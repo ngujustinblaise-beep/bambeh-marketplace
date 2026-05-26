@@ -99,8 +99,6 @@ async function fetchListing(id: string): Promise<ListingDetail> {
   }
 
 
-  } catch {}
-
   throw new Error("Listing not found");
 }
 
