@@ -1,0 +1,1 @@
+[4/5] Searching for -- /s /i "-->" src\*.tsx src\*.ts if errorlevel 1 (    echo û NO -- - CLEAN!) else (    echo ? -- EXISTS - REMOVE IT!    findstr /s /i /n "-->" src\*.tsx src\*.ts)echo.

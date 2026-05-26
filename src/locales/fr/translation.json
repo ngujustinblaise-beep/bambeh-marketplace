@@ -1,0 +1,24 @@
+{
+  "common": {
+    "welcome": "Bienvenue sur Bambeh",
+    "continue": "Continuer",
+    "accept": "Accepter",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  },
+  "subscription": {
+    "title": "Choisissez votre forfait",
+    "bronze": "Basique (Bronze)",
+    "silver": "Premium (Argent)",
+    "gold": "Or",
+    "subscribe": "S'abonner maintenant",
+    "monthly": "Mensuel",
+    "weekly": "Hebdomadaire",
+    "daily": "Quotidien"
+  },
+  "terms": {
+    "title": "Conditions d'utilisation",
+    "accept_checkbox": "J'ai lu et j'accepte les conditions",
+    "scroll_notice": "Veuillez faire défiler jusqu'en bas pour continuer"
+  }
+}

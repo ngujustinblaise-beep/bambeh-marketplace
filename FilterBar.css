@@ -1,0 +1,18 @@
+.filter-bar {
+  padding: 10px;
+  background: var(--ion-background-color);
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.filter-bar ion-searchbar {
+  padding-bottom: 10px;
+}
+
+.filter-bar ion-segment {
+  margin-top: 5px;
+}
+
+.filter-bar ion-segment-button {
+  min-width: 80px;
+  font-size: 14px;
+}

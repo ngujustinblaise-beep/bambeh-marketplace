@@ -1,0 +1,14 @@
+{
+  "security": {
+    "alert": "Alerte de Sécurité",
+    "title": "🛡️ Restez en Sécurité sur BAMBEHhhh",
+    "message": "Protégez-vous contre les arnaques ! Ne partagez jamais d'informations personnelles ou n'envoyez pas d'argent en dehors de la plateforme.",
+    "tip1": "Rencontrez-vous dans des lieux publics sûrs pour les transactions en personne",
+    "tip2": "Utilisez le système de paiement sécurisé de BAMBEHhhh pour toutes les transactions",
+    "tip3": "Signalez immédiatement les activités suspectes",
+    "dismiss": "Compris",
+    "learnMore": "En Savoir Plus",
+    "expand": "Développer l'alerte de sécurité",
+    "collapse": "Réduire l'alerte de sécurité"
+  }
+}

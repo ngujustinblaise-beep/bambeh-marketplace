@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SEO META TAGS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <meta name="description" content="Bambeh — Cameroon's #1 Marketplace. Buy, sell, find jobs, rent properties and vehicles, exchange goods, and book services. Powered by Zerm Coins." />
+    <meta name="keywords" content="cameroon marketplace, buy sell cameroon, jobs cameroun, bambeh, services cameroun, immobilier cameroun, location voiture cameroun" />
+    <meta name="author" content="Bambeh Marketplace" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         OPEN GRAPH (Facebook, WhatsApp, LinkedIn sharing)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bambeh Marketplace" />
+    <meta property="og:title" content="Bambeh — Cameroon's #1 Marketplace" />
+    <meta property="og:description" content="Buy, sell, find jobs, rent, and book services across all 10 regions of Cameroon." />
+    <meta property="og:url" content="https://bambeh.cm" />
+    <meta property="og:image" content="https://bambeh.cm/icon-512x512.png" />
+    <meta property="og:locale" content="en_CM" />
+    <meta property="og:locale:alternate" content="fr_CM" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TWITTER / X CARD
+         ═══════════════════════════════════════════════════════════════════ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bambeh — Cameroon's #1 Marketplace" />
+    <meta name="twitter:description" content="Buy, sell, find jobs, rent, and book services across Cameroon." />
+    <meta name="twitter:image" content="https://bambeh.cm/icon-512x512.png" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PWA META TAGS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <meta name="application-name" content="Bambeh" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Bambeh" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#0d9488" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         THEME COLOR (browser UI color on Android Chrome)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <meta name="theme-color" content="#0d9488" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         APP ICONS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <link rel="icon" type="image/png" sizes="32x32"  href="/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180"     href="/icon-180x180.png" />
+    <link rel="icon" type="image/png"                href="/bambeh-icon.png" />
+    <link rel="apple-touch-icon"                     href="/bambeh-icon.png" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PWA MANIFEST
+         ═══════════════════════════════════════════════════════════════════ -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PERFORMANCE — DNS prefetch for external services
+         ═══════════════════════════════════════════════════════════════════ -->
+    <link rel="dns-prefetch" href="https://api.anthropic.com" />
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fcm.googleapis.com" />
+    <link rel="dns-prefetch" href="https://sentry.io" />
+    <link rel="dns-prefetch" href="https://ingest.de.sentry.io" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         CONTENT SECURITY POLICY (CSP) — XSS Protection
+         Added per security hardening guide (Bug #7 fix)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.notchpay.co;
+        img-src 'self' data: blob: https:;
+        connect-src 'self' https://bambeh-backend-production.up.railway.app https://api.notchpay.co https://*.supabase.co
+          https://firebaseinstallations.googleapis.com https://fcm.googleapis.com
+          https://identitytoolkit.googleapis.com https://api.anthropic.com
+          https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;" />
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TITLE
+         ═══════════════════════════════════════════════════════════════════ -->
+    <title>Bambeh — We Carry All Loads</title>
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

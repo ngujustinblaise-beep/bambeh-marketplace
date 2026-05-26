@@ -1,0 +1,297 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * BAMBEH GLOBAL CSS FIXES
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Add this CSS to your global styles (index.css or App.css)
+ * 
+ * FIXES INCLUDED:
+ * 1. Checkbox visibility fix - makes checkbox borders visible
+ * 2. Arrow removal - removes any stray --> or > characters
+ * 3. Mobile menu scrolling improvements
+ * 4. Better touch interactions for Android
+ * 
+ * © 2025 Bambeh. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 1: CHECKBOX VISIBILITY - Makes checkbox borders visible
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Default checkbox styling - ensure visibility */
+input[type="checkbox"] {
+  /* Make checkbox visible with clear borders */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #6b7280; /* Gray-500 border */
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+/* Checkbox hover state */
+input[type="checkbox"]:hover {
+  border-color: #14b8a6; /* Teal-500 */
+  background-color: #f0fdfa; /* Teal-50 */
+}
+
+/* Checkbox focus state */
+input[type="checkbox"]:focus {
+  outline: none;
+  border-color: #14b8a6; /* Teal-500 */
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+}
+
+/* Checkbox checked state */
+input[type="checkbox"]:checked {
+  background-color: #14b8a6; /* Teal-500 */
+  border-color: #14b8a6;
+}
+
+/* Checkmark inside checkbox */
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Disabled checkbox */
+input[type="checkbox"]:disabled {
+  background-color: #f3f4f6; /* Gray-100 */
+  border-color: #d1d5db; /* Gray-300 */
+  cursor: not-allowed;
+}
+
+/* Terms and Conditions specific checkbox styling */
+.terms-checkbox,
+.checkbox-container input[type="checkbox"],
+[data-checkbox="terms"] {
+  width: 24px !important;
+  height: 24px !important;
+  border: 2px solid #374151 !important; /* Dark gray border */
+  border-radius: 6px !important;
+}
+
+.terms-checkbox:checked,
+.checkbox-container input[type="checkbox"]:checked,
+[data-checkbox="terms"]:checked {
+  background-color: #14b8a6 !important;
+  border-color: #14b8a6 !important;
+}
+
+/* Checkbox with label alignment */
+.checkbox-label,
+label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 2: ARROW REMOVAL - Removes stray --> or > characters
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hide any text nodes that might contain --> */
+body > *:first-child:empty,
+#root > *:first-child:empty {
+  display: none !important;
+}
+
+/* If there's a text node before the app, this helps */
+body {
+  /* Ensure no extra content shows before main app */
+}
+
+/* Hide common problematic elements */
+.arrow-artifact,
+[data-arrow-fix] {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 3: MOBILE MENU SCROLLING IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Smooth scrolling for mobile menus */
+.mobile-menu,
+[data-mobile-menu] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar for mobile menus (when visible) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 4: ANDROID TOUCH IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Improve touch targets */
+button,
+a,
+[role="button"],
+.touchable {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Minimum touch target size for accessibility */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Large touch target for important buttons */
+.touch-target-lg {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 5: FORM ELEMENTS CONSISTENCY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Consistent form element styling */
+input,
+select,
+textarea {
+  font-size: 16px; /* Prevents zoom on mobile */
+}
+
+/* Radio buttons */
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #6b7280;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="radio"]:checked {
+  border-color: #14b8a6;
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #14b8a6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 6: ANIMATION IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Smooth transitions for interactive elements */
+.transition-smooth {
+  transition: all 0.2s ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 7: SAFE AREA INSETS FOR NOTCHED DEVICES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Support for devices with notches */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left, 0);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIX 8: UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hide visually but keep accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible only when using keyboard */
+.focus-visible:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+/* No focus outline for mouse users */
+.focus-visible:focus:not(:focus-visible) {
+  outline: none;
+}

@@ -1,0 +1,266 @@
+/**
+ * BAMBÉ MARKETPLACE - TRANSCRIPT DISPLAY STYLES
+ * Conversation transcript interface
+ * Version: 1.0.0
+ */
+
+.transcript-display {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header */
+.transcript-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.transcript-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.listening-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f44336;
+}
+
+.pulse-dot {
+  width: 10px;
+  height: 10px;
+  background: #f44336;
+  border-radius: 50%;
+  animation: pulseDot 1s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* Content */
+.transcript-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.transcript-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transcript-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.transcript-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.transcript-content::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Conversation Turn */
+.conversation-turn {
+  margin-bottom: 20px;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Message */
+.message {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.user-message .message-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.assistant-message .message-avatar {
+  background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+}
+
+.message-bubble {
+  flex: 1;
+  max-width: 80%;
+}
+
+.message-text {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.user-message .message-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-left-radius: 4px;
+}
+
+.assistant-message .message-text {
+  background: #f0f0f0;
+  color: #333;
+  border-bottom-right-radius: 4px;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  padding-left: 16px;
+}
+
+/* Current Message (While Listening) */
+.message.current .message-text {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  color: #667eea;
+  border: 2px dashed #667eea;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  background: #667eea;
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state h4 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.empty-state p {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.suggestion-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-list li {
+  padding: 10px 20px;
+  background: #f0f4ff;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .message-bubble {
+    max-width: 85%;
+  }
+
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .message-text {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .empty-icon {
+    font-size: 48px;
+  }
+
+  .empty-state h4 {
+    font-size: 16px;
+  }
+}

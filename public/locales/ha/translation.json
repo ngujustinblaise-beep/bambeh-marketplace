@@ -1,0 +1,24 @@
+{
+  "common": {
+    "welcome": "Barka da zuwa Bambeh",
+    "continue": "Ci gaba",
+    "accept": "Amince",
+    "cancel": "Soke",
+    "save": "Ajiye"
+  },
+  "subscription": {
+    "title": "Zaɓi Tsarin Ka",
+    "bronze": "Na Asali (Bronze)",
+    "silver": "Premium (Azurfa)",
+    "gold": "Zinariya",
+    "subscribe": "Yi rajista yanzu",
+    "monthly": "Kowane wata",
+    "weekly": "Kowane mako",
+    "daily": "Kowace rana"
+  },
+  "terms": {
+    "title": "Sharuɗɗan Amfani",
+    "accept_checkbox": "Na karanta kuma na yarda da sharuɗɗan",
+    "scroll_notice": "Da fatan za a gungura zuwa ƙasa don ci gaba"
+  }
+}

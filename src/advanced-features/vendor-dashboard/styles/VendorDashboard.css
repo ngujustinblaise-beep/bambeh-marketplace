@@ -1,0 +1,740 @@
+/**
+ * BAMBÉ MARKETPLACE - VENDOR DASHBOARD STYLES
+ * Main dashboard layout and navigation
+ * Version: 1.0.0
+ */
+
+.vendor-dashboard {
+  display: flex;
+  height: 100vh;
+  background: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar */
+.vendor-sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  z-index: 1000;
+}
+
+.sidebar-header {
+  padding: 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.business-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  margin-bottom: 15px;
+}
+
+.business-logo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 auto 15px;
+  border: 3px solid white;
+}
+
+.business-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.verified-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(76, 175, 80, 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 25px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s;
+  border-left: 4px solid transparent;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left-color: white;
+  font-weight: 600;
+}
+
+.nav-icon {
+  font-size: 20px;
+}
+
+.nav-label {
+  font-size: 15px;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vendor-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.rating-stars {
+  font-weight: 600;
+}
+
+.rating-count {
+  opacity: 0.8;
+}
+
+.help-button {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.help-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Main Content */
+.vendor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Top Bar */
+.vendor-topbar {
+  height: 70px;
+  background: white;
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  gap: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #667eea;
+}
+
+.topbar-search {
+  flex: 1;
+  max-width: 500px;
+}
+
+.topbar-search-input {
+  width: 100%;
+  padding: 10px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.topbar-search-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notification-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.notification-button:hover {
+  background: #e0e0e0;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 20px;
+  height: 20px;
+  background: #f44336;
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.topbar-profile {
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #667eea;
+}
+
+.profile-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: 2px solid #667eea;
+}
+
+/* Notifications Dropdown */
+.notifications-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: 75px;
+  right: 30px;
+  width: 380px;
+  max-height: 500px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.notifications-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.notifications-count {
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.notifications-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background: #f9f9f9;
+}
+
+.notification-item.unread {
+  background: #e3f2fd;
+}
+
+.notification-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.notification-message {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 11px;
+  color: #999;
+}
+
+.no-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.no-notifications span {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.no-notifications p {
+  color: #999;
+  margin: 0;
+}
+
+.notifications-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.notifications-footer button {
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Content Area */
+.vendor-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+}
+
+.vendor-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vendor-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.vendor-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.vendor-content::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Coming Soon Placeholder */
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 40px;
+}
+
+.coming-soon h2 {
+  margin: 0 0 15px 0;
+  font-size: 32px;
+  color: #333;
+}
+
+.coming-soon p {
+  color: #666;
+  font-size: 16px;
+  max-width: 500px;
+  margin: 0;
+}
+
+/* Loading State */
+.vendor-dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #f5f7fa;
+}
+
+.spinner-large {
+  width: 60px;
+  height: 60px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.vendor-dashboard-loading p {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .vendor-sidebar {
+    width: 240px;
+  }
+
+  .topbar-search {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vendor-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+  }
+
+  .vendor-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  .topbar-search {
+    display: none;
+  }
+
+  .vendor-content {
+    padding: 20px 15px;
+  }
+
+  .notifications-dropdown {
+    width: calc(100vw - 40px);
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vendor-topbar {
+    padding: 0 15px;
+  }
+
+  .topbar-actions {
+    gap: 10px;
+  }
+
+  .vendor-content {
+    padding: 15px 10px;
+  }
+}
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * VENDOR DASHBOARD CSS - ADDITIONAL STYLES FOR MONETIZATION
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * ADD THESE STYLES TO YOUR EXISTING VendorDashboard.css FILE
+ * (Copy and paste at the bottom of the existing CSS file)
+ * 
+ * © 2025 Bambeh. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 NAVIGATION DIVIDER (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+.nav-divider {
+  padding: 15px 25px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 10px;
+}
+
+.nav-divider span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 SIDEBAR UPGRADE BUTTON (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+.sidebar-upgrade {
+  padding: 15px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border: none;
+  border-radius: 12px;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+}
+
+.upgrade-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.upgrade-button svg {
+  color: #1f2937;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 MONETIZATION NAV ITEMS - SPECIAL STYLING (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Rewards Tab */
+.nav-item[data-tab="rewards"]:hover,
+.nav-item.active[data-tab="rewards"] {
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.2) 0%, transparent 100%);
+}
+
+/* Commissions Tab */  
+.nav-item[data-tab="commissions"]:hover,
+.nav-item.active[data-tab="commissions"] {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.2) 0%, transparent 100%);
+}
+
+/* Referrals Tab */
+.nav-item[data-tab="referrals"]:hover,
+.nav-item.active[data-tab="referrals"] {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, transparent 100%);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 OVERVIEW GRID ENHANCEMENTS (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+.vendor-content .grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.vendor-content .grid.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .vendor-content .grid.md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vendor-content .grid.lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 SPACING UTILITIES (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 SECTION HEADERS (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+.vendor-content h2 {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.vendor-content h2 svg {
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 UPGRADE CTA BANNER ANIMATION (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+.vendor-content .bg-gradient-to-r {
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🆕 MOBILE RESPONSIVE ADJUSTMENTS (NEW!)
+   ════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar-upgrade {
+    padding: 10px 15px;
+  }
+  
+  .upgrade-button {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+  
+  .nav-divider {
+    padding: 12px 20px 8px;
+  }
+  
+  .nav-divider span {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vendor-content h2 {
+    font-size: 1.25rem;
+  }
+  
+  .vendor-content h2 svg {
+    width: 24px;
+    height: 24px;
+  }
+}

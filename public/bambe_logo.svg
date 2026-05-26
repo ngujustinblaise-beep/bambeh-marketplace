@@ -1,0 +1,74 @@
+/**
+ * BAMBE_LOGO.SVG - OFFICIAL APP LOGO
+ * 
+ * Turquoise glossy logo for:
+ * - App icon (Android/iOS)
+ * - Play Store listing
+ * - Splash screen
+ * - Loading screen
+ * 
+ * Features:
+ * - Turquoise gradient (#0d9488 to #14b8a6)
+ * - Glossy effect with highlights
+ * - Professional design
+ * - Scalable vector
+ */
+
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle with Gradient -->
+  <defs>
+    <!-- Main Gradient -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glossy Highlight Gradient -->
+    <radialGradient id="glossGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.4" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Shadow -->
+    <radialGradient id="shadowGradient" cx="50%" cy="50%">
+      <stop offset="70%" style="stop-color:#000000;stop-opacity:0" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Shadow -->
+  <circle cx="256" cy="268" r="240" fill="url(#shadowGradient)" opacity="0.3"/>
+  
+  <!-- Main Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#mainGradient)"/>
+  
+  <!-- Glossy Highlight -->
+  <ellipse cx="256" cy="180" rx="180" ry="140" fill="url(#glossGradient)"/>
+  
+  <!-- Letter B - Modern Design -->
+  <g>
+    <!-- B Letter Path -->
+    <path d="M 180 140 L 180 372 L 280 372 C 320 372 350 342 350 302 C 350 275 335 252 313 242 C 328 232 338 214 338 192 C 338 152 308 140 268 140 L 180 140 Z M 220 170 L 268 170 C 290 170 298 178 298 192 C 298 206 290 214 268 214 L 220 214 L 220 170 Z M 220 244 L 280 244 C 302 244 310 252 310 272 C 310 292 302 300 280 300 L 220 300 L 220 244 Z" 
+          fill="white" 
+          opacity="0.95"/>
+  </g>
+  
+  <!-- Small Accent - Shopping Bag Icon -->
+  <g transform="translate(340, 180)">
+    <path d="M 0 8 L 4 32 L 28 32 L 32 8 L 0 8 Z M 10 8 L 10 4 C 10 1.8 11.8 0 14 0 L 18 0 C 20.2 0 22 1.8 22 4 L 22 8" 
+          stroke="white" 
+          stroke-width="2.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          opacity="0.9"/>
+  </g>
+  
+  <!-- Bottom Accent Line -->
+  <path d="M 140 390 Q 256 400 372 390" 
+        stroke="white" 
+        stroke-width="3" 
+        fill="none" 
+        stroke-linecap="round" 
+        opacity="0.6"/>
+</svg>

@@ -1,0 +1,213 @@
+/**
+ * BAMBÉ MARKETPLACE - VOICE BUTTON STYLES
+ * Animated microphone button
+ * Version: 1.0.0
+ */
+
+.voice-button {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.voice-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.voice-button.small {
+  width: 50px;
+  height: 50px;
+}
+
+.voice-button.medium {
+  width: 70px;
+  height: 70px;
+}
+
+.voice-button.large {
+  width: 90px;
+  height: 90px;
+}
+
+.voice-button:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+
+.voice-button:active:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Inner Container */
+.voice-button-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Microphone Icon */
+.microphone-icon {
+  width: 40%;
+  height: 40%;
+  color: white;
+  z-index: 2;
+  transition: transform 0.3s;
+}
+
+.voice-button.small .microphone-icon {
+  width: 35%;
+  height: 35%;
+}
+
+.voice-button.large .microphone-icon {
+  width: 45%;
+  height: 45%;
+}
+
+.voice-button.listening .microphone-icon {
+  transform: scale(1.2);
+  animation: micBounce 0.6s ease-in-out infinite;
+}
+
+@keyframes micBounce {
+  0%, 100% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+/* Animated Waves (Listening State) */
+.wave {
+  position: absolute;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: waveExpand 1.5s ease-out infinite;
+}
+
+.wave-1 {
+  animation-delay: 0s;
+}
+
+.wave-2 {
+  animation-delay: 0.5s;
+}
+
+.wave-3 {
+  animation-delay: 1s;
+}
+
+@keyframes waveExpand {
+  0% {
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+  100% {
+    width: 150%;
+    height: 150%;
+    opacity: 0;
+  }
+}
+
+/* Processing Spinner */
+.processing-spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status Text */
+.voice-button-status {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.status-text {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #666;
+}
+
+.status-text.listening {
+  background: #667eea;
+  color: white;
+  animation: pulse 1s infinite;
+}
+
+.status-text.processing {
+  background: #FF9800;
+  color: white;
+}
+
+/* Listening State */
+.voice-button.listening {
+  background: linear-gradient(135deg, #f44336 0%, #E91E63 100%);
+  box-shadow: 0 12px 32px rgba(244, 67, 54, 0.5);
+  animation: breathe 1.5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Processing State */
+.voice-button.processing {
+  background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .voice-button.large {
+    width: 75px;
+    height: 75px;
+  }
+
+  .voice-button-status {
+    bottom: -30px;
+  }
+
+  .status-text {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}

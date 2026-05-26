@@ -1,0 +1,395 @@
+src/admin/AdminInbox.tsx(320,11): error TS2339: Property 'currentAdmin' does not exist on type 'AdminContextType'.
+src/advanced-features/notifications/NotificationPreferences.tsx(8,8): error TS2613: Module '"C:/Dev/bambe-android/src/advanced-features/notifications/NotificationService"' has no default export. Did you mean to use 'import { NotificationService } from "C:/Dev/bambe-android/src/advanced-features/notifications/NotificationService"' instead?
+src/advanced-features/notifications/NotificationPreferences.tsx(17,7): error TS2322: Type '({ userId, onSave }: NotificationPreferencesProps) => void' is not assignable to type 'FC<NotificationPreferencesProps>'.
+src/advanced-features/notifications/NotificationSystem-ADVANCED.tsx(16,8): error TS2613: Module '"C:/Dev/bambe-android/src/advanced-features/notifications/NotificationService"' has no default export. Did you mean to use 'import { NotificationService } from "C:/Dev/bambe-android/src/advanced-features/notifications/NotificationService"' instead?
+src/advanced-features/notifications/NotificationSystem-ADVANCED.tsx(312,55): error TS2339: Property 'timestamp' does not exist on type 'Notification'.
+src/advanced-features/payment-gateway/PaymentGateway-ADVANCED.tsx(64,58): error TS2345: Argument of type 'import("C:/Dev/bambe-android/src/advanced-features/types/index").PaymentIntent' is not assignable to parameter of type 'import("C:/Dev/bambe-android/src/advanced-features/payment-gateway/PaymentService").PaymentIntent'.
+src/advanced-features/payment-gateway/PaymentGateway-ADVANCED.tsx(67,31): error TS2339: Property 'data' does not exist on type 'PaymentResult'.
+src/advanced-features/payment-gateway/PaymentGateway-ADVANCED.tsx(69,33): error TS2339: Property 'data' does not exist on type 'PaymentResult'.
+src/advanced-features/payment-gateway/PaymentGateway-ADVANCED.tsx(69,56): error TS2339: Property 'data' does not exist on type 'PaymentResult'.
+src/advanced-features/payment-gateway/PaymentGateway-ADVANCED.tsx(72,53): error TS2341: Property 'generateReceipt' is private and only accessible within class 'PaymentService'.
+src/advanced-features/payment-gateway/PaymentGateway-ADVANCED.tsx(205,57): error TS2341: Property 'generateReceipt' is private and only accessible within class 'PaymentService'.
+src/advanced-features/payment-gateway/PaymentService.ts(8,27): error TS2307: Cannot find module '../config/firebase' or its corresponding type declarations.
+src/advanced-features/vendor-dashboard/components/DashboardOverview.tsx(32,7): error TS2322: Type '({ vendorId, vendorName }: DashboardOverviewProps) => void' is not assignable to type 'FC<DashboardOverviewProps>'.
+src/advanced-features/vendor-dashboard/components/DashboardOverview.tsx(54,5): error TS2322: Type 'Element' is not assignable to type 'number'.
+src/advanced-features/vendor-dashboard/components/DashboardOverview.tsx(66,3): error TS2322: Type 'Element' is not assignable to type 'number'.
+src/advanced-features/vendor-dashboard/VendorDashboard.tsx(33,33): error TS2322: Type '{ vendorId: string; }' is not assignable to type 'IntrinsicAttributes'.
+src/advanced-features/voice-assistant/components/TranscriptDisplay.tsx(19,7): error TS2322: Type '({ transcript, isListening, conversationHistory }: TranscriptDisplayProps) => void' is not assignable to type 'FC<TranscriptDisplayProps>'.
+src/advanced-features/voice-assistant/components/TranscriptDisplay.tsx(40,3): error TS2322: Type 'Element' is not assignable to type 'string'.
+src/App.tsx(144,38): error TS2322: Type 'Promise<typeof import("C:/Dev/bambe-android/src/pages/SubscriptionPlans")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+src/App.tsx(194,33): error TS2322: Type 'Promise<typeof import("C:/Dev/bambe-android/src/pages/vendor/VendorFilter")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+src/App.tsx(200,9): error TS2322: Type 'Promise<typeof import("C:/Dev/bambe-android/src/pages/vendor/VendorVerification")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+src/App.tsx(220,9): error TS2322: Type 'Promise<typeof import("C:/Dev/bambe-android/src/pages/vendor/settings/VendorSettingsAccountProfile")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+src/App.tsx(312,34): error TS2322: Type 'Promise<typeof import("C:/Dev/bambe-android/src/pages/TontineCreate")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+src/components/account/AccountRestrictionBanner.tsx(281,43): error TS2304: Cannot find name 'AccountBlockedPageProps'.
+src/components/AddJobForm.tsx(44,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/AddJobForm.tsx(74,72): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<JobItem, "id">'.
+src/components/AddJobForm.tsx(154,94): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/AddMarketplaceItemForm.tsx(40,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/AddMarketplaceItemForm.tsx(98,80): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<MarketplaceItem, "id">'.
+src/components/AddMarketplaceItemForm.tsx(184,94): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/AddServiceForm.tsx(40,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/AddServiceForm.tsx(66,76): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<ServiceItem, "id">'.
+src/components/AddServiceForm.tsx(140,98): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/ads/AdCard.tsx(54,49): error TS2339: Property 'title' does not exist on type '{ id: string; name?: string; price_xaf?: number; images?: string[]; }'.
+src/components/ads/AdCard.tsx(64,87): error TS2339: Property 'title' does not exist on type '{ id: string; name?: string; price_xaf?: number; images?: string[]; }'.
+src/components/ads/AdCard.tsx(65,72): error TS2339: Property 'description' does not exist on type '{ id: string; name?: string; price_xaf?: number; images?: string[]; }'.
+src/components/ads/AdCard.tsx(66,70): error TS2339: Property 'type' does not exist on type '{ id: string; name?: string; price_xaf?: number; images?: string[]; }'.
+src/components/ads/AdCreationForm.tsx(39,52): error TS2339: Property 'duration' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(42,54): error TS2339: Property 'subscriberPrice' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(42,88): error TS2339: Property 'nonSubscriberPrice' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(43,51): error TS2339: Property 'multiplier' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(47,52): error TS2339: Property 'duration' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(50,39): error TS2339: Property 'nonSubscriberPrice' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(50,76): error TS2339: Property 'subscriberPrice' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(50,112): error TS2339: Property 'multiplier' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(65,22): error TS2352: Conversion of type '{ itemId: string; duration: string; placement: string; startDate: Date; autoRenew: boolean; }' to type 'AdCreationData' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/components/ads/AdCreationForm.tsx(115,34): error TS2339: Property 'duration' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(115,93): error TS2339: Property 'duration' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(116,89): error TS2339: Property 'duration' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(118,80): error TS2339: Property 'duration' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(122,32): error TS2339: Property 'subscriberPrice' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(123,79): error TS2339: Property 'discount' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(126,32): error TS2339: Property 'nonSubscriberPrice' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/ads/AdCreationForm.tsx(145,49): error TS2339: Property 'multiplier' does not exist on type '{ placement: AdPlacement; price: number; label: string; description: string; }'.
+src/components/auth/PrivilegeGuard.tsx(34,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/auth/ProtectedRoute.tsx(25,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/auth/ProtectedRoute.tsx(25,24): error TS2339: Property 'loading' does not exist on type 'AuthContextValue'.
+src/components/BookingModal.tsx(34,25): error TS2528: A module cannot have multiple default exports.
+src/components/BookingModal.tsx(340,16): error TS2528: A module cannot have multiple default exports.
+src/components/cart/CartButton.tsx(13,11): error TS2339: Property 'totalItems' does not exist on type 'CartContextType'.
+src/components/cart/CartButton.tsx(30,11): error TS2339: Property 'totalItems' does not exist on type 'CartContextType'.
+src/components/cart/CartDrawer.tsx(12,18): error TS2339: Property 'totalItems' does not exist on type 'CartContextType'.
+src/components/cart/CartDrawer.tsx(12,30): error TS2339: Property 'totalPrice' does not exist on type 'CartContextType'.
+src/components/cart/CartDrawer.tsx(37,34): error TS2339: Property 'itemImage' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(37,55): error TS2339: Property 'itemTitle' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(39,76): error TS2339: Property 'itemTitle' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(40,72): error TS2339: Property 'sellerName' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(43,68): error TS2339: Property 'itemId' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(45,68): error TS2339: Property 'itemId' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(47,120): error TS2339: Property 'currency' does not exist on type 'CartItem'.
+src/components/cart/CartDrawer.tsx(50,58): error TS2339: Property 'itemId' does not exist on type 'CartItem'.
+src/components/cart/CheckoutModal.tsx(13,10): error TS2305: Module '"@/contexts/CartContext"' has no exported member 'createOrderFromCart'.
+src/components/cart/CheckoutModal.tsx(13,31): error TS2305: Module '"@/contexts/CartContext"' has no exported member 'createTransaction'.
+src/components/cart/CheckoutModal.tsx(19,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/cart/CheckoutModal.tsx(20,18): error TS2339: Property 'totalPrice' does not exist on type 'CartContextType'.
+src/components/cart/CheckoutModal.tsx(85,57): error TS2339: Property 'itemTitle' does not exist on type 'CartItem'.
+src/components/cart/CheckoutModal.tsx(86,103): error TS2339: Property 'currency' does not exist on type 'CartItem'.
+src/components/chat/ChatInterface.tsx(22,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/chat/ChatInterface.tsx(92,55): error TS2339: Property 'image' does not exist on type 'ChatParticipant'.
+src/components/chat/ChatList.tsx(21,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/chat/ChatList.tsx(89,65): error TS2339: Property 'image' does not exist on type 'ChatParticipant'.
+src/components/chat/ChatList.tsx(113,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/chat/ChatList.tsx(118,73): error TS2339: Property 'image' does not exist on type 'ChatParticipant'.
+src/components/chat/MessageInput.tsx(24,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/common/ItemCard.tsx(28,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/common/SubscriptionBanner.tsx(22,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/common/SubscriptionGate.tsx(9,10): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'isCurrentUserSubscribed'.
+src/components/common/VideoPlayer.tsx(538,39): error TS2304: Cannot find name 'VideoThumbnailProps'.
+src/components/ContactForm.tsx(11,7): error TS2322: Type '({ propertyTitle }: ContactFormProps) => void' is not assignable to type 'FC<ContactFormProps>'.
+src/components/forms/AddJobForm.tsx(61,25): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddJobForm.tsx(63,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/forms/AddJobForm.tsx(126,9): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<JobItem, "id">'.
+src/components/forms/AddJobForm.tsx(332,11): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/forms/AddJobForm.tsx(396,16): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddMarketplaceItemForm.tsx(62,25): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddMarketplaceItemForm.tsx(64,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/forms/AddMarketplaceItemForm.tsx(183,9): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<MarketplaceItem, "id">'.
+src/components/forms/AddMarketplaceItemForm.tsx(402,11): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/forms/AddMarketplaceItemForm.tsx(467,16): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddRentalForm.tsx(65,25): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddRentalForm.tsx(67,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/forms/AddRentalForm.tsx(190,9): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<RentalItem, "id">'.
+src/components/forms/AddRentalForm.tsx(463,11): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/forms/AddRentalForm.tsx(528,16): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddServiceForm.tsx(58,25): error TS2528: A module cannot have multiple default exports.
+src/components/forms/AddServiceForm.tsx(60,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/forms/AddServiceForm.tsx(120,9): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<ServiceItem, "id">'.
+src/components/forms/AddServiceForm.tsx(303,11): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/forms/AddServiceForm.tsx(367,16): error TS2528: A module cannot have multiple default exports.
+src/components/forms/PhoneInput.tsx(26,25): error TS2528: A module cannot have multiple default exports.
+src/components/forms/PhoneInput.tsx(128,16): error TS2528: A module cannot have multiple default exports.
+src/components/forms/ReportForm.tsx(30,25): error TS2528: A module cannot have multiple default exports.
+src/components/forms/ReportForm.tsx(284,16): error TS2528: A module cannot have multiple default exports.
+src/components/Header.tsx(38,25): error TS2528: A module cannot have multiple default exports.
+src/components/Header.tsx(410,16): error TS2528: A module cannot have multiple default exports.
+src/components/index.ts(12,3): error TS2614: Module '"./Verification/VerificationBadge"' has no exported member 'VerificationBadge'. Did you mean to use 'import VerificationBadge from "./Verification/VerificationBadge"' instead?
+src/components/index.ts(13,3): error TS2614: Module '"./Verification/VerificationBadge"' has no exported member 'VerificationApplication'. Did you mean to use 'import VerificationApplication from "./Verification/VerificationBadge"' instead?
+src/components/index.ts(14,3): error TS2724: '"./Verification/VerificationBadge"' has no exported member named 'VerificationDetails'. Did you mean 'VerificationStatus'?
+src/components/LanguageSelection.tsx(73,25): error TS2528: A module cannot have multiple default exports.
+src/components/LanguageSelection.tsx(286,16): error TS2528: A module cannot have multiple default exports.
+src/components/LanguageSwitcher.tsx(34,7): error TS2322: Type '({ compact, }: LanguageSwitcherProps) => void' is not assignable to type 'FC<LanguageSwitcherProps>'.
+src/components/layout/Header.tsx(22,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/layout/Header.tsx(22,24): error TS2339: Property 'logout' does not exist on type 'AuthContextValue'.
+src/components/layout/MainLayout.tsx(44,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/location/LocationSelector.tsx(38,25): error TS2528: A module cannot have multiple default exports.
+src/components/location/LocationSelector.tsx(223,16): error TS2528: A module cannot have multiple default exports.
+src/components/Logo.tsx(113,1): error TS1258: A default export must be at the top level of a file or module declaration.
+src/components/Marketplace/PostMarketplaceItem.tsx(30,5): error TS2322: Type '"brand-new"' is not assignable to type 'ItemCondition'.
+src/components/Marketplace/PostMarketplaceItem.tsx(225,74): error TS2339: Property 'quantity' does not exist on type 'Partial<MarketplaceItem>'.
+src/components/Marketplace/PostMarketplaceItem.tsx(272,65): error TS2339: Property 'contact' does not exist on type 'Partial<MarketplaceItem>'.
+src/components/Marketplace/PostMarketplaceItem.tsx(281,41): error TS2339: Property 'acceptsZermCoins' does not exist on type 'Partial<MarketplaceItem>'.
+src/components/MinimizableChatWidget.tsx(58,25): error TS2528: A module cannot have multiple default exports.
+src/components/MinimizableChatWidget.tsx(461,16): error TS2528: A module cannot have multiple default exports.
+src/components/NotificationDropdown.tsx(6,25): error TS2528: A module cannot have multiple default exports.
+src/components/NotificationDropdown.tsx(141,16): error TS2528: A module cannot have multiple default exports.
+src/components/OnboardingFlow.tsx(27,13): error TS2786: 'LanguageSelection' cannot be used as a JSX component.
+src/components/OnboardingFlow.tsx(31,32): error TS2322: Type '{ onAccepted: () => void; }' is not assignable to type 'IntrinsicAttributes & TermsAndConditionsProps'.
+src/components/payments/PaymentModal.tsx(78,26): error TS2339: Property 'ZERM_COINS' does not exist on type 'typeof PaymentMethod'.
+src/components/payments/PaymentModal.tsx(133,11): error TS2367: This comparison appears to be unintentional because the types 'PaymentMethod' and '"mtn"' have no overlap.
+src/components/payments/PaymentModal.tsx(133,38): error TS2367: This comparison appears to be unintentional because the types 'PaymentMethod' and '"orange"' have no overlap.
+src/components/payments/PaymentModal.tsx(189,10): error TS2367: This comparison appears to be unintentional because the types 'PaymentMethod' and '"zerm"' have no overlap.
+src/components/PhoneInput.tsx(26,25): error TS2528: A module cannot have multiple default exports.
+src/components/PhoneInput.tsx(128,16): error TS2528: A module cannot have multiple default exports.
+src/components/PostAdButton.tsx(11,7): error TS2322: Type '({ className, variant, size, }: PostAdButtonProps) => void' is not assignable to type 'FC<PostAdButtonProps>'.
+src/components/premium/PremiumGate.tsx(37,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/Products/PostProduct.tsx(53,13): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/profile/ChangePasswordModal.tsx(24,25): error TS2528: A module cannot have multiple default exports.
+src/components/profile/ChangePasswordModal.tsx(363,16): error TS2528: A module cannot have multiple default exports.
+src/components/profile/EditProfileModal.tsx(24,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/profile/EmailPreferences.tsx(32,25): error TS2528: A module cannot have multiple default exports.
+src/components/profile/EmailPreferences.tsx(242,16): error TS2528: A module cannot have multiple default exports.
+src/components/profile/PrivacySettings.tsx(35,25): error TS2528: A module cannot have multiple default exports.
+src/components/profile/PrivacySettings.tsx(323,16): error TS2528: A module cannot have multiple default exports.
+src/components/profile/ProfileTrackingButton.tsx(96,52): error TS2304: Cannot find name 'TrackingCardProps'.
+src/components/profile/ProfileTrackingButton.tsx(157,68): error TS2304: Cannot find name 'DeliveryStatusProps'.
+src/components/ReferralButton.tsx(14,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/Rentals/AddRentalForm.tsx(62,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/Rentals/AddRentalForm.tsx(162,9): error TS2353: Object literal may only specify known properties, and 'keywords' does not exist in type 'Omit<RentalItem, "id">'.
+src/components/Rentals/AddRentalForm.tsx(354,44): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/components/Rentals/PostRentalProperty.tsx(54,13): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/report/ReportIssueButton.tsx(46,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/ReviewForm.tsx(12,7): error TS2322: Type '({ propertyId, onSubmit, onClose }: ReviewFormProps) => void' is not assignable to type 'FC<ReviewFormProps>'.
+src/components/Reviews/ReviewForm.tsx(93,119): error TS2322: Type 'File[]' is not assignable to type 'string[]'.
+src/components/Reviews/ReviewList.tsx(114,44): error TS2339: Property 'userAvatar' does not exist on type 'ReviewWithResponse'.
+src/components/Reviews/ReviewList.tsx(170,63): error TS2339: Property 'helpfulCount' does not exist on type 'ReviewWithResponse'.
+src/components/Reviews/ReviewList.tsx(174,65): error TS2339: Property 'notHelpfulCount' does not exist on type 'ReviewWithResponse'.
+src/components/Reviews/ReviewList.tsx(193,77): error TS2339: Property 'text' does not exist on type '{ message: string; respondedAt: Date; responderName: string; createdAt?: Date; comment?: string; }'.
+src/components/Search/GlobalSearchBar.tsx(10,10): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'recordAdView'.
+src/components/Search/GlobalSearchBar.tsx(11,15): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'SearchResult'.
+src/components/security/PrivilegeGuard.tsx(21,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/security/ProtectedRoute.tsx(12,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/security/ProtectedRoute.tsx(12,24): error TS2339: Property 'loading' does not exist on type 'AuthContextValue'.
+src/components/security/TwoFactorAuth.tsx(156,8): error TS2741: Property 'onSuccess' is missing in type '{ phoneNumber: string; onVerify: (code: string) => Promise<void>; onResend: () => Promise<void>; isVerifying: boolean; isSending: boolean; error: string; onCancel: () => void; }' but required in type 'OTPModalProps'.
+src/components/subscription/FeatureGate.tsx(312,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/subscription/FeatureGate.tsx(334,15): error TS2304: Cannot find name 'CompactLockedContent'.
+src/components/subscription/FeatureGate.tsx(336,13): error TS2304: Cannot find name 'FreeUserBrowseOnly'.
+src/components/subscription/FeatureGate.tsx(342,8): error TS2304: Cannot find name 'TeaserContent'.
+src/components/subscription/FeatureGate.tsx(348,9): error TS2304: Cannot find name 'TeaserContent'.
+src/components/subscription/FeatureGate.tsx(353,13): error TS2304: Cannot find name 'CompactLockedContent'.
+src/components/subscription/SubscriptionModal.tsx(92,54): error TS2551: Property 'nameEn' does not exist on type 'SubscriptionPlan'. Did you mean 'name'?
+src/components/subscription/SubscriptionModal.tsx(92,76): error TS2551: Property 'nameFr' does not exist on type 'SubscriptionPlan'. Did you mean 'name'?
+src/components/subscription/SubscriptionModal.tsx(93,32): error TS2339: Property 'priceXAF' does not exist on type 'SubscriptionPlan'.
+src/components/subscription/SubscriptionModal.tsx(95,11): error TS2322: Type '(phoneNumber: string) => Promise<JSX.Element>' is not assignable to type '(phoneNumber: string) => Promise<void>'.
+src/components/subscription/SubscriptionPlans.tsx(145,72): error TS2339: Property 'ZERM_COINS' does not exist on type 'typeof PaymentMethod'.
+src/components/support/LiveChatSupport.tsx(24,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/TestAuth.tsx(5,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/components/TestAuth.tsx(16,13): error TS2304: Cannot find name 'getProducts'.
+src/components/TrustedBadge.tsx(169,41): error TS2304: Cannot find name 'BadgeWithTooltipProps'.
+src/components/TrustedBadge.tsx(213,42): error TS2304: Cannot find name 'BadgeRequirementsProps'.
+src/components/vendor/VendorBadge.tsx(199,4): error TS2304: Cannot find name 'VendorIconProps'.
+src/components/vendor/VendorBadge.tsx(233,4): error TS2304: Cannot find name 'VendorCardBadgeProps'.
+src/components/vendor/VendorBadge.tsx(272,56): error TS2304: Cannot find name 'BecomeVendorButtonProps'.
+src/components/vendor/ZermPurchase.tsx(145,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/components/vendor/ZermPurchase.tsx(244,21): error TS2741: Property 'name' is missing in type 'ZermCoinPackage' but required in type '{ id: string; name: string; popular?: boolean; amount: number; bonus: number; priceXAF: number; }'.
+src/components/VerificationBadge.tsx(16,10): error TS2305: Module '"@/contexts/FirebaseContext"' has no exported member 'storage'.
+src/components/VerificationBadge.tsx(16,19): error TS2305: Module '"@/contexts/FirebaseContext"' has no exported member 'db'.
+src/components/VerificationBadge.tsx(16,23): error TS2305: Module '"@/contexts/FirebaseContext"' has no exported member 'auth'.
+src/components/voice/MovableVoiceControl.tsx(47,5): error TS2687: All declarations of 'length' must have identical modifiers.
+src/components/voice/MovableVoiceControl.tsx(52,5): error TS2687: All declarations of 'isFinal' must have identical modifiers.
+src/components/voice/MovableVoiceControl.tsx(53,5): error TS2687: All declarations of 'length' must have identical modifiers.
+src/components/voice/MovableVoiceControl.tsx(58,5): error TS2687: All declarations of 'transcript' must have identical modifiers.
+src/components/voice/MovableVoiceControl.tsx(59,5): error TS2687: All declarations of 'confidence' must have identical modifiers.
+src/config/subscriptionPlans.ts(9,5): error TS2561: Object literal may only specify known properties, but 'nameEn' does not exist in type 'SubscriptionPlan'. Did you mean to write 'name'?
+src/config/subscriptionPlans.ts(38,5): error TS2561: Object literal may only specify known properties, but 'nameEn' does not exist in type 'SubscriptionPlan'. Did you mean to write 'name'?
+src/config/subscriptionPlans.ts(73,5): error TS2561: Object literal may only specify known properties, but 'nameEn' does not exist in type 'SubscriptionPlan'. Did you mean to write 'name'?
+src/config/subscriptionPlans.ts(112,5): error TS2561: Object literal may only specify known properties, but 'nameEn' does not exist in type 'SubscriptionPlan'. Did you mean to write 'name'?
+src/contexts/AuthContext.tsx(64,7): error TS2322: Type '{ role?: string; full_name?: string; avatar_url?: string; phone?: string; id: string; app_metadata: UserAppMetadata; user_metadata: UserMetadata; ... 20 more ...; banned_until?: string; }' is not assignable to type 'AuthUser'.
+src/contexts/VendorContext.tsx(22,3): error TS2300: Duplicate identifier 'vendorStatus'.
+src/contexts/VendorContext.tsx(22,3): error TS2687: All declarations of 'vendorStatus' must have identical modifiers.
+src/contexts/VendorContext.tsx(30,3): error TS2300: Duplicate identifier 'vendorStatus'.
+src/contexts/VendorContext.tsx(30,3): error TS2687: All declarations of 'vendorStatus' must have identical modifiers.
+src/contexts/VerificationContext.tsx(53,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/data/cameroonLocations.ts(373,16): error TS2528: A module cannot have multiple default exports.
+src/data/cameroonLocations.ts(375,16): error TS2304: Cannot find name 'cameroonLocations'.
+src/data/cameroonLocations.ts(375,16): error TS2528: A module cannot have multiple default exports.
+src/examples/ComponentExamples.tsx(5,10): error TS2614: Module '"@/components/Verification/VerificationBadge"' has no exported member 'VerificationBadge'. Did you mean to use 'import VerificationBadge from "@/components/Verification/VerificationBadge"' instead?
+src/examples/ComponentExamples.tsx(5,29): error TS2614: Module '"@/components/Verification/VerificationBadge"' has no exported member 'VerificationApplication'. Did you mean to use 'import VerificationApplication from "@/components/Verification/VerificationBadge"' instead?
+src/examples/ComponentExamples.tsx(21,12): error TS2304: Cannot find name 'ChatWidget'.
+src/hooks/useAllListings.ts(14,3): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'loadAllListings'.
+src/hooks/useAllListings.ts(15,3): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'searchListings'.
+src/hooks/useAllListings.ts(16,8): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'UnifiedListing'.
+src/hooks/useAllListings.ts(17,8): error TS2305: Module '"@/utils/BambehStore"' has no exported member 'SearchResult'.
+src/hooks/useAnalytics.ts(11,10): error TS2305: Module '"@/utils/analytics/AnalyticsManager"' has no exported member 'analyticsManager'.
+src/hooks/useAnalytics.ts(12,10): error TS2305: Module '"@/utils/analytics/MixpanelManager"' has no exported member 'mixpanelManager'.
+src/hooks/useAnalytics.ts(13,10): error TS2724: '"@/utils/monitoring/ErrorMonitoring"' has no exported member named 'errorMonitoring'. Did you mean 'errorMonitor'?
+src/hooks/useSubscription.ts(41,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/hooks/useVendorAwareBack.ts(10,3): error TS2614: Module '"@/utils/navigationOrigin"' has no exported member 'getLogoDestination'. Did you mean to use 'import getLogoDestination from "@/utils/navigationOrigin"' instead?
+src/hooks/useVendorAwareBack.ts(26,32): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+src/hooks/useVendorMonetization.ts(11,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionTier'. Did you mean 'VendorSubscription'?
+src/hooks/useVendorMonetization.ts(13,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionPlan'. Did you mean 'VendorSubscription'?
+src/hooks/useVendorMonetization.ts(14,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionFeatures'. Did you mean 'VendorSubscription'?
+src/hooks/useVendorMonetization.ts(16,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionableTransactionType'.
+src/hooks/useVendorMonetization.ts(17,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionCalculation'.
+src/hooks/useVendorMonetization.ts(18,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionRecord'.
+src/hooks/useVendorMonetization.ts(19,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'VendorCommissionSummary'.
+src/hooks/useVendorMonetization.ts(20,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'VendorGamificationStats'.
+src/hooks/useVendorMonetization.ts(21,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'VendorReferral'.
+src/hooks/useVendorMonetization.ts(22,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'ReferralBatchProgress'.
+src/hooks/useVendorMonetization.ts(23,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'PositiveReviewProgress'.
+src/hooks/useVendorMonetization.ts(24,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'GamificationRewardRecord'.
+src/hooks/useVendorMonetization.ts(337,9): error TS2353: Object literal may only specify known properties, and 'startDate' does not exist in type 'VendorSubscription'.
+src/hooks/useVendorMonetization.ts(370,48): error TS2339: Property 'endDate' does not exist on type 'VendorSubscription'.
+src/hooks/useVendorMonetization.ts(381,9): error TS2353: Object literal may only specify known properties, and 'endDate' does not exist in type 'VendorSubscription'.
+src/hooks/useVendorMonetization.ts(410,9): error TS2820: Type '"cancelled"' is not assignable to type 'SubscriptionStatus'. Did you mean '"canceled"'?
+src/hooks/useVendorMonetization.ts(537,55): error TS2339: Property 'endDate' does not exist on type 'VendorSubscription'.
+src/hooks/useVendorMonetization.ts(546,25): error TS2339: Property 'listingsUsed' does not exist on type 'VendorSubscription'.
+src/hooks/useVendorMonetization.ts(552,72): error TS2339: Property 'listingsUsed' does not exist on type 'VendorSubscription'.
+src/hooks/useVendorMonetization.ts(586,35): error TS2339: Property 'listingsUsed' does not exist on type 'VendorSubscription'.
+src/pages/AdminDashboard.tsx(34,25): error TS2528: A module cannot have multiple default exports.
+src/pages/AdminDashboard.tsx(238,16): error TS2528: A module cannot have multiple default exports.
+src/pages/Advertisements.tsx(108,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/Advertisements.tsx(873,60): error TS2322: Type 'Dispatch<SetStateAction<LocationDetails>>' is not assignable to type '(location: LocationDetails) => void'.
+src/pages/AlertsPage.tsx(63,73): error TS2322: Type '"medium" | "low" | "high"' is not assignable to type '"medium"'.
+src/pages/AnalyticsDashboard.tsx(22,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/AnalyticsDashboard.tsx(287,1): error TS1258: A default export must be at the top level of a file or module declaration.
+src/pages/ApiTest.tsx(7,3): error TS2305: Module '"../services"' has no exported member 'Job'.
+src/pages/ApiTest.tsx(8,3): error TS2724: '"../services"' has no exported member named 'MarketplaceItem'. Did you mean 'getMarketplaceItems'?
+src/pages/ApiTest.tsx(28,38): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'Partial<ItemFilters>'.
+src/pages/ApiTest.tsx(30,23): error TS2339: Property 'length' does not exist on type 'PaginatedItemsResponse<JobListing>'.
+src/pages/ApiTest.tsx(31,22): error TS2339: Property 'slice' does not exist on type 'PaginatedItemsResponse<JobListing>'.
+src/pages/ApiTest.tsx(40,51): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'Partial<ItemFilters>'.
+src/pages/ApiTest.tsx(42,24): error TS2339: Property 'length' does not exist on type 'PaginatedItemsResponse<MarketplaceItem>'.
+src/pages/ApiTest.tsx(43,23): error TS2339: Property 'slice' does not exist on type 'PaginatedItemsResponse<MarketplaceItem>'.
+src/pages/ApiTest.tsx(143,1): error TS1258: A default export must be at the top level of a file or module declaration.
+src/pages/auth/Login.tsx(110,11): error TS2339: Property 'login' does not exist on type 'AuthContextValue'.
+src/pages/auth/Register.tsx(150,11): error TS2339: Property 'register' does not exist on type 'AuthContextValue'.
+src/pages/CoinsTransfer.tsx(4,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/details/MarketplaceDetails.tsx(35,25): error TS2528: A module cannot have multiple default exports.
+src/pages/details/MarketplaceDetails.tsx(449,16): error TS2528: A module cannot have multiple default exports.
+src/pages/details/RentalDetails.tsx(34,25): error TS2528: A module cannot have multiple default exports.
+src/pages/details/RentalDetails.tsx(340,16): error TS2528: A module cannot have multiple default exports.
+src/pages/details/ServiceDetails.tsx(49,25): error TS2528: A module cannot have multiple default exports.
+src/pages/details/ServiceDetails.tsx(375,70): error TS2339: Property 'name' does not exist on type 'Review'.
+src/pages/details/ServiceDetails.tsx(376,45): error TS2339: Property 'name' does not exist on type 'Review'.
+src/pages/details/ServiceDetails.tsx(380,61): error TS2339: Property 'name' does not exist on type 'Review'.
+src/pages/details/ServiceDetails.tsx(423,16): error TS2528: A module cannot have multiple default exports.
+src/pages/details/VehicleDetails.tsx(39,25): error TS2528: A module cannot have multiple default exports.
+src/pages/details/VehicleDetails.tsx(372,16): error TS2528: A module cannot have multiple default exports.
+src/pages/EditJobListing.tsx(4,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/EditMarketplaceListing.tsx(4,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/EditServiceListing.tsx(4,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/EscrowPage.tsx(91,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/ExchangeItemDetails.tsx(571,27): error TS2322: Type '{ shareOptions: { title: any; description: string; url: string; type: "exchange"; }; onClose: () => void; }' is not assignable to type 'IntrinsicAttributes & SocialShareModalProps'.
+src/pages/ExchangeItemDetails.tsx(574,22): error TS2322: Type '{ itemType: string; itemId: any; itemTitle: any; onClose: () => void; }' is not assignable to type 'IntrinsicAttributes & ReportModalProps'.
+src/pages/FarmFreshPage.tsx(97,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/FarmFreshSellerPage.tsx(55,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/Help.tsx(16,25): error TS2528: A module cannot have multiple default exports.
+src/pages/Help.tsx(131,16): error TS2528: A module cannot have multiple default exports.
+src/pages/HelpGuides.tsx(11,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/Home.tsx(142,14): error TS2322: Type '{ children: (string | Element)[]; title: string; description: string; itemType: string; className: string; }' is not assignable to type 'IntrinsicAttributes & SocialShareButtonProps'.
+src/pages/MeetSafelyPage.tsx(247,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/OrderTrackingAdvanced.tsx(46,25): error TS2528: A module cannot have multiple default exports.
+src/pages/OrderTrackingAdvanced.tsx(236,16): error TS2528: A module cannot have multiple default exports.
+src/pages/payment/PaymentCheckout.tsx(16,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/PostMarketplaceItem.tsx(18,64): error TS2322: Type '"brand-new"' is not assignable to type 'ItemCondition'.
+src/pages/PostMarketplaceItem.tsx(166,74): error TS2339: Property 'quantity' does not exist on type 'Partial<MarketplaceItem>'.
+src/pages/PostMarketplaceItem.tsx(208,65): error TS2339: Property 'contact' does not exist on type 'Partial<MarketplaceItem>'.
+src/pages/PostMarketplaceItem.tsx(213,88): error TS2339: Property 'acceptsZermCoins' does not exist on type 'Partial<MarketplaceItem>'.
+src/pages/PostProduct.tsx(33,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/PostRentalProperty.tsx(33,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/PostService.tsx(36,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/PostVehicle.tsx(53,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/ProductDetails.tsx(35,11): error TS2339: Property 'addToCart' does not exist on type 'CartContextType'.
+src/pages/ProductDetails.tsx(66,9): error TS2353: Object literal may only specify known properties, and 'currency' does not exist in type 'Omit<FavoriteItem, "addedAt">'.
+src/pages/ProductDetails.tsx(480,1): error TS1258: A default export must be at the top level of a file or module declaration.
+src/pages/SearchWithSuggestions.tsx(18,25): error TS2528: A module cannot have multiple default exports.
+src/pages/SearchWithSuggestions.tsx(163,16): error TS2528: A module cannot have multiple default exports.
+src/pages/SellerRatingPage.tsx(139,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/SellerRatingPage.tsx(375,16): error TS2304: Cannot find name 'SellerRatingPage'.
+src/pages/SellItem.tsx(76,25): error TS2528: A module cannot have multiple default exports.
+src/pages/SellItem.tsx(687,16): error TS2528: A module cannot have multiple default exports.
+src/pages/SellZerm.tsx(5,25): error TS2528: A module cannot have multiple default exports.
+src/pages/SellZerm.tsx(231,16): error TS2528: A module cannot have multiple default exports.
+src/pages/TontineCreate.tsx(380,82): error TS2551: Property 'contributionAmount' does not exist on type 'FormData'. Did you mean 'contribution'?
+src/pages/TontineCreate.tsx(381,85): error TS2551: Property 'contributionAmount' does not exist on type 'FormData'. Did you mean 'contribution'?
+src/pages/TontinePages.tsx(5,14): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/vendor/BulkUpload.tsx(38,11): error TS2322: Type '{ idx: number; title: any; priceXAF: number; category: any; condition: any; description: any; status: string; }[]' is not assignable to type 'UploadRow[]'.
+src/pages/vendor/components/OrderManagement.tsx(353,1): error TS1258: A default export must be at the top level of a file or module declaration.
+src/pages/vendor/components/ProductManagement.tsx(259,1): error TS1258: A default export must be at the top level of a file or module declaration.
+src/pages/vendor/VendorAnalytics.tsx(130,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/vendor/VendorAnalytics.tsx(142,22): error TS2554: Expected 0 arguments, but got 1.
+src/pages/vendor/VendorAnalytics.tsx(149,26): error TS2554: Expected 0 arguments, but got 1.
+src/pages/vendor/VendorDashboard.tsx(173,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/vendor/VendorProfile.tsx(356,53): error TS2339: Property 'name' does not exist on type 'VendorData'.
+src/pages/vendor/VendorRegistration.tsx(131,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/vendor/VendorReviews.tsx(102,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/vendor/VendorReviews.tsx(132,9): error TS2741: Property 'all' is missing in type '{ replied: string; pending: string; flagged: string; }' but required in type 'Record<ReviewStatus, string>'.
+src/pages/vendor/VendorReviews.tsx(321,16): error TS2304: Cannot find name 'VendorReviews'.
+src/pages/vendor/ZermPurchase.tsx(132,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/VerificationProcess.tsx(24,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/VerificationStatus.tsx(23,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/pages/VideoTutorials.tsx(16,7): error TS2322: Type '() => void' is not assignable to type 'FC<{}>'.
+src/pages/ZermPurchase.tsx(107,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextValue'.
+src/providers/PerformanceProvider.tsx(5,10): error TS2724: '"@/utils/performance/PerformanceMonitor"' has no exported member named 'performanceMonitor'. Did you mean 'PerformanceMark'?
+src/services/chat.service.ts(31,24): error TS2339: Property 'chat' does not exist on type '{ products: string; orders: string; payments: string; users: string; }'.
+src/services/chat.service.ts(46,27): error TS2339: Property 'chat' does not exist on type '{ products: string; orders: string; payments: string; users: string; }'.
+src/services/chat.service.ts(65,24): error TS2339: Property 'chat' does not exist on type '{ products: string; orders: string; payments: string; users: string; }'.
+src/services/chat_service.ts(30,24): error TS2339: Property 'chat' does not exist on type '{ products: string; orders: string; payments: string; users: string; }'.
+src/services/chat_service.ts(42,27): error TS2339: Property 'chat' does not exist on type '{ products: string; orders: string; payments: string; users: string; }'.
+src/services/chat_service.ts(54,24): error TS2339: Property 'chat' does not exist on type '{ products: string; orders: string; payments: string; users: string; }'.
+src/services/CommissionService.ts(8,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionableTransactionType'.
+src/services/CommissionService.ts(9,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionRate'.
+src/services/CommissionService.ts(10,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionCalculation'.
+src/services/CommissionService.ts(11,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'CommissionRecord'.
+src/services/CommissionService.ts(12,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'VendorCommissionSummary'.
+src/services/firestoreService.ts(27,10): error TS2305: Module '"@/contexts/FirebaseContext"' has no exported member 'db'.
+src/services/GamificationService.ts(8,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionTier'. Did you mean 'VendorSubscription'?
+src/services/GamificationService.ts(9,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'GamificationActionType'.
+src/services/GamificationService.ts(10,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'GamificationReward'.
+src/services/GamificationService.ts(11,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'GamificationRewardRecord'.
+src/services/GamificationService.ts(12,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'VendorReferral'.
+src/services/GamificationService.ts(13,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'ReferralBatchProgress'.
+src/services/GamificationService.ts(14,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'PositiveReviewProgress'.
+src/services/GamificationService.ts(15,3): error TS2305: Module '"@/types/vendor.monetization.types"' has no exported member 'VendorGamificationStats'.
+src/services/marketplace.service.ts(58,5): error TS2322: Type 'string[]' is not assignable to type 'PaymentMethod[]'.
+src/services/marketplace_service.ts(58,5): error TS2322: Type 'string[]' is not assignable to type 'PaymentMethod[]'.
+src/services/payment/notchpayService.ts(79,4): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+src/services/payment/notchpayService.ts(108,4): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+src/services/payment/notchpayService.ts(129,4): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+src/services/supabaseService.ts(147,10): error TS2339: Property 'catch' does not exist on type 'PromiseLike<void>'.
+src/services/test-api.ts(17,34): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'Partial<ItemFilters>'.
+src/services/test-api.ts(18,41): error TS2339: Property 'length' does not exist on type 'PaginatedItemsResponse<JobListing>'.
+src/services/test-api.ts(22,47): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'Partial<ItemFilters>'.
+src/services/test-api.ts(23,55): error TS2339: Property 'length' does not exist on type 'PaginatedItemsResponse<MarketplaceItem>'.
+src/services/VendorSubscriptionService.ts(19,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionTier'. Did you mean 'VendorSubscription'?
+src/services/VendorSubscriptionService.ts(20,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionPlan'. Did you mean 'VendorSubscription'?
+src/services/VendorSubscriptionService.ts(22,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'VendorSubscriptionFeatures'. Did you mean 'VendorSubscription'?
+src/services/VendorSubscriptionService.ts(24,3): error TS2724: '"@/types/vendor.monetization.types"' has no exported member named 'SubscriptionChange'. Did you mean 'SubscriptionPlan'?
+src/services/VendorSubscriptionService.ts(252,31): error TS2339: Property 'endDate' does not exist on type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(253,7): error TS2322: Type '"expired"' is not assignable to type 'SubscriptionStatus'.
+src/services/VendorSubscriptionService.ts(304,5): error TS2353: Object literal may only specify known properties, and 'startDate' does not exist in type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(342,42): error TS2339: Property 'endDate' does not exist on type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(352,5): error TS2353: Object literal may only specify known properties, and 'endDate' does not exist in type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(382,5): error TS2820: Type '"cancelled"' is not assignable to type 'SubscriptionStatus'. Did you mean '"canceled"'?
+src/services/VendorSubscriptionService.ts(468,5): error TS2353: Object literal may only specify known properties, and 'lastPaymentAmount' does not exist in type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(555,20): error TS2339: Property 'listingsUsed' does not exist on type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(571,5): error TS2353: Object literal may only specify known properties, and 'listingsUsed' does not exist in type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(571,32): error TS2339: Property 'listingsUsed' does not exist on type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(585,58): error TS2339: Property 'listingsUsed' does not exist on type 'VendorSubscription'.
+src/services/VendorSubscriptionService.ts(604,41): error TS2339: Property 'endDate' does not exist on type 'VendorSubscription'.
+src/test/PerformanceTest.tsx(8,57): error TS2305: Module '"@/utils/performance/PerformanceMonitor"' has no exported member 'formatBytes'.
+src/test/SecurityTest.tsx(9,10): error TS2305: Module '"../utils/security/SecurityHeaders"' has no exported member 'securityManager'.
+src/test/SecurityTest.tsx(10,10): error TS2724: '"../utils/security/RateLimiter"' has no exported member named 'rateLimiter'. Did you mean 'RateLimiter'?
+src/test/SecurityTest.tsx(11,10): error TS2614: Module '"../utils/api/SecureAPIClient"' has no exported member 'apiClient'. Did you mean to use 'import apiClient from "../utils/api/SecureAPIClient"' instead?
+src/types/providers/AppProviders.tsx(37,16): error TS2786: 'SearchProvider' cannot be used as a JSX component.
+src/types/reviews.ts(11,3): error TS2300: Duplicate identifier 'name'.
+src/types/reviews.ts(11,3): error TS2687: All declarations of 'name' must have identical modifiers.
+src/types/reviews.ts(12,3): error TS2300: Duplicate identifier 'name'.
+src/types/reviews.ts(12,3): error TS2687: All declarations of 'name' must have identical modifiers.
+src/utils/performance.ts(23,19): error TS2304: Cannot find name 'sendToGoogleAnalytics'.
+src/utils/security/auditLogger.ts(184,16): error TS2304: Cannot find name 'auditLogger'.
+src/utils/security/fileUploadValidator.ts(196,32): error TS2345: Argument of type 'Blob' is not assignable to parameter of type 'File'.
+src/utils/security/sanitize.ts(97,43): error TS2769: No overload matches this call.
+src/utils/security/sanitize.ts(112,43): error TS2769: No overload matches this call.
+src/utils/tierBridge.ts(20,15): error TS2614: Module '"@/utils/subscriptionUtils"' has no exported member 'SubscriptionTier'. Did you mean to use 'import SubscriptionTier from "@/utils/subscriptionUtils"' instead?

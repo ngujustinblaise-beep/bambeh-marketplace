@@ -1,0 +1,31 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Enter",
+    "register": "Join",
+    "logout": "Comot",
+    "search": "Search",
+    "continue": "Continue",
+    "selectLanguage": "Choose your language",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Change",
+    "close": "Close"
+  },
+  "nav": {
+    "home": "Home",
+    "jobs": "Work",
+    "marketplace": "Market",
+    "services": "Service",
+    "rentals": "House for rent",
+    "profile": "My Account",
+    "favorites": "My Favorite",
+    "cart": "My Cart"
+  },
+  "home": {
+    "title": "Bambeh - Cameroon Market",
+    "subtitle": "Buy, Sell, Work - Everything for Cameroon People",
+    "searchPlaceholder": "Wetin you dey find?"
+  }
+}

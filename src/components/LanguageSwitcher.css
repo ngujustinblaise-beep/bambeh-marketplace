@@ -1,0 +1,69 @@
+/**
+ * BAMBÉ MARKETPLACE - LANGUAGE SWITCHER STYLES
+ * Beautiful language toggle
+ * Version: 1.0.0
+ */
+
+.language-switcher {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.language-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.language-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.language-button.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.language-button .flag {
+  font-size: 20px;
+}
+
+.language-button .language-name {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .language-switcher {
+    gap: 4px;
+    padding: 3px;
+  }
+
+  .language-button {
+    padding: 6px 12px;
+  }
+
+  .language-button .flag {
+    font-size: 18px;
+  }
+
+  .language-button .language-name {
+    display: none;
+  }
+}

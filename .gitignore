@@ -1,0 +1,87 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Environment files - NEVER commit these
+.env
+.env.*
+*.env
+1.env
+.env.txt
+server/.env
+server/.env.env
+
+# Firebase
+firebase-debug.log
+.firebaserc
+firebase.json
+google-services.json
+firestore.rules
+firestore.indexes.json
+storage.rules
+
+# Keystore - CRITICAL SECURITY
+*.keystore
+bambe-release.keystore
+
+# Backup and junk folders
+_bambeh_backup*/
+BACKUP_*/
+backup_*/
+backups/
+zero_errors/
+__DELETED_BACKUPS/
+_dead_code_quarantine/
+BAMBEH_FIXES/
+CLAUDE_FIXES/
+ELECTRONICS/
+bambeh-next/
+bambeh-web/
+bambeh_*/
+fixed_files*/
+
+# Junk scripts and logs
+*.cjs
+*.py
+BAMBEH_*.cjs
+bambeh-*.cjs
+bambeh-*.js
+rebuild*.cjs
+*.txt
+*.log
+*.zip
+*.csv
+*.ps1
+*.bat
+*.sh
+
+# IDE
+.idea/
+.vscode/
+*.new
+*.bak
+*.old
+*.backup
+
+# Android
+android/
+app/
+gradle/
+gradlew
+gradlew.bat
+build.gradle
+build.gradle.kts
+settings.gradle.kts
+gradle.properties
+variables.gradle
+cap_sync.txt
+
+# Supabase
+supabase.exe.exe
+
+# Misc
+.npmrc.txt
+performance/
+# Local Netlify folder
+.netlify
