@@ -59,6 +59,12 @@ interface ListingDetail {
 // ─── DATA FETCHER ─────────────────────────────────────────────────────────────
 
 async function fetchListing(id: string): Promise<ListingDetail> {
+// Validate UUID format before hitting Supabase
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!id || !UUID_REGEX.test(id)) {
+    throw new Error("Listing not found");
+  }
+
   const { data, error } = await supabase
     .from("listings")
     .select(`
@@ -92,28 +98,7 @@ async function fetchListing(id: string): Promise<ListingDetail> {
     };
   }
 
-  // Fallback: check localStorage (offline listings)
-  try {
-    const stored = JSON.parse(localStorage.getItem("bambeh_marketplace_items") ?? "[]");
-    const found = stored.find((item: any) => item.id === id);
-    if (found) {
-      return {
-        id: found.id,
-        title: found.title ?? "Item",
-        description: found.description ?? "",
-        price: Number(found.price) ?? 0,
-        category: found.category ?? "",
-        condition: found.condition ?? "",
-        location: found.location ?? "",
-        phone: found.phone,
-        negotiable: found.negotiable,
-        images: found.images ?? (found.image ? [found.image] : []),
-        sellerId: found.sellerId ?? found.seller ?? "unknown",
-        sellerName: found.seller ?? "Local Seller",
-        status: found.status ?? "active",
-        postedAt: found.postedAt ?? new Date().toISOString(),
-      };
-    }
+
   } catch {}
 
   throw new Error("Listing not found");
