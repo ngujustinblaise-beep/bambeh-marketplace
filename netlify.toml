@@ -2,8 +2,6 @@
   for = "/*"
   [headers.values]
     Content-Security-Policy = "default-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://bambeh-backend-production.up.railway.app https://api.notchpay.co https://api.anthropic.com https://*.sentry.io https://*.ingest.sentry.io https://fcm.googleapis.com https://firebaseinstallations.googleapis.com https://identitytoolkit.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; frame-src 'self';"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
 
 [[redirects]]
   from = "/*"
