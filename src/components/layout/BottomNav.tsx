@@ -1,41 +1,51 @@
+/**
+ * BottomNav.tsx — Bambeh Marketplace
+ * FILE LOCATION: src/components/layout/BottomNav.tsx
+ *
+ * CHANGES FROM ORIGINAL:
+ * - Now uses useLanguage() so bottom nav labels translate when language changes
+ */
+
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Briefcase, ShoppingBag, Wrench, User, Coins, Building2 } from "lucide-react";
+import { Home, Briefcase, ShoppingBag, Wrench, User, Building2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const BottomNav = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { t } = useLanguage();
 
   const navItems = [
-    { path: "/",           icon: Home,        label: "Home"     },
-    { path: "/jobs",       icon: Briefcase,   label: "Jobs"     },
-    { path: "/marketplace",icon: ShoppingBag, label: "Shop"     },
-    { path: "/rentals",    icon: Building2,   label: "Rentals"  },
-    { path: "/services",   icon: Wrench,      label: "Services" },
-    { path: "/coins",      icon: Coins,       label: "Coins"    },
-    { path: "/profile",    icon: User,        label: "Profile"  },
+    { path: "/",            icon: Home,        labelKey: "nav.home"        },
+    { path: "/jobs",        icon: Briefcase,   labelKey: "nav.jobs"        },
+    { path: "/marketplace", icon: ShoppingBag, labelKey: "nav.marketplace" },
+    { path: "/rentals",     icon: Building2,   labelKey: "nav.rentals"     },
+    { path: "/services",    icon: Wrench,      labelKey: "nav.services"    },
+    { path: "/profile",     icon: User,        labelKey: "common.profile"  },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom z-50">
-      <div className="grid grid-cols-7 h-16">
+      <div className="grid grid-cols-6 h-16">
         {navItems.map((item) => {
-          const Icon = item.icon;
+          const Icon   = item.icon;
           const active = isActive(item.path);
           return (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
               className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                active ? "text-indigo-600" : "text-gray-600 hover:text-indigo-500"
+                active ? "text-teal-600" : "text-gray-500 hover:text-teal-500"
               }`}
             >
-              <Icon size={18} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <Icon size={20} />
+              <span className="text-xs font-medium">{t(item.labelKey)}</span>
             </button>
-          ); // FIX: was `);)}` — moved the stray ) out, closing is now correct
+          );
         })}
       </div>
     </nav>

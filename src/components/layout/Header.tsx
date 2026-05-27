@@ -1,43 +1,43 @@
 /**
- * 3-LEVEL HEADER - ANDROID COMPLETE
+ * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
+ *
+ * CHANGES FROM ORIGINAL:
+ * - Removed local LANGUAGES array and local currentLanguage state
+ * - Now uses useLanguage() from LanguageContext so language change
+ *   actually re-renders the whole app in the chosen language
+ * - Share button now has a visible label
+ * - Search bar navigates to /search?q=...
  */
 
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, Bell, User, LogOut, LogIn, Search, MessageCircle, Mic, MicOff, Gift, Crown, ArrowLeftRight, Heart, Globe, Package, Settings, ChevronRight } from 'lucide-react';
+import {
+  Menu, X, Bell, User, LogOut, LogIn, Search,
+  Mic, MicOff, Gift, Crown, ArrowLeftRight,
+  Heart, Globe, Package, Settings, ChevronRight, Share2
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-
-const LANGUAGES = [
-  { code: 'en',  name: 'English',  flag: '🇬🇧' },
-  { code: 'fr',  name: 'Français', flag: '🇫🇷' },
-  { code: 'ar',  name: 'العربية', flag: '🇸🇦' },
-  { code: 'ha',  name: 'Hausa',    flag: '🇳🇬' },
-  { code: 'ff',  name: 'Fulfulde', flag: '🇨🇲' },
-  { code: 'pcm', name: 'Pidgin',   flag: '🇨🇲' },
-];
+import { useLanguage, AVAILABLE_LANGUAGES, LanguageCode } from '@/contexts/LanguageContext';
 
 export default function Header() {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
   const { currentUser, logout } = useAuth();
+
+  // ── useLanguage gives us the global language state ──────────────────────
+  // When setLanguage() is called, LanguageContext saves to localStorage AND
+  // re-renders every component in the app that calls useLanguage() or t().
+  const { language, setLanguage, t } = useLanguage();
+
   const [isMenuOpen, setIsMenuOpen]               = useState(false);
   const [isVoiceActive, setIsVoiceActive]         = useState(false);
   const [searchQuery, setSearchQuery]             = useState('');
   const [showLanguageMenu, setShowLanguageMenu]   = useState(false);
   const [showMobileLanguages, setShowMobileLanguages] = useState(false);
-  const [currentLanguage, setCurrentLanguage]     = useState(() => localStorage.getItem('Bambeh_language') || 'en');
 
-  useEffect(() => {
-    const handleLanguageChange = () => {
-      setCurrentLanguage(localStorage.getItem('Bambeh_language') || 'en');
-    };
-    window.addEventListener('storage', handleLanguageChange);
-    const interval = setInterval(handleLanguageChange, 1000);
-    return () => {
-      window.removeEventListener('storage', handleLanguageChange);
-      clearInterval(interval);
-    };
-  }, []);
+  // getCurrentLanguage reads from the context (not localStorage directly)
+  const getCurrentLanguage = () =>
+    AVAILABLE_LANGUAGES.find(l => l.code === language) || AVAILABLE_LANGUAGES[0];
 
   const handleLogout = async () => {
     try {
@@ -49,34 +49,95 @@ export default function Header() {
     }
   };
 
+  // ── Voice control ────────────────────────────────────────────────────────
   const toggleVoiceControl = () => {
     setIsVoiceActive(prev => !prev);
     if (!isVoiceActive) {
-      console.log('Voice control activated');
-    } else {
-      console.log('Voice control deactivated');
+      startVoiceRecognition();
     }
   };
 
+  const startVoiceRecognition = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(t('voice.notSupported'));
+      setIsVoiceActive(false);
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    // Use the app's current language for recognition
+    const langMap: Record<LanguageCode, string> = {
+      en: 'en-US', fr: 'fr-FR', pcm: 'en-NG', ff: 'ff', ar: 'ar-SA'
+    };
+    recognition.lang = langMap[language] || 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event: any) => {
+      const command = event.results[0][0].transcript.toLowerCase();
+      handleVoiceCommand(command);
+      setIsVoiceActive(false);
+    };
+    recognition.onerror = () => setIsVoiceActive(false);
+    recognition.onend   = () => setIsVoiceActive(false);
+    recognition.start();
+  };
+
+  const handleVoiceCommand = (command: string) => {
+    if (command.includes('house') || command.includes('rent') || command.includes('maison') || command.includes('suudu')) {
+      navigate('/rentals');
+    } else if (command.includes('job') || command.includes('emploi') || command.includes('work') || command.includes('gollorɗe')) {
+      navigate('/jobs');
+    } else if (command.includes('market') || command.includes('buy') || command.includes('marché') || command.includes('luumo')) {
+      navigate('/marketplace');
+    } else if (command.includes('car') || command.includes('vehicle') || command.includes('voiture') || command.includes('motor')) {
+      navigate('/vehicles');
+    } else if (command.includes('service')) {
+      navigate('/services');
+    } else if (command.includes('community') || command.includes('group') || command.includes('ngwam')) {
+      navigate('/community');
+    } else if (command.includes('home') || command.includes('accueil') || command.includes('galle')) {
+      navigate('/');
+    } else if (command.includes('exchange') || command.includes('échange') || command.includes('swap')) {
+      navigate('/exchange');
+    } else {
+      navigate(`/search?q=${encodeURIComponent(command)}`);
+    }
+  };
+
+  // ── Search ───────────────────────────────────────────────────────────────
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
+      setIsMenuOpen(false);
     }
   };
 
+  // ── Language change — this is the KEY fix ────────────────────────────────
+  // Calling setLanguage() from LanguageContext updates the whole app,
+  // not just this component.
   const handleLanguageChange = (langCode: string) => {
-    setCurrentLanguage(langCode);
-    localStorage.setItem('Bambeh_language', langCode);
-    const html = document.documentElement;
-    html.lang = langCode;
-    html.dir  = langCode === 'ar' ? 'rtl' : 'ltr';
+    setLanguage(langCode as LanguageCode);
     setShowLanguageMenu(false);
     setShowMobileLanguages(false);
   };
 
-  const getCurrentLanguage = () => LANGUAGES.find(l => l.code === currentLanguage) || LANGUAGES[0];
+  // ── Share current page ───────────────────────────────────────────────────
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Bambeh Marketplace',
+        text: 'Check out Bambeh — Cameroon\'s #1 Marketplace!',
+        url: window.location.href,
+      });
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-teal-600 to-blue-600 text-white shadow-lg">
@@ -84,21 +145,29 @@ export default function Header() {
 
         {/* ── LEVEL 1 ─────────────────────────────────────────────── */}
         <div className="flex items-center justify-between h-20 px-4 border-b border-teal-700">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)}
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2 hover:bg-teal-700 rounded-lg transition-colors"
             style={{ touchAction: 'auto', WebkitTapHighlightColor: 'transparent', minWidth: '48px', minHeight: '48px' }}
-            aria-label="Toggle menu">
+            aria-label="Toggle menu"
+          >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
+          {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
             <div className="relative">
-              <img src="/bambeh-logo.png" alt="Bambeh Logo" className="h-12 w-12 object-contain"
+              <img
+                src="/bambeh-logo.png"
+                alt="Bambeh Logo"
+                className="h-12 w-12 object-contain"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                   const fb = e.currentTarget.nextElementSibling;
                   if (fb) (fb as HTMLElement).classList.remove('hidden');
-                }} />
+                }}
+              />
               <div className="hidden w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
                 <span className="text-teal-600 font-bold text-2xl">B</span>
               </div>
@@ -106,149 +175,261 @@ export default function Header() {
             <span className="text-2xl font-bold tracking-wide hidden sm:inline">Bambeh</span>
           </Link>
 
+          {/* Desktop search bar */}
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl mx-8">
-            <div className="relative w-full">
+            <div className="relative w-full flex">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for products, jobs, services, rentals..."
-                className="w-full pl-12 pr-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('common.search') + '...'}
+                className="w-full pl-12 pr-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              />
+              <button
+                type="submit"
+                className="bg-teal-800 hover:bg-teal-900 text-white px-4 py-3 rounded-r-lg font-semibold transition-colors"
+              >
+                {t('common.search')}
+              </button>
             </div>
           </form>
 
+          {/* Right icons */}
           <div className="flex items-center gap-2">
+            {/* Share button — LABELED */}
+            <button
+              onClick={handleShare}
+              aria-label="Share this page"
+              className="hidden md:flex items-center gap-1 px-3 py-2 hover:bg-teal-700 rounded-lg transition-colors text-sm font-medium"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>{t('common.share')}</span>
+            </button>
+
+            {/* Voice button */}
+            <button
+              onClick={toggleVoiceControl}
+              aria-label={isVoiceActive ? 'Stop voice' : 'Start voice'}
+              className={`hidden md:flex items-center gap-1 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                isVoiceActive ? 'bg-red-500 hover:bg-red-600' : 'hover:bg-teal-700'
+              }`}
+            >
+              {isVoiceActive ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            </button>
+
+            {/* Login / Logout */}
             {currentUser ? (
-              <button onClick={handleLogout}
+              <button
+                onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors font-semibold shadow-md active:scale-95"
-                style={{ touchAction: 'auto', minHeight: '44px' }}>
-                <LogOut className="w-5 h-5" /><span className="hidden sm:inline">Logout</span>
+                style={{ touchAction: 'auto', minHeight: '44px' }}
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="hidden sm:inline">{t('common.logout')}</span>
               </button>
             ) : (
-              <Link to="/login"
+              <Link
+                to="/login"
                 className="flex items-center gap-2 px-4 py-2 bg-teal-500 hover:bg-teal-400 rounded-lg transition-colors font-semibold shadow-md active:scale-95"
-                style={{ touchAction: 'auto', minHeight: '44px' }}>
-                <LogIn className="w-5 h-5" /><span className="hidden sm:inline">Login</span>
+                style={{ touchAction: 'auto', minHeight: '44px' }}
+              >
+                <LogIn className="w-5 h-5" />
+                <span className="hidden sm:inline">{t('common.login')}</span>
               </Link>
             )}
           </div>
         </div>
 
-        {/* ── LEVEL 2 ─────────────────────────────────────────────── */}
+        {/* ── LEVEL 2 — Desktop nav ────────────────────────────────── */}
         <nav className="hidden md:flex items-center justify-center gap-1 h-14 px-4 border-b border-teal-700">
           {[
-            { to: '/marketplace', label: '📦 Marketplace' },
-            { to: '/jobs',        label: '💼 Jobs'        },
-            { to: '/services',    label: '🔧 Services'    },
-            { to: '/rentals',     label: '🏠 Rentals'     },
-            { to: '/vehicles',    label: '🚗 Car Rentals' },
+            { to: '/marketplace', label: `📦 ${t('nav.marketplace')}` },
+            { to: '/jobs',        label: `💼 ${t('nav.jobs')}`        },
+            { to: '/services',    label: `🔧 ${t('nav.services')}`    },
+            { to: '/rentals',     label: `🏠 ${t('nav.rentals')}`     },
+            { to: '/vehicles',    label: `🚗 ${t('nav.vehicles')}`    },
           ].map(item => (
-            <Link key={item.to} to={item.to} className="px-4 py-2 hover:bg-teal-700 rounded-lg transition-colors font-medium">{item.label}</Link>
+            <Link
+              key={item.to}
+              to={item.to}
+              className="px-4 py-2 hover:bg-teal-700 rounded-lg transition-colors font-medium"
+            >
+              {item.label}
+            </Link>
           ))}
-          <Link to="/exchange" className="px-4 py-2 hover:bg-teal-700 rounded-lg transition-colors font-medium flex items-center gap-2">
-            <ArrowLeftRight className="w-4 h-4" />Exchange
+          <Link
+            to="/exchange"
+            className="px-4 py-2 hover:bg-teal-700 rounded-lg transition-colors font-medium flex items-center gap-2"
+          >
+            <ArrowLeftRight className="w-4 h-4" />
+            {t('nav.exchange')}
           </Link>
         </nav>
 
-        {/* ── LEVEL 3 ─────────────────────────────────────────────── */}
-        <div className="hidden md:flex items-center justify-center gap-4 h-12 px-4">
-          <button onClick={toggleVoiceControl}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all font-medium ${isVoiceActive ? 'bg-red-500 animate-pulse' : 'hover:bg-teal-700'}`}>
-            {isVoiceActive ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-            <span className="text-sm">{isVoiceActive ? 'Listening...' : 'Voice'}</span>
-          </button>
-          {[
-            { to: '/cart',      icon: <ShoppingCart className="w-4 h-4" />, label: 'Cart'      },
-            { to: '/alerts',    icon: <Bell className="w-4 h-4" />,          label: 'Alerts'    },
-            { to: '/favorites', icon: <Heart className="w-4 h-4" />,         label: 'Favorites' },
-            { to: '/referral',  icon: <Gift className="w-4 h-4" />,          label: 'Referral'  },
-          ].map(item => (
-            <Link key={item.to} to={item.to} className="flex items-center gap-2 px-3 py-1.5 hover:bg-teal-700 rounded-lg transition-colors font-medium">
-              {item.icon}<span className="text-sm">{item.label}</span>
+        {/* ── LEVEL 3 — Desktop utility bar ───────────────────────── */}
+        <div className="hidden md:flex items-center justify-between h-10 px-4 text-sm bg-teal-700/30">
+          <div className="flex items-center gap-4">
+            <Link to="/community" className="hover:text-teal-200 transition-colors">
+              👥 {t('nav.community')}
             </Link>
-          ))}
-
-          {/* Language */}
-          <div className="relative">
-            <button onClick={() => setShowLanguageMenu(!showLanguageMenu)} className="flex items-center gap-2 px-3 py-1.5 hover:bg-teal-700 rounded-lg transition-colors font-medium">
-              <Globe className="w-4 h-4" /><span className="text-sm">{getCurrentLanguage().name}</span>
-            </button>
-            {showLanguageMenu && (
-              <div className="absolute right-0 top-full mt-2 bg-white text-gray-900 rounded-lg shadow-xl py-2 min-w-[180px] z-50">
-                {LANGUAGES.map(lang => (
-                  <button key={lang.code} onClick={() => handleLanguageChange(lang.code)}
-                    className={`w-full text-left px-4 py-2 hover:bg-teal-50 flex items-center gap-3 ${currentLanguage === lang.code ? 'bg-teal-100' : ''}`}>
-                    <span>{lang.name}</span>
-                    {currentLanguage === lang.code && <span className="ml-auto text-teal-600">✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
+            <Link to="/farm-fresh" className="hover:text-teal-200 transition-colors">
+              🌿 Farm Fresh
+            </Link>
+            <Link to="/tontine" className="hover:text-teal-200 transition-colors">
+              💰 Njangi
+            </Link>
           </div>
 
-          <Link to="/subscription" className="flex items-center gap-2 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 rounded-lg transition-colors font-semibold shadow-md">
-            <Crown className="w-4 h-4" /><span className="text-sm">Subscribe</span>
-          </Link>
-          <Link to="/profile" className="flex items-center gap-2 px-3 py-1.5 hover:bg-teal-700 rounded-lg transition-colors font-medium">
-            <User className="w-4 h-4" /><span className="text-sm">Profile</span>
-          </Link>
+          <div className="flex items-center gap-3 relative">
+            {/* Language picker — DESKTOP */}
+            <div className="relative">
+              <button
+                onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                className="flex items-center gap-2 hover:bg-teal-700 px-3 py-1 rounded-lg transition-colors"
+                aria-label="Change language"
+              >
+                <Globe className="w-4 h-4" />
+                <span>{getCurrentLanguage().flag} {getCurrentLanguage().name}</span>
+                <ChevronRight className={`w-3 h-3 transition-transform ${showLanguageMenu ? 'rotate-90' : ''}`} />
+              </button>
+
+              {showLanguageMenu && (
+                <div className="absolute top-full right-0 mt-1 bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 w-44">
+                  {AVAILABLE_LANGUAGES.map(lang => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`w-full text-left px-4 py-3 hover:bg-teal-50 transition-colors flex items-center gap-3 text-sm font-medium ${
+                        language === lang.code ? 'bg-teal-50 text-teal-700' : ''
+                      }`}
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <span className="flex-1">{lang.nativeName}</span>
+                      {language === lang.code && <span className="text-teal-500">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Link
+              to="/subscription"
+              className="flex items-center gap-2 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 rounded-lg transition-colors font-semibold shadow-md"
+            >
+              <Crown className="w-4 h-4" />
+              <span className="text-sm">Subscribe</span>
+            </Link>
+
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-teal-700 rounded-lg transition-colors font-medium"
+            >
+              <User className="w-4 h-4" />
+              <span className="text-sm">{t('common.profile')}</span>
+            </Link>
+          </div>
         </div>
 
         {/* ── MOBILE MENU ──────────────────────────────────────────── */}
         {isMenuOpen && (
-          <div className="md:hidden bg-gradient-to-b from-teal-600 to-blue-700 border-t border-teal-700"
-            style={{ maxHeight: 'calc(100vh - 80px)', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div
+            className="md:hidden bg-gradient-to-b from-teal-600 to-blue-700 border-t border-teal-700"
+            style={{ maxHeight: 'calc(100vh - 80px)', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
+          >
+            {/* Mobile search */}
             <form onSubmit={handleSearch} className="p-4 border-b border-teal-700">
-              <div className="relative">
+              <div className="relative flex">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for anything..."
-                  className="w-full pl-10 pr-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('common.search') + '...'}
+                  className="w-full pl-10 pr-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                />
+                <button
+                  type="submit"
+                  className="bg-teal-800 text-white px-4 rounded-r-lg font-semibold"
+                >
+                  🔍
+                </button>
               </div>
             </form>
 
             <nav className="flex flex-col space-y-1 pb-6">
               {/* Account */}
-              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">👤 My Account</div>
-              <Link to="/profile" onClick={() => setIsMenuOpen(false)}
+              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
+                👤 {t('common.profile')}
+              </div>
+              <Link
+                to="/profile"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 bg-teal-700/50 hover:bg-teal-700 active:bg-teal-800 px-4 py-4 mx-2 rounded-lg transition-colors font-medium"
-                style={{ touchAction: 'auto', minHeight: '56px' }}>
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><User className="w-6 h-6 text-teal-600" /></div>
+                style={{ touchAction: 'auto', minHeight: '56px' }}
+              >
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6 text-teal-600" />
+                </div>
                 <div className="flex-1">
-                  <span className="block font-semibold">My Profile</span>
-                  <span className="text-xs text-teal-200">{currentUser ? 'View & Edit Profile' : 'Login to view profile'}</span>
+                  <span className="block font-semibold">{t('settings.editProfile')}</span>
+                  <span className="text-xs text-teal-200">
+                    {currentUser ? t('common.profile') : t('common.login')}
+                  </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-teal-300" />
               </Link>
+
               {[
-                { to: '/profile?tab=orders', icon: <Package className="w-5 h-5" />, label: 'My Orders',  badge: 'Track' },
-                { to: '/settings',           icon: <Settings className="w-5 h-5" />, label: 'Settings',   badge: null   },
+                { to: '/orders',    icon: <Package className="w-5 h-5" />,  label: t('nav.orders')    },
+                { to: '/settings',  icon: <Settings className="w-5 h-5" />, label: t('common.settings') },
+                { to: '/my-listings', icon: <Package className="w-5 h-5" />, label: t('nav.myListings') },
               ].map(item => (
-                <Link key={item.to} to={item.to} onClick={() => setIsMenuOpen(false)}
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-3 hover:bg-teal-700 active:bg-teal-800 px-4 py-3 mx-2 rounded-lg transition-colors font-medium"
-                  style={{ touchAction: 'auto', minHeight: '48px' }}>
-                  {item.icon}<span className="flex-1">{item.label}</span>
-                  {item.badge && <span className="text-xs bg-teal-800 px-2 py-1 rounded">{item.badge}</span>}
+                  style={{ touchAction: 'auto', minHeight: '48px' }}
+                >
+                  {item.icon}
+                  <span className="flex-1">{item.label}</span>
                 </Link>
               ))}
 
               <div className="border-t border-teal-700 my-2" />
 
-              {/* Language */}
-              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">🌍 Language</div>
-              <button onClick={() => setShowMobileLanguages(!showMobileLanguages)}
+              {/* Language picker — MOBILE */}
+              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
+                🌍 {t('settings.language')}
+              </div>
+              <button
+                onClick={() => setShowMobileLanguages(!showMobileLanguages)}
                 className="flex items-center gap-3 bg-teal-700/30 hover:bg-teal-700 active:bg-teal-800 px-4 py-3 mx-2 rounded-lg transition-colors font-medium"
-                style={{ touchAction: 'auto', minHeight: '48px' }}>
+                style={{ touchAction: 'auto', minHeight: '48px' }}
+              >
+                <span className="text-lg">{getCurrentLanguage().flag}</span>
                 <span className="flex-1 text-left">{getCurrentLanguage().name}</span>
                 <ChevronRight className={`w-5 h-5 transition-transform ${showMobileLanguages ? 'rotate-90' : ''}`} />
               </button>
               {showMobileLanguages && (
                 <div className="mx-2 bg-teal-800/30 rounded-lg overflow-hidden">
-                  {LANGUAGES.map(lang => (
-                    <button key={lang.code}
-                      onClick={() => { handleLanguageChange(lang.code); setShowMobileLanguages(false); }}
-                      className={`w-full text-left hover:bg-teal-700 active:bg-teal-800 px-4 py-3 transition-colors flex items-center gap-3 font-medium ${currentLanguage === lang.code ? 'bg-teal-700' : ''}`}
-                      style={{ touchAction: 'auto', minHeight: '48px' }}>
-                      <span className="flex-1">{lang.name}</span>
-                      {currentLanguage === lang.code && <span className="text-teal-300">✓</span>}
+                  {AVAILABLE_LANGUAGES.map(lang => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        handleLanguageChange(lang.code);
+                        setShowMobileLanguages(false);
+                        setIsMenuOpen(false);
+                      }}
+                      className={`w-full text-left hover:bg-teal-700 active:bg-teal-800 px-4 py-3 transition-colors flex items-center gap-3 font-medium ${
+                        language === lang.code ? 'bg-teal-700' : ''
+                      }`}
+                      style={{ touchAction: 'auto', minHeight: '48px' }}
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <span className="flex-1">{lang.nativeName}</span>
+                      {language === lang.code && <span className="text-teal-300 font-bold">✓</span>}
                     </button>
                   ))}
                 </div>
@@ -257,64 +438,107 @@ export default function Header() {
               <div className="border-t border-teal-700 my-2" />
 
               {/* Categories */}
-              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">📂 Categories</div>
+              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
+                📂 Categories
+              </div>
               {[
-                { to: '/marketplace', label: '📦 Marketplace' },
-                { to: '/jobs',        label: '💼 Jobs'        },
-                { to: '/services',    label: '🔧 Services'    },
-                { to: '/rentals',     label: '🏠 Rentals'     },
-                { to: '/vehicles',    label: '🚗 Car Rentals' },
+                { to: '/marketplace', label: `📦 ${t('nav.marketplace')}` },
+                { to: '/jobs',        label: `💼 ${t('nav.jobs')}`        },
+                { to: '/services',    label: `🔧 ${t('nav.services')}`    },
+                { to: '/rentals',     label: `🏠 ${t('nav.rentals')}`     },
+                { to: '/vehicles',    label: `🚗 ${t('nav.vehicles')}`    },
               ].map(item => (
-                <Link key={item.to} to={item.to} onClick={() => setIsMenuOpen(false)}
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setIsMenuOpen(false)}
                   className="hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
-                  style={{ touchAction: 'auto', minHeight: '48px' }}>{item.label}</Link>
+                  style={{ touchAction: 'auto', minHeight: '48px' }}
+                >
+                  {item.label}
+                </Link>
               ))}
-              <Link to="/exchange" onClick={() => setIsMenuOpen(false)}
+              <Link
+                to="/exchange"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-2 hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
-                style={{ touchAction: 'auto', minHeight: '48px' }}>
-                <ArrowLeftRight className="w-4 h-4" />Exchange
+                style={{ touchAction: 'auto', minHeight: '48px' }}
+              >
+                <ArrowLeftRight className="w-4 h-4" />
+                {t('nav.exchange')}
               </Link>
 
               <div className="border-t border-teal-700 my-2" />
 
-              {/* Quick Actions */}
-              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">⚡ Quick Actions</div>
-              <button onClick={() => { toggleVoiceControl(); setIsMenuOpen(false); }}
+              {/* Quick actions */}
+              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
+                ⚡ Quick Actions
+              </div>
+              <button
+                onClick={() => { toggleVoiceControl(); setIsMenuOpen(false); }}
                 className={`text-left hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium ${isVoiceActive ? 'bg-red-500' : ''}`}
-                style={{ touchAction: 'auto', minHeight: '48px' }}>
-                {isVoiceActive ? '🎤 Voice Active' : '🎙️ Voice Control'}
+                style={{ touchAction: 'auto', minHeight: '48px' }}
+              >
+                {isVoiceActive ? '🎤 ' + t('voice.listening') : '🎙️ ' + t('voice.tapToSpeak')}
+              </button>
+              {/* Share button — LABELED on mobile too */}
+              <button
+                onClick={() => { handleShare(); setIsMenuOpen(false); }}
+                className="text-left flex items-center gap-2 hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
+                style={{ touchAction: 'auto', minHeight: '48px' }}
+              >
+                <Share2 className="w-4 h-4" />
+                {t('common.share')}
               </button>
               {[
-                { to: '/cart',      label: '🛒 Cart'            },
-                { to: '/alerts',    label: '🔔 Alerts'          },
-                { to: '/favorites', label: '❤️ Favorites'       },
-                { to: '/referral',  label: '🎁 Referral Program'},
+                { to: '/cart',      label: `🛒 ${t('nav.cart')}`             },
+                { to: '/favorites', label: `❤️ ${t('nav.favorites')}`        },
+                { to: '/referral',  label: '🎁 Referral Program'              },
               ].map(item => (
-                <Link key={item.to} to={item.to} onClick={() => setIsMenuOpen(false)}
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setIsMenuOpen(false)}
                   className="hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
-                  style={{ touchAction: 'auto', minHeight: '48px' }}>{item.label}</Link>
+                  style={{ touchAction: 'auto', minHeight: '48px' }}
+                >
+                  {item.label}
+                </Link>
               ))}
-              <Link to="/subscription" onClick={() => setIsMenuOpen(false)}
+              <Link
+                to="/subscription"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 px-4 py-3 mx-2 rounded-lg transition-colors font-semibold text-white"
-                style={{ touchAction: 'auto', minHeight: '48px' }}>
-                <Crown className="w-5 h-5" /><span className="flex-1">Subscribe — CFA 100 only!</span>
+                style={{ touchAction: 'auto', minHeight: '48px' }}
+              >
+                <Crown className="w-5 h-5" />
+                <span className="flex-1">Subscribe — CFA 100 only!</span>
               </Link>
 
               <div className="border-t border-teal-700 my-2" />
 
               {/* Session */}
-              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">🔐 Session</div>
+              <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
+                🔐 Session
+              </div>
               {currentUser ? (
-                <button onClick={handleLogout}
+                <button
+                  onClick={handleLogout}
                   className="text-left flex items-center gap-3 bg-red-500/80 hover:bg-red-500 active:bg-red-600 px-4 py-3 mx-2 rounded-lg transition-colors font-medium"
-                  style={{ touchAction: 'auto', minHeight: '48px' }}>
-                  <LogOut className="w-5 h-5" /><span>Logout</span>
+                  style={{ touchAction: 'auto', minHeight: '48px' }}
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>{t('common.logout')}</span>
                 </button>
               ) : (
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-3 bg-teal-500 hover:bg-teal-400 active:bg-teal-600 px-4 py-3 mx-2 rounded-lg transition-colors font-medium"
-                  style={{ touchAction: 'auto', minHeight: '48px' }}>
-                  <LogIn className="w-5 h-5" /><span>Login / Register</span>
+                  style={{ touchAction: 'auto', minHeight: '48px' }}
+                >
+                  <LogIn className="w-5 h-5" />
+                  <span>{t('common.login')} / {t('common.register')}</span>
                 </Link>
               )}
               <div className="h-8" />

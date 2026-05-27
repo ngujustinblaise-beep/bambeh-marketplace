@@ -44,8 +44,8 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
     setLoading(true);
     setError("");
     try {
-      const { error: dbErr } = await supabase.from("job_listings").insert({
-        poster_id: user.id,
+      const { error: dbErr } = await supabase.from("jobs").insert({
+        posted_by: user.id,
         title: form.title,
         company: form.company,
         description: form.description,

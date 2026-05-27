@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, CheckCircle, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";   
 
 const LANGUAGES = [
   {
@@ -63,6 +64,7 @@ export default function LanguageSelection({
   const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { setLanguage } = useLanguage();                  
 
   useEffect(() => {
     const termsAccepted = localStorage.getItem("Bambeh_terms_accepted");
