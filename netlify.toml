@@ -1,1 +1,29 @@
-[build]echo   command = "npm run build"echo   publish = "dist"echo.echo [[redirects]]echo   from = "/*"echo   to = "/index.html"echo   status = 200echo.echo [[headers]]echo   for = "/*"echo   [headers.values]echo     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"echo     X-Frame-Options = "DENY"echo     X-Content-Type-Options = "nosniff"echo     X-XSS-Protection = "1; mode=block"echo     Referrer-Policy = "strict-origin-when-cross-origin"echo     Permissions-Policy = "camera=(), microphone=(), geolocation=(self), payment=()"echo     Content-Security-Policy = "default-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://bambeh-backend-production.up.railway.app wss://bambeh-backend-production.up.railway.app https://bambeh-payment-server.onrender.com https://api.notchpay.co https://api.anthropic.com https://*.campay.net https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://fcm.googleapis.com https://firebaseinstallations.googleapis.com https://identitytoolkit.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: https://*.supabase.co; worker-src 'self' blob:; frame-src 'self'; frame-ancestors 'none';"echo.echo [[headers]]echo   for = "/locales/*"echo   [headers.values]echo     Cache-Control = "no-cache, must-revalidate"echo.echo [[headers]]echo   for = "/assets/*"echo   [headers.values]echo     Cache-Control = "public, max-age=31536000, immutable"
+﻿[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self), payment=()"
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://bambeh-backend-production.up.railway.app wss://bambeh-backend-production.up.railway.app https://bambeh-payment-server.onrender.com https://api.notchpay.co https://api.anthropic.com https://*.campay.net https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://fcm.googleapis.com https://firebaseinstallations.googleapis.com https://identitytoolkit.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: https://*.supabase.co; worker-src 'self' blob:; frame-src 'self'; frame-ancestors 'none';"
+
+[[headers]]
+  for = "/locales/*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
