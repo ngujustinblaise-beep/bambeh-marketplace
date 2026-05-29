@@ -128,3 +128,4 @@ BAMBEH_FIX_*.cjs
 directfix.cjs
 lastfix.cjs
 megafix.cjs
+server/
