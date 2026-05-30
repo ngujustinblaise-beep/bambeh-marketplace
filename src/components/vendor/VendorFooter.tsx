@@ -1,20 +1,20 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR FOOTER ENHANCED - FOOTER FOR ALL VENDOR PAGES
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  *
  * Features:
- * ✅ Quick links with CORRECT paths
- * ✅ Subscription Plans link pointing to /vendor/subscription (FIXED!)
- * ✅ Support information
- * ✅ Social media links
- * ✅ Legal links
- * ✅ Contact information
- * ✅ Payment methods display
+ * ? Quick links with CORRECT paths
+ * ? Subscription Plans link pointing to /vendor/subscription (FIXED!)
+ * ? Support information
+ * ? Social media links
+ * ? Legal links
+ * ? Contact information
+ * ? Payment methods display
  *
  * FILE LOCATION: src/components/vendor/VendorFooter.tsx
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { Link } from "react-router-dom";
@@ -60,7 +60,7 @@ export default function VendorFooter() {
               </div>
             </div>
             <p className="text-gray-400 text-sm mb-4">
-              Cameroon's #1 Marketplace for buying and selling. Join thousands
+              's #1 Marketplace for buying and selling. Join thousands
               of vendors growing their business with Bambeh.
             </p>
             {/* Social Links */}
@@ -124,9 +124,9 @@ export default function VendorFooter() {
                 </Link>
               </li>
               <li>
-                {/* ═══════════════════════════════════════════════════════════════
-                    🔥 CUSTOMERS LINK - NOW POINTS TO CORRECT PAGE 🔥
-                    ═══════════════════════════════════════════════════════════════ */}
+                {/* ---------------------------------------------------------------
+                    ?? CUSTOMERS LINK - NOW POINTS TO CORRECT PAGE ??
+                    --------------------------------------------------------------- */}
                 <Link
                   to="/vendor/customers"
       className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-2"
@@ -136,9 +136,9 @@ export default function VendorFooter() {
                 </Link>
               </li>
               <li>
-                {/* ═══════════════════════════════════════════════════════════════
-                    🔥 SUBSCRIPTION PLANS - FIXED! NOW POINTS TO CORRECT PAGE 🔥
-                    ═══════════════════════════════════════════════════════════════ */}
+                {/* ---------------------------------------------------------------
+                    ?? SUBSCRIPTION PLANS - FIXED! NOW POINTS TO CORRECT PAGE ??
+                    --------------------------------------------------------------- */}
                 <Link
                   to="/vendor/subscription"
       className="text-gray-400 hover:text-white text-sm transition-colors flex items-center gap-2"
@@ -236,7 +236,7 @@ export default function VendorFooter() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
-                  Yaoundé, Cameroon
+                  Yaound�, 
                   <br />
                   Centre Region
                 </span>
@@ -280,7 +280,7 @@ export default function VendorFooter() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
-              © 2025 Bambeh. All rights reserved.
+              � 2025 Bambeh. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
@@ -323,3 +323,4 @@ export default function VendorFooter() {
     </footer>
   );
 }
+

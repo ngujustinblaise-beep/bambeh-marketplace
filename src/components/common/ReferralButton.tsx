@@ -12,7 +12,7 @@ export default function ReferralButton() {
 
   const referralCode    = 'BAMBE-' + Math.random().toString(36).substring(7).toUpperCase();
   const referralLink    = `https://bambeh.cm/register?ref=${referralCode}`;
-  const referralMessage = `🎉 Join me on Bambeh - Cameroon's Premier Marketplace!\n\n💚 Only 1% Transaction Fee - Lowest in Cameroon!\n🛍️ Buy, Sell, Trade, Find Jobs & More\n🎁 Use my referral code: ${referralCode}\n\n📱 Sign up here: ${referralLink}\n\nWe both get 1 Zerm Coin when you register! 🪙`;
+  const referralMessage = `🎉 Join me on Bambeh - Online Marketplace!\n\n💚 Only 1% Transaction Fee - Lowest in !\n🛍️ Buy, Sell, Trade, Find Jobs & More\n🎁 Use my referral code: ${referralCode}\n\n📱 Sign up here: ${referralLink}\n\nWe both get 1 Zerm Coin when you register! 🪙`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -163,3 +163,4 @@ export default function ReferralButton() {
     </>
   );
 }
+

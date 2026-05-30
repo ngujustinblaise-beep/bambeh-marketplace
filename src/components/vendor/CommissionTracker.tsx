@@ -370,7 +370,7 @@ export default function CommissionTracker({ vendorId, compact = false }: Commiss
           <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
             <p className="text-sm text-green-800 flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
-              <strong>Lowest in Cameroon!</strong> Only 1% commission on all transactions.
+              <strong>Lowest in !</strong> Only 1% commission on all transactions.
             </p>
           </div>
         </div>

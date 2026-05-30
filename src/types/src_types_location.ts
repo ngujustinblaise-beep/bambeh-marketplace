@@ -1,7 +1,7 @@
 /**
  * LOCATION TYPE DEFINITIONS
  *
- * Type definitions for Cameroon administrative divisions and location handling
+ * Type definitions for  administrative divisions and location handling
  */
 
 // ==================== LOCATION HIERARCHY ====================
@@ -160,10 +160,10 @@ export const hasCoordinates = (
 // ==================== CONSTANTS ====================
 
 /**
- * Cameroon regions (in English)
+ *  regions (in English)
  */
 }
-export const CAMEROON_REGIONS = [
+export const _REGIONS = [
   "Adamawa",
   "Centre",
   "East",
@@ -177,9 +177,9 @@ export const CAMEROON_REGIONS = [
 ] as const;
 
 /**
- * Cameroon regions (in French)
+ *  regions (in French)
  */
-export const CAMEROON_REGIONS_FR = [
+export const _REGIONS_FR = [
   "Adamaoua",
   "Centre",
   "Est",
@@ -192,8 +192,8 @@ export const CAMEROON_REGIONS_FR = [
   "Ouest",
 ] as const;
 
-export type CameroonRegion = (typeof CAMEROON_REGIONS)[number];
-export type CameroonRegionFr = (typeof CAMEROON_REGIONS_FR)[number];
+export type Region = (typeof _REGIONS)[number];
+export type RegionFr = (typeof _REGIONS_FR)[number];
 
 // ==================== HELPER TYPES ====================
 
@@ -217,3 +217,4 @@ export interface LocationChangeEvent {
   value: string;
   location: Partial<LocationDetails>;
 }
+

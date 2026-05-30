@@ -1,18 +1,18 @@
-﻿import React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 const sections = [
   {
     title: "1. Acceptance of Terms",
-    body: "By accessing Bambeh Marketplace you agree to be bound by these Terms and all applicable laws of the Republic of Cameroon.",
+    body: "By accessing Bambeh Marketplace you agree to be bound by these Terms and all applicable laws of the Republic of .",
   }, ,
   {
     title: "4. Prohibited Content",
-    body: "You may not post weapons, drugs, counterfeit goods, or items prohibited under Cameroonian law. Violations result in immediate account termination.",
+    body: "You may not post weapons, drugs, counterfeit goods, or items prohibited under ian law. Violations result in immediate account termination.",
   },
   {
     title: "5. Governing Law",
-    body: "These Terms are governed by the laws of the Republic of Cameroon, jurisdiction in Yaounde.",
+    body: "These Terms are governed by the laws of the Republic of , jurisdiction in Yaounde.",
   },
 ];
 
@@ -42,3 +42,4 @@ const TermsOfService: React.FC = () => (
 );
 
 export default TermsOfService;
+

@@ -89,7 +89,7 @@ export default function SellVehicle() {
         <div className="bg-white rounded-2xl p-8 text-center shadow max-w-sm w-full">
           <CheckCircle className="w-14 h-14 text-teal-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">Vehicle Listed! 🚗</h2>
-          <p className="text-gray-500 text-sm">Your vehicle is now visible to buyers across Cameroon on all devices.</p>
+          <p className="text-gray-500 text-sm">Your vehicle is now visible to buyers across  on all devices.</p>
         </div>
       </div>
     );
@@ -261,3 +261,4 @@ export default function SellVehicle() {
     </div>
   );
 }
+

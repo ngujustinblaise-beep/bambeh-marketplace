@@ -50,7 +50,7 @@ class MixpanelManagerClass implements AnalyticsProvider {
         platform: "android",
         app: "bambeh",
         app_version: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
-        country: "Cameroon",
+        country: "",
       });
       this.isInitialized = true;
       return true;
@@ -109,3 +109,4 @@ export function createMixpanelProvider(config?: Partial<MixpanelConfig>): Analyt
 export function isMixpanelAvailable(): boolean {
   return Boolean(window.mixpanel && typeof window.mixpanel.track === "function");
 }
+

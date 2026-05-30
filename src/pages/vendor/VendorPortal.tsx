@@ -35,7 +35,7 @@ export default function VendorPortal() {
   const navigate = useNavigate();
 
   const benefits = [
-    { icon: DollarSign, title: 'Only 1% Fee', description: 'Lowest commission in Cameroon' },
+    { icon: DollarSign, title: 'Only 1% Fee', description: 'Lowest commission in ' },
     { icon: Users, title: 'Millions of Buyers', description: 'Access to huge customer base' },
     { icon: BarChart3, title: 'Analytics Dashboard', description: 'Track your sales performance' },
     { icon: Shield, title: 'Secure Payments', description: 'Protected transactions' },
@@ -79,7 +79,7 @@ export default function VendorPortal() {
               Grow Your Business with <span className="text-purple-600">Bambeh</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join thousands of successful vendors selling on Cameroon's fastest-growing marketplace
+              Join thousands of successful vendors selling on 's fastest-growing marketplace
             </p>
           </div>
 
@@ -178,3 +178,4 @@ export default function VendorPortal() {
     </div>
   );
 }
+

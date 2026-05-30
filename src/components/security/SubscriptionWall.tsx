@@ -1,15 +1,15 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * SUBSCRIPTION WALL - UPGRADE PROMPT
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * 
- * ✅ Shows when free users try to access premium content
- * ✅ Beautiful upgrade prompt
- * ✅ Direct link to subscription plans
- * ✅ Context-aware messaging
+ * ? Shows when free users try to access premium content
+ * ? Beautiful upgrade prompt
+ * ? Direct link to subscription plans
+ * ? Context-aware messaging
  * 
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { Link } from 'react-router-dom';
@@ -25,32 +25,32 @@ export default function SubscriptionWall({ action, message, compact = false }: S
   const messages = {
     location: {
       icon: <Lock className="w-12 h-12 text-purple-500" />,
-      title: '🔒 Location Hidden',
+      title: '?? Location Hidden',
       description: message || 'Unlock exact location details with any subscription plan!'
     },
     contact: {
       icon: <Shield className="w-12 h-12 text-purple-500" />,
-      title: '🔒 Contact Locked',
+      title: '?? Contact Locked',
       description: message || 'Subscribe to contact sellers and start conversations!'
     },
     apply: {
       icon: <Zap className="w-12 h-12 text-purple-500" />,
-      title: '🔒 Application Locked',
+      title: '?? Application Locked',
       description: message || 'Get a subscription to apply for jobs and connect with employers!'
     },
     buy: {
       icon: <Crown className="w-12 h-12 text-purple-500" />,
-      title: '🔒 Purchase Locked',
+      title: '?? Purchase Locked',
       description: message || 'Unlock purchasing power with a subscription plan!'
     },
     details: {
       icon: <Lock className="w-12 h-12 text-purple-500" />,
-      title: '🔒 Full Details Locked',
+      title: '?? Full Details Locked',
       description: message || 'Subscribe to see complete information and all details!'
     },
     post: {
       icon: <Zap className="w-12 h-12 text-purple-500" />,
-      title: '🔒 Posting Locked',
+      title: '?? Posting Locked',
       description: message || 'Get a subscription to post your own ads and reach buyers!'
     }
   };
@@ -91,30 +91,30 @@ export default function SubscriptionWall({ action, message, compact = false }: S
       </p>
 
       <div className="bg-white rounded-xl p-6 mb-6 max-w-md mx-auto">
-        <h4 className="font-bold text-gray-900 mb-3">✨ Unlock Premium Features:</h4>
+        <h4 className="font-bold text-gray-900 mb-3">? Unlock Premium Features:</h4>
         <ul className="text-left text-sm text-gray-700 space-y-2">
           <li className="flex items-start gap-2">
-            <span className="text-green-500 mt-0.5">✓</span>
+            <span className="text-green-500 mt-0.5">?</span>
             <span>View exact locations of all listings</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-500 mt-0.5">✓</span>
+            <span className="text-green-500 mt-0.5">?</span>
             <span>Contact sellers directly</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-500 mt-0.5">✓</span>
+            <span className="text-green-500 mt-0.5">?</span>
             <span>Apply for jobs instantly</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-500 mt-0.5">✓</span>
+            <span className="text-green-500 mt-0.5">?</span>
             <span>Buy items and complete purchases</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-500 mt-0.5">✓</span>
+            <span className="text-green-500 mt-0.5">?</span>
             <span>Post unlimited ads</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-500 mt-0.5">✓</span>
+            <span className="text-green-500 mt-0.5">?</span>
             <span>Access full details and descriptions</span>
           </li>
         </ul>

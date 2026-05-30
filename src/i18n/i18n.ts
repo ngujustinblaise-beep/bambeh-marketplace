@@ -14,7 +14,7 @@ import {
 
 // ─── Translation Resources ────────────────────────────────────────────────────
 // Inline translations keep the initial bundle small and avoid extra network
-// requests on slow Cameroonian connections.
+// requests on slow ian connections.
 
 const fr = {
   common: {
@@ -335,3 +335,4 @@ const initI18n = () => {
 export default initI18n();
 
 export { DEFAULT_LANGUAGE, FALLBACK_LANGUAGE };
+

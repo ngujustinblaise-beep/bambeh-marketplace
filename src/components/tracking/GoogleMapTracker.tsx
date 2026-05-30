@@ -1,7 +1,7 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * GOOGLE MAP TRACKER - ORDER TRACKING WITH MAPS
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * 
  * Complete order tracking with Google Maps:
  * - Real-time location tracking
@@ -12,8 +12,8 @@
  * 
  * FILE LOCATION: src/components/tracking/GoogleMapTracker.tsx
  * 
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -41,9 +41,9 @@ import {
   Zap
 } from 'lucide-react';
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // TYPES
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 
 interface Location {
   lat: number;
@@ -82,9 +82,9 @@ interface OrderTracking {
   lastUpdated: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // SAMPLE DATA
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 
 const sampleTracking: OrderTracking = {
   orderId: 'ORD-12345',
@@ -153,9 +153,9 @@ const sampleTracking: OrderTracking = {
   lastUpdated: '2025-01-10T14:00:00Z'
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // MAP PLACEHOLDER COMPONENT (Replace with actual Google Maps)
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 
 const MapPlaceholder = ({ 
   pickupLocation, 
@@ -234,7 +234,7 @@ const MapPlaceholder = ({
           <span className="text-xl font-bold text-gray-700">+</span>
         </button>
         <button className="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50">
-          <span className="text-xl font-bold text-gray-700">−</span>
+          <span className="text-xl font-bold text-gray-700">-</span>
         </button>
         <button className="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50">
           <Navigation className="w-5 h-5 text-gray-700" />
@@ -248,9 +248,9 @@ const MapPlaceholder = ({
     </div>
   );
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // MAIN COMPONENT
-// ════════════════════
+// --------------------
 
 }
 export default function GoogleMapTracker() {
@@ -385,9 +385,9 @@ export default function GoogleMapTracker() {
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                       <span>{tracking.driver.rating}</span>
-                      <span>•</span>
+                      <span>�</span>
                       <span>{tracking.driver.vehicleType}</span>
-                      <span>•</span>
+                      <span>�</span>
                       <span className="font-mono">{tracking.driver.vehiclePlate}</span>
                     </div>
                   </div>

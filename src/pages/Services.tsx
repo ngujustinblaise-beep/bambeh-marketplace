@@ -1,44 +1,53 @@
 /**
  * src/pages/Services.tsx — Bambeh Marketplace
- * FIXED: Reads from Supabase listings table (type='service') instead of static SAMPLE_SERVICES.
- * Cross-device, real-time — new services posted on any device appear instantly for everyone.
+ *
+ * CHANGES IN THIS VERSION:
+ * ✅ LocationFilter integrated — filters by region, city, quarter, landmark
+ * ✅ locationFilters state added and wired into filtered array
+ * ✅ All existing Supabase / real-time / sample logic preserved exactly
+ * ✅ DEMO BADGE: isDemo added to Service interface and all SAMPLE_SERVICES entries
+ * ✅ SORTING: real user listings always appear above demo listings
  */
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Search, MapPin, Star, Plus, Loader2, RefreshCw, Wrench
-} from 'lucide-react';
+import { Search, MapPin, Plus, Loader2, RefreshCw, Wrench } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
+import { DemoBadge } from '@/components/listings/DemoBadge';
 
 interface Service {
-  id:       string;
-  title:    string;
-  category: string;
-  price:    number | null;
-  location: string;
+  id:          string;
+  title:       string;
+  category:    string;
+  price:       number | null;
+  location:    string;
   description: string;
-  phone?:   string;
-  created_at: string;
+  phone?:      string;
+  created_at:  string;
+  isDemo?:     boolean; // ← NEW: marks sample/demo items
 }
 
 const SAMPLE_SERVICES: Service[] = [
-  { id:'s1', title:'Professional House Cleaning', category:'Cleaning',    price:15000, location:'Yaoundé',  description:'Deep cleaning services for homes and offices.',  created_at: new Date().toISOString() },
-  { id:'s2', title:'Plumbing Repairs & Installation', category:'Plumbing', price:25000, location:'Douala',   description:'Expert plumbing services, pipes, water heaters.', created_at: new Date().toISOString() },
-  { id:'s3', title:'Electrical Services',         category:'Electrical',  price:20000, location:'Yaoundé',  description:'Wiring, installations, and electrical repairs.',   created_at: new Date().toISOString() },
-  { id:'s4', title:'Web Development & Design',    category:'IT & Tech',   price:150000,location:'Bambili',  description:'Custom websites, React apps, and mobile apps.',    created_at: new Date().toISOString() },
-  { id:'s5', title:'Photography & Videography',   category:'Photography', price:50000, location:'Yaoundé',  description:'Events, portraits, commercial photography.',        created_at: new Date().toISOString() },
-  { id:'s6', title:'Private Tutoring (Math/Sciences)', category:'Tutoring', price:10000, location:'Buea', description:'Tutoring for secondary and university students.',    created_at: new Date().toISOString() },
+  { id:'s1', title:'Professional House Cleaning',      category:'Cleaning',    price:15000,  location:'Yaoundé', description:'Deep cleaning services for homes and offices.',   created_at: new Date().toISOString(), isDemo: true },
+  { id:'s2', title:'Plumbing Repairs & Installation',  category:'Plumbing',    price:25000,  location:'Douala',  description:'Expert plumbing services, pipes, water heaters.',  created_at: new Date().toISOString(), isDemo: true },
+  { id:'s3', title:'Electrical Services',              category:'Electrical',  price:20000,  location:'Yaoundé', description:'Wiring, installations, and electrical repairs.',    created_at: new Date().toISOString(), isDemo: true },
+  { id:'s4', title:'Web Development & Design',         category:'IT & Tech',   price:150000, location:'Bambili', description:'Custom websites, React apps, and mobile apps.',     created_at: new Date().toISOString(), isDemo: true },
+  { id:'s5', title:'Photography & Videography',        category:'Photography', price:50000,  location:'Yaoundé', description:'Events, portraits, commercial photography.',         created_at: new Date().toISOString(), isDemo: true },
+  { id:'s6', title:'Private Tutoring (Math/Sciences)', category:'Tutoring',    price:10000,  location:'Buea',    description:'Tutoring for secondary and university students.',    created_at: new Date().toISOString(), isDemo: true },
 ];
 
 const CATEGORIES = ['All', 'Cleaning', 'Plumbing', 'Electrical', 'IT & Tech', 'Photography', 'Tutoring', 'Catering', 'Transport', 'Beauty', 'Other'];
 
 export default function Services() {
   const navigate = useNavigate();
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [search,   setSearch]   = useState('');
-  const [category, setCategory] = useState('All');
+  const [services,  setServices]  = useState<Service[]>([]);
+  const [loading,   setLoading]   = useState(true);
+  const [search,    setSearch]    = useState('');
+  const [category,  setCategory]  = useState('All');
+
+  // ── Location filter state ──────────────────────────────────────────
+  const [locationFilters, setLocationFilters] = useState<LocationFilters>(EMPTY_LOCATION);
 
   async function fetchServices() {
     try {
@@ -51,7 +60,12 @@ export default function Services() {
         .limit(40);
 
       if (error) throw error;
-      setServices(data && data.length > 0 ? data : SAMPLE_SERVICES);
+      // Real data from Supabase — mark isDemo false
+      setServices(
+        data && data.length > 0
+          ? data.map((d: any) => ({ ...d, isDemo: false }))
+          : SAMPLE_SERVICES
+      );
     } catch {
       setServices(SAMPLE_SERVICES);
     } finally {
@@ -68,10 +82,24 @@ export default function Services() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const filtered = services.filter(s => {
+  // ── Filter — includes location filter ────────────────────────────────────
+  const baseFiltered = services.filter(s => {
     const matchSearch   = !search || s.title.toLowerCase().includes(search.toLowerCase()) || s.description.toLowerCase().includes(search.toLowerCase());
     const matchCategory = category === 'All' || s.category === category;
+
+    const loc = s.location.toLowerCase();
+    if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
+    if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
+    if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
+    if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+
     return matchSearch && matchCategory;
+  });
+
+  // ── SORTING: real listings first, demo listings last ─────────────────────
+  const filtered = [...baseFiltered].sort((a, b) => {
+    if (a.isDemo !== b.isDemo) return a.isDemo ? 1 : -1;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
   return (
@@ -95,15 +123,14 @@ export default function Services() {
         <div className="bg-white rounded-2xl shadow-sm p-3 mb-4 flex gap-2 overflow-x-auto">
           {CATEGORIES.map(c => (
             <button key={c} onClick={() => setCategory(c)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-                category === c ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}>
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition
+                ${category === c ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
               {c}
             </button>
           ))}
         </div>
 
-        {/* Actions */}
+        {/* Actions row */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-gray-500">{filtered.length} service{filtered.length !== 1 ? 's' : ''} found</p>
           <div className="flex gap-2">
@@ -116,6 +143,9 @@ export default function Services() {
             </button>
           </div>
         </div>
+
+        {/* ── LOCATION FILTER ───────────────────────────────────────────── */}
+        <LocationFilter onFilterChange={setLocationFilters} accentClass="purple" />
 
         {/* Content */}
         {loading ? (
@@ -137,11 +167,16 @@ export default function Services() {
               <div key={service.id}
                 onClick={() => navigate('/services/' + service.id)}
                 className="bg-white rounded-2xl p-4 shadow-sm border flex gap-4 cursor-pointer hover:shadow-md transition-shadow">
-                {/* Icon */}
-                <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                {/* Icon container — `relative` so DemoBadge positions correctly */}
+                <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0 relative">
                   <Wrench className="w-7 h-7 text-purple-500" />
+                  {/* ── DEMO BADGE (smaller position for list layout) ── */}
+                  {service.isDemo && (
+                    <div className="absolute -top-2 -left-2 z-10 bg-yellow-400 text-yellow-900 text-[9px] font-black px-1.5 py-0.5 rounded-full shadow border border-yellow-600 uppercase tracking-wide">
+                      DEMO
+                    </div>
+                  )}
                 </div>
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-gray-900 text-sm mb-0.5">{service.title}</h3>
                   {service.category && (
@@ -160,6 +195,9 @@ export default function Services() {
                       </span>
                     )}
                   </div>
+                  {service.isDemo && (
+                    <p className="text-xs text-yellow-600 mt-1 italic">Sample — not a real service</p>
+                  )}
                 </div>
               </div>
             ))}

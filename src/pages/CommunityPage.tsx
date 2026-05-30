@@ -25,8 +25,8 @@ const DEMO_GROUPS = [
   },
   {
     id: "2",
-    name: "Cameroon Women in Business",
-    description: "Supporting and empowering women entrepreneurs across all 10 regions of Cameroon.",
+    name: " Women in Business",
+    description: "Supporting and empowering women entrepreneurs across all 10 regions of .",
     category: "Business",
     emoji: "👩‍💼",
     members: 3456,
@@ -46,7 +46,7 @@ const DEMO_GROUPS = [
   {
     id: "4",
     name: "Agriculture & Farming Network",
-    description: "For farmers, agro-processors, and agricultural entrepreneurs across Cameroon.",
+    description: "For farmers, agro-processors, and agricultural entrepreneurs across .",
     category: "Agriculture",
     emoji: "🌾",
     members: 567,
@@ -168,7 +168,7 @@ export default function CommunityPage() {
            */}
           <ShareButton
             title="Bambeh Community"
-            text="Join thousands of Cameroonians on Bambeh Community!"
+            text="Join thousands of ians on Bambeh Community!"
             size="md"
             className="bg-white/20 text-white hover:bg-white/30"
           />
@@ -289,3 +289,4 @@ export default function CommunityPage() {
     </div>
   );
 }
+

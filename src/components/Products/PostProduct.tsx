@@ -439,7 +439,7 @@ const PostProduct: React.FC = () => {
                         <CardContent className="space-y-4">
                             <div>
                                 <Label htmlFor="location">Your Location</Label>
-                                <Input id="location" name="location" placeholder="e.g., Yaoundé, Cameroon" value={formData.location} onChange={handleInputChange} />
+                                <Input id="location" name="location" placeholder="e.g., Yaoundé, " value={formData.location} onChange={handleInputChange} />
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="shippingAvailable" checked={formData.shippingAvailable} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, shippingAvailable: checked as boolean }))} />
@@ -496,3 +496,4 @@ const PostProduct: React.FC = () => {
 };
 
 export default PostProduct;
+

@@ -772,7 +772,7 @@ const PostVehicle: React.FC = () => {
                 <Input
                   id="location"
                   name="location"
-                  placeholder="e.g., Yaoundé, Cameroon"
+                  placeholder="e.g., Yaoundé, "
                   value={formData.location}
                   onChange={handleInputChange}
                   required
@@ -872,4 +872,5 @@ const PostVehicle: React.FC = () => {
 };
 
 export default PostVehicle;
+
 

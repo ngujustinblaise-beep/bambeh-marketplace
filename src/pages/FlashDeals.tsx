@@ -39,7 +39,7 @@ const DEMO_DEALS: Deal[] = [
     originalPrice: 750000,
     dealPrice: 480000,
     currency: "XAF",
-    vendor: "TechZone Cameroon",
+    vendor: "TechZone ",
     vendorPhone: "+237670000001",
     stockTotal: 3,
     stockLeft: 2,
@@ -49,7 +49,7 @@ const DEMO_DEALS: Deal[] = [
   {
     id: "2",
     title: "Samsung 65\" 4K Smart TV",
-    description: "Brand new sealed box. 2-year Cameroon warranty. HDMI x3, WiFi, Bluetooth.",
+    description: "Brand new sealed box. 2-year  warranty. HDMI x3, WiFi, Bluetooth.",
     image: "📺",
     originalPrice: 450000,
     dealPrice: 280000,
@@ -79,7 +79,7 @@ const DEMO_DEALS: Deal[] = [
   {
     id: "4",
     title: "HP Laptop 15\" — i5 12th Gen",
-    description: "New, 16GB RAM, 512GB SSD, Windows 11 Pro. Full warranty from HP Cameroon.",
+    description: "New, 16GB RAM, 512GB SSD, Windows 11 Pro. Full warranty from HP .",
     image: "💻",
     originalPrice: 380000,
     dealPrice: 250000,
@@ -143,7 +143,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
 
   async function pay() {
     if (!phone.trim() || phone.replace(/\D/g, "").length < 9) {
-      setError("Enter a valid Cameroon phone number"); return;
+      setError("Enter a valid  phone number"); return;
     }
     setError(""); setStep("processing");
     // Simulate payment — replace with real CamPay call
@@ -416,3 +416,4 @@ export default function FlashDeals() {
     </div>
   );
 }
+

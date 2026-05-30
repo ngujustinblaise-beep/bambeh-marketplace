@@ -23,7 +23,7 @@
  *     // ... your logic using user.id
  *   });
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════
  */
 

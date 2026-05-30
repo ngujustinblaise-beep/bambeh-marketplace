@@ -6,7 +6,7 @@ type Category='entrepreneur'|'farmer'|'artisan'|'tech'|'all';
 interface StoryEntry{id:string;name:string;location:string;category:Category;headline:string;story:string;impact:string;revenue:string;imageInitial:string;featured:boolean;rating:number;}
 
 const STORIES:StoryEntry[]=[
-  {id:'1',name:'Marie-Claire Fotso',location:'Bafoussam',category:'farmer',headline:'From 2 acres to 50: How Bambeh changed everything',story:'I started selling my vegetables locally and could barely make ends meet. After joining Bambeh FarmFresh, I now supply to 200+ families across Cameroon.',impact:'200+ families fed weekly',revenue:'2.4M XAF/month',imageInitial:'M',featured:true,rating:4.9},
+  {id:'1',name:'Marie-Claire Fotso',location:'Bafoussam',category:'farmer',headline:'From 2 acres to 50: How Bambeh changed everything',story:'I started selling my vegetables locally and could barely make ends meet. After joining Bambeh FarmFresh, I now supply to 200+ families across .',impact:'200+ families fed weekly',revenue:'2.4M XAF/month',imageInitial:'M',featured:true,rating:4.9},
   {id:'2',name:'Emmanuel Nkeng',location:'Yaounde',category:'tech',headline:'Built a tech empire from a single laptop',story:'I used to repair phones in Nlongkak market. Bambeh gave me a platform to showcase my skills. I now run a team of 12 developers.',impact:'12 jobs created',revenue:'8M XAF/month',imageInitial:'E',featured:true,rating:4.8},
   {id:'3',name:'Precious Akwa',location:'Douala',category:'artisan',headline:'Traditional crafts reaching the world via Bambeh',story:'My grandmother taught me weaving. I thought it was a dying art. Bambeh helped me sell to buyers across Africa and Europe.',impact:'Preserved cultural heritage',revenue:'1.8M XAF/month',imageInitial:'P',featured:false,rating:4.7},
   {id:'4',name:'Jean-Paul Beti',location:'Ngaoundere',category:'entrepreneur',headline:'Cattle to commerce: A northern success story',story:'I started with 10 cows and used Bambeh to sell livestock and products online. Now I manage a full agribusiness operation.',impact:'50+ herders partnered',revenue:'5.2M XAF/month',imageInitial:'J',featured:false,rating:4.6},
@@ -77,7 +77,7 @@ export default function HeavyLiftSpotlight(){
         <div className="bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl p-5 text-white">
           <p className="text-teal-100 text-xs uppercase tracking-wide mb-1">Success Stories</p>
           <h1 className="text-xl font-bold mb-2">Real people. Real results.</h1>
-          <p className="text-teal-100 text-sm">See how Bambeh is transforming lives and businesses across Cameroon.</p>
+          <p className="text-teal-100 text-sm">See how Bambeh is transforming lives and businesses across .</p>
         </div>
         {featured&&(
           <button onClick={()=>setSelected(featured)} className="w-full bg-white rounded-2xl shadow-sm border overflow-hidden text-left hover:shadow-md transition-shadow">
@@ -127,3 +127,4 @@ export default function HeavyLiftSpotlight(){
     </div>
   );
 }
+

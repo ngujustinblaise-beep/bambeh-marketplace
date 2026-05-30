@@ -28,6 +28,7 @@ import {
 } from "react-router-dom";
 import AuthGate from "@/components/security/AuthGate";
 import { NavigationService } from "@/utils/auth/safeRedirect";
+import { setNavigator } from "@/router";
 import { logger, logDevBanner } from "@/utils/logger";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
@@ -221,7 +222,7 @@ const MeetingSafely           = lazy(() => import("@/pages/help/MeetingSafely"))
 const ReportingIssues         = lazy(() => import("@/pages/help/ReportingIssues"));
 const ContactSupport          = lazy(() => import("@/pages/help/ContactSupport"));
 
-// CAMEROON-SPECIFIC
+// -SPECIFIC
 const EscrowPage          = lazy(() => import("@/pages/EscrowPage"));
 const SellerRatingPage    = lazy(() => import("@/pages/SellerRatingPage"));
 const OfflineModePage     = lazy(() => import("@/pages/OfflineModePage"));
@@ -553,6 +554,9 @@ function NavigationBridge() {
   const navigate = useNavigate();
   useEffect(() => {
     NavigationService.register(navigate);
+    // Also wire the @/router singleton so non-component code (e.g. ActionButtons
+    // dynamic import) can call navigate() from anywhere in the app.
+    setNavigator(navigate);
     // FIX: Do NOT pass null on cleanup. If NavigationBridge ever remounts
     // (HMR, React StrictMode double-invoke) the cleanup would null-out the
     // service just as the new mount re-registers — creating a window where
@@ -1137,7 +1141,7 @@ export default function App() {
                         <Route path="/sell-item" element={<Navigate to="/marketplace/sell" replace />} />
                         <Route path="/post-job" element={<Navigate to="/jobs/post" replace />} />
 
-                        {/* ── 16. CAMEROON FEATURES ──────────────────────────────── */}
+                        {/* ── 16.  FEATURES ──────────────────────────────── */}
                         <Route path="/splash" element={<SplashScreenPage />} />
                         <Route path="/spotlight" element={<MainLayout><HeavyLiftSpotlight /></MainLayout>} />
                         <Route
@@ -1273,3 +1277,4 @@ export default function App() {
     </React.StrictMode>
   );
 }
+

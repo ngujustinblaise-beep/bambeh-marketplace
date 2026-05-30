@@ -87,7 +87,7 @@ export default function OfferService() {
         <div className="text-center bg-white rounded-2xl p-8 shadow max-w-sm w-full">
           <CheckCircle className="w-14 h-14 text-teal-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">Service Listed! 🛠️</h2>
-          <p className="text-gray-500 text-sm">Your service is now visible to clients across Cameroon.</p>
+          <p className="text-gray-500 text-sm">Your service is now visible to clients across .</p>
         </div>
       </div>
     );
@@ -240,3 +240,4 @@ export default function OfferService() {
     </div>
   );
 }
+

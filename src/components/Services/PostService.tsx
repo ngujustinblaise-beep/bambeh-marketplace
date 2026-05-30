@@ -1,4 +1,4 @@
-ï»¿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Briefcase, Upload, X, DollarSign, MapPin, Clock, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -299,7 +299,7 @@ const PostService: React.FC = () => {
 
             toast({
                 title: 'Service posted successfully!',
-                description: 'Your service is now listed on BambÃ©',
+                description: 'Your service is now listed on Bambé',
             });
 
             navigate('/services');
@@ -325,7 +325,7 @@ const PostService: React.FC = () => {
                         </Button>
                         <div>
                             <h1 className="text-xl font-bold">Post Service</h1>
-                            <p className="text-sm text-gray-600">Offer your services on BambÃ©</p>
+                            <p className="text-sm text-gray-600">Offer your services on Bambé</p>
                         </div>
                     </div>
                 </div>
@@ -649,7 +649,7 @@ const PostService: React.FC = () => {
                                 <Input
                                     id="location"
                                     name="location"
-                                    placeholder="e.g., YaoundÃ©, Cameroon"
+                                    placeholder="e.g., Yaoundé, "
                                     value={formData.location}
                                     onChange={handleInputChange}
                                 />
@@ -660,7 +660,7 @@ const PostService: React.FC = () => {
                                 <Input
                                     id="serviceArea"
                                     name="serviceArea"
-                                    placeholder="e.g., YaoundÃ© and surrounding areas within 20km"
+                                    placeholder="e.g., Yaoundé and surrounding areas within 20km"
                                     value={formData.serviceArea}
                                     onChange={handleInputChange}
                                 />
@@ -808,4 +808,5 @@ const PostService: React.FC = () => {
 };
 
 export default PostService;
+
 

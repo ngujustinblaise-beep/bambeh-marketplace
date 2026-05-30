@@ -12,7 +12,7 @@
  *   3. If the table is absent, analytics silently degrades — zero errors.
  *   4. Once the table exists, full tracking resumes automatically.
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════
  */
 

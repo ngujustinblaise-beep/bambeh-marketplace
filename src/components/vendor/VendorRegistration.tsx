@@ -32,7 +32,7 @@ const CATEGORIES = [
   "Véhicules", "Immobilier", "Autre",
 ];
 
-const CAMEROON_CITIES = [
+const _CITIES = [
   "Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua",
   "Bafoussam", "Ngaoundéré", "Kumba", "Nkongsamba", "Limbe",
 ];
@@ -110,7 +110,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
         category: form.category,
         city: form.city,
         region: form.region || form.city,
-        country: "Cameroon",
+        country: "",
         phone: form.phone.trim(),
         email: form.email.trim(),
         website: form.website.trim() || undefined,
@@ -256,7 +256,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
                 className="flex-1 px-3 py-2.5 outline-none text-sm bg-white"
               >
                 <option value="">Sélectionner votre ville</option>
-                {CAMEROON_CITIES.map((city) => (
+                {_CITIES.map((city) => (
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>
@@ -353,3 +353,4 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
 };
 
 export default VendorRegistration;
+

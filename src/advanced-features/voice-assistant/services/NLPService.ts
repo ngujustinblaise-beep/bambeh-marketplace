@@ -350,7 +350,7 @@ class NLPService {
   private extractLocations(text: string, language: Language): CommandEntity[] {
     const locations: CommandEntity[] = [];
 
-    // Common Cameroon locations
+    // Common  locations
     const locationKeywords = [
       "yaoundé",
       "yaounde",
@@ -496,3 +496,4 @@ class NLPService {
 }
 
 export default new NLPService();
+

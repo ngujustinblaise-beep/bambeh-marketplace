@@ -9,7 +9,7 @@ import { Crown, X, Phone, Zap, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const SUBSCRIPTION_MESSAGES = [
   { headline: '🍞 At the price of a loaf of bread, everything can change.', sub: "Subscribe now — you wouldn't regret it.", color: 'from-amber-500 to-orange-500' },
-  { headline: '⚡ Subscribe quick with that wonderful CFA 100 and secure your place all over Cameroon.', sub: 'Your competitors are already moving. Will you?', color: 'from-teal-500 to-blue-600' },
+  { headline: '⚡ Subscribe quick with that wonderful CFA 100 and secure your place all over .', sub: 'Your competitors are already moving. Will you?', color: 'from-teal-500 to-blue-600' },
   { headline: '🛏️ At CFA 100, you can secure anything from the comfort of your bed.', sub: 'No need to go out. Everything comes to you.', color: 'from-purple-500 to-pink-600' },
   { headline: '👑 No need to rush — with that CFA 100... yes that one, you are king.', sub: 'One subscription. Unlimited Bambeh power.', color: 'from-rose-500 to-red-600' },
 ];
@@ -127,3 +127,4 @@ const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({ isOpen, o
 };
 
 export default SubscriptionGateModal;
+

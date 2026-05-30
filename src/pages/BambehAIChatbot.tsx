@@ -1,5 +1,5 @@
 /**
- * src/pages/BambehAIChatbot.tsx — Bambeh Marketplace
+ * src/pages/BambehAIChatbot.tsx â€” Bambeh Marketplace
  *
  * FIXED: No longer calls Anthropic API directly from browser (was blocked by CSP).
  * Now routes through Railway backend: /api/ai/chat
@@ -29,14 +29,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Trash2 } from 'lucide-react';
 
-const BACKEND_URL =
-  (import.meta as any).env?.VITE_BACKEND_URL ||
-  'https://bambeh-backend-production.up.railway.app';
+const BACKEND_URL = 'https://bambeh-backend-production-6bca.up.railway.app';
 
 const SYSTEM_PROMPT =
-  'You are Bambeh AI, a helpful and friendly assistant for the Bambeh Marketplace app in Cameroon. ' +
+  'You are Bambeh AI, a helpful and friendly assistant for the Bambeh Marketplace app in . ' +
   'Help users with buying, selling, finding jobs, rentals, vehicles, services, and using the app. ' +
-  'Keep answers concise. Use XAF for prices. Be culturally aware of Cameroonian context.';
+  'Keep answers concise. Use XAF for prices. Be culturally aware of ian context.';
 
 interface Message {
   id: string;
@@ -77,7 +75,7 @@ export default function BambehAIChatbot() {
     setLoading(true);
 
     try {
-      // ── Route through Railway backend (NOT directly to Anthropic) ────────
+      // â”€â”€ Route through Railway backend (NOT directly to Anthropic) â”€â”€â”€â”€â”€â”€â”€â”€
       const res = await fetch(`${BACKEND_URL}/api/ai/chat`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -219,3 +217,4 @@ export default function BambehAIChatbot() {
     </div>
   );
 }
+

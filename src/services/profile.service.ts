@@ -52,7 +52,7 @@ function mapProfileRow(row: Record<string, unknown>): UserProfile {
     bio: row.bio as string | undefined,
     city: row.city as string | undefined,
     region: row.region as string | undefined,
-    country: (row.country as string) ?? "Cameroon",
+    country: (row.country as string) ?? "",
     isVerified: Boolean(row.is_verified),
     isVendor: Boolean(row.is_vendor),
     subscriptionTier: (row.subscription_tier as string) ?? "free",
@@ -171,3 +171,4 @@ export async function getPublicProfile(userId: string): Promise<ProfileResponse>
     return { data: null, error: message };
   }
 }
+

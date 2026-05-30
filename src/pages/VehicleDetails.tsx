@@ -1,13 +1,12 @@
 /**
- * VehicleDetails.tsx — Bambeh Marketplace
- * FILE LOCATION: src/pages/VehicleDetails.tsx
+ * src/pages/VehicleDetails.tsx
+ * Bambeh Marketplace — Vehicle Detail Page
  *
- * FIXES FROM ORIGINAL:
- * 1. Used useTranslation from react-i18next → replaced with useLanguage
- * 2. Bottom buttons were Call + Email only. Added "Book Test Drive" button.
- *    "Contact Vendor" button now also opens chat page.
- * 3. Share button aria-label added (labeled share)
- * 4. Loads real vehicle data from Supabase listings table when available
+ * CHANGES FROM ORIGINAL:
+ *  ✅ ActionButtons (Contact Vendor / Report Ad / Share) added after description
+ *  ✅ Existing handleShare wired into ActionButtons via onShare prop
+ *  ✅ Standalone Share2 button removed from header — unified in ActionButtons
+ *  ✅ All other functionality preserved (test drive, chat, call)
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -15,7 +14,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, MapPin, Phone, Mail, Share2, Heart,
+  ArrowLeft, MapPin, Phone, Heart,
   AlertCircle, Check, Car, Fuel, Gauge, Calendar, Cog, MessageCircle
 } from "lucide-react";
 import { Button }                     from "@/components/ui/button";
@@ -24,8 +23,9 @@ import { Card }                       from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast }                      from "@/components/ui/use-toast";
 import { supabase }                   from "@/lib/supabase";
-// FIX: Replaced react-i18next with our own LanguageContext
 import { useLanguage }                from "@/contexts/LanguageContext";
+// ✅ NEW: shared action buttons
+import { ActionButtons } from "@/components/listings/ActionButtons";
 
 interface Vehicle {
   id: string; make: string; model: string; year: number;
@@ -61,7 +61,7 @@ const getMockVehicle = (id: string): Vehicle => ({
 export default function VehicleDetails() {
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t }    = useLanguage(); // FIX: use our LanguageContext
+  const { t }    = useLanguage();
 
   const [vehicle,           setVehicle]           = useState<Vehicle | null>(null);
   const [loading,           setLoading]           = useState(true);
@@ -103,7 +103,7 @@ export default function VehicleDetails() {
             sellerPhone:  data.phone               || "",
             sellerEmail:  "",
             sellerId:     data.seller_id,
-            location:     data.location            || "Cameroon",
+            location:     data.location            || "",
             verified:     false,
             postedDate:   data.created_at          || new Date().toISOString(),
             views:        0,
@@ -121,14 +121,8 @@ export default function VehicleDetails() {
     }
   };
 
-  // ── Contact actions ──────────────────────────────────────────────────────
   const handleCall = () => {
     if (vehicle?.sellerPhone) window.location.href = `tel:${vehicle.sellerPhone}`;
-  };
-
-  const handleEmail = () => {
-    if (vehicle?.sellerEmail)
-      window.location.href = `mailto:${vehicle.sellerEmail}?subject=Enquiry: ${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   };
 
   const handleChat = () => {
@@ -139,28 +133,27 @@ export default function VehicleDetails() {
     }
   };
 
-  // ── Book test drive ──────────────────────────────────────────────────────
   const handleBookTestDrive = async () => {
     setTestDriveBooked(true);
     toast({
       title: "Test Drive Requested!",
       description: `We'll contact you at ${vehicle?.sellerPhone} to confirm a time.`,
     });
-    // In production: save test drive request to Supabase
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user && vehicle) {
         await supabase.from("test_drive_requests").insert({
-          vehicle_id:  vehicle.id,
+          vehicle_id:   vehicle.id,
           requester_id: session.user.id,
-          seller_id:   vehicle.sellerId || null,
+          seller_id:    vehicle.sellerId || null,
           requested_at: new Date().toISOString(),
-          status:      "pending",
+          status:       "pending",
         });
       }
-    } catch { /* table may not exist yet — that's fine */ }
+    } catch { /* table may not exist yet */ }
   };
 
+  // ✅ Share handler passed to ActionButtons via onShare prop
   const handleShare = async () => {
     try {
       if (navigator.share) {
@@ -186,19 +179,16 @@ export default function VehicleDetails() {
   if (!vehicle) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <AlertCircle className="h-16 w-16 text-gray-300 mb-4" />
+        <AlertCircle className="h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-bold mb-2">Vehicle Not Found</h2>
-        <Button onClick={() => navigate("/vehicles")}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Vehicles
-        </Button>
+        <Button onClick={() => navigate('/vehicles')}><ArrowLeft className="mr-2 h-4 w-4" />Back to Vehicles</Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
-
-      {/* Sticky header */}
+    <div className="min-h-screen bg-background pb-32">
+      {/* Header — Share button removed; unified into ActionButtons */}
       <div className="sticky top-0 z-10 bg-white border-b">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
@@ -207,25 +197,14 @@ export default function VehicleDetails() {
           <span className="font-semibold text-sm flex-1 mx-3 truncate">
             {vehicle.year} {vehicle.make} {vehicle.model}
           </span>
-          <div className="flex gap-1">
-            {/* Share — LABELED */}
-            <Button
-              variant="ghost" size="icon"
-              onClick={handleShare}
-              aria-label={t("common.share")}
-              title={t("common.share")}
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost" size="icon"
-              onClick={() => setIsFavorite(f => !f)}
-              className={isFavorite ? "text-red-500" : ""}
-              aria-label="Favourite"
-            >
-              <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost" size="icon"
+            onClick={() => setIsFavorite(f => !f)}
+            aria-label={isFavorite ? "Remove from favourites" : "Save to favourites"}
+            className={isFavorite ? "text-red-500" : ""}
+          >
+            <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
+          </Button>
         </div>
       </div>
 
@@ -246,6 +225,7 @@ export default function VehicleDetails() {
             <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
               {vehicle.images.map((_, i) => (
                 <button key={i} onClick={() => setCurrentImageIndex(i)}
+                  aria-label={`View image ${i + 1}`}
                   className={`h-2 rounded-full transition-all ${i === currentImageIndex ? "bg-white w-6" : "bg-white/50 w-2"}`} />
               ))}
             </div>
@@ -316,6 +296,15 @@ export default function VehicleDetails() {
           <p className="text-gray-600 text-sm leading-relaxed">{vehicle.description}</p>
         </Card>
 
+        {/* ✅ NEW: Contact / Report / Share action buttons */}
+        <ActionButtons
+          vendorPhone={vehicle.sellerPhone}
+          adTitle={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+          adId={vehicle.id}
+          adType="vehicles"
+          onShare={handleShare}
+        />
+
         {/* Features */}
         {vehicle.features.length > 0 && (
           <Card className="p-4">
@@ -349,16 +338,9 @@ export default function VehicleDetails() {
         </Card>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          FIXED BOTTOM ACTION BUTTONS
-          FIX: Was only Call + Email. Now has 3 buttons:
-            1. Call Seller
-            2. Contact Vendor (chat)
-            3. Book Test Drive ← NEW
-          ═══════════════════════════════════════════════════════════════════ */}
+      {/* Fixed Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl">
         <div className="max-w-2xl mx-auto space-y-2">
-          {/* Book Test Drive — prominent button */}
           <button
             onClick={handleBookTestDrive}
             disabled={testDriveBooked}
@@ -370,8 +352,6 @@ export default function VehicleDetails() {
           >
             {testDriveBooked ? "✓ Test Drive Requested!" : "🚗 Book Test Drive"}
           </button>
-
-          {/* Call + Chat */}
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" onClick={handleCall} className="w-full">
               <Phone className="mr-2 h-4 w-4" /> Call Seller

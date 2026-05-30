@@ -283,7 +283,7 @@ const MeetingSafely = lazy(() => import("@/pages/help/MeetingSafely"));
 const ReportingIssues = lazy(() => import("@/pages/help/ReportingIssues"));
 const ContactSupport = lazy(() => import("@/pages/help/ContactSupport"));
 
-// CAMEROON-SPECIFIC
+// -SPECIFIC
 const EscrowPage = lazy(() => import("@/pages/EscrowPage"));
 const SellerRatingPage = lazy(() => import("@/pages/SellerRatingPage"));
 const OfflineModePage = lazy(() => import("@/pages/OfflineModePage"));
@@ -2167,7 +2167,7 @@ export default function App() {
                           element={<Navigate to="/jobs/post" replace />}
                         />
 
-                        {/* ── 16. CAMEROON FEATURES ──────────────────────────────── */}
+                        {/* ── 16.  FEATURES ──────────────────────────────── */}
                         <Route path="/splash" element={<SplashScreenPage />} />
                         <Route
                           path="/spotlight"
@@ -2357,3 +2357,4 @@ export default function App() {
     </React.StrictMode>
   );
 } // FIX #15 — closing brace for App() function restored
+

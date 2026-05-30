@@ -19,7 +19,7 @@ i18n
   // Initialize i18next
   .init({
     // Default language
-    fallbackLng: "fr", // French as default for Cameroon
+    fallbackLng: "fr", // French as default for 
 
     // Supported languages
     supportedLngs: ["en", "fr"],
@@ -65,3 +65,4 @@ i18n
   });
 
 export default i18n;
+

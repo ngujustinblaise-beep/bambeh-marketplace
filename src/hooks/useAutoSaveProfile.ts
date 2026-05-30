@@ -28,7 +28,7 @@
  *   </button>
  *   {saveStatus === 'saved' && <p>✅ All saved! Returning to profile...</p>}
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ════════════════════════════════════════════════════════════════
  */
 

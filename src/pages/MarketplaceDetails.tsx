@@ -1,18 +1,26 @@
 /**
  * src/pages/MarketplaceDetails.tsx
  * Bambeh Marketplace — Marketplace Item Detail Page
+ *
+ * CHANGES FROM ORIGINAL:
+ *  ✅ ActionButtons (Contact Vendor / Report Ad / Share) added after description
+ *  ✅ Share button in header removed — unified into ActionButtons
+ *  ✅ ActionButtons receives sanitised seller phone and listing metadata
+ *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Heart, Share2, ShoppingCart, MessageCircle,
+  ArrowLeft, Heart, ShoppingCart, MessageCircle,
   MapPin, Star, ShieldCheck, Eye, RefreshCw, AlertCircle,
   ChevronLeft, ChevronRight, Zap, Package,
 } from "lucide-react";
 import { getMarketplaceItemById, incrementMarketplaceView } from "@/services/marketplace.service";
 import type { MarketplaceItem } from "@/types/src_types_items";
+// ✅ NEW: shared action buttons
+import { ActionButtons } from "@/components/listings/ActionButtons";
 
 const CONDITION_LABELS: Record<string, string> = {
   new: "Neuf", like_new: "Comme neuf", good: "Bon état", fair: "Correct", poor: "À réparer",
@@ -77,6 +85,7 @@ const MarketplaceDetails: React.FC = () => {
           <ArrowLeft className="w-4 h-4 text-gray-700" />
         </button>
         <button type="button" onClick={() => setFavorited((v) => !v)}
+          aria-label={favorited ? "Remove from favourites" : "Save to favourites"}
           className="absolute top-4 right-4 z-10 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-md">
           <Heart className={`w-4 h-4 ${favorited ? "text-red-500 fill-red-500" : "text-gray-500"}`} />
         </button>
@@ -90,10 +99,12 @@ const MarketplaceDetails: React.FC = () => {
         {images.length > 1 && (
           <>
             <button type="button" onClick={() => setImgIdx((i) => Math.max(0, i - 1))}
+              aria-label="Previous image"
               className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow-sm" disabled={imgIdx === 0}>
               <ChevronLeft className="w-4 h-4 text-gray-600" />
             </button>
             <button type="button" onClick={() => setImgIdx((i) => Math.min(images.length - 1, i + 1))}
+              aria-label="Next image"
               className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow-sm" disabled={imgIdx === images.length - 1}>
               <ChevronRight className="w-4 h-4 text-gray-600" />
             </button>
@@ -140,6 +151,14 @@ const MarketplaceDetails: React.FC = () => {
           <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{item.description}</p>
         </div>
 
+        {/* ✅ NEW: Contact / Report / Share action buttons */}
+        <ActionButtons
+          vendorPhone={item.seller?.phone}
+          adTitle={item.title}
+          adId={item.id}
+          adType="marketplace"
+        />
+
         {/* Seller */}
         {item.seller && (
           <div className="bg-white border border-gray-200 rounded-2xl p-4">
@@ -173,9 +192,6 @@ const MarketplaceDetails: React.FC = () => {
 
       {/* Bottom actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex gap-2">
-        <button type="button" className="w-11 h-11 border border-gray-300 rounded-xl flex items-center justify-center hover:bg-gray-50">
-          <Share2 className="w-5 h-5 text-gray-600" />
-        </button>
         <button type="button" onClick={() => navigate(`/chat?sellerId=${item.sellerId}&listingId=${item.id}`)}
           className="flex-1 py-3 border border-teal-300 text-teal-700 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-teal-50 transition-colors">
           <MessageCircle className="w-4 h-4" />

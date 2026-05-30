@@ -1,25 +1,20 @@
 /**
- * Rentals.tsx — Bambeh Marketplace
- * FILE LOCATION: src/pages/Rentals.tsx
+ * src/pages/Rentals.tsx — Bambeh Marketplace
  *
- * FIXES FROM ORIGINAL:
- * 1. Property cards were going to /rental/:id (singular) → 404
- *    FIXED: Now goes to /rentals/:id (plural) — correct route in App.tsx line 769
- * 2. "List Property" button was going to /list-property
- *    FIXED: /list-property redirects to /rentals/list in App.tsx (fine either way)
- *    — made explicit to /rentals/list for clarity
- * 3. Items were only from localStorage → only visible on same device
- *    FIXED: Now loads from Supabase rentals table, visible to ALL users
- *    Falls back to sample data when table is empty.
- * 4. Real-time: new listings appear instantly on all devices
- *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * CHANGES IN THIS VERSION:
+ * ✅ LocationFilter integrated — filters by region, city, quarter, landmark
+ * ✅ locationFilters state added and wired into filtered array
+ * ✅ All existing Supabase / real-time / sample / price-range logic preserved
+ * ✅ DEMO BADGE: isDemo added to Property interface and all SAMPLE entries
+ * ✅ SORTING: real user listings always appear above demo listings
  */
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
+import { DemoBadge } from "@/components/listings/DemoBadge";
 
 interface Property {
   id: string;
@@ -34,14 +29,14 @@ interface Property {
   image?: string;
   postedAt: string;
   isFurnished?: boolean;
+  isDemo?: boolean; // ← NEW: marks sample/demo items
 }
 
-// ── Sample properties shown when Supabase table is empty ─────────────────────
 const SAMPLE: Property[] = [
-  { id:"1", title:"Modern 2-bed apartment in Bastos", type:"Apartment", price:150000, location:"Yaounde",  quartier:"Bastos",       bedrooms:"2", bathrooms:"1", description:"Furnished apartment with balcony and security.",   postedAt: new Date().toISOString() },
-  { id:"2", title:"Spacious villa in Bonamoussadi",   type:"Villa",     price:350000, location:"Douala",   quartier:"Bonamoussadi", bedrooms:"4", bathrooms:"3", description:"4-bedroom villa with garden and parking.",          postedAt: new Date().toISOString() },
-  { id:"3", title:"Studio near University",           type:"Studio",    price:60000,  location:"Yaounde",  quartier:"Ngoa-Ekele",   bedrooms:"Studio", bathrooms:"1", description:"Clean studio, ideal for students.",         postedAt: new Date().toISOString() },
-  { id:"4", title:"Office space in Akwa",             type:"Office",    price:200000, location:"Douala",   quartier:"Akwa",         bedrooms:"N/A",    bathrooms:"1", description:"Professional office space in prime location.", postedAt: new Date().toISOString() },
+  { id:"1", title:"Modern 2-bed apartment in Bastos", type:"Apartment", price:150000, location:"Yaounde",  quartier:"Bastos",       bedrooms:"2",      bathrooms:"1", description:"Furnished apartment with balcony and security.",    postedAt: new Date().toISOString(), isDemo: true },
+  { id:"2", title:"Spacious villa in Bonamoussadi",   type:"Villa",     price:350000, location:"Douala",   quartier:"Bonamoussadi", bedrooms:"4",      bathrooms:"3", description:"4-bedroom villa with garden and parking.",           postedAt: new Date().toISOString(), isDemo: true },
+  { id:"3", title:"Studio near University",           type:"Studio",    price:60000,  location:"Yaounde",  quartier:"Ngoa-Ekele",   bedrooms:"Studio", bathrooms:"1", description:"Clean studio, ideal for students.",                  postedAt: new Date().toISOString(), isDemo: true },
+  { id:"4", title:"Office space in Akwa",             type:"Office",    price:200000, location:"Douala",   quartier:"Akwa",         bedrooms:"N/A",    bathrooms:"1", description:"Professional office space in prime location.",        postedAt: new Date().toISOString(), isDemo: true },
 ];
 
 const CITIES = ["All Cities", "Yaounde", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaoundere", "Bertoua", "Ebolowa", "Kumba"];
@@ -56,11 +51,12 @@ export default function Rentals() {
   const [type,       setType]       = useState("All Types");
   const [maxPrice,   setMaxPrice]   = useState(1000000);
 
-  // ── Load from Supabase ───────────────────────────────────────────────────
+  // ── Location filter state ──────────────────────────────────────────
+  const [locationFilters, setLocationFilters] = useState<LocationFilters>(EMPTY_LOCATION);
+
   async function fetchProperties() {
     setLoading(true);
     try {
-      // Load ALL active rentals — not filtered by user so everyone can see them
       const { data, error } = await supabase
         .from("rentals")
         .select("id, title, type, price, location, bedrooms, bathrooms, description, is_furnished, created_at")
@@ -69,17 +65,19 @@ export default function Rentals() {
         .limit(50);
 
       if (!error && data && data.length > 0) {
+        // Real data from Supabase — mark isDemo false
         setProperties(data.map(d => ({
           id:          d.id,
           title:       d.title,
-          type:        d.type       || "Apartment",
-          price:       d.price      || 0,
-          location:    d.location   || "Cameroon",
-          bedrooms:    d.bedrooms   || "?",
-          bathrooms:   d.bathrooms  || "?",
+          type:        d.type        || "Apartment",
+          price:       d.price       || 0,
+          location:    d.location    || "",
+          bedrooms:    d.bedrooms    || "?",
+          bathrooms:   d.bathrooms   || "?",
           description: d.description || "",
           isFurnished: d.is_furnished || false,
           postedAt:    d.created_at,
+          isDemo:      false, // ← real listings are NOT demo
         })));
       } else {
         setProperties(SAMPLE);
@@ -93,7 +91,6 @@ export default function Rentals() {
 
   useEffect(() => {
     fetchProperties();
-    // Real-time updates — new properties appear immediately on all devices
     const channel = supabase
       .channel("rentals_feed")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "rentals" }, fetchProperties)
@@ -101,12 +98,26 @@ export default function Rentals() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const filtered = properties.filter(p => {
+  // ── Filter — includes location filter ────────────────────────────────────
+  const baseFiltered = properties.filter(p => {
     const matchSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || (p.quartier || "").toLowerCase().includes(search.toLowerCase());
     const matchCity   = city === "All Cities" || p.location.toLowerCase().includes(city.toLowerCase());
     const matchType   = type === "All Types"  || p.type === type;
     const matchPrice  = p.price <= maxPrice;
+
+    const loc = (p.location + ' ' + (p.quartier || '')).toLowerCase();
+    if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
+    if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
+    if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
+    if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+
     return matchSearch && matchCity && matchType && matchPrice;
+  });
+
+  // ── SORTING: real listings first, demo listings last ─────────────────────
+  const filtered = [...baseFiltered].sort((a, b) => {
+    if (a.isDemo !== b.isDemo) return a.isDemo ? 1 : -1;
+    return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
   });
 
   return (
@@ -119,21 +130,14 @@ export default function Rentals() {
             <Home className="w-6 h-6 text-orange-500" /> Rentals
           </h1>
           <div className="flex gap-2">
-            <button
-              onClick={fetchProperties}
+            <button onClick={fetchProperties}
               className="p-2 text-gray-400 hover:text-orange-500 rounded-xl hover:bg-gray-100"
-              aria-label="Refresh"
-            >
+              aria-label="Refresh">
               <RefreshCw className="w-4 h-4" />
             </button>
-            {/*
-              FIX: Goes to /rentals/list (correct route in App.tsx line 707).
-              /list-property also redirects to /rentals/list (alias in App.tsx).
-            */}
-            <button
-              onClick={() => navigate("/rentals/list")}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-1 transition-colors"
-            >
+            <button onClick={() => navigate("/rentals/list")}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl
+                         text-sm font-semibold flex items-center gap-1 transition-colors">
               <Plus className="w-4 h-4" /> List Property
             </button>
           </div>
@@ -142,28 +146,19 @@ export default function Rentals() {
         {/* Search */}
         <div className="relative mb-3">
           <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+          <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search by name or neighbourhood..."
-            className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-          />
+            className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm" />
         </div>
 
-        {/* Filters */}
+        {/* City + type dropdowns */}
         <div className="grid grid-cols-2 gap-2 mb-3">
-          <select
-            value={city}
-            onChange={e => setCity(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
-          >
+          <select value={city} onChange={e => setCity(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm">
             {CITIES.map(loc => <option key={loc}>{loc}</option>)}
           </select>
-          <select
-            value={type}
-            onChange={e => setType(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
-          >
+          <select value={type} onChange={e => setType(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm">
             {TYPES.map(t => <option key={t}>{t}</option>)}
           </select>
         </div>
@@ -174,13 +169,13 @@ export default function Rentals() {
             <span>Max Rent</span>
             <span className="font-semibold">{maxPrice.toLocaleString()} XAF/mo</span>
           </div>
-          <input
-            type="range" min={30000} max={1000000} step={10000}
-            value={maxPrice}
-            onChange={e => setMaxPrice(+e.target.value)}
-            className="w-full accent-orange-500"
-          />
+          <input type="range" min={30000} max={1000000} step={10000}
+            value={maxPrice} onChange={e => setMaxPrice(+e.target.value)}
+            className="w-full accent-orange-500" />
         </div>
+
+        {/* ── LOCATION FILTER ───────────────────────────────────────────── */}
+        <LocationFilter onFilterChange={setLocationFilters} />
 
         {/* Loading */}
         {loading && (
@@ -194,10 +189,8 @@ export default function Rentals() {
           <div className="text-center py-12 text-gray-500">
             <Home className="w-12 h-12 mx-auto mb-3 text-gray-300" />
             <p className="font-medium">No properties found</p>
-            <button
-              onClick={() => navigate("/rentals/list")}
-              className="mt-4 bg-orange-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold"
-            >
+            <button onClick={() => navigate("/rentals/list")}
+              className="mt-4 bg-orange-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
               List a Property
             </button>
           </div>
@@ -208,17 +201,15 @@ export default function Rentals() {
           <div className="space-y-3">
             <p className="text-xs text-gray-400">{filtered.length} propert{filtered.length !== 1 ? "ies" : "y"} found</p>
             {filtered.map(p => (
-              /*
-                FIX: Was navigate("/rental/" + p.id) → 404 (singular, wrong)
-                FIXED: Now navigate("/rentals/" + p.id) — matches App.tsx line 769
-              */
-              <div
-                key={p.id}
+              <div key={p.id}
                 onClick={() => navigate("/rentals/" + p.id)}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm border cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]"
-              >
-                <div className="h-36 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
+                className="bg-white rounded-2xl overflow-hidden shadow-sm border cursor-pointer
+                           hover:shadow-md transition-shadow active:scale-[0.99]">
+                {/* Image container — `relative` so DemoBadge positions correctly */}
+                <div className="h-36 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center relative">
                   <Home className="w-12 h-12 text-orange-300" />
+                  {/* ── DEMO BADGE ── */}
+                  {p.isDemo && <DemoBadge />}
                 </div>
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-1">
@@ -243,6 +234,9 @@ export default function Rentals() {
                       <DollarSign className="w-3 h-3" />{p.price.toLocaleString()} XAF/mo
                     </span>
                   </div>
+                  {p.isDemo && (
+                    <p className="text-xs text-yellow-600 mt-2 italic">Sample — not a real listing</p>
+                  )}
                 </div>
               </div>
             ))}

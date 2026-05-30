@@ -58,7 +58,7 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">I. Agreement and Your Role</h2>
                 <h3 className="text-lg font-semibold text-indigo-800 mb-2">A. Acceptance and Governing Law</h3>
-                <p>These Terms shall be <strong>solely and exclusively</strong> governed by the laws of the <strong>Republic of Cameroon</strong>, including the <strong>mandatory</strong> provisions of the <strong>OHADA Uniform Acts</strong> and <strong>Law No. 2010/012</strong> (Cybersecurity).</p>
+                <p>These Terms shall be <strong>solely and exclusively</strong> governed by the laws of the <strong>Republic of </strong>, including the <strong>mandatory</strong> provisions of the <strong>OHADA Uniform Acts</strong> and <strong>Law No. 2010/012</strong> (Cybersecurity).</p>
                 <p>Bambeh reserves the <strong>absolute and unfettered</strong> right to modify these Terms at any time, with modifications becoming <strong>immediately effective</strong> upon posting. <strong>The User waives any right to personal notice</strong> of such changes, and continued use constitutes <strong>irrevocable acceptance</strong> of the revised Terms.</p>
                 <h3 className="text-lg font-semibold text-indigo-800 mb-2 mt-4">B. Eligibility and Account Security</h3>
                 <p>You must be <strong>18 or older</strong> to use the Services.</p>
@@ -93,12 +93,12 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
 
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">IV. Intellectual Property</h2>
-                <p>Bambeh IP is protected by Cameroon law, OAPI Bangui Agreement, and international treaties. Unauthorized use, copying, or reverse engineering is <strong>strictly prohibited.</strong></p>
+                <p>Bambeh IP is protected by  law, OAPI Bangui Agreement, and international treaties. Unauthorized use, copying, or reverse engineering is <strong>strictly prohibited.</strong></p>
               </div>
 
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">V. Protection of User Data and Security</h2>
-                <p>Bambeh processes Personal Data in compliance with <strong>Law No. 2024/017</strong> and retains the right to cooperate with Cameroonian law enforcement, which may include the <strong>disclosure of User data without prior notice.</strong></p>
+                <p>Bambeh processes Personal Data in compliance with <strong>Law No. 2024/017</strong> and retains the right to cooperate with ian law enforcement, which may include the <strong>disclosure of User data without prior notice.</strong></p>
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 my-3">
                   <strong>⚠️ IMPORTANT SECURITY DISCLAIMER:</strong> Despite reasonable security measures, Bambeh <strong>does not warrant absolute security.</strong> Bambeh shall <strong>have no liability whatsoever</strong> for any damages arising from unauthorized access, malware, data theft, hacking, or cyberattacks.
                 </div>
@@ -115,13 +115,13 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">VII. Termination and Dispute Resolution</h2>
                 <p>Bambeh may suspend or terminate accounts for breaches <strong>immediately and without refund.</strong></p>
-                <p>Disputes are governed by Cameroonian law and resolved in <strong>Yaoundé courts</strong>.</p>
+                <p>Disputes are governed by ian law and resolved in <strong>Yaoundé courts</strong>.</p>
               </div>
 
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">Copyright and Contact</h2>
-                <p>Bambeh's code, design, and content are protected by Cameroonian and international copyright laws.</p>
-                <p className="font-semibold"><strong>Contact:</strong> Yaoundé, Cameroon | +237 670757326 | Bambehtheapp@gmail.com</p>
+                <p>Bambeh's code, design, and content are protected by ian and international copyright laws.</p>
+                <p className="font-semibold"><strong>Contact:</strong> Yaoundé,  | +237 670757326 | Bambehtheapp@gmail.com</p>
               </div>
 
               <div className="border-t-2 pt-6 mt-6 bg-indigo-50 p-6 rounded-lg">
@@ -164,3 +164,4 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
 };
 
 export default TermsAndConditions;
+

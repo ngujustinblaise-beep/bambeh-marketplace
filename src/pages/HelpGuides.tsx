@@ -139,7 +139,7 @@ const CATEGORIES: Category[] = [
       },
       {
         id: 'feat-2', title: 'How tontine (njangi) groups work',
-        summary: 'Digital version of Cameroon\'s traditional savings group.',
+        summary: 'Digital version of \'s traditional savings group.',
         content: 'A tontine on Bambeh works like a traditional njangi:\n\n1. Join or create a group\n2. All members contribute an agreed amount each cycle\n3. One member receives the pot each cycle\n4. Cycle continues until everyone has received once\n\nBambeh\'s tontine is digital — contributions tracked automatically, no cash handling needed.',
       },
       {
@@ -288,3 +288,4 @@ export default function HelpGuides() {
     </div>
   );
 }
+

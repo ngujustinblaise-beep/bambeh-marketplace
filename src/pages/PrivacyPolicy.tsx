@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * LEGAL COVERAGE:
- * ✅ Cameroon Law No. 2024/017 of 23 December 2024 (Personal Data Protection)
+ * ✅  Law No. 2024/017 of 23 December 2024 (Personal Data Protection)
  * ✅ OHADA Uniform Acts (electronic commerce provisions)
  * ✅ Google Play Developer Policy (data collection disclosure)
  * ✅ GDPR-aligned (extraterritorial users)
@@ -13,7 +13,7 @@
  * ✅ Hosted at active URL: bambeh.cm/privacy-policy
  *
  * FILE: src/pages/PrivacyPolicy.tsx
- * © 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026
+ * © 2026 BAMBEH SARL — RC/YAO/2020/A/1026
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -121,10 +121,10 @@ function DataTable({ rows }: { rows: DataRow[] }) {
 // ── Main Privacy Policy Page ───────────────────────────────────────────────────
 export default function PrivacyPolicy() {
   const EFFECTIVE_DATE = "1 January 2026";
-  const LAST_UPDATED = "1 January 2026";
-  const CONTACT_EMAIL = "legal@bambeh.cm";
-  const COMPANY_NAME = "ETS BUSHENERGY";
-  const COMPANY_REG = "RC/YAO/2020/A/1026";
+  const LAST_UPDATED = "1 April 2026";
+  const CONTACT_EMAIL = "support@bambeh.com";
+  const COMPANY_NAME = "BAMBEH SARL";
+  const COMPANY_REG = "CM-NSI-02-2026-B13-00179";
   const COMPANY_ADDRESS = "Yaoundé, Centre Region, Republic of Cameroon";
 
   const dataCollected: DataRow[] = [
@@ -280,9 +280,9 @@ export default function PrivacyPolicy() {
               application and website, operated by:
             </p>
             <div className="bg-teal-50 rounded-xl p-4 space-y-1">
-              <p><strong>Company:</strong> {COMPANY_NAME}</p>
-              <p><strong>Registration:</strong> {COMPANY_REG}</p>
-              <p><strong>Address:</strong> {COMPANY_ADDRESS}</p>
+              <p><strong>Company:</strong> BAMBEH SARL </p>
+              <p><strong>Registration:</strong> CM-NSI-02-2026-B13-00179</p>
+              <p><strong>Address:</strong> YAOUNDE CAMEROON</p>
               <p><strong>Privacy Contact:</strong>{" "}
                 <a href={`mailto:${CONTACT_EMAIL}`} className="text-teal-600 underline font-medium">
                   {CONTACT_EMAIL}
@@ -290,7 +290,7 @@ export default function PrivacyPolicy() {
               </p>
             </div>
             <p>
-              ETS BUSHENERGY is the <strong>Data Controller</strong> as defined under
+              BAMBEH SARL is the <strong>Data Controller</strong> as defined under
               Cameroon's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.
               We determine the purposes and means of processing your personal data.
             </p>
@@ -313,7 +313,7 @@ export default function PrivacyPolicy() {
               We collect only the data that is necessary to operate Bambeh and
               provide you with a safe marketplace experience. The table below
               lists every category of data we collect, with its purpose and
-              legal basis under Cameroon Law No. 2024/017.
+              legal basis under  Law No. 2024/017.
             </p>
             <DataTable rows={dataCollected} />
             <div className="bg-amber-50 border-l-4 border-amber-400 rounded-r-xl p-4 mt-4">
@@ -582,8 +582,8 @@ export default function PrivacyPolicy() {
               <p className="font-bold text-sm">To exercise any of these rights:</p>
               <p className="text-teal-100 text-sm mt-1">
                 Email us at{" "}
-                <a href="mailto:legal@bambeh.cm" className="underline font-semibold">
-                  legal@bambeh.cm
+                <a href="mailto:support@bambeh.com" className="underline font-semibold">
+                  support@bambeh.com
                 </a>{" "}
                 with your request. We will respond within <strong>30 days</strong>.
                 We may need to verify your identity before processing the request.
@@ -621,8 +621,8 @@ export default function PrivacyPolicy() {
               </ol>
               <p className="text-xs text-gray-500">
                 Alternatively, email{" "}
-                <a href="mailto:legal@bambeh.cm" className="text-teal-600 underline font-medium">
-                  legal@bambeh.cm
+                <a href="mailto:support@bambeh.com" className="text-teal-600 underline font-medium">
+                  support@bambeh.com
                 </a>{" "}
                 with subject "Account Deletion Request".
               </p>
@@ -712,7 +712,7 @@ export default function PrivacyPolicy() {
             </p>
             <p>
               If you believe a child has created an account, please contact us immediately
-              at <a href="mailto:legal@bambeh.cm" className="text-teal-600 underline">legal@bambeh.cm</a>.
+              at <a href="mailto:support@bambeh.com" className="text-teal-600 underline">legal@bambeh.cm</a>.
               We will delete the account and all associated data promptly.
             </p>
             <p>
@@ -813,8 +813,8 @@ export default function PrivacyPolicy() {
                 <Mail className="w-5 h-5 text-teal-600" />
                 <div>
                   <p className="text-xs text-gray-500">Privacy & Legal</p>
-                  <a href="mailto:legal@bambeh.cm" className="font-bold text-teal-700 text-sm underline">
-                    legal@bambeh.cm
+                  <a href="mailto:support@bambeh.com" className="font-bold text-teal-700 text-sm underline">
+                    support@bambeh.com
                   </a>
                 </div>
               </div>
@@ -822,8 +822,8 @@ export default function PrivacyPolicy() {
                 <Shield className="w-5 h-5 text-teal-600" />
                 <div>
                   <p className="text-xs text-gray-500">Data Protection Officer</p>
-                  <a href="mailto:dpo@bambeh.com" className="font-bold text-teal-700 text-sm underline">
-                    dpo@bambeh.com
+                  <a href="mailto:support@bambeh.com" className="font-bold text-teal-700 text-sm underline">
+                    support@bambeh.com
                   </a>
                 </div>
               </div>
@@ -866,3 +866,4 @@ export default function PrivacyPolicy() {
     </div>
   );
 }
+

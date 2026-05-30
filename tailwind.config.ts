@@ -21,7 +21,7 @@
  *  - Custom theme extends Tailwind defaults (no overrides = smaller output)
  *  - teal-600 (#0d9488) added as brand colour so you can use arbitrary values
  *    less often (arbitrary values like bg-[#0d9488] don't tree-shake as well)
- *  - Custom breakpoints match Cameroon's most common devices (360px, 390px wide)
+ *  - Custom breakpoints match 's most common devices (360px, 390px wide)
  *  - future.hoverOnlyWhenSupported: true — disables hover styles on touch
  *    devices, removing ~5–8 KB of hover CSS that Android users never use
  *
@@ -79,18 +79,18 @@ const config: Config = {
         },
       },
 
-      // ── Screens — Cameroon device breakpoints ─────────────────────────────
-      // Most Android phones sold in Cameroon are 360–390px wide.
+      // ── Screens —  device breakpoints ─────────────────────────────
+      // Most Android phones sold in  are 360–390px wide.
       // Adding 'xs' breakpoint lets you write xs:grid-cols-2 for these devices.
       screens: {
-        xs: "360px",  // Tecno Spark, Infinix Hot (most common in Cameroon)
+        xs: "360px",  // Tecno Spark, Infinix Hot (most common in )
         // sm, md, lg, xl, 2xl remain as Tailwind defaults
       },
 
       // ── Font sizes — optimised for mobile readability ─────────────────────
       fontSize: {
         // Slightly larger base sizes for outdoor readability in bright sunlight
-        // (common usage pattern in Cameroon)
+        // (common usage pattern in )
         "2xs": ["0.65rem", { lineHeight: "1rem" }],
       },
 
@@ -156,3 +156,4 @@ const config: Config = {
 };
 
 export default config;
+

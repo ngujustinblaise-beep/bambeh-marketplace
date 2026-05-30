@@ -2,7 +2,7 @@
  * PaymentService.ts
  * Military Grade Payment Processing for Bambé Marketplace
  * Handles MTN Mobile Money, Orange Money, and Zerm Coins
- * Copyright © 2026 ETS BUSHENERGY. All rights reserved.
+ * Copyright © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { firestore } from "@/utils/firebase/firebaseConfig";

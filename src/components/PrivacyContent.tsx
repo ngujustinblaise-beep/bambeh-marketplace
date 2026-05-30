@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PRIVACY POLICY CONTENT COMPONENT
  * Official Bambeh Privacy Policy
  * Used in: Privacy.tsx
@@ -358,8 +358,8 @@ export const PrivacyContent: React.FC = () => {
           To ensure legal clarity and predictability in dispute resolution, this
           Privacy Policy and any disputes arising from it shall be governed by
           and construed in accordance with the laws of the{" "}
-          <strong>Republic of Cameroon</strong>. You agree to the exclusive
-          jurisdiction of the courts of <strong>Cameroon</strong> for the
+          <strong>Republic of </strong>. You agree to the exclusive
+          jurisdiction of the courts of <strong></strong> for the
           resolution of any disputes.
         </p>
       </section>
@@ -501,7 +501,7 @@ export const PrivacyContent: React.FC = () => {
             <strong>Bambeh Legal Team</strong>
           </p>
           <p>
-            <strong>Location:</strong> Yaound�, Centre Region, Cameroon
+            <strong>Location:</strong> Yaound?, Centre Region, 
           </p>
           <p>
             <strong>Phone:</strong> +237 670 757 326
@@ -516,3 +516,4 @@ export const PrivacyContent: React.FC = () => {
 
 }
 export default PrivacyContent;
+

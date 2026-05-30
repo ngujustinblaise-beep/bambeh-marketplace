@@ -1,6 +1,6 @@
 /**
  * src/components/PhoneInput.tsx  AND  src/components/forms/PhoneInput.tsx
- * Bambeh Marketplace — Phone Number Input with Cameroon dial code
+ * Bambeh Marketplace — Phone Number Input with  dial code
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * DEPLOY TO BOTH:
@@ -141,3 +141,4 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 };
 
 export default PhoneInput;
+

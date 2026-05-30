@@ -235,10 +235,10 @@ export default function LanguageSelection({
             <span className="font-bold text-green-600">
               Only 1% Transaction Fee
             </span>{" "}
-            - Lowest in Cameroon! 💚
+            - Lowest in ! 💚
           </p>
           <p className="text-sm text-gray-500">
-            Cameroon's Premier Marketplace
+            Online Marketplace
           </p>
           <p className="text-xs text-gray-400 mt-2">
             © 2025 Bambeh. All rights reserved.
@@ -248,3 +248,4 @@ export default function LanguageSelection({
     </div>
   );
 }
+

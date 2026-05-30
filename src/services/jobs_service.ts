@@ -48,7 +48,7 @@ function mapRow(row: Record<string, unknown>): JobListing {
     location: {
       city: row.city as string,
       region: row.region as string,
-      country: (row.country as string) ?? "Cameroon",
+      country: (row.country as string) ?? "",
       latitude: row.latitude as number | undefined,
       longitude: row.longitude as number | undefined,
     },
@@ -156,7 +156,7 @@ export async function createJob(
         is_salary_negotiable: payload.isSalaryNegotiable,
         city: payload.location.city,
         region: payload.location.region,
-        country: payload.location.country ?? "Cameroon",
+        country: payload.location.country ?? "",
         is_remote: payload.isRemote,
         application_deadline: payload.applicationDeadline,
         status: payload.status ?? "active",
@@ -268,3 +268,4 @@ export async function getMyJobs(employerId: string): Promise<JobListResponse> {
     return { data: [], total: 0, error: message };
   }
 }
+

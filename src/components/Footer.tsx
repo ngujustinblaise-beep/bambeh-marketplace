@@ -1,15 +1,15 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * FOOTER - BAMBEH MARKETPLACE
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * 
- * ✅ Exchange in Categories section
- * ✅ Donate/Support Bambeh in Support section
- * ✅ Company profile links to actual website
- * ✅ All navigation links working
+ * ? Exchange in Categories section
+ * ? Donate/Support Bambeh in Support section
+ * ? Company profile links to actual website
+ * ? All navigation links working
  * 
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { Link } from 'react-router-dom';
@@ -37,13 +37,13 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               ABOUT SECTION
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">About Bambeh</h3>
             <p className="text-sm mb-4">
-              Cameroon's Premier Marketplace - Buy, Sell, Trade, and Find Jobs with only 1% transaction fee!
+              Online Marketplace - Buy, Sell, Trade, and Find Jobs with only 1% transaction fee!
             </p>
             <div className="flex gap-4">
               <a
@@ -76,9 +76,9 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               CATEGORIES - WITH EXCHANGE!
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Categories</h3>
             <ul className="space-y-2 text-sm">
@@ -121,9 +121,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               SUPPORT - WITH DONATE!
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
@@ -156,9 +156,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               COMPANY - WITH PROPER WEBSITE LINK!
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
@@ -204,21 +204,21 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Yaoundé, Cameroon</span>
+                <span>Yaound�, </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* -----------------------------------------------------------
             BOTTOM BAR
-            ═══════════════════════════════════════════════════════════ */}
+            ----------------------------------------------------------- */}
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-center md:text-left">
-              <p>© {currentYear} Bambeh. All rights reserved.</p>
+              <p>� {currentYear} Bambeh. All rights reserved.</p>
               <p className="text-xs text-gray-500 mt-1">
-                Operated by ETS BUSHENERGY
+                Operated by BAMBEH SARL
               </p>
             </div>
 
@@ -227,15 +227,15 @@ export default function Footer() {
               <Link to="/terms" className="hover:text-teal-400 transition-colors">
                 Terms
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">�</span>
               <Link to="/privacy" className="hover:text-teal-400 transition-colors">
                 Privacy
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">�</span>
               <Link to="/help/contact" className="hover:text-teal-400 transition-colors">
                 Contact
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">�</span>
               <Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">
                 Subscriptions
               </Link>
@@ -251,3 +251,4 @@ export default function Footer() {
     </footer>
   );
 }
+

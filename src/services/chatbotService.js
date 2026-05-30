@@ -100,7 +100,7 @@ class ChatbotService {
           "arrive",
         ],
         responses: [
-          "🚚 We deliver across Cameroon! Delivery time depends on your location. Yaoundé & Douala: 1-2 days. Other cities: 3-5 days.",
+          "🚚 We deliver across ! Delivery time depends on your location. Yaoundé & Douala: 1-2 days. Other cities: 3-5 days.",
           "Delivery is fast and tracked! You can follow your order in real-time. Where are you located?",
           "We offer same-day delivery in major cities! Track your package from pickup to your doorstep with our GPS tracking.",
         ],
@@ -429,3 +429,4 @@ class ChatbotService {
 }
 
 export default new ChatbotService();
+

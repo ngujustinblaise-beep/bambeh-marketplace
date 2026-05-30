@@ -137,7 +137,7 @@ export default function Home() {
           </h1>
           <p className="text-xl text-gray-600 mb-2">Online Marketplace</p>
           <p className="text-lg text-gray-500">
-            🎉 <span className="font-bold text-green-600">Only 1% Transaction Fee!</span> — Lowest in Cameroon! 💚
+            🎉 <span className="font-bold text-green-600">Only 1% Transaction Fee!</span> — Lowest in ! 💚
           </p>
 
           <div className="mt-6">
@@ -321,7 +321,7 @@ export default function Home() {
                 <span className="text-3xl">💚</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">1% Transaction Fee</h3>
-              <p className="text-gray-600">Lowest fees in Cameroon! Only 1% per transaction.</p>
+              <p className="text-gray-600">Lowest fees in ! Only 1% per transaction.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -371,3 +371,4 @@ function ViewCount({ listingId }: { listingId: string }) {
     </p>
   );
 }
+

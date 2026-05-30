@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/cameroonLocations";
+import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/Locations";
 
 // ─── BigTick — large, clearly visible checkbox ──────────────────────────────
 /**
@@ -609,3 +609,4 @@ export function NavButtons({
     </div>
   );
 }
+

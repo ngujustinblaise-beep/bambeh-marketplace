@@ -31,7 +31,7 @@ export default function ComparisonTool(){
           id:p.id,name:p.title||p.name,price:+p.price||0,
           category:p.category||'Other',rating:p.rating||4.0,
           reviews:p.reviews||0,seller:p.seller||'Bambeh Seller',
-          location:p.location||'Cameroon',
+          location:p.location||'',
           specs:{Category:p.category,Condition:p.condition||'Good'},
           pros:['Available now'],cons:[],
           valueScore:70,qualityScore:70,sellerRating:p.sellerRating||4.0,
@@ -191,3 +191,4 @@ export default function ComparisonTool(){
     </div>
   );
 }
+

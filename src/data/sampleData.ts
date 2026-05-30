@@ -3,7 +3,7 @@ export const SAMPLE_JOBS = [
   {
     id: "job1",
     title: "Senior Android Developer",
-    company: "Tech Cameroon",
+    company: "Tech ",
     location: "Yaoundé, Centre",
     salary: "800,000 XAF/month",
     type: "Full-time",
@@ -13,7 +13,7 @@ export const SAMPLE_JOBS = [
   {
     id: "job2",
     title: "Sales Manager",
-    company: "BushEnergy Ltd",
+    company: "BAMBEH SARL Ltd",
     location: "Douala, Littoral",
     salary: "500,000 - 700,000 XAF/month",
     type: "Full-time",
@@ -51,7 +51,7 @@ export const SAMPLE_SERVICES = [
   {
     id: "service1",
     title: "Professional Landscaping & Gardening",
-    provider: "ETS BUSHENERGY",
+    provider: "BAMBEH SARL",
     price: "50,000 XAF/session",
     location: "Yaoundé",
     rating: 4.8,
@@ -61,7 +61,7 @@ export const SAMPLE_SERVICES = [
   {
     id: "service2",
     title: "Website Development",
-    provider: "Digital Cameroon",
+    provider: "Digital ",
     price: "From 500,000 XAF",
     location: "Douala",
     rating: 4.9,
@@ -124,3 +124,4 @@ export const SAMPLE_VEHICLES = [
   },
   // Add 8 more vehicles...
 ];
+

@@ -1,14 +1,11 @@
 /**
- * ServiceDetails.tsx — Bambeh Marketplace
- * FILE LOCATION: src/pages/ServiceDetails.tsx
+ * src/pages/ServiceDetails.tsx
+ * Bambeh Marketplace — Service Provider Detail Page
  *
- * FIXES FROM ORIGINAL:
- * 1. Used useTranslation from react-i18next — replaced with useLanguage
- * 2. Bottom action buttons existed (Call + Message) but were the only
- *    way to contact — added a prominent "Contact Provider" chat button too
- * 3. Share button now has aria-label (labeled share)
- * 4. Loads real service data from Supabase when available,
- *    falls back to detailed mock data so page always works
+ * CHANGES FROM ORIGINAL:
+ *  ✅ ActionButtons (Contact Vendor / Report Ad / Share) added after description
+ *  ✅ Existing handleShare wired into ActionButtons via onShare prop
+ *  ✅ All other functionality preserved
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -16,7 +13,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, MapPin, Phone, Mail, Share2, Heart,
+  ArrowLeft, MapPin, Phone, Mail, Heart,
   AlertCircle, Check, Star, Clock, DollarSign, User, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,8 +22,9 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
-// FIX: Removed useTranslation from react-i18next, use our own LanguageContext
 import { useLanguage } from "@/contexts/LanguageContext";
+// ✅ NEW: shared action buttons
+import { ActionButtons } from "@/components/listings/ActionButtons";
 
 interface Review {
   id: string; userName: string; userAvatar?: string;
@@ -44,7 +42,6 @@ interface Service {
   verified: boolean; responseTime: string; completedJobs: number;
 }
 
-// ── Fallback mock data (shown while DB loads or if service not found) ─────────
 const getMockService = (id: string): Service => ({
   id,
   title: "Professional Plumbing Services",
@@ -76,7 +73,7 @@ const getMockService = (id: string): Service => ({
 export default function ServiceDetails() {
   const { id }    = useParams<{ id: string }>();
   const navigate  = useNavigate();
-  const { t }     = useLanguage();  // FIX: replaced useTranslation with useLanguage
+  const { t }     = useLanguage();
 
   const [service,           setService]           = useState<Service | null>(null);
   const [loading,           setLoading]           = useState(true);
@@ -89,7 +86,6 @@ export default function ServiceDetails() {
     setLoading(true);
     try {
       if (id && !id.startsWith("s")) {
-        // Try loading from Supabase first
         const { data } = await supabase
           .from("services")
           .select("*")
@@ -108,7 +104,7 @@ export default function ServiceDetails() {
             providerBio:  data.bio || "",
             phone:        data.phone || "",
             email:        data.email || "",
-            location:     data.location || "Cameroon",
+            location:     data.location || "",
             providerId:   data.seller_id,
             pricing: {
               min:      data.price || 0,
@@ -130,7 +126,6 @@ export default function ServiceDetails() {
           return;
         }
       }
-      // Fall back to mock data
       setService(getMockService(id || "1"));
     } catch {
       setService(getMockService(id || "1"));
@@ -139,18 +134,16 @@ export default function ServiceDetails() {
     }
   };
 
-  // ── Contact methods ──────────────────────────────────────────────────────
   const handleCall = () => {
     if (service?.phone) window.location.href = `tel:${service.phone}`;
   };
 
   const handleEmail = () => {
     if (service?.email)
-      window.location.href = `mailto:${service.email}?subject=Service Inquiry: ${service.title}`;
+      window.location.href = `mailto:${service.email}?subject=Service Inquiry: ${encodeURIComponent(service.title)}`;
   };
 
   const handleChat = () => {
-    // Navigate to chat with provider
     if (service?.providerId) {
       navigate(`/chat?with=${service.providerId}&type=service&id=${service.id}`);
     } else {
@@ -158,6 +151,7 @@ export default function ServiceDetails() {
     }
   };
 
+  // ✅ Share handler passed to ActionButtons via onShare prop
   const handleShare = async () => {
     try {
       if (navigator.share) {
@@ -182,7 +176,7 @@ export default function ServiceDetails() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600" />
       </div>
     );
   }
@@ -190,57 +184,43 @@ export default function ServiceDetails() {
   if (!service) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <AlertCircle className="h-16 w-16 text-gray-300 mb-4" />
+        <AlertCircle className="h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-bold mb-2">Service Not Found</h2>
-        <Button onClick={() => navigate("/services")}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Services
-        </Button>
+        <Button onClick={() => navigate('/services')}><ArrowLeft className="mr-2 h-4 w-4" />Back to Services</Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
-
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b">
+      <div className="sticky top-0 z-10 bg-background border-b">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-semibold text-gray-900 text-sm flex-1 mx-3 truncate">{service.title}</h1>
-          <div className="flex gap-1">
-            {/* Share button — LABELED (fixes unlabeled share button issue) */}
-            <Button
-              variant="ghost" size="icon"
-              onClick={handleShare}
-              aria-label={t("common.share")}
-              title={t("common.share")}
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost" size="icon"
-              onClick={toggleFavorite}
-              className={isFavorite ? "text-red-500" : ""}
-              aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
-            >
-              <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost" size="icon"
+            onClick={toggleFavorite}
+            aria-label={isFavorite ? "Remove from favourites" : "Save to favourites"}
+            className={isFavorite ? "text-red-500" : ""}
+          >
+            <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
+          </Button>
         </div>
       </div>
 
       {/* Image gallery */}
       {service.images.length > 0 && (
         <div className="relative">
-          <div className="aspect-video bg-gray-200 max-h-64 overflow-hidden">
+          <div className="aspect-video bg-gray-200 overflow-hidden max-h-72">
             <img src={service.images[currentImageIndex]} alt={service.title} className="w-full h-full object-cover" />
           </div>
           {service.images.length > 1 && (
             <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
               {service.images.map((_, i) => (
                 <button key={i} onClick={() => setCurrentImageIndex(i)}
+                  aria-label={`View image ${i + 1}`}
                   className={`h-2 rounded-full transition-all ${i === currentImageIndex ? "bg-white w-6" : "bg-white/50 w-2"}`} />
               ))}
             </div>
@@ -333,6 +313,15 @@ export default function ServiceDetails() {
           <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
         </Card>
 
+        {/* ✅ NEW: Contact / Report / Share action buttons */}
+        <ActionButtons
+          vendorPhone={service.phone}
+          adTitle={service.title}
+          adId={service.id}
+          adType="services"
+          onShare={handleShare}
+        />
+
         {/* Skills */}
         {service.skills.length > 0 && (
           <Card className="p-4">
@@ -376,40 +365,20 @@ export default function ServiceDetails() {
         )}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          FIXED BOTTOM ACTION BUTTONS
-          FIX: Original had Call + Email. Added Chat button too.
-          All three contact methods are now accessible.
-          ═══════════════════════════════════════════════════════════════════ */}
+      {/* Fixed Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl">
         <div className="max-w-2xl mx-auto grid grid-cols-3 gap-2">
-          {/* Call Provider */}
-          <Button
-            variant="outline"
-            onClick={handleCall}
-            className="w-full border-teal-300 text-teal-700 hover:bg-teal-50 flex items-center justify-center gap-1"
-          >
+          <Button variant="outline" onClick={handleCall} className="w-full border-teal-300 text-teal-700 hover:bg-teal-50">
             <Phone className="h-4 w-4" />
-            <span className="text-xs font-semibold">Call</span>
+            <span className="text-xs font-semibold ml-1">Call</span>
           </Button>
-
-          {/* Chat / Message Provider */}
-          <Button
-            onClick={handleChat}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white flex items-center justify-center gap-1"
-          >
+          <Button onClick={handleChat} className="w-full bg-teal-600 hover:bg-teal-700 text-white">
             <MessageCircle className="h-4 w-4" />
-            <span className="text-xs font-semibold">Message</span>
+            <span className="text-xs font-semibold ml-1">Message</span>
           </Button>
-
-          {/* Email Provider */}
-          <Button
-            variant="outline"
-            onClick={handleEmail}
-            className="w-full flex items-center justify-center gap-1"
-          >
+          <Button variant="outline" onClick={handleEmail} className="w-full">
             <Mail className="h-4 w-4" />
-            <span className="text-xs font-semibold">Email</span>
+            <span className="text-xs font-semibold ml-1">Email</span>
           </Button>
         </div>
       </div>

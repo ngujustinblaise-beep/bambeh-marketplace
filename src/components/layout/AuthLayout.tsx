@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Branding strip */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-600 py-3 px-4 text-center shadow-md">
         <span className="text-white font-bold text-lg tracking-wide">
-          🛒 Bambeh Marketplace — Cameroon's #1 App
+          🛒 Bambeh Marketplace — 's #1 App
         </span>
       </div>
 
@@ -32,3 +32,4 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     </div>
   );
 }
+

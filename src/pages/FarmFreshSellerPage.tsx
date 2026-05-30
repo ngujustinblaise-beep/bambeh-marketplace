@@ -82,7 +82,7 @@ export default function FarmFreshSellerPage() {
         <div className="text-center bg-white rounded-2xl p-8 shadow max-w-sm w-full">
           <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">Produce Listed! 🌿</h2>
-          <p className="text-gray-500 text-sm mb-6">Your produce is now visible to buyers across Cameroon.</p>
+          <p className="text-gray-500 text-sm mb-6">Your produce is now visible to buyers across .</p>
           <button onClick={() => navigate('/farm-fresh')}
             className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold">
             View Farm Fresh
@@ -250,3 +250,4 @@ export default function FarmFreshSellerPage() {
     </div>
   );
 }
+

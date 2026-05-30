@@ -21,7 +21,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     nativeName: "Français",
     flag: "🇫🇷",
     rtl: false,
-    region: "Cameroon",
+    region: "",
   },
   {
     code: "en",
@@ -29,15 +29,15 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     nativeName: "English",
     flag: "🇬🇧",
     rtl: false,
-    region: "Cameroon",
+    region: "",
   },
   {
     code: "pidgin",
-    name: "Cameroon Pidgin",
+    name: " Pidgin",
     nativeName: "Pidgin",
     flag: "🇨🇲",
     rtl: false,
-    region: "Cameroon",
+    region: "",
   },
   {
     code: "bassa",
@@ -149,3 +149,4 @@ export const I18N_NAMESPACES = [
 ] as const;
 
 export type I18nNamespace = (typeof I18N_NAMESPACES)[number];
+

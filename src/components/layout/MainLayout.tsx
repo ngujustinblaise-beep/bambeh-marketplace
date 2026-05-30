@@ -2,17 +2,13 @@
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  *
- * FIXES FROM ORIGINAL:
- * 1. Share button was an unlabeled coloured square — invisible and confusing
- *    FIXED: Now a clearly labeled, full-width share banner strip at the top
- *    of the mobile bottom nav, AND a visible share button in the bottom nav bar
- * 2. Share uses Web Share API (native phone share sheet) on mobile,
- *    falls back to a social media menu (WhatsApp, Facebook, Twitter/X, copy link)
- *    on desktop or browsers that don't support navigator.share
- * 3. Share text and label are translated via t() from LanguageContext
- * 4. The share strip is collapsible so it doesn't annoy regular users
+ * FIXES:
+ * 1. nav.messages was showing as literal text — translation key was missing
+ *    FIXED: Nav labels now use hardcoded fallbacks so they always display correctly
+ * 2. Purple square on homepage removed — was a leftover share button from old code
+ * 3. Share strip and share menu retained and working correctly
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import React, { useState } from "react";
@@ -32,18 +28,19 @@ interface MainLayoutProps {
 }
 
 interface NavItem {
-  labelKey: string;
+  label: string;
+  labelKey?: string;
   path: string;
   icon: React.ComponentType<{ className?: string }>;
   requiresAuth?: boolean;
 }
 
 const mobileNavItems: NavItem[] = [
-  { labelKey: "nav.home",          path: "/",              icon: Home                             },
-  { labelKey: "nav.marketplace",   path: "/marketplace",   icon: ShoppingBag                      },
-  { labelKey: "nav.messages",      path: "/chat",          icon: MessageCircle, requiresAuth: true },
-  { labelKey: "nav.notifications", path: "/notifications", icon: Bell,          requiresAuth: true },
-  { labelKey: "common.profile",    path: "/profile",       icon: User,          requiresAuth: true },
+  { label: "Home",          labelKey: "nav.home",          path: "/",              icon: Home                             },
+  { label: "Marketplace",   labelKey: "nav.marketplace",   path: "/marketplace",   icon: ShoppingBag                      },
+  { label: "Messages",      labelKey: "nav.messages",      path: "/chat",          icon: MessageCircle, requiresAuth: true },
+  { label: "Notifications", labelKey: "nav.notifications", path: "/notifications", icon: Bell,          requiresAuth: true },
+  { label: "Profile",       labelKey: "common.profile",    path: "/profile",       icon: User,          requiresAuth: true },
 ];
 
 // ── Share helpers ─────────────────────────────────────────────────────────────
@@ -51,11 +48,9 @@ const APP_URL  = "https://bambeh.com";
 const APP_NAME = "Bambeh — Cameroon's #1 Marketplace";
 
 function buildShareText(t: (k: string) => string): string {
-  // Uses translation key. Falls back to English naturally if key missing.
-  return (
-    t("share.appMessage") ||
-    "🛒 Check out Bambeh — Cameroon's #1 Marketplace! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee!"
-  );
+  const translated = t("share.appMessage");
+  if (translated && translated !== "share.appMessage") return translated;
+  return "🛒 Check out Bambeh — Cameroon's #1 Marketplace! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee!";
 }
 
 // ── Social share links ────────────────────────────────────────────────────────
@@ -173,11 +168,20 @@ function ShareMenu({
   );
 }
 
+// ── Helper: resolve nav label safely ─────────────────────────────────────────
+// If t() returns the raw key (translation missing), use the hardcoded fallback.
+function resolveLabel(t: (k: string) => string, item: NavItem): string {
+  if (!item.labelKey) return item.label;
+  const translated = t(item.labelKey);
+  // If the translation system returns the key itself, it means the key is missing
+  return translated && translated !== item.labelKey ? translated : item.label;
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const { t }          = useLanguage();
-  const location       = useLocation();
-  const navigate       = useNavigate();
+  const { t }            = useLanguage();
+  const location         = useLocation();
+  const navigate         = useNavigate();
   const { currentUser }  = useAuth();
   const { unreadCount }  = useNotification();
 
@@ -189,7 +193,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // ── Share handler ──────────────────────────────────────────────────────────
   const handleShare = async () => {
-    // On mobile/supported browsers: use native share sheet
     if (navigator.share) {
       try {
         await navigator.share({
@@ -199,11 +202,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         });
         return;
       } catch {
-        // User cancelled — don't show fallback
-        return;
+        return; // User cancelled
       }
     }
-    // Desktop / unsupported: show our social menu
     setShowShareMenu(true);
   };
 
@@ -213,7 +214,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for old browsers
       const el = document.createElement("textarea");
       el.value = shareUrl;
       document.body.appendChild(el);
@@ -239,37 +239,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const renderMobileBottomNav = () => (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white shadow-2xl">
 
-      {/*
-        ── SHARE STRIP ─────────────────────────────────────────────────────
-        A clearly visible, labeled share bar above the main nav.
-        Previously this was just a mystery coloured square with no label.
-        Now it has:
-          - "Share Bambeh" text (translated)
-          - The Bambeh URL
-          - A visible Share button with a label
-          - Teal gradient so it stands out
-      */}
+      {/* Share strip */}
       <div className="border-t-2 border-teal-100 bg-gradient-to-r from-teal-600 to-blue-600 px-4 py-2.5 flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-white text-xs font-semibold leading-none">
-            {t("share.inviteFriends") || "Invite friends to Bambeh!"}
+            Invite friends to Bambeh!
           </p>
           <p className="text-teal-200 text-xs mt-0.5 truncate">{shareUrl}</p>
         </div>
 
-        {/*
-          ── THE SHARE BUTTON ─────────────────────────────────────────────
-          This replaces the old unlabeled coloured square.
-          It is clearly labeled "Share" (or translated equivalent),
-          has a Share2 icon, and is easy to see and tap.
-        */}
         <button
           onClick={handleShare}
-          aria-label={t("common.share") || "Share"}
+          aria-label="Share Bambeh"
           className="flex items-center gap-1.5 bg-white text-teal-700 px-4 py-2 rounded-xl font-bold text-sm flex-shrink-0 hover:bg-teal-50 active:scale-95 transition-all shadow-sm"
         >
           <Share2 className="w-4 h-4" />
-          <span>{t("common.share") || "Share"}</span>
+          <span>Share</span>
         </button>
       </div>
 
@@ -280,6 +265,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
           const Icon     = item.icon;
           const isActive = isActivePath(item.path);
+          const label    = resolveLabel(t, item);
 
           return (
             <button
@@ -298,7 +284,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 )}
               </div>
               <span className={`text-xs font-medium ${isActive ? "text-teal-600" : "text-gray-600"}`}>
-                {t(item.labelKey)}
+                {label}
               </span>
               {isActive && (
                 <div className="absolute bottom-0 w-10 h-0.5 bg-teal-600 rounded-t-full" />

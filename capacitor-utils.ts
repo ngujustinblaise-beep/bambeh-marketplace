@@ -231,9 +231,9 @@ export const getSafeAreaInsets = () => {
 };
 
 /**
- * Format phone number for Cameroon
+ * Format phone number for 
  */
-export const formatCameroonPhone = (phone: string): string => {
+export const formatPhone = (phone: string): string => {
   // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, '');
   
@@ -246,12 +246,12 @@ export const formatCameroonPhone = (phone: string): string => {
 };
 
 /**
- * Validate Cameroon phone number
+ * Validate  phone number
  */
-export const isValidCameroonPhone = (phone: string): boolean => {
+export const isValidPhone = (phone: string): boolean => {
   const cleaned = phone.replace(/\D/g, '');
   
-  // Cameroon phone numbers are 9 digits (6XX XXX XXX)
+  //  phone numbers are 9 digits (6XX XXX XXX)
   // With country code: 237 6XX XXX XXX (12 digits total)
   return cleaned.length === 9 || (cleaned.startsWith('237') && cleaned.length === 12);
 };
@@ -288,3 +288,4 @@ export const isIOS = (): boolean => {
 export const isWeb = (): boolean => {
   return Capacitor.getPlatform() === 'web';
 };
+

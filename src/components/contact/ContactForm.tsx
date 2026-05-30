@@ -1,4 +1,4 @@
-Ôªø/**
+/**
  * UNIVERSAL CONTACT FORM
  * Used for: Jobs (Apply Now), Services (Book Now), Rentals (Contact Owner), Vehicles (Contact Seller)
  * Shows contact details ONLY for paid subscribers
@@ -261,12 +261,12 @@ export default function ContactForm({ type, itemTitle, ownerContact }: ContactFo
       )},
       {/* Safety Tips */}
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-blue-900 mb-2">üõ°Ô∏è Safety Tips:</h4>
+        <h4 className="font-semibold text-blue-900 mb-2">??? Safety Tips:</h4>
         <ul className="space-y-1 text-sm text-blue-800">
-          <li>‚Ä¢ Never send money before meeting in person</li>
-          <li>‚Ä¢ Meet in safe, public places</li>
-          <li>‚Ä¢ Trust your instincts</li>
-          <li>‚Ä¢ Report suspicious behavior</li>
+          <li>ï Never send money before meeting in person</li>
+          <li>ï Meet in safe, public places</li>
+          <li>ï Trust your instincts</li>
+          <li>ï Report suspicious behavior</li>
         </ul>
       </div>
     </div>

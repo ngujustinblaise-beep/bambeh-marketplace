@@ -43,9 +43,9 @@ const MOCK_SELLERS: Record<string, SellerData> = {
       { id: 'r3', reviewerName: 'Eric Tamba', reviewerAvatar: '🧑', rating: 4, comment: 'Good quality product, delivery took slightly longer than promised but communication was great throughout.', date: '2 weeks ago', itemBought: 'AirPods Pro' },
     ],
   },
-  'natural-cameroon': {
-    id: 'natural-cameroon', name: 'Natural Cameroon', avatar: '🌿', coverEmoji: '🧴',
-    bio: 'Handcrafted natural beauty products made from Cameroonian raw materials. Cold-pressed shea butter, palm oil, and moringa from West and Adamawa Regions.',
+  'natural-': {
+    id: 'natural-', name: 'Natural ', avatar: '🌿', coverEmoji: '🧴',
+    bio: 'Handcrafted natural beauty products made from ian raw materials. Cold-pressed shea butter, palm oil, and moringa from West and Adamawa Regions.',
     location: 'Bafoussam, West Region', memberSince: 'June 2020',
     verified: true, responseRate: 95, avgResponseTime: '< 3 hours',
     totalSales: 2876, rating: 5.0, reviewCount: 891,
@@ -61,7 +61,7 @@ const MOCK_SELLERS: Record<string, SellerData> = {
   },
   'heritage-fabrics': {
     id: 'heritage-fabrics', name: 'Heritage Fabrics', avatar: '🎨', coverEmoji: '🪡',
-    bio: "Preserving Cameroon's weaving traditions since 2015. Our master weavers from Foumban create authentic Kente, Ndop, and Toghu textiles.",
+    bio: "Preserving 's weaving traditions since 2015. Our master weavers from Foumban create authentic Kente, Ndop, and Toghu textiles.",
     location: 'Foumban, West Region', memberSince: 'January 2015',
     verified: true, responseRate: 87, avgResponseTime: '< 12 hours',
     totalSales: 312, rating: 5.0, reviewCount: 78,
@@ -292,3 +292,4 @@ const SellerProfilePage: React.FC = () => {
 };
 
 export default SellerProfilePage;
+

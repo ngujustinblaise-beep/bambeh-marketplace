@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * ✅ Seeds sample jobs, products, services, rentals, vehicles
- * ✅ Realistic Cameroon data
+ * ✅ Realistic  data
  * ✅ Can be called on app init or manually
  * ✅ Doesn't overwrite if data exists
  *
@@ -22,7 +22,7 @@ const SAMPLE_JOBS = [
   {
     id: "job_1",
     title: "Senior Software Developer",
-    company: "TechCorp Cameroon",
+    company: "TechCorp ",
     location: "Yaoundé, Centre",
     salary: "500,000 - 800,000 XAF",
     type: "Full-time",
@@ -38,7 +38,7 @@ const SAMPLE_JOBS = [
   {
     id: "job_2",
     title: "Marketing Manager",
-    company: "Orange Cameroon",
+    company: "Orange ",
     location: "Douala, Littoral",
     salary: "400,000 - 600,000 XAF",
     type: "Full-time",
@@ -55,7 +55,7 @@ const SAMPLE_JOBS = [
   {
     id: "job_3",
     title: "Accountant",
-    company: "BGFI Bank Cameroon",
+    company: "BGFI Bank ",
     location: "Yaoundé, Centre",
     salary: "350,000 - 500,000 XAF",
     type: "Full-time",
@@ -68,7 +68,7 @@ const SAMPLE_JOBS = [
   {
     id: "job_4",
     title: "Sales Representative",
-    company: "MTN Cameroon",
+    company: "MTN ",
     location: "Bamenda, Northwest",
     salary: "200,000 - 350,000 XAF",
     type: "Full-time",
@@ -81,7 +81,7 @@ const SAMPLE_JOBS = [
   {
     id: "job_5",
     title: "Teacher - English",
-    company: "International School of Cameroon",
+    company: "International School of ",
     location: "Yaoundé, Centre",
     salary: "250,000 - 400,000 XAF",
     type: "Full-time",
@@ -205,7 +205,7 @@ const SAMPLE_SERVICES = [
     description:
       "Expert plumbing services. Pipe repairs, installation, and maintenance.",
     category: "Home Services",
-    provider: "PlumbFix Cameroon",
+    provider: "PlumbFix ",
     images: [
       "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400",
     ],
@@ -512,3 +512,4 @@ export const hasTestData = (): boolean => {
 
 }
 export default { seedTestData, clearTestData, hasTestData };
+

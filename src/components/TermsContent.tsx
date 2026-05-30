@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TERMS CONTENT COMPONENT
  * Official Bambeh Terms and Conditions
  * Used in: TermsAcceptance.tsx and Terms.tsx
@@ -150,21 +150,21 @@ export const TermsContent: React.FC = () => {
           <p className="font-semibold mb-2">Fee Structure:</p>
           <ul className="space-y-1 ml-4">
             <li>
-              � Transactions = $9.00 USD: <strong>0.009%</strong>
+              ? Transactions = $9.00 USD: <strong>0.009%</strong>
             </li>
             <li>
-              � Transactions &gt; $9.00 up to $87.00 USD: <strong>0.01%</strong>
+              ? Transactions &gt; $9.00 up to $87.00 USD: <strong>0.01%</strong>
             </li>
             <li>
-              � Transactions &gt; $87.00 up to $870.00 USD:{" "}
+              ? Transactions &gt; $87.00 up to $870.00 USD:{" "}
               <strong>0.05%</strong>
             </li>
             <li>
-              � Transactions &gt; $870.00 up to $3,479.00 USD:{" "}
+              ? Transactions &gt; $870.00 up to $3,479.00 USD:{" "}
               <strong>0.09%</strong>
             </li>
             <li>
-              � Transactions &gt; $3,479.00 USD: <strong>0.10%</strong>
+              ? Transactions &gt; $3,479.00 USD: <strong>0.10%</strong>
             </li>
           </ul>
         </div>
@@ -259,7 +259,7 @@ export const TermsContent: React.FC = () => {
           <li>
             <strong>Legal Action:</strong> Report the User to the Agence
             Nationale des Technologies de l'Information et de la Communication
-            (ANTIC) in Cameroon or relevant international Interpol divisions.
+            (ANTIC) in  or relevant international Interpol divisions.
           </li>
         </ul>
       </section>
@@ -433,11 +433,11 @@ export const TermsContent: React.FC = () => {
           <li>
             <strong>Jurisdiction:</strong> These Terms are governed by the laws
             of the
-            <strong> Republic of Cameroon</strong>.
+            <strong> Republic of </strong>.
           </li>
           <li>
             <strong>Arbitration:</strong> Any dispute shall be settled by
-            binding arbitration in Yaound�, Cameroon, in accordance with the
+            binding arbitration in Yaound?, , in accordance with the
             OHADA Uniform Act on Arbitration.
           </li>
           <li>
@@ -457,7 +457,7 @@ export const TermsContent: React.FC = () => {
           <strong>Legal Department:</strong> Bambehtheapp@gmail.com
         </p>
         <p>
-          <strong>Address:</strong> Yaound�, Cameroon
+          <strong>Address:</strong> Yaound?, 
         </p>
       </section>
 
@@ -474,3 +474,4 @@ export const TermsContent: React.FC = () => {
 
 }
 export default TermsContent;
+

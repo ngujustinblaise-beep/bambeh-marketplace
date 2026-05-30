@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PAYMENT METHODS PAGE
  */
 
@@ -33,9 +33,9 @@ export default function PaymentMethods() {
               Use your earned Zerm Coins for premium features and boosts
             </p>
             <ul className="space-y-2 text-gray-600 text-sm">
-              <li>✓ Instant transactions</li>
-              <li>✓ No fees</li>
-              <li>✓ Secure within platform</li>
+              <li>? Instant transactions</li>
+              <li>? No fees</li>
+              <li>? Secure within platform</li>
             </ul>
           </div>
 
@@ -50,9 +50,9 @@ export default function PaymentMethods() {
               MTN Mobile Money and Orange Money
             </p>
             <ul className="space-y-2 text-gray-600 text-sm">
-              <li>✓ Widely accepted</li>
-              <li>✓ Fast processing</li>
-              <li>✓ Convenient</li>
+              <li>? Widely accepted</li>
+              <li>? Fast processing</li>
+              <li>? Convenient</li>
             </ul>
           </div>
 
@@ -65,15 +65,15 @@ export default function PaymentMethods() {
             </div>
             <p className="text-gray-600 mb-3">Pay in person when you meet</p>
             <ul className="space-y-2 text-gray-600 text-sm">
-              <li>✓ No transaction fees</li>
-              <li>✓ Instant payment</li>
-              <li>✓ Simple and direct</li>
+              <li>? No transaction fees</li>
+              <li>? Instant payment</li>
+              <li>? Simple and direct</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-bold text-gray-900 mb-3">🛡️ Safety Reminder</h3>
+          <h3 className="font-bold text-gray-900 mb-3">??? Safety Reminder</h3>
           <p className="text-gray-700">
             Never share your payment details before meeting in person. Always
             verify items before paying.
@@ -85,7 +85,7 @@ export default function PaymentMethods() {
             to="/help"
       className="text-teal-600 hover:text-teal-700 font-semibold"
           >
-            ← Back to Help Center
+            ? Back to Help Center
           </Link>
         </div>
       </div>

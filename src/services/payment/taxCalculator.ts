@@ -3,14 +3,14 @@
  * src/services/payment/taxCalculator.ts
  * Government Tax Calculator for Bambeh Marketplace
  *
- * Cameroon government tax: 0.2% per side of every transaction
+ *  government tax: 0.2% per side of every transaction
  *   • Buyer pays:   item price + 0.2% gov tax  → platform collects it
  *   • Vendor gets:  item price - 0.2% gov tax  → deducted at withdrawal
  *   • Total gov tax per deal = 0.4% of item value
  *
  * ⚠️  Subscription payments are TAX-EXEMPT (pass isSubscription=true).
  *
- * © 2026 ETS BUSHENERGY. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  * ════════════════════════════════════════════════════════════════
  */
 

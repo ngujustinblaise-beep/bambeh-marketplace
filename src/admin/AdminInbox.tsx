@@ -59,7 +59,7 @@ const generateSampleMessages = (): InboxMessage[] => [
     fromUserName: 'Bob Johnson',
     fromUserEmail: 'bob@example.com',
     subject: '🚨 URGENT: Scam Report - Seller not delivering',
-    body: `Dear Admin,\n\nI paid 450,000 XAF for an iPhone 13 Pro Max on December 20th, 2024. The seller "TechZone Cameroon" confirmed my order and promised delivery within 7 days.\n\nIt has now been 2 weeks and the item has not been delivered and the seller stopped responding.\n\nOrder Number: BMB-2024-008765\nPayment Method: MTN Mobile Money\n\nPlease help me urgently.\n\nBob Johnson`,
+    body: `Dear Admin,\n\nI paid 450,000 XAF for an iPhone 13 Pro Max on December 20th, 2024. The seller "TechZone " confirmed my order and promised delivery within 7 days.\n\nIt has now been 2 weeks and the item has not been delivered and the seller stopped responding.\n\nOrder Number: BMB-2024-008765\nPayment Method: MTN Mobile Money\n\nPlease help me urgently.\n\nBob Johnson`,
     category: 'report', priority: 'urgent', status: 'unread', isStarred: true,
     attachments: [
       { id: 'att-1', name: 'payment_screenshot.jpg', type: 'image/jpeg', url: '/attachments/payment.jpg', size: 245000 },
@@ -553,3 +553,4 @@ export default function AdminInbox() {
     </div>
   );
 }
+

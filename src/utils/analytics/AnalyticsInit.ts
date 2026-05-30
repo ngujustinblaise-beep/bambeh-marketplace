@@ -1,4 +1,4 @@
-﻿import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 export interface AnalyticsConfig {
   enabled: boolean;
@@ -51,7 +51,7 @@ function setupErrorTracking(): void {
   });
 }
 
-// ─── Core init function ───────────────────────────────────────────────────────
+// --- Core init function -------------------------------------------------------
 
 export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<void> {
   if (isInitialized) return;
@@ -60,23 +60,23 @@ export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<
       analyticsConfig = { ...defaultConfig, ...config };
     }
     if (!analyticsConfig.enabled) {
-      debugLog('Analytics disabled — skipping init');
+      debugLog('Analytics disabled � skipping init');
       return;
     }
     debugLog('Initializing analytics...');
     if (analyticsConfig.trackPageViews) setupPageViewTracking();
     if (analyticsConfig.trackErrors) setupErrorTracking();
     isInitialized = true;
-    debugLog('Analytics initialized ✅');
+    debugLog('Analytics initialized ?');
   } catch (error) {
-    console.error('❌ Analytics initialization error:', error);
+    console.error('? Analytics initialization error:', error);
   }
 }
 
-// ─── Alias — App.tsx imports { initializeAnalytics } ─────────────────────────
+// --- Alias � App.tsx imports { initializeAnalytics } -------------------------
 export const initializeAnalytics = initAnalytics;
 
-// ─── Tracking helpers ─────────────────────────────────────────────────────────
+// --- Tracking helpers ---------------------------------------------------------
 
 export async function trackPageView(path: string): Promise<void> {
   if (!analyticsConfig.enabled || !analyticsConfig.trackPageViews) return;
@@ -155,7 +155,7 @@ export function isAnalyticsReady(): boolean {
   return isInitialized;
 }
 
-// ─── Default export ───────────────────────────────────────────────────────────
+// --- Default export -----------------------------------------------------------
 const analyticsModule = {
   initAnalytics,
   initializeAnalytics,

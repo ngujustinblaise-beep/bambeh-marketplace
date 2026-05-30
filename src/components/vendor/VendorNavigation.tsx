@@ -1,13 +1,13 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR NAVIGATION COMPONENT
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  *
  * Quick navigation for vendors to access dashboard features
  * Used in Profile page and other vendor-related areas
  *
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import React from "react";
@@ -84,7 +84,7 @@ const VendorNavigation: React.FC<VendorNavigationProps> = ({
             onClick={() => navigate("/vendor/dashboard")}
             className="text-sm text-teal-600 hover:text-teal-700 font-medium"
           >
-            View All →
+            View All ?
           </button>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -148,7 +148,7 @@ const VendorNavigation: React.FC<VendorNavigationProps> = ({
             onClick={() => navigate("/vendor/register")}
             className="w-full py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg font-bold hover:from-yellow-600 hover:to-orange-600 transition-colors"
           >
-            Become a Vendor Today! 🚀
+            Become a Vendor Today! ??
           </button>
         </div>
       )}

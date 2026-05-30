@@ -91,7 +91,7 @@ function mapRow(row: Record<string, unknown>): Property {
     })),
     city: row.city as string,
     region: row.region as string,
-    country: (row.country as string) ?? "Cameroon",
+    country: (row.country as string) ?? "",
     address: row.address as string | undefined,
     latitude: row.latitude as number | undefined,
     longitude: row.longitude as number | undefined,
@@ -201,7 +201,7 @@ export async function createProperty(
         images: payload.images,
         city: payload.city,
         region: payload.region,
-        country: payload.country ?? "Cameroon",
+        country: payload.country ?? "",
         address: payload.address,
         latitude: payload.latitude,
         longitude: payload.longitude,
@@ -317,3 +317,4 @@ export async function incrementPropertyView(id: string): Promise<void> {
     // Non-critical
   }
 }
+

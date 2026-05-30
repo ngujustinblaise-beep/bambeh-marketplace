@@ -18,7 +18,7 @@ interface Tutorial {
 
 const TUTORIALS: Tutorial[] = [
   { id:'1', title:'How to Post a Marketplace Listing',       duration:'3:24', category:'Selling',    emoji:'🛍️', description:'Step-by-step guide to selling items on Bambeh.' },
-  { id:'2', title:'How to Find and Apply for Jobs',           duration:'2:51', category:'Jobs',       emoji:'💼', description:'Search and apply for jobs in Cameroon.' },
+  { id:'2', title:'How to Find and Apply for Jobs',           duration:'2:51', category:'Jobs',       emoji:'💼', description:'Search and apply for jobs in .' },
   { id:'3', title:'How Escrow Payments Work',                 duration:'4:12', category:'Safety',     emoji:'🔒', description:'Protect your money with Bambeh escrow.' },
   { id:'4', title:'Subscribing with MTN MoMo / Orange Money', duration:'2:05', category:'Payments',   emoji:'📱', description:'Unlock all features with a daily/weekly/monthly plan.' },
   { id:'5', title:'How to Exchange Items',                    duration:'2:38', category:'Exchange',   emoji:'🔄', description:'Swap items with other Bambeh users.' },
@@ -139,3 +139,4 @@ export default function VideoTutorials() {
     </div>
   );
 }
+

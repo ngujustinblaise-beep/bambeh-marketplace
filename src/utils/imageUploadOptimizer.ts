@@ -13,7 +13,7 @@
  *   const result = await uploadOptimizedImage(file, 'listings', userId);
  *   console.log(result.url, result.savings); // "saved 847 KB (73%)"
  *
- * Results on typical Cameroon 3G:
+ * Results on typical  3G:
  *   5 MB phone photo → ~400 KB WebP = 92% smaller → 8x faster upload
  */
 
@@ -286,3 +286,4 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+

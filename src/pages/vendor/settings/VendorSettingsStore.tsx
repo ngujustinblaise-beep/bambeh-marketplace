@@ -396,7 +396,7 @@ export default function VendorSettingsStore() {
                     seo: { ...storeSettings.seo, metaTitle: e.target.value }
                   })}
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="Your Store - Best Products in Cameroon"
+                  placeholder="Your Store - Best Products in "
                   maxLength={60}
                 />
                 <p className="text-xs text-slate-500 mt-1">{storeSettings.seo.metaTitle.length}/60 characters</p>
@@ -428,7 +428,7 @@ export default function VendorSettingsStore() {
                     seo: { ...storeSettings.seo, keywords: e.target.value }
                   })}
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="cameroon, online shopping, electronics..."
+                  placeholder=", online shopping, electronics..."
                 />
                 <p className="text-xs text-slate-500 mt-1">Separate keywords with commas</p>
               </div>
@@ -460,3 +460,4 @@ export default function VendorSettingsStore() {
     </div>
   );
 }
+

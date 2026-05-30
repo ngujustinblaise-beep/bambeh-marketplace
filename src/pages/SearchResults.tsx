@@ -296,7 +296,7 @@ export default function SearchResults() {
             <Search className="w-14 h-14 text-gray-200 mx-auto mb-3" />
             <p className="font-semibold text-gray-700 mb-1">Search Bambeh Marketplace</p>
             <p className="text-sm text-gray-400">
-              Find jobs, items, services, rentals, and vehicles across Cameroon.
+              Find jobs, items, services, rentals, and vehicles across .
             </p>
           </div>
         ) : results.length === 0 ? (
@@ -365,3 +365,4 @@ export default function SearchResults() {
     </div>
   );
 }
+

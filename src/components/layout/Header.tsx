@@ -130,7 +130,7 @@ export default function Header() {
     if (navigator.share) {
       await navigator.share({
         title: 'Bambeh Marketplace',
-        text: 'Check out Bambeh — Cameroon\'s #1 Marketplace!',
+        text: 'Check out Bambeh — \'s #1 Marketplace!',
         url: window.location.href,
       });
     } else {
@@ -549,3 +549,4 @@ export default function Header() {
     </header>
   );
 }
+

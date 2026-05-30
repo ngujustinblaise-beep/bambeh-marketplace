@@ -1,18 +1,18 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * FOOTER - BAMBEH MARKETPLACE (FIXED)
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  *
- * ✅ FIXED: Subscription link now goes to /subscription (was /subscription-plans)
- * ✅ Correct Facebook link: https://www.facebook.com/profile.php?id=61585316773462
- * ✅ Correct Instagram link: https://www.instagram.com/bambehtheapp?igsh=MW9vNmU1MG84d3dsaA==
- * ✅ Donate/Support Bambeh button
- * ✅ Exchange in categories
- * ✅ Company profile linking
- * ✅ All navigation working
+ * ? FIXED: Subscription link now goes to /subscription (was /subscription-plans)
+ * ? Correct Facebook link: https://www.facebook.com/profile.php?id=61585316773462
+ * ? Correct Instagram link: https://www.instagram.com/bambehtheapp?igsh=MW9vNmU1MG84d3dsaA==
+ * ? Donate/Support Bambeh button
+ * ? Exchange in categories
+ * ? Company profile linking
+ * ? All navigation working
  *
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { Link } from "react-router-dom";
@@ -39,9 +39,9 @@ export default function Footer() {
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               ABOUT SECTION - WITH SOCIAL MEDIA LINKS
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">About Bambeh</h3>
             <p className="text-sm mb-4">
@@ -86,9 +86,9 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               CATEGORIES - WITH EXCHANGE!
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Categories</h3>
             <ul className="space-y-2 text-sm">
@@ -149,9 +149,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               SUPPORT - WITH DONATE LINK!
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
@@ -179,9 +179,9 @@ export default function Footer() {
                   Safety & Security
                 </Link>
               </li>
-              {/* ═══════════════════════════════════════════════════════
-                  🔧 FIXED: Changed from /subscription-plans to /subscription
-                  ═══════════════════════════════════════════════════════ */}
+              {/* -------------------------------------------------------
+                  ?? FIXED: Changed from /subscription-plans to /subscription
+                  ------------------------------------------------------- */}
               <li>
                 <Link
                   to="/subscription"
@@ -191,9 +191,9 @@ export default function Footer() {
                 </Link>
               </li>
 
-              {/* ═══════════════════════════════════════════════════════
-                  💚 DONATE LINK - SUPPORT BAMBEH!
-                  ═══════════════════════════════════════════════════════ */}
+              {/* -------------------------------------------------------
+                  ?? DONATE LINK - SUPPORT BAMBEH!
+                  ------------------------------------------------------- */}
               <li>
                 <Link
                   to="/donate"
@@ -206,9 +206,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* -----------------------------------------------------------
               COMPANY - WITH PROPER WEBSITE LINK!
-              ═══════════════════════════════════════════════════════════ */}
+              ----------------------------------------------------------- */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
@@ -256,6 +256,7 @@ export default function Footer() {
                   href="mailto:bambetheapp@gmail.com"
       className="hover:text-teal-400 break-all"
                 >
+                  support@bambeh.com
                   bambetheapp@gmail.com
                 </a>
               </div>
@@ -267,19 +268,19 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Yaoundé, Cameroon</span>
+                <span>Yaound�, </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* -----------------------------------------------------------
             BOTTOM BAR
-            ═══════════════════════════════════════════════════════════ */}
+            ----------------------------------------------------------- */}
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-center md:text-left">
-              <p>© {currentYear} Bambeh. All rights reserved.</p>
+              <p>� {currentYear} Bambeh. All rights reserved.</p>
               <p className="text-xs text-gray-500 mt-1">
                 Operated by Bambeh the App
               </p>
@@ -293,29 +294,29 @@ export default function Footer() {
               >
                 Terms
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">�</span>
               <Link
                 to="/privacy"
       className="hover:text-teal-400 transition-colors"
               >
                 Privacy
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">�</span>
               <Link
                 to="/help/contact"
       className="hover:text-teal-400 transition-colors"
               >
                 Contact
               </Link>
-              <span className="text-gray-600">•</span>
-              {/* 🔧 FIXED: Changed from /subscription-plans to /subscription */}
+              <span className="text-gray-600">�</span>
+              {/* ?? FIXED: Changed from /subscription-plans to /subscription */}
               <Link
                 to="/subscription"
       className="hover:text-teal-400 transition-colors"
               >
                 Subscriptions
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">�</span>
               <Link
                 to="/donate"
       className="hover:text-teal-400 transition-colors text-pink-400 font-semibold"
@@ -362,3 +363,4 @@ export default function Footer() {
     </footer>
   );
 }
+

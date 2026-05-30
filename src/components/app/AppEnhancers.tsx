@@ -57,7 +57,7 @@ export const RouteTracker: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     trackPageView(location.pathname + location.search);
     const routeTitles: Record<string, string> = {
-      '/': "Bambeh - Cameroon's Premier Marketplace",
+      '/': "Bambeh - Online Marketplace",
       '/marketplace': 'Shop Products - Bambeh',
       '/jobs': 'Find Jobs - Bambeh',
       '/services': 'Professional Services - Bambeh',
@@ -98,3 +98,4 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
 };
 
 export default { AppErrorBoundary, RouteTracker, PerformanceMonitor };
+

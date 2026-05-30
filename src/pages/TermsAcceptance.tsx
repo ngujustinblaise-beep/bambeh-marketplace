@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * LEGAL COMPLIANCE:
- * ✅ OHADA e-consent checkbox — Cameroonian data protection law
+ * ✅ OHADA e-consent checkbox — ian data protection law
  *    (Law No. 2024/017 of 23 December 2024, Sections 13-16)
  * ✅ Standard Terms & Conditions acceptance checkbox
  * ✅ Scroll-to-bottom enforcement before acceptance is enabled
@@ -13,7 +13,7 @@
  * ✅ Returning users correctly bypass re-acceptance
  *
  * FILE: src/pages/TermsAcceptance.tsx
- * © 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026
+ * © 2026 BAMBEH SARL — RC/YAO/2020/A/1026
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -37,7 +37,7 @@ export default function TermsAcceptance() {
   const [isReturningUser, setIsReturningUser] = useState(false);
 
   // ── OHADA / Law No. 2024/017 consent ──────────────────────────────────────
-  // Cameroonian personal data protection law (enacted 23 December 2024)
+  // ian personal data protection law (enacted 23 December 2024)
   // requires explicit, informed, opt-in consent BEFORE any data is collected.
   // This checkbox is separate from the Terms checkbox — it specifically covers
   // personal data processing. It must NOT be pre-checked (Law 2024/017 §13–16).
@@ -74,7 +74,7 @@ export default function TermsAcceptance() {
     }
     if (!ohadaConsented) {
       alert(
-        "Please confirm your consent to data processing under Cameroonian law (Law No. 2024/017) to continue."
+        "Please confirm your consent to data processing under ian law (Law No. 2024/017) to continue."
       );
       return;
     }
@@ -165,15 +165,15 @@ export default function TermsAcceptance() {
 
               <p className="mb-4 font-semibold">
                 Welcome to Bambeh ("the App"), a marketplace platform operated
-                by ETS BUSHENERGY (RC/YAO/2020/A/1026), connecting buyers and
-                sellers digitally across Cameroon and beyond.
+                by BAMBEH SARL (RC/YAO/2020/A/1026), connecting buyers and
+                sellers digitally across  and beyond.
               </p>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">
                 1. DEFINITIONS AND INTERPRETATION
               </h3>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>"ETS BUSHENERGY"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé, Cameroon (RC/YAO/2020/A/1026).</li>
+                <li><strong>"BAMBEH SARL"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé,  (RC/YAO/2020/A/1026).</li>
                 <li><strong>"User"</strong> means any individual who creates an account and uses the App for buying, selling, or browsing.</li>
                 <li><strong>"Vendor"</strong> means a User who offers goods or services for sale on the platform.</li>
                 <li><strong>"Zerm Coins"</strong> are a proprietary in-app virtual currency with no real-world cash value outside the platform.</li>
@@ -197,23 +197,23 @@ export default function TermsAcceptance() {
                 3. MARKETPLACE RULES
               </h3>
               <ul className="list-disc pl-6 space-y-2">
-                <li>All listings must be accurate and lawful under Cameroonian law.</li>
+                <li>All listings must be accurate and lawful under ian law.</li>
                 <li>No counterfeit, stolen, or prohibited items are permitted.</li>
                 <li>Bambeh reserves the right to remove listings at its discretion.</li>
-                <li>A 1% transaction fee applies to all completed sales — the lowest in Cameroon.</li>
+                <li>A 1% transaction fee applies to all completed sales — the lowest in .</li>
               </ul>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">4. ZERM COINS</h3>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Zerm Coins have no monetary value outside the platform.</li>
                 <li>They cannot be exchanged for cash.</li>
-                <li>ETS BUSHENERGY reserves the right to modify Zerm Coin policies with 30 days' notice.</li>
+                <li>BAMBEH SARL reserves the right to modify Zerm Coin policies with 30 days' notice.</li>
               </ul>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">5. DATA PROTECTION</h3>
               <p>
                 The collection and processing of your personal data is governed by
-                Cameroon's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.
+                's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.
                 You have the right to access, rectify, and request deletion of your data at
                 any time by contacting legal@bambeh.cm. Full details are in our{" "}
                 <strong>Privacy Policy</strong> available at bambeh.cm/privacy-policy.
@@ -232,7 +232,7 @@ export default function TermsAcceptance() {
               </h3>
               <p>
                 All disputes shall be resolved through binding arbitration in
-                Yaoundé, Cameroon, under the laws of the Republic of Cameroon and
+                Yaoundé, , under the laws of the Republic of  and
                 applicable OHADA Uniform Acts.
               </p>
 
@@ -240,7 +240,7 @@ export default function TermsAcceptance() {
                 8. INTELLECTUAL PROPERTY
               </h3>
               <p>
-                All content, trademarks, and technology are owned by ETS BUSHENERGY.
+                All content, trademarks, and technology are owned by BAMBEH SARL.
                 You may not copy, modify, or distribute any part without written permission.
               </p>
 
@@ -252,7 +252,7 @@ export default function TermsAcceptance() {
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">10. GOVERNING LAW</h3>
               <p>
-                These Terms are governed by the laws of the Republic of Cameroon,
+                These Terms are governed by the laws of the Republic of ,
                 including applicable OHADA Uniform Acts.
               </p>
 
@@ -274,7 +274,7 @@ export default function TermsAcceptance() {
                 <strong>Last Updated:</strong> January 1, 2026
                 <br />
                 <strong>Contact:</strong> legal@bambeh.cm
-                <br />© 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026
+                <br />© 2026 BAMBEH SARL — RC/YAO/2020/A/1026
               </p>
             </div>
           </div>
@@ -351,7 +351,7 @@ export default function TermsAcceptance() {
             </div>
 
             {/* ── Checkbox 2: OHADA / Law No. 2024/017 Data Consent ─────────────
-                MANDATORY under Cameroon's Personal Data Protection Act
+                MANDATORY under 's Personal Data Protection Act
                 (Law No. 2024/017, 23 December 2024, Sections 13-16).
                 — Must be explicit and opt-in (never pre-checked)
                 — Must clearly state what data is processed and why
@@ -392,15 +392,15 @@ export default function TermsAcceptance() {
                   <div className="flex items-center gap-2 mb-1">
                     <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
                     <p className="text-sm font-bold text-gray-900">
-                      Data Protection Consent — Law No. 2024/017 (Cameroon)
+                      Data Protection Consent — Law No. 2024/017 ()
                     </p>
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    I consent to ETS BUSHENERGY collecting and processing my personal
+                    I consent to BAMBEH SARL collecting and processing my personal
                     data (name, email, phone number, location, device identifiers) solely
                     to operate my Bambeh account, process transactions, and improve the
                     platform — in accordance with{" "}
-                    <strong>Cameroon's Law No. 2024/017 of 23 December 2024</strong>{" "}
+                    <strong>'s Law No. 2024/017 of 23 December 2024</strong>{" "}
                     on Personal Data Protection and applicable OHADA Uniform Acts.
                   </p>
                   <p className="text-xs text-gray-500 mt-2 leading-relaxed">
@@ -473,7 +473,7 @@ export default function TermsAcceptance() {
 
             {/* Compliance note */}
             <p className="text-center text-xs text-gray-400 mt-4">
-              Compliant with Cameroon Law No. 2024/017 · OHADA Uniform Acts ·
+              Compliant with  Law No. 2024/017 · OHADA Uniform Acts ·
               Google Play Developer Policy
             </p>
           </div>
@@ -484,7 +484,7 @@ export default function TermsAcceptance() {
           <p className="text-sm text-gray-600">
             🎉{" "}
             <span className="font-bold text-green-600">Only 1% Transaction Fee</span>{" "}
-            — Lowest in Cameroon! 💚
+            — Lowest in ! 💚
           </p>
           <p className="text-xs text-gray-500 mt-2">Next: Choose Your Language</p>
         </div>
@@ -492,3 +492,4 @@ export default function TermsAcceptance() {
     </div>
   );
 }
+

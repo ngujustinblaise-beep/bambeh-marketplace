@@ -138,7 +138,7 @@ export default function OrderTracking() {
           street: '123 Rue de la Paix',
           city: 'Yaoundé',
           region: 'Centre',
-          country: 'Cameroon',
+          country: '',
         },
         courier: {
           name: 'Bambeh Express',

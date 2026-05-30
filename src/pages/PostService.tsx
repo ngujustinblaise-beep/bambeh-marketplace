@@ -243,7 +243,7 @@ const PostService: React.FC = () => {
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" />Location & Service Area</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div><Label htmlFor="location">Base Location</Label><Input id="location" name="location" placeholder="e.g., Yaoundé, Cameroon" value={formData.location} onChange={handleInputChange} /></div>
+              <div><Label htmlFor="location">Base Location</Label><Input id="location" name="location" placeholder="e.g., Yaoundé, " value={formData.location} onChange={handleInputChange} /></div>
               <div><Label htmlFor="serviceArea">Service Area</Label><Input id="serviceArea" name="serviceArea" placeholder="e.g., Entire Yaoundé, or specific neighborhoods" value={formData.serviceArea} onChange={handleInputChange} /></div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="travelCharges" checked={formData.travelCharges} onCheckedChange={(c) => setFormData(prev => ({ ...prev, travelCharges: c as boolean }))} />
@@ -342,3 +342,4 @@ const PostService: React.FC = () => {
 };
 
 export default PostService;
+

@@ -2,7 +2,7 @@
  * BAMBEH MARKETPLACE - WORLD-CLASS API SERVICE
  * Centralized API client with interceptors, error handling, offline support
  * Built to standards of: Jumia, Amazon, OLX, eBay
- * @author Big Blaise - ETS BUSHENERGY
+ * @author Big Blaise - BAMBEH SARL
  * @version 1.0.0
  */
 

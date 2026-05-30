@@ -10,7 +10,7 @@
  * 🔐 Hardened auth: no localStorage-only fallback for vendor/admin
  * 🔐 ScrollToTop on every route change
  * 🌿 TontinePage + FarmFreshPage FULLY DISPLAYED
- * 🌍 All Cameroon features: Escrow, Community, SellerRating, MeetSafely etc.
+ * 🌍 All  features: Escrow, Community, SellerRating, MeetSafely etc.
  * 📦 Vendor: Orders, Reviews, Payments, Products, Onboarding, Withdraw
  * 💳 NotchPay: /payment/checkout · /payment/callback · /success · /failed
  * 🔒 ESCROW: All marketplace/service/rental/exchange → Escrow → NotchPay
@@ -163,7 +163,7 @@ const MeetingSafely          = lazy(() => import('@/pages/help/MeetingSafely'));
 const ReportingIssues        = lazy(() => import('@/pages/help/ReportingIssues'));
 const ContactSupport         = lazy(() => import('@/pages/help/ContactSupport'));
 
-// Cameroon-specific lazy imports
+// -specific lazy imports
 const EscrowPage       = lazy(() => import('@/pages/EscrowPage'));
 const SellerRatingPage = lazy(() => import('@/pages/SellerRatingPage'));
 const OfflineModePage  = lazy(() => import('@/pages/OfflineModePage'));
@@ -365,7 +365,7 @@ export default function App() {
       console.log('%c✅ BackToTop (smart) | SecurityInitializer | AdminProtectedRoute (1h) | VendorProtectedRoute (sync)', 'color:#10b981;font-weight:bold');
       console.log('%c🔒 Escrow: Marketplace/Service/Rental/Exchange → Escrow → NotchPay', 'color:#0891b2;font-weight:bold');
       console.log('%c⚡ Direct: Subscription/Donation/Zerm → NotchPay (no escrow)', 'color:#7c3aed;font-weight:bold');
-      console.log('%c✅ Tontine + Farm Fresh ACTIVE | All Cameroon features ACTIVE', 'color:#10b981;font-weight:bold');
+      console.log('%c✅ Tontine + Farm Fresh ACTIVE | All  features ACTIVE', 'color:#10b981;font-weight:bold');
     }
   }, []);
 
@@ -547,7 +547,7 @@ export default function App() {
                         <Route path="/sell-item" element={<Navigate to="/marketplace/sell" replace />} />
                         <Route path="/post-job"  element={<Navigate to="/jobs/post" replace />} />
 
-                        {/* 14. CAMEROON FEATURES */}
+                        {/* 14.  FEATURES */}
                         <Route path="/escrow"                  element={<MainLayout><ProtectedRoute><EscrowPage /></ProtectedRoute></MainLayout>} />
                         <Route path="/escrow/:orderId"         element={<MainLayout><ProtectedRoute><EscrowPage /></ProtectedRoute></MainLayout>} />
                         <Route path="/seller/:sellerId/rating" element={<MainLayout><SellerRatingPage /></MainLayout>} />
@@ -592,3 +592,4 @@ export default function App() {
     </React.StrictMode>
   );
 }
+

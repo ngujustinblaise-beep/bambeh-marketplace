@@ -31,7 +31,7 @@ export default function LiveChatSupport({ buttonText = 'Start Live Chat', classN
     if (isOpen && messages.length === 0) {
       const welcomeMessages: Message[] = [
         { id: 'welcome_1', text: `Hello${currentUser?.name ? ` ${currentUser.name}` : ''}! 💚 Welcome to Bambeh Support!`, sender: 'bot', timestamp: new Date() },
-        { id: 'welcome_2', text: "I'm here to help you with any questions about Bambeh - Cameroon's Premier Marketplace! How can I assist you today?", sender: 'bot', timestamp: new Date(Date.now() + 500) },
+        { id: 'welcome_2', text: "I'm here to help you with any questions about Bambeh - Online Marketplace! How can I assist you today?", sender: 'bot', timestamp: new Date(Date.now() + 500) },
       ];
       setTimeout(() => { setMessages(welcomeMessages); }, 300);
     }
@@ -46,7 +46,7 @@ export default function LiveChatSupport({ buttonText = 'Start Live Chat', classN
       return ["Great question about subscriptions! 🌟", "Bambeh offers Free, Basic (1,500 XAF/month), Premium (2,500 XAF/month), and Business (5,000 XAF/month) plans.", "Each plan comes with different features. Would you like me to connect you with a support agent for more details?"];
     }
     if (lc.includes('payment') || lc.includes('pay') || lc.includes('momo') || lc.includes('orange money')) {
-      return ["For payments, Bambeh accepts: 💳", "• MTN Mobile Money\n• Orange Money\n• Credit/Debit Cards", "We charge only 1% transaction fee - the lowest in Cameroon! 💚"];
+      return ["For payments, Bambeh accepts: 💳", "• MTN Mobile Money\n• Orange Money\n• Credit/Debit Cards", "We charge only 1% transaction fee - the lowest in ! 💚"];
     }
     if (lc.includes('sell') || lc.includes('list') || lc.includes('post')) {
       return ["Selling on Bambeh is easy! 📦", "1. Create an account\n2. Click 'Post Ad'\n3. Add photos and description\n4. Set your price\n5. Publish!", "Free users can post 1 listing per month. Upgrade for unlimited listings!"];
@@ -195,3 +195,4 @@ export default function LiveChatSupport({ buttonText = 'Start Live Chat', classN
     </>
   );
 }
+

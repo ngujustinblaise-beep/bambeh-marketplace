@@ -12,7 +12,7 @@
  *   ✅ roles fetched from DB     → isVendor / isAdmin cannot be spoofed
  *   ✅ loading state             → protected routes wait for verification
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════
  */
 

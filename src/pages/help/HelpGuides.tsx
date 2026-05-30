@@ -22,7 +22,7 @@ const HelpGuides: React.FC = () => {
         'Click on "Register" in the top right corner',
         'Enter your full name, email address, and phone number',
         'Create a strong password (minimum 8 characters)',
-        'Select your region and city in Cameroon',
+        'Select your region and city in ',
         'Choose your preferred language (English, French, Arabic, or Hausa)',
         'Agree to the Terms of Service and Privacy Policy',
         'Click "Create Account"',
@@ -362,5 +362,6 @@ const HelpGuides: React.FC = () => {
 };
 
 export default HelpGuides;
+
 
 

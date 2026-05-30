@@ -83,7 +83,7 @@ export default function CheckoutAdvanced() {
         subtotal: subtotal,
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
-        deliveryAddress: 'Bastos, Yaoundé, Cameroon'
+        deliveryAddress: 'Bastos, Yaoundé, '
       };
 
       setCheckoutData(mockCheckoutData);
@@ -285,7 +285,7 @@ export default function CheckoutAdvanced() {
                 </div>
                 <div className="flex items-center">
                   <span className="mr-2">🇨🇲</span>
-                  <span>Cameroon</span>
+                  <span></span>
                 </div>
               </div>
             </div>

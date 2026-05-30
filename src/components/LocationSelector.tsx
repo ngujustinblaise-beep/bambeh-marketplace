@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Globe, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -21,7 +21,7 @@ const languages: Language[] = [
   {
     code: "fr",
     name: "French",
-    nativeName: "Fran�ais",
+    nativeName: "Fran?ais",
     flag: "????",
     dir: "ltr",
   },

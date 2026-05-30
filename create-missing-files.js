@@ -57,14 +57,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const sections = [
-  { title: '1. Acceptance of Terms', body: 'By accessing or using Bambeh Marketplace you agree to be bound by these Terms of Service and all applicable laws of the Republic of Cameroon. If you do not agree, you may not use our services.' },
+  { title: '1. Acceptance of Terms', body: 'By accessing or using Bambeh Marketplace you agree to be bound by these Terms of Service and all applicable laws of the Republic of . If you do not agree, you may not use our services.' },
   { title: '2. Marketplace Services', body: 'Bambeh provides an online marketplace for buying, selling, job listings, property rentals, and financial tools including Zerm Coins and Tontine savings. Bambeh acts as an intermediary and is not a party to transactions between buyers and sellers.' },
   { title: '3. User Accounts', body: 'You must be at least 18 years old to create an account. You are responsible for maintaining the confidentiality of your credentials. We reserve the right to suspend or terminate accounts that violate these terms.' },
   { title: '4. Vendor Obligations', body: 'Vendors must accurately describe their products and services. Counterfeit goods, illegal items, or prohibited content is strictly forbidden. Bambeh escrow protects buyers — vendors receive payment only after buyer confirmation.' },
   { title: '5. Payments & Zerm Coins', body: 'All payments are in XAF (Central African Franc) via NotchPay (MTN Mobile Money and Orange Money). Zerm Coins are a digital loyalty currency with no cash redemption value unless explicitly stated. Balances are managed server-side.' },
-  { title: '6. Prohibited Content', body: 'You may not post or sell: weapons, drugs, counterfeit goods, stolen property, explicit content, or any items prohibited under Cameroonian law. Violations result in immediate account termination.' },
+  { title: '6. Prohibited Content', body: 'You may not post or sell: weapons, drugs, counterfeit goods, stolen property, explicit content, or any items prohibited under ian law. Violations result in immediate account termination.' },
   { title: '7. Limitation of Liability', body: 'Bambeh is not liable for losses from user transactions, unauthorized account access due to user negligence, downtime, or third-party actions.' },
-  { title: '8. Governing Law', body: 'These terms are governed by the laws of the Republic of Cameroon, with jurisdiction in Yaounde.' },
+  { title: '8. Governing Law', body: 'These terms are governed by the laws of the Republic of , with jurisdiction in Yaounde.' },
   { title: '9. Changes to Terms', body: 'We may update these Terms at any time. Continued use of Bambeh after changes are posted constitutes acceptance. We will notify you of material changes via email or in-app notification.' },
 ];
 
@@ -758,7 +758,7 @@ const JobsCategory: React.FC = () => {
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-gray-800">Sample {label} Job {i + 1}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Yaounde, Cameroon &middot; Full-time</p>
+                <p className="text-xs text-gray-400 mt-0.5">Yaounde,  &middot; Full-time</p>
                 <p className="text-sm text-teal-600 font-medium mt-2">200,000 XAF/month</p>
               </div>
             </div>
@@ -1217,3 +1217,4 @@ console.log('\n============================================================');
 console.log(' ALL 17 FILES CREATED SUCCESSFULLY!');
 console.log(' Now run:  npm run dev');
 console.log('============================================================\n');
+

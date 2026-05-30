@@ -2,7 +2,7 @@
  * supabase/functions/send-otp/index.ts — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * Sends a Twilio Verify SMS OTP to a Cameroon phone number.
+ * Sends a Twilio Verify SMS OTP to a  phone number.
  *
  * Called by Register.tsx Step 1 via:
  *   supabase.functions.invoke("send-otp", { body: { phone, channel: "sms" } })
@@ -42,7 +42,7 @@ serve(async (req: Request) => {
     const normalized = phone.trim();
     if (!/^\+237[6-9]\d{8}$/.test(normalized)) {
       return new Response(
-        JSON.stringify({ error: "Invalid Cameroon phone number. Format: +2376XXXXXXXX" }),
+        JSON.stringify({ error: "Invalid  phone number. Format: +2376XXXXXXXX" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -103,3 +103,4 @@ serve(async (req: Request) => {
     );
   }
 });
+

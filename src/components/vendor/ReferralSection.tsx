@@ -165,7 +165,7 @@ export default function ReferralSection({
   const shareViaWhatsApp = () => {
     const message = encodeURIComponent(
       `🎉 Join me on Bambeh Marketplace!\n\n` +
-        `I'm earning money selling on Cameroon's best marketplace. Use my referral code to get started:\n\n` +
+        `I'm earning money selling on 's best marketplace. Use my referral code to get started:\n\n` +
         `📱 Code: ${referralCode}\n` +
         `🔗 Link: ${referralLink}\n\n` +
         `Start selling today! 🚀`,
@@ -191,7 +191,7 @@ export default function ReferralSection({
     );
     const body = encodeURIComponent(
       `Hi!\n\n` +
-        `I'm using Bambeh Marketplace to sell products and services in Cameroon, and I think you'd love it too!\n\n` +
+        `I'm using Bambeh Marketplace to sell products and services in , and I think you'd love it too!\n\n` +
         `Use my referral code to sign up as a vendor:\n` +
         `Code: ${referralCode}\n` +
         `Link: ${referralLink}\n\n` +

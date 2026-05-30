@@ -33,7 +33,7 @@ const formatXAF = (n: number) => `${n.toLocaleString('fr-CM')} XAF`;
 const groupDeals: GroupDeal[] = [
   {
     id: 'grp-001',
-    name: 'Premium Cocoa Powder 1kg (Cameroon Origin)',
+    name: 'Premium Cocoa Powder 1kg ( Origin)',
     image: '☕',
     category: 'Food',
     regularPrice: 12000,
@@ -48,7 +48,7 @@ const groupDeals: GroupDeal[] = [
     vendor: 'Cocoa Cameroun',
     rating: 4.9,
     reviews: 42,
-    description: 'Premium single-origin Cameroonian cocoa powder, fair-trade certified. Perfect for baking, hot chocolate, and cooking.',
+    description: 'Premium single-origin ian cocoa powder, fair-trade certified. Perfect for baking, hot chocolate, and cooking.',
   },
   {
     id: 'grp-002',
@@ -101,10 +101,10 @@ const groupDeals: GroupDeal[] = [
     currentBuyers: 13,
     maxBuyers: 20,
     endsAt: '2026-02-22',
-    vendor: 'Natural Cameroon',
+    vendor: 'Natural ',
     rating: 5.0,
     reviews: 67,
-    description: '100% pure unrefined shea butter from West Cameroon highlands. Cold-pressed, no additives.',
+    description: '100% pure unrefined shea butter from West  highlands. Cold-pressed, no additives.',
   },
 ];
 
@@ -397,3 +397,4 @@ const GroupBuying: React.FC = () => {
 };
 
 export default GroupBuying;
+

@@ -1,6 +1,6 @@
-﻿/**
- * src/utils/firebase/firebaseConfig.ts — Bambeh Marketplace
- * ✅ FIXED: getApps() guard + safe AppCheck + initializeFirebaseAppCheck export
+/**
+ * src/utils/firebase/firebaseConfig.ts � Bambeh Marketplace
+ * ? FIXED: getApps() guard + safe AppCheck + initializeFirebaseAppCheck export
  */
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
@@ -9,7 +9,7 @@ import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
-// ─── Firebase config (from .env) ─────────────────────────────────────────────
+// --- Firebase config (from .env) ---------------------------------------------
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -20,23 +20,23 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// ─── ✅ Safe singleton init (fixes app/duplicate-app crash) ──────────────────
+// --- ? Safe singleton init (fixes app/duplicate-app crash) ------------------
 const app: FirebaseApp =
   getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-// ─── Firebase services ───────────────────────────────────────────────────────
+// --- Firebase services -------------------------------------------------------
 export const auth: Auth = getAuth(app);
 export const db: Firestore = getFirestore(app);
 export const storage: FirebaseStorage = getStorage(app);
 
-// ─── AppCheck state (module-level singleton) ─────────────────────────────────
+// --- AppCheck state (module-level singleton) ---------------------------------
 let appCheckInstance: AppCheck | null = null;
 
 /**
  * initializeFirebaseAppCheck
  *
  * Called by SecurityInitializer.tsx on app startup.
- * Safe to call multiple times — only initializes AppCheck once.
+ * Safe to call multiple times � only initializes AppCheck once.
  *
  * @param recaptchaSiteKey  Your reCAPTCHA v3 site key.
  *                          Falls back to VITE_RECAPTCHA_SITE_KEY env var.
@@ -44,7 +44,7 @@ let appCheckInstance: AppCheck | null = null;
 export function initializeFirebaseAppCheck(
   recaptchaSiteKey?: string,
 ): AppCheck | null {
-  // Already initialized — return the existing instance
+  // Already initialized � return the existing instance
   if (appCheckInstance) return appCheckInstance;
 
   const siteKey = recaptchaSiteKey ?? import.meta.env.VITE_RECAPTCHA_SITE_KEY;
@@ -59,7 +59,7 @@ export function initializeFirebaseAppCheck(
     });
     return appCheckInstance;
   } catch (e) {
-    // AppCheck may already be initialized by another code path — safe to ignore
+    // AppCheck may already be initialized by another code path � safe to ignore
     console.warn("[Bambeh] AppCheck init skipped:", e);
     return null;
   }
@@ -68,13 +68,13 @@ export function initializeFirebaseAppCheck(
 export { app, appCheckInstance as appCheck };
 export default app;
 
-// Alias for Firestore — used by paymentService.ts
+// Alias for Firestore � used by paymentService.ts
 export const firestore = db;
 
-// API base URL — used by api.service.ts and exchange services
+// API base URL � used by api.service.ts and exchange services
 export const API_BASE_URL: string = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
 
-// API endpoints map — used by api.service.ts
+// API endpoints map � used by api.service.ts
 export const API_ENDPOINTS = {
   auth: {
     login:          `${API_BASE_URL}/auth/login`,

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TERMS OF SERVICE PAGE
  * Complete legal terms for Bambeh Marketplace
  */
@@ -57,7 +57,7 @@ export default function Terms() {
                 </li>
                 <li>Be legally capable of entering into binding contracts</li>
                 <li>
-                  Not be prohibited from using the Platform under Cameroonian
+                  Not be prohibited from using the Platform under ian
                   law
                 </li>
                 <li>Provide accurate and complete registration information</li>
@@ -278,7 +278,7 @@ export default function Terms() {
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
                 The Bambeh Platform, including its design, logo, text, graphics,
-                and software, is owned by ETS BUSHENERGY and protected by
+                and software, is owned by BAMBEH SARL and protected by
                 copyright, trademark, and other intellectual property laws. You
                 may not copy, modify, or distribute our content without written
                 permission.
@@ -349,7 +349,7 @@ export default function Terms() {
               <ol className="list-decimal pl-6 mb-4 text-gray-700 space-y-2">
                 <li>Good faith negotiation between the parties</li>
                 <li>Mediation, if negotiation fails</li>
-                <li>Arbitration or legal proceedings in Yaound�, Cameroon</li>
+                <li>Arbitration or legal proceedings in Yaound?, </li>
               </ol>
             </section>
 
@@ -360,8 +360,8 @@ export default function Terms() {
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
                 These Terms are governed by the laws of the Republic of
-                Cameroon. Any legal action related to these Terms must be
-                brought in the courts of Yaound�, Centre Region.
+                . Any legal action related to these Terms must be
+                brought in the courts of Yaound?, Centre Region.
               </p>
             </section>
 
@@ -395,7 +395,7 @@ export default function Terms() {
                     <strong>Phone:</strong> +237 6XX XXX XXX
                   </li>
                   <li>
-                    <strong>Address:</strong> ETS BUSHENERGY, Yaound�, Cameroon
+                    <strong>Address:</strong> BAMBEH SARL, Yaound?, 
                   </li>
                   <li>
                     <strong>Website:</strong> www.Bambeh.cm
@@ -417,3 +417,4 @@ export default function Terms() {
     </div>
   );
 }
+

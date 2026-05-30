@@ -2,7 +2,7 @@
  * ════════════════════════════════════════════════════════════════
  * src/components/posting/ImageUploadStep.tsx
  * Universal image upload step — drop into any posting form.
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ════════════════════════════════════════════════════════════════
  */
 

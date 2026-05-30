@@ -23,7 +23,7 @@ const JOB_CATEGORIES = [
   "Juridique", "Hôtellerie & Restauration", "Autre",
 ];
 
-const CAMEROON_CITIES = [
+const _CITIES = [
   "Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua",
   "Bafoussam", "Ngaoundéré", "Kumba", "Bertoua", "Limbe",
 ];
@@ -100,7 +100,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         location: {
           city: form.city,
           region: form.region || form.city,
-          country: "Cameroon",
+          country: "",
         },
         isRemote: form.isRemote,
         applicationDeadline: form.applicationDeadline || undefined,
@@ -191,7 +191,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
             <div className="px-3 py-2.5 bg-gray-50 border-r border-gray-300"><MapPin className="w-4 h-4 text-gray-400" /></div>
             <select value={form.city} onChange={set("city")} className="flex-1 px-2 py-2.5 text-sm outline-none bg-white">
               <option value="">Ville...</option>
-              {CAMEROON_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              {_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
         </div>
@@ -266,3 +266,4 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
 };
 
 export default PostJobListing;
+

@@ -63,7 +63,7 @@
   --font-size-base: 16px;
   --line-height-base: 1.5;
 
-  /* Transition speed — slightly slower than default for 60Hz screens common in Cameroon */
+  /* Transition speed — slightly slower than default for 60Hz screens common in  */
   --transition-fast:   150ms ease-out;
   --transition-normal: 250ms ease-out;
   --transition-slow:   400ms ease-out;
@@ -361,3 +361,4 @@ img {
   @apply fixed top-0 left-0 right-0 z-50
          bg-green-500 text-white text-center text-sm font-medium py-2 px-4;
 }
+

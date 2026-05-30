@@ -15,7 +15,7 @@ export default function About() {
         <div className="bg-gradient-to-r from-teal-600 to-teal-800 text-white rounded-2xl p-12 mb-8 text-center shadow-2xl">
           <h1 className="text-5xl font-bold mb-4">About Bambeh</h1>
           <p className="text-xl text-teal-100 max-w-3xl mx-auto">
-            Cameroon's online marketplace connecting buyers, sellers, job seekers, and service providers
+            's online marketplace connecting buyers, sellers, job seekers, and service providers
           </p>
         </div>
 
@@ -239,7 +239,7 @@ export default function About() {
               </div>
               <div>
                 <div className="text-4xl font-bold mb-2">100%</div>
-                <div className="text-purple-100">Cameroon Made</div>
+                <div className="text-purple-100"> Made</div>
               </div>
             </div>
           </div>
@@ -252,7 +252,7 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
               <p className="text-gray-700 leading-relaxed">
-                To empower Cameroonians by providing a safe, accessible, and efficient platform for buying, 
+                To empower ians by providing a safe, accessible, and efficient platform for buying, 
                 selling, finding jobs, and discovering services. We're building a stronger economy, one 
                 transaction at a time.
               </p>
@@ -264,7 +264,7 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h3>
               <p className="text-gray-700 leading-relaxed">
-                To become the most trusted marketplace in Cameroon, where every citizen has equal 
+                To become the most trusted marketplace in , where every citizen has equal 
                 opportunity to grow their business, find employment, and access essential services.
               </p>
             </div>
@@ -343,3 +343,4 @@ export default function About() {
     </div>
   );
 }
+

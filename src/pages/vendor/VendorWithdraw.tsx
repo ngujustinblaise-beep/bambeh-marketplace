@@ -57,17 +57,17 @@ const METHODS: MethodConfig[] = [
     id: 'bank', label: 'Bank Transfer', shortLabel: 'Bank', logo: '🏦',
     color: 'border-emerald-400 text-emerald-700', bg: 'bg-emerald-50',
     gradient: 'linear-gradient(135deg, #10b981, #059669)',
-    description: 'Direct transfer to your bank account in Cameroon',
+    description: 'Direct transfer to your bank account in ',
     fee: '500 XAF flat', time: '24 – 48 hours', minAmount: 10000, maxAmount: 5000000,
   },
 ];
 
-const CAMEROON_BANKS = [
+const _BANKS = [
   'Afriland First Bank', 'Société Générale Cameroun (SGC)',
-  'Standard Chartered Bank Cameroon', 'UBA Cameroon',
-  'Ecobank Cameroon', 'BICEC (Banque Internationale du Cameroun)',
-  'CCA Bank', 'CBC Bank', 'Atlantic Bank Cameroon',
-  'BGFI Bank Cameroon', 'NFC Bank', 'AMITY Bank', 'Autre (Other)',
+  'Standard Chartered Bank ', 'UBA ',
+  'Ecobank ', 'BICEC (Banque Internationale du Cameroun)',
+  'CCA Bank', 'CBC Bank', 'Atlantic Bank ',
+  'BGFI Bank ', 'NFC Bank', 'AMITY Bank', 'Autre (Other)',
 ];
 
 const formatXAF = (n: number) => `${n.toLocaleString('fr-CM')} XAF`;
@@ -84,7 +84,7 @@ const validate = (method: PaymentMethod, fields: Record<string, string>, amount:
   if (method === 'mtn' || method === 'orange') {
     if (!fields.phone) errs.phone = 'Phone number is required';
     else if (!/^(6[5-9]\d{7}|6[0-4]\d{7})$/.test(fields.phone.replace(/\s/g, '')))
-      errs.phone = 'Enter a valid Cameroon number (e.g. 677 000 000)';
+      errs.phone = 'Enter a valid  number (e.g. 677 000 000)';
     if (method === 'mtn' && fields.phone && !fields.phone.replace(/\s/g, '').startsWith('67') && !fields.phone.replace(/\s/g, '').startsWith('68'))
       errs.phone = 'MTN numbers start with 67 or 68';
     if (method === 'orange' && fields.phone && !fields.phone.replace(/\s/g, '').startsWith('69') && !fields.phone.replace(/\s/g, '').startsWith('65'))
@@ -456,7 +456,7 @@ const VendorWithdraw: React.FC = () => {
                       onChange={e => setField('bankName', e.target.value)}
                       className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-300 text-sm ${errors.bankName ? 'border-red-400 bg-red-50' : 'border-gray-200'} bg-white`}>
                       <option value="">-- Select your bank --</option>
-                      {CAMEROON_BANKS.map(b => <option key={b} value={b}>{b}</option>)}
+                      {_BANKS.map(b => <option key={b} value={b}>{b}</option>)}
                     </select>
                     {errors.bankName && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.bankName}</p>}
                   </div>
@@ -606,3 +606,4 @@ const VendorWithdraw: React.FC = () => {
 };
 
 export default VendorWithdraw;
+

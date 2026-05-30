@@ -34,7 +34,7 @@ const JobsCategory: React.FC = () => {
                   Sample {label} Job {i + 1}
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  Yaounde, Cameroon · Full-time
+                  Yaounde,  · Full-time
                 </p>
                 <p className="text-sm text-teal-600 font-medium mt-2">
                   200,000 XAF/month
@@ -49,3 +49,4 @@ const JobsCategory: React.FC = () => {
 
 }
 export default JobsCategory;
+

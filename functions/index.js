@@ -4,9 +4,9 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * 
  * Version: 3.0.0 - Production Enterprise Edition
- * Company: ETS BUSHENERGY (RC/YAO/2020/A/1026)
+ * Company: BAMBEH SARL (RC/YAO/2020/A/1026)
  * Developer: Big Blaise
- * Location: Yaoundé, Cameroon
+ * Location: Yaoundé, 
  * Architecture: Microservices with Clean Architecture
  * 
  * Features:
@@ -128,7 +128,7 @@ const CONFIG = {
   DEFAULT_CURRENCY: 'XAF',
   SUPPORTED_CURRENCIES: ['XAF', 'USD', 'EUR'],
   
-  // Cameroon Mobile Money
+  //  Mobile Money
   MTN_PREFIXES: ['650', '651', '652', '653', '654', '680', '681', '682', '683'],
   ORANGE_PREFIXES: ['655', '656', '657', '658', '659', '690', '691', '692', '693'],
   
@@ -666,9 +666,9 @@ async function parallelQueries(...queries) {
 }
 
 /**
- * Validate Cameroon Phone Number
+ * Validate  Phone Number
  */
-function validateCameroonPhone(phone) {
+function validatePhone(phone) {
   const cleaned = phone.replace(/[\s\-+]/g, '');
   
   if (cleaned.length !== 9) {
@@ -845,8 +845,8 @@ exports.health = functions.runWith({ memory: "256MB" }).https.onRequest(async (r
       version: '3.0.0',
       environment: CONFIG.NODE_ENV,
       timestamp: new Date().toISOString(),
-      location: 'Yaoundé, Cameroon',
-      company: 'ETS BUSHENERGY',
+      location: 'Yaoundé, ',
+      company: 'BAMBEH SARL',
       performance: {
         firestoreLatency: `${firestoreLatency}ms`,
         cacheHitRate: 'N/A', // Calculate from metrics
@@ -883,9 +883,9 @@ app.post('/v3/users',
     // Validate phone if provided
     let phoneProvider = null;
     if (phoneNumber) {
-      const phoneValidation = validateCameroonPhone(phoneNumber);
+      const phoneValidation = validatePhone(phoneNumber);
       if (!phoneValidation.valid) {
-        throw new AppError('Invalid Cameroon phone number', 400, 'INVALID_PHONE');
+        throw new AppError('Invalid  phone number', 400, 'INVALID_PHONE');
       }
       phoneProvider = phoneValidation.provider;
     }
@@ -916,7 +916,7 @@ app.post('/v3/users',
       isVerified: false,
       avatar: null,
       location: {
-        country: 'Cameroon',
+        country: '',
         city: '',
         region: '',
       },
@@ -948,7 +948,7 @@ app.post('/v3/users',
       userRecord.uid,
       'welcome',
       'Welcome to Bambé Marketplace!',
-      'Thank you for joining Cameroon\'s premier marketplace platform.',
+      'Thank you for joining \'s premier marketplace platform.',
       { isWelcome: true }
     );
     
@@ -1054,9 +1054,9 @@ app.put('/v3/users/:userId',
     
     // Validate phone if being updated
     if (updateData.phoneNumber) {
-      const phoneValidation = validateCameroonPhone(updateData.phoneNumber);
+      const phoneValidation = validatePhone(updateData.phoneNumber);
       if (!phoneValidation.valid) {
-        throw new AppError('Invalid Cameroon phone number', 400, 'INVALID_PHONE');
+        throw new AppError('Invalid  phone number', 400, 'INVALID_PHONE');
       }
       updateData.phoneProvider = phoneValidation.provider;
     }
@@ -1098,5 +1098,5 @@ exports.api = functions
   .https.onRequest(app);
 
 console.log('✅ Bambé Marketplace Enterprise Cloud Functions loaded successfully!');
-console.log('🇨🇲 Proudly developed in Yaoundé, Cameroon');
+console.log('🇨🇲 Proudly developed in Yaoundé, ');
 console.log('🚀 Version 3.0.0 - Enterprise Production Edition');

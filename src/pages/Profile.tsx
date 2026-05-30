@@ -27,7 +27,7 @@ export default function Profile() {
               name: data.name || data.displayName || 'Bambeh User',
               email: data.email || '',
               phone: data.phone || data.phoneNumber || '',
-              location: data.location || 'Cameroon',
+              location: data.location || '',
               bio: data.bio || 'Bambeh Marketplace member',
               avatar: data.avatar || data.photoURL,
               joinedAt: data.joinedAt || data.createdAt || new Date().toISOString(),
@@ -41,7 +41,7 @@ export default function Profile() {
     } catch {}
     const guest: UserProfile = {
       id: 'guest', name: 'Guest User', email: '', phone: '',
-      location: 'Cameroon', bio: 'Welcome to Bambeh!', joinedAt: new Date().toISOString(),
+      location: '', bio: 'Welcome to Bambeh!', joinedAt: new Date().toISOString(),
     };
     setProfile(guest);
     setForm(guest);
@@ -147,3 +147,4 @@ export default function Profile() {
     </div>
   );
 }
+

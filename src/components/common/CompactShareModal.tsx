@@ -37,7 +37,7 @@ const useSwipeToClose = (onSwipe: () => void, threshold = 100) => {
 export default function CompactShareModal({
   isOpen, onClose, shareUrl,
   shareTitle = 'Join Bambeh Marketplace!',
-  shareText  = "Check out Bambeh Marketplace - Cameroon's premier marketplace with only 1% transaction fee!",
+  shareText  = "Check out Bambeh Marketplace - Online Marketplace with only 1% transaction fee!",
 }: CompactShareModalProps) {
   const [copied, setCopied] = useState(false);
   const swipeHandlers       = useSwipeToClose(onClose);
@@ -159,3 +159,4 @@ export default function CompactShareModal({
     </div>
   );
 }
+

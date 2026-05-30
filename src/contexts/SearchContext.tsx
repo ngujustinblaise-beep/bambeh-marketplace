@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SEARCH CONTEXT - Multi-Parameter Search System
  */
 

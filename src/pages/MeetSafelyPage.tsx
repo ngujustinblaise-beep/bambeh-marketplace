@@ -14,7 +14,7 @@ const TIPS = [
     points: [
       'Choose busy locations: supermarkets, shopping centres, banks',
       'Avoid isolated areas, parking lots, or your home address',
-      'Popular spots in Cameroon: Marché Central, shopping malls, hotel lobbies',
+      'Popular spots in : Marché Central, shopping malls, hotel lobbies',
       'Meet during daytime hours whenever possible',
     ],
   },
@@ -186,3 +186,4 @@ export default function MeetSafelyPage() {
     </div>
   );
 }
+

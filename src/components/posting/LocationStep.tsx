@@ -35,18 +35,18 @@
  *
  * OR use the onNext prop pattern below.
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ════════════════════════════════════════════════════════════════
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Plus, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 
-// ── Cameroon Location Hierarchy (all 10 regions) ─────────────────────────────
+// ──  Location Hierarchy (all 10 regions) ─────────────────────────────
 // This is the LIVE version — pulls from localStorage for user-added locations
 // so new locations appear for everyone immediately (Issue 3 + 11).
 
-export const CAMEROON_REGIONS: Record<string, string[]> = {
+export const _REGIONS: Record<string, string[]> = {
   'Centre':          ['Yaoundé', 'Mbalmayo', 'Obala', 'Bafia', 'Nanga Eboko', 'Akonolinga', 'Mfou'],
   'Littoral':        ['Douala', 'Nkongsamba', 'Edéa', 'Loum', 'Mbanga', 'Kumba'],
   'West':            ['Bafoussam', 'Dschang', 'Mbouda', 'Foumban', 'Bangangté', 'Bandjoun'],
@@ -82,7 +82,7 @@ function saveCustomLocation(region: string, city: string) {
 
 // ── Build full regions map merging base + custom ──────────────────────────────
 function buildRegionsMap(): Record<string, string[]> {
-  const base   = { ...CAMEROON_REGIONS };
+  const base   = { ..._REGIONS };
   const custom = getCustomLocations();
   for (const { region, city } of custom) {
     if (!base[region]) base[region] = [];
@@ -298,4 +298,5 @@ const LocationStep: React.FC<LocationStepProps> = ({
 
 }
 export default LocationStep;
+
 

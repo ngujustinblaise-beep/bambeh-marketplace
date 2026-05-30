@@ -1,4 +1,4 @@
-﻿/**
+/**
  * HOW TO POST AD PAGE
  */
 
@@ -75,7 +75,7 @@ export default function HowToPostAd() {
           </div>
 
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 mt-8">
-            <h3 className="font-bold text-gray-900 mb-3">🎁 Earn Zerm Coins</h3>
+            <h3 className="font-bold text-gray-900 mb-3">?? Earn Zerm Coins</h3>
             <p className="text-gray-700">
               Get 2 Zerm Coins for each approved listing!
             </p>
@@ -87,7 +87,7 @@ export default function HowToPostAd() {
             to="/help"
       className="text-teal-600 hover:text-teal-700 font-semibold"
           >
-            ← Back to Help Center
+            ? Back to Help Center
           </Link>
         </div>
       </div>

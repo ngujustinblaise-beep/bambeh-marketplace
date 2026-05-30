@@ -33,7 +33,7 @@ const NOTCHPAY_DOMAINS = [
 ].join(" ");
 
 const RAILWAY_DOMAINS = [
-  "https://bambeh-backend-production.up.railway.app",
+  "https://bambeh-backend-production-6bca.up.railway.app",
 ].join(" ");
 
 const SENTRY_DOMAINS = [

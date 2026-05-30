@@ -2,7 +2,7 @@
  * BambehImage.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * ─── STEP 24: IMAGE OPTIMISATION FOR CAMEROON 3G / 2G ────────────────────────
+ * ─── STEP 24: IMAGE OPTIMISATION FOR  3G / 2G ────────────────────────
  *
  * Problems this component solves:
  *
@@ -16,7 +16,7 @@
  *  2. BANDWIDTH WASTE
  *     PNG/JPEG images sent to browsers that support WebP waste 25–40% bandwidth.
  *     We use <picture> + <source type="image/webp"> so modern browsers (Chrome,
- *     Firefox, Edge — i.e. every Android phone in Cameroon) get WebP
+ *     Firefox, Edge — i.e. every Android phone in ) get WebP
  *     automatically, while older browsers fall back to the original format.
  *
  *  3. EAGER LOADING OFF-SCREEN IMAGES
@@ -397,3 +397,4 @@ export const VendorBannerImage: React.FC<Omit<BambehImageProps, "width" | "heigh
 );
 
 export default BambehImage;
+

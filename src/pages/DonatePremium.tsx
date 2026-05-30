@@ -333,7 +333,7 @@ export default function DonatePremium() {
             <Heart className="w-8 h-8 text-white fill-white" />
           </div>
           <h1 className="text-white text-2xl font-bold mb-2">Support Bambeh</h1>
-          <p className="text-purple-100 text-sm">Help us build a better marketplace for Cameroon</p>
+          <p className="text-purple-100 text-sm">Help us build a better marketplace for </p>
         </div>
       </div>
 
@@ -652,3 +652,4 @@ create table if not exists donations (
 
 ════════════════════════════════════════════════════════════════════════════════
 */
+

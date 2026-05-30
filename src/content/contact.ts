@@ -22,7 +22,7 @@ export const contactInfo = {
       },
       {
         name: "Headquarters",
-        location: "Yaound�, Cameroon",
+        location: "Yaound�, ",
         purpose: "Primary jurisdiction for all legal contracts and agreements.",
       },
     ],
@@ -47,3 +47,4 @@ export const contactInfo = {
     footer: "� 2025 Bambeh. Tous droits r�serv�s.",
   },
 };
+

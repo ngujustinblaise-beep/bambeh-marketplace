@@ -56,7 +56,7 @@ export default function SplashScreen() {
         <div className="text-center mb-12">
           <h1 className="text-6xl font-bold text-white mb-3 drop-shadow-lg animate-fade-in-up">Bambeh</h1>
           <p className="text-xl text-teal-100 drop-shadow animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Cameroon's Premier Marketplace
+            Online Marketplace
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export default function SplashScreen() {
       </div>
 
       <div className="absolute bottom-8 text-center">
-        <p className="text-teal-200 text-sm">by ETS BUSHENERGY</p>
+        <p className="text-teal-200 text-sm">by BAMBEH SARL</p>
         <p className="text-teal-300 text-xs mt-1">Version 1.0.0</p>
       </div>
 
@@ -91,4 +91,5 @@ export default function SplashScreen() {
     </div>
   );
 }
+
 

@@ -21,7 +21,7 @@ export interface Job {
 
 const MOCK_JOBS: Job[] = [
   {
-    id: "1", title: "Senior Software Engineer", company: "TechCorp Cameroon",
+    id: "1", title: "Senior Software Engineer", company: "TechCorp ",
     companyLogo: "https://via.placeholder.com/100",
     description: "We are looking for an experienced software engineer to join our growing team.",
     requirements: ["5+ years of experience in software development", "Strong knowledge of React, TypeScript, Node.js", "Experience with cloud platforms (AWS, Azure)", "Excellent problem-solving skills"],
@@ -149,3 +149,4 @@ class JobsService {
 }
 
 export const jobsService = new JobsService();
+

@@ -39,7 +39,7 @@ function mapRow(row: Record<string, unknown>): ServiceListing {
     location: {
       city: row.city as string,
       region: row.region as string,
-      country: (row.country as string) ?? "Cameroon",
+      country: (row.country as string) ?? "",
     },
     isOnlineService: Boolean(row.is_online_service),
     deliveryDays: row.delivery_days as number | undefined,
@@ -133,7 +133,7 @@ export async function createService(
         images: payload.images,
         city: payload.location.city,
         region: payload.location.region,
-        country: payload.location.country ?? "Cameroon",
+        country: payload.location.country ?? "",
         is_online_service: payload.isOnlineService,
         delivery_days: payload.deliveryDays,
         payment_methods: payload.paymentMethods,
@@ -221,3 +221,4 @@ export async function getMyServices(
     return { data: [], total: 0, page: 1, pageSize: 100, hasNextPage: false, error: message };
   }
 }
+

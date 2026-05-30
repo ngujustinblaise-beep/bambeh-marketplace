@@ -33,7 +33,7 @@ function mapRow(row: Record<string, unknown>): MarketplaceItem {
     location: {
       city: row.city as string,
       region: row.region as string,
-      country: (row.country as string) ?? "Cameroon",
+      country: (row.country as string) ?? "",
       latitude: row.latitude as number | undefined,
       longitude: row.longitude as number | undefined,
       address: row.address as string | undefined,
@@ -108,7 +108,7 @@ export async function createMarketplaceItem(
       category: payload.category, subcategory: payload.subcategory, price_xaf: payload.priceXAF,
       is_negotiable: payload.isNegotiable, condition: payload.condition, images,
       city: payload.location.city, region: payload.location.region,
-      country: payload.location.country ?? "Cameroon",
+      country: payload.location.country ?? "",
       latitude: payload.location.latitude, longitude: payload.location.longitude,
       address: payload.location.address, delivery_option: payload.deliveryOption,
       payment_methods: payload.paymentMethods, tags: payload.tags ?? [],
@@ -176,3 +176,4 @@ export async function markItemAsSold(id: string, sellerId: string): Promise<Mark
     return { success: false, error: err instanceof Error ? err.message : "Failed" };
   }
 }
+

@@ -1,4 +1,4 @@
-﻿import React, { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { Lock, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -71,9 +71,9 @@ export const LockedContent: React.FC<LockedContentProps> = ({
           </Button>
 
           <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-            <p>✓ Unlimited views in all categories</p>
-            <p>✓ Contact sellers and employers directly</p>
-            <p>✓ Priority listings & ad-free experience</p>
+            <p>? Unlimited views in all categories</p>
+            <p>? Contact sellers and employers directly</p>
+            <p>? Priority listings & ad-free experience</p>
           </div>
         </div>
       </Card>

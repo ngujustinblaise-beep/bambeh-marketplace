@@ -86,7 +86,7 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         category: row.category as string | undefined,
         city: row.city as string | undefined,
         region: row.region as string | undefined,
-        country: (row.country as string) ?? "Cameroon",
+        country: (row.country as string) ?? "",
         phone: row.phone as string | undefined,
         whatsapp: row.whatsapp as string | undefined,
         isVerified: Boolean(row.is_verified),
@@ -120,7 +120,7 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         category: data.category,
         city: data.city,
         region: data.region,
-        country: data.country ?? "Cameroon",
+        country: data.country ?? "",
         phone: data.phone,
         whatsapp: data.whatsapp,
         status: "pending",
@@ -185,3 +185,4 @@ export function useVendor(): VendorContextValue {
 }
 
 export default VendorContext;
+

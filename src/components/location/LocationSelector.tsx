@@ -1,10 +1,10 @@
 /**
  * src/components/location/LocationSelector.tsx
- * Bambeh Marketplace — Cameroon Location Selector
+ * Bambeh Marketplace —  Location Selector
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState, useMemo } from "react";
-import { CAMEROON_REGIONS } from "@/data/cameroonLocations";
+import { _REGIONS } from "@/data/Locations";
 
 interface LocationDetails {
   city: string;
@@ -38,7 +38,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 
   const cities = useMemo(() => {
     if (!selectedRegion) return [];
-    return CAMEROON_REGIONS.find((r) => r.name === selectedRegion)?.cities ?? [];
+    return _REGIONS.find((r) => r.name === selectedRegion)?.cities ?? [];
   }, [selectedRegion]);
 
   const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -79,7 +79,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
             className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white"
           >
             <option value="">-- Région --</option>
-            {CAMEROON_REGIONS.map((r) => (
+            {_REGIONS.map((r) => (
               <option key={r.code} value={r.name}>{r.name}</option>
             ))}
           </select>
@@ -129,3 +129,4 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 };
 
 export default LocationSelector;
+

@@ -5,7 +5,7 @@
  * TanStack Query (React Query v5) global client configuration.
  *
  * Configured for:
- * - Aggressive caching suitable for Cameroon 3G networks
+ * - Aggressive caching suitable for  3G networks
  * - Background refetch-on-focus for stale data
  * - Automatic retry with exponential backoff
  * - Smart stale times per query type (set via meta.staleTime)
@@ -36,10 +36,10 @@ export const queryClient = new QueryClient({
       // staleTime: how long data is considered fresh (no background refetch)
       // gcTime: how long unused data stays in memory cache
       //
-      // These defaults are tuned for Cameroon 3G:
+      // These defaults are tuned for  3G:
       // - 5min stale time prevents constant re-fetching on every tab switch
       // - 10min cache keeps listings available offline briefly
-      staleTime: 5 * 60 * 1000,   // 5 minutes — critical for Cameroon 3G
+      staleTime: 5 * 60 * 1000,   // 5 minutes — critical for  3G
       gcTime: 10 * 60_000,        // 10 minutes
 
       // ── Refetch Policy ────────────────────────────────────────────────────
@@ -165,3 +165,4 @@ export const invalidateVendorDashboard = (vendorId: string) =>
   queryClient.invalidateQueries({ queryKey: queryKeys.vendor.dashboard(vendorId) });
 
 export default queryClient;
+

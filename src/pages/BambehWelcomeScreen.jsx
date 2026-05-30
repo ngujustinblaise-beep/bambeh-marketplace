@@ -748,7 +748,7 @@ export default function BambehWelcomeScreen() {
           flexWrap: "wrap",
         }}
       >
-        {["🇨🇲 Cameroon", "4 Languages", "6 Categories", "1 Family"].map(
+        {["🇨🇲 ", "4 Languages", "6 Categories", "1 Family"].map(
           (item, i) => (
             <span
               key={i}
@@ -768,3 +768,4 @@ export default function BambehWelcomeScreen() {
     </div>
   );
 }
+

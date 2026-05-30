@@ -18,7 +18,7 @@
  *   import { useAuth } from '@/hooks/useSupabaseAuth';
  *   const { user, isVendor, isAdmin, loading } = useAuth();
  *
- * © 2026 ETS BUSHENERGY / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════
  */
 

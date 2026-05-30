@@ -150,7 +150,7 @@ const sampleReports: Report[] = [
     status: "pending",
     source: "vendor_section",
     reporterId: "VND-456",
-    reporterName: "TechZone Cameroon",
+    reporterName: "TechZone ",
     reporterEmail: "techzone@email.com",
     isVendor: true,
     subject: "Customer Harassment",
@@ -467,3 +467,4 @@ export const useReports = (): ReportContextType => {
 };
 
 export default ReportContext;
+

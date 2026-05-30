@@ -1,10 +1,10 @@
-﻿/**
- * 🔐 ANTI-TAMPERING - Detect App Modifications
+/**
+ * ?? ANTI-TAMPERING - Detect App Modifications
  * Prevents code injection and unauthorized modifications
  */
 
 export const initializeAntiTampering = () => {
-  console.log("🔐 Anti-tampering protection activated");
+  console.log("?? Anti-tampering protection activated");
 
   // Detect debugging attempts
   const detectDebugger = () => {
@@ -13,7 +13,7 @@ export const initializeAntiTampering = () => {
     const after = Date.now();
 
     if (after - before > 100) {
-      console.warn("⚠️ SECURITY ALERT: Debugger detected!");
+      console.warn("?? SECURITY ALERT: Debugger detected!");
       // In production, you might want to disable certain features
     }
   };
@@ -26,7 +26,7 @@ export const initializeAntiTampering = () => {
   const originalConsole = window.console;
   Object.freeze(window.console);
 
-  console.log("✅ Anti-tampering active");
+  console.log("? Anti-tampering active");
 
 // Auto-initialize
 initializeAntiTampering();

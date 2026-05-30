@@ -77,7 +77,7 @@ function mapVendorRow(row: Record<string, unknown>): VendorProfile {
     category: row.category as string,
     city: row.city as string,
     region: row.region as string,
-    country: (row.country as string) ?? "Cameroon",
+    country: (row.country as string) ?? "",
     phone: row.phone as string,
     email: row.email as string,
     website: row.website as string | undefined,
@@ -144,7 +144,7 @@ export async function createVendorProfile(
         category: payload.category,
         city: payload.city,
         region: payload.region,
-        country: payload.country ?? "Cameroon",
+        country: payload.country ?? "",
         phone: payload.phone,
         email: payload.email,
         website: payload.website,
@@ -376,3 +376,4 @@ export async function getVendorSubscription(
     return { data: null, error: message };
   }
 }
+

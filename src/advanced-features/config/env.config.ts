@@ -10,7 +10,7 @@ export const ENV_CONFIG = {
     API_KEY: "YOUR_GOOGLE_MAPS_API_KEY_HERE", // Get from Google Cloud Console,
     LIBRARIES: ["places", "geometry", "directions"] as const,
     DEFAULT_CENTER: {
-      lat: 3.848, // Yaoundé, Cameroon,
+      lat: 3.848, // Yaoundé, ,
       lng: 11.5021,
     },
     DEFAULT_ZOOM: 13,
@@ -85,3 +85,4 @@ export const ENV_CONFIG = {
 };
 
 export default ENV_CONFIG;
+

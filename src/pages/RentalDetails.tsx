@@ -1,23 +1,37 @@
+/**
+ * src/pages/RentalDetails.tsx
+ * Bambeh Marketplace — Rental Property Detail Page
+ *
+ * CHANGES FROM ORIGINAL:
+ *  ✅ ActionButtons (Contact Vendor / Report Ad / Share) added after description
+ *  ✅ Existing Share handler wired into ActionButtons via onShare prop
+ *  ✅ Existing toggleFavorite kept; share/report now unified in ActionButtons
+ *
+ * © 2026 Bambeh Marketplace. All rights reserved.
+ */
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Bed, Bath, Home, Phone, Mail, Share2, Heart, AlertCircle, Check } from 'lucide-react';
+import { ArrowLeft, MapPin, Bed, Bath, Home, Phone, Mail, Heart, AlertCircle, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
+// ✅ NEW: shared action buttons
+import { ActionButtons } from '@/components/listings/ActionButtons';
 
 interface RentalProperty {
   id: string;
   title: string;
-  type: string; // apartment, house, studio, commercial,
+  type: string;
   price: number;
   currency: string;
-  period: string; // monthly, yearly,
+  period: string;
   location: string;
   bedrooms: number;
   bathrooms: number;
-  area: number; // in square meters,
+  area: number;
   description: string;
   images: string[];
   amenities: string[];
@@ -48,11 +62,7 @@ export default function RentalDetails() {
   const fetchRentalDetails = async () => {
     try {
       setLoading(true);
-      
-      // TODO: Replace with your Firebase query
-      // Example: const doc = await getDoc(doc(db, 'rentals', id));
-      
-      // MOCK DATA for demonstration - Replace with Firebase call
+      // TODO: Replace with your Firebase / Supabase query
       const mockRental: RentalProperty = {
         id: id || '1',
         title: 'Luxury 3 Bedroom Apartment in Bastos',
@@ -92,21 +102,18 @@ export default function RentalDetails() {
 
   const handleContact = (method: 'phone' | 'email') => {
     if (!rental) return;
-
     if (method === 'phone') {
       window.location.href = `tel:${rental.ownerPhone}`;
     } else {
-      window.location.href = `mailto:${rental.ownerEmail}?subject=Inquiry about ${rental.title}`;
+      window.location.href = `mailto:${rental.ownerEmail}?subject=Inquiry about ${encodeURIComponent(rental.title)}`;
     }
   };
 
+  // ✅ Share handler passed to ActionButtons as onShare prop
   const handleShare = async () => {
     try {
       if (navigator.share) {
-        await navigator.share({ title: rental?.title,
-          text: `Check out this rental: ${rental?.title}`,
-          url: window.location.href,
-        });
+        await navigator.share({ title: rental?.title, text: `Check out this rental: ${rental?.title}`, url: window.location.href });
       } else {
         await navigator.clipboard.writeText(window.location.href);
         toast({ title: 'Link Copied', description: 'Link copied to clipboard' });
@@ -152,13 +159,11 @@ export default function RentalDetails() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={handleShare}>
-              <Share2 className="h-5 w-5" />
-            </Button>
             <Button
               variant="ghost" 
               size="icon"
               onClick={toggleFavorite}
+              aria-label={isFavorite ? 'Remove from favourites' : 'Save to favourites'}
               className={isFavorite ? 'text-red-500' : ''}
             >
               <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
@@ -177,12 +182,12 @@ export default function RentalDetails() {
           />
         </div>
         
-        {/* Image Navigation Dots */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
           {rental.images.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
+              aria-label={`View image ${index + 1}`}
               className={`w-2 h-2 rounded-full transition-all ${
                 index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50'
               }`}
@@ -190,7 +195,6 @@ export default function RentalDetails() {
           ))}
         </div>
 
-        {/* Availability Badge */}
         {!rental.available && (
           <div className="absolute top-4 right-4">
             <Badge variant="destructive">Not Available</Badge>
@@ -267,10 +271,19 @@ export default function RentalDetails() {
         </Card>
 
         {/* Description */}
-        <Card className="p-4 mb-6">
+        <Card className="p-4 mb-4">
           <h2 className="font-semibold text-lg mb-3">Description</h2>
           <p className="text-muted-foreground whitespace-pre-line">{rental.description}</p>
         </Card>
+
+        {/* ✅ NEW: Contact / Report / Share action buttons */}
+        <ActionButtons
+          vendorPhone={rental.ownerPhone}
+          adTitle={rental.title}
+          adId={rental.id}
+          adType="rentals"
+          onShare={handleShare}
+        />
 
         {/* Amenities */}
         <Card className="p-4 mb-6">
@@ -288,17 +301,15 @@ export default function RentalDetails() {
         {/* Owner Information */}
         <Card className="p-4 mb-6">
           <h2 className="font-semibold text-lg mb-3">Contact Owner</h2>
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                <span className="font-semibold text-primary">
-                  {rental.ownerName.split(' ').map(n => n[0]).join('')}
-                </span>
-              </div>
-              <div>
-                <div className="font-medium">{rental.ownerName}</div>
-                <div className="text-sm text-muted-foreground">Property Owner</div>
-              </div>
+          <div className="flex items-center">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+              <span className="font-semibold text-primary">
+                {rental.ownerName.split(' ').map(n => n[0]).join('')}
+              </span>
+            </div>
+            <div>
+              <div className="font-medium">{rental.ownerName}</div>
+              <div className="text-sm text-muted-foreground">Property Owner</div>
             </div>
           </div>
         </Card>
@@ -307,19 +318,11 @@ export default function RentalDetails() {
       {/* Fixed Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            onClick={() => handleContact('phone')}
-            className="w-full"
-          >
+          <Button variant="outline" onClick={() => handleContact('phone')} className="w-full">
             <Phone className="mr-2 h-4 w-4" />
             Call
           </Button>
-          <Button
-            onClick={() => handleContact('email')}
-            className="w-full"
-            disabled={!rental.available}
-          >
+          <Button onClick={() => handleContact('email')} className="w-full" disabled={!rental.available}>
             <Mail className="mr-2 h-4 w-4" />
             {rental.available ? 'Email Inquiry' : 'Not Available'}
           </Button>

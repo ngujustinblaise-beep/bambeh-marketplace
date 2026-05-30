@@ -1,4 +1,4 @@
-﻿import { User as FirebaseUser } from "firebase/auth";
+import { User as FirebaseUser } from "firebase/auth";
 import type { User } from "../types";
 
 export const mapFirebaseUser = (firebaseUser: FirebaseUser): Partial<User> => {

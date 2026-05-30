@@ -4,7 +4,7 @@
  *
  * ─── STEP 25: SERVICE WORKER / OFFLINE STRATEGY ───────────────────────────────
  *
- * Cameroon network reality:
+ *  network reality:
  *  - MTN/Orange 3G:  1–3 Mbps, 200–600ms latency, frequent drops
  *  - MTN/Orange 2G:  50–200 Kbps, 800ms–3s latency (common outside Yaoundé/Douala)
  *  - WiFi hotspots:  shared bandwidth, 300ms–2s latency
@@ -19,7 +19,7 @@
  *
  *  SUPABASE API (listings, jobs, profiles)
  *  → NetworkFirst with 4s timeout: try network, fall back to cache if slow/offline.
- *    4s timeout is calibrated for Cameroon 3G — fast enough to not feel slow,
+ *    4s timeout is calibrated for  3G — fast enough to not feel slow,
  *    long enough to give a 3G connection a real chance before going offline.
  *    Cache TTL: 5 minutes (matches queryClient staleTime).
  *
@@ -205,7 +205,7 @@ export default defineConfig({
       manifest: {
         name: "Bambeh Marketplace",
         short_name: "Bambeh",
-        description: "Cameroon's #1 Online Marketplace",
+        description: "'s #1 Online Marketplace",
         theme_color: "#0d9488",
         background_color: "#ffffff",
         display: "standalone",
@@ -233,7 +233,7 @@ export default defineConfig({
 
         // ── SW activation ─────────────────────────────────────────────────
         // skipWaiting: new SW activates immediately without waiting for
-        // all tabs to close. Critical for Cameroon users who leave app open
+        // all tabs to close. Critical for  users who leave app open
         // for days and would otherwise never get updates.
         skipWaiting: true,
         clientsClaim: true,
@@ -252,7 +252,7 @@ export default defineConfig({
         runtimeCaching: [
 
           // 1. SUPABASE REST API — NetworkFirst, 4s timeout
-          // 4s calibrated for Cameroon 3G. Serves stale cache if offline/slow.
+          // 4s calibrated for  3G. Serves stale cache if offline/slow.
           // TTL matches queryClient staleTime (5 minutes).
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/.*/i,
@@ -406,3 +406,4 @@ export default defineConfig({
     exclude: ["firebase", "@firebase/app"],
   },
 });
+

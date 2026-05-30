@@ -35,7 +35,7 @@ export const WELCOME_MESSAGES: Record<string, {
   en: {
     greeting:   'Welcome to Bambeh',
     tagline:    'The Unstoppable Grind',
-    subTagline: "Cameroon's #1 Online Marketplace — Buy, Sell, Connect.",
+    subTagline: "'s #1 Online Marketplace — Buy, Sell, Connect.",
     cta:        'Get Started',
   },
   fr: {
@@ -53,7 +53,7 @@ export const WELCOME_MESSAGES: Record<string, {
   pidgin: {
     greeting:   'Welcome for Bambeh',
     tagline:    'Di Grind No Go Stop',
-    subTagline: 'Cameroon Number One Online Market — Buy, Sell, Connect.',
+    subTagline: ' Number One Online Market — Buy, Sell, Connect.',
     cta:        'Make We Start',
   },
   ha: {
@@ -84,3 +84,4 @@ export function getCurrentWelcome() {
   const lang = getCurrentLanguage();
   return WELCOME_MESSAGES[lang.code] ?? WELCOME_MESSAGES['en'];
 }
+

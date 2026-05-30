@@ -18,7 +18,7 @@ export type SupportedLanguage =
   | "ar" // Arabic
   | "ha" // Hausa
   | "ff" // Fulfulde (Fula)
-  | "pcm" // Pidgin English (Nigerian/Cameroon Pidgin)
+  | "pcm" // Pidgin English (Nigerian/ Pidgin)
   | "ewo" // Ewondo (Future)
   | "dua" // Duala (Future)
   | "nge"; // Ngemba (Future)
@@ -121,7 +121,7 @@ i18n
   // Initialize i18next
   .init({
     // Default language
-    fallbackLng: "fr", // French as default for Cameroon
+    fallbackLng: "fr", // French as default for 
 
     // Supported languages - Now using dynamic enabled languages
     supportedLngs: getEnabledLanguages(),
@@ -164,3 +164,4 @@ i18n
   });
 
 export default i18n;
+

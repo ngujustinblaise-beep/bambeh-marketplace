@@ -17,7 +17,7 @@ export default function SocialShareButton({ title, description, itemType, url, c
   const [copied, setCopied]       = useState(false);
 
   const shareUrl     = url || (typeof window !== 'undefined' ? window.location.href : '');
-  const shareMessage = `${title}\n\n${description}\n\n🔗 ${shareUrl}\n\n📱 Bambeh - Cameroon's Premier Marketplace!\n💚 Only 1% Transaction Fee!`;
+  const shareMessage = `${title}\n\n${description}\n\n🔗 ${shareUrl}\n\n📱 Bambeh - Online Marketplace!\n💚 Only 1% Transaction Fee!`;
   const encodedMessage = encodeURIComponent(shareMessage);
   const encodedTitle   = encodeURIComponent(title);
   const encodedUrl     = encodeURIComponent(shareUrl);
@@ -134,3 +134,4 @@ export default function SocialShareButton({ title, description, itemType, url, c
     </>
   );
 }
+

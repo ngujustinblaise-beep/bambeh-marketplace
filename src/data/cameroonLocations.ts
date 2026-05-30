@@ -1,6 +1,6 @@
 /**
- * src/data/cameroonLocations.ts
- * All 10 regions, major cities, and common quarters/kwatas of Cameroon.
+ * src/data/Locations.ts
+ * All 10 regions, major cities, and common quarters/kwatas of .
  * This file is imported by LocationCascade and all posting forms.
  */
 
@@ -76,3 +76,4 @@ export const QUARTIERS_BY_CITY: Record<string, string[]> = {
   // Foumban
   Foumban: ["Centre", "Nkoumadjap", "Njimom"],
 };
+

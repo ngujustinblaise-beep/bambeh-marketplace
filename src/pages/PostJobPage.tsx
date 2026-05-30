@@ -12,7 +12,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/cameroonLocations";
+import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/Locations";
 
 // ─── Constants ─────────────────────────────────────────────────────────────
 const JOB_TYPES     = ["Full-time","Part-time","Contract","Internship","Temporary","Remote","Freelance"];
@@ -470,7 +470,7 @@ export default function PostJobPage() {
                 Company Name <span className="text-red-500">*</span>
               </label>
               <SInput value={d.companyName} onChange={(v) => upd({ companyName: v })}
-                placeholder="e.g. TechCorp Cameroon" error={errs.companyName} />
+                placeholder="e.g. TechCorp " error={errs.companyName} />
             </div>
 
             <div>
@@ -877,3 +877,4 @@ export default function PostJobPage() {
     </div>
   );
 }
+

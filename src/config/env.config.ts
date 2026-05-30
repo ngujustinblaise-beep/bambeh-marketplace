@@ -1,4 +1,4 @@
-﻿const env = {
+const env = {
   supabaseUrl: (import.meta.env.VITE_SUPABASE_URL as string) ?? "",
   supabaseAnonKey: (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ?? "",
   firebaseApiKey: (import.meta.env.VITE_FIREBASE_API_KEY as string) ?? "",

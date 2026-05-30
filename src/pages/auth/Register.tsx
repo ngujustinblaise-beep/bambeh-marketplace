@@ -158,7 +158,7 @@ export default function Register() {
               <span className="text-white text-2xl font-black">B</span>
             </div>
             <h1 className="text-2xl font-black text-gray-900">Join Bambeh</h1>
-            <p className="text-gray-500 text-sm mt-1">Cameroon's #1 Marketplace</p>
+            <p className="text-gray-500 text-sm mt-1">'s #1 Marketplace</p>
           </div>
 
           {/* Error banner */}
@@ -347,3 +347,4 @@ export default function Register() {
     </div>
   );
 }
+
