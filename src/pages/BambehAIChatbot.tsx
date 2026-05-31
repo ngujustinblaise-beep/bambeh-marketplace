@@ -29,7 +29,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Trash2 } from 'lucide-react';
 
-const BACKEND_URL = 'https://bambeh-backend-production-6bca.up.railway.app';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://bambeh-backend-production-6bca.up.railway.app';
 
 const SYSTEM_PROMPT =
   'You are Bambeh AI, a helpful and friendly assistant for the Bambeh Marketplace app in . ' +

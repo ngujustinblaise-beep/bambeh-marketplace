@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const BACKEND_URL = "https://bambeh-backend-production-6bca.up.railway.app";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://bambeh-backend-production-6bca.up.railway.app";
 
 
 
