@@ -1,10 +1,10 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
- * Chat.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Chat.tsx â€” Bambeh Marketplace
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * UPGRADED: Full Supabase Realtime chat with:
- * - Live typing indicators ("Seller is typing…")
+ * - Live typing indicators ("Seller is typingâ€¦")
  * - Real-time message delivery via Supabase Realtime channels
  * - Presence tracking (online/offline)
  * - Unread count badge
@@ -43,7 +43,7 @@ import { isSubscribed } from '@/utils/subscriptionUtils';
 import { logger } from '@/utils/logger';
 import { AvatarImage, BambehImage } from '@/components/ui/BambehImage';
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ChatParticipant {
   id: string;
@@ -58,7 +58,7 @@ interface ChatMessage {
   chatId: string;
   senderId: string;
   content: string;
-  type: 'text' | 'image';
+  message_type: 'text' | 'image';
   imageUrl?: string;
   readBy: string[];
   createdAt: string;
@@ -69,13 +69,13 @@ interface ChatConversation {
   participants: string[];
   participantDetails: ChatParticipant[];
   lastMessage: string;
-  lastMessageTime: string;
+  lastMessageAt: string;
   unreadCount: number;
   listingTitle?: string;
   listingImage?: string;
 }
 
-// ─── TYPING INDICATOR ─────────────────────────────────────────────────────────
+// â”€â”€â”€ TYPING INDICATOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
   <div className="flex items-end gap-2 px-4 py-1">
@@ -89,11 +89,11 @@ const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
         <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </div>
-    <span className="text-xs text-gray-400 mb-1">{name} is typing…</span>
+    <span className="text-xs text-gray-400 mb-1">{name} is typingâ€¦</span>
   </div>
 );
 
-// ─── MESSAGE BUBBLE ───────────────────────────────────────────────────────────
+// â”€â”€â”€ MESSAGE BUBBLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const MessageBubble: React.FC<{
   message: ChatMessage;
@@ -109,7 +109,7 @@ const MessageBubble: React.FC<{
 
   return (
     <div className={`flex items-end gap-2 px-4 py-0.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Avatar — only for other person, only on last message in a group */}
+      {/* Avatar â€” only for other person, only on last message in a group */}
       {!isMine && (
         <div className="w-7 flex-shrink-0">
           {showAvatar && (
@@ -156,7 +156,7 @@ const MessageBubble: React.FC<{
   );
 };
 
-// ─── CONVERSATION LIST ITEM ───────────────────────────────────────────────────
+// â”€â”€â”€ CONVERSATION LIST ITEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const ConversationItem: React.FC<{
   conv: ChatConversation;
@@ -165,8 +165,8 @@ const ConversationItem: React.FC<{
   onClick: () => void;
 }> = ({ conv, isActive, currentUserId, onClick }) => {
   const other = conv.participantDetails.find(p => p.id !== currentUserId);
-  const time = conv.lastMessageTime
-    ? new Date(conv.lastMessageTime).toLocaleTimeString('fr-CM', { hour: '2-digit', minute: '2-digit' })
+  const time = conv.lastMessageAt
+    ? new Date(conv.lastMessageAt).toLocaleTimeString('fr-CM', { hour: '2-digit', minute: '2-digit' })
     : '';
 
   return (
@@ -215,7 +215,7 @@ const ConversationItem: React.FC<{
   );
 };
 
-// ─── MAIN CHAT PAGE ───────────────────────────────────────────────────────────
+// â”€â”€â”€ MAIN CHAT PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function ChatPage() {
   const navigate = useNavigate();
@@ -245,14 +245,14 @@ export default function ChatPage() {
   const selectedConv = conversations.find(c => c.id === selectedChatId);
   const otherParticipant = selectedConv?.participantDetails.find(p => p.id !== user?.id);
 
-  // ── Responsive ────────────────────────────────────────────────────────────
+  // â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const check = () => setIsMobileView(window.innerWidth < 1024);
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // ── Load conversations ────────────────────────────────────────────────────
+  // â”€â”€ Load conversations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!user?.id) return;
 
@@ -269,8 +269,8 @@ export default function ChatPage() {
           unread_counts,
           conversation_participants(user_id, profiles(id, full_name, avatar_url, last_seen))
         `)
-        .contains('participants', [user.id])
-        .order('last_message_time', { ascending: false });
+        .contains('participant_ids', [user.id])
+        .order('last_message_at', { ascending: false });
 
       if (error) { logger.warn('Conversations fetch error:', error); return; }
 
@@ -278,7 +278,7 @@ export default function ChatPage() {
         id: row.id,
         participants: row.participants,
         lastMessage: row.last_message ?? '',
-        lastMessageTime: row.last_message_time ?? '',
+        lastMessageAt: row.last_message_at ?? '',
         unreadCount: row.unread_counts?.[user.id] ?? 0,
         listingTitle: row.listing_title,
         listingImage: row.listing_image,
@@ -303,14 +303,14 @@ export default function ChatPage() {
         event: '*',
         schema: 'public',
         table: 'conversations',
-        filter: `participants=cs.{${user.id}}`,
+        filter: `participant_ids=cs.{${user.id}}`,
       }, () => { fetchConversations(); })
       .subscribe();
 
     return () => { supabase.removeChannel(listChannel); };
   }, [user?.id]);
 
-  // ── Load messages + Realtime subscription ─────────────────────────────────
+  // â”€â”€ Load messages + Realtime subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!selectedChatId || !user?.id) return;
 
@@ -331,7 +331,7 @@ export default function ChatPage() {
           chatId: m.conversation_id,
           senderId: m.sender_id,
           content: m.content ?? '',
-          type: m.type ?? 'text',
+          type: m.message_type ?? 'text',
           imageUrl: m.image_url,
           readBy: m.read_by ?? [],
           createdAt: m.created_at,
@@ -352,7 +352,7 @@ export default function ChatPage() {
       );
     });
 
-    // ── Realtime channel for this conversation ──────────────────────────────
+    // â”€â”€ Realtime channel for this conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const channel = supabase.channel(`chat:${selectedChatId}`, {
       config: { broadcast: { self: false } },
     });
@@ -370,7 +370,7 @@ export default function ChatPage() {
         chatId: m.conversation_id,
         senderId: m.sender_id,
         content: m.content ?? '',
-        type: m.type ?? 'text',
+        type: m.message_type ?? 'text',
         imageUrl: m.image_url,
         readBy: m.read_by ?? [],
         createdAt: m.created_at,
@@ -404,7 +404,7 @@ export default function ChatPage() {
     };
   }, [selectedChatId, user?.id]);
 
-  // ── Presence channel (online status) ──────────────────────────────────────
+  // â”€â”€ Presence channel (online status) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!user?.id) return;
 
@@ -439,7 +439,7 @@ export default function ChatPage() {
     };
   }, [user?.id]);
 
-  // ── Auto-scroll ───────────────────────────────────────────────────────────
+  // â”€â”€ Auto-scroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!showScrollDown) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -453,7 +453,7 @@ export default function ChatPage() {
     setShowScrollDown(distFromBottom > 200);
   }, []);
 
-  // ── Typing broadcast ──────────────────────────────────────────────────────
+  // â”€â”€ Typing broadcast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const broadcastTyping = useCallback((isTyping: boolean) => {
     if (!channelRef.current || !user?.id) return;
     channelRef.current.send({
@@ -471,7 +471,7 @@ export default function ChatPage() {
     typingTimerRef.current = setTimeout(() => broadcastTyping(false), 2000);
   }, [broadcastTyping]);
 
-  // ── Send message ──────────────────────────────────────────────────────────
+  // â”€â”€ Send message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const sendMessage = useCallback(async () => {
     const content = newMessage.trim();
     if (!content || !selectedChatId || !user?.id) return;
@@ -486,7 +486,7 @@ export default function ChatPage() {
       chatId: selectedChatId,
       senderId: user.id,
       content,
-      type: 'text',
+      message_type: 'text',
       readBy: [user.id],
       createdAt: new Date().toISOString(),
     };
@@ -496,7 +496,7 @@ export default function ChatPage() {
       conversation_id: selectedChatId,
       sender_id: user.id,
       content,
-      type: 'text',
+      message_type: 'text',
       read_by: [user.id],
     });
 
@@ -510,7 +510,7 @@ export default function ChatPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }, [sendMessage]);
 
-  // ── Gates ─────────────────────────────────────────────────────────────────
+  // â”€â”€ Gates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -560,7 +560,7 @@ export default function ChatPage() {
       c.listingTitle?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // ── Conversation List Panel ───────────────────────────────────────────────
+  // â”€â”€ Conversation List Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const ConversationList = (
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
@@ -571,7 +571,7 @@ export default function ChatPage() {
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search conversations…"
+            placeholder="Search conversationsâ€¦"
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
           />
         </div>
@@ -602,7 +602,7 @@ export default function ChatPage() {
     </div>
   );
 
-  // ── Chat Interface Panel ──────────────────────────────────────────────────
+  // â”€â”€ Chat Interface Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const ChatInterface = selectedChatId ? (
     <div className="flex flex-col h-full bg-[#f0f4f8]">
       {/* Top bar */}
@@ -669,7 +669,7 @@ export default function ChatPage() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
-              <p className="text-sm text-gray-400">Loading messages…</p>
+              <p className="text-sm text-gray-400">Loading messagesâ€¦</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
@@ -737,7 +737,7 @@ export default function ChatPage() {
               value={newMessage}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Type a message…"
+              placeholder="Type a messageâ€¦"
               className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
             />
           </div>
@@ -769,7 +769,7 @@ export default function ChatPage() {
     </div>
   );
 
-  // ── Layout ────────────────────────────────────────────────────────────────
+  // â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (isMobileView) {
     return (
       <div className="h-[calc(100vh-64px)]">
@@ -786,7 +786,7 @@ export default function ChatPage() {
   );
 }
 
-// ─── START CHAT HELPER ────────────────────────────────────────────────────────
+// â”€â”€â”€ START CHAT HELPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Creates or retrieves an existing conversation between two users.
@@ -806,7 +806,7 @@ export async function startChat(
   const { data: existing } = await supabase
     .from('conversations')
     .select('id')
-    .contains('participants', [currentUserId, otherUserId])
+    .contains('participant_ids', [currentUserId, otherUserId])
     .maybeSingle();
 
   if (existing?.id) return existing.id;
@@ -815,9 +815,9 @@ export async function startChat(
   const { data, error } = await supabase
     .from('conversations')
     .insert({
-      participants: [currentUserId, otherUserId],
+      participant_ids: [currentUserId, otherUserId],
       last_message: '',
-      last_message_time: new Date().toISOString(),
+      last_message_at: new Date().toISOString(),
       listing_title: listingTitle ?? null,
       listing_image: listingImage ?? null,
       unread_counts: { [currentUserId]: 0, [otherUserId]: 0 },
@@ -835,3 +835,5 @@ export async function startChat(
 
   return data.id;
 }
+
+

@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ArrowLeft,
+ArrowLeft,
   Heart,
   Share2,
   Tag,
@@ -34,6 +34,7 @@ import { supabase } from "@/lib/supabase";
 import { queryKeys } from "@/lib/queryClient";
 import SellerResponseBadge from "@/components/vendor/SellerResponseBadge";
 import { logger } from "@/utils/logger";
+import { ActionButtons } from '@/components/listings/ActionButtons';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -432,3 +433,5 @@ export default function MarketplaceItemDetails() {
     </div>
   );
 }
+
+
