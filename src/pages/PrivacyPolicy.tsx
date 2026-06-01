@@ -31,15 +31,15 @@ const SECTIONS: Section[] = [
     title: "1. Who We Are",
     body: (
       <p>
-        This Privacy Policy describes how <strong>ETS BUSHENERGY</strong>{" "}
+        This Privacy Policy describes how <strong>BAMBEH SARL</strong>{" "}
         ("Bambeh", "we", "us", or "our"), operator of the Bambeh Marketplace
         (bambeh.com), collects, uses, stores, and protects your personal data
         when you use our platform. Our platform operates primarily in the
         Republic of Cameroon and serves users across the Central and West African
         region. Our registered address is in <strong>Yaoundé, Republic of
         Cameroon</strong>. For privacy inquiries, contact:{" "}
-        <a href="mailto:legal@bambeh.com" className="text-teal-600 hover:underline">
-          legal@bambeh.com
+        <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
+          support@bambeh.com
         </a>
         .
       </p>
@@ -263,8 +263,8 @@ const SECTIONS: Section[] = [
         </div>
         <p className="mt-4 text-sm">
           To exercise any right, email{" "}
-          <a href="mailto:legal@bambeh.com" className="text-teal-600 hover:underline">
-            legal@bambeh.com
+          <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
+            support@bambeh.com
           </a>
           . We will respond within <strong>30 days</strong>.
         </p>
@@ -313,8 +313,8 @@ const SECTIONS: Section[] = [
         under 18 has provided us with personal data, we will delete that data
         immediately. If you believe a child has registered on our Platform, please
         contact us at{" "}
-        <a href="mailto:legal@bambeh.com" className="text-teal-600 hover:underline">
-          legal@bambeh.com
+        <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
+          support@bambeh.com
         </a>
         .
       </p>
@@ -400,18 +400,18 @@ const SECTIONS: Section[] = [
           Policy or our data practices:
         </p>
         <div className="mt-3 bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-1 text-sm">
-          <p><strong>ETS BUSHENERGY — Bambeh Marketplace</strong></p>
+          <p><strong>BAMBEH SARL — Bambeh Marketplace</strong></p>
           <p>Yaoundé, Republic of Cameroon</p>
           <p>
-            Privacy:{" "}
-            <a href="mailto:legal@bambeh.com" className="text-teal-600 hover:underline">
-              legal@bambeh.com
+            Email:{" "}
+            <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
+              support@bambeh.com
             </a>
           </p>
           <p>
-            Support:{" "}
-            <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-              support@bambeh.com
+            WhatsApp / Support:{" "}
+            <a href="mailto:bambetheapp@gmail.com" className="text-teal-600 hover:underline">
+              bambetheapp@gmail.com
             </a>
           </p>
           <p>
@@ -468,7 +468,7 @@ const PrivacyPolicy: React.FC = () => {
               }}
               className="whitespace-nowrap hover:text-teal-900 transition-colors"
             >
-              §{s.id}
+              {s.id}. {SECTIONS.find(x => x.id === s.id)?.title.split(". ")[1] ?? ""}
             </button>
           ))}
         </div>
@@ -540,7 +540,7 @@ const PrivacyPolicy: React.FC = () => {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-8">
-          © {new Date().getFullYear()} ETS BUSHENERGY — Bambeh Marketplace. All rights reserved.
+          © {new Date().getFullYear()} BAMBEH SARL — Bambeh Marketplace. All rights reserved.
           <br />
           Governed by Cameroon Law No. 2024/017 on Personal Data Protection.
         </p>

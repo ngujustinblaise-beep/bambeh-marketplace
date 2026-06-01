@@ -42,7 +42,7 @@ const SECTIONS: Section[] = [
         </p>
         <p className="mt-3">
           These Terms constitute a legally binding agreement between you and
-          <strong> ETS BUSHENERGY</strong> ("Bambeh", "we", "us", or "our"),
+          <strong> BAMBEH SARL</strong> ("Bambeh", "we", "us", or "our"),
           the operator of the Bambeh Marketplace, headquartered in Yaoundé,
           Republic of Cameroon.
         </p>
@@ -320,8 +320,8 @@ const SECTIONS: Section[] = [
         </ul>
         <p className="mt-3">
           To exercise any of these rights, contact us at{" "}
-          <a href="mailto:legal@bambeh.com" className="text-teal-600 hover:underline">
-            legal@bambeh.com
+          <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
+            support@bambeh.com
           </a>
           . Full details are in our{" "}
           <Link to="/privacy-policy" className="text-teal-600 hover:underline">
@@ -340,7 +340,7 @@ const SECTIONS: Section[] = [
         <p>
           All content, trademarks, logos, trade names, technology, source code,
           designs, and platform features are owned by or licensed to{" "}
-          <strong>ETS BUSHENERGY</strong> and are protected under Cameroonian
+          <strong>BAMBEH SARL</strong> and are protected under Cameroonian
           intellectual property law and applicable international conventions.
         </p>
         <p className="mt-3">
@@ -445,19 +445,19 @@ const SECTIONS: Section[] = [
         <p>For questions, complaints, or legal notices regarding these Terms:</p>
         <div className="mt-3 space-y-1 text-sm text-gray-700">
           <p>
-            <strong>Bambeh Marketplace</strong> — operated by ETS BUSHENERGY
+            <strong>Bambeh Marketplace</strong> — operated by BAMBEH SARL
           </p>
           <p>Yaoundé, Republic of Cameroon</p>
           <p>
             Email:{" "}
-            <a href="mailto:legal@bambeh.com" className="text-teal-600 hover:underline">
-              legal@bambeh.com
+            <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
+              support@bambeh.com
             </a>
           </p>
           <p>
-            Support:{" "}
-            <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-              support@bambeh.com
+            WhatsApp / Support:{" "}
+            <a href="mailto:bambetheapp@gmail.com" className="text-teal-600 hover:underline">
+              bambetheapp@gmail.com
             </a>
           </p>
           <p>
@@ -491,7 +491,7 @@ const TermsOfService: React.FC = () => {
           </p>
           <p className="mt-4 text-sm text-teal-100 leading-relaxed max-w-2xl">
             Please read these Terms carefully before using Bambeh. They are a
-            legal agreement between you and ETS BUSHENERGY, operator of the
+            legal agreement between you and BAMBEH SARL, operator of the
             Bambeh Marketplace.
           </p>
         </div>
@@ -511,7 +511,7 @@ const TermsOfService: React.FC = () => {
               }}
               className="whitespace-nowrap hover:text-teal-900 transition-colors"
             >
-              §{s.id}
+              {s.id}. {SECTIONS.find(x => x.id === s.id)?.title.split(". ")[1] ?? ""}
             </button>
           ))}
         </div>
@@ -583,7 +583,7 @@ const TermsOfService: React.FC = () => {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-8">
-          © {new Date().getFullYear()} ETS BUSHENERGY — Bambeh Marketplace. All rights reserved.
+          © {new Date().getFullYear()} BAMBEH SARL — Bambeh Marketplace. All rights reserved.
           <br />
           Governed by the laws of the Republic of Cameroon.
         </p>
