@@ -192,7 +192,10 @@ export default function FarmFreshPage() {
           <div className="grid grid-cols-2 gap-3">
             {filtered.map(product => (
               <div key={product.id}
-                onClick={() => navigate("/farm-fresh/order/" + product.id)}
+                onClick={() => navigate(product.isDemo
+                  ? "/farm-fresh/order/" + product.id   // demo items skip detail, go straight to order preview
+                  : "/farm-fresh/" + product.id          // real items show detail page first
+                )}
                 className="bg-white rounded-2xl overflow-hidden shadow-sm border cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]">
                 <div className="h-32 bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center overflow-hidden relative">
                   {product.image_url

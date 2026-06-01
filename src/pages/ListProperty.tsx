@@ -12,15 +12,24 @@
  *  ✅ All routes: /rentals/list, /rentals/post → /rentals/list, /list-property → /rentals/list
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { REGIONS, CITIES_BY_REGION } from "@/data/Locations";
 
-const STEP_LABELS   = ["Property Info", "Details & Amenities", "Pricing & Location", "Review & Post"];
+const STEP_LABELS   = ["Property Info", "Details & Amenities", "Photos", "Pricing & Location", "Review & Post"];
 const PROP_TYPES    = ["Apartment", "House", "Villa", "Studio", "Room", "Duplex", "Townhouse", "Penthouse", "Office", "Shop", "Land", "Other"];
 const AMENITIES     = ["Air Conditioning", "Wi-Fi", "Generator", "Water 24/7", "Security Guard", "CCTV", "Parking", "Swimming Pool", "Gym", "Elevator", "Balcony/Terrace", "Garden", "Furnished"];
 const RENT_PERIODS  = ["Monthly", "Yearly", "Weekly", "Daily"];
+
+// Image validation
+const MAX_IMG   = 5 * 1024 * 1024;
+const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
+function validateImg(f: File): string | null {
+  if (!IMG_TYPES.includes(f.type)) return "Only JPG, PNG or WebP images allowed.";
+  if (f.size > MAX_IMG) return `Too large (max 5 MB). Got ${(f.size/1024/1024).toFixed(1)} MB.`;
+  return null;
+}
 
 function StepBar({ step, total }: { step: number; total: number }) {
   return (
@@ -152,9 +161,12 @@ const BLANK: Draft = {
 
 export default function ListProperty() {
   const navigate = useNavigate();
+  const fileRef  = useRef<HTMLInputElement>(null);
   const [step,       setStep]       = useState(1);
   const [d, setD]                   = useState<Draft>(BLANK);
   const [errs,       setErrs]       = useState<Record<string, string>>({});
+  const [images,     setImages]     = useState<string[]>([]);
+  const [imgErrors,  setImgErrors]  = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [posted,     setPosted]     = useState(false);
   const [newId,      setNewId]      = useState<string | null>(null);
@@ -174,6 +186,23 @@ export default function ListProperty() {
 
   const cities = d.region ? (CITIES_BY_REGION[d.region] ?? []) : [];
 
+  async function handleFiles(files: FileList | null) {
+    if (!files) return;
+    const errors: string[] = [];
+    const previews: string[] = [];
+    for (const f of Array.from(files).slice(0, 6 - images.length)) {
+      const err = validateImg(f);
+      if (err) { errors.push(err); continue; }
+      await new Promise<void>(res => {
+        const r = new FileReader();
+        r.onload = e => { previews.push(e.target?.result as string); res(); };
+        r.readAsDataURL(f);
+      });
+    }
+    setImgErrors(errors);
+    setImages(prev => [...prev, ...previews].slice(0, 6));
+  }
+
   function toggleAmenity(a: string) {
     upd({ amenities: d.amenities.includes(a) ? d.amenities.filter(x => x !== a) : [...d.amenities, a] });
   }
@@ -188,7 +217,8 @@ export default function ListProperty() {
       if (!d.description.trim() || d.description.trim().length < 20)
         e.description = "Description must be at least 20 characters";
     }
-    if (s === 3) {
+    // Step 3 is photos — no required validation
+    if (s === 4) {
       if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0)
         e.price = "Valid price is required";
       if (!d.region)     e.region = "Region is required";
@@ -220,6 +250,7 @@ export default function ListProperty() {
         location:    [d.address, d.city, d.region].filter(Boolean).join(", "),
         phone:       d.phone.trim(),
         status:      "active",
+        images:      images.length > 0 ? images : null,
         extra: {
           property_type: d.propertyType,
           bedrooms:      Number(d.bedrooms),
@@ -372,8 +403,59 @@ export default function ListProperty() {
           </div>
         )}
 
-        {/* STEP 3 */}
+        {/* STEP 3 — PHOTOS */}
         {step === 3 && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h2 className="font-bold text-base text-gray-900 dark:text-white">Add Photos</h2>
+            <p className="text-xs text-gray-400">JPG, PNG or WebP · Max 5 MB each · Up to 6 photos</p>
+
+            {imgErrors.map((e, i) => (
+              <p key={i} className="text-xs text-red-500 font-medium">⚠ {e}</p>
+            ))}
+
+            <div
+              onClick={() => fileRef.current?.click()}
+              className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors
+                ${images.length >= 6 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20"}`}>
+              <p className="text-3xl mb-2">🏠</p>
+              <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                {images.length >= 6 ? "Maximum 6 photos" : "Tap to upload property photos"}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">{images.length}/6 photos added</p>
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={e => handleFiles(e.target.files)} />
+
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {images.map((src, i) => (
+                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-100">
+                    <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setImages(p => p.filter((_, idx) => idx !== i))}
+                      className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">×</button>
+                    {i === 0 && <span className="absolute bottom-1 left-1 bg-teal-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+              <p className="text-xs text-amber-700">
+                📌 <strong>Tip:</strong> Properties with photos get 5× more inquiries. Show the bedroom, living room, kitchen, and exterior.
+              </p>
+            </div>
+
+            <NavRow onDraft={saveDraft} onBack={back} onNext={next} nextLabel="Pricing & Location →" />
+          </div>
+        )}
+
+        {/* STEP 4 — PRICING & LOCATION (was step 3) */}
+        {step === 4 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900 dark:text-white">Pricing & Location</h2>
 
@@ -435,8 +517,8 @@ export default function ListProperty() {
           </div>
         )}
 
-        {/* STEP 4 */}
-        {step === 4 && (
+        {/* STEP 5 — REVIEW (was step 4) */}
+        {step === 5 && (
           <>
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
               <h2 className="font-bold text-base text-gray-900 dark:text-white mb-4">📋 Listing Summary</h2>
@@ -451,6 +533,7 @@ export default function ListProperty() {
                 ["Phone",        d.phone ? `+237 ${d.phone}` : "Not provided"],
                 ["Amenities",    d.amenities.length > 0 ? d.amenities.join(", ") : "None selected"],
                 ["Available",    d.availableFrom || "Immediately"],
+                ["Photos",       `${images.length} photo${images.length !== 1 ? "s" : ""}`],
               ].map(([k, v]) => (
                 <div key={String(k)} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
                   <span className="text-gray-500">{k}</span>

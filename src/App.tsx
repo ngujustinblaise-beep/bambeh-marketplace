@@ -240,6 +240,7 @@ const TontinePage         = lazy(() => import("@/pages/TontinePage"));
 const TontineDetail       = lazy(() => import("@/pages/TontineDetail"));
 const TontineCreate       = lazy(() => import("@/pages/TontineCreate"));
 const FarmFreshPage       = lazy(() => import("@/pages/FarmFreshPage"));
+const FarmFreshDetail     = lazy(() => import("@/pages/FarmFreshDetail"));    // ✅ ADDED: was missing — caused "Oops" on product tap
 const FarmFreshOrderPage  = lazy(() => import("@/pages/FarmFreshOrderPage"));
 const FarmFreshSellerPage = lazy(() => import("@/pages/FarmFreshSellerPage"));
 const MakeOfferPage       = lazy(() => import("@/pages/MakeOfferPage"));
@@ -765,6 +766,8 @@ export default function App() {
                           {/* ✅ FIXED: farm-fresh changed to require="user" (was "subscription")
                               This was why FarmFresh and related pages weren't opening for users */}
                           <Route path="/farm-fresh" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Farm Fresh"><FarmFreshPage /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          {/* ✅ ADDED: FarmFreshDetail route was completely missing — tapping a product showed "Oops" */}
+                          <Route path="/farm-fresh/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Farm Fresh Product"><FarmFreshDetail /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           <Route path="/farm-fresh/order/:productId" element={<MainLayout><AuthGate require="user"><FarmFreshOrderPage /></AuthGate></MainLayout>} />
                           <Route path="/farm-fresh/sell" element={<MainLayout><AuthGate require="user"><FarmFreshSellerPage /></AuthGate></MainLayout>} />
 
