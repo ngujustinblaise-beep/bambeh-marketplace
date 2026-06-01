@@ -315,19 +315,25 @@ export default function RentalDetails() {
         </Card>
       </div>
 
-      {/* Fixed Bottom Actions */}
+{/* Fixed Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 gap-3">
-          <Button variant="outline" onClick={() => handleContact('phone')} className="w-full">
-            <Phone className="mr-2 h-4 w-4" />
-            Call
+        <div className="max-w-7xl mx-auto flex flex-col gap-2">
+          <Button onClick={() => {
+            toast({ title: "Viewing Requested! 🏠", description: `The owner will contact you at your registered number to schedule a visit.` });
+          }} className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+            📅 Book a Viewing
           </Button>
-          <Button onClick={() => handleContact('email')} className="w-full" disabled={!rental.available}>
-            <Mail className="mr-2 h-4 w-4" />
-            {rental.available ? 'Email Inquiry' : 'Not Available'}
-          </Button>
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" onClick={() => handleContact('phone')} className="w-full">
+              <Phone className="mr-2 h-4 w-4" />
+              Call Owner
+            </Button>
+            <Button variant="outline" onClick={() => handleContact('email')} className="w-full" disabled={!rental.available}>
+              <Mail className="mr-2 h-4 w-4" />
+              {rental.available ? 'Email' : 'Unavailable'}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
   );
 }

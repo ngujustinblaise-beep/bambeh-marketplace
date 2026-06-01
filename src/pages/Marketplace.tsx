@@ -30,12 +30,12 @@ interface Item {
 }
 
 const SAMPLES: Item[] = [
-  { id:"1", title:"iPhone 13 Pro Max 256GB",    price:450000, category:"Electronics", location:"Yaounde",    condition:"Good",     description:"Excellent condition, with charger and box.",        postedAt: new Date().toISOString(), isDemo: true },
-  { id:"2", title:'Samsung 55" Smart TV',       price:280000, category:"Electronics", location:"Douala",     condition:"Like New", description:"Used only 3 months, perfect working order.",        postedAt: new Date().toISOString(), isDemo: true },
-  { id:"3", title:"Traditional African Fabric", price:25000,  category:"Fashion",     location:"Yaounde",    condition:"New",      description:"Authentic Cameroonian fabric, various patterns.",   postedAt: new Date().toISOString(), isDemo: true },
-  { id:"4", title:"Honda Generator 2.5KVA",     price:180000, category:"Electronics", location:"Bafoussam",  condition:"Good",     description:"Reliable generator, serviced regularly.",           postedAt: new Date().toISOString(), isDemo: true },
-  { id:"5", title:"Fridge Samsung 300L",        price:220000, category:"Appliances",  location:"Douala",     condition:"Good",     description:"3-door fridge in excellent condition.",             postedAt: new Date().toISOString(), isDemo: true },
-  { id:"6", title:"School Textbooks Set",       price:15000,  category:"Books",       location:"Yaounde",    condition:"Fair",     description:"Complete set for Form 5 sciences.",                 postedAt: new Date().toISOString(), isDemo: true },
+  { id:"1", title:"iPhone 13 Pro Max 256GB",    price:450000, category:"Electronics", location:"Yaounde",    condition:"Good",     description:"Excellent condition, with charger and box.",        image:"https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400", postedAt: new Date().toISOString(), isDemo: true },
+  { id:"2", title:'Samsung 55" Smart TV',       price:280000, category:"Electronics", location:"Douala",     condition:"Like New", description:"Used only 3 months, perfect working order.",        image:"https://images.unsplash.com/photo-1593359677879-a4bb92f829e1?w=400", postedAt: new Date().toISOString(), isDemo: true },
+  { id:"3", title:"Traditional African Fabric", price:25000,  category:"Fashion",     location:"Yaounde",    condition:"New",      description:"Authentic Cameroonian fabric, various patterns.",   image:"https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=400", postedAt: new Date().toISOString(), isDemo: true },
+  { id:"4", title:"Honda Generator 2.5KVA",     price:180000, category:"Electronics", location:"Bafoussam",  condition:"Good",     description:"Reliable generator, serviced regularly.",           image:"https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400", postedAt: new Date().toISOString(), isDemo: true },
+  { id:"5", title:"Fridge Samsung 300L",        price:220000, category:"Appliances",  location:"Douala",     condition:"Good",     description:"3-door fridge in excellent condition.",             image:"https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400", postedAt: new Date().toISOString(), isDemo: true },
+  { id:"6", title:"School Textbooks Set",       price:15000,  category:"Books",       location:"Yaounde",    condition:"Fair",     description:"Complete set for Form 5 sciences.",                 image:"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400", postedAt: new Date().toISOString(), isDemo: true },
 ];
 
 const CATEGORIES = ["All", "Electronics", "Fashion", "Appliances", "Books", "Furniture", "Vehicles", "Other"];
