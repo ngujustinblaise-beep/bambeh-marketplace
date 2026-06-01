@@ -1,264 +1,491 @@
 /**
  * src/pages/SellVehicle.tsx — Bambeh Marketplace
- * FIXED: Saves vehicle listings to Supabase listings table (type='vehicle').
- * Was saving to localStorage — now visible on all devices.
+ *
+ * REBUILT to match PostJobPage gold-standard pattern:
+ *  ✅ 4-step wizard: Vehicle Info → Details → Pricing & Location → Review
+ *  ✅ StepBar + NavRow (💾 Save Draft | ← Back | Next Step →)
+ *  ✅ Per-step validation with red inline errors
+ *  ✅ Draft save/restore (key: bambeh_draft_vehicle)
+ *  ✅ price type="number", FCFA live formatter
+ *  ✅ Saves to Supabase listings table (type: 'vehicle')
+ *  ✅ 🎉 Success screen
+ *  ✅ Preview card with DEMO badge
  */
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Car, Check, Loader2, CheckCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+import { REGIONS, CITIES_BY_REGION } from "@/data/Locations";
 
-const STEPS  = ['Vehicle Info', 'Details', 'Review'];
-const MAKES  = ['Toyota','Honda','Mercedes','BMW','Nissan','Hyundai','Ford','Peugeot','Renault','Kia','Other'];
-const TYPES  = ['Sedan','SUV','Pickup','Van','Minibus','Motorcycle','Truck','Other'];
+const STEP_LABELS = ["Vehicle Info", "Condition & Details", "Pricing & Location", "Review & Post"];
+const MAKES       = ["Toyota", "Honda", "Mercedes-Benz", "BMW", "Nissan", "Hyundai", "Ford", "Peugeot", "Renault", "Kia", "Mitsubishi", "Land Rover", "Suzuki", "Isuzu", "Other"];
+const TYPES       = ["Sedan", "SUV", "Pickup Truck", "Van / Minibus", "Motorcycle", "Truck", "Bus", "Other"];
+const FUELS       = ["Petrol", "Diesel", "Electric", "Hybrid", "LPG"];
+const GEARBOXES   = ["Manual", "Automatic", "Semi-Automatic"];
+const CONDITIONS  = ["Brand New", "Excellent", "Good", "Fair", "Needs Repair"];
+
+function StepBar({ step }: { step: number }) {
+  return (
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div className="flex items-center gap-0.5 mb-2">
+        {STEP_LABELS.map((_, i) => (
+          <React.Fragment key={i}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-200
+              ${step > i + 1 ? "bg-teal-500 text-white" : step === i + 1 ? "bg-teal-600 text-white ring-4 ring-teal-100 dark:ring-teal-900" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}>
+              {step > i + 1 ? (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12"/></svg>) : i + 1}
+            </div>
+            {i < STEP_LABELS.length - 1 && <div className={`flex-1 h-1 rounded-full transition-colors ${step > i + 1 ? "bg-teal-500" : "bg-gray-200 dark:bg-gray-700"}`} />}
+          </React.Fragment>
+        ))}
+      </div>
+      <p className="text-xs font-semibold text-teal-600 dark:text-teal-400">
+        Step {step} of {STEP_LABELS.length}: {STEP_LABELS[step - 1]}
+      </p>
+    </div>
+  );
+}
+
+function NavRow({ onDraft, onBack, onNext, nextLabel = "Next Step →", disabled = false }: {
+  onDraft: () => void; onBack?: () => void;
+  onNext: () => void; nextLabel?: string; disabled?: boolean;
+}) {
+  return (
+    <div className="flex gap-2 pt-4 pb-6">
+      <button type="button" onClick={onDraft}
+        className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
+        💾 Save Draft
+      </button>
+      {onBack && (
+        <button type="button" onClick={onBack}
+          className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
+          ← Back
+        </button>
+      )}
+      <button type="button" onClick={onNext} disabled={disabled}
+        className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.98]
+          ${disabled ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+            : "bg-gradient-to-r from-teal-500 to-teal-700 text-white shadow-lg shadow-teal-500/30"}`}>
+        {nextLabel}
+      </button>
+    </div>
+  );
+}
+
+function Err({ msg }: { msg?: string }) {
+  return msg ? <p className="text-xs text-red-500 mt-1 font-medium">⚠ {msg}</p> : null;
+}
+
+function Lbl({ children, required }: { children: React.ReactNode; required?: boolean }) {
+  return <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">{children}{required && <span className="text-red-500 ml-1">*</span>}</label>;
+}
+
+function SInput({ value, onChange, placeholder, type = "text", error, min }: {
+  value: string; onChange: (v: string) => void; placeholder?: string;
+  type?: string; error?: string; min?: string;
+}) {
+  return (
+    <>
+      <input type={type} min={min}
+        className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
+          ${error ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
+        placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
+      <Err msg={error} />
+    </>
+  );
+}
+
+function SSelect({ value, onChange, options, placeholder, error }: {
+  value: string; onChange: (v: string) => void; options: string[];
+  placeholder: string; error?: string;
+}) {
+  return (
+    <>
+      <select
+        className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none appearance-none
+          ${error ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
+        value={value} onChange={e => onChange(e.target.value)}>
+        <option value="">{placeholder}</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+      <Err msg={error} />
+    </>
+  );
+}
+
+function BigCheck({ checked, onChange, label, desc }: {
+  checked: boolean; onChange: (v: boolean) => void; label: string; desc?: string;
+}) {
+  return (
+    <button type="button" onClick={() => onChange(!checked)}
+      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all
+        ${checked ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20" : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800"}`}>
+      <div className={`flex-shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all
+        ${checked ? "border-teal-500 bg-teal-500" : "border-gray-300 dark:border-gray-500"}`}>
+        {checked && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
+      </div>
+      <div><p className="font-semibold text-sm text-gray-900 dark:text-white">{label}</p>
+        {desc && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{desc}</p>}
+      </div>
+    </button>
+  );
+}
+
+const fmt = (n: string) => n && !isNaN(Number(n)) && Number(n) > 0
+  ? new Intl.NumberFormat("fr-CM").format(Number(n)) + " FCFA" : "";
+
+interface Draft {
+  make: string; model: string; year: string; vehicleType: string;
+  fuel: string; transmission: string; mileage: string; color: string;
+  condition: string; description: string;
+  price: string; negotiable: boolean; region: string; city: string; phone: string;
+}
+const BLANK: Draft = {
+  make: "", model: "", year: String(new Date().getFullYear()), vehicleType: "",
+  fuel: "Petrol", transmission: "Manual", mileage: "", color: "",
+  condition: "Good", description: "",
+  price: "", negotiable: false, region: "", city: "", phone: "",
+};
 
 export default function SellVehicle() {
   const navigate = useNavigate();
-  const [step,       setStep]       = useState(0);
+  const [step,       setStep]       = useState(1);
+  const [d, setD]                   = useState<Draft>(BLANK);
+  const [errs,       setErrs]       = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [done,       setDone]       = useState(false);
-  const [error,      setError]      = useState<string | null>(null);
+  const [posted,     setPosted]     = useState(false);
+  const [newId,      setNewId]      = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    make:         'Toyota',
-    model:        '',
-    year:         '2020',
-    type:         'Sedan',
-    price:        '',
-    mileage:      '',
-    fuel:         'Petrol',
-    transmission: 'Manual',
-    condition:    'Good',
-    location:     'Yaoundé',
-    description:  '',
-    color:        '',
-    phone:        '',
-  });
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("bambeh_draft_vehicle");
+      if (s) setD(prev => ({ ...prev, ...JSON.parse(s) }));
+    } catch {}
+  }, []);
+
+  function upd(patch: Partial<Draft>) { setD(prev => ({ ...prev, ...patch })); }
+  function saveDraft() {
+    localStorage.setItem("bambeh_draft_vehicle", JSON.stringify(d));
+    alert("Draft saved ✅");
+  }
+
+  const cities = d.region ? (CITIES_BY_REGION[d.region] ?? []) : [];
+
+  function validate(s: number): Record<string, string> {
+    const e: Record<string, string> = {};
+    if (s === 1) {
+      if (!d.make)                e.make        = "Make is required";
+      if (!d.model.trim())        e.model       = "Model is required";
+      if (!d.vehicleType)         e.vehicleType = "Vehicle type is required";
+      if (!d.year || Number(d.year) < 1950 || Number(d.year) > new Date().getFullYear() + 1)
+        e.year = "Valid year is required";
+    }
+    if (s === 2) {
+      if (!d.description.trim() || d.description.trim().length < 20)
+        e.description = "Description must be at least 20 characters";
+    }
+    if (s === 3) {
+      if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0)
+        e.price  = "Valid price is required";
+      if (!d.region)   e.region = "Region is required";
+      if (!d.city.trim()) e.city = "City is required";
+    }
+    return e;
+  }
 
   function next() {
-    if (step === 0 && !form.model.trim()) { setError('Please enter the vehicle model.'); return; }
-    if (step === 1 && !form.price)        { setError('Please enter the price.'); return; }
-    setError(null);
-    if (step < STEPS.length - 1) setStep(s => s + 1);
+    const e = validate(step); setErrs(e);
+    if (Object.keys(e).length > 0) return;
+    setStep(s => s + 1); window.scrollTo(0, 0);
   }
+  function back() { setErrs({}); setStep(s => s - 1); window.scrollTo(0, 0); }
 
   async function handleSubmit() {
     setSubmitting(true);
-    setError(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { navigate('/login'); return; }
+      if (!session?.user) { navigate("/login"); return; }
 
-      const { error: err } = await supabase.from('listings').insert({
-        seller_id:   session.user.id,    // UUID — not text
-        type:        'vehicle',
-        title:       `${form.make} ${form.model} ${form.year}`,
-        description: form.description || `${form.type}, ${form.fuel}, ${form.transmission}${form.mileage ? ', ' + form.mileage + 'km' : ''}`,
-        price:       Number(form.price),
-        category:    form.type,
-        condition:   form.condition,
-        location:    form.location,
-        phone:       form.phone,
-        status:      'active',
+      const { data, error: err } = await supabase.from("listings").insert({
+        seller_id:   session.user.id,
+        type:        "vehicle",
+        title:       `${d.make} ${d.model} ${d.year}`.trim(),
+        description: d.description.trim(),
+        price:       Number(d.price),
+        category:    d.vehicleType,
+        condition:   d.condition,
+        location:    [d.city, d.region].filter(Boolean).join(", "),
+        phone:       d.phone.trim(),
+        negotiable:  d.negotiable,
+        status:      "active",
         extra: {
-          make:         form.make,
-          model:        form.model,
-          year:         form.year,
-          vehicle_type: form.type,
-          fuel:         form.fuel,
-          transmission: form.transmission,
-          mileage:      form.mileage,
-          color:        form.color,
+          make: d.make, model: d.model, year: d.year,
+          vehicle_type: d.vehicleType, fuel: d.fuel,
+          transmission: d.transmission, mileage: d.mileage, color: d.color,
         },
-      });
+      }).select("id").single();
 
       if (err) throw err;
-      setDone(true);
-      setTimeout(() => navigate('/vehicles'), 2000);
+      localStorage.removeItem("bambeh_draft_vehicle");
+      setNewId(data?.id ?? null);
+      setPosted(true);
     } catch (e: any) {
-      setError(e.message || 'Could not post listing. Please try again.');
+      setErrs({ submit: e.message || "Failed to post. Please try again." });
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (done) {
+  if (posted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-        <div className="bg-white rounded-2xl p-8 text-center shadow max-w-sm w-full">
-          <CheckCircle className="w-14 h-14 text-teal-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Vehicle Listed! 🚗</h2>
-          <p className="text-gray-500 text-sm">Your vehicle is now visible to buyers across  on all devices.</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4 text-center">
+        <p className="text-7xl mb-4">🚗</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Vehicle Listed!</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+          Your vehicle is now live on Bambeh, visible to buyers across Cameroon on all devices.
+        </p>
+        <div className="flex flex-col gap-3 w-full max-w-xs">
+          {newId && <button onClick={() => navigate(`/vehicles/${newId}`)} className="py-3 bg-teal-600 text-white rounded-xl font-bold">View My Listing →</button>}
+          <button onClick={() => navigate("/vehicles")} className="py-3 bg-teal-600 text-white rounded-xl font-bold">Browse Vehicles</button>
+          <button onClick={() => { setPosted(false); setStep(1); setD(BLANK); }}
+            className="py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300">
+            List Another Vehicle
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={() => step > 0 ? setStep(s => s - 1) : navigate(-1)}
-          className="p-2 hover:bg-gray-100 rounded-xl">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="font-bold text-gray-900 flex items-center gap-2">
-          <Car className="w-5 h-5 text-teal-600" /> Sell Vehicle
-        </h1>
-        <div className="ml-auto flex gap-1">
-          {STEPS.map((_, i) => (
-            <div key={i} className={`h-1.5 w-8 rounded-full ${i <= step ? 'bg-teal-600' : 'bg-gray-200'}`} />
-          ))}
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="sticky top-0 z-10 bg-teal-600 text-white px-4 py-4 flex items-center gap-3 shadow">
+        <button onClick={() => step === 1 ? navigate(-1) : back()}
+          className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">←</button>
+        <h1 className="font-bold text-lg">🚗 Sell a Vehicle</h1>
       </div>
 
-      <div className="max-w-lg mx-auto p-4 space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>
+      <StepBar step={step} />
+
+      <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
+
+        {/* STEP 1 */}
+        {step === 1 && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h2 className="font-bold text-base text-gray-900 dark:text-white">Vehicle Information</h2>
+
+            <div><Lbl required>Make / Brand</Lbl>
+              <div className="grid grid-cols-2 gap-2">
+                {MAKES.map(m => (
+                  <button key={m} type="button" onClick={() => upd({ make: m })}
+                    className={`flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-semibold text-left transition-all
+                      ${d.make === m ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700" : "border-gray-200 dark:border-gray-600 text-gray-600"}`}>
+                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0
+                      ${d.make === m ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
+                      {d.make === m && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                    {m}
+                  </button>
+                ))}
+              </div>
+              <Err msg={errs.make} />
+            </div>
+
+            <div><Lbl required>Model</Lbl>
+              <SInput value={d.model} onChange={v => upd({ model: v })}
+                placeholder="e.g. Corolla, RAV4, Hilux" error={errs.model} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div><Lbl required>Year</Lbl>
+                <SInput type="number" min="1950" value={d.year} onChange={v => upd({ year: v })}
+                  placeholder="2020" error={errs.year} />
+              </div>
+              <div><Lbl>Color</Lbl>
+                <SInput value={d.color} onChange={v => upd({ color: v })}
+                  placeholder="e.g. White, Silver" />
+              </div>
+            </div>
+
+            <div><Lbl required>Vehicle Type</Lbl>
+              <SSelect value={d.vehicleType} onChange={v => upd({ vehicleType: v })}
+                options={TYPES} placeholder="Select type" error={errs.vehicleType} />
+            </div>
+
+            <NavRow onDraft={saveDraft} onNext={next} />
+          </div>
         )}
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-          <h2 className="font-bold text-gray-900">{STEPS[step]}</h2>
+        {/* STEP 2 */}
+        {step === 2 && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h2 className="font-bold text-base text-gray-900 dark:text-white">Condition & Details</h2>
 
-          {/* Step 0 — Vehicle Info */}
-          {step === 0 && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Make</label>
-                <select value={form.make} onChange={e => setForm({...form, make: e.target.value})}
-                  className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                  {MAKES.map(m => <option key={m}>{m}</option>)}
-                </select>
+            <div><Lbl required>Condition</Lbl>
+              <div className="grid grid-cols-2 gap-2">
+                {CONDITIONS.map(c => (
+                  <button key={c} type="button" onClick={() => upd({ condition: c })}
+                    className={`flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-semibold text-left transition-all
+                      ${d.condition === c ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700" : "border-gray-200 dark:border-gray-600 text-gray-600"}`}>
+                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0
+                      ${d.condition === c ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
+                      {d.condition === c && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                    {c}
+                  </button>
+                ))}
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Model *</label>
-                <input value={form.model} onChange={e => setForm({...form, model: e.target.value})}
-                  placeholder="e.g. Corolla, Hilux"
-                  className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Year</label>
-                  <input type="number" value={form.year} onChange={e => setForm({...form, year: e.target.value})}
-                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
-                  <select value={form.type} onChange={e => setForm({...form, type: e.target.value})}
-                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                    {TYPES.map(t => <option key={t}>{t}</option>)}
-                  </select>
-                </div>
-              </div>
-            </>
-          )}
+            </div>
 
-          {/* Step 1 — Details */}
-          {step === 1 && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Price (XAF) *</label>
-                <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})}
-                  placeholder="e.g. 3500000"
-                  className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Mileage (km)</label>
-                  <input type="number" value={form.mileage} onChange={e => setForm({...form, mileage: e.target.value})}
-                    placeholder="45000"
-                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Color</label>
-                  <input value={form.color} onChange={e => setForm({...form, color: e.target.value})}
-                    placeholder="White, Black..."
-                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+            <div className="grid grid-cols-2 gap-3">
+              <div><Lbl>Fuel Type</Lbl>
+                <div className="flex flex-col gap-1.5">
+                  {FUELS.map(f => (
+                    <button key={f} type="button" onClick={() => upd({ fuel: f })}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border-2 text-xs font-semibold text-left transition-all
+                        ${d.fuel === f ? "border-teal-500 bg-teal-50 text-teal-700" : "border-gray-200 text-gray-600"}`}>
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center
+                        ${d.fuel === f ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
+                        {d.fuel === f && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
+                      </div>
+                      {f}
+                    </button>
+                  ))}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Fuel</label>
-                  <select value={form.fuel} onChange={e => setForm({...form, fuel: e.target.value})}
-                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                    {['Petrol','Diesel','Electric','Hybrid'].map(f => <option key={f}>{f}</option>)}
-                  </select>
+              <div><Lbl>Gearbox</Lbl>
+                <div className="flex flex-col gap-1.5">
+                  {GEARBOXES.map(g => (
+                    <button key={g} type="button" onClick={() => upd({ transmission: g })}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border-2 text-xs font-semibold text-left transition-all
+                        ${d.transmission === g ? "border-teal-500 bg-teal-50 text-teal-700" : "border-gray-200 text-gray-600"}`}>
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center
+                        ${d.transmission === g ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
+                        {d.transmission === g && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
+                      </div>
+                      {g}
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Gearbox</label>
-                  <select value={form.transmission} onChange={e => setForm({...form, transmission: e.target.value})}
-                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                    {['Manual','Automatic'].map(t => <option key={t}>{t}</option>)}
-                  </select>
-                </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
-                <input value={form.location} onChange={e => setForm({...form, location: e.target.value})}
-                  className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Phone</label>
-                <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
-                  placeholder="237 6XX XXX XXX"
-                  className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
-                  rows={3} placeholder="Condition, history, service records..."
-                  className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none" />
-              </div>
-            </>
-          )}
+            </div>
 
-          {/* Step 2 — Review */}
-          {step === 2 && (
-            <div className="space-y-2">
+            <div><Lbl>Mileage (km)</Lbl>
+              <SInput type="number" min="0" value={d.mileage} onChange={v => upd({ mileage: v })}
+                placeholder="e.g. 45000" />
+            </div>
+
+            <div><Lbl required>Description</Lbl>
+              <textarea rows={4}
+                className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none resize-none transition-colors
+                  ${errs.description ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
+                placeholder="Describe the vehicle: service history, any issues, modifications, reason for sale..."
+                value={d.description}
+                onChange={e => upd({ description: e.target.value })} />
+              <Err msg={errs.description} />
+            </div>
+
+            <NavRow onDraft={saveDraft} onBack={back} onNext={next} />
+          </div>
+        )}
+
+        {/* STEP 3 */}
+        {step === 3 && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+            <h2 className="font-bold text-base text-gray-900 dark:text-white">Pricing & Location</h2>
+
+            <div><Lbl required>Price (FCFA)</Lbl>
+              <SInput type="number" min="0" value={d.price} onChange={v => upd({ price: v })}
+                placeholder="e.g. 3500000" error={errs.price} />
+              {fmt(d.price) && <p className="text-xs text-teal-600 font-semibold mt-1">= {fmt(d.price)}</p>}
+            </div>
+
+            <BigCheck checked={d.negotiable} onChange={v => upd({ negotiable: v })}
+              label="Price is Negotiable"
+              desc="Buyers can make you an offer" />
+
+            <div><Lbl required>Region</Lbl>
+              <SSelect value={d.region} onChange={v => upd({ region: v, city: "" })}
+                options={REGIONS} placeholder="Select region" error={errs.region} />
+            </div>
+
+            {d.region && (
+              <div><Lbl required>City / Town</Lbl>
+                {cities.length > 0
+                  ? <SSelect value={d.city} onChange={v => upd({ city: v })}
+                      options={cities} placeholder="Select city" error={errs.city} />
+                  : <SInput value={d.city} onChange={v => upd({ city: v })}
+                      placeholder="Enter city name" error={errs.city} />}
+              </div>
+            )}
+
+            <div><Lbl>Contact Phone</Lbl>
+              <div className="flex">
+                <span className="border-2 border-r-0 border-gray-200 dark:border-gray-600 rounded-l-xl px-3 py-3 text-sm bg-gray-50 dark:bg-gray-700 text-gray-600">🇨🇲 +237</span>
+                <input type="tel"
+                  className="flex-1 border-2 border-gray-200 dark:border-gray-600 focus:border-teal-500 rounded-r-xl px-4 py-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none"
+                  placeholder="6XX XXX XXX"
+                  value={d.phone}
+                  onChange={e => upd({ phone: e.target.value.replace(/\D/g, "").slice(0, 9) })} />
+              </div>
+            </div>
+
+            <NavRow onDraft={saveDraft} onBack={back} onNext={next} nextLabel="Review Listing →" />
+          </div>
+        )}
+
+        {/* STEP 4 */}
+        {step === 4 && (
+          <>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
+              <h2 className="font-bold text-base text-gray-900 dark:text-white mb-4">📋 Listing Summary</h2>
               {[
-                ['Make / Model', `${form.make} ${form.model}`],
-                ['Year',         form.year],
-                ['Type',         form.type],
-                ['Price',        form.price ? `${Number(form.price).toLocaleString()} XAF` : '—'],
-                ['Mileage',      form.mileage ? `${form.mileage} km` : 'Not specified'],
-                ['Fuel',         form.fuel],
-                ['Gearbox',      form.transmission],
-                ['Location',     form.location],
+                ["Vehicle",      `${d.make} ${d.model} ${d.year}`.trim() || "—"],
+                ["Type",         d.vehicleType || "—"],
+                ["Condition",    d.condition],
+                ["Fuel",         d.fuel],
+                ["Gearbox",      d.transmission],
+                ["Mileage",      d.mileage ? `${Number(d.mileage).toLocaleString()} km` : "Not specified"],
+                ["Color",        d.color || "Not specified"],
+                ["Price",        fmt(d.price) || "—"],
+                ["Negotiable",   d.negotiable ? "Yes ✓" : "No"],
+                ["Location",     [d.city, d.region].filter(Boolean).join(", ") || "—"],
+                ["Phone",        d.phone ? `+237 ${d.phone}` : "Not provided"],
               ].map(([k, v]) => (
-                <div key={String(k)} className="flex justify-between py-2 border-b last:border-0 text-sm">
+                <div key={String(k)} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
                   <span className="text-gray-500">{k}</span>
-                  <span className="font-semibold text-gray-900">{v}</span>
+                  <span className="font-semibold text-gray-900 dark:text-white text-right max-w-[60%]">{v}</span>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
-        <div className="flex gap-3 max-w-lg mx-auto">
-          {step > 0 && (
-            <button onClick={() => setStep(s => s - 1)}
-              className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold text-sm">
-              Back
-            </button>
-          )}
-          {step < STEPS.length - 1 ? (
-            <button onClick={next}
-              className="flex-1 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm">
-              Next →
-            </button>
-          ) : (
-            <button onClick={handleSubmit} disabled={submitting}
-              className="flex-1 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-              {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />Posting...</> : 'Submit Listing'}
-            </button>
-          )}
-        </div>
+            {/* Preview card */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
+              <h3 className="font-bold text-sm text-gray-500 uppercase tracking-wide mb-3">Preview — how buyers will see your listing</h3>
+              <div className="rounded-xl border border-gray-200 overflow-hidden">
+                <div className="h-40 bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center relative">
+                  <span className="text-5xl">🚗</span>
+                  <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">DEMO</span>
+                </div>
+                <div className="p-3">
+                  <p className="font-bold text-sm text-gray-900 dark:text-white">{`${d.make} ${d.model} ${d.year}`.trim() || "Your vehicle"}</p>
+                  <p className="text-teal-700 font-bold text-base mt-1">{fmt(d.price) || "Price not set"}</p>
+                  <p className="text-xs text-gray-400 mt-1">{[d.city, d.region].filter(Boolean).join(", ") || "Location"} · {d.fuel} · {d.transmission}</p>
+                </div>
+              </div>
+              <p className="text-xs text-yellow-600 mt-2 italic text-center">
+                DEMO badge only shows on sample items — not on your live listing.
+              </p>
+            </div>
+
+            {errs.submit && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">⚠ {errs.submit}</div>
+            )}
+
+            <NavRow onDraft={saveDraft} onBack={back} onNext={handleSubmit}
+              nextLabel={submitting ? "Posting..." : "🚀 List Vehicle"}
+              disabled={submitting} />
+          </>
+        )}
       </div>
     </div>
   );
 }
-
