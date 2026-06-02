@@ -1,199 +1,137 @@
 /**
- * src/pages/Favorites.tsx — Bambeh Marketplace
- * FIXED: Reads and writes favorites from Supabase user_favorites table.
- * Was using localStorage — now synced across all devices when logged in.
- * Falls back to localStorage for guests.
+ * src/pages/Favorites.tsx — Bambeh Marketplace  DEFINITIVE VERSION
+ * Reads bambeh_favorites from localStorage — catches hearts from ALL sections.
+ * Filter tabs: All / Items / Jobs / Farm / Vehicles / Services / Rentals
  */
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Heart, Trash2, ShoppingBag, Loader2, Briefcase, Wrench, Car, Leaf, Zap, Home } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Heart, Trash2, ShoppingBag, Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+interface FavItem { id:string; title:string; price?:string|number; image?:string; category:string; type:string; location?:string; savedAt:string; }
 
-interface FavoriteItem {
-  id:        string;
-  item_id:   string;
-  title:     string;
-  price?:    string;
-  image_url?:string;
-  category:  string;
-  item_type: string;
-  saved_at:  string;
-}
+const FAV_KEY = "bambeh_favorites";
+const TYPE_ROUTES: Record<string,string> = { marketplace:"/marketplace/", job:"/jobs/", service:"/services/", rental:"/rentals/", vehicle:"/vehicles/", "farm-fresh":"/farm-fresh/", deal:"/deals/", "group-deal":"/group-buying/", exchange:"/exchange/" };
+const TYPE_LABELS: Record<string,string> = { marketplace:"Item", job:"Job", service:"Service", rental:"Rental", vehicle:"Vehicle", "farm-fresh":"Farm Fresh", deal:"Flash Deal", "group-deal":"Group Deal", exchange:"Exchange" };
+const TYPE_COLORS: Record<string,string> = { marketplace:"bg-teal-100 text-teal-700", job:"bg-blue-100 text-blue-700", service:"bg-purple-100 text-purple-700", rental:"bg-orange-100 text-orange-700", vehicle:"bg-gray-100 text-gray-700", "farm-fresh":"bg-green-100 text-green-700", deal:"bg-red-100 text-red-700", "group-deal":"bg-indigo-100 text-indigo-700", exchange:"bg-yellow-100 text-yellow-700" };
+const TYPE_ICONS: Record<string,React.ReactNode> = { marketplace:<ShoppingBag className="w-4 h-4"/>, job:<Briefcase className="w-4 h-4"/>, service:<Wrench className="w-4 h-4"/>, rental:<Home className="w-4 h-4"/>, vehicle:<Car className="w-4 h-4"/>, "farm-fresh":<Leaf className="w-4 h-4"/>, deal:<Zap className="w-4 h-4"/> };
+const TABS = [{key:"all",label:"All"},{key:"marketplace",label:"Items"},{key:"job",label:"Jobs"},{key:"service",label:"Services"},{key:"farm-fresh",label:"Farm"},{key:"vehicle",label:"Vehicles"},{key:"rental",label:"Rentals"},{key:"deal",label:"Deals"}];
 
-export default function Favorites() {
-  const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
-  const [loading,   setLoading]   = useState(true);
-  const [userId,    setUserId]    = useState<string | null>(null);
+function fmtPrice(p:string|number|undefined){if(!p)return null;if(typeof p==="number")return`${p.toLocaleString("fr-CM")} XAF`;return String(p);}
 
-  useEffect(() => {
-    loadFavorites();
-  }, []);
+export default function Favorites(){
+  const navigate=useNavigate();
+  const[favorites,setFavorites]=useState<FavItem[]>([]);
+  const[loading,  setLoading]  =useState(true);
+  const[filter,   setFilter]   =useState("all");
+  const[userId,   setUserId]   =useState<string|null>(null);
 
-  async function loadFavorites() {
+  useEffect(()=>{void load();},[]);
+
+  async function load(){
     setLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const uid = session?.user?.id ?? null;
-      setUserId(uid);
-
-      if (uid) {
-        // Logged in: read from Supabase
-        const { data, error } = await supabase
-          .from('user_favorites')
-          .select('*')
-          .eq('user_id', uid)
-          .order('saved_at', { ascending: false });
-
-        if (!error && data) {
-          setFavorites(data.map(d => ({
-            id:        d.id,
-            item_id:   d.item_id,
-            title:     d.title,
-            price:     d.price ?? undefined,
-            image_url: d.image_url ?? undefined,
-            category:  d.category || 'Other',
-            item_type: d.item_type || 'marketplace',
-            saved_at:  d.saved_at,
-          })));
-          setLoading(false);
-          return;
+    let items:FavItem[]=[];
+    try{const s=JSON.parse(localStorage.getItem(FAV_KEY)||"[]");if(Array.isArray(s))items=s;}catch{}
+    try{
+      const{data:{session}}=await supabase.auth.getSession();
+      const uid=session?.user?.id??null; setUserId(uid);
+      if(uid){
+        const{data,error}=await supabase.from("user_favorites").select("*").eq("user_id",uid).order("saved_at",{ascending:false});
+        if(!error&&data&&data.length>0){
+          const dbItems:FavItem[]=data.map((d:any)=>({id:d.item_id,title:d.title,price:d.price,image:d.image_url,category:d.category||"Other",type:d.item_type||"marketplace",savedAt:d.saved_at}));
+          const dbIds=new Set(dbItems.map(i=>i.id));
+          items=[...dbItems,...items.filter(i=>!dbIds.has(i.id))];
+          localStorage.setItem(FAV_KEY,JSON.stringify(items));
         }
       }
-
-      // Guest: read from localStorage as fallback
-      const keys = ['bambeh_favorites', 'Bambeh_favorites', 'favorites'];
-      for (const key of keys) {
-        const stored = localStorage.getItem(key);
-        if (stored) {
-          const items = JSON.parse(stored);
-          if (Array.isArray(items) && items.length > 0) {
-            setFavorites(items.map((i: any) => ({
-              id:        i.id || String(Math.random()),
-              item_id:   i.id || i.item_id || '',
-              title:     i.title || 'Saved Item',
-              price:     i.price,
-              image_url: i.image,
-              category:  i.category || 'Other',
-              item_type: i.type || 'marketplace',
-              saved_at:  i.savedAt || new Date().toISOString(),
-            })));
-            break;
-          }
-        }
-      }
-    } catch {
-      // silent
-    } finally {
-      setLoading(false);
-    }
+    }catch{}
+    setFavorites(items);
+    setLoading(false);
   }
 
-  async function removeFavorite(fav: FavoriteItem) {
-    // Remove from local state immediately
-    setFavorites(prev => prev.filter(f => f.id !== fav.id));
-
-    if (userId) {
-      // Remove from Supabase
-      await supabase.from('user_favorites').delete().eq('id', fav.id);
-    } else {
-      // Remove from localStorage
-      try {
-        const stored = JSON.parse(localStorage.getItem('bambeh_favorites') || '[]');
-        const updated = stored.filter((i: any) => i.id !== fav.item_id);
-        localStorage.setItem('bambeh_favorites', JSON.stringify(updated));
-      } catch {}
-    }
+  async function removeFavorite(fav:FavItem){
+    const updated=favorites.filter(f=>f.id!==fav.id);
+    setFavorites(updated);
+    localStorage.setItem(FAV_KEY,JSON.stringify(updated));
+    if(userId) await supabase.from("user_favorites").delete().eq("user_id",userId).eq("item_id",fav.id);
   }
 
-  function navigateToItem(fav: FavoriteItem) {
-    const routes: Record<string, string> = {
-      marketplace: '/marketplace/',
-      job:         '/jobs/',
-      service:     '/services/',
-      deal:        '/deals/',
-      exchange:    '/exchange/',
-      rental:      '/rentals/',
-      vehicle:     '/vehicles/',
-    };
-    const base = routes[fav.item_type] || '/marketplace/';
-    navigate(base + fav.item_id);
+  function navigateToItem(fav:FavItem){
+    navigate((TYPE_ROUTES[fav.type]||"/marketplace/")+fav.id);
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-      </div>
-    );
-  }
+  const filtered=filter==="all"?favorites:favorites.filter(f=>f.type===filter);
 
-  if (favorites.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
-        <Heart className="w-16 h-16 text-gray-300 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-700 mb-2">No favorites yet</h2>
-        <p className="text-gray-500 text-center mb-6">
-          Tap the ♡ heart on any listing to save it here. Favorites sync across all your devices.
-        </p>
-        <button onClick={() => navigate('/marketplace')}
-          className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold">
-          Browse Marketplace
-        </button>
-      </div>
-    );
-  }
+  if(loading)return<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-teal-600"/></div>;
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center gap-2 mb-6">
-          <Heart className="w-6 h-6 text-red-500 fill-red-500" />
-          <h1 className="text-2xl font-bold text-gray-900">Favorites</h1>
+  return(
+    <div className="min-h-screen bg-gray-50 pb-24">
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-4">
+        <div className="flex items-center gap-3 mb-3">
+          <Heart className="w-6 h-6 text-red-500 fill-red-500"/>
+          <h1 className="text-xl font-bold text-gray-900">Favorites</h1>
           <span className="ml-auto text-sm text-gray-500">{favorites.length} saved</span>
         </div>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          {TABS.map(tab=>{
+            const count=tab.key==="all"?favorites.length:favorites.filter(f=>f.type===tab.key).length;
+            if(tab.key!=="all"&&count===0)return null;
+            return(
+              <button key={tab.key} onClick={()=>setFilter(tab.key)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${filter===tab.key?"bg-teal-600 text-white":"bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                {tab.label} {count>0&&<span className="ml-1 opacity-70">({count})</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-        {!userId && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-700">
-            ⚠️ Log in to sync your favorites across all devices.
+      <div className="p-4">
+        {!userId&&(
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-700 flex items-center gap-2">
+            <Heart className="w-4 h-4 text-amber-500 flex-shrink-0"/>
+            <span>Log in to sync your favorites across all devices.</span>
+            <button onClick={()=>navigate("/login")} className="ml-auto font-bold underline flex-shrink-0">Log in</button>
           </div>
         )}
 
-        <div className="space-y-3">
-          {favorites.map(fav => (
-            <div key={fav.id}
-              className="bg-white rounded-2xl p-4 shadow-sm border flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigateToItem(fav)}>
-              {/* Image or icon */}
-              <div className="w-16 h-16 rounded-xl bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                {fav.image_url
-                  ? <img src={fav.image_url} alt={fav.title} className="w-full h-full object-cover" />
-                  : <ShoppingBag className="w-6 h-6 text-gray-400" />
-                }
+        {filtered.length===0?(
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Heart className="w-16 h-16 text-gray-200 mb-4"/>
+            <h2 className="text-lg font-semibold text-gray-600 mb-2">{filter==="all"?"No favorites yet":`No ${TYPE_LABELS[filter]||filter} favorites`}</h2>
+            <p className="text-gray-400 text-sm mb-6 max-w-xs">Tap the ♡ heart on any listing, job, or produce to save it here.</p>
+            <button onClick={()=>navigate(filter==="job"?"/jobs":filter==="service"?"/services":filter==="farm-fresh"?"/farm-fresh":"/marketplace")}
+              className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold text-sm">
+              Browse {filter==="all"?"Marketplace":TYPE_LABELS[filter]||"Listings"}
+            </button>
+          </div>
+        ):(
+          <div className="space-y-3">
+            {filtered.map(fav=>(
+              <div key={fav.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]" onClick={()=>navigateToItem(fav)}>
+                <div className="w-[72px] h-[72px] rounded-xl bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                  {fav.image
+                    ?<img src={fav.image} alt={fav.title} className="w-full h-full object-cover" onError={e=>{(e.target as HTMLImageElement).style.display="none";}}/>
+                    :<div className="text-gray-300">{TYPE_ICONS[fav.type]||<ShoppingBag className="w-6 h-6"/>}</div>
+                  }
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-2 mb-1">
+                    <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 flex-1">{fav.title}</h3>
+                    <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_COLORS[fav.type]||"bg-gray-100 text-gray-600"}`}>{TYPE_LABELS[fav.type]||fav.type}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-1">{fav.category}</p>
+                  {fav.price&&<p className="text-teal-600 font-bold text-sm">{fmtPrice(fav.price)}</p>}
+                  {fav.location&&<p className="text-xs text-gray-400 mt-0.5 truncate">{fav.location}</p>}
+                  <p className="text-xs text-gray-300 mt-0.5">Saved {new Date(fav.savedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short"})}</p>
+                </div>
+                <button onClick={e=>{e.stopPropagation();removeFavorite(fav);}} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition flex-shrink-0">
+                  <Trash2 className="w-5 h-5"/>
+                </button>
               </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 truncate">{fav.title}</h3>
-                <p className="text-xs text-gray-500 capitalize">{fav.category} · {fav.item_type}</p>
-                {fav.price && (
-                  <p className="text-teal-600 font-semibold text-sm mt-0.5">{fav.price}</p>
-                )}
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Saved {new Date(fav.saved_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                </p>
-              </div>
-
-              {/* Remove */}
-              <button
-                onClick={e => { e.stopPropagation(); removeFavorite(fav); }}
-                className="p-2 text-red-400 hover:text-red-600 transition-colors flex-shrink-0">
-                <Trash2 className="w-5 h-5" />
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
