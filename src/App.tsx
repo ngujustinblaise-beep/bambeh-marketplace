@@ -581,9 +581,11 @@ export default function App() {
                           <Route path="/vehicles" element={<MainLayout><VehicleRentals /></MainLayout>} />
                           <Route path="/exchange" element={<MainLayout><Exchange /></MainLayout>} />
 
-                          <Route path="/deals" element={<MainLayout><AuthGate require="subscription"><FlashDeals /></AuthGate></MainLayout>} />
+                          <Route path="/deals" element={<MainLayout><AuthGate require="user"><FlashDeals /></AuthGate></MainLayout>} />
                           <Route path="/flash-deals" element={<Navigate to="/deals" replace />} />
-                          <Route path="/group-buying" element={<MainLayout><AuthGate require="subscription"><GroupBuying /></AuthGate></MainLayout>} />
+                          <Route path="/group-buying" element={<MainLayout><AuthGate require="user"><GroupBuying /></AuthGate></MainLayout>} />
+                          <Route path="/group-buying/create" element={<Navigate to="/group-buying" replace />} />
+                          <Route path="/group-buying/invite" element={<Navigate to="/group-buying" replace />} />
                           <Route path="/ai-chat" element={<MainLayout><AuthGate require="subscription"><BambehAIChatbot /></AuthGate></MainLayout>} />
 
                           {/* ── 4. CATEGORY PAGES ─────────────────────────── */}
@@ -614,7 +616,7 @@ export default function App() {
 
                           {/* ── 7. USER PAGES ─────────────────────────────── */}
                           <Route path="/profile" element={<MainLayout><AuthGate require="user"><Profile /></AuthGate></MainLayout>} />
-                          <Route path="/cart" element={<MainLayout><AuthGate require="subscription"><Cart /></AuthGate></MainLayout>} />
+                          <Route path="/cart" element={<MainLayout><AuthGate require="user"><Cart /></AuthGate></MainLayout>} />
                           <Route path="/favorites" element={<MainLayout><AuthGate require="user"><Favorites /></AuthGate></MainLayout>} />
                           <Route path="/notifications" element={<MainLayout><AuthGate require="subscription"><Notifications /></AuthGate></MainLayout>} />
                           <Route path="/alerts" element={<MainLayout><AuthGate require="user"><AlertsPage /></AuthGate></MainLayout>} />
@@ -757,23 +759,22 @@ export default function App() {
                           <Route path="/seller/:sellerId/rating" element={<MainLayout><SellerRatingPage /></MainLayout>} />
                           <Route path="/offline-mode" element={<MainLayout><OfflineModePage /></MainLayout>} />
                           <Route path="/meet-safely" element={<MainLayout><MeetSafelyPage /></MainLayout>} />
-                          <Route path="/community" element={<MainLayout><AuthGate require="subscription"><CommunityPage /></AuthGate></MainLayout>} />
-                          <Route path="/community/:id" element={<MainLayout><AuthGate require="subscription"><CommunityDetail /></AuthGate></MainLayout>} />
+                          <Route path="/community" element={<MainLayout><AuthGate require="user"><CommunityPage /></AuthGate></MainLayout>} />
+                          <Route path="/community/create" element={<Navigate to="/community" replace />} />
+                          <Route path="/community/:id" element={<MainLayout><AuthGate require="user"><CommunityDetail /></AuthGate></MainLayout>} />
                           <Route path="/tontine" element={<MainLayout><AuthGate require="subscription"><TontinePage /></AuthGate></MainLayout>} />
                           <Route path="/tontine/create" element={<MainLayout><AuthGate require="subscription"><TontineCreate /></AuthGate></MainLayout>} />
                           <Route path="/tontine/:id" element={<MainLayout><AuthGate require="subscription"><TontineDetail /></AuthGate></MainLayout>} />
 
-                          {/* ✅ FIXED: farm-fresh changed to require="user" (was "subscription")
-                              This was why FarmFresh and related pages weren't opening for users */}
+                          {/* FARM FRESH — static sub-routes MUST come before :id wildcard */}
                           <Route path="/farm-fresh" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Farm Fresh"><FarmFreshPage /></RouteErrorBoundary></AuthGate></MainLayout>} />
-                          {/* ✅ ADDED: FarmFreshDetail route was completely missing — tapping a product showed "Oops" */}
-                          <Route path="/farm-fresh/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Farm Fresh Product"><FarmFreshDetail /></RouteErrorBoundary></AuthGate></MainLayout>} />
-                          <Route path="/farm-fresh/order/:productId" element={<MainLayout><AuthGate require="user"><FarmFreshOrderPage /></AuthGate></MainLayout>} />
                           <Route path="/farm-fresh/sell" element={<MainLayout><AuthGate require="user"><FarmFreshSellerPage /></AuthGate></MainLayout>} />
+                          <Route path="/farm-fresh/order/:productId" element={<MainLayout><AuthGate require="user"><FarmFreshOrderPage /></AuthGate></MainLayout>} />
+                          <Route path="/farm-fresh/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Farm Fresh Product"><FarmFreshDetail /></RouteErrorBoundary></AuthGate></MainLayout>} />
 
                           <Route path="/make-offer/:listingId" element={<MainLayout><AuthGate require="user"><MakeOfferPage /></AuthGate></MainLayout>} />
                           <Route path="/compare" element={<MainLayout><AuthGate require="subscription"><ComparisonTool /></AuthGate></MainLayout>} />
-                          <Route path="/group-buying/:id" element={<MainLayout><AuthGate require="subscription"><GroupBuyingDetail /></AuthGate></MainLayout>} />
+                          <Route path="/group-buying/:id" element={<MainLayout><AuthGate require="user"><GroupBuyingDetail /></AuthGate></MainLayout>} />
 
                           {/* ── 17. 404 ────────────────────────────────────── */}
                           <Route path="*" element={<MainLayout><NotFoundPage /></MainLayout>} />
