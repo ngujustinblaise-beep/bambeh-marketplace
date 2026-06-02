@@ -237,29 +237,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // ── Mobile bottom nav ──────────────────────────────────────────────────────
   const renderMobileBottomNav = () => (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white shadow-2xl">
-
-      {/* Share strip */}
-      <div className="border-t-2 border-teal-100 bg-gradient-to-r from-teal-600 to-blue-600 px-4 py-2.5 flex items-center justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-white text-xs font-semibold leading-none">
-            Invite friends to Bambeh!
-          </p>
-          <p className="text-teal-200 text-xs mt-0.5 truncate">{shareUrl}</p>
-        </div>
-
-        <button
-          onClick={handleShare}
-          aria-label="Share Bambeh"
-          className="flex items-center gap-1.5 bg-white text-teal-700 px-4 py-2 rounded-xl font-bold text-sm flex-shrink-0 hover:bg-teal-50 active:scale-95 transition-all shadow-sm"
-        >
-          <Share2 className="w-4 h-4" />
-          <span>Share</span>
-        </button>
-      </div>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white shadow-2xl border-t border-gray-100">
 
       {/* Main nav row */}
-      <div className="flex items-center justify-around px-2 py-2 border-t border-gray-100">
+      <div className="flex items-center justify-around px-2 py-2">
         {mobileNavItems.map((item) => {
           if (item.requiresAuth && !currentUser) return null;
 
@@ -292,6 +273,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </button>
           );
         })}
+
+        {/* ── Compact Share / Invite button — replaces the old full-width share strip ── */}
+        <button
+          onClick={handleShare}
+          aria-label="Invite friends to Bambeh"
+          className="flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-xl transition-all text-teal-600 hover:text-teal-700"
+        >
+          <Share2 className="w-6 h-6" />
+          <span className="text-xs font-medium text-teal-600">Share</span>
+        </button>
       </div>
     </nav>
   );
@@ -300,7 +291,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
-      <main className="flex-1 pt-0 pb-28 md:pb-8">
+      <main className="flex-1 pt-0 pb-20 md:pb-8">
         {children || <Outlet />}
       </main>
 

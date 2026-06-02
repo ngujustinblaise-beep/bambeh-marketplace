@@ -137,6 +137,7 @@ const JobsCategory        = lazy(() => import("@/pages/JobsCategory"));
 
 // SUBSCRIPTION / ZERM
 const SubscriptionPlans = lazy(() => import("@/pages/SubscriptionPlans"));
+const ShareMyVoice      = lazy(() => import("@/pages/ShareMyVoice"));
 const ZermPurchase      = lazy(() => import("@/pages/ZermPurchase"));
 const CoinsPage         = lazy(() => import("@/pages/CoinsPage"));
 const CoinsHistory      = lazy(() => import("@/pages/CoinsHistory"));
@@ -379,6 +380,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/vehicles",
     "/exchange",
     "/subscription",
+    "/share-my-voice",
     "/referral",
     "/donate",
   ];
@@ -581,9 +583,11 @@ export default function App() {
                           <Route path="/vehicles" element={<MainLayout><VehicleRentals /></MainLayout>} />
                           <Route path="/exchange" element={<MainLayout><Exchange /></MainLayout>} />
 
-                          <Route path="/deals" element={<MainLayout><AuthGate require="subscription"><FlashDeals /></AuthGate></MainLayout>} />
+                          <Route path="/deals" element={<MainLayout><AuthGate require="user"><FlashDeals /></AuthGate></MainLayout>} />
                           <Route path="/flash-deals" element={<Navigate to="/deals" replace />} />
-                          <Route path="/group-buying" element={<MainLayout><AuthGate require="subscription"><GroupBuying /></AuthGate></MainLayout>} />
+                          <Route path="/group-buying/create" element={<Navigate to="/group-buying" replace />} />
+                          <Route path="/group-buying/invite" element={<Navigate to="/group-buying" replace />} />
+                          <Route path="/group-buying" element={<MainLayout><AuthGate require="user"><GroupBuying /></AuthGate></MainLayout>} />
                           <Route path="/ai-chat" element={<MainLayout><AuthGate require="subscription"><BambehAIChatbot /></AuthGate></MainLayout>} />
 
                           {/* ── 4. CATEGORY PAGES ─────────────────────────── */}
@@ -614,7 +618,7 @@ export default function App() {
 
                           {/* ── 7. USER PAGES ─────────────────────────────── */}
                           <Route path="/profile" element={<MainLayout><AuthGate require="user"><Profile /></AuthGate></MainLayout>} />
-                          <Route path="/cart" element={<MainLayout><AuthGate require="subscription"><Cart /></AuthGate></MainLayout>} />
+                          <Route path="/cart" element={<MainLayout><AuthGate require="user"><Cart /></AuthGate></MainLayout>} />
                           <Route path="/favorites" element={<MainLayout><AuthGate require="user"><Favorites /></AuthGate></MainLayout>} />
                           <Route path="/notifications" element={<MainLayout><AuthGate require="subscription"><Notifications /></AuthGate></MainLayout>} />
                           <Route path="/alerts" element={<MainLayout><AuthGate require="user"><AlertsPage /></AuthGate></MainLayout>} />
@@ -631,6 +635,7 @@ export default function App() {
 
                           {/* ── 8. SUBSCRIPTION / ZERM COINS ──────────────── */}
                           <Route path="/subscription" element={<MainLayout><SubscriptionPlans /></MainLayout>} />
+                          <Route path="/share-my-voice" element={<MainLayout><Suspense fallback={<LoadingFallback />}><ShareMyVoice /></Suspense></MainLayout>} />
                           <Route path="/zerm/purchase" element={<MainLayout><AuthGate require="subscription"><ZermPurchase /></AuthGate></MainLayout>} />
                           <Route path="/coins" element={<MainLayout><AuthGate require="subscription"><CoinsPage /></AuthGate></MainLayout>} />
                           <Route path="/coins/history" element={<MainLayout><AuthGate require="subscription"><CoinsHistory /></AuthGate></MainLayout>} />
@@ -757,8 +762,9 @@ export default function App() {
                           <Route path="/seller/:sellerId/rating" element={<MainLayout><SellerRatingPage /></MainLayout>} />
                           <Route path="/offline-mode" element={<MainLayout><OfflineModePage /></MainLayout>} />
                           <Route path="/meet-safely" element={<MainLayout><MeetSafelyPage /></MainLayout>} />
-                          <Route path="/community" element={<MainLayout><AuthGate require="subscription"><CommunityPage /></AuthGate></MainLayout>} />
-                          <Route path="/community/:id" element={<MainLayout><AuthGate require="subscription"><CommunityDetail /></AuthGate></MainLayout>} />
+                          <Route path="/community" element={<MainLayout><AuthGate require="user"><CommunityPage /></AuthGate></MainLayout>} />
+                          <Route path="/community/create" element={<Navigate to="/community" replace />} />
+                          <Route path="/community/:id" element={<MainLayout><AuthGate require="user"><CommunityDetail /></AuthGate></MainLayout>} />
                           <Route path="/tontine" element={<MainLayout><AuthGate require="subscription"><TontinePage /></AuthGate></MainLayout>} />
                           <Route path="/tontine/create" element={<MainLayout><AuthGate require="subscription"><TontineCreate /></AuthGate></MainLayout>} />
                           <Route path="/tontine/:id" element={<MainLayout><AuthGate require="subscription"><TontineDetail /></AuthGate></MainLayout>} />
@@ -771,7 +777,7 @@ export default function App() {
 
                           <Route path="/make-offer/:listingId" element={<MainLayout><AuthGate require="user"><MakeOfferPage /></AuthGate></MainLayout>} />
                           <Route path="/compare" element={<MainLayout><AuthGate require="subscription"><ComparisonTool /></AuthGate></MainLayout>} />
-                          <Route path="/group-buying/:id" element={<MainLayout><AuthGate require="subscription"><GroupBuyingDetail /></AuthGate></MainLayout>} />
+                          <Route path="/group-buying/:id" element={<MainLayout><AuthGate require="user"><GroupBuyingDetail /></AuthGate></MainLayout>} />
 
                           {/* ── 17. 404 ────────────────────────────────────── */}
                           <Route path="*" element={<MainLayout><NotFoundPage /></MainLayout>} />
