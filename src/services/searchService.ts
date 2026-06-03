@@ -2,220 +2,228 @@
  * src/services/searchService.ts
  * Bambeh Marketplace — Universal Search Service
  * © 2026 Bambeh Marketplace. All rights reserved.
+ *
+ * IMPORTANT — YOUR SUPABASE SCHEMA:
+ * All listing types (marketplace, job, service, rental, vehicle, exchange)
+ * live in ONE table: "listings" with a "type" column.
+ * There is NO separate marketplace_items, job_listings, or service_listings table.
+ * vendor_profiles is a separate table and IS queried separately.
+ * This file queries ONLY tables that actually exist.
  */
 
 import { supabase } from "@/lib/supabase";
 
+// ─── Geographic Scope ─────────────────────────────────────────────────────────
+
+export type SearchScope = "cameroon" | "central_africa" | "west_africa";
+
+export const SCOPE_CONFIG: Record<
+  SearchScope,
+  { label: string; labelFr: string; countries: string[]; emoji: string }
+> = {
+  cameroon: {
+    label:   "Cameroon",
+    labelFr: "Cameroun",
+    emoji:   "🇨🇲",
+    countries: ["Cameroon", "Cameroun"],
+  },
+  central_africa: {
+    label:   "Central Africa",
+    labelFr: "Afrique Centrale",
+    emoji:   "🌍",
+    countries: [
+      "Cameroon", "Cameroun", "Gabon",
+      "Congo", "Republic of Congo", "Congo-Brazzaville",
+      "DR Congo", "DRC", "Congo-Kinshasa",
+      "Central African Republic", "CAR",
+      "Chad", "Tchad",
+      "Equatorial Guinea", "Guinée Équatoriale",
+      "São Tomé and Príncipe",
+    ],
+  },
+  west_africa: {
+    label:   "West Africa",
+    labelFr: "Afrique de l'Ouest",
+    emoji:   "🌍",
+    countries: [
+      "Nigeria", "Ghana", "Senegal", "Sénégal",
+      "Côte d'Ivoire", "Ivory Coast", "Cameroon", "Cameroun",
+      "Mali", "Burkina Faso", "Niger", "Guinea", "Guinée",
+      "Benin", "Bénin", "Togo", "Sierra Leone", "Liberia",
+      "Mauritania", "Mauritanie", "Gambia", "Guinea-Bissau",
+      "Cape Verde", "Cabo Verde",
+    ],
+  },
+};
+
 // ─── Types ────────────────────────────────────────────────────────────────────
+
 export type SearchCategory =
   | "all"
   | "marketplace"
-  | "jobs"
-  | "services"
-  | "rentals"
-  | "vehicles"
+  | "job"
+  | "service"
+  | "rental"
+  | "vehicle"
   | "exchange"
   | "vendors";
 
 export interface SearchResult {
-  id: string;
-  type: Exclude<SearchCategory, "all">;
-  title: string;
-  description?: string;
-  imageUrl?: string;
-  priceXAF?: number;
-  location?: string;
-  createdAt: string;
+  id:              string;
+  type:            Exclude<SearchCategory, "all">;
+  title:           string;
+  description?:    string;
+  imageUrl?:       string;
+  priceXAF?:       number;
+  location?:       string;
+  country?:        string;
+  createdAt:       string;
   relevanceScore?: number;
 }
 
 export interface SearchFilters {
-  query: string;
-  category?: SearchCategory;
-  city?: string;
-  region?: string;
+  query:        string;
+  category?:    SearchCategory;
+  scope?:       SearchScope;
+  city?:        string;
+  region?:      string;
+  country?:     string;
   minPriceXAF?: number;
   maxPriceXAF?: number;
-  sortBy?: "relevance" | "newest" | "price_asc" | "price_desc";
-  page?: number;
-  pageSize?: number;
+  sortBy?:      "relevance" | "newest" | "price_asc" | "price_desc";
+  page?:        number;
+  pageSize?:    number;
 }
 
 export interface SearchResponse {
-  results: SearchResult[];
-  total: number;
-  query: string;
-  category: SearchCategory;
-  page: number;
-  pageSize: number;
+  results:     SearchResult[];
+  total:       number;
+  query:       string;
+  category:    SearchCategory;
+  scope:       SearchScope;
+  page:        number;
+  pageSize:    number;
   hasNextPage: boolean;
-  error: string | null;
+  error:       string | null;
 }
 
 export interface SearchSuggestion {
-  text: string;
+  text:     string;
   category: SearchCategory;
-  count: number;
+  count:    number;
 }
 
 // ─── Full-Text Search ─────────────────────────────────────────────────────────
+// ALL types go through the single "listings" table using the "type" column.
+
 export async function search(filters: SearchFilters): Promise<SearchResponse> {
   const {
     query,
     category = "all",
+    scope    = "cameroon",
     city,
     minPriceXAF,
     maxPriceXAF,
-    sortBy = "relevance",
-    page = 1,
+    sortBy   = "newest",
+    page     = 1,
     pageSize = 20,
   } = filters;
 
-  const from = (page - 1) * pageSize;
+  const from    = (page - 1) * pageSize;
   const results: SearchResult[] = [];
-  let total = 0;
+  let   total   = 0;
 
   try {
     if (!query || query.trim().length < 2) {
-      return {
-        results: [],
-        total: 0,
-        query,
-        category,
-        page,
-        pageSize,
-        hasNextPage: false,
-        error: "Query too short",
-      };
+      return { results: [], total: 0, query, category, scope, page, pageSize, hasNextPage: false, error: "Query too short" };
     }
 
-    const searchTerm = query.trim();
+    const term = query.trim();
 
-    // ── Marketplace ──────────────────────────────────────────────────────────
-    if (category === "all" || category === "marketplace") {
+    // ── All listing types from the single "listings" table ────────────────────
+    // Map category names to the "type" values stored in your listings table
+    const TYPE_MAP: Record<string, string> = {
+      marketplace: "marketplace",
+      job:         "job",
+      service:     "service",
+      rental:      "rental",
+      vehicle:     "vehicle",
+      exchange:    "exchange",
+    };
+
+    const typesToSearch = category === "all" || category === "vendors"
+      ? Object.values(TYPE_MAP)
+      : TYPE_MAP[category] ? [TYPE_MAP[category]] : [];
+
+    if (typesToSearch.length > 0) {
       let q = supabase
-        .from("marketplace_items")
-        .select("id, title, description, images, price_xaf, city, created_at", { count: "exact" })
+        .from("listings")
+        .select(
+          "id, type, title, description, price, category, condition, location, country, images, created_at, extra",
+          { count: "exact" }
+        )
         .eq("status", "active")
-        .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-
-      if (city) q = q.ilike("city", `%${city}%`);
-      if (minPriceXAF !== undefined) q = q.gte("price_xaf", minPriceXAF);
-      if (maxPriceXAF !== undefined) q = q.lte("price_xaf", maxPriceXAF);
-
-      const { data, count } = await q
+        .in("type", typesToSearch)
+        .or(`title.ilike.%${term}%,description.ilike.%${term}%,category.ilike.%${term}%`)
         .order("created_at", { ascending: false })
         .range(from, from + pageSize - 1);
 
-      total += count ?? 0;
+      if (city)                       q = q.ilike("location", `%${city}%`);
+      if (minPriceXAF !== undefined)  q = q.gte("price", minPriceXAF);
+      if (maxPriceXAF !== undefined)  q = q.lte("price", maxPriceXAF);
+      if (scope !== "cameroon")       q = (q as any).in("country", SCOPE_CONFIG[scope].countries);
 
+      const { data, count, error } = await q;
+      if (error) console.warn("[searchService] listings query:", error.message);
+
+      total += count ?? 0;
       if (data) {
         for (const row of data) {
-          const images = Array.isArray(row.images) ? row.images : [];
           results.push({
-            id: row.id as string,
-            type: "marketplace",
-            title: row.title as string,
-            description: row.description as string,
-            imageUrl: images[0]?.url as string | undefined,
-            priceXAF: row.price_xaf as number,
-            location: row.city as string,
-            createdAt: row.created_at as string,
+            id:          row.id,
+            type:        row.type as SearchResult["type"],
+            title:       row.title,
+            description: row.description,
+            imageUrl:    Array.isArray(row.images) ? row.images[0] : undefined,
+            priceXAF:    row.price ? Number(row.price) : undefined,
+            location:    row.location || row.extra?.city || "",
+            country:     row.country || "Cameroon",
+            createdAt:   row.created_at,
           });
         }
       }
     }
 
-    // ── Jobs ─────────────────────────────────────────────────────────────────
-    if (category === "all" || category === "jobs") {
-      let q = supabase
-        .from("job_listings")
-        .select("id, title, description, city, salary_min_xaf, created_at", { count: "exact" })
-        .eq("status", "active")
-        .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-
-      if (city) q = q.ilike("city", `%${city}%`);
-
-      const { data, count } = await q
-        .order("created_at", { ascending: false })
-        .range(from, from + pageSize - 1);
-
-      total += count ?? 0;
-
-      if (data) {
-        for (const row of data) {
-          results.push({
-            id: row.id as string,
-            type: "jobs",
-            title: row.title as string,
-            description: row.description as string,
-            priceXAF: row.salary_min_xaf as number | undefined,
-            location: row.city as string,
-            createdAt: row.created_at as string,
-          });
-        }
-      }
-    }
-
-    // ── Services ─────────────────────────────────────────────────────────────
-    if (category === "all" || category === "services") {
-      let q = supabase
-        .from("service_listings")
-        .select("id, title, description, images, price_from_xaf, city, created_at", { count: "exact" })
-        .eq("status", "active")
-        .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-
-      if (city) q = q.ilike("city", `%${city}%`);
-
-      const { data, count } = await q
-        .order("created_at", { ascending: false })
-        .range(from, from + pageSize - 1);
-
-      total += count ?? 0;
-
-      if (data) {
-        for (const row of data) {
-          const images = Array.isArray(row.images) ? row.images : [];
-          results.push({
-            id: row.id as string,
-            type: "services",
-            title: row.title as string,
-            description: row.description as string,
-            imageUrl: images[0]?.url as string | undefined,
-            priceXAF: row.price_from_xaf as number,
-            location: row.city as string,
-            createdAt: row.created_at as string,
-          });
-        }
-      }
-    }
-
-    // ── Vendors ───────────────────────────────────────────────────────────────
+    // ── Vendors — separate table ───────────────────────────────────────────────
     if (category === "all" || category === "vendors") {
-      const { data, count } = await supabase
+      let q = supabase
         .from("vendor_profiles")
-        .select("id, store_name, store_description, logo_url, city, created_at", { count: "exact" })
-        .or(`store_name.ilike.%${searchTerm}%,store_description.ilike.%${searchTerm}%`)
-        .range(from, from + pageSize - 1);
+        .select("id, store_name, store_description, logo_url, city, country, created_at", { count: "exact" })
+        .or(`store_name.ilike.%${term}%,store_description.ilike.%${term}%`);
+
+      if (scope !== "cameroon") q = (q as any).in("country", SCOPE_CONFIG[scope].countries);
+
+      const { data, count, error } = await q.range(from, from + pageSize - 1);
+      if (error) console.warn("[searchService] vendor_profiles query:", error.message);
 
       total += count ?? 0;
-
       if (data) {
         for (const row of data) {
           results.push({
-            id: row.id as string,
-            type: "vendors",
-            title: row.store_name as string,
-            description: row.store_description as string,
-            imageUrl: row.logo_url as string | undefined,
-            location: row.city as string,
-            createdAt: row.created_at as string,
+            id:          row.id,
+            type:        "vendors",
+            title:       row.store_name,
+            description: row.store_description,
+            imageUrl:    row.logo_url,
+            location:    row.city,
+            country:     row.country || "Cameroon",
+            createdAt:   row.created_at,
           });
         }
       }
     }
 
-    // Sort combined results
+    // ── Sort ──────────────────────────────────────────────────────────────────
     if (sortBy === "price_asc") {
       results.sort((a, b) => (a.priceXAF ?? 0) - (b.priceXAF ?? 0));
     } else if (sortBy === "price_desc") {
@@ -224,58 +232,42 @@ export async function search(filters: SearchFilters): Promise<SearchResponse> {
       results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
 
-    return {
-      results,
-      total,
-      query,
-      category,
-      page,
-      pageSize,
-      hasNextPage: from + pageSize < total,
-      error: null,
-    };
+    return { results, total, query, category, scope, page, pageSize, hasNextPage: from + pageSize < total, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Search failed";
-    return {
-      results: [],
-      total: 0,
-      query,
-      category,
-      page,
-      pageSize,
-      hasNextPage: false,
-      error: message,
-    };
+    return { results: [], total: 0, query, category, scope, page, pageSize, hasNextPage: false, error: message };
   }
 }
 
-// ─── Search Suggestions (autocomplete) ───────────────────────────────────────
-export async function getSearchSuggestions(
-  query: string
-): Promise<SearchSuggestion[]> {
+// ─── Search Suggestions ───────────────────────────────────────────────────────
+// Uses the single "listings" table — no more references to non-existent tables.
+
+export async function getSearchSuggestions(query: string): Promise<SearchSuggestion[]> {
   if (!query || query.length < 2) return [];
 
   try {
-    const suggestions: SearchSuggestion[] = [];
-
-    const { data } = await supabase
-      .from("marketplace_items")
-      .select("title")
+    const { data, error } = await supabase
+      .from("listings")
+      .select("title, type")
       .ilike("title", `${query}%`)
       .eq("status", "active")
-      .limit(5);
+      .limit(8);
 
-    if (data) {
-      for (const row of data) {
-        suggestions.push({
-          text: row.title as string,
-          category: "marketplace",
-          count: 1,
-        });
-      }
-    }
+    if (error) return [];
 
-    return suggestions.slice(0, 8);
+    const seen = new Set<string>();
+    return (data ?? [])
+      .filter(row => {
+        const key = row.title.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map(row => ({
+        text:     row.title,
+        category: row.type as SearchCategory,
+        count:    1,
+      }));
   } catch {
     return [];
   }
@@ -290,25 +282,24 @@ export async function saveSearch(
 ): Promise<{ success: boolean; error: string | null }> {
   try {
     const { error } = await supabase.from("saved_searches").upsert({
-      user_id: userId,
+      user_id:    userId,
       query,
       category,
-      filters: filters ?? {},
+      filters:    filters ?? {},
       updated_at: new Date().toISOString(),
     });
-
     if (error) return { success: false, error: error.message };
     return { success: true, error: null };
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to save search";
-    return { success: false, error: message };
+    return { success: false, error: err instanceof Error ? err.message : "Failed to save search" };
   }
 }
 
 // ─── Get Saved Searches ───────────────────────────────────────────────────────
-export async function getSavedSearches(
-  userId: string
-): Promise<{ data: Array<{ id: string; query: string; category: SearchCategory; createdAt: string }>; error: string | null }> {
+export async function getSavedSearches(userId: string): Promise<{
+  data: Array<{ id: string; query: string; category: SearchCategory; createdAt: string }>;
+  error: string | null;
+}> {
   try {
     const { data, error } = await supabase
       .from("saved_searches")
@@ -318,19 +309,14 @@ export async function getSavedSearches(
       .limit(20);
 
     if (error) return { data: [], error: error.message };
-
     return {
-      data: (data ?? []).map((row) => ({
-        id: row.id,
-        query: row.query,
-        category: row.category,
-        createdAt: row.created_at,
+      data: (data ?? []).map(row => ({
+        id: row.id, query: row.query, category: row.category, createdAt: row.created_at,
       })),
       error: null,
     };
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load saved searches";
-    return { data: [], error: message };
+    return { data: [], error: err instanceof Error ? err.message : "Failed to load saved searches" };
   }
 }
 
@@ -338,14 +324,16 @@ export async function getSavedSearches(
 export async function recordSearchAnalytics(
   query: string,
   category: SearchCategory,
-  resultCount: number
+  resultCount: number,
+  scope: SearchScope = "cameroon"
 ): Promise<void> {
   try {
     await supabase.from("search_analytics").insert({
-      query: query.toLowerCase().trim(),
+      query:        query.toLowerCase().trim(),
       category,
+      scope,
       result_count: resultCount,
-      searched_at: new Date().toISOString(),
+      searched_at:  new Date().toISOString(),
     });
   } catch {
     // Non-critical

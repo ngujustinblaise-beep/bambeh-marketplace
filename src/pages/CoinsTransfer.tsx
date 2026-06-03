@@ -4,7 +4,7 @@
  * Was a stub. Lets users transfer coins to another user by their email.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap, Send, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -21,8 +21,8 @@ export default function CoinsTransfer() {
   const [error,           setError]          = useState<string | null>(null);
   const [myBalance,       setMyBalance]      = useState<number | null>(null);
 
-  // Load balance on mount
-  useState(() => {
+  // Load balance on mount — FIXED: was useState() (wrong), now useEffect()
+  useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
@@ -33,7 +33,7 @@ export default function CoinsTransfer() {
         .single();
       if (data) setMyBalance(data.balance);
     })();
-  });
+  }, []);
 
   async function handleTransfer() {
     if (!recipientEmail.trim()) { setError('Please enter recipient email.'); return; }

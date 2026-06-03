@@ -1,101 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/bambeh-icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         SEO META TAGS
-         ═══════════════════════════════════════════════════════════════════ -->
-    <meta name="description" content="Bambeh — 's #1 Marketplace. Buy, sell, find jobs, rent properties and vehicles, exchange goods, and book services. Powered by Zerm Coins." />
-    <meta name="keywords" content=" marketplace, buy sell , jobs cameroun, bambeh, services cameroun, immobilier cameroun, location voiture cameroun" />
+    <!-- SEO META TAGS -->
+    <title>Bambeh: The Pulse of African Commerce | Buy, Sell, Jobs &amp; More</title>
+    <meta name="description" content="Bambeh: The Pulse of African Commerce. Buy, sell, find jobs, rent properties, exchange goods, and book services across Cameroon, Central Africa, and West Africa." />
+    <meta name="keywords" content="African marketplace, Bambeh, buy sell Africa, jobs Cameroon, services Africa, Central Africa marketplace, West Africa marketplace, Cameroun, immobilier Afrique, commerce africain" />
     <meta name="author" content="Bambeh Marketplace" />
     <meta name="robots" content="index, follow" />
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         OPEN GRAPH (Facebook, WhatsApp, LinkedIn sharing)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Bambeh Marketplace" />
-    <meta property="og:title" content="Bambeh — 's #1 Marketplace" />
-    <meta property="og:description" content="Buy, sell, find jobs, rent, and book services across all 10 regions of Cameroon and the whole of Central and West Africa ." />
-    <meta property="og:url" content="https://bambeh.com" />
-    <meta property="og:image" content="https://bambeh.com/icon-512x512.png" />
-    <meta property="og:locale" content="en_CM" />
-    <meta property="og:locale:alternate" content="fr_CM" />
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         TWITTER / X CARD
-         ═══════════════════════════════════════════════════════════════════ -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bambeh — 's #1 Marketplace" />
-    <meta name="twitter:description" content="Buy, sell, find jobs, rent, and book services across ." />
-    <meta name="twitter:image" content="https://bambeh.com/icon-512x512.png" />
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PWA META TAGS
-         ═══════════════════════════════════════════════════════════════════ -->
-    <meta name="application-name" content="Bambeh" />
+    <!-- PWA / MOBILE -->
+    <meta name="theme-color" content="#0d9488" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Bambeh" />
-    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Bambeh" />
     <meta name="msapplication-TileColor" content="#0d9488" />
     <meta name="msapplication-tap-highlight" content="no" />
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         THEME COLOR (browser UI color on Android Chrome)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <meta name="theme-color" content="#0d9488" />
+    <!-- OPEN GRAPH -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bambeh.com" />
+    <meta property="og:title" content="Bambeh: The Pulse of African Commerce" />
+    <meta property="og:description" content="Buy, sell, find jobs, rent, and book services across Cameroon, Central Africa, and West Africa. Bambeh — where African commerce comes alive." />
+    <meta property="og:image" content="https://bambeh.com/icon-512x512.png" />
+    <meta property="og:site_name" content="Bambeh Marketplace" />
+    <meta property="og:locale" content="en_CM" />
+    <meta property="og:locale:alternate" content="fr_CM" />
+    <meta property="og:locale:alternate" content="en_NG" />
+    <meta property="og:locale:alternate" content="en_GH" />
+    <meta property="og:locale:alternate" content="fr_SN" />
+    <meta property="og:locale:alternate" content="fr_GA" />
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         APP ICONS
-         ═══════════════════════════════════════════════════════════════════ -->
-    <link rel="icon" type="image/png" sizes="32x32"  href="/icon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
-    <link rel="apple-touch-icon" sizes="180x180"     href="/icon-180x180.png" />
-    <link rel="icon" type="image/png"                href="/bambeh-icon.png" />
-    <link rel="apple-touch-icon"                     href="/bambeh-icon.png" />
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PWA MANIFEST
-         ═══════════════════════════════════════════════════════════════════ -->
-    <link rel="manifest" href="/manifest.json" />
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PERFORMANCE — DNS prefetch for external services
-         ═══════════════════════════════════════════════════════════════════ -->
-    <link rel="dns-prefetch" href="https://api.anthropic.com" />
-    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fcm.googleapis.com" />
-    <link rel="dns-prefetch" href="https://sentry.io" />
-    <link rel="dns-prefetch" href="https://ingest.de.sentry.io" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         CONTENT SECURITY POLICY (CSP) — XSS Protection
-         Added per security hardening guide (Bug #7 fix)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self';
-        script-src 'self' 'unsafe-inline' https://cdn.notchpay.co;
-        img-src 'self' data: blob: https:;
-        connect-src 'self' https://bambeh-backend-production.up.railway.app https://api.notchpay.co https://*.supabase.co
-          https://firebaseinstallations.googleapis.com https://fcm.googleapis.com
-          https://identitytoolkit.googleapis.com https://api.anthropic.com
-          https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        font-src 'self' https://fonts.gstatic.com;" />
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         TITLE
-         ═══════════════════════════════════════════════════════════════════ -->
-    <title>Bambeh — 's #1 Marketplace | Buy, Sell, Jobs &amp; Rentals</title>
-
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bambeh: The Pulse of African Commerce" />
+    <meta name="twitter:description" content="Buy, sell, find jobs, rent, and book services across Cameroon, Central Africa, and West Africa." />
+    <meta name="twitter:image" content="https://bambeh.com/icon-512x512.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

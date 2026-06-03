@@ -134,6 +134,7 @@ export default function CheckoutAdvanced() {
 
     // Optional: Log error to analytics
     // logPaymentError(error);
+  }; // ← FIXED: was missing this closing brace (caused parse error on import)
 
   const handlePaymentCancel = () => {
     console.log('Payment cancelled by user');
@@ -308,5 +309,4 @@ export default function CheckoutAdvanced() {
       </div>
     </div>
   );
-}
 }

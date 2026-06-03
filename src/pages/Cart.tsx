@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useCamPay } from '@/hooks/useCamPay';
+import AfricanPhoneInput from '@/components/AfricanPhoneInput';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -34,9 +35,6 @@ function calcFees(subtotal: number) {
 
 const fmt = (n: number) => n.toLocaleString('fr-CM');
 
-function isValidPhone(phone: string) {
-  return /^6[2-9]\d{7}$/.test(phone.replace(/\s/g, ''));
-}
 
 // ─── Section icon map ─────────────────────────────────────────────────────────
 
@@ -89,7 +87,7 @@ function PaymentModal({
   status: PaymentStatus; payRef: string; errorMsg: string;
 }) {
   const [phone, setPhone] = useState('');
-  const valid = isValidPhone(phone);
+  const [phoneValid, setPhoneValid] = useState(false);
 
   return (
     <div
@@ -130,23 +128,16 @@ function PaymentModal({
 
           {(status === 'idle' || status === 'error') && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Mobile Money Number</label>
-                <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-teal-500 transition">
-                  <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 font-mono">+237</span>
-                  <input
-                    type="tel" inputMode="numeric" maxLength={9}
-                    value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
-                    placeholder="6XXXXXXXX"
-                    className="flex-1 px-3 py-3 text-sm outline-none font-mono bg-white"
-                  />
-                </div>
-                {phone.length > 0 && !valid && (
-                  <p className="text-xs text-red-500 mt-1">Enter a valid Cameroonian number (e.g. 677123456)</p>
-                )}
-              </div>
+              <AfricanPhoneInput
+                label="Mobile Money Number"
+                required
+                onChange={(fullNumber, isValid) => {
+                  setPhone(fullNumber);
+                  setPhoneValid(isValid);
+                }}
+              />
               <button
-                disabled={!valid}
+                disabled={!phoneValid}
                 onClick={() => onPay(phone)}
                 className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-3.5 rounded-2xl font-bold"
               >

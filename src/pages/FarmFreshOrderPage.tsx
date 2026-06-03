@@ -3,7 +3,7 @@
  *
  * FIXED in this version:
  *  ✅ Uses shared @/lib/supabase (not createClient() — that caused the crash)
- *  ✅ Handles both UUID product IDs (from DB) and sample string IDs (s1–s6)
+ *  ✅ Handles both UUID product IDs (from DB) and sample string IDs (s1–s8)
  *  ✅ Saves orders to Supabase farm_orders table (if user is logged in)
  *  ✅ Falls back to localStorage for guest/sample-item orders
  *  ✅ Cameroon +237 phone prefix on phone field
@@ -14,9 +14,10 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Leaf, MapPin, ShoppingCart,
-  Check, Loader2, Phone, AlertCircle,
+  Check, Loader2, AlertCircle,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase"; // ✅ FIXED: shared client
+import { supabase } from "@/lib/supabase";
+import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 
 // ── UUID check ────────────────────────────────────────────────────────────────
 function isUUID(s: string) {
@@ -37,12 +38,14 @@ interface Product {
 
 // ── Sample products matching FarmFreshPage demo data ─────────────────────────
 const SAMPLE_PRODUCTS: Record<string, Product> = {
-  s1: { id: "s1", name: "Fresh Tomatoes",      price: 500,  unit: "kg",    location: "Bafoussam",   is_organic: true  },
-  s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "Yaoundé",    is_organic: false },
-  s3: { id: "s3", name: "Cocoyams",             price: 800,  unit: "kg",    location: "Douala",     is_organic: true  },
-  s4: { id: "s4", name: "Fresh Corn",           price: 300,  unit: "cob",   location: "Bamenda",    is_organic: false },
-  s5: { id: "s5", name: "Groundnuts (1kg)",     price: 1200, unit: "kg",    location: "Ngaoundéré", is_organic: false },
-  s6: { id: "s6", name: "Bitter Leaf",          price: 200,  unit: "bunch", location: "Yaoundé",    is_organic: true  },
+  s1: { id: "s1", name: "Fresh Tomatoes",      price: 500,  unit: "kg",    location: "Bafoussam",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80" },
+  s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "Yaoundé",    is_organic: false, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" },
+  s3: { id: "s3", name: "Cocoyams (Macabo)",    price: 800,  unit: "kg",    location: "Douala",     is_organic: true,  image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80" },
+  s4: { id: "s4", name: "Fresh Maize (Corn)",   price: 300,  unit: "cob",   location: "Bamenda",    is_organic: false, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80" },
+  s5: { id: "s5", name: "Groundnuts (1kg bag)", price: 1200, unit: "kg",    location: "Ngaoundéré", is_organic: false, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80" },
+  s6: { id: "s6", name: "Bitter Leaf (Ndolé)",  price: 200,  unit: "bunch", location: "Yaoundé",    is_organic: true,  image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" },
+  s7: { id: "s7", name: "Fresh Avocados",        price: 800,  unit: "kg",    location: "Dschang, West",      is_organic: true,  image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80" },
+  s8: { id: "s8", name: "Pineapples (Large)",    price: 600,  unit: "piece", location: "Edea, Littoral",     is_organic: false, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80" },
 };
 
 // ── FCFA formatter ────────────────────────────────────────────────────────────
@@ -59,6 +62,7 @@ export default function FarmFreshOrderPage() {
   const [qty,        setQty]        = useState(Math.max(1, Number(params.get("quantity")) || 1));
   const [address,    setAddress]    = useState("");
   const [phone,      setPhone]      = useState("");
+  const [phoneValid, setPhoneValid] = useState(false);
   const [note,       setNote]       = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done,       setDone]       = useState(false);
@@ -72,7 +76,7 @@ export default function FarmFreshOrderPage() {
   async function loadProduct(id: string) {
     setLoading(true);
 
-    // 1 — Sample data (s1–s6)
+    // 1 — Sample data (s1–s8)
     if (SAMPLE_PRODUCTS[id]) {
       setProduct(SAMPLE_PRODUCTS[id]);
       setIsDemo(true);
@@ -118,7 +122,7 @@ export default function FarmFreshOrderPage() {
 
   async function placeOrder() {
     if (!address.trim()) { setError("Please enter your delivery address."); return; }
-    if (!phone.trim())   { setError("Please enter your phone number.");     return; }
+    if (!phoneValid)     { setError("Please enter a valid phone number.");   return; }
 
     setSubmitting(true);
     setError(null);
@@ -133,7 +137,7 @@ export default function FarmFreshOrderPage() {
           product_id: product?.id,
           quantity:   qty,
           address:    address.trim(),
-          phone:      `+237${phone.replace(/\D/g, "")}`,
+          phone:      phone, // full international number e.g. +237671234567
           note:       note.trim() || null,
           total_xaf:  (product?.price ?? 0) * qty,
           status:     "pending",
@@ -190,7 +194,7 @@ export default function FarmFreshOrderPage() {
             </p>
           ) : (
             <p className="text-gray-500 text-sm mb-2">
-              The farmer will contact you at <strong>+237 {phone}</strong> to confirm delivery.
+              The farmer will contact you at <strong>{phone}</strong> to confirm delivery.
             </p>
           )}
           <p className="text-gray-400 text-xs mb-6">Total: {fmtXAF((product?.price ?? 0) * qty)}</p>
@@ -314,25 +318,14 @@ export default function FarmFreshOrderPage() {
               className="w-full border-2 border-gray-200 focus:border-green-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors" />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              <Phone className="inline w-3.5 h-3.5 mr-1" />Phone Number <span className="text-red-500">*</span>
-            </label>
-            <div className="flex">
-              <span className="border-2 border-r-0 border-gray-200 rounded-l-xl px-3 py-3 text-sm bg-gray-50 text-gray-600 flex-shrink-0">
-                🇨🇲 +237
-              </span>
-              <input
-                type="tel"
-                value={phone}
-                onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 9))}
-                placeholder="6XX XXX XXX"
-                className="flex-1 border-2 border-gray-200 focus:border-green-500 rounded-r-xl px-4 py-3 text-sm outline-none transition-colors" />
-            </div>
-            {phone && phone.length < 9 && (
-              <p className="text-xs text-orange-500 mt-1">Enter 9 digits — e.g. 6XXXXXXXX</p>
-            )}
-          </div>
+          <AfricanPhoneInput
+            label="Phone Number"
+            required
+            onChange={(fullNumber, isValid) => {
+              setPhone(fullNumber);
+              setPhoneValid(isValid);
+            }}
+          />
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">Special Instructions (optional)</label>
@@ -363,7 +356,7 @@ export default function FarmFreshOrderPage() {
           </div>
           <button
             onClick={placeOrder}
-            disabled={submitting || !address.trim() || phone.length < 9}
+            disabled={submitting || !address.trim() || !phoneValid}
             className="w-full bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
             {submitting
               ? <><Loader2 className="w-4 h-4 animate-spin" />Placing order...</>
