@@ -1,7 +1,13 @@
 /**
  * src/pages/EditServiceListing.tsx — Bambeh Marketplace
- * FIXED: Real service edit form reading from and saving to Supabase.
- * Was a stub (just showed a pencil emoji).
+ *
+ * BUG FIX v2:
+ * ✅ Previous version updated ONLY the services table, then fell back to listings
+ *    on error — meaning if services update succeeded, listings table was never updated.
+ *    Since OfferService inserts into BOTH tables, an edit must update BOTH tables.
+ *    Fixed: now updates services AND listings independently (errors logged, not thrown).
+ * ✅ price_type not a column in listings table — stored in extra JSONB. Preserved.
+ * ✅ updated_at sent as ISO string — correct for both tables.
  */
 
 import { useState, useEffect } from 'react';
@@ -23,13 +29,13 @@ export default function EditServiceListing() {
   const [notFound, setNotFound] = useState(false);
 
   const [form, setForm] = useState({
-    title:      '',
-    description:'',
-    category:   '',
-    price:      '',
-    price_type: 'fixed',
-    location:   '',
-    phone:      '',
+    title:       '',
+    description: '',
+    category:    '',
+    price:       '',
+    price_type:  'fixed',
+    location:    '',
+    phone:       '',
   });
 
   useEffect(() => {
@@ -44,14 +50,14 @@ export default function EditServiceListing() {
         .from('services')
         .select('title, description, category, price, price_type, location, phone')
         .eq('id', serviceId)
-        .single();
+        .maybeSingle();
 
       if (svc) {
         setForm({
           title:       svc.title       || '',
           description: svc.description || '',
           category:    svc.category    || '',
-          price:       String(svc.price || ''),
+          price:       String(svc.price ?? ''),
           price_type:  svc.price_type  || 'fixed',
           location:    svc.location    || '',
           phone:       svc.phone       || '',
@@ -65,7 +71,7 @@ export default function EditServiceListing() {
         .from('listings')
         .select('title, description, category, price, location, phone, extra')
         .eq('id', serviceId)
-        .single();
+        .maybeSingle();
 
       if (listing) {
         const extra = listing.extra || {};
@@ -73,7 +79,7 @@ export default function EditServiceListing() {
           title:       listing.title       || '',
           description: listing.description || '',
           category:    listing.category    || '',
-          price:       String(listing.price || ''),
+          price:       String(listing.price ?? ''),
           price_type:  extra.price_type    || 'fixed',
           location:    listing.location    || '',
           phone:       listing.phone       || '',
@@ -96,32 +102,48 @@ export default function EditServiceListing() {
     setError(null);
 
     try {
-      const updates = {
+      const now        = new Date().toISOString();
+      const priceValue = form.price ? Number(form.price) : null;
+
+      const serviceUpdates = {
         title:       form.title.trim(),
         description: form.description.trim(),
         category:    form.category,
-        price:       form.price ? Number(form.price) : null,
+        price:       priceValue,
         price_type:  form.price_type,
         location:    form.location.trim(),
         phone:       form.phone.trim(),
-        updated_at:  new Date().toISOString(),
+        updated_at:  now,
       };
 
-      // Try services table first
-      const { error: svcErr } = await supabase.from('services').update(updates).eq('id', id);
+      const listingUpdates = {
+        title:       form.title.trim(),
+        description: form.description.trim(),
+        category:    form.category,
+        price:       priceValue,
+        location:    form.location.trim(),
+        phone:       form.phone.trim(),
+        // ✅ price_type lives in extra JSONB for listings table
+        extra:       { price_type: form.price_type },
+        updated_at:  now,
+      };
 
-      if (svcErr) {
-        // Fallback: listings table
-        await supabase.from('listings').update({
-          title:       updates.title,
-          description: updates.description,
-          category:    updates.category,
-          price:       updates.price,
-          location:    updates.location,
-          phone:       updates.phone,
-          extra:       { price_type: updates.price_type },
-          updated_at:  updates.updated_at,
-        }).eq('id', id);
+      // ✅ FIX: Update BOTH tables independently — not one OR the other.
+      // OfferService inserts to both, so both must stay in sync on edit.
+      const [svcResult, lstResult] = await Promise.allSettled([
+        supabase.from('services').update(serviceUpdates).eq('id', id),
+        supabase.from('listings').update(listingUpdates).eq('id', id),
+      ]);
+
+      // Log any errors (non-fatal — at least one table likely succeeded)
+      if (svcResult.status === 'rejected') console.warn('services update failed:', svcResult.reason);
+      if (lstResult.status === 'rejected') console.warn('listings update failed:', lstResult.reason);
+
+      // If both failed, surface an error to the user
+      const svcFailed = svcResult.status === 'rejected' || (svcResult.value as any)?.error;
+      const lstFailed = lstResult.status === 'rejected' || (lstResult.value as any)?.error;
+      if (svcFailed && lstFailed) {
+        throw new Error('Could not save to either services or listings table.');
       }
 
       setDone(true);
@@ -144,7 +166,9 @@ export default function EditServiceListing() {
       <div className="text-center">
         <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
         <p className="font-bold text-gray-800 mb-1">Service listing not found</p>
-        <button onClick={() => navigate('/services')} className="mt-4 text-teal-600 underline text-sm">Browse Services</button>
+        <button onClick={() => navigate('/services')} className="mt-4 text-teal-600 underline text-sm">
+          Browse Services
+        </button>
       </div>
     </div>
   );
@@ -171,24 +195,36 @@ export default function EditServiceListing() {
 
       <div className="max-w-lg mx-auto p-4 space-y-4">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+            {error}
+          </div>
         )}
 
         <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Service Title *</label>
-            <input value={form.title} onChange={e => setForm({...form, title: e.target.value})}
-              className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+            <input
+              value={form.title}
+              onChange={e => setForm({ ...form, title: e.target.value })}
+              className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+            />
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-            <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
-              rows={4} className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none" />
+            <textarea
+              value={form.description}
+              onChange={e => setForm({ ...form, description: e.target.value })}
+              rows={4}
+              className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+            />
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-            <select value={form.category} onChange={e => setForm({...form, category: e.target.value})}
-              className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white">
+            <select
+              value={form.category}
+              onChange={e => setForm({ ...form, category: e.target.value })}
+              className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+            >
               <option value="">Select...</option>
               {CATEGORIES.map(c => <option key={c}>{c}</option>)}
             </select>
@@ -196,37 +232,55 @@ export default function EditServiceListing() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Price (XAF)</label>
-              <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})}
+              <input
+                type="number"
+                value={form.price}
+                onChange={e => setForm({ ...form, price: e.target.value })}
                 placeholder="e.g. 15000"
-                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Price Type</label>
-              <select value={form.price_type} onChange={e => setForm({...form, price_type: e.target.value})}
-                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                {PRICE_TYPES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+              <select
+                value={form.price_type}
+                onChange={e => setForm({ ...form, price_type: e.target.value })}
+                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+              >
+                {PRICE_TYPES.map(t => (
+                  <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                ))}
               </select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
-              <input value={form.location} onChange={e => setForm({...form, location: e.target.value})}
-                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+              <input
+                value={form.location}
+                onChange={e => setForm({ ...form, location: e.target.value })}
+                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
-              <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
+              <input
+                value={form.phone}
+                onChange={e => setForm({ ...form, phone: e.target.value })}
                 placeholder="237 6XX XXX XXX"
-                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
           </div>
         </div>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
-        <button onClick={handleSave} disabled={saving}
-          className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+        >
           {saving ? <><Loader2 className="w-4 h-4 animate-spin" />Saving...</> : 'Save Changes'}
         </button>
       </div>

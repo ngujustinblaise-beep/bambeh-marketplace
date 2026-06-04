@@ -34,7 +34,6 @@ import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Plus, Loader2, RefreshCw, Wrench, CalendarDays } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
-import { DemoBadge } from '@/components/listings/DemoBadge';
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
 

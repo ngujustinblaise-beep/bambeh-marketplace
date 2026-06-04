@@ -1,26 +1,10 @@
 /**
  * src/components/services/ServiceLikeButton.tsx — Bambeh Marketplace
  *
- * Like / unlike a service. Persists to `service_likes` table.
- * Falls back to localStorage if user is not logged in (prompts login on tap).
- *
- * SQL (run once):
- * ───────────────
- * create table if not exists service_likes (
- *   id         uuid primary key default gen_random_uuid(),
- *   service_id text not null,
- *   user_id    uuid not null references auth.users(id),
- *   created_at timestamptz not null default now(),
- *   unique (service_id, user_id)
- * );
- * alter table service_likes enable row level security;
- * create policy "users manage own likes"
- *   on service_likes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
- *
- * -- Public like count view used by listing cards
- * create or replace view service_like_counts as
- *   select service_id, count(*)::int as like_count
- *   from service_likes group by service_id;
+ * BUG FIX v2: On mount, now fetches BOTH:
+ *   1. Whether the current user already liked this service (setLiked)
+ *   2. The total like count from service_like_counts view (setCount)
+ * Previously only fetched #1, so count always showed 0 on first load.
  */
 
 import { useState, useEffect } from 'react';
@@ -28,46 +12,57 @@ import { Heart } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface Props {
-  serviceId:    string;
-  initialCount?: number;
-  /** If true, shows the count next to the heart */
-  showCount?:   boolean;
-  /** compact = just icon; default = icon + label */
-  size?:        'compact' | 'default';
-  className?:   string;
+  serviceId:        string;
+  initialCount?:    number;
+  showCount?:       boolean;
+  size?:            'compact' | 'default';
+  className?:       string;
   onLoginRequired?: () => void;
 }
 
 export default function ServiceLikeButton({
   serviceId,
-  initialCount = 0,
-  showCount    = true,
-  size         = 'default',
-  className    = '',
+  initialCount  = 0,
+  showCount     = true,
+  size          = 'default',
+  className     = '',
   onLoginRequired,
 }: Props) {
   const [liked,   setLiked]   = useState(false);
   const [count,   setCount]   = useState(initialCount);
   const [loading, setLoading] = useState(false);
 
-  // On mount: check if current user already liked this service
   useEffect(() => {
-    async function check() {
+    async function init() {
+      // ✅ FIX: Fetch real total count from the view (was missing — always showed 0)
+      const { data: countRow } = await supabase
+        .from('service_like_counts')
+        .select('like_count')
+        .eq('service_id', serviceId)
+        .maybeSingle();
+
+      if (countRow?.like_count != null) {
+        setCount(countRow.like_count);
+      }
+
+      // Check if current user already liked this service
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
-      const { data } = await supabase
+
+      const { data: existing } = await supabase
         .from('service_likes')
         .select('id')
         .eq('service_id', serviceId)
         .eq('user_id', session.user.id)
         .maybeSingle();
-      if (data) setLiked(true);
+
+      if (existing) setLiked(true);
     }
-    check();
+    init();
   }, [serviceId]);
 
   async function toggle(e: React.MouseEvent) {
-    e.stopPropagation(); // don't trigger card navigation
+    e.stopPropagation();
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user) {
@@ -93,7 +88,7 @@ export default function ServiceLikeButton({
         setCount(c => c + 1);
       }
     } catch {
-      // ignore — optimistic UI stays, will reconcile on next mount
+      // optimistic UI stays; reconciles on next mount
     } finally {
       setLoading(false);
     }
@@ -113,7 +108,8 @@ export default function ServiceLikeButton({
         ${className}`}
     >
       <Heart
-        className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'} transition-all duration-150 ${liked ? 'fill-current scale-110' : ''}`}
+        className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'} transition-all duration-150
+          ${liked ? 'fill-current scale-110' : ''}`}
       />
       {showCount && count > 0 && (
         <span className={`font-semibold ${isCompact ? 'text-xs' : 'text-sm'}`}>
