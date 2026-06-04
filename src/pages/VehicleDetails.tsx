@@ -36,7 +36,7 @@ import { supabase }                   from "@/lib/supabase";
 import { useLanguage }                from "@/contexts/LanguageContext";
 import { ActionButtons }              from "@/components/listings/ActionButtons";
 // ✅ NEW: Test Drive modal
-import { BookTestDrive }              from "@/components/vehicles/BookTestDrive";
+import { BookTestDrive }              from "@/components/Vehicles/BookTestDrive";
 
 // ─── types ────────────────────────────────────────────────────────────────────
 interface Vehicle {
