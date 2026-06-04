@@ -16,6 +16,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { REGIONS, CITIES_BY_REGION } from "@/data/Locations";
+import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 
 const STEP_LABELS   = ["Property Info", "Details & Amenities", "Photos", "Pricing & Location", "Review & Post"];
 const PROP_TYPES    = ["Apartment", "House", "Villa", "Studio", "Room", "Duplex", "Townhouse", "Penthouse", "Office", "Shop", "Land", "Other"];
@@ -165,11 +166,16 @@ export default function ListProperty() {
   const [step,       setStep]       = useState(1);
   const [d, setD]                   = useState<Draft>(BLANK);
   const [errs,       setErrs]       = useState<Record<string, string>>({});
-  const [images,     setImages]     = useState<string[]>([]);
-  const [imgErrors,  setImgErrors]  = useState<string[]>([]);
+  // imageFiles  — actual File objects, sent to Supabase Storage on submit
+  // imagePreviews — local blob URLs for display (revoked on unmount to avoid memory leaks)
+  const [imageFiles,    setImageFiles]    = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imgErrors,     setImgErrors]     = useState<string[]>([]);
+  const [uploading,     setUploading]     = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [posted,     setPosted]     = useState(false);
   const [newId,      setNewId]      = useState<string | null>(null);
+  const [phoneValid, setPhoneValid] = useState(false);
 
   useEffect(() => {
     try {
@@ -177,6 +183,11 @@ export default function ListProperty() {
       if (s) setD(prev => ({ ...prev, ...JSON.parse(s) }));
     } catch {}
   }, []);
+
+  // Revoke blob preview URLs on unmount to avoid memory leaks
+  useEffect(() => {
+    return () => { imagePreviews.forEach(url => URL.revokeObjectURL(url)); };
+  }, [imagePreviews]);
 
   function upd(patch: Partial<Draft>) { setD(prev => ({ ...prev, ...patch })); }
   function saveDraft() {
@@ -186,21 +197,27 @@ export default function ListProperty() {
 
   const cities = d.region ? (CITIES_BY_REGION[d.region] ?? []) : [];
 
-  async function handleFiles(files: FileList | null) {
+  function handleFiles(files: FileList | null) {
     if (!files) return;
     const errors: string[] = [];
-    const previews: string[] = [];
-    for (const f of Array.from(files).slice(0, 6 - images.length)) {
+    const newFiles: File[] = [];
+    const newPreviews: string[] = [];
+    const slots = 3 - imageFiles.length;   // max 3 photos
+    for (const f of Array.from(files).slice(0, slots)) {
       const err = validateImg(f);
       if (err) { errors.push(err); continue; }
-      await new Promise<void>(res => {
-        const r = new FileReader();
-        r.onload = e => { previews.push(e.target?.result as string); res(); };
-        r.readAsDataURL(f);
-      });
+      newFiles.push(f);
+      newPreviews.push(URL.createObjectURL(f));  // instant local preview, no base64
     }
     setImgErrors(errors);
-    setImages(prev => [...prev, ...previews].slice(0, 6));
+    setImageFiles(prev => [...prev, ...newFiles].slice(0, 3));
+    setImagePreviews(prev => [...prev, ...newPreviews].slice(0, 3));
+  }
+
+  function removeImage(i: number) {
+    URL.revokeObjectURL(imagePreviews[i]);   // clean up blob URL
+    setImageFiles(prev => prev.filter((_, idx) => idx !== i));
+    setImagePreviews(prev => prev.filter((_, idx) => idx !== i));
   }
 
   function toggleAmenity(a: string) {
@@ -234,12 +251,38 @@ export default function ListProperty() {
   }
   function back() { setErrs({}); setStep(s => s - 1); window.scrollTo(0, 0); }
 
+  // Upload all chosen photos to Supabase Storage and return their public URLs
+  async function uploadImages(userId: string): Promise<string[]> {
+    const urls: string[] = [];
+    setUploading(true);
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      const ext  = file.name.split(".").pop() ?? "jpg";
+      // Path: userId/timestamp_index.ext  — one folder per user, no collisions
+      const path = `${userId}/${Date.now()}_${i}.${ext}`;
+      const { error } = await supabase.storage
+        .from("rental-images")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (error) throw new Error(`Photo ${i + 1} upload failed: ${error.message}`);
+      const { data } = supabase.storage.from("rental-images").getPublicUrl(path);
+      urls.push(data.publicUrl);
+    }
+    setUploading(false);
+    return urls;
+  }
+
   async function handleSubmit() {
     setSubmitting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) { navigate("/login"); return; }
 
+      // 1. Upload photos first — get back public URLs
+      const imageUrls = imageFiles.length > 0
+        ? await uploadImages(session.user.id)
+        : [];
+
+      // 2. Insert listing row with URL strings (not base64)
       const { data, error: err } = await supabase.from("listings").insert({
         seller_id:   session.user.id,
         type:        "rental",
@@ -250,15 +293,15 @@ export default function ListProperty() {
         location:    [d.address, d.city, d.region].filter(Boolean).join(", "),
         phone:       d.phone.trim(),
         status:      "active",
-        images:      images.length > 0 ? images : null,
+        images:      imageUrls.length > 0 ? imageUrls : null,
         extra: {
-          property_type: d.propertyType,
-          bedrooms:      Number(d.bedrooms),
-          bathrooms:     Number(d.bathrooms),
-          furnished:     d.furnished,
-          rent_period:   d.rentPeriod,
-          amenities:     d.amenities,
-          available_from:d.availableFrom,
+          property_type:  d.propertyType,
+          bedrooms:       Number(d.bedrooms),
+          bathrooms:      Number(d.bathrooms),
+          furnished:      d.furnished,
+          rent_period:    d.rentPeriod,
+          amenities:      d.amenities,
+          available_from: d.availableFrom,
         },
       }).select("id").single();
 
@@ -267,6 +310,7 @@ export default function ListProperty() {
       setNewId(data?.id ?? null);
       setPosted(true);
     } catch (e: any) {
+      setUploading(false);
       setErrs({ submit: e.message || "Failed to post. Please try again." });
     } finally {
       setSubmitting(false);
@@ -407,21 +451,21 @@ export default function ListProperty() {
         {step === 3 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900 dark:text-white">Add Photos</h2>
-            <p className="text-xs text-gray-400">JPG, PNG or WebP · Max 5 MB each · Up to 6 photos</p>
+            <p className="text-xs text-gray-400">JPG, PNG or WebP · Max 5 MB each · Up to 3 photos</p>
 
             {imgErrors.map((e, i) => (
               <p key={i} className="text-xs text-red-500 font-medium">⚠ {e}</p>
             ))}
 
             <div
-              onClick={() => fileRef.current?.click()}
+              onClick={() => imageFiles.length < 3 && fileRef.current?.click()}
               className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors
-                ${images.length >= 6 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20"}`}>
+                ${imageFiles.length >= 3 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20"}`}>
               <p className="text-3xl mb-2">🏠</p>
               <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                {images.length >= 6 ? "Maximum 6 photos" : "Tap to upload property photos"}
+                {imageFiles.length >= 3 ? "Maximum 3 photos reached" : "Tap to upload property photos"}
               </p>
-              <p className="text-xs text-gray-400 mt-1">{images.length}/6 photos added</p>
+              <p className="text-xs text-gray-400 mt-1">{imageFiles.length}/3 photos added</p>
             </div>
             <input
               ref={fileRef}
@@ -429,14 +473,14 @@ export default function ListProperty() {
               accept="image/jpeg,image/png,image/webp"
               multiple
               className="hidden"
-              onChange={e => handleFiles(e.target.files)} />
+              onChange={e => { handleFiles(e.target.files); e.target.value = ""; }} />
 
-            {images.length > 0 && (
+            {imagePreviews.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
-                {images.map((src, i) => (
+                {imagePreviews.map((src, i) => (
                   <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-100">
                     <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => setImages(p => p.filter((_, idx) => idx !== i))}
+                    <button type="button" onClick={() => removeImage(i)}
                       className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">×</button>
                     {i === 0 && <span className="absolute bottom-1 left-1 bg-teal-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>}
                   </div>
@@ -446,7 +490,7 @@ export default function ListProperty() {
 
             <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
               <p className="text-xs text-amber-700">
-                📌 <strong>Tip:</strong> Properties with photos get 5× more inquiries. Show the bedroom, living room, kitchen, and exterior.
+                📌 <strong>Tip:</strong> Properties with photos get 5× more inquiries. Upload up to 3 clear shots — bedroom, living room, and exterior work best.
               </p>
             </div>
 
@@ -502,15 +546,16 @@ export default function ListProperty() {
                 min={new Date().toISOString().split("T")[0]} />
             </div>
 
-            <div><Lbl>Contact Phone</Lbl>
-              <div className="flex">
-                <span className="border-2 border-r-0 border-gray-200 dark:border-gray-600 rounded-l-xl px-3 py-3 text-sm bg-gray-50 dark:bg-gray-700 text-gray-600">🇨🇲 +237</span>
-                <input type="tel"
-                  className="flex-1 border-2 border-gray-200 dark:border-gray-600 focus:border-teal-500 rounded-r-xl px-4 py-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none"
-                  placeholder="6XX XXX XXX"
-                  value={d.phone}
-                  onChange={e => upd({ phone: e.target.value.replace(/\D/g, "").slice(0, 9) })} />
-              </div>
+            {/* ── AfricanPhoneInput: Cameroon default, all Central + West Africa ── */}
+            <div>
+              <AfricanPhoneInput
+                label="Contact Phone"
+                value={d.phone}
+                onChange={(full, valid) => {
+                  upd({ phone: full });
+                  setPhoneValid(valid);
+                }}
+              />
             </div>
 
             <NavRow onDraft={saveDraft} onBack={back} onNext={next} nextLabel="Review Listing →" />
@@ -533,7 +578,7 @@ export default function ListProperty() {
                 ["Phone",        d.phone ? `+237 ${d.phone}` : "Not provided"],
                 ["Amenities",    d.amenities.length > 0 ? d.amenities.join(", ") : "None selected"],
                 ["Available",    d.availableFrom || "Immediately"],
-                ["Photos",       `${images.length} photo${images.length !== 1 ? "s" : ""}`],
+                ["Photos",       `${imageFiles.length} photo${imageFiles.length !== 1 ? "s" : ""} selected`],
               ].map(([k, v]) => (
                 <div key={String(k)} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
                   <span className="text-gray-500">{k}</span>
@@ -568,8 +613,8 @@ export default function ListProperty() {
             )}
 
             <NavRow onDraft={saveDraft} onBack={back} onNext={handleSubmit}
-              nextLabel={submitting ? "Posting..." : "🚀 List Property"}
-              disabled={submitting} />
+              nextLabel={uploading ? "⬆ Uploading photos…" : submitting ? "Posting…" : "🚀 List Property"}
+              disabled={submitting || uploading} />
           </>
         )}
       </div>
