@@ -1,15 +1,24 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * Chat.tsx â€” Bambeh Marketplace
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Chat.tsx — Bambeh Marketplace
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * UPGRADED: Full Supabase Realtime chat with:
- * - Live typing indicators ("Seller is typingâ€¦")
+ * - Live typing indicators ("Seller is typing…")
  * - Real-time message delivery via Supabase Realtime channels
  * - Presence tracking (online/offline)
  * - Unread count badge
  * - Image sharing
  * - Subscriber-only access gate
+ *
+ * NEW IN THIS VERSION:
+ * ✅ is_booking_message support — booking messages (from BookVisitModal,
+ *    BookServiceModal, BookTestDrive) render as a formatted notification card
+ *    instead of a plain text bubble.
+ * ✅ Reply input is hidden when the last message in a conversation is a booking
+ *    message — the conversation is intentionally one-way for booking notifications.
+ * ✅ ChatMessage interface extended with isBookingMessage flag.
+ * ✅ Both fetchMessages and the Realtime INSERT handler map is_booking_message.
  */
 
 import React, {
@@ -43,7 +52,7 @@ import { isSubscribed } from '@/utils/subscriptionUtils';
 import { logger } from '@/utils/logger';
 import { AvatarImage, BambehImage } from '@/components/ui/BambehImage';
 
-// â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TYPES ──────────────────────────────────────────────────────────────────
 
 interface ChatParticipant {
   id: string;
@@ -62,6 +71,8 @@ interface ChatMessage {
   imageUrl?: string;
   readBy: string[];
   createdAt: string;
+  // ✅ NEW: flags this message as a booking notification card
+  isBookingMessage?: boolean;
 }
 
 interface ChatConversation {
@@ -75,7 +86,7 @@ interface ChatConversation {
   listingImage?: string;
 }
 
-// â”€â”€â”€ TYPING INDICATOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TYPING INDICATOR ────────────────────────────────────────────────────────
 
 const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
   <div className="flex items-end gap-2 px-4 py-1">
@@ -89,11 +100,76 @@ const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
         <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </div>
-    <span className="text-xs text-gray-400 mb-1">{name} is typingâ€¦</span>
+    <span className="text-xs text-gray-400 mb-1">{name} is typing…</span>
   </div>
 );
 
-// â”€â”€â”€ MESSAGE BUBBLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── BOOKING MESSAGE CARD ────────────────────────────────────────────────────
+// Rendered instead of a plain bubble when isBookingMessage === true.
+
+const BOOKING_EMOJI: Record<string, string> = {
+  '📅': '📅',
+  '🚗': '🚗',
+  '🔧': '🔧',
+};
+
+function getBookingEmoji(content: string): string {
+  for (const emoji of Object.keys(BOOKING_EMOJI)) {
+    if (content.startsWith(emoji)) return emoji;
+  }
+  return '📋';
+}
+
+const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => {
+  const lines  = message.content.split('\n');
+  const title  = lines[0] ?? 'Booking Request';
+  const detail = lines.slice(1);
+  const emoji  = getBookingEmoji(title);
+  const label  = title.replace(/^[📅🚗🔧]\s*/, '');
+  const time   = new Date(message.createdAt).toLocaleTimeString('fr-CM', {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  return (
+    <div className="flex justify-center px-4 py-2">
+      <div className="w-full max-w-sm bg-teal-50 border border-teal-200 rounded-2xl p-4 shadow-sm">
+        {/* Card header */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-lg flex-shrink-0">
+            {emoji}
+          </div>
+          <div>
+            <p className="font-bold text-teal-800 text-sm leading-tight">{label}</p>
+            <p className="text-[10px] text-teal-500">{time}</p>
+          </div>
+        </div>
+
+        {/* Detail lines */}
+        <div className="space-y-1.5 border-t border-teal-100 pt-2">
+          {detail.map((line, i) => {
+            const [key, ...rest] = line.split(':');
+            const val = rest.join(':').trim();
+            return val ? (
+              <div key={i} className="flex gap-1.5 text-xs">
+                <span className="text-teal-500 font-semibold min-w-[80px]">{key}:</span>
+                <span className="text-teal-800">{val}</span>
+              </div>
+            ) : (
+              <p key={i} className="text-xs text-teal-700">{line}</p>
+            );
+          })}
+        </div>
+
+        {/* Footer note */}
+        <p className="text-[10px] text-teal-400 mt-3 pt-2 border-t border-teal-100 italic text-center">
+          📩 This is a booking notification — replies are disabled for this message.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ─── MESSAGE BUBBLE ──────────────────────────────────────────────────────────
 
 const MessageBubble: React.FC<{
   message: ChatMessage;
@@ -101,6 +177,12 @@ const MessageBubble: React.FC<{
   showAvatar: boolean;
   otherParticipant?: ChatParticipant;
 }> = ({ message, isMine, showAvatar, otherParticipant }) => {
+
+  // ✅ Booking messages render as a centred card, not a chat bubble
+  if (message.isBookingMessage) {
+    return <BookingMessageCard message={message} />;
+  }
+
   const time = new Date(message.createdAt).toLocaleTimeString('fr-CM', {
     hour: '2-digit',
     minute: '2-digit',
@@ -109,7 +191,7 @@ const MessageBubble: React.FC<{
 
   return (
     <div className={`flex items-end gap-2 px-4 py-0.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Avatar â€” only for other person, only on last message in a group */}
+      {/* Avatar — only for other person, only on last message in a group */}
       {!isMine && (
         <div className="w-7 flex-shrink-0">
           {showAvatar && (
@@ -156,7 +238,7 @@ const MessageBubble: React.FC<{
   );
 };
 
-// â”€â”€â”€ CONVERSATION LIST ITEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CONVERSATION LIST ITEM ──────────────────────────────────────────────────
 
 const ConversationItem: React.FC<{
   conv: ChatConversation;
@@ -215,7 +297,7 @@ const ConversationItem: React.FC<{
   );
 };
 
-// â”€â”€â”€ MAIN CHAT PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MAIN CHAT PAGE ──────────────────────────────────────────────────────────
 
 export default function ChatPage() {
   const navigate = useNavigate();
@@ -245,14 +327,19 @@ export default function ChatPage() {
   const selectedConv = conversations.find(c => c.id === selectedChatId);
   const otherParticipant = selectedConv?.participantDetails.find(p => p.id !== user?.id);
 
-  // â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ✅ NEW: determine if the reply input should be hidden.
+  // We hide it when the last message in the conversation is a booking notification.
+  const lastMessage = messages[messages.length - 1];
+  const isBookingOnlyThread = !!lastMessage?.isBookingMessage;
+
+  // ── Responsive ────────────────────────────────────────────────────────────
   useEffect(() => {
     const check = () => setIsMobileView(window.innerWidth < 1024);
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // â”€â”€ Load conversations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Load conversations ────────────────────────────────────────────────────
   useEffect(() => {
     if (!user?.id) return;
 
@@ -310,7 +397,7 @@ export default function ChatPage() {
     return () => { supabase.removeChannel(listChannel); };
   }, [user?.id]);
 
-  // â”€â”€ Load messages + Realtime subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Load messages + Realtime subscription ─────────────────────────────────
   useEffect(() => {
     if (!selectedChatId || !user?.id) return;
 
@@ -335,6 +422,8 @@ export default function ChatPage() {
           imageUrl: m.image_url,
           readBy: m.read_by ?? [],
           createdAt: m.created_at,
+          // ✅ Map is_booking_message from DB row
+          isBookingMessage: m.is_booking_message ?? false,
         })));
       }
       setIsLoadingMessages(false);
@@ -352,7 +441,7 @@ export default function ChatPage() {
       );
     });
 
-    // â”€â”€ Realtime channel for this conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Realtime channel for this conversation ──────────────────────────────
     const channel = supabase.channel(`chat:${selectedChatId}`, {
       config: { broadcast: { self: false } },
     });
@@ -374,6 +463,8 @@ export default function ChatPage() {
         imageUrl: m.image_url,
         readBy: m.read_by ?? [],
         createdAt: m.created_at,
+        // ✅ Map is_booking_message in realtime handler too
+        isBookingMessage: m.is_booking_message ?? false,
       };
       setMessages(prev => [...prev, newMsg]);
       // Clear typing indicator when message arrives
@@ -404,7 +495,7 @@ export default function ChatPage() {
     };
   }, [selectedChatId, user?.id]);
 
-  // â”€â”€ Presence channel (online status) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Presence channel (online status) ──────────────────────────────────────
   useEffect(() => {
     if (!user?.id) return;
 
@@ -439,7 +530,7 @@ export default function ChatPage() {
     };
   }, [user?.id]);
 
-  // â”€â”€ Auto-scroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Auto-scroll ───────────────────────────────────────────────────────────
   useEffect(() => {
     if (!showScrollDown) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -453,7 +544,7 @@ export default function ChatPage() {
     setShowScrollDown(distFromBottom > 200);
   }, []);
 
-  // â”€â”€ Typing broadcast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Typing broadcast ───────────────────────────────────────────────────────
   const broadcastTyping = useCallback((isTyping: boolean) => {
     if (!channelRef.current || !user?.id) return;
     channelRef.current.send({
@@ -471,7 +562,7 @@ export default function ChatPage() {
     typingTimerRef.current = setTimeout(() => broadcastTyping(false), 2000);
   }, [broadcastTyping]);
 
-  // â”€â”€ Send message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Send message ──────────────────────────────────────────────────────────
   const sendMessage = useCallback(async () => {
     const content = newMessage.trim();
     if (!content || !selectedChatId || !user?.id) return;
@@ -489,6 +580,7 @@ export default function ChatPage() {
       message_type: 'text',
       readBy: [user.id],
       createdAt: new Date().toISOString(),
+      isBookingMessage: false,
     };
     setMessages(prev => [...prev, optimisticMsg]);
 
@@ -498,6 +590,7 @@ export default function ChatPage() {
       content,
       message_type: 'text',
       read_by: [user.id],
+      is_booking_message: false,
     });
 
     if (error) {
@@ -510,7 +603,7 @@ export default function ChatPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }, [sendMessage]);
 
-  // â”€â”€ Gates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Gates ──────────────────────────────────────────────────────────────────
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -560,7 +653,7 @@ export default function ChatPage() {
       c.listingTitle?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // â”€â”€ Conversation List Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Conversation List Panel ───────────────────────────────────────────────
   const ConversationList = (
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
@@ -571,7 +664,7 @@ export default function ChatPage() {
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search conversationsâ€¦"
+            placeholder="Search conversations…"
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
           />
         </div>
@@ -602,7 +695,7 @@ export default function ChatPage() {
     </div>
   );
 
-  // â”€â”€ Chat Interface Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Chat Interface Panel ──────────────────────────────────────────────────
   const ChatInterface = selectedChatId ? (
     <div className="flex flex-col h-full bg-[#f0f4f8]">
       {/* Top bar */}
@@ -669,7 +762,7 @@ export default function ChatPage() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
-              <p className="text-sm text-gray-400">Loading messagesâ€¦</p>
+              <p className="text-sm text-gray-400">Loading messages…</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
@@ -687,7 +780,6 @@ export default function ChatPage() {
         ) : (
           <>
             {messages.map((msg, index) => {
-              const prevMsg = messages[index - 1];
               const isLastInGroup = index === messages.length - 1 ||
                 messages[index + 1]?.senderId !== msg.senderId;
               return (
@@ -721,41 +813,49 @@ export default function ChatPage() {
         </button>
       )}
 
-      {/* Input bar */}
-      <div className="bg-white border-t border-gray-100 px-3 py-3">
-        <div className="flex items-center gap-2">
-          <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
-            <Smile className="w-5 h-5" />
-          </button>
-          <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
-            <ImageIcon className="w-5 h-5" />
-          </button>
-
-          <div className="flex-1 relative">
-            <input
-              ref={inputRef}
-              value={newMessage}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a messageâ€¦"
-              className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-            />
-          </div>
-
-          {newMessage.trim() ? (
-            <button
-              onClick={sendMessage}
-              className="w-10 h-10 bg-teal-600 hover:bg-teal-700 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-95 shadow-md shadow-teal-200"
-            >
-              <Send className="w-4 h-4 text-white" />
-            </button>
-          ) : (
-            <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
-              <Mic className="w-5 h-5" />
-            </button>
-          )}
+      {/* ✅ Input bar — hidden when last message is a booking notification */}
+      {isBookingOnlyThread ? (
+        <div className="bg-teal-50 border-t border-teal-100 px-4 py-4 text-center">
+          <p className="text-xs text-teal-600 font-medium">
+            📩 Booking request sent. The host will contact you directly to confirm.
+          </p>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white border-t border-gray-100 px-3 py-3">
+          <div className="flex items-center gap-2">
+            <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
+              <Smile className="w-5 h-5" />
+            </button>
+            <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
+              <ImageIcon className="w-5 h-5" />
+            </button>
+
+            <div className="flex-1 relative">
+              <input
+                ref={inputRef}
+                value={newMessage}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message…"
+                className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+              />
+            </div>
+
+            {newMessage.trim() ? (
+              <button
+                onClick={sendMessage}
+                className="w-10 h-10 bg-teal-600 hover:bg-teal-700 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-95 shadow-md shadow-teal-200"
+              >
+                <Send className="w-4 h-4 text-white" />
+              </button>
+            ) : (
+              <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
+                <Mic className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   ) : (
     <div className="flex items-center justify-center h-full bg-[#f0f4f8]">
@@ -769,7 +869,7 @@ export default function ChatPage() {
     </div>
   );
 
-  // â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Layout ─────────────────────────────────────────────────────────────────
   if (isMobileView) {
     return (
       <div className="h-[calc(100vh-64px)]">
@@ -786,14 +886,17 @@ export default function ChatPage() {
   );
 }
 
-// â”€â”€â”€ START CHAT HELPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── START CHAT HELPER ────────────────────────────────────────────────────────
 
 /**
  * Creates or retrieves an existing conversation between two users.
+ * Called by sendBookingMessage (src/utils/sendBookingMessage.ts) and
+ * any page that opens a direct chat (e.g. handleChat in ServiceDetails).
+ *
  * @param currentUserId - The authenticated user's ID
- * @param otherUserId - The other participant's user ID
- * @param listingTitle - Optional listing context title
- * @param listingImage - Optional listing image URL
+ * @param otherUserId   - The other participant's user ID
+ * @param listingTitle  - Optional listing context title
+ * @param listingImage  - Optional listing image URL
  * @returns The conversation ID
  */
 export async function startChat(
@@ -835,5 +938,3 @@ export async function startChat(
 
   return data.id;
 }
-
-

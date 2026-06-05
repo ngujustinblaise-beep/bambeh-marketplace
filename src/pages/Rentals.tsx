@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw } from "lucide-react";
+import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw, Eye } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
@@ -236,6 +236,13 @@ export default function Rentals() {
                   </div>
                   {p.isDemo && (
                     <p className="text-xs text-yellow-600 mt-2 italic">Sample — not a real listing</p>
+                  )}
+                  {/* ✅ View count — only for real listings */}
+                  {!p.isDemo && (
+                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
+                      <Eye className="w-3 h-3" />
+                      {(p as any).view_count ?? 0} views
+                    </div>
                   )}
                 </div>
               </div>

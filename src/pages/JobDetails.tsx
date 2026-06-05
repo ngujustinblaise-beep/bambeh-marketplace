@@ -16,6 +16,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ActionButtons } from "@/components/listings/ActionButtons";
 import { getJobById, incrementJobView } from "@/services/jobs.service";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import type { JobListing } from "@/types/src_types_items";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -291,6 +292,7 @@ function QuickActionsSheet({ job, isSaved, onClose, onSave, onApply }: {
 export default function JobDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  useViewTracker(id, 'listings'); // ✅ increments view_count in Supabase
 
   const [job, setJob]             = useState<Job | null>(null);
   const [loading, setLoading]     = useState(true);

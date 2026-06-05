@@ -8,25 +8,25 @@
  *   actually re-renders the whole app in the chosen language
  * - Share button now has a visible label
  * - Search bar navigates to /search?q=...
+ * - NotificationBell added to desktop header (right icons + utility bar)
+ *
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Menu, X, Bell, User, LogOut, LogIn, Search,
-  Mic, MicOff, Gift, Crown, ArrowLeftRight,
-  Heart, Globe, Package, Settings, ChevronRight, Share2
+  Menu, X, User, LogOut, LogIn, Search,
+  Mic, MicOff, Crown, ArrowLeftRight,
+  Globe, Settings, Package, Heart, Gift, ChevronRight, Share2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage, AVAILABLE_LANGUAGES, LanguageCode } from '@/contexts/LanguageContext';
+import { NotificationBell } from '@/components/NotificationBell';
 
 export default function Header() {
   const navigate  = useNavigate();
   const { currentUser, logout } = useAuth();
-
-  // ── useLanguage gives us the global language state ──────────────────────
-  // When setLanguage() is called, LanguageContext saves to localStorage AND
-  // re-renders every component in the app that calls useLanguage() or t().
   const { language, setLanguage, t } = useLanguage();
 
   const [isMenuOpen, setIsMenuOpen]               = useState(false);
@@ -35,7 +35,6 @@ export default function Header() {
   const [showLanguageMenu, setShowLanguageMenu]   = useState(false);
   const [showMobileLanguages, setShowMobileLanguages] = useState(false);
 
-  // getCurrentLanguage reads from the context (not localStorage directly)
   const getCurrentLanguage = () =>
     AVAILABLE_LANGUAGES.find(l => l.code === language) || AVAILABLE_LANGUAGES[0];
 
@@ -52,9 +51,7 @@ export default function Header() {
   // ── Voice control ────────────────────────────────────────────────────────
   const toggleVoiceControl = () => {
     setIsVoiceActive(prev => !prev);
-    if (!isVoiceActive) {
-      startVoiceRecognition();
-    }
+    if (!isVoiceActive) startVoiceRecognition();
   };
 
   const startVoiceRecognition = () => {
@@ -66,17 +63,14 @@ export default function Header() {
       return;
     }
     const recognition = new SpeechRecognition();
-    // Use the app's current language for recognition
     const langMap: Record<LanguageCode, string> = {
       en: 'en-US', fr: 'fr-FR', pcm: 'en-NG', ff: 'ff', ar: 'ar-SA'
     };
     recognition.lang = langMap[language] || 'en-US';
-    recognition.continuous = false;
+    recognition.continuous    = false;
     recognition.interimResults = false;
-
     recognition.onresult = (event: any) => {
-      const command = event.results[0][0].transcript.toLowerCase();
-      handleVoiceCommand(command);
+      handleVoiceCommand(event.results[0][0].transcript.toLowerCase());
       setIsVoiceActive(false);
     };
     recognition.onerror = () => setIsVoiceActive(false);
@@ -85,28 +79,17 @@ export default function Header() {
   };
 
   const handleVoiceCommand = (command: string) => {
-    if (command.includes('house') || command.includes('rent') || command.includes('maison') || command.includes('suudu')) {
-      navigate('/rentals');
-    } else if (command.includes('job') || command.includes('emploi') || command.includes('work') || command.includes('gollorɗe')) {
-      navigate('/jobs');
-    } else if (command.includes('market') || command.includes('buy') || command.includes('marché') || command.includes('luumo')) {
-      navigate('/marketplace');
-    } else if (command.includes('car') || command.includes('vehicle') || command.includes('voiture') || command.includes('motor')) {
-      navigate('/vehicles');
-    } else if (command.includes('service')) {
-      navigate('/services');
-    } else if (command.includes('community') || command.includes('group') || command.includes('ngwam')) {
-      navigate('/community');
-    } else if (command.includes('home') || command.includes('accueil') || command.includes('galle')) {
-      navigate('/');
-    } else if (command.includes('exchange') || command.includes('échange') || command.includes('swap')) {
-      navigate('/exchange');
-    } else {
-      navigate(`/search?q=${encodeURIComponent(command)}`);
-    }
+    if (command.includes('house') || command.includes('rent') || command.includes('maison'))  navigate('/rentals');
+    else if (command.includes('job') || command.includes('emploi'))                           navigate('/jobs');
+    else if (command.includes('market') || command.includes('buy') || command.includes('marché')) navigate('/marketplace');
+    else if (command.includes('car') || command.includes('vehicle') || command.includes('voiture')) navigate('/vehicles');
+    else if (command.includes('service'))                                                     navigate('/services');
+    else if (command.includes('community') || command.includes('group'))                      navigate('/community');
+    else if (command.includes('home') || command.includes('accueil'))                         navigate('/');
+    else if (command.includes('exchange') || command.includes('échange'))                     navigate('/exchange');
+    else navigate(`/search?q=${encodeURIComponent(command)}`);
   };
 
-  // ── Search ───────────────────────────────────────────────────────────────
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -116,21 +99,17 @@ export default function Header() {
     }
   };
 
-  // ── Language change — this is the KEY fix ────────────────────────────────
-  // Calling setLanguage() from LanguageContext updates the whole app,
-  // not just this component.
   const handleLanguageChange = (langCode: string) => {
     setLanguage(langCode as LanguageCode);
     setShowLanguageMenu(false);
     setShowMobileLanguages(false);
   };
 
-  // ── Share current page ───────────────────────────────────────────────────
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
         title: 'Bambeh Marketplace',
-        text: 'Check out Bambeh — \'s #1 Marketplace!',
+        text: "Check out Bambeh — Africa's #1 Marketplace!",
         url: window.location.href,
       });
     } else {
@@ -145,6 +124,7 @@ export default function Header() {
 
         {/* ── LEVEL 1 ─────────────────────────────────────────────── */}
         <div className="flex items-center justify-between h-20 px-4 border-b border-teal-700">
+
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -195,9 +175,10 @@ export default function Header() {
             </div>
           </form>
 
-          {/* Right icons */}
+          {/* ── Right icons (desktop) ──────────────────────────────── */}
           <div className="flex items-center gap-2">
-            {/* Share button — LABELED */}
+
+            {/* Share button */}
             <button
               onClick={handleShare}
               aria-label="Share this page"
@@ -217,6 +198,16 @@ export default function Header() {
             >
               {isVoiceActive ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </button>
+
+            {/* ── NOTIFICATION BELL — desktop header ─────────────────
+                Shows on desktop only (md:flex). On mobile the bottom
+                nav already has a bell icon that navigates to /notifications.
+            ───────────────────────────────────────────────────────── */}
+            {currentUser && (
+              <div className="hidden md:flex items-center">
+                <NotificationBell />
+              </div>
+            )}
 
             {/* Login / Logout */}
             {currentUser ? (
@@ -348,10 +339,7 @@ export default function Header() {
                   placeholder={t('common.search') + '...'}
                   className="w-full pl-10 pr-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
                 />
-                <button
-                  type="submit"
-                  className="bg-teal-800 text-white px-4 rounded-r-lg font-semibold"
-                >
+                <button type="submit" className="bg-teal-800 text-white px-4 rounded-r-lg font-semibold">
                   🔍
                 </button>
               </div>
@@ -381,9 +369,9 @@ export default function Header() {
               </Link>
 
               {[
-                { to: '/orders',    icon: <Package className="w-5 h-5" />,  label: t('nav.orders')    },
-                { to: '/settings',  icon: <Settings className="w-5 h-5" />, label: t('common.settings') },
-                { to: '/my-listings', icon: <Package className="w-5 h-5" />, label: t('nav.myListings') },
+                { to: '/orders',      icon: <Package className="w-5 h-5" />,  label: t('nav.orders')      },
+                { to: '/settings',    icon: <Settings className="w-5 h-5" />, label: t('common.settings') },
+                { to: '/my-listings', icon: <Package className="w-5 h-5" />, label: t('nav.myListings')  },
               ].map(item => (
                 <Link
                   key={item.to}
@@ -481,7 +469,6 @@ export default function Header() {
               >
                 {isVoiceActive ? '🎤 ' + t('voice.listening') : '🎙️ ' + t('voice.tapToSpeak')}
               </button>
-              {/* Share button — LABELED on mobile too */}
               <button
                 onClick={() => { handleShare(); setIsMenuOpen(false); }}
                 className="text-left flex items-center gap-2 hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
@@ -491,9 +478,9 @@ export default function Header() {
                 {t('common.share')}
               </button>
               {[
-                { to: '/cart',      label: `🛒 ${t('nav.cart')}`             },
-                { to: '/favorites', label: `❤️ ${t('nav.favorites')}`        },
-                { to: '/referral',  label: '🎁 Referral Program'              },
+                { to: '/cart',      label: `🛒 ${t('nav.cart')}`      },
+                { to: '/favorites', label: `❤️ ${t('nav.favorites')}` },
+                { to: '/referral',  label: '🎁 Referral Program'       },
               ].map(item => (
                 <Link
                   key={item.to}
@@ -549,4 +536,3 @@ export default function Header() {
     </header>
   );
 }
-

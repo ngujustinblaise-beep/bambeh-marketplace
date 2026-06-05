@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { registerFCM } from "@/lib/fcm";
 
 const MAX_ATTEMPTS      = 5;
 const LOCKOUT_DURATION  = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -231,6 +232,18 @@ export default function Login() {
         // If it's a real Supabase user, Supabase session is already set
         if (result.isMaster && login) {
           await login(result.user.username, formData.password);
+        }
+
+        // ✅ Register this device for push notifications
+        // Saves the FCM token to Supabase so the backend can send push alerts
+        try {
+          const userId = result.user?.id ?? (await supabase.auth.getUser()).data.user?.id;
+          if (userId) {
+            await registerFCM(userId);
+          }
+        } catch (fcmErr) {
+          // Never block login if FCM fails
+          console.warn("FCM registration skipped:", fcmErr);
         }
 
         setTimeout(() => {

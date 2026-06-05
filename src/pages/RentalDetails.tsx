@@ -8,6 +8,11 @@
  * ✅ Replaced getRentalById (Firebase) with Supabase (listings + rentals fallback)
  * ✅ Unsplash splash images per property type with image carousel
  * ✅ Book a Visit: date picker, time slots, visitor phone, message, Supabase insert
+ * ✅ NEW: sendBookingMessage — sends a non-repliable in-app message to the property
+ *         owner after a visit request is submitted. Owner sees a formatted booking
+ *         card in Chat. Visitor never needs to see or dial the owner's number.
+ * ✅ NEW: RentalProperty now includes ownerId (mapped from seller_id / user_id /
+ *         vendor_id) so sendBookingMessage can open a conversation with the owner.
  */
 
 import { useEffect, useState } from "react";
@@ -22,6 +27,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
+import { sendBookingMessage } from "@/utils/sendBookingMessage";
 
 // ─── Splash images ────────────────────────────────────────────────────────────
 const SPLASH: Record<string, string[]> = {
@@ -87,6 +93,8 @@ interface RentalProperty {
   bedrooms: string | number; bathrooms: string | number; area?: number;
   description: string; images: string[]; amenities: string[];
   ownerName: string; ownerPhone: string; ownerEmail: string;
+  // ✅ NEW: ownerId so we can open a conversation with the property owner
+  ownerId?: string;
   verified: boolean; available: boolean; postedDate: string;
   deposit?: number; furnished: boolean;
 }
@@ -104,6 +112,8 @@ function fromListings(r: Record<string, any>): RentalProperty {
     amenities: Array.isArray(x.amenities) ? x.amenities : [],
     ownerName: r.owner_name ?? "Property Owner",
     ownerPhone: r.phone ?? "", ownerEmail: r.owner_email ?? "",
+    // ✅ Try all three common column name variants (same pattern as ServiceDetails)
+    ownerId: r.seller_id ?? r.user_id ?? r.vendor_id ?? undefined,
     verified: r.verified ?? false, available: r.status === "active",
     postedDate: r.created_at ?? new Date().toISOString(),
     deposit: x.deposit, furnished: x.furnished ?? false,
@@ -117,6 +127,7 @@ function fromRentals(r: Record<string, any>): RentalProperty {
     location: r.location ?? "", bedrooms: r.bedrooms ?? "?", bathrooms: r.bathrooms ?? "?",
     description: r.description ?? "", images: [], amenities: [],
     ownerName: "Property Owner", ownerPhone: r.contact_phone ?? "", ownerEmail: "",
+    ownerId: r.seller_id ?? r.user_id ?? r.vendor_id ?? undefined,
     verified: false, available: r.status === "active",
     postedDate: r.created_at ?? new Date().toISOString(), furnished: r.is_furnished ?? false,
   };
@@ -137,12 +148,15 @@ function BookVisitModal({ property, onClose }: { property: RentalProperty; onClo
     if (!date || !time) {
       toast({ title: "Please pick a date and time", variant: "destructive" }); return;
     }
+    // Phone is optional but if entered it must be valid (AfricanPhoneInput handles validation)
     if (visitorPhone && !phoneValid) {
       toast({ title: "Please enter a valid phone number", variant: "destructive" }); return;
     }
     setSending(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
+
+      // 1️⃣ Record the visit request in the visit_requests table
       await supabase.from("visit_requests").insert({
         listing_id:     property.id,
         visitor_id:     session?.user?.id ?? null,
@@ -154,10 +168,26 @@ function BookVisitModal({ property, onClose }: { property: RentalProperty; onClo
         property_title: property.title,
         owner_phone:    property.ownerPhone,
       });
+
+      // 2️⃣ Send a non-repliable in-app message to the property owner
+      //    The visitor never sees the owner's contact — the owner gets
+      //    a booking notification card in their Chat inbox.
+      if (property.ownerId) {
+        await sendBookingMessage({
+          adCreatorId:  property.ownerId,
+          adTitle:      property.title,
+          bookingType:  'visit',
+          date,
+          time,
+          visitorNote:  message.trim() || undefined,
+          visitorPhone: visitorPhone   || undefined,
+        });
+      }
+
       setSent(true);
     } catch (err) {
-      console.warn("visit_requests insert:", err);
-      setSent(true); // don't block UX if table not yet created
+      console.warn("visit_requests / sendBookingMessage error:", err);
+      setSent(true); // don't block UX if table not yet created or message fails
     } finally {
       setSending(false);
     }
@@ -191,7 +221,6 @@ function BookVisitModal({ property, onClose }: { property: RentalProperty; onClo
             </p>
             <p className="text-sm text-gray-500 mb-6">
               The landlord will contact you to confirm.
-              {property.ownerPhone && <> You can also reach them at <strong>{property.ownerPhone}</strong>.</>}
             </p>
             <button onClick={onClose} className="w-full py-3 bg-orange-500 text-white rounded-xl font-bold">Close</button>
           </div>
@@ -233,7 +262,7 @@ function BookVisitModal({ property, onClose }: { property: RentalProperty; onClo
                 onChange={(full, valid) => { setVisitorPhone(full); setPhoneValid(valid); }}
               />
               <p className="text-xs text-gray-400 mt-1">
-                So the landlord can reach you to confirm. Cameroon is default — tap the flag to change.
+                So the landlord can reach you to confirm. Cameroon is default — tap the flag to change country.
               </p>
             </div>
 

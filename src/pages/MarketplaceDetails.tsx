@@ -18,6 +18,7 @@ import {
   ChevronLeft, ChevronRight, Zap, Package,
 } from "lucide-react";
 import { getMarketplaceItemById, incrementMarketplaceView } from "@/services/marketplace.service";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import type { MarketplaceItem } from "@/types/src_types_items";
 // ✅ NEW: shared action buttons
 import { ActionButtons } from "@/components/listings/ActionButtons";
@@ -29,6 +30,7 @@ const CONDITION_LABELS: Record<string, string> = {
 const MarketplaceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  useViewTracker(id, 'listings'); // ✅ increments view_count in Supabase
   const [item, setItem] = useState<MarketplaceItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

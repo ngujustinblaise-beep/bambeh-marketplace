@@ -6,6 +6,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Heart, ShoppingCart, MessageCircle, Phone, MapPin, Tag, Share2, Flag, Shield, CheckCircle, AlertCircle, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useViewTracker } from "@/hooks/useViewTracker";
 
 function isUUID(s:string){return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);}
 const fmt=(n:number)=>n.toLocaleString("fr-CM");
@@ -30,6 +31,7 @@ function addToCartStorage(l:Listing,qty:number){try{const c:any[]=JSON.parse(loc
 export default function MarketplaceItemDetails(){
   const{id}=useParams<{id:string}>();
   const navigate=useNavigate();
+  useViewTracker(id, 'listings'); // ✅ increments view_count in Supabase
   const[listing,  setListing]  =useState<Listing|null>(null);
   const[loading,  setLoading]  =useState(true);
   const[error,    setError]    =useState<string|null>(null);

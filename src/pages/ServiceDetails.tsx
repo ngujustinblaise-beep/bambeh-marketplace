@@ -26,6 +26,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useViewTracker } from '@/hooks/useViewTracker';
 import {
   ArrowLeft, MapPin, Phone, Mail, Heart,
   AlertCircle, Check, Star, Clock, DollarSign, User, MessageCircle, CalendarDays,
@@ -93,6 +94,7 @@ export default function ServiceDetails() {
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t }    = useLanguage();
+  useViewTracker(id, 'listings'); // ✅ increments view_count in Supabase
 
   const [service,           setService]           = useState<Service | null>(null);
   const [loading,           setLoading]           = useState(true);

@@ -31,7 +31,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Plus, Loader2, RefreshCw, Wrench, CalendarDays } from 'lucide-react';
+import { Search, MapPin, Plus, Loader2, RefreshCw, Wrench, CalendarDays, Eye } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
@@ -254,6 +254,11 @@ export default function Services() {
                       className="text-gray-400"
                       onLoginRequired={() => navigate('/login')}
                     />
+                    {/* ✅ View count */}
+                    <div className="flex items-center gap-1 text-xs text-gray-400">
+                      <Eye className="w-3 h-3" />
+                      {(service as any).view_count ?? 0}
+                    </div>
                     <button
                       onClick={e => { e.stopPropagation(); setBookingService(service); }}
                       className="flex items-center gap-1.5 bg-teal-600 text-white px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-teal-700 transition-colors"

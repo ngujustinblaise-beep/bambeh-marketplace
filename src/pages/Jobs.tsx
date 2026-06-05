@@ -14,7 +14,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Loader2, BriefcaseIcon } from "lucide-react";
+import { Loader2, BriefcaseIcon, Eye } from "lucide-react";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
@@ -194,6 +194,12 @@ function JobCard({
         <div className="mt-3 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold
                         py-2 rounded-xl text-center transition-colors">
           🚀 Apply Now
+        </div>
+
+        {/* ✅ View count */}
+        <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
+          <Eye className="w-3 h-3" />
+          {(job as any).view_count ?? 0} views
         </div>
       </div>
     </Link>

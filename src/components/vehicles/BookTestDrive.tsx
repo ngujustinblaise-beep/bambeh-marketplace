@@ -1,22 +1,21 @@
 /**
  * src/components/vehicles/BookTestDrive.tsx — Bambeh Marketplace
  *
- * PHONE INPUT CHANGE:
- *  ✅ "Prefer to call directly?" link now renders a clickable tel: anchor
- *     using the sellerPhone prop — no phone INPUT here (buyer doesn't enter
- *     their own number; they pick date/time and the seller calls them back).
- *     AfricanPhoneInput is NOT needed in this file because:
- *       - sellerPhone is a display value passed in as a prop
- *       - the buyer's own contact is looked up from their auth session
- *     If you later want the buyer to provide a callback number, add
- *     AfricanPhoneInput here and pass the result into the Supabase row.
+ * CHANGES IN THIS VERSION:
+ * ✅ AfricanPhoneInput added — buyer enters their own callback number
+ *    (Cameroon default, full Central + West Africa country picker).
+ *    Previously this file had no buyer phone input.
+ * ✅ sendBookingMessage called after Supabase insert — sends a non-repliable
+ *    in-app message to the vehicle seller so they see a test ride booking card
+ *    in Chat. The buyer never needs to see or dial the seller's number directly.
  *
  * ALL PREVIOUS FIXES PRESERVED:
- *  ✅ date picker, 11 time slots, optional message
- *  ✅ writes to test_drive_requests in Supabase
- *  ✅ gracefully handles missing table (shows success, logs warning)
- *  ✅ success confirmation screen with booking summary
- *  ✅ outside-click closes modal
+ * ✅ date picker, 11 time slots, optional message
+ * ✅ writes to test_drive_requests in Supabase
+ * ✅ gracefully handles missing table (shows success, logs warning)
+ * ✅ success confirmation screen with booking summary
+ * ✅ outside-click closes modal
+ * ✅ "Prefer to call directly?" tel: anchor using sellerPhone prop
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -24,6 +23,8 @@
 import { useState } from "react";
 import { X, Calendar, Clock, MessageSquare, Car, CheckCircle2, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import AfricanPhoneInput from "@/components/AfricanPhoneInput";
+import { sendBookingMessage } from "@/utils/sendBookingMessage";
 
 interface Props {
   vehicleId:    string;
@@ -52,12 +53,14 @@ const TIME_SLOTS = [
 export function BookTestDrive({
   vehicleId, vehicleTitle, sellerPhone, sellerId, open, onClose,
 }: Props) {
-  const [date,      setDate]      = useState("");
-  const [time,      setTime]      = useState("");
-  const [message,   setMessage]   = useState("");
-  const [loading,   setLoading]   = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error,     setError]     = useState("");
+  const [date,         setDate]         = useState("");
+  const [time,         setTime]         = useState("");
+  const [message,      setMessage]      = useState("");
+  const [buyerPhone,   setBuyerPhone]   = useState("");
+  const [phoneValid,   setPhoneValid]   = useState(false);
+  const [loading,      setLoading]      = useState(false);
+  const [submitted,    setSubmitted]    = useState(false);
+  const [error,        setError]        = useState("");
 
   if (!open) return null;
 
@@ -65,11 +68,15 @@ export function BookTestDrive({
     setError("");
     if (!date) { setError("Please select a date."); return; }
     if (!time) { setError("Please select a preferred time."); return; }
+    if (buyerPhone && !phoneValid) {
+      setError("Please enter a valid phone number."); return;
+    }
 
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
+      // 1️⃣ Write to test_drive_requests table
       const row: Record<string, any> = {
         vehicle_id:     vehicleId,
         vehicle_title:  vehicleTitle,
@@ -79,6 +86,7 @@ export function BookTestDrive({
         seller_id:      sellerId       || null,
         requester_id:   session?.user?.id || null,
         contact_phone:  sellerPhone,
+        buyer_phone:    buyerPhone     || null,
         status:         "pending",
         requested_at:   new Date().toISOString(),
       };
@@ -88,6 +96,21 @@ export function BookTestDrive({
         .insert(row);
 
       if (dbErr && !dbErr.message.includes("does not exist")) throw dbErr;
+
+      // 2️⃣ Send non-repliable in-app booking message to the seller
+      //    Seller sees a formatted test ride card in Chat — buyer's contact
+      //    is included in the card; no need for the seller's number to be exposed.
+      if (sellerId) {
+        await sendBookingMessage({
+          adCreatorId:  sellerId,
+          adTitle:      vehicleTitle,
+          bookingType:  'test_ride',
+          date,
+          time,
+          visitorNote:  message.trim() || undefined,
+          visitorPhone: buyerPhone     || undefined,
+        });
+      }
 
       setSubmitted(true);
     } catch (e: any) {
@@ -99,6 +122,7 @@ export function BookTestDrive({
 
   function handleClose() {
     setDate(""); setTime(""); setMessage("");
+    setBuyerPhone(""); setPhoneValid(false);
     setSubmitted(false); setError("");
     onClose();
   }
@@ -140,6 +164,7 @@ export function BookTestDrive({
                   })}
                 </p>
                 <p><span className="font-semibold">Time: </span>{time}</p>
+                {buyerPhone && <p><span className="font-semibold">Your number: </span>{buyerPhone}</p>}
                 {message && <p><span className="font-semibold">Your note: </span>{message}</p>}
               </div>
               <p className="text-xs text-gray-400 mb-6">
@@ -154,9 +179,9 @@ export function BookTestDrive({
             /* ── Form ── */
             <>
               <p className="text-sm text-gray-600">
-                Choose a date and time to view{" "}
+                Choose a date and time to test{" "}
                 <span className="font-semibold text-gray-900">{vehicleTitle}</span> in person.
-                The seller will confirm by phone.
+                The seller will confirm the appointment.
               </p>
 
               {/* Date */}
@@ -191,6 +216,19 @@ export function BookTestDrive({
                 </div>
               </div>
 
+              {/* ── AfricanPhoneInput — buyer's callback number ── */}
+              <div>
+                <AfricanPhoneInput
+                  label="Your contact number"
+                  value={buyerPhone}
+                  onChange={(full, valid) => { setBuyerPhone(full); setPhoneValid(valid); }}
+                />
+                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                  <Phone className="w-3 h-3" />
+                  So the seller can confirm your appointment. Tap the flag to change country.
+                </p>
+              </div>
+
               {/* Message */}
               <div>
                 <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-2">
@@ -218,13 +256,14 @@ export function BookTestDrive({
                   className="flex-1 py-3 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-600">
                   Cancel
                 </button>
-                <button type="button" onClick={handleSubmit} disabled={loading}
+                <button type="button" onClick={handleSubmit}
+                  disabled={loading || (!!buyerPhone && !phoneValid)}
                   className="flex-1 py-3 bg-teal-600 text-white rounded-xl text-sm font-bold disabled:opacity-60">
                   {loading ? "Sending…" : "📅 Send Request"}
                 </button>
               </div>
 
-              {/* Direct call fallback */}
+              {/* Direct call fallback — seller's number, for buyer who prefers to call */}
               {sellerPhone && (
                 <a
                   href={`tel:${sellerPhone.replace(/\s/g, "")}`}

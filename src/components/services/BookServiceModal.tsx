@@ -1,18 +1,12 @@
 /**
  * src/components/services/BookServiceModal.tsx — Bambeh Marketplace
  *
- * Booking modal: date picker + time picker + optional message to provider.
- * Writes to `service_bookings` table in Supabase.
- *
- * Usage:
- *   <BookServiceModal
- *     serviceId={service.id}
- *     serviceTitle={service.title}
- *     providerId={service.providerId}
- *     providerName={service.providerName}
- *     isOpen={showBooking}
- *     onClose={() => setShowBooking(false)}
- *   />
+ * CHANGES IN THIS VERSION:
+ * ✅ AfricanPhoneInput added for visitor callback number (Cameroon default,
+ *    full Central + West Africa country picker)
+ * ✅ sendBookingMessage called after Supabase insert — sends a non-repliable
+ *    in-app message to the service provider so they see a booking card in Chat.
+ *    The client never needs to see or dial the provider's number directly.
  *
  * SQL to create table (run once in Supabase SQL editor):
  * ─────────────────────────────────────────────────────
@@ -24,6 +18,7 @@
  *   booking_date date not null,
  *   booking_time text not null,
  *   message      text,
+ *   client_phone text,
  *   status       text not null default 'pending',
  *   created_at   timestamptz not null default now()
  * );
@@ -35,8 +30,10 @@
  */
 
 import { useState } from 'react';
-import { X, CalendarDays, Clock, MessageCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { X, CalendarDays, Clock, MessageCircle, CheckCircle, Loader2, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import AfricanPhoneInput from '@/components/AfricanPhoneInput';
+import { sendBookingMessage } from '@/utils/sendBookingMessage';
 
 interface Props {
   serviceId:    string;
@@ -79,18 +76,23 @@ function fmt12(t: string) {
 export default function BookServiceModal({
   serviceId, serviceTitle, providerId, providerName, isOpen, onClose,
 }: Props) {
-  const [date,      setDate]      = useState('');
-  const [time,      setTime]      = useState('');
-  const [message,   setMessage]   = useState('');
-  const [loading,   setLoading]   = useState(false);
-  const [done,      setDone]      = useState(false);
-  const [error,     setError]     = useState<string | null>(null);
+  const [date,         setDate]         = useState('');
+  const [time,         setTime]         = useState('');
+  const [message,      setMessage]      = useState('');
+  const [clientPhone,  setClientPhone]  = useState('');
+  const [phoneValid,   setPhoneValid]   = useState(false);
+  const [loading,      setLoading]      = useState(false);
+  const [done,         setDone]         = useState(false);
+  const [error,        setError]        = useState<string | null>(null);
 
   const dateOptions = buildDateOptions();
 
   async function handleBook() {
     if (!date) { setError('Please select a date.'); return; }
     if (!time) { setError('Please select a time.'); return; }
+    if (clientPhone && !phoneValid) {
+      setError('Please enter a valid phone number.'); return;
+    }
     setError(null);
     setLoading(true);
 
@@ -102,6 +104,7 @@ export default function BookServiceModal({
         return;
       }
 
+      // 1️⃣ Write to service_bookings table
       const { error: dbErr } = await supabase.from('service_bookings').insert({
         service_id:   serviceId,
         client_id:    session.user.id,
@@ -109,10 +112,26 @@ export default function BookServiceModal({
         booking_date: date,
         booking_time: time,
         message:      message.trim() || null,
+        client_phone: clientPhone    || null,
         status:       'pending',
       });
 
       if (dbErr) throw dbErr;
+
+      // 2️⃣ Send non-repliable in-app booking message to the service provider
+      //    Provider sees a formatted booking card in Chat — no contact exposure needed.
+      if (providerId) {
+        await sendBookingMessage({
+          adCreatorId:  providerId,
+          adTitle:      serviceTitle,
+          bookingType:  'service',
+          date,
+          time,
+          visitorNote:  message.trim()  || undefined,
+          visitorPhone: clientPhone     || undefined,
+        });
+      }
+
       setDone(true);
     } catch (e: any) {
       setError(e.message || 'Could not complete booking. Please try again.');
@@ -123,6 +142,7 @@ export default function BookServiceModal({
 
   function handleClose() {
     setDate(''); setTime(''); setMessage('');
+    setClientPhone(''); setPhoneValid(false);
     setDone(false); setError(null);
     onClose();
   }
@@ -172,7 +192,7 @@ export default function BookServiceModal({
             <h3 className="font-bold text-gray-900 text-lg mb-1">Booking Requested!</h3>
             <p className="text-sm text-gray-500 max-w-xs">
               Your booking request has been sent to <strong>{providerName}</strong>.
-              They will confirm or suggest an alternative time shortly.
+              They will contact you to confirm.
             </p>
             <button
               onClick={handleClose}
@@ -236,6 +256,19 @@ export default function BookServiceModal({
               </div>
             </div>
 
+            {/* ── AfricanPhoneInput — client's callback number ── */}
+            <div>
+              <AfricanPhoneInput
+                label="Your contact number"
+                value={clientPhone}
+                onChange={(full, valid) => { setClientPhone(full); setPhoneValid(valid); }}
+              />
+              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                <Phone className="w-3 h-3" />
+                So the provider can reach you to confirm. Tap the flag to change country.
+              </p>
+            </div>
+
             {/* Message */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
@@ -259,13 +292,14 @@ export default function BookServiceModal({
                 {date && <p>📅 {dateOptions.find(d => d.value === date)?.label}</p>}
                 {time && <p>🕐 {fmt12(time)}</p>}
                 <p>👤 Provider: {providerName}</p>
+                {clientPhone && <p>📞 Your number: {clientPhone}</p>}
               </div>
             )}
 
             {/* CTA */}
             <button
               onClick={handleBook}
-              disabled={loading || !date || !time}
+              disabled={loading || !date || !time || (!!clientPhone && !phoneValid)}
               className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold text-sm
                 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2
                 hover:bg-teal-700 active:scale-[0.98] transition-all"

@@ -21,6 +21,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import {
   ArrowLeft, MapPin, Phone, Heart,
   AlertCircle, Check, Car, Fuel, Gauge, Calendar, Cog, MessageCircle,
@@ -75,6 +76,7 @@ const getMockVehicle = (id: string): Vehicle => ({
 export default function VehicleDetails() {
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
+  useViewTracker(id, 'listings'); // ✅ increments view_count in Supabase
 
   const [vehicle,           setVehicle]           = useState<Vehicle | null>(null);
   const [loading,           setLoading]           = useState(true);

@@ -14,6 +14,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useViewTracker } from "@/hooks/useViewTracker";
 import {
   ArrowLeft, ShoppingCart, MapPin, Star, Leaf,
   RefreshCw, AlertCircle, Plus, Minus, Heart, Share2,
@@ -85,6 +86,7 @@ const FarmFreshDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  useViewTracker(id, 'farm_products'); // ✅ increments view_count in Supabase
 
   const [product,   setProduct]   = useState<FarmProduct | null>(null);
   const [loading,   setLoading]   = useState(true);

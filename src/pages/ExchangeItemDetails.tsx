@@ -15,6 +15,7 @@
 
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useViewTracker } from '@/hooks/useViewTracker';
 import {
   ArrowLeft,
   MapPin,
@@ -42,6 +43,7 @@ import { ActionButtons } from '@/components/listings/ActionButtons';
 export default function ExchangeItemDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  useViewTracker(id as string, 'exchange_items'); // ✅ increments view_count in Supabase
 
   const [showShareModal, setShowShareModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

@@ -116,6 +116,7 @@ const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
 
 // SETTINGS
 const UserSettings = lazy(() => import("@/pages/settings/UserSettings"));
+const MyListings   = lazy(() => import("@/pages/MyListings"));
 
 // POSTING FORMS
 const PostJobPage              = lazy(() => import("@/pages/PostJobPage"));
@@ -628,6 +629,7 @@ export default function App() {
                           <Route path="/settings/notifications" element={<MainLayout><AuthGate require="user"><UserSettings /></AuthGate></MainLayout>} />
                           <Route path="/settings/privacy" element={<MainLayout><AuthGate require="user"><UserSettings /></AuthGate></MainLayout>} />
                           <Route path="/settings/security" element={<MainLayout><AuthGate require="user"><UserSettings /></AuthGate></MainLayout>} />
+                          <Route path="/my-listings" element={<MainLayout><AuthGate require="user"><MyListings /></AuthGate></MainLayout>} />
                           <Route path="/marketplace/edit/:id" element={<MainLayout><AuthGate require="user"><EditMarketplaceListing /></AuthGate></MainLayout>} />
                           <Route path="/jobs/edit/:id" element={<MainLayout><AuthGate require="user"><EditJobListing /></AuthGate></MainLayout>} />
                           <Route path="/services/edit/:id" element={<MainLayout><AuthGate require="user"><EditServiceListing /></AuthGate></MainLayout>} />

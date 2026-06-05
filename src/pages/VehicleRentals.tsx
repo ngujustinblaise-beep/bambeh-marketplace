@@ -24,7 +24,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Gauge, Fuel, Plus, Car, Loader2, RefreshCw } from 'lucide-react';
+import { Search, MapPin, Gauge, Fuel, Plus, Car, Loader2, RefreshCw, Eye } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import { DemoBadge } from '@/components/listings/DemoBadge';
@@ -278,6 +278,13 @@ export default function VehicleRentals() {
                   </div>
                   {v.isDemo && (
                     <p className="text-xs text-yellow-600 mt-2 italic">Sample — not a real listing</p>
+                  )}
+                  {/* ✅ View count — only for real listings */}
+                  {!v.isDemo && (
+                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                      <Eye className="w-3 h-3" />
+                      {(v as any).view_count ?? 0} views
+                    </div>
                   )}
                 </div>
               </div>
