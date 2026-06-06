@@ -55,7 +55,7 @@ export function useNotifications() {
   useEffect(() => {
     if (!user?.id) return;
     const channel = supabase
-      .channel('bambeh-notifications-realtime')
+      .channel('bambeh-notifications-realtime-' + user.id)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
