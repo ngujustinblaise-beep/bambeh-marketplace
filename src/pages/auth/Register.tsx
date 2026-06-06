@@ -3,20 +3,15 @@
  * Register.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/auth/Register.tsx
  *
- * FIXES FROM ORIGINAL:
- * 1. Added "username" field — users can now log in with username
- * 2. Added "phone number" field — users can now log in with phone
- * 3. After Supabase creates the auth user, we also write a row to
- *    the "profiles" table with username + phone so Login can find them
- * 4. Username validation: no spaces, min 3 chars, only letters/numbers/_
- * 5. Phone validation: must start with + or digits, min 8 digits
+ * FIX: Call supabase.auth.signUp() directly with full options.data metadata
+ * so that raw_user_meta_data contains full_name, username, and phone.
+ * The handle_new_user() trigger reads those fields to populate profiles.
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import {
   Eye, EyeOff, Mail, User, Lock, Phone,
@@ -25,13 +20,12 @@ import {
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register } = useAuth();
 
   // ── Form state ──────────────────────────────────────────────────────────
   const [formData, setFormData] = useState({
     fullName:        "",
-    username:        "",   // ← NEW
-    phone:           "",   // ← NEW
+    username:        "",
+    phone:           "",
     email:           "",
     password:        "",
     confirmPassword: "",
@@ -74,7 +68,7 @@ export default function Register() {
     if (formData.password !== formData.confirmPassword)
       return "Passwords do not match";
 
-    return null; // no error
+    return null;
   };
 
   // ── Submit ───────────────────────────────────────────────────────────────
@@ -85,36 +79,44 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      // STEP 1 — Create the Supabase auth user (email + password)
-      const result = await register(
-        formData.email.trim(),
-        formData.password,
-        formData.fullName.trim()
-      );
-      if (result?.error) throw new Error(result.error);
+      // Call signUp directly so we can pass metadata.
+      // The handle_new_user() trigger reads options.data to populate profiles.
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email:    formData.email.trim().toLowerCase(),
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName.trim(),
+            username:  formData.username.trim().toLowerCase(),
+            phone:     formData.phone.trim(),
+          },
+        },
+      });
 
-      // STEP 2 — Get the newly created user's ID
-      const { data: { user } } = await supabase.auth.getUser();
+      if (signUpError) throw new Error(signUpError.message);
 
-      if (user) {
-        // STEP 3 — Write extra fields (username, phone) to the profiles table
-        // This is what makes login-by-username and login-by-phone work.
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .upsert({
-            id:           user.id,
-            full_name:    formData.fullName.trim(),
-            username:     formData.username.trim().toLowerCase(),
-            phone:        formData.phone.trim(),
-            email:        formData.email.trim().toLowerCase(),
-            created_at:   new Date().toISOString(),
-            avatar_url:   null,
-          });
+      // If email confirmation is disabled the user object is returned immediately.
+      // If email confirmation is enabled, data.user is still set but session is null.
+      const user = data?.user;
+      if (!user) throw new Error("Account could not be created. Please try again.");
 
-        if (profileError) {
-          // Profile write failed — log but don't block the user
-          console.error("Profile save error:", profileError.message);
-        }
+      // Belt-and-suspenders: upsert profiles in case the trigger didn't fire
+      // (e.g. email-confirm flow where session isn't active yet).
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({
+          id:         user.id,
+          full_name:  formData.fullName.trim(),
+          username:   formData.username.trim().toLowerCase(),
+          phone:      formData.phone.trim(),
+          email:      formData.email.trim().toLowerCase(),
+          created_at: new Date().toISOString(),
+          avatar_url: null,
+        }, { onConflict: "id" });
+
+      if (profileError) {
+        // Log but don't block — trigger may have already written the row
+        console.warn("Profile upsert warning:", profileError.message);
       }
 
       setSuccess(true);
@@ -190,11 +192,6 @@ export default function Register() {
             </div>
 
             {/* ── Username ───────────────────────────────────────── */}
-            {/*
-              NEW FIELD — this is what users will type when they log in.
-              No spaces allowed. Only letters, numbers, underscores.
-              Example: jean_mbarga or jpmbarga99
-            */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Username <span className="text-red-400">*</span>
@@ -217,10 +214,6 @@ export default function Register() {
             </div>
 
             {/* ── Phone Number ───────────────────────────────────── */}
-            {/*
-              NEW FIELD — users can also use their phone number to log in.
-              Format: +237612345678 or 0612345678
-            */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Phone Number <span className="text-red-400">*</span>
@@ -347,4 +340,3 @@ export default function Register() {
     </div>
   );
 }
-
