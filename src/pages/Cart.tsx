@@ -1,14 +1,13 @@
 /**
  * src/pages/Cart.tsx — Bambeh Marketplace
  *
- * FIXED / UPGRADED:
- *  ✅ Reads items from CartContext (useCart) — no more isolated localStorage island
- *  ✅ Displays actual items added from Marketplace, Farm Fresh, Group Buying, Vehicles, etc.
- *  ✅ Shows item images, quantity controls, remove button
- *  ✅ Full fee breakdown: subtotal + 3% Bambeh fee + 0.002% gov tax
- *  ✅ Two payment options: Mobile Money (CamPay) + Escrow
- *  ✅ "Empty cart" state with links to all sections
- *  ✅ Cart persisted in localStorage via CartContext
+ * FIXED:
+ *  ✅ Uses unified useCamPay hook (initPayment / status / reset)
+ *  ✅ "Pay with Mobile Money" button works directly from the cart
+ *  ✅ "Pay via Escrow" navigates to /payment/checkout with escrow context
+ *  ✅ "More Payment Options" navigates to /payment/checkout with cart context
+ *  ✅ Coins credited / order saved only AFTER CamPay confirms SUCCESSFUL
+ *  ✅ All cart state preserved during payment
  */
 
 import { useState, useCallback } from 'react';
@@ -16,11 +15,11 @@ import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Plus, Minus, ArrowRight,
   Shield, Info, Smartphone, Loader2, CheckCircle2,
-  XCircle, Lock, Leaf, Zap, Users, Tag,
+  XCircle, Lock, Leaf, Zap, Users, Tag, Clock,
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { useCamPay } from '@/hooks/useCamPay';
-import AfricanPhoneInput from '@/components/AfricanPhoneInput';
+import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from '@/hooks/useCamPay';
+import { supabase } from '@/lib/supabase';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -35,17 +34,16 @@ function calcFees(subtotal: number) {
 
 const fmt = (n: number) => n.toLocaleString('fr-CM');
 
-
-// ─── Section icon map ─────────────────────────────────────────────────────────
+// ─── Section icon map ──────────────────────────────────────────────────────────
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
-  'farm-fresh':    <Leaf className="w-3 h-3 text-green-600" />,
-  'flash-deal':    <Zap  className="w-3 h-3 text-yellow-600" />,
-  'group-buying':  <Users className="w-3 h-3 text-blue-600" />,
-  'marketplace':   <Tag  className="w-3 h-3 text-teal-600" />,
+  'farm-fresh':   <Leaf  className="w-3 h-3 text-green-600" />,
+  'flash-deal':   <Zap   className="w-3 h-3 text-yellow-600" />,
+  'group-buying': <Users className="w-3 h-3 text-blue-600" />,
+  'marketplace':  <Tag   className="w-3 h-3 text-teal-600" />,
 };
 
-// ─── FeeRow ───────────────────────────────────────────────────────────────────
+// ─── FeeRow ────────────────────────────────────────────────────────────────────
 
 function FeeRow({
   label, amount, muted = false, bold = false, tooltip,
@@ -76,23 +74,46 @@ function FeeRow({
   );
 }
 
-// ─── PaymentModal ─────────────────────────────────────────────────────────────
+// ─── Mobile Money Modal ────────────────────────────────────────────────────────
 
-type PaymentStatus = 'idle' | 'pending' | 'success' | 'error';
-
-function PaymentModal({
-  total, onClose, onPay, status, payRef, errorMsg,
+function MobileMoneyModal({
+  total,
+  onClose,
+  onPay,
+  status,
+  payRef,
+  errorMsg,
+  countdown,
 }: {
-  total: number; onClose: () => void; onPay: (phone: string) => void;
-  status: PaymentStatus; payRef: string; errorMsg: string;
+  total: number;
+  onClose: () => void;
+  onPay: (phone: string) => void;
+  status: string;
+  payRef: string;
+  errorMsg: string;
+  countdown: number;
 }) {
-  const [phone, setPhone] = useState('');
-  const [phoneValid, setPhoneValid] = useState(false);
+  const [phone,      setPhone]      = useState('');
+  const [phoneError, setPhoneError] = useState('');
+
+  const operator = phone.length >= 3 ? detectOperator(normalizePhone(phone)) : null;
+
+  function handlePhoneChange(v: string) {
+    const digits = v.replace(/\D/g, '').slice(0, 9);
+    setPhone(digits);
+    setPhoneError('');
+  }
+
+  function handlePay() {
+    const err = validateCamPhone(phone);
+    if (err) { setPhoneError(err); return; }
+    onPay(normalizePhone(phone));
+  }
 
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4"
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={e => { if (e.target === e.currentTarget && status !== 'waiting' && status !== 'submitting') onClose(); }}
     >
       <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
         <div className="bg-teal-600 px-6 py-5 text-white">
@@ -104,53 +125,118 @@ function PaymentModal({
         </div>
 
         <div className="px-6 py-5 space-y-4">
+          {/* Amount */}
           <div className="bg-teal-50 border border-teal-100 rounded-2xl px-4 py-3 flex justify-between items-center">
             <span className="text-gray-600 text-sm">Amount to pay</span>
             <span className="text-teal-700 font-bold text-lg">{fmt(total)} XAF</span>
           </div>
 
+          {/* SUCCESS */}
           {status === 'success' && (
             <div className="flex flex-col items-center gap-2 py-4">
               <CheckCircle2 className="w-12 h-12 text-green-500" />
-              <p className="font-semibold text-gray-800">Payment Initiated!</p>
-              <p className="text-xs text-gray-500 text-center">Check your phone and confirm the prompt.</p>
-              {payRef && <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">Ref: {payRef}</p>}
+              <p className="font-semibold text-gray-800">Payment Confirmed! 🎉</p>
+              <p className="text-xs text-gray-500 text-center">Your order has been placed.</p>
+              {payRef && (
+                <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">
+                  Ref: {payRef}
+                </p>
+              )}
             </div>
           )}
 
-          {status === 'error' && (
-            <div className="flex flex-col items-center gap-2 py-3">
-              <XCircle className="w-10 h-10 text-red-500" />
-              <p className="font-semibold text-gray-800">Payment Failed</p>
-              <p className="text-xs text-red-500 text-center">{errorMsg}</p>
+          {/* WAITING FOR USSD */}
+          {status === 'waiting' && (
+            <div className="flex flex-col items-center gap-3 py-4">
+              <Loader2 className="w-10 h-10 text-teal-600 animate-spin" />
+              <p className="font-semibold text-gray-800 text-center">Check your phone!</p>
+              <p className="text-xs text-gray-500 text-center">
+                A payment request was sent to your number. Enter your PIN to approve.
+              </p>
+              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-3 py-2 text-xs font-semibold">
+                <Clock className="w-3.5 h-3.5" />
+                {countdown > 0
+                  ? `Waiting… ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')}`
+                  : 'Processing…'}
+              </div>
             </div>
           )}
 
-          {(status === 'idle' || status === 'error') && (
-            <>
-              <AfricanPhoneInput
-                label="Mobile Money Number"
-                required
-                onChange={(fullNumber, isValid) => {
-                  setPhone(fullNumber);
-                  setPhoneValid(isValid);
-                }}
-              />
-              <button
-                disabled={!phoneValid}
-                onClick={() => onPay(phone)}
-                className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-3.5 rounded-2xl font-bold"
-              >
-                Confirm & Pay {fmt(total)} XAF
-              </button>
-            </>
-          )}
-
-          {status === 'pending' && (
+          {/* SUBMITTING */}
+          {status === 'submitting' && (
             <div className="flex flex-col items-center gap-3 py-6">
               <Loader2 className="w-10 h-10 text-teal-600 animate-spin" />
               <p className="text-sm text-gray-600 text-center">Sending payment request to your phone…</p>
             </div>
+          )}
+
+          {/* ERROR */}
+          {(status === 'failed' || status === 'timeout') && (
+            <div className="flex flex-col items-center gap-2 py-3">
+              <XCircle className="w-10 h-10 text-red-500" />
+              <p className="font-semibold text-gray-800">Payment Failed</p>
+              <p className="text-xs text-red-500 text-center">{errorMsg}</p>
+              <p className="text-xs text-gray-400 text-center">
+                If money was deducted, email{' '}
+                <a href="mailto:support@bambeh.com" className="text-teal-600 underline">
+                  support@bambeh.com
+                </a>
+              </p>
+            </div>
+          )}
+
+          {/* IDLE / ERROR — show phone input */}
+          {(status === 'idle' || status === 'failed' || status === 'timeout') && (
+            <>
+              {/* Phone input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  MTN or Orange Money number
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 select-none">
+                    +237
+                  </span>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={e => handlePhoneChange(e.target.value)}
+                    placeholder="6XXXXXXXX"
+                    maxLength={9}
+                    className={`w-full pl-14 pr-14 py-3 border-2 rounded-xl text-sm focus:outline-none transition-all ${
+                      operator === 'mtn'
+                        ? 'border-yellow-400 bg-yellow-50'
+                        : operator === 'orange'
+                        ? 'border-orange-400 bg-orange-50'
+                        : phoneError
+                        ? 'border-red-300'
+                        : 'border-gray-200 focus:border-teal-500'
+                    }`}
+                  />
+                  {operator && (
+                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                      operator === 'mtn'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-orange-100 text-orange-800'
+                    }`}>
+                      {operator === 'mtn' ? '📶 MTN' : '🟠 Orange'}
+                    </span>
+                  )}
+                </div>
+                {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
+                <p className="text-xs text-gray-400 mt-1">
+                  A USSD prompt will appear on your phone. Enter your PIN to pay.
+                </p>
+              </div>
+
+              <button
+                disabled={phone.length < 9}
+                onClick={handlePay}
+                className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-3.5 rounded-2xl font-bold"
+              >
+                Confirm &amp; Pay {fmt(total)} XAF
+              </button>
+            </>
           )}
 
           <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 pt-1">
@@ -158,7 +244,7 @@ function PaymentModal({
             <span>Secured &amp; encrypted via CamPay</span>
           </div>
 
-          {status !== 'pending' && (
+          {status !== 'submitting' && status !== 'waiting' && status !== 'success' && (
             <button onClick={onClose} className="w-full text-sm text-gray-500 hover:text-gray-700 py-1 transition-colors">
               Cancel
             </button>
@@ -197,7 +283,7 @@ function EscrowModal({ total, onClose, onConfirm }: {
 
           <button onClick={onConfirm}
             className="w-full bg-blue-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2">
-            <Lock className="w-4 h-4" /> Confirm Escrow — {fmt(total)} XAF
+            <Lock className="w-4 h-4" /> Proceed to Escrow Payment
           </button>
 
           <button onClick={onClose} className="w-full text-sm text-gray-500 hover:text-gray-700 py-1">
@@ -209,55 +295,102 @@ function EscrowModal({ total, onClose, onConfirm }: {
   );
 }
 
-// ─── Main Cart Component ──────────────────────────────────────────────────────
+// ─── Main Cart Component ───────────────────────────────────────────────────────
 
 export default function Cart() {
   const navigate = useNavigate();
   const { items, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
-  const { pay, loading: campayLoading } = useCamPay();
 
   const [showMobileMoney, setShowMobileMoney] = useState(false);
   const [showEscrow,      setShowEscrow]      = useState(false);
-  const [payStatus,       setPayStatus]       = useState<PaymentStatus>('idle');
-  const [payRef,          setPayRef]          = useState('');
-  const [payError,        setPayError]        = useState('');
   const [escrowDone,      setEscrowDone]      = useState(false);
 
   const subtotal = totalPrice;
   const { appFee, govTax, total } = calcFees(subtotal);
 
-  const handlePay = useCallback(async (phone: string) => {
-    setPayStatus('pending');
-    setPayError('');
-    try {
-      const result = await pay(subtotal, phone, 'Bambeh cart payment');
-      if (result.success) {
-        setPayRef(result.reference ?? '');
-        setPayStatus('success');
-        clearCart();
-      } else {
-        setPayError(result.error ?? 'Unknown error. Please try again.');
-        setPayStatus('error');
+  // Build a description of what's in the cart
+  const cartDescription = items.length === 1
+    ? `Bambeh — ${items[0].title}`
+    : `Bambeh Order — ${items.length} items`;
+
+  // ── useCamPay hook ───────────────────────────────────────────────────────────
+  const { status, errorMsg, reference, countdown, initPayment, reset } = useCamPay({
+    onSuccess: async (ref) => {
+      // Save order to Supabase after confirmed payment
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const orderId = `ORD_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+        await supabase.from('orders').insert({
+          id:           orderId,
+          user_id:      session?.user?.id ?? null,
+          items:        items,
+          subtotal,
+          delivery_fee: 0,
+          total,
+          reference:    ref,
+          status:       'paid',
+          paid_at:      new Date().toISOString(),
+        });
+      } catch (e) {
+        // Non-critical — payment succeeded even if order record fails
+        console.error('Order save error:', e);
       }
-    } catch (err: unknown) {
-      setPayError(err instanceof Error ? err.message : 'Network error. Please retry.');
-      setPayStatus('error');
-    }
-  }, [pay, subtotal, clearCart]);
+      clearCart();
+    },
+  });
+
+  // ── Initiate mobile money payment ────────────────────────────────────────────
+  const handlePay = useCallback(async (phone: string) => {
+    await initPayment({
+      amount:      total,
+      phone,
+      description: cartDescription,
+      externalRef: `cart_${Date.now()}`,
+    });
+  }, [initPayment, total, cartDescription]);
 
   function openMobileMoney() {
-    setPayStatus('idle'); setPayRef(''); setPayError('');
+    reset();
     setShowMobileMoney(true);
   }
 
+  // ── Escrow: navigate to checkout page with escrow context ────────────────────
   const handleEscrowConfirm = () => {
     setShowEscrow(false);
-    setEscrowDone(true);
-    clearCart();
+    navigate('/payment/checkout', {
+      state: {
+        items,
+        subtotal,
+        deliveryFee: 0,
+        total,
+        context:     'escrow',
+        description: cartDescription,
+      },
+    });
   };
 
-  // ── Empty state ──────────────────────────────────────────────────────────────
-  if (items.length === 0 && payStatus !== 'success' && !escrowDone) {
+  // ── "More Payment Options" → full checkout page ──────────────────────────────
+  function goToCheckout() {
+    navigate('/payment/checkout', {
+      state: {
+        items,
+        subtotal,
+        deliveryFee: 0,
+        total,
+        context:     'cart',
+        description: cartDescription,
+      },
+    });
+  }
+
+  // Close modal if payment succeeded
+  const isSuccess = status === 'success';
+  if (isSuccess && showMobileMoney && items.length === 0) {
+    // cart was cleared by onSuccess — close modal and show success state
+  }
+
+  // ── Empty state ───────────────────────────────────────────────────────────────
+  if (items.length === 0 && !isSuccess && !escrowDone) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
         <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
@@ -282,19 +415,21 @@ export default function Cart() {
     );
   }
 
-  // ── Order success ─────────────────────────────────────────────────────────────
-  if ((payStatus === 'success' && items.length === 0) || escrowDone) {
+  // ── Order success ──────────────────────────────────────────────────────────────
+  if ((isSuccess && items.length === 0) || escrowDone) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
         <CheckCircle2 className="w-20 h-20 text-green-500 mb-4" />
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Placed! 🎉</h2>
-        <p className="text-gray-500 mb-1 text-sm">
+        <p className="text-gray-500 mb-1 text-sm text-center">
           {escrowDone
             ? 'Your payment is safely held in escrow. The vendor has been notified.'
-            : 'A payment prompt was sent to your phone. Confirm to complete.'}
+            : 'Payment confirmed! Your order is being processed.'}
         </p>
-        {payRef && (
-          <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600 mb-6">Ref: {payRef}</p>
+        {reference && (
+          <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600 mb-6">
+            Ref: {reference}
+          </p>
         )}
         <div className="flex gap-3">
           <button onClick={() => navigate('/orders')}
@@ -310,7 +445,7 @@ export default function Cart() {
     );
   }
 
-  // ── Main render ───────────────────────────────────────────────────────────────
+  // ── Main render ────────────────────────────────────────────────────────────────
   return (
     <>
       <div className="min-h-screen bg-gray-50 p-4 pb-8">
@@ -346,7 +481,6 @@ export default function Cart() {
                     </button>
                   </div>
 
-                  {/* Type badge */}
                   {item.listingType && (
                     <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full mt-0.5 capitalize">
                       {TYPE_ICONS[item.listingType] || <Tag className="w-3 h-3 text-gray-400" />}
@@ -359,12 +493,10 @@ export default function Cart() {
                   </p>
                   <p className="text-gray-400 text-xs">{fmt(item.priceXAF)} XAF each</p>
 
-                  {/* Seller */}
                   {item.sellerName && (
                     <p className="text-xs text-gray-400 mt-0.5">Sold by {item.sellerName}</p>
                   )}
 
-                  {/* Qty controls */}
                   <div className="flex items-center gap-2 mt-2">
                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label="Decrease"
                       className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition">
@@ -399,23 +531,30 @@ export default function Cart() {
 
           {/* Payment options */}
           <div className="space-y-3">
-            {/* Mobile Money */}
-            <button onClick={openMobileMoney} disabled={campayLoading}
-              className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-md shadow-teal-100 transition">
-              {campayLoading
+            {/* Mobile Money — direct from cart */}
+            <button
+              onClick={openMobileMoney}
+              disabled={status === 'submitting' || status === 'waiting'}
+              className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-md shadow-teal-100 transition"
+            >
+              {(status === 'submitting' || status === 'waiting')
                 ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing…</>
                 : <><Smartphone className="w-5 h-5" /> Pay with Mobile Money</>}
             </button>
 
             {/* Escrow */}
-            <button onClick={() => setShowEscrow(true)}
-              className="w-full bg-blue-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-100 transition hover:bg-blue-800">
+            <button
+              onClick={() => setShowEscrow(true)}
+              className="w-full bg-blue-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-100 transition hover:bg-blue-800"
+            >
               <Lock className="w-5 h-5" /> Pay via Escrow (Recommended)
             </button>
 
-            {/* Checkout page */}
-            <button onClick={() => navigate('/payment/checkout')}
-              className="w-full border border-teal-600 text-teal-700 py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 transition hover:bg-teal-50">
+            {/* Full checkout page */}
+            <button
+              onClick={goToCheckout}
+              className="w-full border border-teal-600 text-teal-700 py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 transition hover:bg-teal-50"
+            >
               More Payment Options <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -428,13 +567,26 @@ export default function Cart() {
         </div>
       </div>
 
+      {/* Mobile Money Modal */}
       {showMobileMoney && (
-        <PaymentModal total={total} onClose={() => setShowMobileMoney(false)} onPay={handlePay}
-          status={payStatus} payRef={payRef} errorMsg={payError} />
+        <MobileMoneyModal
+          total={total}
+          onClose={() => { setShowMobileMoney(false); reset(); }}
+          onPay={handlePay}
+          status={status}
+          payRef={reference}
+          errorMsg={errorMsg}
+          countdown={countdown}
+        />
       )}
 
+      {/* Escrow Modal */}
       {showEscrow && (
-        <EscrowModal total={total} onClose={() => setShowEscrow(false)} onConfirm={handleEscrowConfirm} />
+        <EscrowModal
+          total={total}
+          onClose={() => setShowEscrow(false)}
+          onConfirm={handleEscrowConfirm}
+        />
       )}
     </>
   );

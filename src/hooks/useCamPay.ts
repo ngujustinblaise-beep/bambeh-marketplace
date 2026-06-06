@@ -1,174 +1,242 @@
-﻿/**
- * useCamPay.ts — Hardened Payment Hook · Bambeh SARL
+/**
+ * useCamPay.ts  —  Bambeh Marketplace
+ * FILE LOCATION: src/hooks/useCamPay.ts
+ *
+ * ════════════════════════════════════════════════════════════════
+ *  UNIFIED CAMPAY PAYMENT HOOK
+ *  Single source of truth for ALL payments on Bambeh:
+ *    • Subscriptions     → /subscription-plans
+ *    • Zerm Coin purchase → /coins/purchase
+ *    • Cart checkout      → /cart → /payment/checkout
+ *    • Donations          → /donate
+ *    • Escrow / Services  → /escrow
+ * ════════════════════════════════════════════════════════════════
+ *
+ * HOW IT WORKS
+ * ─────────────
+ *  1. Frontend calls initPayment() with amount + phone + description
+ *  2. Hook calls the Supabase Edge Function  `campay-collect`
+ *     (the Edge Function holds CAMPAY_USERNAME / CAMPAY_PASSWORD — 
+ *      they never leave the server)
+ *  3. CamPay sends a USSD push to the user's phone
+ *  4. Hook polls Edge Function `campay-status` every 3 s
+ *  5. Returns status: 'idle' | 'submitting' | 'waiting' | 'success' | 'failed' | 'timeout'
+ *
+ * USAGE EXAMPLE
+ * ─────────────
+ *  const { status, errorMsg, reference, initPayment, reset } = useCamPay({
+ *    onSuccess: (ref) => { / activate subscription, etc. / },
+ *    onFailure: (msg) => { / show error / },
+ *  });
+ *
+ *  <button onClick={() => initPayment({ amount: 500, phone: '237670000000', description: 'Daily plan' })}>
+ *    Pay
+ *  </button>
  */
-import { useState, useRef, useCallback, useEffect } from 'react';
 
-const SUPABASE_URL  = (import.meta.env.VITE_SUPABASE_URL      as string) ?? '';
-const SUPABASE_ANON = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ?? '';
-const COLLECT_URL   = `${SUPABASE_URL}/functions/v1/campay-collect`;
-const STATUS_URL    = (ref: string) => `${SUPABASE_URL}/functions/v1/campay-status?reference=${encodeURIComponent(ref)}`;
+import { useRef, useState, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
 
-const REQUEST_TIMEOUT_MS  = 25_000;
-const MAX_RETRIES         = 3;
-const RETRY_BASE_DELAY_MS = 1_200;
-const POLL_INTERVAL_MS    = 5_000;
-const POLL_MAX_ATTEMPTS   = 18;
-const RATE_LIMIT_MAX      = 3;
-const RATE_LIMIT_WINDOW   = 10 * 60 * 1_000;
-const RATE_LIMIT_KEY      = 'beh_pay_attempts';
-const MIN_AMOUNT_XAF      = 100;
-const MAX_AMOUNT_XAF      = 5_000_000;
+// ── Types ────────────────────────────────────────────────────────────────────
+export type PaymentStatus = 'idle' | 'submitting' | 'waiting' | 'success' | 'failed' | 'timeout';
 
-export type PaymentStatus   = 'idle'|'initiating'|'pending'|'confirmed'|'failed'|'timeout';
-export type PaymentErrorCode= 'NETWORK_ERROR'|'SERVER_ERROR'|'VALIDATION_ERROR'|'RATE_LIMITED'|'TIMEOUT'|'CANCELLED'|'UNKNOWN';
-export interface PaymentBreakdown { subtotal:number; appFee:number; govTax:number; total:number; currency:'XAF'; }
-export interface PaymentResult { success:boolean; reference?:string; status?:PaymentStatus; error?:string; errorCode?:PaymentErrorCode; breakdown?:PaymentBreakdown; }
+export interface InitPaymentArgs {
+  amount: number;           // XAF, integer, min 100
+  phone: string;            // full number with country code, e.g. "237670757326"
+  description: string;      // shown to user on USSD prompt
+  externalRef?: string;     // optional: your own order ID / reference
+  metadata?: Record<string, unknown>; // optional: stored in Supabase alongside the transaction
+}
 
-async function generateSecureRef(): Promise<string> {
-  const ts  = Date.now().toString(36).toUpperCase();
-  const buf = new Uint8Array(4); crypto.getRandomValues(buf);
-  const rand= Array.from(buf).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
-  return `BEH-${ts}-${rand}`;
+export interface UseCamPayOptions {
+  onSuccess?: (reference: string, data: Record<string, unknown>) => void | Promise<void>;
+  onFailure?: (message: string) => void;
+  pollIntervalMs?: number;  // default 3000
+  maxPollAttempts?: number; // default 40 (= 2 minutes at 3 s intervals)
 }
-async function generateNonce(): Promise<string> {
-  const buf = new Uint8Array(8); crypto.getRandomValues(buf);
-  return `${Date.now()}.${Array.from(buf).map(b=>b.toString(16).padStart(2,'0')).join('')}`;
+
+export interface UseCamPayResult {
+  status: PaymentStatus;
+  errorMsg: string;
+  reference: string;
+  countdown: number;        // seconds remaining in the waiting phase
+  initPayment: (args: InitPaymentArgs) => Promise<void>;
+  reset: () => void;
 }
-function validatePhone(phone: string): string {
-  const cleaned = phone.replace(/\s+/g,'').replace(/^(\+237|237)/,'');
-  if (!/^6[5-9]\d{7}$/.test(cleaned))
-    throw Object.assign(new Error('Invalid phone number. Use a Cameroon MTN or Orange number (e.g. 6XXXXXXXX).'),{code:'VALIDATION_ERROR'});
-  return cleaned;
+
+// ── Helper: detect operator from phone number ────────────────────────────────
+const MTN_PREFIXES    = ['650','651','652','653','654','680','681','682','683','684','677','676','671','672','673','674','675'];
+const ORANGE_PREFIXES = ['655','656','657','658','659','699','698','697','690','691','692','693','694','695','696'];
+
+export function detectOperator(phone: string): 'mtn' | 'orange' | null {
+  const digits = phone.replace(/\D/g, '');
+  const local   = digits.startsWith('237') ? digits.slice(3) : digits;
+  const prefix  = local.slice(0, 3);
+  if (MTN_PREFIXES.includes(prefix))    return 'mtn';
+  if (ORANGE_PREFIXES.includes(prefix)) return 'orange';
+  return null;
 }
-function validateAmount(amount: number): void {
-  if (!Number.isFinite(amount)||amount<MIN_AMOUNT_XAF)
-    throw Object.assign(new Error(`Minimum payment is ${MIN_AMOUNT_XAF.toLocaleString()} XAF.`),{code:'VALIDATION_ERROR'});
-  if (amount>MAX_AMOUNT_XAF)
-    throw Object.assign(new Error(`Maximum payment is ${MAX_AMOUNT_XAF.toLocaleString()} XAF.`),{code:'VALIDATION_ERROR'});
+
+/** Normalize phone: strips non-digits, adds 237 prefix if missing */
+export function normalizePhone(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  return digits.startsWith('237') ? digits : `237${digits}`;
 }
-function checkRateLimit(): void {
-  try {
-    const raw = sessionStorage.getItem(RATE_LIMIT_KEY);
-    const now = Date.now();
-    let rec = raw ? JSON.parse(raw) : {attempts:0,windowStart:now};
-    if (now-rec.windowStart>RATE_LIMIT_WINDOW) rec={attempts:0,windowStart:now};
-    if (rec.attempts>=RATE_LIMIT_MAX) {
-      const remaining=Math.ceil((RATE_LIMIT_WINDOW-(now-rec.windowStart))/60_000);
-      throw Object.assign(new Error(`Too many payment attempts. Please wait ${remaining} minute(s).`),{code:'RATE_LIMITED'});
-    }
-    rec.attempts+=1;
-    sessionStorage.setItem(RATE_LIMIT_KEY,JSON.stringify(rec));
-  } catch(err:any) { if(err?.code==='RATE_LIMITED') throw err; }
+
+/** Validate a Cameroonian phone number */
+export function validateCamPhone(raw: string): string | null {
+  const normalized = normalizePhone(raw);
+  if (normalized.length !== 12) return 'Please enter a valid 9-digit Cameroonian number';
+  if (!detectOperator(normalized)) return 'Please enter a valid MTN or Orange number';
+  return null;
 }
-function sleep(ms:number):Promise<void>{return new Promise(r=>setTimeout(r,ms));}
-async function fetchWithTimeout(url:string,options:RequestInit,externalSignal?:AbortSignal):Promise<Response>{
-  const ctrl=new AbortController();
-  const timer=setTimeout(()=>ctrl.abort(),REQUEST_TIMEOUT_MS);
-  externalSignal?.addEventListener('abort',()=>ctrl.abort(),{once:true});
-  try{return await fetch(url,{...options,signal:ctrl.signal});}finally{clearTimeout(timer);}
-}
-async function securePost(url:string,body:Record<string,unknown>,externalSignal?:AbortSignal):Promise<unknown>{
-  const nonce=await generateNonce();
-  let lastError:Error|null=null;
-  for(let attempt=0;attempt<MAX_RETRIES;attempt++){
-    if(externalSignal?.aborted) throw new DOMException('Aborted','AbortError');
-    try{
-      const res=await fetchWithTimeout(url,{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPABASE_ANON}`,'apikey':SUPABASE_ANON,'x-bambeh-nonce':nonce,'x-bambeh-client':'web'},
-        body:JSON.stringify(body),
-      },externalSignal);
-      if(res.status>=400&&res.status<500){
-        const p=await res.json().catch(()=>({})) as Record<string,unknown>;
-        const code:PaymentErrorCode=(res.status===400||res.status===422)?'VALIDATION_ERROR':'SERVER_ERROR';
-        throw Object.assign(new Error((p?.error as string)??`Request error (${res.status})`),{code});
+
+// ── Hook ─────────────────────────────────────────────────────────────────────
+export function useCamPay({
+  onSuccess,
+  onFailure,
+  pollIntervalMs  = 3000,
+  maxPollAttempts = 40,   // 40 × 3 s = 2 minutes
+}: UseCamPayOptions = {}): UseCamPayResult {
+
+  const [status,    setStatus]    = useState<PaymentStatus>('idle');
+  const [errorMsg,  setErrorMsg]  = useState('');
+  const [reference, setReference] = useState('');
+  const [countdown, setCountdown] = useState(0);
+
+  const pollTimer     = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownTimer= useRef<ReturnType<typeof setInterval> | null>(null);
+  const attempts      = useRef(0);
+
+  // ── Cleanup timers ────────────────────────────────────────────────────────
+  const clearTimers = useCallback(() => {
+    if (pollTimer.current)      { clearInterval(pollTimer.current);      pollTimer.current = null; }
+    if (countdownTimer.current) { clearInterval(countdownTimer.current); countdownTimer.current = null; }
+  }, []);
+
+  // ── Reset to idle ─────────────────────────────────────────────────────────
+  const reset = useCallback(() => {
+    clearTimers();
+    setStatus('idle');
+    setErrorMsg('');
+    setReference('');
+    setCountdown(0);
+    attempts.current = 0;
+  }, [clearTimers]);
+
+  // ── Poll transaction status ───────────────────────────────────────────────
+  const startPolling = useCallback((ref: string) => {
+    attempts.current = 0;
+
+    pollTimer.current = setInterval(async () => {
+      attempts.current += 1;
+
+      if (attempts.current > maxPollAttempts) {
+        clearTimers();
+        setStatus('timeout');
+        const msg = 'Payment timed out. If you approved the request, it will be confirmed shortly — check your email/SMS for confirmation.';
+        setErrorMsg(msg);
+        onFailure?.(msg);
+        return;
       }
-      if(res.status===429) throw Object.assign(new Error('Payment service is busy. Please try again.'),{code:'RATE_LIMITED'});
-      if(!res.ok){const p=await res.json().catch(()=>({})) as Record<string,unknown>;throw new Error((p?.error as string)??`Server error (${res.status})`);}
-      return await res.json();
-    }catch(err:any){
-      if(err.name==='AbortError') throw err;
-      if(err.code==='VALIDATION_ERROR'||err.code==='RATE_LIMITED') throw err;
-      lastError=err;
-      if(attempt<MAX_RETRIES-1) await sleep(RETRY_BASE_DELAY_MS*2**attempt);
+
+      try {
+        const { data, error } = await supabase.functions.invoke('campay-status', {
+          body: { reference: ref },
+        });
+
+        if (error) return; // network hiccup — keep polling
+
+        const txStatus = (data?.status ?? '').toUpperCase();
+
+        if (txStatus === 'SUCCESSFUL') {
+          clearTimers();
+          setStatus('success');
+          await onSuccess?.(ref, data as Record<string, unknown>);
+        } else if (txStatus === 'FAILED') {
+          clearTimers();
+          setStatus('failed');
+          const msg = data?.message || 'Payment was declined. Please check your balance and try again.';
+          setErrorMsg(msg);
+          onFailure?.(msg);
+        }
+        // PENDING → keep polling
+      } catch {
+        // transient error — keep polling
+      }
+    }, pollIntervalMs);
+  }, [maxPollAttempts, pollIntervalMs, onSuccess, onFailure, clearTimers]);
+
+  // ── Initiate payment ──────────────────────────────────────────────────────
+  const initPayment = useCallback(async ({
+    amount,
+    phone,
+    description,
+    externalRef,
+    metadata,
+  }: InitPaymentArgs) => {
+    clearTimers();
+    setErrorMsg('');
+    setStatus('submitting');
+
+    const fullPhone = normalizePhone(phone);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('campay-collect', {
+        body: {
+          amount:             String(amount),
+          currency:           'XAF',
+          from:               fullPhone,
+          description,
+          external_reference: externalRef ?? `bambeh_${Date.now()}`,
+          metadata,
+        },
+      });
+
+      if (error) throw new Error(error.message || 'Payment initiation failed');
+      if (data?.error) throw new Error(data.error);
+
+      if (!data?.reference) {
+        throw new Error(data?.message || 'No payment reference returned. Please try again.');
+      }
+
+      setReference(data.reference);
+      setStatus('waiting');
+
+      // Countdown display: 2 minutes
+      const totalSeconds = maxPollAttempts * (pollIntervalMs / 1000);
+      setCountdown(totalSeconds);
+      countdownTimer.current = setInterval(() => {
+        setCountdown(c => {
+          if (c <= 1) { clearInterval(countdownTimer.current!); return 0; }
+          return c - 1;
+        });
+      }, 1000);
+
+      startPolling(data.reference);
+
+    } catch (err: unknown) {
+      clearTimers();
+      setStatus('failed');
+      const msg = err instanceof Error
+        ? friendlyError(err.message)
+        : 'Payment failed. Please try again.';
+      setErrorMsg(msg);
+      onFailure?.(msg);
     }
-  }
-  throw lastError??new Error('Payment request failed after retries.');
-}
-async function secureGet(url:string,externalSignal?:AbortSignal):Promise<unknown>{
-  try{
-    const res=await fetchWithTimeout(url,{method:'GET',headers:{'Authorization':`Bearer ${SUPABASE_ANON}`,'apikey':SUPABASE_ANON,'x-bambeh-client':'web'}},externalSignal);
-    if(!res.ok) return null;
-    return await res.json();
-  }catch{return null;}
-}
-async function pollForConfirmation(reference:string,onStatusChange:(s:PaymentStatus)=>void,externalSignal?:AbortSignal):Promise<PaymentResult>{
-  for(let i=0;i<POLL_MAX_ATTEMPTS;i++){
-    if(externalSignal?.aborted) return{success:false,error:'Payment cancelled.',errorCode:'CANCELLED'};
-    const delay=i<6?POLL_INTERVAL_MS:Math.min(POLL_INTERVAL_MS+(i-5)*1_000,12_000);
-    await sleep(delay);
-    const data=await secureGet(STATUS_URL(reference),externalSignal) as Record<string,unknown>|null;
-    if(!data) continue;
-    const s=(data.status as string)?.toUpperCase();
-    if(s==='SUCCESSFUL'||data.confirmed===true){onStatusChange('confirmed');return{success:true,reference,status:'confirmed',breakdown:data.breakdown as PaymentBreakdown|undefined};}
-    if(s==='FAILED'){onStatusChange('failed');return{success:false,reference,status:'failed',error:'Your payment was declined. Please check your Mobile Money balance.',errorCode:'SERVER_ERROR'};}
-    onStatusChange('pending');
-  }
-  onStatusChange('timeout');
-  return{success:false,reference,status:'timeout',error:'Confirmation timed out. If deducted, contact support@bambeh.com with your reference.',errorCode:'TIMEOUT'};
+  }, [clearTimers, maxPollAttempts, pollIntervalMs, onFailure, startPolling]);
+
+  return { status, errorMsg, reference, countdown, initPayment, reset };
 }
 
-export function useCamPay(){
-  const [status,setStatus]=useState<PaymentStatus>('idle');
-  const [error,setError]=useState<string|null>(null);
-  const [errorCode,setErrorCode]=useState<PaymentErrorCode|null>(null);
-  const abortRef=useRef<AbortController|null>(null);
-  useEffect(()=>()=>{abortRef.current?.abort();},[]);
-  function getSignal():AbortSignal{abortRef.current?.abort();const ctrl=new AbortController();abortRef.current=ctrl;return ctrl.signal;}
-  function handleError(err:unknown):PaymentResult{
-    const e=err as Record<string,unknown>;
-    const message=typeof e?.message==='string'?e.message:'An unexpected error occurred. Please try again.';
-    const knownCodes:PaymentErrorCode[]=['VALIDATION_ERROR','SERVER_ERROR','TIMEOUT','RATE_LIMITED','CANCELLED'];
-    const code:PaymentErrorCode=knownCodes.includes(e?.code as PaymentErrorCode)?(e.code as PaymentErrorCode):(e as{name?:string})?.name==='AbortError'?'CANCELLED':'NETWORK_ERROR';
-    setError(message);setErrorCode(code);setStatus('failed');
-    console.error('[useCamPay] Payment error:',{code,message});
-    return{success:false,error:message,errorCode:code,status:'failed'};
+// ── Friendly error messages ───────────────────────────────────────────────────
+function friendlyError(raw: string): string {
+  const msg = raw.toLowerCase();
+  if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('fetch')) {
+    return 'Connection error. Please check your internet and try again.';
   }
-  const pay=useCallback(async(amount:number,phone:string,description:string):Promise<PaymentResult>=>{
-    setStatus('initiating');setError(null);setErrorCode(null);
-    try{
-      validateAmount(amount);
-      const cleanPhone=validatePhone(phone);
-      checkRateLimit();
-      const signal=getSignal();
-      const reference=await generateSecureRef();
-      const data=await securePost(COLLECT_URL,{amount,phone:cleanPhone,description,reference},signal) as Record<string,unknown>;
-      if(!data?.success) return handleError({message:(data?.error as string)??'Payment initiation failed.',code:'SERVER_ERROR'});
-      setStatus('pending');
-      return await pollForConfirmation((data.reference as string)??reference,setStatus,signal);
-    }catch(err:any){
-      if(err?.name==='AbortError'){setStatus('idle');return{success:false,error:'Payment cancelled.',errorCode:'CANCELLED'};}
-      return handleError(err);
-    }
-  },[]);
-  const donate=useCallback(async(amount:number,phone:string):Promise<PaymentResult>=>{
-    setStatus('initiating');setError(null);setErrorCode(null);
-    try{
-      validateAmount(amount);
-      const cleanPhone=validatePhone(phone);
-      checkRateLimit();
-      const signal=getSignal();
-      const reference=await generateSecureRef();
-      const data=await securePost(COLLECT_URL,{amount,phone:cleanPhone,description:'Donation to Bambeh Marketplace',reference},signal) as Record<string,unknown>;
-      if(!data?.success) return handleError({message:(data?.error as string)??'Donation initiation failed.',code:'SERVER_ERROR'});
-      setStatus('pending');
-      return await pollForConfirmation((data.reference as string)??reference,setStatus,signal);
-    }catch(err:any){
-      if(err?.name==='AbortError'){setStatus('idle');return{success:false,error:'Donation cancelled.',errorCode:'CANCELLED'};}
-      return handleError(err);
-    }
-  },[]);
-  const cancel=useCallback(()=>{abortRef.current?.abort();setStatus('idle');setError(null);setErrorCode(null);},[]);
-  const reset=useCallback(()=>{setStatus('idle');setError(null);setErrorCode(null);},[]);
-  return{pay,donate,cancel,reset,status,error,errorCode,loading:status==='initiating'||status==='pending',isConfirmed:status==='confirmed',isFailed:status==='failed'||status==='timeout',isPending:status==='pending'};
+  if (msg.includes('insufficient')) return 'Insufficient funds. Please top up your Mobile Money account and try again.';
+  if (msg.includes('timeout'))      return 'The request timed out. Check your connection and try again.';
+  if (msg.includes('invalid'))      return 'Invalid phone number. Please enter a valid MTN or Orange number.';
+  return raw || 'Payment could not be processed. Please try again.';
 }
