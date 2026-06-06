@@ -56,7 +56,7 @@ const config: CapacitorConfig = {
         // Images: same-origin, base64 blobs, Supabase Storage, Firebase Storage
         "img-src 'self' data: blob: https://*.supabase.co https://firebasestorage.googleapis.com https://images.unsplash.com",
         // API calls: Supabase (REST + Realtime WebSocket), Firebase, Twilio, NotchPay, FCM
-        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.firebase.com https://fcm.googleapis.com https://verify.twilio.com https://api.notchpay.co https://sandbox.notchpay.co",
+        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.firebase.com https://fcm.googleapis.com https://verify.twilio.com https://campay.net https://www.campay.net",
         // Workers: Supabase Realtime uses service workers
         "worker-src 'self' blob:",
         // No iframes allowed
