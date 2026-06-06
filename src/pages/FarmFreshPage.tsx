@@ -125,7 +125,7 @@ export default function FarmFreshPage() {
 
   function handleAddToCart(e: React.MouseEvent, p: FarmProduct) {
     e.stopPropagation();
-    addToCart({ id: p.id, name: p.title, price: p.price_per_unit_xaf, unit: p.unit, image: getImage(p) || "", farmerId: p.seller_id, farmerName: p.sellerName || "Farmer", category: p.category, isOrganic: p.is_organic });
+    addToCart({ id: p.id, title: p.title, priceXAF: p.price_per_unit_xaf, quantity: 1, unit: p.unit, imageUrl: getImage(p) || "", listingType: "farm-fresh", sellerName: p.sellerName || "Farmer" });
     setAddedId(p.id);
     setTimeout(() => setAddedId(null), 1500);
   }

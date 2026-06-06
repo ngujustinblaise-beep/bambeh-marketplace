@@ -19,9 +19,11 @@ import {
   ArrowLeft, ShoppingCart, MapPin, Star, Leaf,
   RefreshCw, AlertCircle, Plus, Minus, Heart, Share2,
   MessageCircle, Phone, Flag, Shield, Users, CheckCircle,
+  Smartphone, Loader2, CheckCircle2, XCircle, Clock, Lock,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
+import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from "@/hooks/useCamPay";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -80,6 +82,191 @@ const DEMO: Record<string, FarmProduct> = {
   s8: { id: "s8", title: "Pineapples (Large)", category: "Fruits", unit: "piece", pricePerUnitXAF: 600, stockQuantity: 25, isOrganic: false, availableForDelivery: true, sellerName: "Littoral Tropicals", sellerCity: "Edea, Littoral", sellerRating: 4.6, sellerPhone: "+237698901234", images: ["https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=600&q=85"], description: "Sweet, juicy pineapples from coastal farms near Edea. Extra large size.", isDemo: true },
 };
 
+// ── DirectPayModal — inline CamPay payment from the detail page ───────────────
+
+interface DirectPayModalProps {
+  total: number;
+  productTitle: string;
+  quantity: number;
+  unit: string;
+  onClose: () => void;
+  onPay: (phone: string) => void;
+  status: string;
+  payRef: string;
+  errorMsg: string;
+  countdown: number;
+}
+
+function DirectPayModal({
+  total, productTitle, quantity, unit,
+  onClose, onPay, status, payRef, errorMsg, countdown,
+}: DirectPayModalProps) {
+  const [phone,      setPhone]      = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
+  const operator = phone.length >= 3 ? detectOperator(normalizePhone(phone)) : null;
+
+  function handlePhoneChange(v: string) {
+    const digits = v.replace(/\D/g, "").slice(0, 9);
+    setPhone(digits);
+    setPhoneError("");
+  }
+
+  function handlePay() {
+    const err = validateCamPhone(phone);
+    if (err) { setPhoneError(err); return; }
+    onPay(normalizePhone(phone));
+  }
+
+  const canClose = status !== "submitting" && status !== "waiting";
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4"
+      onClick={e => { if (e.target === e.currentTarget && canClose) onClose(); }}
+    >
+      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-green-700 px-6 py-5 text-white">
+          <div className="flex items-center gap-2 mb-1">
+            <Smartphone className="w-5 h-5" />
+            <span className="font-bold text-lg">Pay with Mobile Money</span>
+          </div>
+          <p className="text-green-100 text-sm">Powered by CamPay</p>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          {/* Order summary */}
+          <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3">
+            <p className="text-xs text-gray-500 mb-0.5">{productTitle} × {quantity} {unit}</p>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 text-sm">Total</span>
+              <span className="text-green-700 font-bold text-lg">{total.toLocaleString("fr-CM")} XAF</span>
+            </div>
+          </div>
+
+          {/* SUCCESS */}
+          {status === "success" && (
+            <div className="flex flex-col items-center gap-2 py-4">
+              <CheckCircle2 className="w-12 h-12 text-green-500" />
+              <p className="font-semibold text-gray-800">Payment Confirmed! 🎉</p>
+              <p className="text-xs text-gray-500 text-center">Your order is being processed.</p>
+              {payRef && (
+                <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">
+                  Ref: {payRef}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* WAITING */}
+          {status === "waiting" && (
+            <div className="flex flex-col items-center gap-3 py-4">
+              <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
+              <p className="font-semibold text-gray-800 text-center">Check your phone!</p>
+              <p className="text-xs text-gray-500 text-center">
+                A payment request was sent to your number. Enter your PIN to approve.
+              </p>
+              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-3 py-2 text-xs font-semibold">
+                <Clock className="w-3.5 h-3.5" />
+                {countdown > 0
+                  ? `Waiting… ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, "0")}`
+                  : "Processing…"}
+              </div>
+            </div>
+          )}
+
+          {/* SUBMITTING */}
+          {status === "submitting" && (
+            <div className="flex flex-col items-center gap-3 py-6">
+              <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
+              <p className="text-sm text-gray-600 text-center">Sending payment request…</p>
+            </div>
+          )}
+
+          {/* FAILED / TIMEOUT */}
+          {(status === "failed" || status === "timeout") && (
+            <div className="flex flex-col items-center gap-2 py-3">
+              <XCircle className="w-10 h-10 text-red-500" />
+              <p className="font-semibold text-gray-800">Payment Failed</p>
+              <p className="text-xs text-red-500 text-center">{errorMsg}</p>
+              <p className="text-xs text-gray-400 text-center">
+                Questions?{" "}
+                <a href="mailto:support@bambeh.com" className="text-green-600 underline">
+                  support@bambeh.com
+                </a>
+              </p>
+            </div>
+          )}
+
+          {/* IDLE / RETRY — phone input */}
+          {(status === "idle" || status === "failed" || status === "timeout") && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  MTN or Orange Money number
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 select-none">
+                    +237
+                  </span>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={e => handlePhoneChange(e.target.value)}
+                    placeholder="6XXXXXXXX"
+                    maxLength={9}
+                    className={`w-full pl-14 pr-14 py-3 border-2 rounded-xl text-sm focus:outline-none transition-all ${
+                      operator === "mtn"
+                        ? "border-yellow-400 bg-yellow-50"
+                        : operator === "orange"
+                        ? "border-orange-400 bg-orange-50"
+                        : phoneError
+                        ? "border-red-300"
+                        : "border-gray-200 focus:border-green-500"
+                    }`}
+                  />
+                  {operator && (
+                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                      operator === "mtn"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-orange-100 text-orange-800"
+                    }`}>
+                      {operator === "mtn" ? "📶 MTN" : "🟠 Orange"}
+                    </span>
+                  )}
+                </div>
+                {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
+                <p className="text-xs text-gray-400 mt-1">
+                  A USSD prompt will appear on your phone. Enter your PIN to pay.
+                </p>
+              </div>
+
+              <button
+                disabled={phone.length < 9}
+                onClick={handlePay}
+                className="w-full bg-green-700 disabled:bg-green-300 text-white py-3.5 rounded-2xl font-bold">
+                Confirm & Pay {total.toLocaleString("fr-CM")} XAF
+              </button>
+            </>
+          )}
+
+          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 pt-1">
+            <Shield className="w-3.5 h-3.5" />
+            <span>Secured &amp; encrypted via CamPay</span>
+          </div>
+
+          {canClose && (
+            <button onClick={onClose} className="w-full text-sm text-gray-500 hover:text-gray-700 py-1 transition-colors">
+              Cancel
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const FarmFreshDetail: React.FC = () => {
@@ -88,14 +275,17 @@ const FarmFreshDetail: React.FC = () => {
   const { addToCart } = useCart();
   useViewTracker(id, 'farm_products'); // ✅ increments view_count in Supabase
 
-  const [product,   setProduct]   = useState<FarmProduct | null>(null);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState<string | null>(null);
-  const [quantity,  setQuantity]  = useState(1);
-  const [imgIdx,    setImgIdx]    = useState(0);
-  const [favorited, setFavorited] = useState(() => isFavd(id ?? ""));
-  const [copied,    setCopied]    = useState(false);
-  const [added,     setAdded]     = useState(false);
+  const [product,      setProduct]      = useState<FarmProduct | null>(null);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState<string | null>(null);
+  const [quantity,     setQuantity]     = useState(1);
+  const [imgIdx,       setImgIdx]       = useState(0);
+  const [favorited,    setFavorited]    = useState(() => isFavd(id ?? ""));
+  const [copied,       setCopied]       = useState(false);
+  const [added,        setAdded]        = useState(false);
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [orderDone,    setOrderDone]    = useState(false);
+  const [orderRef,     setOrderRef]     = useState("");
 
   // ── Load product ─────────────────────────────────────────────────────────
 
@@ -173,13 +363,14 @@ const FarmFreshDetail: React.FC = () => {
   function handleAddToCart() {
     if (!product) return;
     addToCart({
-      id:       product.id,
-      name:     product.title,
-      price:    product.pricePerUnitXAF,
+      id:          product.id,
+      title:       product.title,
+      priceXAF:    product.pricePerUnitXAF,
       quantity,
-      image:    product.images[0] ?? "",
-      type:     "farm-fresh",
-      unit:     product.unit,
+      imageUrl:    product.images[0] ?? "",
+      listingType: "farm-fresh",
+      unit:        product.unit,
+      sellerName:  product.sellerName,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -188,6 +379,54 @@ const FarmFreshDetail: React.FC = () => {
   function handleBuyNow() {
     handleAddToCart();
     navigate("/cart");
+  }
+
+  // totalXAF used by both the bottom bar render and the CamPay hook
+  const totalXAF = (product?.pricePerUnitXAF ?? 0) * quantity;
+
+  // ── Direct CamPay payment from detail page ──────────────────────────────
+  const { status: payStatus, errorMsg: payError, reference: payRef,
+          countdown: payCountdown, initPayment, reset: resetPay } = useCamPay({
+    onSuccess: async (ref) => {
+      if (!product) return;
+      // Add to cart so it appears in cart history, then record order
+      addToCart({
+        id:          product.id,
+        title:       product.title,
+        priceXAF:    product.pricePerUnitXAF,
+        quantity,
+        imageUrl:    product.images[0] ?? "",
+        listingType: "farm-fresh",
+        unit:        product.unit,
+        sellerName:  product.sellerName,
+      });
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        await supabase.from("orders").insert({
+          id:        `ORD_${Date.now()}_${Math.random().toString(36).slice(2,8).toUpperCase()}`,
+          user_id:   session?.user?.id ?? null,
+          items:     [{ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, unit: product.unit, listingType: "farm-fresh" }],
+          subtotal:  totalXAF,
+          total:     totalXAF,
+          reference: ref,
+          status:    "paid",
+          paid_at:   new Date().toISOString(),
+        });
+      } catch { /* non-critical */ }
+      setOrderRef(ref);
+      setOrderDone(true);
+      setShowPayModal(false);
+    },
+  });
+
+  async function handleDirectPay(phone: string) {
+    if (!product) return;
+    await initPayment({
+      amount:      totalXAF,
+      phone,
+      description: `Bambeh Farm Fresh — ${product.title} x${quantity}`,
+      externalRef: `ff_${product.id}_${Date.now()}`,
+    });
   }
 
   // ── Loading / error states ────────────────────────────────────────────────
@@ -213,10 +452,35 @@ const FarmFreshDetail: React.FC = () => {
     </div>
   );
 
-  const totalXAF = product.pricePerUnitXAF * quantity;
   const waMsg = encodeURIComponent(
     `Hi ${product.sellerName}, I saw your listing on Bambeh: ${product.title} — ${fmtXAF(product.pricePerUnitXAF)}/${product.unit}. Is it still available?`
   );
+
+  // ── Order success screen ──────────────────────────────────────────────────
+  if (orderDone) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-6">
+        <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
+          <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Order Placed! 🎉</h2>
+          <p className="text-sm text-gray-500 mb-3">Payment confirmed. Your order is being processed.</p>
+          {orderRef && (
+            <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600 mb-4 inline-block">
+              Ref: {orderRef}
+            </p>
+          )}
+          <button onClick={() => navigate("/orders")}
+            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold mb-2">
+            Track Order
+          </button>
+          <button onClick={() => navigate("/farm-fresh")}
+            className="w-full text-gray-500 text-sm py-2">
+            Keep Shopping
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ── Main render ───────────────────────────────────────────────────────────
 
@@ -381,7 +645,7 @@ const FarmFreshDetail: React.FC = () => {
         </button>
       </div>
 
-      {/* Fixed bottom bar: quantity + Add to Cart + Buy Now */}
+      {/* Fixed bottom bar: quantity + Add to Cart + Pay Now */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 max-w-lg mx-auto">
         {/* Quantity selector */}
         <div className="flex items-center gap-3 mb-2.5">
@@ -408,16 +672,37 @@ const FarmFreshDetail: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={handleAddToCart}
-            className="flex-1 py-3 border-2 border-green-600 text-green-700 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition hover:bg-green-50 active:scale-[0.98]">
-            <ShoppingCart className="w-4 h-4" />Add to Cart
+            className={`flex-1 py-3 border-2 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition active:scale-[0.98] ${
+              added
+                ? "border-green-500 bg-green-500 text-white"
+                : "border-green-600 text-green-700 hover:bg-green-50"
+            }`}>
+            <ShoppingCart className="w-4 h-4" />
+            {added ? "Added!" : "Add to Cart"}
           </button>
           <button
-            onClick={handleBuyNow}
+            onClick={() => { resetPay(); setShowPayModal(true); }}
             className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition active:scale-[0.98]">
-            Buy Now →
+            <Smartphone className="w-4 h-4" /> Pay Now
           </button>
         </div>
       </div>
+
+      {/* ── CamPay Direct Payment Modal ─────────────────────────────────── */}
+      {showPayModal && (
+        <DirectPayModal
+          total={totalXAF}
+          productTitle={product.title}
+          quantity={quantity}
+          unit={product.unit}
+          onClose={() => { setShowPayModal(false); resetPay(); }}
+          onPay={handleDirectPay}
+          status={payStatus}
+          payRef={payRef}
+          errorMsg={payError}
+          countdown={payCountdown}
+        />
+      )}
     </div>
   );
 };
