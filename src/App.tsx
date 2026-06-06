@@ -638,10 +638,13 @@ export default function App() {
                           {/* ── 8. SUBSCRIPTION / ZERM COINS ──────────────── */}
                           <Route path="/subscription" element={<MainLayout><SubscriptionPlans /></MainLayout>} />
                           <Route path="/share-my-voice" element={<MainLayout><Suspense fallback={<LoadingFallback />}><ShareMyVoice /></Suspense></MainLayout>} />
-                          <Route path="/zerm/purchase" element={<MainLayout><AuthGate require="subscription"><ZermPurchase /></AuthGate></MainLayout>} />
-                          <Route path="/coins" element={<MainLayout><AuthGate require="subscription"><CoinsPage /></AuthGate></MainLayout>} />
-                          <Route path="/coins/history" element={<MainLayout><AuthGate require="subscription"><CoinsHistory /></AuthGate></MainLayout>} />
-                          <Route path="/coins/transfer" element={<MainLayout><AuthGate require="subscription"><CoinsTransfer /></AuthGate></MainLayout>} />
+                          {/* FIXED: /coins/purchase now exists (CoinsPage navigates here) */}
+                          <Route path="/coins/purchase" element={<MainLayout><AuthGate require="user"><ZermPurchase /></AuthGate></MainLayout>} />
+                          {/* Keep old path as redirect for any existing bookmarks/links */}
+                          <Route path="/zerm/purchase" element={<Navigate to="/coins/purchase" replace />} />
+                          <Route path="/coins" element={<MainLayout><AuthGate require="user"><CoinsPage /></AuthGate></MainLayout>} />
+                          <Route path="/coins/history" element={<MainLayout><AuthGate require="user"><CoinsHistory /></AuthGate></MainLayout>} />
+                          <Route path="/coins/transfer" element={<MainLayout><AuthGate require="user"><CoinsTransfer /></AuthGate></MainLayout>} />
 
                           {/* ── 9. VENDOR PUBLIC ──────────────────────────── */}
                           <Route path="/vendor" element={<Navigate to="/vendor/home" replace />} />
