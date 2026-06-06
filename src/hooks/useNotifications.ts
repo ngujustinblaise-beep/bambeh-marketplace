@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
+$content = @'
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -11,11 +12,15 @@ export interface BambehNotification {
   created_at: string;
 }
 
+// Global registry to prevent duplicate subscriptions across hook instances
+const activeChannels = new Map<string, ReturnType<typeof supabase.channel>>();
+
 export function useNotifications() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<BambehNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  const mountedRef = useRef(true);
 
   const fetchNotifications = useCallback(async () => {
     if (!user?.id) return;
@@ -26,8 +31,8 @@ export function useNotifications() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(50);
-    if (!error && data) setNotifications(data as BambehNotification[]);
-    setLoading(false);
+    if (!error && data && mountedRef.current) setNotifications(data as BambehNotification[]);
+    if (mountedRef.current) setLoading(false);
   }, [user?.id]);
 
   const markRead = useCallback(async (id: string) => {
@@ -50,23 +55,43 @@ export function useNotifications() {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
   }, [user?.id]);
 
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
 
   useEffect(() => {
     if (!user?.id) return;
+    const channelKey = `bambeh-notifications-${user.id}`;
+
+    // If a channel for this user already exists globally, skip creating another
+    if (activeChannels.has(channelKey)) return;
+
     const channel = supabase
-      .channel('bambeh-notifications-realtime-' + user.id)
+      .channel(channelKey)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
         table: 'notifications',
         filter: `user_id=eq.${user.id}`,
       }, (payload) => {
-        setNotifications(prev => [payload.new as BambehNotification, ...prev]);
+        if (mountedRef.current) {
+          setNotifications(prev => [payload.new as BambehNotification, ...prev]);
+        }
       })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    activeChannels.set(channelKey, channel);
+
+    return () => {
+      activeChannels.delete(channelKey);
+      supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   return { notifications, unreadCount, loading, markRead, markAllRead, refetch: fetchNotifications };
 }
+'@
+Set-Content "C:\Dev\bambe-android\src\hooks\useNotifications.ts" $content
