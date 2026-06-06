@@ -1,6 +1,6 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase";
 
 type Status = "loading" | "success" | "failed" | "pending";
 
@@ -27,9 +27,9 @@ const PaymentCallback: React.FC = () => {
   }, [params]);
 
   const INFO = {
-    success: { emoji: "✅", title: "Payment Successful!",  color: "text-green-600",  msg: "Your payment was confirmed. Thank you!" },
-    failed:  { emoji: "❌", title: "Payment Failed",       color: "text-red-600",    msg: "Your payment could not be processed. No funds were deducted." },
-    pending: { emoji: "⏳", title: "Payment Pending",      color: "text-yellow-600", msg: "We are still waiting for confirmation from your mobile operator." },
+    success: { emoji: "?", title: "Payment Successful!",  color: "text-green-600",  msg: "Your payment was confirmed. Thank you!" },
+    failed:  { emoji: "?", title: "Payment Failed",       color: "text-red-600",    msg: "Your payment could not be processed. No funds were deducted." },
+    pending: { emoji: "?", title: "Payment Pending",      color: "text-yellow-600", msg: "We are still waiting for confirmation from your mobile operator." },
   };
 
   if (status === "loading") return (
