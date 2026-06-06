@@ -78,6 +78,7 @@ export default function Home() {
 
   // ── Special Features tiles ───────────────────────────────────────────────
   const specialFeatures = [
+    { label: 'Zerm Coins',    link: '/coins',        emoji: '⚡', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
     { label: 'Farm Fresh',    link: '/farm-fresh',   emoji: '🌿', bg: 'bg-green-50',   text: 'text-green-800'   },
     { label: 'Community',     link: '/community',    emoji: '🏘️', bg: 'bg-teal-50',    text: 'text-teal-800'    },
     { label: 'Group Buying',  link: '/group-buying', emoji: '👥', bg: 'bg-blue-50',    text: 'text-blue-800'    },

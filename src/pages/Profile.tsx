@@ -420,6 +420,7 @@ export default function Profile() {
           <h3 className="font-semibold text-gray-900 mb-3">Quick Links</h3>
           <div className="space-y-1">
             {[
+              ["⚡  Zerm Coins",      "/coins"],
               ["🛍️  My Listings",    "/marketplace"],
               ["📦  My Orders",      "/orders"],
               ["❤️   Saved Items",    "/favorites"],

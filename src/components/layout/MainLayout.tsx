@@ -16,7 +16,7 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  Home, ShoppingBag, MessageCircle, Bell, User,
+  Home, ShoppingBag, MessageCircle, Bell, User, Zap,
   Share2, X, Copy, Check, Facebook, Twitter, MessageSquare
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,6 +38,7 @@ interface NavItem {
 const mobileNavItems: NavItem[] = [
   { label: "Home",          labelKey: "nav.home",          path: "/",              icon: Home                             },
   { label: "Marketplace",   labelKey: "nav.marketplace",   path: "/marketplace",   icon: ShoppingBag                      },
+  { label: "Coins",         labelKey: "nav.coins",         path: "/coins",         icon: Zap,           requiresAuth: true },
   { label: "Messages",      labelKey: "nav.messages",      path: "/chat",          icon: MessageCircle, requiresAuth: true },
   { label: "Notifications", labelKey: "nav.notifications", path: "/notifications", icon: Bell,          requiresAuth: true },
   { label: "Profile",       labelKey: "common.profile",    path: "/profile",       icon: User,          requiresAuth: true },

@@ -478,6 +478,7 @@ export default function Header() {
                 {t('common.share')}
               </button>
               {[
+                { to: '/coins',     label: `⚡ Zerm Coins Wallet`          },
                 { to: '/cart',      label: `🛒 ${t('nav.cart')}`      },
                 { to: '/favorites', label: `❤️ ${t('nav.favorites')}` },
                 { to: '/referral',  label: '🎁 Referral Program'       },
