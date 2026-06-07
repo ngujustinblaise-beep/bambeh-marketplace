@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ FEATURED ADS
 
 interface FarmProduct {
   id: string;
@@ -181,6 +182,9 @@ export default function FarmFreshPage() {
           <Users className="w-4 h-4" /> Join Group Buying — Save More
         </button>
       </div>
+
+      {/* ✅ FEATURED ADS STRIP — farm-fresh category only */}
+      <FeaturedAdsStrip category="farm-fresh" showHeader={false} maxVisible={20} />
 
       {/* Product grid */}
       <div className="px-4 pb-24">

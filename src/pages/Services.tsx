@@ -36,6 +36,7 @@ import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
+import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip'; // ✅ FEATURED ADS
 
 interface Service {
   id:          string;
@@ -165,6 +166,9 @@ export default function Services() {
             </button>
           ))}
         </div>
+
+        {/* ✅ FEATURED ADS STRIP — services category only */}
+        <FeaturedAdsStrip category="services" showHeader={false} maxVisible={20} />
 
         {/* Actions row */}
         <div className="flex items-center justify-between mb-4">

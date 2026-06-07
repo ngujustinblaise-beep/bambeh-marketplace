@@ -28,6 +28,7 @@ import { Search, MapPin, Gauge, Fuel, Plus, Car, Loader2, RefreshCw, Eye } from 
 import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import { DemoBadge } from '@/components/listings/DemoBadge';
+import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip'; // ✅ FEATURED ADS
 
 interface Vehicle {
   id:         string;
@@ -218,6 +219,9 @@ export default function VehicleRentals() {
 
         {/* Location filter */}
         <LocationFilter onFilterChange={setLocationFilters} />
+
+        {/* ✅ FEATURED ADS STRIP — vehicles category only */}
+        <FeaturedAdsStrip category="vehicles" showHeader={false} maxVisible={20} />
 
         <div className="mb-3 text-sm text-gray-500">
           {filtered.length} vehicle{filtered.length !== 1 ? 's' : ''} found

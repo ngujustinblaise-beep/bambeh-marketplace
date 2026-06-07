@@ -21,28 +21,26 @@
  *  - Custom theme extends Tailwind defaults (no overrides = smaller output)
  *  - teal-600 (#0d9488) added as brand colour so you can use arbitrary values
  *    less often (arbitrary values like bg-[#0d9488] don't tree-shake as well)
- *  - Custom breakpoints match 's most common devices (360px, 390px wide)
+ *  - Custom breakpoints match Cameroon's most common devices (360px wide)
  *  - future.hoverOnlyWhenSupported: true — disables hover styles on touch
  *    devices, removing ~5–8 KB of hover CSS that Android users never use
  *
- * PLACEMENT: Replace C:\Dev\bambe-android\tailwind.config.ts
+ * ✅ UPDATED: Added tailwind-scrollbar-hide plugin.
+ *    Required by FeaturedAdsStrip (horizontal ad scroll row) and all
+ *    category chip rows in Jobs, Marketplace, Services, FarmFresh, etc.
+ *    Install once: npm install tailwind-scrollbar-hide --legacy-peer-deps
+ *
+ * PLACEMENT: C:\Dev\bambe-android\tailwind.config.ts
+ *            Delete tailwind.config.js if it still exists alongside this file.
  */
 
 import type { Config } from "tailwindcss";
 
 const config: Config = {
   // ── Content paths — PRECISE ────────────────────────────────────────────────
-  // Only scan files that actually contain Tailwind class names.
-  // This is the single most impactful CSS size reduction.
   content: [
-    // Main app entry
     "./index.html",
-
-    // All source TypeScript/TSX files — the actual UI
     "./src/**/*.{ts,tsx}",
-
-    // Explicitly EXCLUDE files that don't contain Tailwind classes:
-    // (Tailwind v3+ supports negation patterns)
     "!./src/**/*.test.{ts,tsx}",
     "!./src/**/*.spec.{ts,tsx}",
     "!./src/**/*.stories.{ts,tsx}",
@@ -52,17 +50,11 @@ const config: Config = {
   ],
 
   // ── Dark mode ─────────────────────────────────────────────────────────────
-  // "class" strategy: dark mode is opt-in via a .dark class on <html>.
-  // This is better than "media" for a marketplace app — users can override
-  // their OS preference within the app settings.
   darkMode: "class",
 
   theme: {
     extend: {
       // ── Brand colours ─────────────────────────────────────────────────────
-      // Defining these in the theme means you can write bg-brand-600 instead
-      // of bg-[#0d9488]. Named colours tree-shake correctly; arbitrary values
-      // sometimes don't, contributing to CSS bloat.
       colors: {
         brand: {
           50:  "#f0fdf4",
@@ -79,28 +71,23 @@ const config: Config = {
         },
       },
 
-      // ── Screens —  device breakpoints ─────────────────────────────
-      // Most Android phones sold in  are 360–390px wide.
-      // Adding 'xs' breakpoint lets you write xs:grid-cols-2 for these devices.
+      // ── Screens — Cameroon device breakpoints ─────────────────────────────
       screens: {
-        xs: "360px",  // Tecno Spark, Infinix Hot (most common in )
-        // sm, md, lg, xl, 2xl remain as Tailwind defaults
+        xs: "360px",  // Tecno Spark, Infinix Hot (most common in Cameroon)
       },
 
-      // ── Font sizes — optimised for mobile readability ─────────────────────
+      // ── Font sizes ────────────────────────────────────────────────────────
       fontSize: {
-        // Slightly larger base sizes for outdoor readability in bright sunlight
-        // (common usage pattern in )
         "2xs": ["0.65rem", { lineHeight: "1rem" }],
       },
 
-      // ── Spacing additions ─────────────────────────────────────────────────
+      // ── Spacing ───────────────────────────────────────────────────────────
       spacing: {
-        "safe-bottom": "env(safe-area-inset-bottom)", // iOS notch support
+        "safe-bottom": "env(safe-area-inset-bottom)",
         "safe-top":    "env(safe-area-inset-top)",
       },
 
-      // ── Animation — shimmer for BambehImage skeleton ──────────────────────
+      // ── Animations ────────────────────────────────────────────────────────
       keyframes: {
         shimmer: {
           "0%":   { backgroundPosition: "-200% 0" },
@@ -116,17 +103,17 @@ const config: Config = {
         },
       },
       animation: {
-        shimmer:  "shimmer 1.8s infinite linear",
-        "fade-in": "fade-in 0.3s ease-out",
+        shimmer:    "shimmer 1.8s infinite linear",
+        "fade-in":  "fade-in 0.3s ease-out",
         "slide-up": "slide-up 0.4s ease-out",
       },
 
-      // ── Border radius — consistent rounded corners ────────────────────────
+      // ── Border radius ─────────────────────────────────────────────────────
       borderRadius: {
         "4xl": "2rem",
       },
 
-      // ── Box shadows — Bambeh card shadows ────────────────────────────────
+      // ── Box shadows ───────────────────────────────────────────────────────
       boxShadow: {
         "card":    "0 2px 8px 0 rgba(0, 0, 0, 0.08)",
         "card-lg": "0 4px 16px 0 rgba(0, 0, 0, 0.12)",
@@ -135,25 +122,21 @@ const config: Config = {
     },
   },
 
-  // ── Future flags ─────────────────────────────────────────────────────────
+  // ── Future flags ──────────────────────────────────────────────────────────
   future: {
-    // Disables hover styles on touch devices (Android phones).
-    // Removes ~5–8 KB of CSS that touch users never trigger.
-    // This is one of the most impactful CSS size reductions for mobile-first apps.
     hoverOnlyWhenSupported: true,
   },
 
   plugins: [
-    // Add tailwindcss/typography if you use prose classes in TermsAcceptance:
+    // ✅ REQUIRED: Hides scrollbars while keeping scroll functionality.
+    // Used by FeaturedAdsStrip and all category chip rows throughout the app.
+    // Install: npm install tailwind-scrollbar-hide --legacy-peer-deps
+    require("tailwind-scrollbar-hide"),
+
+    // Uncomment if needed:
     // require('@tailwindcss/typography'),
-    //
-    // Add tailwindcss/forms if you use form utilities:
     // require('@tailwindcss/forms'),
-    //
-    // Uncomment the ones your project uses. Each adds ~10–30 KB if unused,
-    // so only enable what you actually need.
   ],
 };
 
 export default config;
-

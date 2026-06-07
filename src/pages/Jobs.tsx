@@ -19,6 +19,7 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ FEATURED ADS
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -477,6 +478,11 @@ export default function Jobs() {
       {/* ── Location filter (preserved from original) ── */}
       <div className="px-4 pt-4">
         <LocationFilter onFilterChange={setLocationFilters} />
+      </div>
+
+      {/* ✅ FEATURED ADS STRIP — jobs category only */}
+      <div className="px-4 pb-2">
+        <FeaturedAdsStrip category="jobs" showHeader={false} maxVisible={20} />
       </div>
 
       {/* ── Results count ── */}

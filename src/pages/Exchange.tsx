@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeftRight, Plus, Package, Loader2, RefreshCw, Eye } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
+import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip'; // ✅ FEATURED ADS
 
 const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
 const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || '';
@@ -89,7 +90,17 @@ export default function Exchange() {
 
         <LocationFilter onFilterChange={setLocationFilters} />
 
-        {loading && <div className="flex flex-col items-center py-16 gap-3"><Loader2 className="w-8 h-8 animate-spin text-teal-600" /><p className="text-sm text-gray-500">Loading exchange listings...</p></div>}
+        {/* ✅ FEATURED ADS STRIP — exchange category only */}
+        <div className="mt-2 mb-1">
+          <FeaturedAdsStrip category="exchange" showHeader={false} maxVisible={20} />
+        </div>
+
+        {loading && (
+          <div className="flex flex-col items-center py-16 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+            <p className="text-sm text-gray-500">Loading exchange listings...</p>
+          </div>
+        )}
         {error && !loading && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-center">
             <p className="text-red-600 text-sm mb-2">{error}</p>

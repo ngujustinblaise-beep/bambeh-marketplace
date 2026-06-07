@@ -1,6 +1,6 @@
 /**
  * App.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace (ETS BUSHENERGY). All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  *
  * CHANGES IN THIS VERSION (June 2026):
  *  ✅ /terms-of-service added to publicPrefixes (was missing — caused redirect loop)
@@ -611,7 +611,8 @@ export default function App() {
 
                           {/* ── 6. DETAIL PAGES ───────────────────────────── */}
                           <Route path="/jobs/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Job Details"><JobDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
-                          <Route path="/marketplace/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Item Details"><MarketplaceItemDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          {/* ✅ FIX: No AuthGate — marketplace items visible to all users including guests */}
+                          <Route path="/marketplace/:id" element={<MainLayout><RouteErrorBoundary routeName="Item Details"><MarketplaceItemDetails /></RouteErrorBoundary></MainLayout>} />
                           <Route path="/services/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Service Details"><ServiceDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           <Route path="/rentals/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Rental Details"><RentalDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           <Route path="/vehicles/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Vehicle Details"><VehicleDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
@@ -619,7 +620,7 @@ export default function App() {
 
                           {/* ── 7. USER PAGES ─────────────────────────────── */}
                           <Route path="/profile" element={<MainLayout><AuthGate require="user"><Profile /></AuthGate></MainLayout>} />
-                          <Route path="/cart" element={<MainLayout><AuthGate require="user"><Cart /></AuthGate></MainLayout>} />
+                          <Route path="/cart" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Cart"><Cart /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           <Route path="/favorites" element={<MainLayout><AuthGate require="user"><Favorites /></AuthGate></MainLayout>} />
                           <Route path="/notifications" element={<MainLayout><AuthGate require="subscription"><Notifications /></AuthGate></MainLayout>} />
                           <Route path="/alerts" element={<MainLayout><AuthGate require="user"><AlertsPage /></AuthGate></MainLayout>} />

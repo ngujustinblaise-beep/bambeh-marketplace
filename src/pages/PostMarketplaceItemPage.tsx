@@ -1,561 +1,538 @@
 /**
- * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
+ * src/pages/PostMarketplaceItemPage.tsx — Bambeh
  *
- * FIXES APPLIED:
- *  ✅ Actually saves to Supabase "listings" table — was a fake setTimeout before
- *  ✅ Uploads images to Supabase Storage "listings" bucket
- *  ✅ Requires user to be logged in — redirects to /login if not
- *  ✅ Fixed import — uses @/types/src_types_items (not @/types/items)
- *  ✅ On success, navigates to /marketplace so user sees their listing
- *  ✅ Proper error messages shown on screen
+ * FIX (June 2026): Insert uses `seller_id` (column name in `listings` table).
+ * Previous code used `user_id` which caused the schema-cache error.
+ *
+ * This is a self-contained posting form. Paste it over your existing
+ * PostMarketplaceItemPage.tsx (or whatever your sell page is called).
+ *
+ * What it does:
+ *  ✅ 3-step wizard: Details → Photos → Review & Post
+ *  ✅ Inserts into `listings` table with seller_id = auth.uid()
+ *  ✅ Uploads photos to Supabase Storage bucket "listings"
+ *  ✅ Stores image URLs in the `images` JSONB column
+ *  ✅ Draft save/restore via localStorage
+ *  ✅ Price formatted with XAF
+ *  ✅ Full error display
  */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Upload, X, MapPin, DollarSign, Package,
-  Loader2, Check, Camera, AlertCircle,
+  ArrowLeft, ArrowRight, Upload, X, Check,
+  Loader2, Camera, AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-interface ImagePreview {
-  file: File;
-  url: string;
-  id: string;
-}
-
-interface FormData {
+interface DraftData {
   title: string;
   description: string;
+  price: string;
   category: string;
   condition: string;
-  price: number;
-  city: string;
+  location: string;
   phone: string;
   negotiable: boolean;
-  acceptsZermCoins: boolean;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+const DRAFT_KEY = "bambeh_marketplace_draft";
+
 const CATEGORIES = [
-  "Electronics & Gadgets",
-  "Fashion & Clothing",
-  "Home & Furniture",
-  "Vehicles & Parts",
-  "Agriculture & Food",
-  "Books & Education",
-  "Sports & Leisure",
-  "Other",
+  "Electronics", "Fashion", "Appliances",
+  "Books", "Furniture", "Vehicles", "Rentals", "Other",
 ];
 
-const CONDITIONS = [
-  { value: "brand-new",  label: "Brand New",  desc: "Never used, original packaging" },
-  { value: "like-new",   label: "Like New",   desc: "Gently used, excellent condition" },
-  { value: "good",       label: "Good",       desc: "Used, normal wear" },
-  { value: "fair",       label: "Fair",       desc: "Visible wear, fully functional" },
-  { value: "for-parts",  label: "For Parts",  desc: "Not fully functional" },
-];
+const CONDITIONS = ["New", "Like New", "Good", "Fair", "Poor"];
 
-const CITIES = [
-  "Yaoundé", "Douala", "Garoua", "Bamenda", "Bafoussam",
-  "Maroua", "Ngaoundéré", "Buea", "Kumba", "Bertoua", "Limbe",
-];
+const EMPTY: DraftData = {
+  title: "", description: "", price: "",
+  category: "Electronics", condition: "Good",
+  location: "", phone: "", negotiable: false,
+};
+
+function loadDraft(): DraftData {
+  try {
+    return { ...EMPTY, ...JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}") };
+  } catch { return EMPTY; }
+}
+
+function saveDraft(d: DraftData) {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch { }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch { }
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function PostMarketplaceItemPage() {
   const navigate = useNavigate();
+  const fileRef  = useRef<HTMLInputElement>(null);
 
-  const [userId,    setUserId]    = useState<string | null>(null);
-  const [step,      setStep]      = useState(1);
-  const [loading,   setLoading]   = useState(false);
-  const [submitErr, setSubmitErr] = useState<string | null>(null);
-  const [done,      setDone]      = useState(false);
-  const [dragActive,setDragActive]= useState(false);
-  const [images,    setImages]    = useState<ImagePreview[]>([]);
-  const [errors,    setErrors]    = useState<Partial<Record<keyof FormData, string>>>({});
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [step,     setStep]     = useState(1);
+  const [form,     setForm]     = useState<DraftData>(loadDraft);
+  const [photos,   setPhotos]   = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [posting,  setPosting]  = useState(false);
+  const [error,    setError]    = useState<string | null>(null);
 
-  const [form, setForm] = useState<FormData>({
-    title:           "",
-    description:     "",
-    category:        "",
-    condition:       "good",
-    price:           0,
-    city:            "",
-    phone:           "",
-    negotiable:      false,
-    acceptsZermCoins:true,
-  });
-
-  // ── Require login ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session?.user) {
-        navigate("/login");
-        return;
-      }
-      setUserId(session.user.id);
+  // ── Form helpers ──────────────────────────────────────────────────────────
+  function set(field: keyof DraftData, value: string | boolean) {
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
+      saveDraft(next);
+      return next;
     });
-  }, [navigate]);
-
-  // ── Form helpers ───────────────────────────────────────────────────────────
-  function set(field: keyof FormData) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const val = e.target.type === "checkbox"
-        ? (e.target as HTMLInputElement).checked
-        : e.target.type === "number"
-          ? Number(e.target.value)
-          : e.target.value;
-      setForm((prev) => ({ ...prev, [field]: val }));
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    };
   }
 
-  function toggle(field: keyof FormData) {
-    return () => setForm((prev) => ({ ...prev, [field]: !prev[field] }));
+  function formatPriceDisplay(raw: string): string {
+    const num = parseInt(raw.replace(/\D/g, ""), 10);
+    return isNaN(num) ? "" : num.toLocaleString("fr-CM");
   }
 
-  // ── Image handling ─────────────────────────────────────────────────────────
-  function handleFiles(files: FileList) {
-    const arr = Array.from(files);
-    if (images.length + arr.length > 10) {
-      alert("Maximum 10 images allowed");
-      return;
-    }
-    const previews: ImagePreview[] = arr.map((file) => ({
-      file,
-      url: URL.createObjectURL(file),
-      id:  Math.random().toString(36).slice(2, 9),
-    }));
-    setImages((prev) => [...prev, ...previews]);
+  // ── Photo handling ────────────────────────────────────────────────────────
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []).slice(0, 6 - photos.length);
+    setPhotos((prev) => [...prev, ...files]);
+    files.forEach((f) => {
+      const reader = new FileReader();
+      reader.onload = (ev) =>
+        setPreviews((prev) => [...prev, ev.target?.result as string]);
+      reader.readAsDataURL(f);
+    });
+    if (fileRef.current) fileRef.current.value = "";
   }
 
-  function removeImage(id: string) {
-    setImages((prev) => prev.filter((img) => img.id !== id));
+  function removePhoto(idx: number) {
+    setPhotos((prev) => prev.filter((_, i) => i !== idx));
+    setPreviews((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  // ── Validation ─────────────────────────────────────────────────────────────
-  function validate(s: number): boolean {
-    const errs: Partial<Record<keyof FormData, string>> = {};
-    if (s === 1) {
-      if (!form.title.trim())       errs.title       = "Title is required";
-      if (form.title.length < 5)    errs.title       = "Title must be at least 5 characters";
-      if (!form.description.trim()) errs.description = "Description is required";
-      if (form.description.length < 20) errs.description = "Please write at least 20 characters";
-      if (!form.category)           errs.category    = "Please select a category";
-    }
-    if (s === 2) {
-      if (form.price <= 0)          errs.price       = "Please enter a valid price";
-      if (!form.city)               errs.city        = "Please select a city";
-    }
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  }
-
-  // ── Upload image to Supabase Storage ──────────────────────────────────────
-  async function uploadImage(file: File, itemId: string): Promise<string | null> {
-    const ext  = file.name.split(".").pop() ?? "jpg";
-    const path = `marketplace/${itemId}/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage
-      .from("listings")
-      .upload(path, file, { upsert: false, contentType: file.type });
-    if (error) return null;
-    const { data } = supabase.storage.from("listings").getPublicUrl(path);
-    return data.publicUrl;
-  }
-
-  // ── Submit — saves to Supabase ─────────────────────────────────────────────
-  async function handleSubmit() {
-    if (!validate(2)) return;
-    if (!userId) { navigate("/login"); return; }
-
-    setLoading(true);
-    setSubmitErr(null);
-
-    try {
-      // 1. Insert the listing row first to get the ID
-      const { data: insertData, error: insertError } = await supabase
-        .from("listings")
-        .insert({
-          user_id:     userId,
-          type:        "marketplace",
-          title:       form.title.trim(),
-          description: form.description.trim(),
-          category:    form.category,
-          price:       form.price,
-          location:    form.city,
-          status:      "active",
-          extra: {
-            condition:        form.condition,
-            negotiable:       form.negotiable,
-            accepts_zerm:     form.acceptsZermCoins,
-            seller_phone:     form.phone.trim() || null,
-            image_url:        null, // will update after upload
-          },
-          created_at: new Date().toISOString(),
-        })
-        .select("id")
-        .single();
-
-      if (insertError || !insertData) {
-        setSubmitErr(
-          insertError?.message ?? "Failed to save listing. Please try again."
-        );
-        return;
-      }
-
-      const listingId = (insertData as { id: string }).id;
-
-      // 2. Upload images if any and update the listing with the first image URL
-      if (images.length > 0) {
-        const firstUrl = await uploadImage(images[0].file, listingId);
-        if (firstUrl) {
-          await supabase
-            .from("listings")
-            .update({ extra: {
-              condition:    form.condition,
-              negotiable:   form.negotiable,
-              accepts_zerm: form.acceptsZermCoins,
-              seller_phone: form.phone.trim() || null,
-              image_url:    firstUrl,
-            }})
-            .eq("id", listingId);
-        }
-
-        // Upload remaining images in the background (don't block the user)
-        for (let i = 1; i < images.length; i++) {
-          void uploadImage(images[i].file, listingId);
-        }
-      }
-
-      setDone(true);
-
-      // Navigate to marketplace after 2 seconds so user sees confirmation
-      setTimeout(() => navigate("/marketplace"), 2000);
-
-    } catch (err) {
-      setSubmitErr(
-        err instanceof Error ? err.message : "Unexpected error. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // ── Success screen ─────────────────────────────────────────────────────────
-  if (done) {
+  // ── Step validation ───────────────────────────────────────────────────────
+  function step1Valid(): boolean {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-8 text-center">
-        <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-5">
-          <Check className="w-10 h-10 text-teal-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Listing Published!</h2>
-        <p className="text-gray-500 text-sm">
-          Your item is now live on Bambeh Marketplace and visible to everyone.
-        </p>
-        <p className="text-xs text-gray-400 mt-3">Taking you to the marketplace…</p>
-      </div>
+      form.title.trim().length >= 3 &&
+      form.description.trim().length >= 10 &&
+      parseInt(form.price.replace(/\D/g, ""), 10) > 0 &&
+      form.location.trim().length >= 2
     );
   }
 
-  // ── Main form ──────────────────────────────────────────────────────────────
+  // ── Upload photos to Supabase Storage ────────────────────────────────────
+  async function uploadPhotos(sellerId: string): Promise<string[]> {
+    if (photos.length === 0) return [];
+
+    const urls: string[] = [];
+    for (const file of photos) {
+      const ext  = file.name.split(".").pop() ?? "jpg";
+      const path = `marketplace/${sellerId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const { error: upErr } = await supabase.storage
+        .from("listings")
+        .upload(path, file, { upsert: false, contentType: file.type });
+
+      if (upErr) {
+        console.warn("Photo upload failed:", upErr.message);
+        continue; // skip failed uploads, don't block posting
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("listings")
+        .getPublicUrl(path);
+
+      if (urlData?.publicUrl) urls.push(urlData.publicUrl);
+    }
+    return urls;
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  const handleSubmit = useCallback(async () => {
+    setPosting(true);
+    setError(null);
+
+    try {
+      // 1. Get current user
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !user) {
+        setError("You must be logged in to post a listing.");
+        return;
+      }
+
+      // 2. Upload photos (non-blocking if bucket missing)
+      const imageUrls = await uploadPhotos(user.id);
+
+      // 3. Parse price (strip formatting)
+      const price = parseInt(form.price.replace(/\D/g, ""), 10);
+
+      // 4. Build images JSONB array
+      const images = imageUrls.map((url, idx) => ({
+        id:       `img-${Date.now()}-${idx}`,
+        url,
+        order:    idx,
+        is_main:  idx === 0,
+      }));
+
+      // 5. Insert into listings
+      //    KEY FIX: use `seller_id`, NOT `user_id`
+      const { error: insertErr } = await supabase
+        .from("listings")
+        .insert({
+          seller_id:   user.id,          // ← CORRECT column name
+          type:        "marketplace",
+          title:       form.title.trim(),
+          description: form.description.trim(),
+          price,
+          category:    form.category,
+          condition:   form.condition,
+          location:    form.location.trim(),
+          phone:       form.phone.trim() || null,
+          negotiable:  form.negotiable,
+          images,                        // JSONB array
+          extra:       { image_url: imageUrls[0] ?? null }, // legacy fallback
+          status:      "active",
+          view_count:  0,
+          is_featured: false,
+          is_sponsored: false,
+          expires_at:  new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+        });
+
+      if (insertErr) {
+        // Surface the real Supabase error message
+        setError(insertErr.message);
+        return;
+      }
+
+      clearDraft();
+      navigate("/marketplace", { replace: true });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unexpected error. Please try again.");
+    } finally {
+      setPosting(false);
+    }
+  }, [form, photos, navigate]);
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-
       {/* Header */}
-      <div className="bg-white border-b px-4 py-4 sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Package className="w-5 h-5 text-teal-600" />
-          Sell an Item
-        </h1>
-        {/* Step indicator */}
-        <div className="flex items-center gap-2 mt-3">
-          {[1, 2].map((s) => (
-            <React.Fragment key={s}>
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                  step >= s ? "bg-teal-600 text-white" : "bg-gray-200 text-gray-400"
-                }`}
-              >
-                {step > s ? <Check className="w-3.5 h-3.5" /> : s}
-              </div>
-              {s < 2 && (
-                <div className={`flex-1 h-0.5 ${step > s ? "bg-teal-600" : "bg-gray-200"}`} />
-              )}
-            </React.Fragment>
+      <div className="bg-white border-b px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+        <button onClick={() => (step > 1 ? setStep(step - 1) : navigate(-1))}>
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </button>
+        <div className="flex-1">
+          <p className="font-bold text-gray-900 text-sm">Sell an Item</p>
+          <p className="text-xs text-gray-400">Step {step} of 3</p>
+        </div>
+        {/* Step dots */}
+        <div className="flex gap-1.5">
+          {[1, 2, 3].map((s) => (
+            <div
+              key={s}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                s <= step ? "bg-teal-600" : "bg-gray-200"
+              }`}
+            />
           ))}
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto p-4 space-y-5">
-
-        {/* ── STEP 1: Item details ── */}
+      <div className="max-w-lg mx-auto p-4">
+        {/* ── STEP 1: Details ── */}
         {step === 1 && (
-          <>
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Item Title <span className="text-red-500">*</span>
-              </label>
+          <div className="space-y-4">
+            <h2 className="font-bold text-gray-900 text-lg">Item Details</h2>
+
+            <Field label="Title *">
               <input
                 value={form.title}
-                onChange={set("title")}
-                placeholder="e.g. iPhone 14 Pro 256GB"
-                className={`w-full px-4 py-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500 ${errors.title ? "border-red-400" : "border-gray-300"}`}
+                onChange={(e) => set("title", e.target.value)}
+                placeholder="e.g. iPhone 15 Pro Max 256GB"
                 maxLength={100}
+                className={input}
               />
-              {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
-            </div>
+            </Field>
 
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Category <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={form.category}
-                onChange={set("category")}
-                className={`w-full px-4 py-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white ${errors.category ? "border-red-400" : "border-gray-300"}`}
-              >
-                <option value="">Select a category…</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
-            </div>
-
-            {/* Condition */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Condition <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-1 gap-2">
-                {CONDITIONS.map((c) => (
-                  <label
-                    key={c.value}
-                    className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${
-                      form.condition === c.value
-                        ? "border-teal-500 bg-teal-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="condition"
-                      value={c.value}
-                      checked={form.condition === c.value}
-                      onChange={set("condition")}
-                      className="text-teal-600"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">{c.label}</p>
-                      <p className="text-xs text-gray-500">{c.desc}</p>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Description <span className="text-red-500">*</span>
-              </label>
+            <Field label="Description *">
               <textarea
                 value={form.description}
-                onChange={set("description")}
-                placeholder="Describe your item — age, features, any defects, reason for selling…"
-                rows={5}
-                className={`w-full px-4 py-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none ${errors.description ? "border-red-400" : "border-gray-300"}`}
-                maxLength={2000}
+                onChange={(e) => set("description", e.target.value)}
+                placeholder="Describe your item: condition, reason for selling, accessories included…"
+                rows={4}
+                maxLength={1000}
+                className={`${input} resize-none`}
               />
-              <div className="flex justify-between mt-1">
-                {errors.description
-                  ? <p className="text-red-500 text-xs">{errors.description}</p>
-                  : <span />
-                }
-                <p className="text-xs text-gray-400">{form.description.length}/2000</p>
-              </div>
+              <p className="text-xs text-gray-400 text-right mt-1">
+                {form.description.length}/1000
+              </p>
+            </Field>
+
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Category *">
+                <select
+                  value={form.category}
+                  onChange={(e) => set("category", e.target.value)}
+                  className={input}
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Condition *">
+                <select
+                  value={form.condition}
+                  onChange={(e) => set("condition", e.target.value)}
+                  className={input}
+                >
+                  {CONDITIONS.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </Field>
             </div>
 
-            {/* Images */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Photos (optional — up to 10)
-              </label>
-              <div
-                className={`border-2 border-dashed rounded-2xl p-8 text-center transition-colors ${
-                  dragActive ? "border-teal-500 bg-teal-50" : "border-gray-200"
-                }`}
-                onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-                onDragLeave={() => setDragActive(false)}
-                onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); setDragActive(false); }}
-              >
-                <Camera className="w-10 h-10 mx-auto text-gray-300 mb-2" />
-                <p className="text-sm text-gray-500">Drag photos here or</p>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="mt-2 px-5 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition"
-                >
-                  Browse Photos
-                </button>
+            <Field label="Price (XAF) *">
+              <div className="relative">
                 <input
-                  type="file"
-                  className="hidden"
-                  ref={fileInputRef}
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => e.target.files && handleFiles(e.target.files)}
+                  value={formatPriceDisplay(form.price)}
+                  onChange={(e) =>
+                    set("price", e.target.value.replace(/\D/g, ""))
+                  }
+                  inputMode="numeric"
+                  placeholder="e.g. 50,000"
+                  className={`${input} pr-14`}
+                />
+                <span className="absolute right-3 top-2.5 text-sm text-gray-500 font-semibold">
+                  XAF
+                </span>
+              </div>
+            </Field>
+
+            <Field label="Location *">
+              <input
+                value={form.location}
+                onChange={(e) => set("location", e.target.value)}
+                placeholder="e.g. Bastos, Yaoundé"
+                className={input}
+              />
+            </Field>
+
+            <Field label="WhatsApp / Phone">
+              <input
+                value={form.phone}
+                onChange={(e) => set("phone", e.target.value)}
+                placeholder="+237 6XX XXX XXX"
+                inputMode="tel"
+                className={input}
+              />
+            </Field>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <div
+                onClick={() => set("negotiable", !form.negotiable)}
+                className={`w-11 h-6 rounded-full transition-colors ${
+                  form.negotiable ? "bg-teal-600" : "bg-gray-200"
+                } relative`}
+              >
+                <div
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                    form.negotiable ? "translate-x-5" : ""
+                  }`}
                 />
               </div>
+              <span className="text-sm text-gray-700 font-medium">
+                Price is negotiable
+              </span>
+            </label>
 
-              {images.length > 0 && (
-                <div className="grid grid-cols-4 gap-2 mt-3">
-                  {images.map((img) => (
-                    <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden border">
-                      <img src={img.url} alt="Preview" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(img.id)}
-                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
+            <button
+              onClick={() => step1Valid() && setStep(2)}
+              disabled={!step1Valid()}
+              className="w-full py-3.5 bg-teal-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 hover:bg-teal-700 transition"
+            >
+              Next — Add Photos <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* ── STEP 2: Photos ── */}
+        {step === 2 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-bold text-gray-900 text-lg">Add Photos</h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Up to 6 photos. First photo is the cover.
+              </p>
+            </div>
+
+            {/* Photo grid */}
+            <div className="grid grid-cols-3 gap-2">
+              {previews.map((src, idx) => (
+                <div
+                  key={idx}
+                  className="aspect-square rounded-xl overflow-hidden relative bg-gray-100"
+                >
+                  <img
+                    src={src}
+                    alt={`Photo ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  {idx === 0 && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-[9px] text-center py-0.5 font-bold">
+                      COVER
                     </div>
-                  ))}
+                  )}
+                  <button
+                    onClick={() => removePhoto(idx)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3 text-white" />
+                  </button>
                 </div>
+              ))}
+
+              {photos.length < 6 && (
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-teal-400 transition-colors"
+                >
+                  <Camera className="w-6 h-6 text-gray-400" />
+                  <span className="text-xs text-gray-400">Add</span>
+                </button>
               )}
             </div>
 
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+
+            {photos.length === 0 && (
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="w-full py-10 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center gap-2 hover:border-teal-400 transition-colors"
+              >
+                <Upload className="w-8 h-8 text-gray-400" />
+                <p className="text-sm font-medium text-gray-600">
+                  Tap to upload photos
+                </p>
+                <p className="text-xs text-gray-400">
+                  JPG, PNG, WebP — max 6 photos
+                </p>
+              </button>
+            )}
+
+            <p className="text-xs text-gray-400 text-center">
+              Photos are optional but increase your chances of selling!
+            </p>
+
             <button
-              type="button"
-              onClick={() => { if (validate(1)) setStep(2); }}
-              className="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition-colors"
+              onClick={() => setStep(3)}
+              className="w-full py-3.5 bg-teal-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-teal-700 transition"
             >
-              Continue →
+              Next — Review <ArrowRight className="w-4 h-4" />
             </button>
-          </>
+          </div>
         )}
 
-        {/* ── STEP 2: Price & Location ── */}
-        {step === 2 && (
-          <>
-            {/* Price */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Price (XAF) <span className="text-red-500">*</span>
-              </label>
-              <div className="flex items-center border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-teal-500 border-gray-300">
-                <div className="px-3 py-3 bg-gray-50 border-r border-gray-300 text-sm text-gray-500 font-medium">
-                  XAF
-                </div>
-                <input
-                  type="number"
-                  value={form.price || ""}
-                  onChange={set("price")}
-                  placeholder="e.g. 150000"
-                  min={0}
-                  className="flex-1 px-3 py-3 text-sm outline-none"
-                />
+        {/* ── STEP 3: Review ── */}
+        {step === 3 && (
+          <div className="space-y-4">
+            <h2 className="font-bold text-gray-900 text-lg">Review & Post</h2>
+
+            {/* Preview card */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="h-48 bg-gradient-to-br from-teal-50 to-blue-50 flex items-center justify-center">
+                {previews[0] ? (
+                  <img
+                    src={previews[0]}
+                    alt="Cover"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Camera className="w-12 h-12 text-teal-200" />
+                )}
               </div>
-              {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
-
-              <label className="flex items-center gap-2 mt-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.negotiable}
-                  onChange={toggle("negotiable")}
-                  className="w-4 h-4 text-teal-600 rounded"
-                />
-                <span className="text-sm text-gray-700">Price is negotiable</span>
-              </label>
-            </div>
-
-            {/* City */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                City <span className="text-red-500">*</span>
-              </label>
-              <div className="flex items-center border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-teal-500 border-gray-300">
-                <div className="px-3 py-3 bg-gray-50 border-r border-gray-300">
-                  <MapPin className="w-4 h-4 text-gray-400" />
-                </div>
-                <select
-                  value={form.city}
-                  onChange={set("city")}
-                  className="flex-1 px-3 py-3 text-sm outline-none bg-white"
-                >
-                  <option value="">Select your city…</option>
-                  {CITIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+              <div className="p-4 space-y-1">
+                <p className="text-xs text-gray-400">{form.category}</p>
+                <h3 className="font-bold text-gray-900">{form.title}</h3>
+                <p className="text-teal-600 font-bold text-lg">
+                  {parseInt(form.price || "0", 10).toLocaleString("fr-CM")} XAF
+                  {form.negotiable && (
+                    <span className="ml-2 text-xs text-green-600 font-normal">
+                      (Negotiable)
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-gray-500">{form.location}</p>
+                <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+                  {form.description}
+                </p>
               </div>
-              {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
             </div>
 
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Contact Phone (optional)
-              </label>
-              <input
-                value={form.phone}
-                onChange={set("phone")}
-                placeholder="+237 6XX XXX XXX"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
-
-            {/* Zerm Coins */}
-            <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.acceptsZermCoins}
-                  onChange={toggle("acceptsZermCoins")}
-                  className="w-4 h-4 text-teal-600 rounded"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-teal-900">Accept Zerm Coins</p>
-                  <p className="text-xs text-teal-700">Allow buyers to pay with Bambeh's digital currency</p>
-                </div>
-              </label>
-            </div>
-
-            {/* Error message */}
-            {submitErr && (
+            {error && (
               <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
                 <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-600">{submitErr}</p>
+                <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-              >
-                ← Back
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                {loading ? "Publishing…" : "Publish Listing"}
-              </button>
-            </div>
-          </>
+            <button
+              onClick={handleSubmit}
+              disabled={posting}
+              className="w-full py-4 bg-teal-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-teal-700 transition disabled:opacity-60"
+            >
+              {posting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Posting…
+                </>
+              ) : (
+                <>
+                  <Check className="w-5 h-5" />
+                  Post Listing
+                </>
+              )}
+            </button>
+
+            <p className="text-xs text-gray-400 text-center">
+              Your listing will be visible to all Bambeh users immediately.
+            </p>
+          </div>
         )}
       </div>
     </div>
   );
 }
+
+// ─── Tiny helper components ───────────────────────────────────────────────────
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const input =
+  "w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white";

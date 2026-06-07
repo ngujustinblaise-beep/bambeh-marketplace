@@ -15,6 +15,7 @@ import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw, 
 import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ FEATURED ADS
 
 interface Property {
   id: string;
@@ -176,6 +177,9 @@ export default function Rentals() {
 
         {/* ── LOCATION FILTER ───────────────────────────────────────────── */}
         <LocationFilter onFilterChange={setLocationFilters} />
+
+        {/* ✅ FEATURED ADS STRIP — rentals category only */}
+        <FeaturedAdsStrip category="rentals" showHeader={false} maxVisible={20} />
 
         {/* Loading */}
         {loading && (
