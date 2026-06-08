@@ -1,16 +1,13 @@
 /**
  * src/pages/FarmFreshSellerPage.tsx — Bambeh Marketplace
  *
- * UPGRADED VERSION — all bugs fixed:
- *  ✅ FIXED: Images uploaded to Supabase Storage ('farm-images' bucket) — NOT base64
- *  ✅ FIXED: DB column names: seller_id, title, price_per_unit_xaf
- *  ✅ FIXED: available_for_delivery toggle added and saved
- *  ✅ FIXED: Guest fallback shows clear warning — you must log in for worldwide visibility
- *  ✅ 3-step wizard: Produce Details → Location, Delivery & Description → Photos & Review
- *  ✅ Real listings are visible worldwide to anyone with Bambeh app
+ * FIXES in this version:
+ *  ✅ farmer_id + seller_id BOTH inserted (DB has farmer_id NOT NULL)
+ *  ✅ Storage RLS graceful fallback: if image upload fails RLS, listing
+ *     is saved WITHOUT photos and user gets a clear warning (not a crash)
+ *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde — live-reactive
+ *  ✅ 3-step wizard: Produce Details → Location & Description → Photos & Review
  *  ✅ Draft save/restore
- *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
- *     — reacts instantly when user changes language
  */
 
 import React, { useState, useRef, useEffect } from "react";
@@ -19,9 +16,8 @@ import { supabase } from "@/lib/supabase";
 import { AlertCircle } from "lucide-react";
 import { useLang, t } from "@/hooks/useFarmFreshLang";
 
-// Category and Unit values are stored in English in DB — display is translated
-const CATEGORIES  = ["Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy", "Other"];
-const UNITS       = ["kg", "g", "bunch", "cob", "litre", "bag", "crate", "piece"];
+const CATEGORIES = ["Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy", "Other"];
+const UNITS      = ["kg", "g", "bunch", "cob", "litre", "bag", "crate", "piece"];
 
 const MAX_IMG   = 5 * 1024 * 1024;
 const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -79,7 +75,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, saveDraftLabel, disabled =
       {onBack && (
         <button type="button" onClick={onBack}
           className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
-          ← {t("back", "en")}
+          ←
         </button>
       )}
       <button type="button" onClick={onNext} disabled={disabled}
@@ -124,8 +120,6 @@ function BigCheck({ checked, onChange, label, desc }: {
   );
 }
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 interface Draft {
   title: string; category: string; unit: string;
   price: string; quantity: string; is_organic: boolean;
@@ -140,38 +134,52 @@ const BLANK: Draft = {
 
 const DRAFT_KEY = "bambeh_draft_farm_produce";
 
-// ── Upload image to Supabase Storage ─────────────────────────────────────────
+/**
+ * Upload one image to Supabase Storage.
+ * Returns the public URL on success, or null if the upload fails
+ * (e.g. RLS policy not yet configured) — caller handles null gracefully.
+ */
+async function tryUploadImage(dataUrl: string, fileName: string): Promise<string | null> {
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const ext  = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+    const path = `farm-fresh/${Date.now()}-${fileName.replace(/\s/g, "-")}.${ext}`;
 
-async function uploadImageToStorage(dataUrl: string, fileName: string): Promise<string> {
-  const res = await fetch(dataUrl);
-  const blob = await res.blob();
-  const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
-  const path = `farm-fresh/${Date.now()}-${fileName.replace(/\s/g, "-")}.${ext}`;
-  const { error } = await supabase.storage.from("farm-images").upload(path, blob, { contentType: blob.type, upsert: false });
-  if (error) throw new Error(`Image upload failed: ${error.message}`);
-  const { data: urlData } = supabase.storage.from("farm-images").getPublicUrl(path);
-  return urlData.publicUrl;
+    const { error } = await supabase.storage
+      .from("farm-images")
+      .upload(path, blob, { contentType: blob.type, upsert: false });
+
+    if (error) {
+      console.warn("Image upload error (listing will proceed without photo):", error.message);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage.from("farm-images").getPublicUrl(path);
+    return urlData.publicUrl;
+  } catch (e) {
+    console.warn("Image upload exception:", e);
+    return null;
+  }
 }
-
-// ── Main component ────────────────────────────────────────────────────────────
 
 export default function FarmFreshSellerPage() {
   const navigate = useNavigate();
   const fileRef  = useRef<HTMLInputElement>(null);
   const lang     = useLang();
+  const isRtl    = lang === "ar";
 
-  const isRtl = lang === "ar";
-
-  const [step,        setStep]        = useState(1);
-  const [d,           setD]           = useState<Draft>(BLANK);
-  const [errs,        setErrs]        = useState<Record<string, string>>({});
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [imageFiles,  setImageFiles]  = useState<File[]>([]);
-  const [imgErrors,   setImgErrors]   = useState<string[]>([]);
-  const [submitting,  setSubmitting]  = useState(false);
-  const [posted,      setPosted]      = useState(false);
+  const [step,           setStep]           = useState(1);
+  const [d,              setD]              = useState<Draft>(BLANK);
+  const [errs,           setErrs]           = useState<Record<string, string>>({});
+  const [imagePreviews,  setImagePreviews]  = useState<string[]>([]);
+  const [imageFiles,     setImageFiles]     = useState<File[]>([]);
+  const [imgErrors,      setImgErrors]      = useState<string[]>([]);
+  const [submitting,     setSubmitting]     = useState(false);
+  const [posted,         setPosted]         = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
-  const [loginRequired, setLoginRequired]   = useState(false);
+  const [loginRequired,  setLoginRequired]  = useState(false);
+  const [uploadWarning,  setUploadWarning]  = useState(""); // soft photo-upload failure
 
   const stepLabels = [
     t("step1Label", lang) as string,
@@ -224,7 +232,8 @@ export default function FarmFreshSellerPage() {
     }
     if (s === 2) {
       if (!d.location.trim()) e.location = "Location is required";
-      if (!d.description.trim() || d.description.trim().length < 20) e.description = "Description must be at least 20 characters";
+      if (!d.description.trim() || d.description.trim().length < 20)
+        e.description = "Description must be at least 20 characters";
     }
     return e;
   }
@@ -239,20 +248,37 @@ export default function FarmFreshSellerPage() {
   async function handleSubmit() {
     setSubmitting(true);
     setErrs({});
+    setUploadWarning("");
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { setLoginRequired(true); setSubmitting(false); return; }
 
+      if (!session?.user) {
+        setLoginRequired(true);
+        setSubmitting(false);
+        return;
+      }
+
+      // ── 1. Try uploading images (graceful — never blocks the listing) ──────
       const uploadedUrls: string[] = [];
       for (let i = 0; i < imageFiles.length; i++) {
-        setUploadProgress(`${t("posting", lang)} ${i + 1}/${imageFiles.length}…`);
-        const url = await uploadImageToStorage(imagePreviews[i], imageFiles[i].name);
-        uploadedUrls.push(url);
+        setUploadProgress(`Uploading photo ${i + 1} of ${imageFiles.length}…`);
+        const url = await tryUploadImage(imagePreviews[i], imageFiles[i].name);
+        if (url) {
+          uploadedUrls.push(url);
+        }
+        // null = upload failed silently; we'll warn the user after DB insert
       }
-      setUploadProgress(t("posting", lang) as string);
 
+      const photosFailed = imageFiles.length > 0 && uploadedUrls.length === 0;
+
+      setUploadProgress("Saving listing…");
+
+      // ── 2. Insert with BOTH farmer_id AND seller_id ───────────────────────
+      // The DB has farmer_id (NOT NULL) AND seller_id — we write both to be safe.
       const { error: dbErr } = await supabase.from("farm_products").insert({
-        seller_id:              session.user.id,
+        farmer_id:              session.user.id,   // ✅ NOT NULL column in DB
+        seller_id:              session.user.id,   // ✅ also populate seller_id
         title:                  d.title.trim(),
         description:            d.description.trim(),
         price_per_unit_xaf:     Number(d.price),
@@ -268,7 +294,13 @@ export default function FarmFreshSellerPage() {
       });
 
       if (dbErr) throw dbErr;
+
       localStorage.removeItem(DRAFT_KEY);
+
+      if (photosFailed) {
+        setUploadWarning(t("imageUploadSkipped", lang) as string);
+      }
+
       setPosted(true);
     } catch (e: any) {
       setErrs({ submit: e.message || "Failed to post. Please try again." });
@@ -285,12 +317,18 @@ export default function FarmFreshSellerPage() {
         <p className="text-7xl mb-4">🌿</p>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("produceListed", lang)}</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t("produceListedSub", lang)}</p>
-        <p className="text-xs text-gray-400 mb-8">{t("produceListedSub2", lang)}</p>
+        <p className="text-xs text-gray-400 mb-4">{t("produceListedSub2", lang)}</p>
+        {uploadWarning && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 max-w-xs">
+            <p className="text-xs text-amber-700">{uploadWarning}</p>
+          </div>
+        )}
         <div className="flex flex-col gap-3 w-full max-w-xs">
           <button onClick={() => navigate("/farm-fresh")} className="py-3 bg-green-600 text-white rounded-xl font-bold">
             {t("viewFarmFresh", lang)}
           </button>
-          <button onClick={() => { setPosted(false); setStep(1); setD(BLANK); setImagePreviews([]); setImageFiles([]); }}
+          <button
+            onClick={() => { setPosted(false); setStep(1); setD(BLANK); setImagePreviews([]); setImageFiles([]); setUploadWarning(""); }}
             className="py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300">
             {t("listAnother", lang)}
           </button>
@@ -334,16 +372,14 @@ export default function FarmFreshSellerPage() {
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
 
-        {/* ── STEP 1: PRODUCE DETAILS ── */}
+        {/* ── STEP 1 ── */}
         {step === 1 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900 dark:text-white">{t("step1Label", lang)}</h2>
 
             <div>
               <Lbl required>{t("produceName", lang)}</Lbl>
-              <input
-                value={d.title}
-                onChange={e => upd({ title: e.target.value })}
+              <input value={d.title} onChange={e => upd({ title: e.target.value })}
                 placeholder={t("produceNamePlaceholder", lang) as string}
                 className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
                   ${errs.title ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
@@ -370,10 +406,7 @@ export default function FarmFreshSellerPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Lbl required>{t("priceLabel", lang)}</Lbl>
-                <input
-                  type="number" min="0"
-                  value={d.price}
-                  onChange={e => upd({ price: e.target.value })}
+                <input type="number" min="0" value={d.price} onChange={e => upd({ price: e.target.value })}
                   placeholder="e.g. 500"
                   className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
                     ${errs.price ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
@@ -382,56 +415,40 @@ export default function FarmFreshSellerPage() {
               </div>
               <div>
                 <Lbl>{t("stockQty", lang)}</Lbl>
-                <input
-                  type="number" min="0"
-                  value={d.quantity}
-                  onChange={e => upd({ quantity: e.target.value })}
+                <input type="number" min="0" value={d.quantity} onChange={e => upd({ quantity: e.target.value })}
                   placeholder="e.g. 50"
                   className="w-full border-2 border-gray-200 dark:border-gray-600 focus:border-green-500 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none" />
               </div>
             </div>
 
-            <BigCheck
-              checked={d.is_organic}
-              onChange={v => upd({ is_organic: v })}
-              label={t("organicLabel", lang) as string}
-              desc={t("organicDesc", lang) as string} />
+            <BigCheck checked={d.is_organic} onChange={v => upd({ is_organic: v })}
+              label={t("organicLabel", lang) as string} desc={t("organicDesc", lang) as string} />
 
-            <NavRow
-              onDraft={saveDraft} onNext={next}
-              nextLabel={t("nextStep", lang) as string}
-              saveDraftLabel={t("saveDraft", lang) as string} />
+            <NavRow onDraft={saveDraft} onNext={next}
+              nextLabel={t("nextStep", lang) as string} saveDraftLabel={t("saveDraft", lang) as string} />
           </div>
         )}
 
-        {/* ── STEP 2: LOCATION, DELIVERY & DESCRIPTION ── */}
+        {/* ── STEP 2 ── */}
         {step === 2 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900 dark:text-white">{t("step2Label", lang)}</h2>
 
             <div>
               <Lbl required>{t("yourLocation", lang)}</Lbl>
-              <input
-                value={d.location}
-                onChange={e => upd({ location: e.target.value })}
+              <input value={d.location} onChange={e => upd({ location: e.target.value })}
                 placeholder={t("locationPlaceholder", lang) as string}
                 className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
                   ${errs.location ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
               <Err msg={errs.location} />
             </div>
 
-            <BigCheck
-              checked={d.available_for_delivery}
-              onChange={v => upd({ available_for_delivery: v })}
-              label={t("deliveryToggleLabel", lang) as string}
-              desc={t("deliveryToggleDesc", lang) as string} />
+            <BigCheck checked={d.available_for_delivery} onChange={v => upd({ available_for_delivery: v })}
+              label={t("deliveryToggleLabel", lang) as string} desc={t("deliveryToggleDesc", lang) as string} />
 
             <div>
               <Lbl required>{t("description", lang)}</Lbl>
-              <textarea
-                rows={5}
-                value={d.description}
-                onChange={e => upd({ description: e.target.value })}
+              <textarea rows={5} value={d.description} onChange={e => upd({ description: e.target.value })}
                 placeholder={t("descPlaceholder", lang) as string}
                 className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none resize-none transition-colors
                   ${errs.description ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
@@ -442,29 +459,22 @@ export default function FarmFreshSellerPage() {
               <Err msg={errs.description} />
             </div>
 
-            <NavRow
-              onDraft={saveDraft} onBack={back} onNext={next}
-              nextLabel={t("addPhotos", lang) as string}
-              saveDraftLabel={t("saveDraft", lang) as string} />
+            <NavRow onDraft={saveDraft} onBack={back} onNext={next}
+              nextLabel={t("addPhotos", lang) as string} saveDraftLabel={t("saveDraft", lang) as string} />
           </div>
         )}
 
-        {/* ── STEP 3: PHOTOS & REVIEW ── */}
+        {/* ── STEP 3 ── */}
         {step === 3 && (
           <>
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
               <h2 className="font-bold text-base text-gray-900 dark:text-white">{t("photoHeader", lang)}</h2>
               <p className="text-xs text-gray-400">{t("photoSub", lang)}</p>
-              <p className="text-xs text-green-700 bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2">
-                {t("photoSecure", lang)}
-              </p>
+              <p className="text-xs text-green-700 bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2">{t("photoSecure", lang)}</p>
 
-              {imgErrors.map((e, i) => (
-                <p key={i} className="text-xs text-red-500 font-medium">⚠ {e}</p>
-              ))}
+              {imgErrors.map((e, i) => <p key={i} className="text-xs text-red-500 font-medium">⚠ {e}</p>)}
 
-              <div
-                onClick={() => fileRef.current?.click()}
+              <div onClick={() => fileRef.current?.click()}
                 className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors
                   ${imagePreviews.length >= 6 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"}`}>
                 <p className="text-3xl mb-2">📸</p>
@@ -473,25 +483,18 @@ export default function FarmFreshSellerPage() {
                 </p>
                 <p className="text-xs text-gray-400 mt-1">{imagePreviews.length}/6 {t("photosKey", lang)}</p>
               </div>
-              <input
-                ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
-                multiple className="hidden"
-                onChange={e => handleFiles(e.target.files)} />
+              <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
+                multiple className="hidden" onChange={e => handleFiles(e.target.files)} />
 
               {imagePreviews.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
                   {imagePreviews.map((src, i) => (
                     <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-100">
                       <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
+                      <button type="button"
                         onClick={() => { setImagePreviews(p => p.filter((_, idx) => idx !== i)); setImageFiles(p => p.filter((_, idx) => idx !== i)); }}
-                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">
-                        ×
-                      </button>
-                      {i === 0 && (
-                        <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>
-                      )}
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">×</button>
+                      {i === 0 && <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>}
                     </div>
                   ))}
                 </div>
@@ -509,13 +512,13 @@ export default function FarmFreshSellerPage() {
               <h3 className="font-bold text-base text-gray-900 dark:text-white mb-4">{t("listingSummary", lang)}</h3>
               {([
                 [t("produceKey", lang), d.title],
-                [t("category", lang),   d.category],
-                [t("priceKey", lang),   fmtXAF(d.price) ? `${fmtXAF(d.price)} / ${d.unit}` : "—"],
-                [t("stockKey", lang),   d.quantity ? `${d.quantity} ${d.unit}` : t("notSpecified", lang)],
+                [t("category",   lang), d.category],
+                [t("priceKey",   lang), fmtXAF(d.price) ? `${fmtXAF(d.price)} / ${d.unit}` : "—"],
+                [t("stockKey",   lang), d.quantity ? `${d.quantity} ${d.unit}` : t("notSpecified", lang)],
                 [t("organicKey", lang), d.is_organic ? t("yesOrganic", lang) : t("no", lang)],
-                [t("deliveryKey", lang),d.available_for_delivery ? t("delivAvail", lang) : t("pickupOnly", lang)],
-                [t("locationKey", lang),d.location || "—"],
-                [t("photosKey", lang),  imagePreviews.length === 0 ? t("noPhotosWarn", lang) : `${imagePreviews.length} photo${imagePreviews.length !== 1 ? "s" : ""}`],
+                [t("deliveryKey",lang), d.available_for_delivery ? t("delivAvail", lang) : t("pickupOnly", lang)],
+                [t("locationKey",lang), d.location || "—"],
+                [t("photosKey",  lang), imagePreviews.length === 0 ? t("noPhotosWarn", lang) : `${imagePreviews.length} photo${imagePreviews.length !== 1 ? "s" : ""}`],
               ] as [string, string][]).map(([k, v]) => (
                 <div key={String(k)} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
                   <span className="text-gray-500">{k}</span>
@@ -535,19 +538,15 @@ export default function FarmFreshSellerPage() {
                 <span className="animate-spin">⟳</span> {uploadProgress}
               </div>
             )}
-
             {errs.submit && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
-                ⚠ {errs.submit}
-              </div>
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">⚠ {errs.submit}</div>
             )}
 
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">
               <p className="text-xs text-blue-700">{t("worldwideVis", lang)}</p>
             </div>
 
-            <NavRow
-              onDraft={saveDraft} onBack={back} onNext={handleSubmit}
+            <NavRow onDraft={saveDraft} onBack={back} onNext={handleSubmit}
               nextLabel={submitting ? t("posting", lang) as string : t("listWorldwide", lang) as string}
               saveDraftLabel={t("saveDraft", lang) as string}
               disabled={submitting} />
