@@ -621,7 +621,8 @@ export default function App() {
                           <Route path="/services/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Service Details"><ServiceDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           <Route path="/rentals/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Rental Details"><RentalDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           <Route path="/vehicles/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Vehicle Details"><VehicleDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
-                          <Route path="/exchange/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Exchange Details"><ExchangeItemDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          {/* ✅ FIX: require="user" not "subscription" — exchange detail visible to all logged-in users */}
+                          <Route path="/exchange/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Exchange Details"><ExchangeItemDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
 
                           {/* ── 7. USER PAGES ─────────────────────────────── */}
                           <Route path="/profile" element={<MainLayout><AuthGate require="user"><Profile /></AuthGate></MainLayout>} />
