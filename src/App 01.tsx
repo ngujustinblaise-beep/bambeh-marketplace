@@ -541,6 +541,21 @@ export default function App() {
     initializeCapacitor();
     initializeAnalytics();
     logDevBanner();
+
+    // ✅ FIX: Clear welcome flag on new account creation so welcome screen shows
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const createdAt      = session.user.created_at;
+        const lastSignIn     = session.user.last_sign_in_at;
+        // If created_at and last_sign_in_at are within 10 seconds → brand new account
+        const isNewAccount   = createdAt && lastSignIn &&
+          Math.abs(new Date(createdAt).getTime() - new Date(lastSignIn).getTime()) < 10_000;
+        if (isNewAccount) {
+          localStorage.removeItem('Bambeh_welcome_shown');
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
