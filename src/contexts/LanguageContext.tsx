@@ -597,4 +597,5 @@ export function useLanguage(): LanguageContextType {
   return context;
 }
 
+export { LanguageContext };
 export default LanguageContext;
