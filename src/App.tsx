@@ -541,6 +541,11 @@ export default function App() {
     initializeCapacitor();
     initializeAnalytics();
     logDevBanner();
+    // Fire-and-forget: mark any past-deadline jobs as expired on app open
+    // (backup for the hourly cron in case of cron lag)
+    import("@/services/jobs.service").then(({ cleanupExpiredJobs }) => {
+      void cleanupExpiredJobs();
+    }).catch(() => { /* non-critical */ });
   }, []);
 
   return (
@@ -610,7 +615,7 @@ export default function App() {
                           <Route path="/exchange/offer/:id" element={<MainLayout><AuthGate require="user"><ExchangeOfferPage /></AuthGate></MainLayout>} />
 
                           {/* ── 6. DETAIL PAGES ───────────────────────────── */}
-                          <Route path="/jobs/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Job Details"><JobDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          <Route path="/jobs/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Job Details"><JobDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           {/* ✅ FIX: No AuthGate — marketplace items visible to all users including guests */}
                           <Route path="/marketplace/:id" element={<MainLayout><RouteErrorBoundary routeName="Item Details"><MarketplaceItemDetails /></RouteErrorBoundary></MainLayout>} />
                           <Route path="/services/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Service Details"><ServiceDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
