@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/EditMarketplaceListing.tsx — Bambeh Marketplace
  * FIXED: Was a stub. Now loads the listing from Supabase and saves edits back.
  */
@@ -7,11 +7,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CATEGORIES  = ['Electronics','Fashion','Furniture','Appliances','Books','Sports','Food','Beauty','Vehicles','Other'];
 const CONDITIONS  = ['New','Like New','Good','Fair','Poor'];
 
 export default function EditMarketplaceListing() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { id }    = useParams<{ id: string }>();
   const navigate  = useNavigate();
 

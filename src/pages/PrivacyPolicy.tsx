@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PrivacyPolicy.tsx — Bambeh Marketplace
  * ---------------------------------------------------------------------------
  * Play Store / App Store compliant — June 2026
@@ -18,6 +18,7 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Section {
   id: string;

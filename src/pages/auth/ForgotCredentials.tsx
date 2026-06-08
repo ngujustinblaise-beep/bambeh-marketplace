@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate,Link}from'react-router-dom';
 import{ArrowLeft,Mail,Phone,User,Check,AlertCircle,Eye,EyeOff}from'lucide-react';
@@ -6,6 +8,8 @@ type Mode='lookup'|'security'|'success';
 type IdentifierType='email'|'phone';
 
 export default function ForgotCredentials(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[mode,setMode]=useState<Mode>('lookup');
   const[identifierType,setIdentifierType]=useState<IdentifierType>('email');

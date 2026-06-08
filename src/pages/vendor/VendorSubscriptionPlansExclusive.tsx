@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR SUBSCRIPTION PLANS EXCLUSIVE - VENDOR-ONLY PAGE
  * ROUTE: /vendor/manage-plan
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import BambehLogo from '@/assets/images/bambeh-logo.png';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES & INTERFACES
@@ -184,6 +185,8 @@ const getTierConfig = (tier: string | undefined) => {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export default function VendorSubscriptionPlansExclusive() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [vendor, setVendor] = useState<VendorData | null>(null);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly');
@@ -776,7 +779,7 @@ export default function VendorSubscriptionPlansExclusive() {
                         <div className="relative">
                           <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             <span className="text-white/60">+237</span>
-                            <div className="w-px h-6 bg-white/20" />
+                            <div className="w-px h-6 bg-white/20"/>
                           </div>
                           <input type="tel" value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
@@ -847,7 +850,7 @@ export default function VendorSubscriptionPlansExclusive() {
                         <span className="text-white/70">Plan Cost</span>
                         <span className="text-white font-bold text-xl">{Math.round(price / 100)} ZC</span>
                       </div>
-                      <div className="h-px bg-white/10 my-4" />
+                      <div className="h-px bg-white/10 my-4"/>
                       <div className="flex items-center justify-between">
                         <span className="text-white font-semibold">Remaining</span>
                         <span className={`font-bold ${zermBalance - Math.round(price / 100) >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
@@ -878,7 +881,7 @@ export default function VendorSubscriptionPlansExclusive() {
                         <span className="text-white/60">Billing</span>
                         <span className="text-white">{billingPeriod === 'monthly' ? 'Monthly' : 'Annual'}</span>
                       </div>
-                      <div className="h-px bg-white/10 my-2" />
+                      <div className="h-px bg-white/10 my-2"/>
                       <div className="flex justify-between font-semibold">
                         <span className="text-white">Total</span>
                         <span className="text-teal-400 text-lg">{formatPrice(price)} XAF</span>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Orders.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/Orders.tsx
  *
@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Package, MapPin, Clock, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Order {
   id: string;
@@ -35,6 +36,8 @@ const SAMPLE_ORDERS: Order[] = [
 
 // ── Status colour helper ──────────────────────────────────────────────────────
 function statusStyle(status: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   switch (status.toLowerCase()) {
     case "delivered":      return "bg-green-100 text-green-700";
     case "in transit":     return "bg-orange-100 text-orange-700";

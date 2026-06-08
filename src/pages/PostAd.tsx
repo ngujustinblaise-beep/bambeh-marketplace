@@ -1,7 +1,11 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Megaphone}from'lucide-react';
 export default function PostAd(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[form,setForm]=useState({title:'',description:'',budget:'',duration:'7',contact:'',category:'General'});
   const[done,setDone]=useState(false);

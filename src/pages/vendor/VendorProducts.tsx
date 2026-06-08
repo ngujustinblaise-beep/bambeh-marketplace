@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Plus,Search,Package,Eye,Edit3,Trash2,ToggleLeft,ToggleRight,Filter}from'lucide-react';
@@ -13,6 +15,8 @@ const SAMPLE:Product[]=[
 ];
 
 export default function VendorProducts(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[products,setProducts]=useState<Product[]>(SAMPLE);
   const[search,setSearch]=useState('');

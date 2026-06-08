@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/GroupBuying.tsx — Bambeh Marketplace
  *
  * FIXED / NEW in this version:
@@ -18,6 +18,7 @@ import {
   ChevronRight, Zap, TrendingDown, Info, Copy, MessageCircle,
   X, Plus, Shield, Lock, ArrowRight, Gift, AlertCircle,
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -222,6 +223,8 @@ interface CreateGroupModalProps {
 }
 
 function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const [name,        setName]        = useState('');
   const [description, setDescription] = useState('');
   const [category,    setCategory]    = useState('Electronics');
@@ -286,7 +289,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
 
         {/* Progress bar */}
         <div className="w-full h-1.5 bg-gray-100">
-          <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(step / 3) * 100}%` }} />
+          <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(step / 3) * 100}%` }}/>
         </div>
 
         <div className="p-5 space-y-4">
@@ -509,7 +512,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
                   className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"
                 >
                   {saving ? (
-                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Creating...</>
+                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> Creating...</>
                   ) : (
                     <><Gift className="w-4 h-4" /> Create Deal!</>
                   )}
@@ -639,7 +642,7 @@ const GroupDealCard = ({ deal, onJoin, onShare }: {
         ) : (
           <div className="w-full h-full flex items-center justify-center text-6xl">{deal.image}</div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"/>
         <div className="absolute top-3 left-3">
           <span className="bg-blue-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Users className="w-3 h-3" /> Group Deal
@@ -715,7 +718,7 @@ const GroupDealCard = ({ deal, onJoin, onShare }: {
           </div>
           <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"
-              style={{ width: `${progressPct}%` }} />
+              style={{ width: `${progressPct}%` }}/>
           </div>
           <div className="flex justify-between text-xs text-gray-400 mt-0.5">
             <span>0</span><span>Max: {deal.maxBuyers}</span>

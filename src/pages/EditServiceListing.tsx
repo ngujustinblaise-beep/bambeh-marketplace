@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/EditServiceListing.tsx — Bambeh Marketplace
  *
  * BUG FIX v2:
@@ -14,11 +14,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Wrench, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CATEGORIES  = ['Plumbing', 'Electrical', 'Cleaning', 'Carpentry', 'IT & Tech', 'Tutoring', 'Photography', 'Catering', 'Transport', 'Beauty', 'Other'];
 const PRICE_TYPES = ['fixed', 'hourly', 'daily', 'negotiable'];
 
 export default function EditServiceListing() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
 

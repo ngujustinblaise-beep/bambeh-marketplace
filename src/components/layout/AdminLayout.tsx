@@ -1,4 +1,4 @@
-import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+﻿import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface NavItem {
   label: string;
@@ -34,6 +35,8 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function AdminLayout() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);

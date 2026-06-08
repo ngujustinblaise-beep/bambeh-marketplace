@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, CreditCard, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface PaymentSettings { mtn_momo_number:string; orange_money_number:string; bank_name:string; bank_account_number:string; bank_account_name:string; preferred_method:string; notchpay_email:string; }
 const defaultSettings: PaymentSettings = { mtn_momo_number:"", orange_money_number:"", bank_name:"", bank_account_number:"", bank_account_name:"", preferred_method:"", notchpay_email:"" };
 
 export default function VendorSettingsPayment() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [settings, setSettings] = useState<PaymentSettings>(defaultSettings);

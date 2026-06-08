@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR SUBSCRIPTION PAYMENT PAGE
  * © 2025 Bambeh. All rights reserved.
@@ -11,6 +11,7 @@ import {
   Lock, Star, Zap, Crown, AlertCircle, Loader2, Receipt,
   Download, Copy, Check, Clock, BadgeCheck, Sparkles, TrendingUp
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface SubscriptionPlan {
   id: string;
@@ -364,7 +365,7 @@ Support: support@bambeh.cm
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <span className="text-white/60">+237</span>
-                    <div className="w-px h-6 bg-white/20" />
+                    <div className="w-px h-6 bg-white/20"/>
                   </div>
                   <input type="tel" value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
@@ -432,7 +433,7 @@ Support: support@bambeh.cm
                     <span className="text-white/60">Discount</span>
                     <span className="text-emerald-400">-0 XAF</span>
                   </div>
-                  <div className="h-px bg-white/10" />
+                  <div className="h-px bg-white/10"/>
                   <div className="flex justify-between items-center">
                     <span className="text-white font-semibold">Total</span>
                     <div className="text-right">

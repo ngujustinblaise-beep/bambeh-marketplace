@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FlashDealDetail.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -25,6 +25,7 @@ import {
   Copy, Check, MessageCircle, X,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Safe BambehImage wrapper ──────────────────────────────────────────────
 // Falls back to plain <img> if the custom component is not available
@@ -66,6 +67,8 @@ interface FlashDeal {
 // ─── Countdown hook ─────────────────────────────────────────────────────────
 
 function useCountdown(endsAt: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const calcRemaining = useCallback(() => {
     const ts = new Date(endsAt).getTime();
     if (Number.isNaN(ts)) return { hours: 0, minutes: 0, seconds: 0, expired: true };
@@ -127,7 +130,7 @@ function ShareSheet({ url, title, onClose }: { url: string; title: string; onClo
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="bg-white rounded-t-2xl w-full max-w-lg p-5 pb-8">
-        <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+        <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"/>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900 flex items-center gap-2">
             <Share2 className="w-4 h-4 text-teal-600" /> Share this deal
@@ -392,7 +395,7 @@ const FlashDealDetail: React.FC = () => {
           <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
-                fillPercent >= 80 ? 'bg-red-500' : 'bg-teal-500'
+                fillPercent>= 80 ? 'bg-red-500' : 'bg-teal-500'
               }`}
               style={{ width: `${fillPercent}%` }}
             />

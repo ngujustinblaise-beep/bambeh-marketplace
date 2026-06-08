@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/TrackOrder.tsx
  * Bambeh Marketplace — Track a Specific Order
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -8,6 +8,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Package, ArrowLeft, RefreshCw, CheckCircle, Clock, Truck, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface OrderDetail {
   id: string;

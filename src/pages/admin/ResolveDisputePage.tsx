@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/admin/ResolveDisputePage.tsx
  * Bambeh Marketplace — Admin Dispute Resolution
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Scale, Search, AlertTriangle, CheckCircle, Clock, XCircle, RefreshCw, ChevronDown, MessageSquare, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type DisputeStatus = "open" | "under_review" | "resolved_buyer" | "resolved_seller" | "closed";
 
@@ -35,6 +36,8 @@ const STATUS_CFG: Record<DisputeStatus, { label: string; color: string; icon: Re
 };
 
 function DisputeBadge({ status }: { status: DisputeStatus }) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const cfg = STATUS_CFG[status];
   const Icon = cfg.icon;
   return (

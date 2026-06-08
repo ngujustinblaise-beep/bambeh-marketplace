@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/AutoMessaging.tsx
  * Bambeh Marketplace — Vendor Auto-Messaging
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -7,6 +7,7 @@
 import React, { useState, useCallback } from "react";
 import { MessageCircle, Plus, Trash2, Edit2, ArrowLeft, Save, ToggleRight, ToggleLeft, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface AutoMessage {
   id: string;

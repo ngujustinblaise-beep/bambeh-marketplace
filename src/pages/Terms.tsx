@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS PAGE
  * Accessible from footer and menu
  * Uses official TermsContent component
@@ -7,8 +7,11 @@
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TermsContent from '@/components/TermsContent';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function Terms() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
 
   return (

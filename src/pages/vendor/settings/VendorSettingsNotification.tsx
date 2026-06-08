@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Bell, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface NotifSettings { new_order:boolean; order_status_change:boolean; new_message:boolean; new_review:boolean; low_stock:boolean; payment_received:boolean; promotion_alerts:boolean; platform_updates:boolean; email_notifications:boolean; sms_notifications:boolean; push_notifications:boolean; }
 const defaultSettings: NotifSettings = { new_order:true, order_status_change:true, new_message:true, new_review:true, low_stock:true, payment_received:true, promotion_alerts:false, platform_updates:false, email_notifications:true, sms_notifications:false, push_notifications:true };
 
 function Toggle({label,desc,value,onChange}:{label:string;desc?:string;value:boolean;onChange:(v:boolean)=>void}) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return (
     <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
       <div className="flex-1 mr-4"><p className="text-sm font-medium text-gray-800">{label}</p>{desc&&<p className="text-xs text-gray-500 mt-0.5">{desc}</p>}</div>

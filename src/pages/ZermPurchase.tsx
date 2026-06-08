@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ZermPurchase.tsx  —  Bambeh Marketplace
  * FILE LOCATION: src/pages/ZermPurchase.tsx
  *
@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap, Check, CheckCircle, Shield } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import CamPayWidget from '@/components/payment/CamPayWidget';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ── Coin packages ─────────────────────────────────────────────────────────────
 const PACKAGES = [
@@ -25,6 +26,8 @@ const PACKAGES = [
 ];
 
 export default function ZermPurchase() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [selected,        setSelected]       = useState<string>('popular');
   const [userId,          setUserId]         = useState<string | null>(null);

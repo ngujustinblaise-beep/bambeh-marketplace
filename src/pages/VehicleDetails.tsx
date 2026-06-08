@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/VehicleDetails.tsx — Bambeh Marketplace
  *
  * FIXES IN THIS VERSION:
@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface VehicleRecord {
@@ -79,6 +80,8 @@ const DEMO_MAP: Record<string, VehicleRecord> = {
 };
 
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!expiresAt) return false;
   const diff = new Date(expiresAt).getTime() - Date.now();
   return diff > 0 && diff <= days * 86_400_000;

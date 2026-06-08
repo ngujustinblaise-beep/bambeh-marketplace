@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/BambehAIChatbot.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -18,6 +18,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Bot, User, Loader2, Trash2, Globe } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL ||
@@ -52,6 +53,8 @@ interface Message {
 // ─── Source pills ──────────────────────────────────────────────────────────
 
 function SourcePills({ sources }: { sources: { title: string; url: string }[] }) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!sources || sources.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-1 mt-2">
@@ -82,7 +85,7 @@ function TypingIndicator() {
       <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border">
         <div className="flex gap-1 items-center">
           {[0, 150, 300].map(delay => (
-            <div
+            <div 
               key={delay}
               className="w-2 h-2 bg-teal-400 rounded-full animate-bounce"
               style={{ animationDelay: `${delay}ms` }}
@@ -275,8 +278,7 @@ export default function BambehAIChatbot() {
                 m.role === 'user'
                   ? 'bg-teal-600 text-white rounded-tr-sm'
                   : 'bg-white shadow-sm border rounded-tl-sm'
-              }`}
-            >
+              }`}>
               <p className="text-sm whitespace-pre-wrap leading-relaxed">{m.content}</p>
               {m.role === 'assistant' && m.sources && m.sources.length > 0 && (
                 <SourcePills sources={m.sources} />
@@ -294,7 +296,7 @@ export default function BambehAIChatbot() {
         ))}
 
         {loading && <TypingIndicator />}
-        <div ref={endRef} />
+        <div  ref={endRef} />
       </div>
 
       {/* Quick suggestions */}

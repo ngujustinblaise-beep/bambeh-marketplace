@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * Chat.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -51,6 +51,7 @@ import { useSupabaseAuth } from '@/providers/SupabaseAuthProvider';
 import { isSubscribed } from '@/utils/subscriptionUtils';
 import { logger } from '@/utils/logger';
 import { AvatarImage, BambehImage } from '@/components/ui/BambehImage';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
 
@@ -114,6 +115,8 @@ const BOOKING_EMOJI: Record<string, string> = {
 };
 
 function getBookingEmoji(content: string): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   for (const emoji of Object.keys(BOOKING_EMOJI)) {
     if (content.startsWith(emoji)) return emoji;
   }
@@ -219,8 +222,7 @@ const MessageBubble: React.FC<{
               isMine
                 ? 'bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-br-sm shadow-teal-200 shadow-md'
                 : 'bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100'
-            }`}
-          >
+            }`}>
             {message.content}
           </div>
         )}
@@ -761,7 +763,7 @@ export default function ChatPage() {
         {isLoadingMessages ? (
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
+              <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin"/>
               <p className="text-sm text-gray-400">Loading messages…</p>
             </div>
           </div>
@@ -800,7 +802,7 @@ export default function ChatPage() {
             })}
           </>
         )}
-        <div ref={messagesEndRef} />
+        <div  ref={messagesEndRef} />
       </div>
 
       {/* Scroll to bottom button */}

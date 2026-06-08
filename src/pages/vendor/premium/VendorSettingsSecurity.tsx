@@ -1,13 +1,16 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Shield, Lock, Eye, EyeOff, CheckCircle, AlertCircle, Smartphone, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface PasswordForm { current_password:string; new_password:string; confirm_password:string; }
 const defaultForm: PasswordForm = { current_password:"", new_password:"", confirm_password:"" };
 
 export default function VendorSettingsSecurity() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user, signOut } = useAuthStore();
   const [form, setForm] = useState<PasswordForm>(defaultForm);

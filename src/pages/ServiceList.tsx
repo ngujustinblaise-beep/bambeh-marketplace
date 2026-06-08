@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * SERVICE LIST PAGE — BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/listings/ServiceList.tsx
@@ -12,6 +12,7 @@ import { Star, MapPin, Clock, DollarSign, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { setMainOrigin } from '@/utils/navigationOrigin';
 import { BambehImage } from '@/components/ui/BambehImage';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Service {
   id: string; title: string; category?: string; description?: string;
@@ -67,9 +68,9 @@ const ServiceList = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-white rounded-2xl p-4 shadow-sm animate-pulse">
-              <div className="h-48 bg-gray-200 rounded-xl mb-4" />
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-4 bg-gray-100 rounded w-1/2" />
+              <div className="h-48 bg-gray-200 rounded-xl mb-4"/>
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"/>
+              <div className="h-4 bg-gray-100 rounded w-1/2"/>
             </div>
           ))}
         </div>

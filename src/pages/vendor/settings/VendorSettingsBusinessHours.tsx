@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const DAYS = [{key:"monday",label:"Monday"},{key:"tuesday",label:"Tuesday"},{key:"wednesday",label:"Wednesday"},{key:"thursday",label:"Thursday"},{key:"friday",label:"Friday"},{key:"saturday",label:"Saturday"},{key:"sunday",label:"Sunday"}] as const;
 type DayKey = typeof DAYS[number]["key"];
@@ -14,6 +15,8 @@ for (let h=0;h<24;h++) for (const m of ["00","30"]) TIMES.push(`${String(h).padS
 const fmt = (t:string) => { const [h,m]=t.split(":"); const n=parseInt(h); return `${n%12||12}:${m} ${n>=12?"PM":"AM"}`; };
 
 export default function VendorSettingsBusinessHours() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [hours, setHours] = useState<BusinessHours>(defaultHours());

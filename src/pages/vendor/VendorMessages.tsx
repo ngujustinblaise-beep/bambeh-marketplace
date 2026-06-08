@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/VendorMessages.tsx
  * Bambeh Marketplace — Vendor Messages Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import ChatList from "@/advanced-features/chat/ChatList";
 import ChatInterface from "@/components/Chatbot/chat/ChatInterface";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const VendorMessages: React.FC = () => {
   const navigate = useNavigate();

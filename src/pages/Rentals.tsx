@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Rentals.tsx — Bambeh Marketplace
  *
  * FIXES IN THIS VERSION:
@@ -26,6 +26,7 @@ import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Property {
@@ -109,6 +110,8 @@ const TYPES  = ["All Types", "Apartment", "Villa", "Studio", "House", "Office", 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 /** Returns true if a listing expires within `days` days */
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!expiresAt) return false;
   const diff = new Date(expiresAt).getTime() - Date.now();
   return diff > 0 && diff <= days * 86_400_000;

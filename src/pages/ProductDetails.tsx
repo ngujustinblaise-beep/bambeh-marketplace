@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ProductDetails.tsx — Bambeh Marketplace
  *
  * FIXED:
@@ -19,10 +19,13 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { SAMPLE_MARKETPLACE } from '@/data/sampleData';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const fmt = (n: number) => n.toLocaleString('fr-CM');
 
 export default function ProductDetails() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { id }     = useParams<{ id: string }>();
   const navigate   = useNavigate();
   const { addToCart, toggleFavorite, isFavorite } = useCart();
@@ -120,7 +123,7 @@ export default function ProductDetails() {
         ) : (
           <div className="w-full h-full flex items-center justify-center text-6xl text-gray-300">🛍️</div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"/>
 
         {/* DEMO badge */}
         <div className="absolute top-3 left-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full shadow">

@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Star, TrendingUp, Eye, Clock, Plus, AlertCircle, CheckCircle, Package, Zap } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface FeaturedListing{id:string;product_id:string;product_name:string;product_image:string;featured_since:string;featured_until:string;impressions:number;clicks:number;plan:"basic"|"standard"|"premium";status:"active"|"expired"|"pending";}
 interface AvailableProduct{id:string;name:string;image_url:string;price:number;category:string;}
 const PLANS={basic:{label:"Basic",price:2500,duration:7,color:"text-blue-400",bg:"bg-blue-500/10",border:"border-blue-500/20",badge:"bg-blue-500/20"},standard:{label:"Standard",price:5000,duration:14,color:"text-purple-400",bg:"bg-purple-500/10",border:"border-purple-500/20",badge:"bg-purple-500/20"},premium:{label:"Premium",price:10000,duration:30,color:"text-yellow-400",bg:"bg-yellow-500/10",border:"border-yellow-500/20",badge:"bg-yellow-500/20"}};
 
 export default function FeaturedListings(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const{user}=useAuthStore();
   const[featured,setFeatured]=useState<FeaturedListing[]>([]);

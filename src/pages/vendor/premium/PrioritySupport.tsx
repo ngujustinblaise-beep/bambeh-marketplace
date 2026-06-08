@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Headphones, MessageSquare, Clock, CheckCircle, AlertCircle, ChevronRight, Plus, Star, Zap, Shield } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type TicketStatus="open"|"in_progress"|"resolved"|"closed";
 type TicketPriority="low"|"medium"|"high"|"urgent";
@@ -13,6 +14,8 @@ const PRIORITY={low:{label:"Low",color:"text-gray-400"},medium:{label:"Medium",c
 const CATEGORIES=[{value:"billing" as const,label:"Billing & Payments"},{value:"technical" as const,label:"Technical Issue"},{value:"account" as const,label:"Account & Profile"},{value:"orders" as const,label:"Orders & Deliveries"},{value:"products" as const,label:"Products & Listings"},{value:"other" as const,label:"Other"}];
 
 export default function PrioritySupport() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/HelpGuides.tsx — Bambeh Marketplace
  * FIXED: Was a stub. Now a full help center with categories and guides.
  */
@@ -9,6 +9,7 @@ import {
   ArrowLeft, BookOpen, ShoppingBag, Briefcase, Shield,
   CreditCard, Zap, ChevronRight, Search, MessageCircle
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Guide {
   id: string;
@@ -152,6 +153,8 @@ const CATEGORIES: Category[] = [
 ];
 
 export default function HelpGuides() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate   = useNavigate();
   const [search,   setSearch]   = useState('');
   const [selected, setSelected] = useState<Guide | null>(null);

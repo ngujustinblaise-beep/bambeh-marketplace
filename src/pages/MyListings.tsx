@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/MyListings.tsx — Bambeh Marketplace
  *
  * Seller's personal dashboard showing ALL their listings across every category.
@@ -19,6 +19,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -38,6 +39,8 @@ interface MyListing {
 // ── Icon helper ────────────────────────────────────────────────────────────────
 
 function ListingIcon({ type }: { type: string }) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const cls = "w-5 h-5";
   if (type === "farm")        return <Leaf       className={`${cls} text-green-600`} />;
   if (type === "rental")      return <Home       className={`${cls} text-orange-500`} />;

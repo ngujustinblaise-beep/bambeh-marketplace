@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import type {
   PaginatedItemsResponse,
@@ -6,9 +6,12 @@ import type {
   MarketplaceItem,
   ItemFilters,
 } from "../types/items";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // Use a named function — avoids the <T> jsx-ambiguity in .tsx files
 function emptyPage<T extends object>(): PaginatedItemsResponse<T> {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return { data: [], total: 0, page: 1, pageSize: 3, hasMore: false };
 }
 

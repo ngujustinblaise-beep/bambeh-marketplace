@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  *
@@ -31,6 +31,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ NEW
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -70,6 +71,8 @@ const APP_URL  = "https://bambeh.com";
 const APP_NAME = "Bambeh — The Pulse of African Commerce";
 
 function buildShareText(t: (k: string) => string): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const translated = t("share.appMessage");
   if (translated && translated !== "share.appMessage") return translated;
   return "🛒 Check out Bambeh — The Pulse of African Commerce! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee!";
@@ -94,7 +97,7 @@ function ShareMenu({
 }) {
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose}/>
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl p-5 pb-8 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-gray-900 text-base flex items-center gap-2">
@@ -240,7 +243,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 {label}
               </span>
               {isActive && (
-                <div className="absolute bottom-0 w-10 h-0.5 bg-teal-600 rounded-t-full" />
+                <div className="absolute bottom-0 w-10 h-0.5 bg-teal-600 rounded-t-full"/>
               )}
             </button>
           );

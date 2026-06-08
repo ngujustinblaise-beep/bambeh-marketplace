@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/Jobs/PostJobListing.tsx
  * Bambeh Marketplace — Post Job Listing Form
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -8,6 +8,7 @@ import React, { useState, useCallback } from "react";
 import { Briefcase, MapPin, DollarSign, Calendar, Users, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { createJob } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface PostJobListingProps {
   userId: string;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ChecklistItem {
   id: string;
@@ -28,6 +29,8 @@ interface ChecklistItem {
 }
 
 export default function VendorOnboardingChecklist() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [profile, setProfile] = useState<any>(null);
@@ -147,7 +150,7 @@ export default function VendorOnboardingChecklist() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"/>
       </div>
     );
   }
@@ -194,8 +197,7 @@ export default function VendorOnboardingChecklist() {
           <div className="w-full bg-green-800/40 rounded-full h-3">
             <div
               className="bg-white rounded-full h-3 transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
+              style={{ width: `${progress}%` }}/>
           </div>
           {progress === 100 && (
             <div className="mt-3 flex items-center gap-2 bg-white/20 rounded-lg px-3 py-2">
@@ -218,8 +220,7 @@ export default function VendorOnboardingChecklist() {
                   item.completed
                     ? "bg-green-100 text-green-600"
                     : "bg-gray-100 text-gray-400"
-                }`}
-              >
+                }`}>
                 {item.completed ? (
                   <CheckCircle className="w-5 h-5" />
                 ) : (

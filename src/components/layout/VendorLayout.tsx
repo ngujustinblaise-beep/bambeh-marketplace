@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VendorLayout.tsx — PREMIUM REDESIGN
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -30,6 +30,7 @@ import {
   CheckSquare,
   Boxes,
 } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const BambehLogo = ({
   size = 40,
@@ -197,8 +198,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ backgroundColor: "#f8f9fc" }}
-    >
+      style={{ backgroundColor: "#f8f9fc" }}>
       {/* FIXED HEADER */}
       <header
         className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${
@@ -292,8 +292,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
                   >
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow"
-                      style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}
-                    >
+                      style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
                       {vendorInitial}
                     </div>
                     <ChevronDown
@@ -329,7 +328,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
                 const newGroup = i > 0 && navTabs[i - 1].group !== tab.group;
                 return (
                   <React.Fragment key={tab.path}>
-                    {newGroup && <div className="w-px h-4 bg-gray-200 mx-1" />}
+                    {newGroup && <div className="w-px h-4 bg-gray-200 mx-1"/>}
                     <Link
                       to={tab.path}
                       className={`flex items-center gap-1.5 px-3 h-full text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
@@ -362,8 +361,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
         {isMobileMenuOpen && (
           <div
             className="lg:hidden bg-white border-t border-gray-100 max-h-[70vh] overflow-y-auto"
-            style={{ zIndex: 9999, boxShadow: "0 20px 60px rgba(124,58,237,0.15)" }}
-          >
+            style={{ zIndex: 9999, boxShadow: "0 20px 60px rgba(124,58,237,0.15)" }}>
             <div className="px-4 py-3">
               <form onSubmit={handleSearch} className="mb-3">
                 <div className="relative">
@@ -438,16 +436,14 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
           top: "59px",
           height: "3px",
           background: "linear-gradient(to right,#d97706,#fbbf24,#f59e0b,#fbbf24,#d97706)",
-        }}
-      />
+        }}/>
       <div
         className="hidden lg:block fixed z-[59] left-0 right-0"
         style={{
           top: "99px",
           height: "3px",
           background: "linear-gradient(to right,#d97706,#fbbf24,#f59e0b,#fbbf24,#d97706)",
-        }}
-      />
+        }}/>
 
       {/* MAIN CONTENT */}
       <main className="flex-1 pt-[62px] lg:pt-[102px] pb-16 md:pb-8 min-h-screen">
@@ -530,12 +526,10 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
           />
           <div
             className="fixed right-4 w-60 rounded-2xl shadow-2xl overflow-hidden"
-            style={{ top: "62px", zIndex: 9999, border: "1px solid rgba(124,58,237,0.15)" }}
-          >
+            style={{ top: "62px", zIndex: 9999, border: "1px solid rgba(124,58,237,0.15)" }}>
             <div
               className="px-4 py-3"
-              style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}
-            >
+              style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
               <p className="font-bold text-white text-sm truncate">{vendorName}</p>
               <p className="text-xs text-purple-200 mt-0.5">✦ Vendor Account</p>
             </div>

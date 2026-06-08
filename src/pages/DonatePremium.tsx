@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DonatePremium.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/DonatePremium.tsx
  *
@@ -64,6 +64,8 @@ function detectOperator(phone: string): "mtn" | "orange" | null {
 }
 
 export default function DonatePremium() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const { t }     = useLanguage();
 
@@ -594,6 +596,7 @@ FUNCTION 2: campay-status
 ────────────────────────────────────────────────────────────────────────────────
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CAMPAY_BASE = "https://campay.net/api";
 const CORS = {

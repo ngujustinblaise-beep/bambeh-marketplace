@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/help/VideoTutorials.tsx — Bambeh Marketplace
  * FIXED: Was a stub (emoji + title). Now a full video tutorial index.
  */
@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, BookOpen, ShoppingBag, Briefcase, Home, Car, Shield, Zap } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Tutorial {
   id:       string;
@@ -44,6 +45,8 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function VideoTutorials() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const [category, setCategory] = useState('All');
   const [playing,  setPlaying]  = useState<string | null>(null);

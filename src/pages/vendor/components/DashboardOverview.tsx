@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/components/DashboardOverview.tsx
  * Bambeh Marketplace — Vendor Dashboard Overview
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getVendorAnalytics } from "@/services/vendor.service";
 import type { VendorAnalyticsSnapshot } from "@/types/vendor.monetization.types";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface DashboardOverviewProps {
   vendorId: string;
@@ -49,7 +50,7 @@ const KpiCard: React.FC<KpiCardProps> = ({
       {trend !== undefined && (
         <div
           className={`flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
-            trend >= 0 ? "bg-green-50 text-green-600" : "bg-red-50 text-red-500"
+            trend>= 0 ? "bg-green-50 text-green-600" : "bg-red-50 text-red-500"
           }`}
         >
           {trend >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
@@ -136,7 +137,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       {loading && (
         <div className="grid grid-cols-2 gap-3 animate-pulse">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-28 bg-gray-100 rounded-2xl" />
+            <div  key={i} className="h-28 bg-gray-100 rounded-2xl" />
           ))}
         </div>
       )}

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/VendorPublicProfile.tsx — Bambeh Marketplace
  * FIXED: Reads real vendor data from Supabase vendor_profiles table.
  * Also loads vendor's active listings from the listings table.
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import SellerResponseBadge from '@/components/vendor/SellerResponseBadge';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface VendorProfile {
   id: string;
@@ -108,10 +109,10 @@ const VendorPublicProfile: React.FC = () => {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto py-6 px-4 space-y-4">
-        <div className="h-32 bg-gray-100 rounded-2xl animate-pulse" />
-        <div className="h-20 bg-gray-100 rounded-2xl animate-pulse" />
+        <div className="h-32 bg-gray-100 rounded-2xl animate-pulse"/>
+        <div className="h-20 bg-gray-100 rounded-2xl animate-pulse"/>
         <div className="grid grid-cols-2 gap-3">
-          {[1,2,3,4].map(i => <div key={i} className="h-40 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[1,2,3,4].map(i => <div  key={i} className="h-40 bg-gray-100 rounded-xl animate-pulse" />)}
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const VerificationStatus: React.FC = () => (
   <div className="min-h-screen bg-gray-50 p-6">

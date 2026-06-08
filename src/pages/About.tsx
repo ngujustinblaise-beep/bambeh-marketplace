@@ -1,12 +1,15 @@
-/**
+﻿/**
  * ABOUT US PAGE - COMPLETE & BEAUTIFUL
  * The Bambeh Chronicle with Professional Stats
  */
 
 import { Link } from 'react-router-dom';
 import { Crown, Heart, Shield, Star, Sparkles, Award, Target, Users } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function About() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
       <div className="container mx-auto px-4 py-8">
@@ -26,7 +29,7 @@ export default function About() {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-teal-600 blur-2xl opacity-20 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-teal-600 blur-2xl opacity-20 animate-pulse"/>
                 <Crown className="w-20 h-20 text-purple-600 relative"
                        style={{ filter: 'drop-shadow(0 0 20px rgba(168, 85, 247, 0.4))' }} />
               </div>
@@ -41,9 +44,9 @@ export default function About() {
             
             {/* Decorative Line */}
             <div className="flex items-center justify-center gap-2 mt-6">
-              <div className="h-px w-16 bg-gradient-to-r from-transparent to-purple-400" />
+              <div className="h-px w-16 bg-gradient-to-r from-transparent to-purple-400"/>
               <Sparkles className="w-6 h-6 text-purple-500" />
-              <div className="h-px w-16 bg-gradient-to-l from-transparent to-teal-400" />
+              <div className="h-px w-16 bg-gradient-to-l from-transparent to-teal-400"/>
             </div>
           </div>
 

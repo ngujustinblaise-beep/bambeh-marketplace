@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/JobsCategory.tsx
  * Bambeh Marketplace — Jobs Category Page (HARDENED)
  *
@@ -16,6 +16,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Loader2, BriefcaseIcon, Share2 } from "lucide-react";
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Category Map ─────────────────────────────────────────────────────────────
 const CATEGORY_MAP: Record<string, { label: string; dbValue: string; emoji: string }> = {
@@ -34,6 +35,8 @@ const CATEGORY_MAP: Record<string, { label: string; dbValue: string; emoji: stri
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtSalary(min?: number, max?: number): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!min && !max) return "Salary not specified";
   const fmt = (n: number) =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` :

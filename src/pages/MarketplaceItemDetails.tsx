@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
  *
  * COMPLETE REWRITE — June 2026
@@ -33,6 +33,7 @@ import {
   Eye, Clock, Zap, MessageCircle, Star,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ListingDetail {
@@ -80,6 +81,8 @@ const CONDITION_COLOR: Record<string, string> = {
 
 // ─── Cart Helpers ─────────────────────────────────────────────────────────────
 function readCart(): CartItem[] {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
   catch { return []; }
 }

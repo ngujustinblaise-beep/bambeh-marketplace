@@ -1,6 +1,7 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const VendorDashboard: React.FC = () => {
   const navigate = useNavigate();

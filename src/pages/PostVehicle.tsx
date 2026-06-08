@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/PostVehicle.tsx — Bambeh Marketplace
  *
  * PHONE INPUT CHANGE:
@@ -34,6 +34,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import AfricanPhoneInput from '@/components/AfricanPhoneInput';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface VehicleFormData {
   title: string;

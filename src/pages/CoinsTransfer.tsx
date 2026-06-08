@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/CoinsTransfer.tsx — Bambeh Marketplace
  * FIXED: Real Zerm Coins transfer form reading/writing from Supabase.
  * Was a stub. Lets users transfer coins to another user by their email.
@@ -8,10 +8,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap, Send, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const QUICK_AMOUNTS = [50, 100, 200, 500];
 
 export default function CoinsTransfer() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [recipientEmail, setRecipientEmail] = useState('');
   const [amount,          setAmount]         = useState('');

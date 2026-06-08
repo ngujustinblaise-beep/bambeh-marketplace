@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,TrendingUp,Lightbulb,Target,BarChart2,Star,Package,Users,DollarSign,ChevronRight}from'lucide-react';
@@ -23,6 +25,8 @@ const METRICS:Metric[]=[
 const impactColor={high:'bg-red-50 text-red-700',medium:'bg-orange-50 text-orange-700',low:'bg-gray-50 text-gray-600'};
 
 export default function VendorRecommendations(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[filter,setFilter]=useState<'all'|'high'|'medium'|'low'>('all');
   const filtered=RECOMMENDATIONS.filter(r=>filter==='all'||r.impact===filter);

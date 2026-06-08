@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ShareMyVoice.tsx — Bambeh Marketplace
  *
  * NEW PAGE: User experience feedback form.
@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Star, Send, CheckCircle, MessageSquare, Smile, Frown, Meh } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type Mood = "love" | "good" | "okay" | "bad" | null;
 type Category = "general" | "buying" | "selling" | "payment" | "support" | "bug";
@@ -31,6 +32,8 @@ const MOOD_CONFIG = [
 ];
 
 export default function ShareMyVoice() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [mood,      setMood]      = useState<Mood>(null);
   const [rating,    setRating]    = useState(0);
@@ -272,7 +275,7 @@ export default function ShareMyVoice() {
             className="w-full bg-gradient-to-r from-teal-600 to-teal-700 disabled:from-gray-300 disabled:to-gray-300 disabled:text-gray-500 text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-md shadow-teal-200 transition-all"
           >
             {submitting ? (
-              <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Sending...</>
+              <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/> Sending...</>
             ) : (
               <><Send className="w-5 h-5" /> Send Feedback</>
             )}

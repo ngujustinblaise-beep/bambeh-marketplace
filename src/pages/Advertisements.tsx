@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * ADVERTISEMENTS PAGE - ENHANCED VERSION 2.0
  * FILE LOCATION: src/pages/Advertisements.tsx
@@ -32,6 +32,7 @@ import {
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { isSubscribed } from '@/utils/subscriptionUtils';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -104,6 +105,8 @@ interface PaymentOption {
 // ============================================================================
 
 export default function Advertisements() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -646,7 +649,7 @@ export default function Advertisements() {
         {/* Ads List */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"/>
           </div>
         ) : ads.length === 0 ? (
           <Card className="text-center py-12">
@@ -1016,7 +1019,7 @@ export default function Advertisements() {
               <Button variant="outline" onClick={() => setShowPaymentDialog(false)} disabled={processingPayment}>{t('common.cancel', 'Cancel')}</Button>
               <Button onClick={handlePayment} disabled={processingPayment} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700" size="lg">
                 {processingPayment ? (
-                  <><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />Processing...</>
+                  <><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"/>Processing...</>
                 ) : (
                   <><CreditCard className="w-5 h-5 mr-2" />{t('ads.payNow', 'Pay Now')} - {selectedAd?.price.toLocaleString()} XAF</>
                 )}

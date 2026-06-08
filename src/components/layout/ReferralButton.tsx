@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReferralButton.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/ReferralButton.tsx  (or wherever you had it)
  *
@@ -11,8 +11,11 @@
 
 import { useState } from 'react';
 import { Share2, Copy, Check } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function ReferralButton() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const [copied, setCopied] = useState(false);
 
   // Generate a referral code once and keep it stable

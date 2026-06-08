@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/TontineCreate.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -20,6 +20,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const FREQUENCY_OPTIONS = [
   { value: 'weekly',  label: 'Weekly',  desc: 'Contributions every week' },
@@ -27,6 +28,8 @@ const FREQUENCY_OPTIONS = [
 ] as const;
 
 export default function TontineCreate() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const redirectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

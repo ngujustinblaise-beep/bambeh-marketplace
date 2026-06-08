@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/payment/PaymentSuccess.tsx
  * Shown after a successful payment verification.
  */
@@ -7,6 +7,7 @@ import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { CheckCircle2, Receipt, ShoppingBag, Home } from 'lucide-react';
 import { formatXAF } from '@/services/payment/taxCalculator';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const PaymentSuccess: React.FC = () => {
   const { state } = useLocation();

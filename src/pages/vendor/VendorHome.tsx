@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{BarChart2,Package,MessageSquare,Star,TrendingUp,Plus,Bell,Settings,Eye,ShoppingBag,Users,DollarSign}from'lucide-react';
@@ -12,6 +14,8 @@ const sampleListings:Listing[]=[
 ];
 
 export default function VendorHome(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[vendor,setVendor]=useState<any>(null);
   const[listings,setListings]=useState<Listing[]>(sampleListings);

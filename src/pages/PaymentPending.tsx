@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const PaymentPending: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -54,7 +55,7 @@ const PaymentPending: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 justify-center text-sm text-gray-400 mb-6">
-          <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce" />
+          <div className="w-2 h-2 rounded-full bg-yellow-400 animate-bounce"/>
           <span>Checking status every 5 seconds ({Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')} elapsed)</span>
         </div>
 

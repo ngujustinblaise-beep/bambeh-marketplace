@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ListProperty.tsx — Bambeh Marketplace
  *
  * REBUILT to match PostJobPage gold-standard pattern:
@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { REGIONS, CITIES_BY_REGION } from "@/data/Locations";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const STEP_LABELS   = ["Property Info", "Details & Amenities", "Photos", "Pricing & Location", "Review & Post"];
 const PROP_TYPES    = ["Apartment", "House", "Villa", "Studio", "Room", "Duplex", "Townhouse", "Penthouse", "Office", "Shop", "Land", "Other"];
@@ -27,6 +28,8 @@ const RENT_PERIODS  = ["Monthly", "Yearly", "Weekly", "Daily"];
 const MAX_IMG   = 5 * 1024 * 1024;
 const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
 function validateImg(f: File): string | null {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!IMG_TYPES.includes(f.type)) return "Only JPG, PNG or WebP images allowed.";
   if (f.size > MAX_IMG) return `Too large (max 5 MB). Got ${(f.size/1024/1024).toFixed(1)} MB.`;
   return null;
@@ -39,10 +42,10 @@ function StepBar({ step, total }: { step: number; total: number }) {
         {STEP_LABELS.map((_, i) => (
           <React.Fragment key={i}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-200
-              ${step > i + 1 ? "bg-teal-500 text-white" : step === i + 1 ? "bg-teal-600 text-white ring-4 ring-teal-100 dark:ring-teal-900" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}>
+              ${step> i + 1 ? "bg-teal-500 text-white" : step === i + 1 ? "bg-teal-600 text-white ring-4 ring-teal-100 dark:ring-teal-900" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}>
               {step > i + 1 ? (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12"/></svg>) : i + 1}
             </div>
-            {i < total - 1 && <div className={`flex-1 h-1 rounded-full transition-colors ${step > i + 1 ? "bg-teal-500" : "bg-gray-200 dark:bg-gray-700"}`} />}
+            {i < total - 1 && <div className={`flex-1 h-1 rounded-full transition-colors ${step> i + 1 ? "bg-teal-500" : "bg-gray-200 dark:bg-gray-700"}`} />}
           </React.Fragment>
         ))}
       </div>

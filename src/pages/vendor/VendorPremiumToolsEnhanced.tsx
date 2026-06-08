@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VENDOR PREMIUM TOOLS - REBUILT Feb 17, 2026
  * Clean rebuild. No broken imports. All tiers supported.
  * VendorLayout provides the header - this page is content only.
@@ -13,6 +13,7 @@ import {
   MessageSquare, ChevronRight, Lock, Sparkles, TrendingUp,
   Check, Search, Package, Eye
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 /* ── Tier configuration (supports ALL possible tier values) ── */
 const TIERS: Record<string, { name: string; level: number; color: string; bg: string }> = {
@@ -28,6 +29,8 @@ const TIERS: Record<string, { name: string; level: number; color: string; bg: st
 const DEFAULT_TIER = TIERS.starter;
 
 function getTier(key: string | undefined): { name: string; level: number; color: string; bg: string } {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!key) return DEFAULT_TIER;
   return TIERS[key.toLowerCase()] || DEFAULT_TIER;
 }
@@ -193,7 +196,7 @@ export default function VendorPremiumToolsEnhanced() {
 
           return (
             <div key={tool.id} className={`bg-white rounded-2xl border-2 overflow-hidden transition-all hover:shadow-lg ${hasAccess ? 'border-gray-100 hover:border-teal-200' : 'border-gray-100 opacity-85'}`}>
-              <div className={`h-1.5 bg-gradient-to-r ${tool.gradient}`} />
+              <div className={`h-1.5 bg-gradient-to-r ${tool.gradient}`}/>
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center shadow-lg`}>

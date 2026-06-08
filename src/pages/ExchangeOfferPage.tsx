@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ExchangeOfferPage.tsx — Bambeh Marketplace
  * FIXED:
  *  ✅ Prevents item owner from making an offer on their own item
@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send, Info, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CONDITIONS: { value: string; label: string }[] = [
   { value: 'new',      label: 'New'       },
@@ -21,6 +22,8 @@ const CONDITIONS: { value: string; label: string }[] = [
 ];
 
 export default function ExchangeOfferPage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
 

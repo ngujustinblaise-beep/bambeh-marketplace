@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/PostJobPage.tsx
  * Bambeh Marketplace — 5-step Job Posting flow
  *
@@ -23,6 +23,7 @@ import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/Locations";
 import { supabase } from "@/lib/supabase";
 import { createJob } from "@/services/jobs.service";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Constants ─────────────────────────────────────────────────────────────
 const JOB_TYPES     = ["Full-time","Part-time","Contract","Internship","Temporary","Remote","Freelance"];
@@ -63,6 +64,8 @@ const BLANK: Draft = {
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function wordCount(t: string): number {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return t.trim() === "" ? 0 : t.trim().split(/\s+/).length;
 }
 
@@ -91,14 +94,14 @@ function StepBar({ step }: { step: number }) {
       <div className="flex items-center gap-0.5 mb-2">
         {STEP_LABELS.map((_, i) => (
           <React.Fragment key={i}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-200 ${step > i + 1 ? "bg-teal-500 text-white" : step === i + 1 ? "bg-teal-600 text-white ring-4 ring-teal-100 dark:ring-teal-900" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-200 ${step> i + 1 ? "bg-teal-500 text-white" : step === i + 1 ? "bg-teal-600 text-white ring-4 ring-teal-100 dark:ring-teal-900" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}>
               {step > i + 1 ? (
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               ) : i + 1}
             </div>
-            {i < 4 && <div className={`flex-1 h-1 rounded-full transition-colors duration-300 ${step > i + 1 ? "bg-teal-500" : "bg-gray-200 dark:bg-gray-700"}`} />}
+            {i < 4 && <div className={`flex-1 h-1 rounded-full transition-colors duration-300 ${step> i + 1 ? "bg-teal-500" : "bg-gray-200 dark:bg-gray-700"}`} />}
           </React.Fragment>
         ))}
       </div>
@@ -168,7 +171,7 @@ function UrgentKnob({ on, onChange, label }: { on: boolean; onChange: (v: boolea
     <button type="button" onClick={() => onChange(!on)}
       className={`flex items-center gap-3 px-4 py-3 rounded-2xl border-2 transition-all ${on ? "border-red-400 bg-red-50 dark:bg-red-900/20" : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"}`}>
       <div className={`relative w-12 h-6 rounded-full transition-colors ${on ? "bg-red-500" : "bg-gray-300 dark:bg-gray-600"}`}>
-        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${on ? "left-7" : "left-1"}`} />
+        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${on ? "left-7" : "left-1"}`}/>
       </div>
       <span className={`font-semibold text-sm ${on ? "text-red-600 dark:text-red-400" : "text-gray-500"}`}>{on ? `🔥 ${label}` : label}</span>
     </button>
@@ -363,7 +366,7 @@ export default function PostJobPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full"/>
       </div>
     );
   }

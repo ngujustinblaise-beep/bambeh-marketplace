@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface CachedListing {
   id: string;
@@ -13,6 +14,8 @@ const CACHE_KEY = "Bambeh_offline_listings";
 const SYNCED_KEY = "Bambeh_offline_lastSynced";
 
 function loadCache(): { listings: CachedListing[]; lastSynced: number | null } {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   try {
     return {
       listings: JSON.parse(localStorage.getItem(CACHE_KEY) || "[]") as CachedListing[],
@@ -59,8 +62,7 @@ const OfflineModePage: React.FC = () => {
           (isOnline
             ? "bg-green-50 border border-green-200"
             : "bg-orange-50 border border-orange-200")
-        }
-      >
+        }>
         <div className="flex-1">
           <p
             className={

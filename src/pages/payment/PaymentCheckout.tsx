@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PaymentCheckout.tsx  —  Bambeh Marketplace
  * FILE LOCATION: src/pages/payment/PaymentCheckout.tsx
  *
@@ -24,6 +24,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import CamPayWidget from '@/components/payment/CamPayWidget';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface CartItem {
   id: string;
@@ -45,6 +46,8 @@ interface CheckoutState {
 }
 
 export default function PaymentCheckout() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const location  = useLocation();
   const state     = (location.state as CheckoutState) ?? null;

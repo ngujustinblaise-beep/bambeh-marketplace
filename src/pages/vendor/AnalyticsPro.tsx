@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/AnalyticsPro.tsx
  * Bambeh Marketplace — Vendor Analytics Pro Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -11,6 +11,7 @@ import VendorAnalytics from "@/components/vendor/VendorAnalytics";
 import DashboardOverview from "@/pages/vendor/components/DashboardOverview";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const AnalyticsPro: React.FC = () => {
   const navigate = useNavigate();

@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const VendorVerification: React.FC = () => (
   <div className="min-h-screen flex flex-col items-center justify-center p-6

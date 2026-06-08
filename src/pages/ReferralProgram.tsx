@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{Gift,Users,Copy,Check,Share2,TrendingUp}from'lucide-react';
@@ -12,6 +14,8 @@ const TIERS=[
 ];
 
 export default function ReferralProgram(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[code]=useState('BAMBEH-'+Math.random().toString(36).substr(2,6).toUpperCase());
   const[copied,setCopied]=useState(false);

@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * HOME PAGE - BAMBEH MARKETPLACE
@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FeaturedAd {
@@ -63,6 +64,8 @@ interface RecentListing {
 }
 
 export default function Home() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const [featuredAds, setFeaturedAds] = useState<FeaturedAd[]>([]);
   const [recentListings, setRecentListings] = useState<RecentListing[]>([]);
 

@@ -1,10 +1,11 @@
-/**
+﻿/**
  * src/pages/MeetSafelyPage.tsx — Bambeh Marketplace
  * FIXED: Was a stub (emoji + title). Now a full safety guide.
  */
 
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, MapPin, Users, Phone, AlertTriangle, CheckCircle, Camera } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const TIPS = [
   {
@@ -75,6 +76,8 @@ const SAFE_SPOTS = [
 ];
 
 export default function MeetSafelyPage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
 
   return (

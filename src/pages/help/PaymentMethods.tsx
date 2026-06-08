@@ -1,11 +1,14 @@
-/**
+﻿/**
  * PAYMENT METHODS PAGE
  */
 
 import { Link } from "react-router-dom";
 import { CreditCard, Coins, Smartphone, DollarSign } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function PaymentMethods() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">

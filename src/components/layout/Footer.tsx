@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Footer.tsx — Bambeh Marketplace
  * ---------------------------------------------------------------------------
  * FIXED in this version:
@@ -29,8 +29,11 @@ import {
   Home as HomeIcon,
   Car,
 } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function Footer() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const currentYear = new Date().getFullYear();
 
   return (

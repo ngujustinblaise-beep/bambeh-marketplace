@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR SETTINGS ENHANCED - COMPREHENSIVE SETTINGS PAGE
  * FILE LOCATION: src/pages/vendor/VendorSettingsEnhanced.tsx
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 import BambehLogo from '@/assets/images/bambeh-logo.png';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface VendorData {
   id: string;
@@ -45,6 +46,8 @@ const settingsSections: SettingsSection[] = [
 ];
 
 export default function VendorSettingsEnhanced() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [vendor, setVendor] = useState<VendorData | null>(null);
   const [activeSection, setActiveSection] = useState('account');
@@ -141,7 +144,7 @@ export default function VendorSettingsEnhanced() {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-600 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-600 mx-auto mb-4"/>
           <p className="text-gray-600">Loading settings...</p>
         </div>
       </div>
@@ -306,7 +309,7 @@ export default function VendorSettingsEnhanced() {
                       checked={formData[item.key as keyof typeof formData] as boolean}
                       onChange={(e) => handleInputChange(item.key, e.target.checked)}
                       className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600" />
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"/>
                   </label>
                 </div>
               ))}
@@ -329,7 +332,7 @@ export default function VendorSettingsEnhanced() {
                       checked={formData[item.key as keyof typeof formData] as boolean}
                       onChange={(e) => handleInputChange(item.key, e.target.checked)}
                       className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600" />
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"/>
                   </label>
                 </div>
               ))}
@@ -417,7 +420,7 @@ export default function VendorSettingsEnhanced() {
                   <input type="checkbox" checked={formData.twoFactorEnabled}
                     onChange={(e) => handleInputChange('twoFactorEnabled', e.target.checked)}
                     className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600" />
+                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"/>
                 </label>
               </div>
             </div>
@@ -436,7 +439,7 @@ export default function VendorSettingsEnhanced() {
                   <input type="checkbox" checked={formData.loginAlerts}
                     onChange={(e) => handleInputChange('loginAlerts', e.target.checked)}
                     className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"/>
                 </label>
               </div>
             </div>
@@ -537,7 +540,7 @@ export default function VendorSettingsEnhanced() {
                   <input type="checkbox" checked={formData.darkMode}
                     onChange={(e) => handleInputChange('darkMode', e.target.checked)}
                     className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-800" />
+                  <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-800"/>
                 </label>
               </div>
             </div>
@@ -634,7 +637,7 @@ export default function VendorSettingsEnhanced() {
                   className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 flex items-center gap-2 shadow-lg"
                 >
                   {saving ? (
-                    <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />Saving...</>
+                    <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"/>Saving...</>
                   ) : (
                     <><Save className="w-5 h-5" />Save Changes</>
                   )}

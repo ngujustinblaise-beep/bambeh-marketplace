@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Cart.tsx — Bambeh Marketplace
  *
  * FIXED:
@@ -20,6 +20,7 @@ import {
 import { useCart } from '@/contexts/CartContext';
 import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from '@/hooks/useCamPay';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -27,6 +28,8 @@ const BAMBEH_FEE_RATE = 0.03;
 const GOV_TAX_RATE    = 0.00002;
 
 function calcFees(subtotal: number) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const appFee = Math.round(subtotal * BAMBEH_FEE_RATE);
   const govTax = Math.round(subtotal * GOV_TAX_RATE);
   return { appFee, govTax, total: subtotal + appFee + govTax };
@@ -521,7 +524,7 @@ export default function Cart() {
               tooltip="A 3% platform fee that keeps Bambeh running and supports local sellers." />
             <FeeRow label="Government Tax (0.002%)" amount={`${fmt(govTax)} XAF`} muted
               tooltip="Statutory 0.002% digital tax levied by the Government of Cameroon." />
-            <div className="border-t border-gray-100 my-3" />
+            <div className="border-t border-gray-100 my-3"/>
             <FeeRow label="Total" amount={`${fmt(total)} XAF`} bold />
           </div>
 

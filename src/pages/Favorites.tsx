@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Favorites.tsx — Bambeh Marketplace  DEFINITIVE VERSION
  * Reads bambeh_favorites from localStorage — catches hearts from ALL sections.
  * Filter tabs: All / Items / Jobs / Farm / Vehicles / Services / Rentals
@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trash2, ShoppingBag, Loader2, Briefcase, Wrench, Car, Leaf, Zap, Home } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface FavItem { id:string; title:string; price?:string|number; image?:string; category:string; type:string; location?:string; savedAt:string; }
 
@@ -18,6 +19,8 @@ const TYPE_ICONS: Record<string,React.ReactNode> = { marketplace:<ShoppingBag cl
 const TABS = [{key:"all",label:"All"},{key:"marketplace",label:"Items"},{key:"job",label:"Jobs"},{key:"service",label:"Services"},{key:"farm-fresh",label:"Farm"},{key:"vehicle",label:"Vehicles"},{key:"rental",label:"Rentals"},{key:"deal",label:"Deals"}];
 
 function fmtPrice(p:string|number|undefined){if(!p)return null;if(typeof p==="number")return`${p.toLocaleString("fr-CM")} XAF`;return String(p);}
+  const lang = useLang();
+  const isRtl = lang === "ar";
 
 export default function Favorites(){
   const navigate=useNavigate();

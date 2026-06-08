@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/TontineDetail.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -22,6 +22,7 @@ import {
   Clock, Loader2, AlertCircle, Plus, Shield,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Group {
   id:              string;
@@ -60,6 +61,8 @@ const DEMO_GROUP: Group = {
 };
 
 function isUUID(s: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 

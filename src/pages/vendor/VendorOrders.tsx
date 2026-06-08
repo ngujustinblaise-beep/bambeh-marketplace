@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Package,Clock,Check,X,ChevronRight,Search,Filter}from'lucide-react';
@@ -21,6 +23,8 @@ const STATUS_CONFIG={
 };
 
 export default function VendorOrders(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[orders,setOrders]=useState<Order[]>(SAMPLE);
   const[filter,setFilter]=useState<'all'|Order['status']>('all');

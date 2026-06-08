@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * ADMIN DASHBOARD - ADMIN PANEL INTEGRATION EXAMPLE
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,6 +23,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminPanelADVANCED from '@/advanced-features/admin-panel/AdminPanel-ADVANCED';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface AdminUser {
   id: string;
@@ -32,6 +33,8 @@ interface AdminUser {
 }
 
 export default function AdminDashboard() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,7 +108,7 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-900 to-blue-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"/>
           <p className="text-white font-semibold">Verifying admin access...</p>
         </div>
       </div>

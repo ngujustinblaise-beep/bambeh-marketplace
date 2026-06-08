@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SubscriptionPlans.tsx  —  Bambeh Marketplace
  * FILE LOCATION: src/pages/SubscriptionPlans.tsx
  *
@@ -20,6 +20,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import CamPayWidget from '@/components/payment/CamPayWidget';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ── Plan definitions ──────────────────────────────────────────────────────────
 const PLANS = [

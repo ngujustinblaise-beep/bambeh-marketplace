@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Jobs.tsx — Bambeh Marketplace
  *
  * FIXES APPLIED:
@@ -20,6 +20,7 @@ import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ FEATURED ADS
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -51,6 +52,8 @@ const SAVED_KEY = "bambeh_saved_jobs";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function timeAgo(dateStr: string): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
   if (diff === 0) return "Today";
   if (diff === 1) return "1d ago";

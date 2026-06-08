@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SellerProfilePage.tsx — BAMBEH MARKETPLACE
  * Route: /seller/:id
  * © 2026 Bambeh Marketplace
@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, MapPin, CheckCircle, MessageSquare, Share2, Copy, MessageCircle, ShieldCheck, Clock, UserPlus } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Listing { id: string; title: string; price: number; image: string; category: string; condition?: string }
 interface Review { id: string; reviewerName: string; reviewerAvatar: string; rating: number; comment: string; date: string; itemBought?: string }
@@ -230,7 +231,7 @@ const SellerProfilePage: React.FC = () => {
                       <span className="text-xs text-gray-500 w-4">{star}</span>
                       <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                       <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-amber-400 rounded-full" style={{ width: `${seller.ratingDistribution[i]}%` }} />
+                        <div className="h-full bg-amber-400 rounded-full" style={{ width: `${seller.ratingDistribution[i]}%` }}/>
                       </div>
                       <span className="text-xs text-gray-400 w-7 text-right">{seller.ratingDistribution[i]}%</span>
                     </div>

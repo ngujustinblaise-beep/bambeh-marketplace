@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/GroupBuyingDetail.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -24,8 +24,11 @@ import {
   ArrowLeft, Users, Check, ShoppingCart, Copy, Share2, Loader2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 function isUUID(s: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
@@ -286,8 +289,7 @@ export default function GroupBuyingDetail() {
             <div className="w-full bg-white/20 rounded-full h-2.5">
               <div
                 className="bg-white h-2.5 rounded-full transition-all duration-500"
-                style={{ width: `${pct}%` }}
-              />
+                style={{ width: `${pct}%` }}/>
             </div>
             <p className="text-xs text-teal-100 mt-2">
               {spotsLeft > 0

@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const VendorSettingsAccountProfile: React.FC = () => (
   <div className="p-6">

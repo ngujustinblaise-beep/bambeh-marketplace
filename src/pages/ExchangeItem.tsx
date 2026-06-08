@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ExchangeItem.tsx — Bambeh Marketplace
  * FIXED:
  *  ✅ Column mismatch: user_id (not owner_id), location (not city)
@@ -19,6 +19,7 @@ import {
   ChevronLeft, ChevronRight, Clock, Flame,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ExchangeItemData {
   id:                    string;
@@ -50,6 +51,8 @@ const CONDITION_COLORS: Record<string, string> = {
 };
 
 function daysUntil(iso: string): number {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
 }
 

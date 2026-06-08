@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FarmFreshSellerPage.tsx — Bambeh Marketplace
  *
  * FIXES in this version:
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { AlertCircle } from "lucide-react";
 import { useLang, t } from "@/hooks/useFarmFreshLang";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CATEGORIES = ["Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy", "Other"];
 const UNITS      = ["kg", "g", "bunch", "cob", "litre", "bag", "crate", "piece"];
@@ -23,6 +24,8 @@ const MAX_IMG   = 5 * 1024 * 1024;
 const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function validateImg(f: File): string | null {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!IMG_TYPES.includes(f.type)) return "Only JPG, PNG or WebP images allowed.";
   if (f.size > MAX_IMG) return `File too large (max 5 MB). Got ${(f.size / 1024 / 1024).toFixed(1)} MB.`;
   return null;
@@ -313,7 +316,7 @@ export default function FarmFreshSellerPage() {
   // ── Success screen ────────────────────────────────────────────────────────
   if (posted) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4 text-center" dir={isRtl ? "rtl" : "ltr"}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4 text-center">
         <p className="text-7xl mb-4">🌿</p>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("produceListed", lang)}</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t("produceListedSub", lang)}</p>
@@ -340,7 +343,7 @@ export default function FarmFreshSellerPage() {
   // ── Login required screen ─────────────────────────────────────────────────
   if (loginRequired) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center" dir={isRtl ? "rtl" : "ltr"}>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
         <AlertCircle className="w-14 h-14 text-orange-500 mb-4" />
         <h2 className="text-xl font-bold text-gray-900 mb-2">{t("loginRequired", lang)}</h2>
         <p className="text-sm text-gray-500 mb-2">{t("loginRequiredSub", lang)}</p>
@@ -359,7 +362,7 @@ export default function FarmFreshSellerPage() {
 
   // ── Wizard ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900" dir={isRtl ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="sticky top-0 z-10 bg-green-600 text-white px-4 py-4 flex items-center gap-3 shadow">
         <button onClick={() => step === 1 ? navigate(-1) : back()}
           className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">

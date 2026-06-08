@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/SellerRatingPage.tsx — Bambeh Marketplace
  * FIXED: Was a stub. Now a real star rating form that saves reviews.
  */
@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, CheckCircle, Loader2 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const supabase = createClient(
   (import.meta as any).env?.VITE_SUPABASE_URL || '',
@@ -14,6 +15,8 @@ const supabase = createClient(
 );
 
 export default function SellerRatingPage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { sellerId } = useParams<{ sellerId: string }>();
   const navigate     = useNavigate();
 

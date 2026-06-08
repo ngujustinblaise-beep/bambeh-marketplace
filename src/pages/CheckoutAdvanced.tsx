@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * CHECKOUT ADVANCED - PAYMENT GATEWAY INTEGRATION EXAMPLE
@@ -21,6 +21,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PaymentGatewayADVANCED from '@/advanced-features/payment-gateway/PaymentGateway-ADVANCED';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface CartItem {
   id: string;
@@ -39,6 +40,8 @@ interface CheckoutData {
 }
 
 export default function CheckoutAdvanced() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -151,7 +154,7 @@ export default function CheckoutAdvanced() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-teal-600 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-teal-600 mx-auto mb-4"/>
           <p className="text-teal-600 font-semibold">Loading checkout...</p>
         </div>
       </div>

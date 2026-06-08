@@ -1,8 +1,9 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Briefcase, Clock, DollarSign } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const JobList = () => {
   const navigate = useNavigate();

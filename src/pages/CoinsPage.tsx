@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Zap, ArrowUpRight, ArrowDownLeft, Plus, History } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Transaction {
   id: string;
@@ -12,6 +13,8 @@ interface Transaction {
 }
 
 export default function CoinsPage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [balance, setBalance] = useState<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -135,7 +138,7 @@ export default function CoinsPage() {
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
+              <div  key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (

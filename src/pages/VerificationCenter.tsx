@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/VerificationCenter.tsx — Bambeh Marketplace
  * FIXED: Saves verification requests to Supabase verification_requests table.
  * Was only calling alert() — no data was being saved anywhere.
@@ -11,6 +11,7 @@ import {
   CheckCircle, ArrowLeft, Loader2, AlertCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 type Level = 'email' | 'phone' | 'id' | 'business';
 
@@ -27,6 +28,8 @@ interface RequestStatus {
 }
 
 export default function VerificationCenter() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
 
   const [userId,         setUserId]         = useState<string | null>(null);

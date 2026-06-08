@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Globe, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface LangSettings { preferred_language:string; secondary_language:string; currency_display:string; date_format:string; number_format:string; }
 const defaultSettings: LangSettings = { preferred_language:"fr", secondary_language:"en", currency_display:"FCFA", date_format:"DD/MM/YYYY", number_format:"1.000,00" };
@@ -12,6 +13,8 @@ const DATE_FORMATS = [{value:"DD/MM/YYYY",label:"DD/MM/YYYY (e.g. 23/03/2026)"},
 const NUMBER_FORMATS = [{value:"1.000,00",label:"1.000,00 (European)"},{value:"1,000.00",label:"1,000.00 (US/UK)"},{value:"1 000,00",label:"1 000,00 (French/CFA)"}];
 
 export default function VendorSettingsLanguage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [settings, setSettings] = useState<LangSettings>(defaultSettings);

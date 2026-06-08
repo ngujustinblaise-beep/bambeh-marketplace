@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TontinePage.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/TontinePage.tsx
  *
@@ -25,6 +25,7 @@ import {
   ChevronRight, Shield, Loader2, RefreshCw
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface TontineGroup {
   id: string; name: string; contributionXaf: number; frequency: string;
@@ -39,6 +40,8 @@ const DEMO_GROUPS: TontineGroup[] = [
 ];
 
 export default function TontinePage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [groups,  setGroups]  = useState<TontineGroup[]>([]);
   const [loading, setLoading] = useState(true);
@@ -241,7 +244,7 @@ export default function TontinePage() {
 
                   {/* Member progress bar */}
                   <div className="bg-gray-100 rounded-full h-1.5 mb-3">
-                    <div className="bg-purple-600 h-1.5 rounded-full" style={{ width: `${progressPct}%` }} />
+                    <div className="bg-purple-600 h-1.5 rounded-full" style={{ width: `${progressPct}%` }}/>
                   </div>
 
                   <div className="flex justify-between items-center text-sm">

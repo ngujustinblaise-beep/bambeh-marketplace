@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/MarketplaceDetails.tsx
  * Bambeh Marketplace — Marketplace Item Detail Page
  *
@@ -22,6 +22,7 @@ import { useViewTracker } from "@/hooks/useViewTracker";
 import type { MarketplaceItem } from "@/types/src_types_items";
 // ✅ NEW: shared action buttons
 import { ActionButtons } from "@/components/listings/ActionButtons";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CONDITION_LABELS: Record<string, string> = {
   new: "Neuf", like_new: "Comme neuf", good: "Bon état", fair: "Correct", poor: "À réparer",
@@ -112,7 +113,7 @@ const MarketplaceDetails: React.FC = () => {
             </button>
             <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
               {images.map((_, i) => (
-                <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === imgIdx ? "bg-white" : "bg-white/50"}`} />
+                <div  key={i} className={`w-1.5 h-1.5 rounded-full ${i === imgIdx ? "bg-white" : "bg-white/50"}`} />
               ))}
             </div>
           </>

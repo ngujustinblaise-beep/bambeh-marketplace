@@ -1,11 +1,14 @@
-/**
+ï»¿/**
  * UNDERSTANDING ZERM COINS - HELP PAGE
  */
 
 import { Link } from 'react-router-dom';
 import { Coins, Gift, Star, Award } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function UnderstandingZermCoins() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -73,19 +76,19 @@ export default function UnderstandingZermCoins() {
             </h2>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500">•</span>
+                <span className="text-yellow-500">ï¿½</span>
                 <span>Boost your listings to appear at the top (5 coins per boost)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500">•</span>
+                <span className="text-yellow-500">ï¿½</span>
                 <span>Get featured on the homepage (10 coins)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500">•</span>
+                <span className="text-yellow-500">ï¿½</span>
                 <span>Unlock premium filters (3 coins per month)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500">•</span>
+                <span className="text-yellow-500">ï¿½</span>
                 <span>Send highlighted messages (1 coin per message)</span>
               </li>
             </ul>

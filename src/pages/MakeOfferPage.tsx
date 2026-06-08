@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MakeOfferPage.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -36,6 +36,7 @@ import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/providers/SupabaseAuthProvider";
 import { logger } from "@/utils/logger";
 import { BambehImage } from "@/components/ui/BambehImage";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -149,7 +150,7 @@ const TrailStep: React.FC<{
         <div className={`w-8 h-8 rounded-full ${dotColor} flex items-center justify-center flex-shrink-0 text-white shadow-sm`}>
           {getActionIcon()}
         </div>
-        {!isLast && <div className="w-0.5 flex-1 bg-gray-200 mt-1 mb-1 min-h-[2rem]" />}
+        {!isLast && <div className="w-0.5 flex-1 bg-gray-200 mt-1 mb-1 min-h-[2rem]"/>}
       </div>
 
       {/* Content card */}
@@ -224,6 +225,8 @@ const TrailStep: React.FC<{
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 
 export default function MakeOfferPage() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { listingId } = useParams();
   const navigate = useNavigate();
   const { user, profile } = useSupabaseAuth() as any;
@@ -503,7 +506,7 @@ export default function MakeOfferPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-9 h-9 rounded-full border-3 border-teal-600 border-t-transparent animate-spin" style={{ borderWidth: 3 }} />
+          <div className="w-9 h-9 rounded-full border-3 border-teal-600 border-t-transparent animate-spin" style={{ borderWidth: 3 }}/>
           <p className="text-sm text-gray-400">Loading offer details…</p>
         </div>
       </div>

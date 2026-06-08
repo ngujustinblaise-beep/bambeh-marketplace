@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Bell,BellOff,Check,Trash2,Package,MessageSquare,DollarSign,Star,AlertCircle,Settings}from'lucide-react';
@@ -17,6 +19,8 @@ const TYPE_ICONS={order:Package,message:MessageSquare,payment:DollarSign,review:
 const TYPE_COLORS={order:'bg-blue-50 text-blue-600',message:'bg-green-50 text-green-600',payment:'bg-teal-50 text-teal-600',review:'bg-yellow-50 text-yellow-600',alert:'bg-orange-50 text-orange-600',system:'bg-purple-50 text-purple-600'};
 
 function timeAgo(iso:string):string{
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const diff=Date.now()-new Date(iso).getTime();
   const mins=Math.floor(diff/60000);
   if(mins<1)return'Just now';

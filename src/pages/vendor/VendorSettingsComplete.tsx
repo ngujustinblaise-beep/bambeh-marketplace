@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR SETTINGS COMPLETE - ENTERPRISE-GRADE SETTINGS PAGE
  * FILE LOCATION: src/pages/vendor/VendorSettingsComplete.tsx
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 
 import BambehLogo from '@/assets/images/bambeh-logo.png';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface VendorData {
   id: string;
@@ -63,6 +64,8 @@ const businessDays = [
 ];
 
 export default function VendorSettingsComplete() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [vendor, setVendor] = useState<VendorData | null>(null);
   const [activeSection, setActiveSection] = useState('account');
@@ -222,7 +225,7 @@ export default function VendorSettingsComplete() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-teal-500 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-teal-500 mx-auto mb-4"/>
           <p className="text-white/70">Loading settings...</p>
         </div>
       </div>
@@ -377,7 +380,7 @@ export default function VendorSettingsComplete() {
                   checked={storeSettings[option.key as keyof typeof storeSettings] as boolean}
                   onChange={(e) => setStoreSettings({ ...storeSettings, [option.key]: e.target.checked })}
                   className="sr-only peer" />
-                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
               </label>
             </div>
           ))}
@@ -429,7 +432,7 @@ export default function VendorSettingsComplete() {
                   checked={notificationSettings[option.key as keyof typeof notificationSettings] as boolean}
                   onChange={(e) => setNotificationSettings({ ...notificationSettings, [option.key]: e.target.checked })}
                   className="sr-only peer" />
-                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
               </label>
             </div>
           ))}
@@ -519,7 +522,7 @@ export default function VendorSettingsComplete() {
               <input type="checkbox" checked={paymentSettings.autoWithdraw}
                 onChange={(e) => setPaymentSettings({ ...paymentSettings, autoWithdraw: e.target.checked })}
                 className="sr-only peer" />
-              <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+              <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
             </label>
           </div>
           <div>
@@ -580,7 +583,7 @@ export default function VendorSettingsComplete() {
               <input type="checkbox" checked={securitySettings.twoFactorEnabled}
                 onChange={(e) => setSecuritySettings({ ...securitySettings, twoFactorEnabled: e.target.checked })}
                 className="sr-only peer" />
-              <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+              <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
             </label>
           </div>
           {securitySettings.twoFactorEnabled && (
@@ -620,7 +623,7 @@ export default function VendorSettingsComplete() {
                   checked={securitySettings[option.key as keyof typeof securitySettings] as boolean}
                   onChange={(e) => setSecuritySettings({ ...securitySettings, [option.key]: e.target.checked })}
                   className="sr-only peer" />
-                <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+                <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
               </label>
             </div>
           ))}
@@ -655,7 +658,7 @@ export default function VendorSettingsComplete() {
           <input type="checkbox" checked={shippingSettings.enableShipping}
             onChange={(e) => setShippingSettings({ ...shippingSettings, enableShipping: e.target.checked })}
             className="sr-only peer" />
-          <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+          <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
         </label>
       </div>
       {shippingSettings.enableShipping && (
@@ -675,7 +678,7 @@ export default function VendorSettingsComplete() {
                 <input type="checkbox" checked={shippingSettings.localDeliveryEnabled}
                   onChange={(e) => setShippingSettings({ ...shippingSettings, localDeliveryEnabled: e.target.checked })}
                   className="sr-only peer" />
-                <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+                <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
               </label>
             </div>
             {shippingSettings.localDeliveryEnabled && (
@@ -734,7 +737,7 @@ export default function VendorSettingsComplete() {
                     [day.id]: { ...businessHours[day.id], enabled: e.target.checked }
                   })}
                   className="sr-only peer" />
-                <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+                <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
               </label>
               <span className={`font-medium ${businessHours[day.id].enabled ? 'text-white' : 'text-white/50'}`}>
                 {day.label}
@@ -793,7 +796,7 @@ export default function VendorSettingsComplete() {
             <input type="checkbox" checked={languageSettings.darkMode}
               onChange={(e) => setLanguageSettings({ ...languageSettings, darkMode: e.target.checked })}
               className="sr-only peer" />
-            <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-600" />
+            <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-600"/>
           </label>
         </div>
       </div>
@@ -832,7 +835,7 @@ export default function VendorSettingsComplete() {
             <input type="checkbox" checked={integrationSettings.enableWebhooks}
               onChange={(e) => setIntegrationSettings({ ...integrationSettings, enableWebhooks: e.target.checked })}
               className="sr-only peer" />
-            <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500" />
+            <div className="w-11 h-6 bg-white/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"/>
           </label>
         </div>
         {integrationSettings.enableWebhooks && (
@@ -1035,7 +1038,7 @@ export default function VendorSettingsComplete() {
                 <button onClick={handleSave} disabled={isSaving}
                   className="px-8 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/25 disabled:opacity-50 flex items-center gap-2 transition-all">
                   {isSaving ? (
-                    <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Saving...</>
+                    <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>Saving...</>
                   ) : (
                     <><Save className="w-5 h-5" />Save Changes</>
                   )}

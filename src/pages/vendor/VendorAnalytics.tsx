@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const PERIODS = ["7d", "30d", "90d"] as const;
 type Period = typeof PERIODS[number];

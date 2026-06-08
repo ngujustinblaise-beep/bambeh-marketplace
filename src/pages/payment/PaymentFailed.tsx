@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/payment/PaymentFailed.tsx
  * Shown when payment fails or is canceled.
  */
@@ -6,6 +6,7 @@
 import React from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { XCircle, RefreshCcw, Home, HelpCircle } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const REASON_MESSAGES: Record<string, string> = {
   failed:   'Your payment could not be processed. Please check your balance and try again.',

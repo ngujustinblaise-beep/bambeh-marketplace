@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Tx {
   id: string;
@@ -43,7 +44,7 @@ const CoinsHistory: React.FC = () => {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
+            <div  key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : txs.length === 0 ? (

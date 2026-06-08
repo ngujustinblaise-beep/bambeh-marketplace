@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/TrackingPage.tsx
  * Bambeh Marketplace — Order Tracking Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Package, MapPin, CheckCircle, Clock, Truck, RefreshCw, Search, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type TrackingStatus = "pending" | "confirmed" | "processing" | "shipped" | "out_for_delivery" | "delivered" | "failed";
 
@@ -191,10 +192,10 @@ const TrackingPage: React.FC = () => {
                       "bg-gray-100 border-2 border-gray-200"
                     }`}>
                       {step.done && <CheckCircle className="w-3 h-3 text-white fill-white" />}
-                      {step.active && <div className="w-2 h-2 bg-teal-600 rounded-full" />}
+                      {step.active && <div className="w-2 h-2 bg-teal-600 rounded-full"/>}
                     </div>
                     {idx < tracking.steps.length - 1 && (
-                      <div className={`w-0.5 h-8 ${step.done ? "bg-teal-600" : "bg-gray-200"}`} />
+                      <div className={`w-0.5 h-8 ${step.done ? "bg-teal-600" : "bg-gray-200"}`}/>
                     )}
                   </div>
                   {/* Info */}

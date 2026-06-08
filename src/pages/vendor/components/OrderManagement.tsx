@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * ORDER MANAGEMENT COMPONENT
  * ═══════════════════════════════════════════════════════════════════════════
@@ -24,6 +24,7 @@ import {
   MapPin,
   Phone
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface OrderItem {
   id: string;
@@ -130,7 +131,7 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ vendorId }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"/>
       </div>
     );
   }

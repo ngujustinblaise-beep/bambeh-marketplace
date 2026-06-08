@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,AlertTriangle,Check,Shield,Phone,Mail}from'lucide-react';
@@ -12,6 +14,8 @@ const ISSUE_TYPES=[
 ];
 
 export default function ReportIssuePage(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[issueType,setIssueType]=useState('');
   const[description,setDescription]=useState('');

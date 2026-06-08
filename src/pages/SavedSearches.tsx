@@ -1,10 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, X, Clock, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSearch } from '@/contexts/SearchContext';
 import { useToast } from '@/hooks/use-toast';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const SavedSearches: React.FC = () => {
   const navigate = useNavigate();

@@ -1,14 +1,17 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload, FileText, CheckCircle, AlertCircle, X, Download, Package, Loader2, Eye } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ParsedProduct{name:string;description:string;price:number;category:string;stock:number;image_url?:string;status:"valid"|"error";errors:string[];}
 interface UploadResult{success:number;failed:number;errors:string[];}
 const HEADERS=["name","description","price","category","stock","image_url"];
 const SAMPLES=[["iPhone 14 Case","Protective case","2500","Electronics","50",""],["Ankara Dress","Traditional dress","15000","Fashion","20",""],["Fresh Tomatoes 1kg","Farm tomatoes","800","Food & Groceries","100",""]];
 function genCSV(){return[HEADERS,...SAMPLES].map(r=>r.join(",")).join("\n");}
+  const lang = useLang();
+  const isRtl = lang === "ar";
 function parseRow(row:string):string[]{const r:string[]=[],cur={v:""};let q=false;for(const c of row){if(c==='"'){q=!q;}else if(c===","&&!q){r.push(cur.v.trim());cur.v="";}else{cur.v+=c;}}r.push(cur.v.trim());return r;}
 function validate(fields:string[]):ParsedProduct{
   const[name,description,priceStr,category,stockStr,image_url]=fields,errors:string[]=[];

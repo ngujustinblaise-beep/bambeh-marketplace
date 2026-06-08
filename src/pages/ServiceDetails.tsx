@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
  *
  * COMPLETE REWRITE — was a hollow stub with no data loading.
@@ -31,6 +31,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─────────────────────────────────────────────
 // Types
@@ -69,18 +70,20 @@ interface RelatedService {
 // Skeleton loader
 // ─────────────────────────────────────────────
 function SkeletonLoader() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return (
     <div className="min-h-screen bg-gray-50 animate-pulse">
-      <div className="h-14 bg-purple-700" />
+      <div className="h-14 bg-purple-700"/>
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        <div className="h-8 bg-gray-200 rounded-xl w-3/4" />
-        <div className="h-4 bg-gray-100 rounded w-1/3" />
+        <div className="h-8 bg-gray-200 rounded-xl w-3/4"/>
+        <div className="h-4 bg-gray-100 rounded w-1/3"/>
         <div className="bg-white rounded-2xl p-5 space-y-3">
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-100 rounded w-5/6" />
-          <div className="h-4 bg-gray-100 rounded w-4/6" />
+          <div className="h-4 bg-gray-200 rounded w-full"/>
+          <div className="h-4 bg-gray-100 rounded w-5/6"/>
+          <div className="h-4 bg-gray-100 rounded w-4/6"/>
         </div>
-        <div className="bg-white rounded-2xl p-5 h-20" />
+        <div className="bg-white rounded-2xl p-5 h-20"/>
       </div>
     </div>
   );

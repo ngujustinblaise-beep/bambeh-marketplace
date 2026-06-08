@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type Status = "loading" | "success" | "failed" | "pending";
 
@@ -34,7 +35,7 @@ const PaymentCallback: React.FC = () => {
 
   if (status === "loading") return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin h-10 w-10 rounded-full border-4 border-teal-500 border-t-transparent" />
+      <div className="animate-spin h-10 w-10 rounded-full border-4 border-teal-500 border-t-transparent"/>
     </div>
   );
 

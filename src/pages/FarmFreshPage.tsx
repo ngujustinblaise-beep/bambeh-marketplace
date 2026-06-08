@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
  * ✅ FeaturedAdsStrip import REMOVED (was crashing the page)
  * ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
@@ -15,6 +15,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import { useLang, t } from "@/hooks/useFarmFreshLang";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface FarmProduct {
   id: string;
@@ -61,6 +62,8 @@ const CATEGORY_KEYS = [
 const CATEGORY_VALUES = ["All", "Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy"];
 
 function hasImage(p: FarmProduct): boolean {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (p.image_url && p.image_url.trim() !== "") return true;
   if (p.images && p.images.length > 0 && p.images[0].trim() !== "") return true;
   return false;
@@ -70,7 +73,6 @@ function getImage(p: FarmProduct): string { return (p.image_url || p.images?.[0]
 export default function FarmFreshPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const lang = useLang();
 
   const [products, setProducts] = useState<FarmProduct[]>([]);
   const [loading,  setLoading]  = useState(true);
@@ -160,10 +162,9 @@ export default function FarmFreshPage() {
   });
 
   // RTL support for Arabic
-  const isRtl = lang === "ar";
 
   return (
-    <div className="min-h-screen bg-gray-50" dir={isRtl ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-gray-50">
       {/* Sticky header */}
       <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">

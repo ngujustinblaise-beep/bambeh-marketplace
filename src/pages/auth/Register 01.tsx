@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * Register.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/auth/Register.tsx
@@ -15,6 +15,7 @@ import {
   Eye, EyeOff, Mail, User, Lock, Phone,
   AtSign, ArrowRight, CheckCircle, AlertCircle, Info
 } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ✅ BAMBEH WELCOME MESSAGE CONFIG
@@ -114,6 +115,8 @@ async function sendWelcomeMessageAndNotification(
 
 // ── Friendly error messages for common Supabase errors ───────────────────────
 function friendlyError(msg: string): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const m = msg.toLowerCase();
   if (m.includes("user already registered") || m.includes("already been registered"))
     return "An account with this email already exists. Try signing in instead.";
@@ -307,7 +310,7 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-blue-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div className="h-1.5 bg-gradient-to-r from-teal-400 to-blue-500" />
+        <div className="h-1.5 bg-gradient-to-r from-teal-400 to-blue-500"/>
 
         <div className="p-7">
           {/* Branding */}
@@ -439,7 +442,7 @@ export default function Register() {
               {pwStrength && (
                 <div className="mt-2">
                   <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${pwStrength.color} ${pwStrength.width}`} />
+                    <div className={`h-full rounded-full transition-all ${pwStrength.color} ${pwStrength.width}`}/>
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">
                     Password strength: <span className="font-semibold">{pwStrength.label}</span>
@@ -491,7 +494,7 @@ export default function Register() {
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"/>
                   Creating Account…
                 </>
               ) : (

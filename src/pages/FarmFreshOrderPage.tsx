@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FarmFreshOrderPage.tsx — Bambeh Marketplace
  *
  * FIXED in this version:
@@ -21,9 +21,12 @@ import {
 import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 import { useLang, t } from "@/hooks/useFarmFreshLang";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ── UUID check ────────────────────────────────────────────────────────────────
 function isUUID(s: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
@@ -71,7 +74,6 @@ export default function FarmFreshOrderPage() {
   const [error,      setError]      = useState<string | null>(null);
   const [isDemo,     setIsDemo]     = useState(false);
 
-  const isRtl = lang === "ar";
 
   useEffect(() => {
     if (productId) void loadProduct(productId);
@@ -181,7 +183,7 @@ export default function FarmFreshOrderPage() {
   // ── Success ──────────────────────────────────────────────────────────────
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-50 p-6" dir={isRtl ? "rtl" : "ltr"}>
+      <div className="min-h-screen flex items-center justify-center bg-green-50 p-6">
         <div className="bg-white rounded-2xl p-8 text-center max-w-sm w-full shadow">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-600" />
@@ -215,7 +217,7 @@ export default function FarmFreshOrderPage() {
   // ── Not found ────────────────────────────────────────────────────────────
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" dir={isRtl ? "rtl" : "ltr"}>
+      <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center">
           <Leaf className="w-12 h-12 text-gray-200 mx-auto mb-3" />
           <p className="text-gray-700 font-semibold mb-2">{t("productNotFound", lang)}</p>
@@ -230,7 +232,7 @@ export default function FarmFreshOrderPage() {
   const total = product.price * qty;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-gray-50 pb-28">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-xl">

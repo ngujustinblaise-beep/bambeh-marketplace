@@ -1,4 +1,4 @@
-/**
+﻿/**
  * POST RENTAL PROPERTY
  * FILE LOCATION: src/pages/PostRentalProperty.tsx
  */
@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface RentalFormData {
   title: string; propertyType: string; rentalType: 'short-term' | 'long-term';

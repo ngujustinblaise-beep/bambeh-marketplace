@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/TontineGroupDetail.tsx
  * Bambeh Marketplace — Tontine/Njangi Group Detail
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { AvatarImage } from "@/components/ui/BambehImage";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface TontineGroup {
   id: string;

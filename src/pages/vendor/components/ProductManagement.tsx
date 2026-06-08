@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * PRODUCT MANAGEMENT COMPONENT
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,6 +23,7 @@ import {
   MoreVertical,
   Image as ImageIcon
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Product {
   id: string;
@@ -91,7 +92,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"/>
       </div>
     );
   }

@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const VendorProfile: React.FC = () => {
   const vendor = { id: "v1", name: "My Business", businessName: "My Store", email: "vendor@example.com", phone: "+237 600 000 000", status: "approved" };

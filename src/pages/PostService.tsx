@@ -1,4 +1,4 @@
-/**
+﻿/**
  * POST SERVICE
  * FILE LOCATION: src/pages/PostService.tsx
  */
@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ServiceFormData {
   title: string; category: string; subcategory: string;

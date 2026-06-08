@@ -1,7 +1,10 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Check, Crown, Star, Zap } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function VendorSubscriptionPlans() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   const plans = [

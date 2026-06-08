@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * ZERM PURCHASE PAGE
  * © 2025 Bambé. All rights reserved.
@@ -11,6 +11,7 @@ import {
   Clock, ShieldCheck, AlertCircle, Info, ChevronDown, Wallet
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Packages ────────────────────────────────────────────────────────────────
 
@@ -129,6 +130,8 @@ const PaymentMethodCard: React.FC<PaymentMethodCardProps> = ({ method, isSelecte
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ZermPurchase() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { currentUser } = useAuth();
 
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -291,7 +294,7 @@ export default function ZermPurchase() {
                     disabled={!selectedPayment || !phoneNumber || isProcessing}
                     className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl hover:from-yellow-600 hover:to-orange-600 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                     {isProcessing ? (
-                      <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />Processing...</>
+                      <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/>Processing...</>
                     ) : (
                       <><CreditCard className="w-5 h-5" />Buy Now</>
                     )}

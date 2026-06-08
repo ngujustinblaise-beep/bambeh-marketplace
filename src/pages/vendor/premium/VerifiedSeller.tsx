@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Shield,Check,Upload,FileText,Camera,AlertCircle,Clock}from'lucide-react';
@@ -21,6 +23,8 @@ const BENEFITS=[
 ];
 
 export default function VerifiedSeller(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[docs,setDocs]=useState<Document[]>(REQUIRED_DOCS);
   const[submitted,setSubmitted]=useState(false);

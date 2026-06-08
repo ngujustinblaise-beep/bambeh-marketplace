@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Marketplace.tsx — Bambeh Marketplace
  *
  * COMPLETE REWRITE — June 2026
@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Item {
@@ -70,6 +71,8 @@ const EXPIRY_WARN_DAYS = 3; // warn when listing expires within 3 days
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function readFavIds(): Set<string> {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   try {
     return new Set(
       (JSON.parse(localStorage.getItem(FAV_KEY) || "[]") as { id: string }[])
@@ -409,8 +412,7 @@ export default function Marketplace() {
     <div
       className="min-h-screen bg-gray-50 pb-24"
       onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
+      onTouchEnd={handleTouchEnd}>
       {/* ── Sticky header ── */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 shadow-sm px-4 pt-4 pb-3">
         {/* Title row */}

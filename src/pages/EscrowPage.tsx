@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/EscrowPage.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -20,6 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -74,6 +75,8 @@ type TabKey = 'transaction' | 'protect' | 'meet';
 // ─── Step strip ─────────────────────────────────────────────────────────────
 
 function StepStrip({ currentIdx }: { currentIdx: number }) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const labels = ['Pending', 'Paid', 'In-Transit', 'Delivered', 'Complete'];
   return (
     <div className="flex items-center gap-1 py-2 overflow-x-auto scrollbar-hide" role="list" aria-label="Transaction steps">
@@ -94,7 +97,7 @@ function StepStrip({ currentIdx }: { currentIdx: number }) {
             </span>
           </div>
           {i < labels.length - 1 && (
-            <div className={`flex-1 h-0.5 min-w-[8px] ${i < currentIdx ? 'bg-teal-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+            <div className={`flex-1 h-0.5 min-w-[8px] ${i < currentIdx ? 'bg-teal-500' : 'bg-gray-200 dark:bg-gray-700'}`}/>
           )}
         </React.Fragment>
       ))}
@@ -340,7 +343,7 @@ export default function EscrowPage() {
                         {s.icon}
                       </div>
                       {i < PROCESS_STEPS.length - 1 && (
-                        <div className="w-0.5 flex-1 bg-teal-100 dark:bg-teal-900 mt-1 min-h-[20px]" />
+                        <div className="w-0.5 flex-1 bg-teal-100 dark:bg-teal-900 mt-1 min-h-[20px]"/>
                       )}
                     </div>
                     <div className="pb-4 flex-1">
@@ -464,7 +467,7 @@ export default function EscrowPage() {
       {showReceipt && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-t-3xl p-6 pb-10 space-y-5">
-            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto" />
+            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto"/>
             <div className="text-center">
               <p className="text-5xl mb-3">✅</p>
               <h3 className="font-bold text-xl text-gray-900 dark:text-white">Confirm Receipt</h3>
@@ -515,7 +518,7 @@ export default function EscrowPage() {
       {showProblem && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-t-3xl p-6 pb-10 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto" />
+            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto"/>
             <div className="text-center">
               <p className="text-5xl mb-3">⚠️</p>
               <h3 className="font-bold text-xl text-gray-900 dark:text-white">Report a Problem</h3>

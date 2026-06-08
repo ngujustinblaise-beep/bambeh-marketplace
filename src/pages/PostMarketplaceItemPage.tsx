@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh
  *
  * FIX (June 2026): Insert uses `seller_id` (column name in `listings` table).
@@ -24,6 +24,7 @@ import {
   Loader2, Camera, AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DraftData {
@@ -53,6 +54,8 @@ const EMPTY: DraftData = {
 };
 
 function loadDraft(): DraftData {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   try {
     return { ...EMPTY, ...JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}") };
   } catch { return EMPTY; }
@@ -232,7 +235,7 @@ export default function PostMarketplaceItemPage() {
         {/* Step dots */}
         <div className="flex gap-1.5">
           {[1, 2, 3].map((s) => (
-            <div
+            <div 
               key={s}
               className={`w-2 h-2 rounded-full transition-colors ${
                 s <= step ? "bg-teal-600" : "bg-gray-200"
@@ -343,8 +346,7 @@ export default function PostMarketplaceItemPage() {
                 <div
                   className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
                     form.negotiable ? "translate-x-5" : ""
-                  }`}
-                />
+                  }`}/>
               </div>
               <span className="text-sm text-gray-700 font-medium">
                 Price is negotiable

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ExchangeItemPost.tsx — Bambeh Marketplace
  * FIXED:
  *  ✅ Uses shared @/lib/supabase (no inline createClient)
@@ -13,6 +13,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Loader2, X, Image as ImageIcon, Info } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const CATEGORIES = [
   'Electronics', 'Furniture', 'Fashion', 'Appliances',
@@ -23,6 +24,8 @@ const MAX_IMAGES = 4;
 const BUCKET     = 'exchange-images';
 
 export default function ExchangeItemPost() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const fileInput = useRef<HTMLInputElement>(null);
 

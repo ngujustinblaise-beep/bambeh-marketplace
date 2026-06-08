@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type TriggerType =
   | "new_order"
@@ -74,6 +75,8 @@ const blankForm = () => ({
 });
 
 export default function AutoMessaging() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [messages, setMessages] = useState<AutoMessage[]>([]);
@@ -175,7 +178,7 @@ export default function AutoMessaging() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"/>
       </div>
     );
   }

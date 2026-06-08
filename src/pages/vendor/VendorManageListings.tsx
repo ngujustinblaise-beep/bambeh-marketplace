@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Plus,Search,Package,Eye,Edit3,Trash2,ToggleLeft,ToggleRight,Filter,TrendingUp}from'lucide-react';
@@ -23,6 +25,8 @@ const STATUS_STYLES:Record<ListingStatus,string>={
 };
 
 export default function VendorManageListings(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[listings,setListings]=useState<Listing[]>(SAMPLE);
   const[search,setSearch]=useState('');

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ComparisonTool.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -21,6 +21,7 @@ import {
   ArrowLeft, Plus, X, Check, Star, TrendingUp, ShoppingCart,
   Search, Loader2, Globe, AlertCircle, RefreshCw,
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -102,6 +103,8 @@ async function searchProductOnline(query: string): Promise<{
 // ─── Source Badge ──────────────────────────────────────────────────────────
 
 function SourceBadge({ product }: { product: Product }) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!product.source || product.source === 'https://bambeh.com') return null;
   return (
     <a
@@ -122,9 +125,9 @@ function SourceBadge({ product }: { product: Product }) {
 function ProductSkeleton() {
   return (
     <div className="bg-white rounded-2xl p-3 shadow-sm border animate-pulse">
-      <div className="w-full h-16 bg-gray-100 rounded-xl mb-2" />
-      <div className="h-3 bg-gray-100 rounded w-3/4 mb-1" />
-      <div className="h-3 bg-gray-100 rounded w-1/2" />
+      <div className="w-full h-16 bg-gray-100 rounded-xl mb-2"/>
+      <div className="h-3 bg-gray-100 rounded w-3/4 mb-1"/>
+      <div className="h-3 bg-gray-100 rounded w-1/2"/>
     </div>
   );
 }
@@ -524,8 +527,7 @@ export default function ComparisonTool() {
                           <div className="w-full bg-gray-100 rounded-full h-2 mb-0.5">
                             <div
                               className="bg-teal-500 h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${pct}%` }}
-                            />
+                              style={{ width: `${pct}%` }}/>
                           </div>
                           <p className="text-xs text-gray-600 text-center">
                             {max === 5 ? `${val}/5` : `${val}%`}

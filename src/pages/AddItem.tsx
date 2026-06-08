@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 ﻿/**
  * ADD ITEM PAGE
  * 
@@ -23,6 +23,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { setMainOrigin } from '@/utils/navigationOrigin';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface CategoryOption {
   id: string;
@@ -35,6 +36,8 @@ interface CategoryOption {
 }
 
 export default function AddItem() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { t } = useTranslation();
 

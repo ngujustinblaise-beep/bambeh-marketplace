@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FlashDeals.tsx
  * Bambeh Marketplace — Flash Deals page
  *
@@ -11,6 +11,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface Deal {
@@ -95,6 +96,8 @@ const DEMO_DEALS: Deal[] = [
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function fmtXAF(n: number) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return n.toLocaleString("fr-CM") + " XAF";
 }
 
@@ -211,7 +214,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
 
           {step === "processing" && (
             <div className="text-center py-8">
-              <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"/>
               <p className="font-semibold text-gray-900 dark:text-white">Processing payment...</p>
               <p className="text-sm text-gray-500 mt-1">Check your phone for the payment prompt</p>
             </div>
@@ -287,7 +290,7 @@ function DealCard({ deal }: { deal: Deal }) {
               <div className="flex items-center gap-1 mt-0.5">
                 <div className="w-20 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div className="h-full bg-teal-500 rounded-full transition-all"
-                       style={{ width: `${(deal.stockLeft / deal.stockTotal) * 100}%` }} />
+                       style={{ width: `${(deal.stockLeft / deal.stockTotal) * 100}%` }}/>
                 </div>
                 <span className="text-[10px] text-gray-500">{deal.stockLeft}/{deal.stockTotal}</span>
               </div>

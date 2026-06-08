@@ -1,17 +1,17 @@
-/**
- * src/pages/FarmFreshDetail.tsx — Bambeh Marketplace  UPGRADED VERSION
+﻿/**
+ * src/pages/FarmFreshDetail.tsx â€” Bambeh Marketplace  UPGRADED VERSION
  *
  * FIXES applied:
- *  ✅ DB query now reads correct columns: title, price_per_unit_xaf, seller_id
- *  ✅ "Add to Cart" button → CartContext → can pay via CamPay in Cart
- *  ✅ "Buy Now" = Add to Cart + navigate to /cart
- *  ✅ "Join Group Buy" CTA linking to /group-buying
- *  ✅ Images with no URL show nothing (no broken placeholder)
- *  ✅ Demo IDs s1–s8 handled inline (no DB call)
- *  ✅ Worldwide visibility: any logged-in user anywhere can view
- *  ✅ Seller contact: WhatsApp + Call work correctly
- *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
- *     — reacts instantly when user changes language
+ *  âœ… DB query now reads correct columns: title, price_per_unit_xaf, seller_id
+ *  âœ… "Add to Cart" button â†’ CartContext â†’ can pay via CamPay in Cart
+ *  âœ… "Buy Now" = Add to Cart + navigate to /cart
+ *  âœ… "Join Group Buy" CTA linking to /group-buying
+ *  âœ… Images with no URL show nothing (no broken placeholder)
+ *  âœ… Demo IDs s1â€“s8 handled inline (no DB call)
+ *  âœ… Worldwide visibility: any logged-in user anywhere can view
+ *  âœ… Seller contact: WhatsApp + Call work correctly
+ *  âœ… Full i18n: English, French, Pidgin, Arabic, Fulfulde
+ *     â€” reacts instantly when user changes language
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -27,10 +27,13 @@ import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from "@/hooks/useCamPay";
 import { useLang, t } from "@/hooks/useFarmFreshLang";
+import { useLang, t } from "@/hooks/useAppLang";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function isUUID(s: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
@@ -62,7 +65,7 @@ function toggleFavStorage(p: FarmProduct) {
   } catch { return false; }
 }
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface FarmProduct {
   id: string; sellerId?: string; sellerName: string; sellerCity: string;
@@ -72,20 +75,20 @@ interface FarmProduct {
   availableForDelivery: boolean; isDemo?: boolean;
 }
 
-// ── Built-in demo items (s1–s8 only) ─────────────────────────────────────────
+// â”€â”€ Built-in demo items (s1â€“s8 only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const DEMO: Record<string, FarmProduct> = {
-  s1: { id: "s1", title: "Fresh Tomatoes", category: "Vegetables", unit: "kg", pricePerUnitXAF: 500, stockQuantity: 50, isOrganic: true, availableForDelivery: true, sellerName: "Fon's Farm", sellerCity: "Bafoussam, West", sellerRating: 4.8, sellerPhone: "+237671234567", images: ["https://images.unsplash.com/photo-1546470427-e212876f0173?w=600&q=85"], description: "Sun-ripened tomatoes harvested fresh from highland farms in Bafoussam. Perfect for cooking, sauces, and salads. No pesticides — 100% organic.", isDemo: true },
-  s2: { id: "s2", title: "Plantains (1 bunch)", category: "Fruits", unit: "bunch", pricePerUnitXAF: 1500, stockQuantity: 30, isOrganic: false, availableForDelivery: true, sellerName: "Mama Ngo's Produce", sellerCity: "Yaoundé, Centre", sellerRating: 4.6, sellerPhone: "+237682345678", images: ["https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&q=85"], description: "Fresh ripe plantains, 12–15 fingers per bunch. Sourced from farms in the Centre region.", isDemo: true },
-  s3: { id: "s3", title: "Cocoyams (Macabo)", category: "Tubers", unit: "kg", pricePerUnitXAF: 800, stockQuantity: 100, isOrganic: true, availableForDelivery: false, sellerName: "Douala Fresh", sellerCity: "Douala, Littoral", sellerRating: 4.5, sellerPhone: "+237693456789", images: ["https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&q=85"], description: "Fresh macabo cocoyams, firm and starchy. Ideal for Eru and Ndolé. Organically grown.", isDemo: true },
+  s1: { id: "s1", title: "Fresh Tomatoes", category: "Vegetables", unit: "kg", pricePerUnitXAF: 500, stockQuantity: 50, isOrganic: true, availableForDelivery: true, sellerName: "Fon's Farm", sellerCity: "Bafoussam, West", sellerRating: 4.8, sellerPhone: "+237671234567", images: ["https://images.unsplash.com/photo-1546470427-e212876f0173?w=600&q=85"], description: "Sun-ripened tomatoes harvested fresh from highland farms in Bafoussam. Perfect for cooking, sauces, and salads. No pesticides â€” 100% organic.", isDemo: true },
+  s2: { id: "s2", title: "Plantains (1 bunch)", category: "Fruits", unit: "bunch", pricePerUnitXAF: 1500, stockQuantity: 30, isOrganic: false, availableForDelivery: true, sellerName: "Mama Ngo's Produce", sellerCity: "YaoundÃ©, Centre", sellerRating: 4.6, sellerPhone: "+237682345678", images: ["https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&q=85"], description: "Fresh ripe plantains, 12â€“15 fingers per bunch. Sourced from farms in the Centre region.", isDemo: true },
+  s3: { id: "s3", title: "Cocoyams (Macabo)", category: "Tubers", unit: "kg", pricePerUnitXAF: 800, stockQuantity: 100, isOrganic: true, availableForDelivery: false, sellerName: "Douala Fresh", sellerCity: "Douala, Littoral", sellerRating: 4.5, sellerPhone: "+237693456789", images: ["https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&q=85"], description: "Fresh macabo cocoyams, firm and starchy. Ideal for Eru and NdolÃ©. Organically grown.", isDemo: true },
   s4: { id: "s4", title: "Fresh Maize (Corn)", category: "Grains", unit: "cob", pricePerUnitXAF: 300, stockQuantity: 200, isOrganic: false, availableForDelivery: true, sellerName: "NW Farm Co-op", sellerCity: "Bamenda, NW Region", sellerRating: 4.7, sellerPhone: "+237654567890", images: ["https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=85"], description: "Sweet juicy corn from Bamenda highlands. Ready to grill or boil.", isDemo: true },
-  s5: { id: "s5", title: "Groundnuts (1kg bag)", category: "Legumes", unit: "kg", pricePerUnitXAF: 1200, stockQuantity: 80, isOrganic: false, availableForDelivery: true, sellerName: "Adamaoua Nuts", sellerCity: "Ngaoundéré, Adamaoua", sellerRating: 4.9, sellerPhone: "+237665678901", images: ["https://images.unsplash.com/photo-1567581935884-3349723552ca?w=600&q=85"], description: "Premium shelled groundnuts from the Adamaoua savannah. Great for peanut paste and soup.", isDemo: true },
-  s6: { id: "s6", title: "Bitter Leaf (Ndolé)", category: "Vegetables", unit: "bunch", pricePerUnitXAF: 200, stockQuantity: 40, isOrganic: true, availableForDelivery: false, sellerName: "Centre Fresh Greens", sellerCity: "Yaoundé, Centre", sellerRating: 4.4, sellerPhone: "+237676789012", images: ["https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=85"], description: "Fresh bitter leaf (vernonia amygdalina) for authentic Ndolé. Already washed and ready.", isDemo: true },
+  s5: { id: "s5", title: "Groundnuts (1kg bag)", category: "Legumes", unit: "kg", pricePerUnitXAF: 1200, stockQuantity: 80, isOrganic: false, availableForDelivery: true, sellerName: "Adamaoua Nuts", sellerCity: "NgaoundÃ©rÃ©, Adamaoua", sellerRating: 4.9, sellerPhone: "+237665678901", images: ["https://images.unsplash.com/photo-1567581935884-3349723552ca?w=600&q=85"], description: "Premium shelled groundnuts from the Adamaoua savannah. Great for peanut paste and soup.", isDemo: true },
+  s6: { id: "s6", title: "Bitter Leaf (NdolÃ©)", category: "Vegetables", unit: "bunch", pricePerUnitXAF: 200, stockQuantity: 40, isOrganic: true, availableForDelivery: false, sellerName: "Centre Fresh Greens", sellerCity: "YaoundÃ©, Centre", sellerRating: 4.4, sellerPhone: "+237676789012", images: ["https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=85"], description: "Fresh bitter leaf (vernonia amygdalina) for authentic NdolÃ©. Already washed and ready.", isDemo: true },
   s7: { id: "s7", title: "Fresh Avocados", category: "Fruits", unit: "kg", pricePerUnitXAF: 800, stockQuantity: 60, isOrganic: true, availableForDelivery: true, sellerName: "Highlands Harvest", sellerCity: "Dschang, West", sellerRating: 4.8, sellerPhone: "+237687890123", images: ["https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&q=85"], description: "Hand-picked avocados from highland farms in Dschang. Perfectly ripe, creamy and nutritious.", isDemo: true },
   s8: { id: "s8", title: "Pineapples (Large)", category: "Fruits", unit: "piece", pricePerUnitXAF: 600, stockQuantity: 25, isOrganic: false, availableForDelivery: true, sellerName: "Littoral Tropicals", sellerCity: "Edea, Littoral", sellerRating: 4.6, sellerPhone: "+237698901234", images: ["https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=600&q=85"], description: "Sweet, juicy pineapples from coastal farms near Edea. Extra large size.", isDemo: true },
 };
 
-// ── DirectPayModal ────────────────────────────────────────────────────────────
+// â”€â”€ DirectPayModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface DirectPayModalProps {
   total: number; productTitle: string; quantity: number; unit: string;
@@ -97,7 +100,6 @@ function DirectPayModal({
   total, productTitle, quantity, unit,
   onClose, onPay, status, payRef, errorMsg, countdown,
 }: DirectPayModalProps) {
-  const lang = useLang();
   const [phone,      setPhone]      = useState("");
   const [phoneError, setPhoneError] = useState("");
 
@@ -133,7 +135,7 @@ function DirectPayModal({
         </div>
         <div className="px-6 py-5 space-y-4">
           <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3">
-            <p className="text-xs text-gray-500 mb-0.5">{productTitle} × {quantity} {unit}</p>
+            <p className="text-xs text-gray-500 mb-0.5">{productTitle} Ã— {quantity} {unit}</p>
             <div className="flex justify-between items-center">
               <span className="text-gray-600 text-sm">{t("total", lang)}</span>
               <span className="text-green-700 font-bold text-lg">{total.toLocaleString("fr-CM")} XAF</span>
@@ -201,7 +203,7 @@ function DirectPayModal({
                   {operator && (
                     <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-0.5 rounded-full ${
                       operator === "mtn" ? "bg-yellow-100 text-yellow-800" : "bg-orange-100 text-orange-800"}`}>
-                      {operator === "mtn" ? "📶 MTN" : "🟠 Orange"}
+                      {operator === "mtn" ? "ðŸ“¶ MTN" : "ðŸŸ  Orange"}
                     </span>
                   )}
                 </div>
@@ -232,13 +234,12 @@ function DirectPayModal({
   );
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const FarmFreshDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const lang = useLang();
   useViewTracker(id, "farm_products");
 
   const [product,      setProduct]      = useState<FarmProduct | null>(null);
@@ -253,7 +254,6 @@ const FarmFreshDetail: React.FC = () => {
   const [orderDone,    setOrderDone]    = useState(false);
   const [orderRef,     setOrderRef]     = useState("");
 
-  const isRtl = lang === "ar";
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -350,7 +350,7 @@ const FarmFreshDetail: React.FC = () => {
 
   async function handleDirectPay(phone: string) {
     if (!product) return;
-    await initPayment({ amount: totalXAF, phone, description: `Bambeh Farm Fresh — ${product.title} x${quantity}`, externalRef: `ff_${product.id}_${Date.now()}` });
+    await initPayment({ amount: totalXAF, phone, description: `Bambeh Farm Fresh â€” ${product.title} x${quantity}`, externalRef: `ff_${product.id}_${Date.now()}` });
   }
 
   if (loading) return (
@@ -360,7 +360,7 @@ const FarmFreshDetail: React.FC = () => {
   );
 
   if (error || !product) return (
-    <div className="p-4 space-y-4" dir={isRtl ? "rtl" : "ltr"}>
+    <div className="p-4 space-y-4">
       <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-600">
         <ArrowLeft className="w-4 h-4" />{t("back", lang)}
       </button>
@@ -376,7 +376,7 @@ const FarmFreshDetail: React.FC = () => {
 
   if (orderDone) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-6" dir={isRtl ? "rtl" : "ltr"}>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-6">
         <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
           <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-1">{t("orderPlaced", lang)}</h2>
@@ -390,11 +390,11 @@ const FarmFreshDetail: React.FC = () => {
   }
 
   const waMsg = encodeURIComponent(
-    `Hi ${product.sellerName}, I saw your listing on Bambeh: ${product.title} — ${fmtXAF(product.pricePerUnitXAF)}/${product.unit}. Is it still available?`
+    `Hi ${product.sellerName}, I saw your listing on Bambeh: ${product.title} â€” ${fmtXAF(product.pricePerUnitXAF)}/${product.unit}. Is it still available?`
   );
 
   return (
-    <div className="max-w-lg mx-auto pb-36 bg-white min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
+    <div className="max-w-lg mx-auto pb-36 bg-white min-h-screen">
       {/* Toasts */}
       {copied && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white text-sm px-4 py-2 rounded-full shadow-lg">
@@ -426,7 +426,7 @@ const FarmFreshDetail: React.FC = () => {
             <img src={product.images[imgIdx]} alt={product.title} className="w-full h-full object-cover"
               onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🌿</div>
+            <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">ðŸŒ¿</div>
           )}
         </div>
         {product.images.length > 1 && (
@@ -488,7 +488,7 @@ const FarmFreshDetail: React.FC = () => {
               <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
                 <MapPin className="w-3 h-3" />{product.sellerCity}
                 {product.sellerRating > 0 && (
-                  <><span>·</span><Star className="w-3 h-3 text-yellow-400 fill-yellow-400" /><span>{product.sellerRating.toFixed(1)}</span></>
+                  <><span>Â·</span><Star className="w-3 h-3 text-yellow-400 fill-yellow-400" /><span>{product.sellerRating.toFixed(1)}</span></>
                 )}
               </div>
             </div>
@@ -516,7 +516,7 @@ const FarmFreshDetail: React.FC = () => {
             <p className="font-semibold text-blue-900 text-sm">{t("joinGroupBuy", lang)}</p>
             <p className="text-xs text-blue-600">{t("joinGroupBuySub", lang)}</p>
           </div>
-          <span className="text-blue-500 text-sm font-semibold">→</span>
+          <span className="text-blue-500 text-sm font-semibold">â†’</span>
         </button>
 
         {/* Description */}

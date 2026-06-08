@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Profile.tsx — Bambeh Marketplace
  *
  * FIXED in this version:
@@ -19,6 +19,7 @@ import {
   X, LogOut, Camera, AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface UserProfile {
   id:       string;
@@ -35,6 +36,8 @@ const ALLOWED_IMG  = ["image/jpeg", "image/png", "image/webp"];
 const MAX_AVATAR   = 3 * 1024 * 1024; // 3MB — keeps localStorage manageable
 
 export default function Profile() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const fileRef   = useRef<HTMLInputElement>(null);
 
@@ -223,7 +226,7 @@ export default function Profile() {
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full"/>
       </div>
     );
   }

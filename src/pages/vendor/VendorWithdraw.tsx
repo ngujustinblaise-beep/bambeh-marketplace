@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VendorWithdraw.tsx — BAMBEH VENDOR PORTAL
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -11,6 +11,7 @@ import {
   AlertCircle, Shield, Clock, ChevronRight, Wallet, Lock,
   Info, Eye, EyeOff, Zap, Check
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 type PaymentMethod = 'mtn' | 'orange' | 'card' | 'bank';
 type Step = 'method' | 'details' | 'confirm' | 'success';
@@ -205,7 +206,7 @@ const VendorWithdraw: React.FC = () => {
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`flex-1 h-0.5 mb-4 rounded-full transition-all ${i < stepIndex ? 'bg-green-400' : 'bg-gray-200'}`} />
+                  <div className={`flex-1 h-0.5 mb-4 rounded-full transition-all ${i < stepIndex ? 'bg-green-400' : 'bg-gray-200'}`}/>
                 )}
               </React.Fragment>
             ))}
@@ -220,7 +221,7 @@ const VendorWithdraw: React.FC = () => {
           <>
             <div className="rounded-2xl p-5 text-white relative overflow-hidden"
               style={{ background: 'linear-gradient(135deg, #059669 0%, #0d9488 50%, #0369a1 100%)' }}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"/>
               <p className="text-green-100 text-sm mb-1">Available Balance</p>
               <p className="text-4xl font-black">{formatXAF(BALANCE)}</p>
               <p className="text-green-200 text-xs mt-2">💡 Minimum withdrawal: 1,000 XAF</p>
@@ -289,7 +290,7 @@ const VendorWithdraw: React.FC = () => {
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
                       selectedMethod === m.id ? 'border-teal-600 bg-teal-600' : 'border-gray-300'
                     }`}>
-                      {selectedMethod === m.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                      {selectedMethod === m.id && <div className="w-2 h-2 bg-white rounded-full"/>}
                     </div>
                   </button>
                 ))}

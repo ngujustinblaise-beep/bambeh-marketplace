@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/CommunityPage.tsx — Bambeh Marketplace
  *
  * FIXED:
@@ -15,6 +15,7 @@ import {
   Users, Search, Plus, X, ArrowRight, Globe, Lock,
   ChevronRight, Share2, Check, MessageCircle, Copy,
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -118,6 +119,8 @@ const DIAL_CODES = [
 // ─── Share Modal ──────────────────────────────────────────────────────────────
 
 function ShareModal({ group, onClose }: { group: Group; onClose: () => void }) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const [copied, setCopied] = useState(false);
   const url = `${window.location.origin}${window.location.pathname}#/community/${group.id}`;
 
@@ -348,7 +351,7 @@ function CreateGroupModal({ onClose, onCreated }: {
                   alt="preview"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/30" />
+                <div className="absolute inset-0 bg-black/30"/>
                 <div className="absolute bottom-2 left-3 text-white">
                   <p className="font-bold text-sm">{CAT_EMOJIS[category]} {name || 'Group Name'}</p>
                   <p className="text-xs text-white/80">{category} · {isPublic ? 'Public' : 'Private'}</p>
@@ -364,7 +367,7 @@ function CreateGroupModal({ onClose, onCreated }: {
             className="w-full bg-gradient-to-r from-teal-500 to-teal-700 disabled:from-gray-200 disabled:to-gray-200 disabled:text-gray-400 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
           >
             {saving ? (
-              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Creating...</>
+              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> Creating...</>
             ) : (
               <><Users className="w-4 h-4" /> Create Group</>
             )}
@@ -393,7 +396,7 @@ function GroupCard({ group, onShare }: { group: Group; onShare: (g: Group) => vo
           <img src={group.coverUrl} alt={group.name} className="w-full h-full object-cover" loading="lazy"
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"/>
         <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
           <div>
             <p className="text-white font-bold text-sm leading-tight line-clamp-1">{group.emoji} {group.name}</p>

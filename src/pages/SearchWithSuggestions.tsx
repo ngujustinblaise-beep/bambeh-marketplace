@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/SearchWithSuggestions.tsx — Bambeh Marketplace
  * FIXED: Was a stub with wrong Firebase AuthContext.
  * Now redirects to /search (SearchResults.tsx) which reads from Supabase.
@@ -8,8 +8,11 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function SearchWithSuggestions() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate      = useNavigate();
   const [searchParams] = useSearchParams();
 

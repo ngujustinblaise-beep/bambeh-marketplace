@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/VerifiedSeller.tsx
  * Bambeh Marketplace — Verified Seller Application Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type VerificationStatus = "not_applied" | "pending" | "approved" | "rejected";
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR PORTAL - ENTRY PAGE FOR VENDORS
  * ═══════════════════════════════════════════════════════════════════════════
@@ -30,8 +30,11 @@ import {
   BarChart3,
   Zap
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function VendorPortal() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
 
   const benefits = [

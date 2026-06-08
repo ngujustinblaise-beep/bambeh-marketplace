@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Store, ArrowLeft, LogIn, User, Lock, Eye, EyeOff, AlertCircle, Shield, Clock, CheckCircle, Building, Loader2 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 5 * 60 * 1000;
@@ -10,6 +11,8 @@ const MASTERS = [
 ];
 
 function doAuth(input: string, pw: string) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const u = input.toLowerCase().trim();
   for (const m of MASTERS) {
     if (m.username === u && m.password === pw) {

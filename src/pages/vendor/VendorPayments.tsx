@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VendorPayments.tsx — BAMBEH VENDOR PORTAL
  * Earnings tracker, withdrawal requests, payment history
@@ -12,6 +12,7 @@ import {
   Clock, CheckCircle, AlertCircle, Smartphone, ArrowUpRight,
   BarChart2, Wallet, Send, ChevronRight, Shield, ArrowUp,
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Transaction {
   id: string;
@@ -92,8 +93,8 @@ const VendorPayments: React.FC = () => {
 
       {/* Balance Hero */}
       <div className="bg-gradient-to-r from-green-600 via-teal-600 to-blue-600 rounded-2xl p-6 mb-6 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"/>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"/>
         <p className="text-green-100 text-sm mb-1 relative">Available Balance</p>
         <p className="text-4xl font-black relative">{formatXAF(balance)}</p>
         <div className="flex gap-6 mt-4 relative">
@@ -101,12 +102,12 @@ const VendorPayments: React.FC = () => {
             <p className="text-green-200 text-xs">Pending</p>
             <p className="font-bold text-lg">{formatXAF(pending)}</p>
           </div>
-          <div className="w-px bg-white/20" />
+          <div className="w-px bg-white/20"/>
           <div>
             <p className="text-green-200 text-xs">Total Earned</p>
             <p className="font-bold text-lg">{formatXAF(totalEarned)}</p>
           </div>
-          <div className="w-px bg-white/20" />
+          <div className="w-px bg-white/20"/>
           <div>
             <p className="text-green-200 text-xs">Withdrawn</p>
             <p className="font-bold text-lg">{formatXAF(totalWithdrawn)}</p>

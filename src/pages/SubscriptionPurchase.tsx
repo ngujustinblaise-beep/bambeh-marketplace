@@ -1,10 +1,11 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, Star, Zap, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface SubscriptionTier {
   id?: any; name?: any; popular?: any; bgGradient?: any;

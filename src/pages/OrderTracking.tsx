@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * ORDER TRACKING PAGE - PROFESSIONAL E-COMMERCE TRACKING
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,6 +23,7 @@ import {
   AlertCircle, RefreshCw, Home, Store,
   Calendar, User, CreditCard, ChevronRight,
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // Order status types
 type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
@@ -84,6 +85,8 @@ const STATUS_CONFIG: Record<OrderStatus, { color: string; bgColor: string; icon:
 };
 
 export default function OrderTracking() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderDetails | null>(null);

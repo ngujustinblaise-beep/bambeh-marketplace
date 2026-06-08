@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/MarketplaceDrafts.tsx — Bambeh Marketplace
  *
  * REWRITE — June 2026
@@ -11,6 +11,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit3, Trash2, CheckCircle, Loader2, PackageOpen, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Draft {
   id: string;
@@ -22,6 +23,8 @@ interface Draft {
 }
 
 export default function MarketplaceDrafts() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [drafts,  setDrafts]  = useState<Draft[]>([]);
   const [loading, setLoading] = useState(true);

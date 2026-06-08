@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/FeaturedListings.tsx
  * Bambeh Marketplace — Featured Listings Manager
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -8,6 +8,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Star, ArrowLeft, Zap, Plus, RefreshCw, CheckCircle, Clock, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface FeaturedSlot {
   id: string;

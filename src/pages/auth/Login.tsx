@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LOGIN PAGE — Bambeh Marketplace
  * FILE LOCATION: src/pages/auth/Login.tsx
  *
@@ -34,6 +34,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { registerFCM } from "@/lib/fcm";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const MAX_ATTEMPTS      = 5;
 const LOCKOUT_DURATION  = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -80,6 +81,8 @@ const MASTER_ACCOUNTS = {
 };
 
 export default function Login() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const location  = useLocation();
   const { login } = useAuth();
@@ -402,7 +405,7 @@ export default function Login() {
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"/>
                     Signing In...
                   </span>
                 ) : isLocked ? "Account Locked" : "Sign In"}

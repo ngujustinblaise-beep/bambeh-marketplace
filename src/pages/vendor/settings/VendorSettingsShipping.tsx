@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Truck, CheckCircle, AlertCircle, Plus, Trash2, MapPin } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ShippingZone { id:string; name:string; enabled:boolean; price:number; freeAbove:number|null; estimatedDays:string; }
 interface ShippingSettings { offersDelivery:boolean; offersPickup:boolean; pickupAddress:string; processingDays:number; zones:ShippingZone[]; }
@@ -16,6 +17,8 @@ const DEFAULT_ZONES: ShippingZone[] = [
 const defaultSettings = (): ShippingSettings => ({ offersDelivery:true, offersPickup:false, pickupAddress:"", processingDays:1, zones:DEFAULT_ZONES });
 
 export default function VendorSettingsShipping() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [shipping, setShipping] = useState<ShippingSettings>(defaultSettings());

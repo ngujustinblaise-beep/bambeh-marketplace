@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR SECURE DASHBOARD - ENHANCED VERSION
  * © 2025 Bambeh. All rights reserved.
@@ -12,6 +12,7 @@ import {
   Star, ShoppingBag, CheckCircle, Bell, FileText, Crown,
   Store, LogOut, Eye, DollarSign
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Activity {
   id: string;
@@ -24,6 +25,8 @@ interface Activity {
 }
 
 export default function VendorSecureDashboard() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [vendor, setVendor] = useState<any>(null);
 
@@ -60,7 +63,7 @@ export default function VendorSecureDashboard() {
   if (!vendor) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"/>
       </div>
     );
   }

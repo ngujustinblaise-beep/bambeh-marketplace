@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/PrioritySupport.tsx
  * Bambeh Marketplace — Priority Support Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -8,6 +8,7 @@ import React, { useState, useCallback } from "react";
 import { Headphones, ArrowLeft, Send, CheckCircle, Clock, AlertTriangle, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type TicketPriority = "low" | "medium" | "high" | "urgent";
 type TicketCategory = "payment" | "account" | "listing" | "order" | "technical" | "other";

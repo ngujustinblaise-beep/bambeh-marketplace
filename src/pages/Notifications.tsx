@@ -1,5 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const typeIcon: Record<string, string> = {
   welcome:      '👋',
@@ -16,6 +17,8 @@ const typeBg: Record<string, string> = {
 };
 
 function timeAgo(dateStr: string): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
   if (m < 1)  return 'Just now';
@@ -63,7 +66,7 @@ function NotifCard({ notif, onRead }: { notif: BambehNotification; onRead: (id: 
               {timeAgo(notif.created_at)}
             </span>
             {!notif.is_read && (
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1D9E75' }} />
+              <div  style={{ width: 8, height: 8, borderRadius: '50%', background: '#1D9E75' }} />
             )}
           </div>
         </div>

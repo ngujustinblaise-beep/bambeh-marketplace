@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Details Page (WORLD-CLASS REBUILD)
  *
@@ -41,6 +41,7 @@ import {
 import { getJobById, incrementJobView, getJobs } from "@/services/jobs.service";
 import { useAuth } from "@/contexts/AuthContext";
 import type { JobListing } from "@/types/src_types_items";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const SAVED_KEY = "bambeh_saved_jobs";
@@ -65,6 +66,8 @@ const EXPERIENCE_LABELS: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtSalary(min?: number, max?: number): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (!min && !max) return "Salary not specified";
   const fmt = (n: number) =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` :
@@ -105,13 +108,13 @@ function JobDetailsSkeleton() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 animate-pulse">
       {/* Header */}
       <div className="bg-gradient-to-br from-teal-600 to-teal-800 px-4 pt-5 pb-8">
-        <div className="h-4 w-20 bg-teal-500/50 rounded mb-6" />
+        <div className="h-4 w-20 bg-teal-500/50 rounded mb-6"/>
         <div className="flex gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-white/20" />
+          <div className="w-16 h-16 rounded-2xl bg-white/20"/>
           <div className="flex-1">
-            <div className="h-5 w-3/4 bg-white/20 rounded mb-2" />
-            <div className="h-4 w-1/2 bg-white/15 rounded mb-2" />
-            <div className="h-3 w-1/3 bg-white/10 rounded" />
+            <div className="h-5 w-3/4 bg-white/20 rounded mb-2"/>
+            <div className="h-4 w-1/2 bg-white/15 rounded mb-2"/>
+            <div className="h-3 w-1/3 bg-white/10 rounded"/>
           </div>
         </div>
       </div>
@@ -119,9 +122,9 @@ function JobDetailsSkeleton() {
       <div className="px-4 py-5 space-y-4">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-4 space-y-3">
-            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-3 w-full bg-gray-100 dark:bg-gray-700 rounded" />
-            <div className="h-3 w-5/6 bg-gray-100 dark:bg-gray-700 rounded" />
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded"/>
+            <div className="h-3 w-full bg-gray-100 dark:bg-gray-700 rounded"/>
+            <div className="h-3 w-5/6 bg-gray-100 dark:bg-gray-700 rounded"/>
           </div>
         ))}
       </div>
@@ -288,8 +291,8 @@ const JobDetails: React.FC = () => {
       <div className="bg-gradient-to-br from-teal-600 via-teal-700 to-teal-900 px-4 pt-5 pb-10 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white transform translate-x-1/3 -translate-y-1/3" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white transform -translate-x-1/3 translate-y-1/3" />
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white transform translate-x-1/3 -translate-y-1/3"/>
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white transform -translate-x-1/3 translate-y-1/3"/>
         </div>
 
         {/* Back button */}

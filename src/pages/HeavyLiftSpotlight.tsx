@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Star,MapPin,Briefcase,TrendingUp,Award,ChevronRight,Share2}from'lucide-react';
@@ -17,6 +19,8 @@ const CATEGORIES:{key:Category|'all';label:string}[]=[
 ];
 
 export default function HeavyLiftSpotlight(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[stories,setStories]=useState<StoryEntry[]>([]);
   const[filter,setFilter]=useState<Category|'all'>('all');

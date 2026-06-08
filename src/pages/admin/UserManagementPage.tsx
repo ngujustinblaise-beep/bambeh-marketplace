@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/admin/UserManagementPage.tsx
  * Bambeh Marketplace — Admin User Management
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Users, Search, ShieldCheck, ShieldOff, Eye, Ban, RefreshCw, Filter, ChevronDown, UserCheck, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ManagedUser {
   id: string;

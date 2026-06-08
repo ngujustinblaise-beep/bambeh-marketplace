@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
  *
@@ -23,8 +23,11 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage, AVAILABLE_LANGUAGES, LanguageCode } from '@/contexts/LanguageContext';
 import { NotificationBell } from '@/components/NotificationBell';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function Header() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const { currentUser, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
@@ -326,8 +329,7 @@ export default function Header() {
         {isMenuOpen && (
           <div
             className="md:hidden bg-gradient-to-b from-teal-600 to-blue-700 border-t border-teal-700"
-            style={{ maxHeight: 'calc(100vh - 80px)', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
-          >
+            style={{ maxHeight: 'calc(100vh - 80px)', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
             {/* Mobile search */}
             <form onSubmit={handleSearch} className="p-4 border-b border-teal-700">
               <div className="relative flex">
@@ -385,7 +387,7 @@ export default function Header() {
                 </Link>
               ))}
 
-              <div className="border-t border-teal-700 my-2" />
+              <div className="border-t border-teal-700 my-2"/>
 
               {/* Language picker — MOBILE */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
@@ -423,7 +425,7 @@ export default function Header() {
                 </div>
               )}
 
-              <div className="border-t border-teal-700 my-2" />
+              <div className="border-t border-teal-700 my-2"/>
 
               {/* Categories */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
@@ -456,7 +458,7 @@ export default function Header() {
                 {t('nav.exchange')}
               </Link>
 
-              <div className="border-t border-teal-700 my-2" />
+              <div className="border-t border-teal-700 my-2"/>
 
               {/* Quick actions */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
@@ -503,7 +505,7 @@ export default function Header() {
                 <span className="flex-1">Subscribe — CFA 100 only!</span>
               </Link>
 
-              <div className="border-t border-teal-700 my-2" />
+              <div className="border-t border-teal-700 my-2"/>
 
               {/* Session */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
@@ -529,7 +531,7 @@ export default function Header() {
                   <span>{t('common.login')} / {t('common.register')}</span>
                 </Link>
               )}
-              <div className="h-8" />
+              <div className="h-8"/>
             </nav>
           </div>
         )}

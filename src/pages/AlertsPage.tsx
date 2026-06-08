@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Alert { id: string; title: string; message: string; priority: "low" | "medium" | "high"; read: boolean; }
 

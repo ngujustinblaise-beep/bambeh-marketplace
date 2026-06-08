@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useParams,useNavigate}from'react-router-dom';
 import{ArrowLeft,Users,MessageCircle,ThumbsUp,Share2,Send}from'lucide-react';
@@ -13,6 +15,8 @@ const MOCK_POSTS:Post[]=[
 const MOCK_POLL:Poll={id:'1',question:'What feature do you want most?',options:[{text:'Better search',votes:45},{text:'Live chat',votes:38},{text:'Payment plans',votes:29},{text:'More categories',votes:22}]};
 
 export default function CommunityDetail(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const{id}=useParams();
   const navigate=useNavigate();
   const[posts,setPosts]=useState<Post[]>(MOCK_POSTS);

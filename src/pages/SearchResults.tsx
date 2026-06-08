@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/SearchResults.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -23,6 +23,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import type { SearchScope } from '@/services/searchService';
 import { SCOPE_CONFIG } from '@/services/searchService';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Result {
@@ -79,6 +80,8 @@ const SCOPES: { value: SearchScope; label: string; emoji: string; sublabel: stri
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function timeAgo(iso: string): string {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const diff = Date.now() - new Date(iso).getTime();
   const h = Math.floor(diff / 3600000);
   if (h < 1)  return 'Just now';

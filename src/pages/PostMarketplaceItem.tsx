@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * POST MARKETPLACE ITEM - MILITARY GRADE VERSION
  * FILE LOCATION: src/pages/PostMarketplaceItem.tsx
@@ -8,6 +8,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, X, MapPin, DollarSign, Package, Loader2, Check, Camera } from 'lucide-react';
 import { MarketplaceItem } from '@/types/items';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface ImagePreview { file: File; url: string; id: string; }
 

@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,TrendingUp,TrendingDown,BarChart2,Users,DollarSign,Eye,ShoppingCart,Star,Package}from'lucide-react';
@@ -7,6 +9,8 @@ const REVENUE=[180000,220000,150000,310000,280000,350000,260000];
 const ORDERS=[5,8,4,12,10,15,9];
 
 export default function VendorAnalyticsEnhanced(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[period,setPeriod]=useState<'7d'|'30d'|'90d'>('7d');
   const maxRev=Math.max(...REVENUE);

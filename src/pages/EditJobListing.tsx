@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/EditJobListing.tsx — Bambeh Marketplace
  * FIXED: Real job edit form reading from and saving to Supabase.
  * Was a stub (just showed a pencil emoji).
@@ -8,11 +8,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Briefcase, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const JOB_TYPES  = ['Full-time', 'Part-time', 'Contract', 'Remote', 'Internship'];
 const CATEGORIES = ['Technology', 'Sales', 'Marketing', 'Finance', 'Healthcare', 'Education', 'Transport', 'Other'];
 
 export default function EditJobListing() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
 

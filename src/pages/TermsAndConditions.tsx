@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS AND CONDITIONS
  * FILE LOCATION: src/pages/TermsAndConditions.tsx
  */
@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, CheckCircle2 } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface TermsAndConditionsProps { onAccepted: () => void; }
 

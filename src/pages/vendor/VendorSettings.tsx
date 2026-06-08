@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VENDOR SETTINGS PAGE - COMPREHENSIVE VENDOR SETTINGS
  * FILE LOCATION: src/pages/vendor/VendorSettings.tsx
@@ -12,6 +12,7 @@ import {
   Eye, EyeOff, Save, Lock, Mail, Phone, Camera, Check, ChevronRight,
   Moon, Sun, Volume2, VolumeX, Smartphone, LogOut, Trash2, AlertTriangle
 } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface VendorData {
   id: string;
@@ -39,6 +40,8 @@ const settingsSections: SettingsSection[] = [
 ];
 
 export default function VendorSettings() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [vendor, setVendor] = useState<VendorData | null>(null);
   const [activeSection, setActiveSection] = useState('account');
@@ -168,7 +171,7 @@ export default function VendorSettings() {
             onClick={() => setNotificationSettings({ ...notificationSettings, [key]: !notificationSettings[key as keyof typeof notificationSettings] })}
             className={`w-12 h-7 rounded-full transition-colors ${notificationSettings[key as keyof typeof notificationSettings] ? 'bg-purple-600' : 'bg-gray-300'}`}
           >
-            <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${notificationSettings[key as keyof typeof notificationSettings] ? 'translate-x-6' : 'translate-x-1'}`} />
+            <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${notificationSettings[key as keyof typeof notificationSettings] ? 'translate-x-6' : 'translate-x-1'}`}/>
           </button>
         </div>
       ))}
@@ -193,7 +196,7 @@ export default function VendorSettings() {
             onClick={() => setPrivacySettings({ ...privacySettings, [key]: !privacySettings[key as keyof typeof privacySettings] })}
             className={`w-12 h-7 rounded-full transition-colors ${privacySettings[key as keyof typeof privacySettings] ? 'bg-purple-600' : 'bg-gray-300'}`}
           >
-            <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${privacySettings[key as keyof typeof privacySettings] ? 'translate-x-6' : 'translate-x-1'}`} />
+            <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${privacySettings[key as keyof typeof privacySettings] ? 'translate-x-6' : 'translate-x-1'}`}/>
           </button>
         </div>
       ))}
@@ -225,7 +228,7 @@ export default function VendorSettings() {
           onClick={() => setPaymentSettings({ ...paymentSettings, autoWithdraw: !paymentSettings.autoWithdraw })}
           className={`w-12 h-7 rounded-full transition-colors ${paymentSettings.autoWithdraw ? 'bg-green-600' : 'bg-gray-300'}`}
         >
-          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${paymentSettings.autoWithdraw ? 'translate-x-6' : 'translate-x-1'}`} />
+          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${paymentSettings.autoWithdraw ? 'translate-x-6' : 'translate-x-1'}`}/>
         </button>
       </div>
       <div>
@@ -263,7 +266,7 @@ export default function VendorSettings() {
           onClick={() => setSecuritySettings({ ...securitySettings, twoFactorEnabled: !securitySettings.twoFactorEnabled })}
           className={`w-12 h-7 rounded-full transition-colors ${securitySettings.twoFactorEnabled ? 'bg-green-600' : 'bg-gray-300'}`}
         >
-          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${securitySettings.twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${securitySettings.twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'}`}/>
         </button>
       </div>
       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
@@ -275,7 +278,7 @@ export default function VendorSettings() {
           onClick={() => setSecuritySettings({ ...securitySettings, loginAlerts: !securitySettings.loginAlerts })}
           className={`w-12 h-7 rounded-full transition-colors ${securitySettings.loginAlerts ? 'bg-green-600' : 'bg-gray-300'}`}
         >
-          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${securitySettings.loginAlerts ? 'translate-x-6' : 'translate-x-1'}`} />
+          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${securitySettings.loginAlerts ? 'translate-x-6' : 'translate-x-1'}`}/>
         </button>
       </div>
       <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -322,7 +325,7 @@ export default function VendorSettings() {
           onClick={() => setLanguageSettings({ ...languageSettings, darkMode: !languageSettings.darkMode })}
           className={`w-12 h-7 rounded-full transition-colors ${languageSettings.darkMode ? 'bg-purple-600' : 'bg-gray-300'}`}
         >
-          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${languageSettings.darkMode ? 'translate-x-6' : 'translate-x-1'}`} />
+          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${languageSettings.darkMode ? 'translate-x-6' : 'translate-x-1'}`}/>
         </button>
       </div>
     </div>

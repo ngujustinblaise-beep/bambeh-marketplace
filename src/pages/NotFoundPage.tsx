@@ -1,5 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
+import { useLang, t } from "@/hooks/useAppLang";
 
 const NotFoundPage: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 py-12 px-4">

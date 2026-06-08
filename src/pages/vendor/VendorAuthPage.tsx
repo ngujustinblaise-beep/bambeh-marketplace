@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState}from'react';
 import{useNavigate,Link}from'react-router-dom';
 import{Store,Mail,Lock,Eye,EyeOff,User,Phone,Check,AlertCircle}from'lucide-react';
@@ -5,6 +7,8 @@ import{Store,Mail,Lock,Eye,EyeOff,User,Phone,Check,AlertCircle}from'lucide-react
 type Mode='signin'|'register';
 
 export default function VendorAuthPage(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[mode,setMode]=useState<Mode>('signin');
   const[email,setEmail]=useState('');

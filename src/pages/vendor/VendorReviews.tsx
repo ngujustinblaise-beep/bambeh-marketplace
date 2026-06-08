@@ -1,5 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type ReviewStatus = "all" | "replied" | "pending" | "flagged";
 const TABS: ReviewStatus[] = ["all", "replied", "pending", "flagged"];

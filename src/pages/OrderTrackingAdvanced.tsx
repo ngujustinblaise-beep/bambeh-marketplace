@@ -1,10 +1,11 @@
-/**
+﻿/**
  * Bambeh Marketplace — Suivi des commandes
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang, t } from "@/hooks/useAppLang";
 
 const OrderTrackingAdvanced: React.FC = () => {
   const navigate = useNavigate();

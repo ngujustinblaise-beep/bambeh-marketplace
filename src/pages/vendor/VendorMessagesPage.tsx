@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect,useRef}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Search,Send,MessageSquare,Circle}from'lucide-react';
@@ -23,6 +25,8 @@ const MOCK_CHATS:Chat[]=[
 ];
 
 export default function VendorMessagesPage(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[vendor,setVendor]=useState<any>(null);
   const[chats,setChats]=useState<Chat[]>(MOCK_CHATS);
@@ -130,7 +134,7 @@ export default function VendorMessagesPage(){
                 </div>
               </div>
             ))}
-            <div ref={msgEndRef}/>
+            <div  ref={msgEndRef}/>
           </div>
           <div className="bg-white border-t p-3 flex gap-2">
             <input

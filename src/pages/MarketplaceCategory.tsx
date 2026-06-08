@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/MarketplaceCategory.tsx — Bambeh Marketplace
  *
  * REWRITE — June 2026
@@ -16,6 +16,7 @@ import {
   Eye, Loader2, PackageOpen, X, ShoppingCart,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Item {
@@ -36,6 +37,8 @@ const CART_KEY = "bambeh_cart";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function extractImage(row: any): string | undefined {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   if (Array.isArray(row.images) && row.images.length > 0) {
     const f = row.images[0];
     return typeof f === "string" ? f : (f?.url ?? f?.thumbnail_url);

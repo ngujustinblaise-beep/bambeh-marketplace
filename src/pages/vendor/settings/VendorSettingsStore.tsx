@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VENDOR SETTINGS - STORE SETTINGS
  * Sub-page for managing store branding, categories, and SEO
  * FILE LOCATION: src/pages/vendor/settings/VendorSettingsStore.tsx
@@ -11,8 +11,11 @@ import {
   Camera, Palette, Layout, Settings, ChevronRight
 } from 'lucide-react';
 import BambehLogo from '@/assets/images/bambeh-logo.png';
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function VendorSettingsStore() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -373,7 +376,7 @@ export default function VendorSettingsStore() {
                       storeSettings.displaySettings[setting.key as keyof typeof storeSettings.displaySettings]
                         ? 'translate-x-6'
                         : 'translate-x-1'
-                    }`} />
+                    }`}/>
                   </button>
                 </div>
               ))}

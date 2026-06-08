@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HELP CENTER - MAIN PAGE
  */
 
@@ -12,8 +12,11 @@ import {
   Shield,
   ShoppingBag
 } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function Help() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const categories = [
     {
       title: "Getting Started",
@@ -98,8 +101,7 @@ export default function Help() {
                 className="bg-white rounded-2xl shadow-lg overflow-hidden"
               >
                 <div
-                  className={`bg-gradient-to-r ${category.color} text-white p-6`}
-                >
+                  className={`bg-gradient-to-r ${category.color} text-white p-6`}>
                   <div className="flex items-center gap-3">
                     <Icon className="w-8 h-8" />
                     <h2 className="text-2xl font-bold">{category.title}</h2>

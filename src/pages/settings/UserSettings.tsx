@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  *
@@ -23,6 +23,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage, AVAILABLE_LANGUAGES, LanguageCode } from "@/contexts/LanguageContext";
 import { supabase } from "@/lib/supabase";
+import { useLang, t } from "@/hooks/useAppLang";
 
 type Tab = "general" | "notifications" | "privacy" | "security";
 

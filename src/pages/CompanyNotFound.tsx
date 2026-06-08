@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/CompanyNotFound.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -12,6 +12,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, Building, AlertCircle } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface CompanyNotFoundProps {
   companyName?: string;
@@ -19,6 +20,8 @@ interface CompanyNotFoundProps {
 }
 
 export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoundProps) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
 
   return (

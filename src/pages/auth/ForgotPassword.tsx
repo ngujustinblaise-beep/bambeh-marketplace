@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/auth/ForgotPassword.tsx
  * Password reset via Supabase Auth (Firebase Auth removed)
  */
@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useLang, t } from "@/hooks/useAppLang";
 
 // ─────────────────────────────────────────────────────────────────────────────
 

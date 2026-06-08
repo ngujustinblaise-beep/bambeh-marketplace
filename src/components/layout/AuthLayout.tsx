@@ -1,16 +1,19 @@
-/**
+﻿/**
  * AuthLayout.tsx
  * Minimal centered layout for Login, Register, ForgotPassword pages.
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 flex flex-col">
       {/* Branding strip */}

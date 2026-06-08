@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/VendorPremiumTools.tsx
  * Bambeh Marketplace — Vendor Premium Tools Dashboard
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -7,6 +7,7 @@
 import React from "react";
 import { ArrowLeft, Zap, BarChart2, Upload, Star, Headphones, ShieldCheck, MessageCircle, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface PremiumTool {
   id: string;

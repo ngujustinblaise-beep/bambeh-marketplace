@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Exchange.tsx — Bambeh Marketplace
  * ✅ ADDED: view_count shown on each listing card
  * ✅ All original logic preserved exactly
@@ -10,6 +10,7 @@ import { ArrowLeftRight, Plus, Package, Loader2, RefreshCw, Eye } from 'lucide-r
 import { createClient } from '@supabase/supabase-js';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip'; // ✅ FEATURED ADS
+import { useLang, t } from "@/hooks/useAppLang";
 
 const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
 const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || '';
@@ -29,6 +30,8 @@ interface ExchangeItem {
 }
 
 export default function Exchange() {
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate = useNavigate();
   const [items,   setItems]   = useState<ExchangeItem[]>([]);
   const [loading, setLoading] = useState(true);

@@ -1,3 +1,5 @@
+﻿import { useLang, t } from "@/hooks/useAppLang";
+
 import{useState,useEffect}from'react';
 import{useNavigate}from'react-router-dom';
 import{ArrowLeft,Users,Search,Phone,Mail,Star,ShoppingBag,TrendingUp,ChevronRight}from'lucide-react';
@@ -12,6 +14,8 @@ const SAMPLE:Customer[]=[
 ];
 
 export default function VendorCustomers(){
+  const lang = useLang();
+  const isRtl = lang === "ar";
   const navigate=useNavigate();
   const[customers,setCustomers]=useState<Customer[]>(SAMPLE);
   const[search,setSearch]=useState('');

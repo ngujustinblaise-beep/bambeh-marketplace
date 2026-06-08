@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Book, Search, HelpCircle, FileText } from 'lucide-react';
+import { useLang, t } from "@/hooks/useAppLang";
 
 interface Guide {
   id: string;
