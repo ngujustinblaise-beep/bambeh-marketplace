@@ -10,6 +10,8 @@
  *  ✅ Demo IDs s1–s8 handled inline (no DB call)
  *  ✅ Worldwide visibility: any logged-in user anywhere can view
  *  ✅ Seller contact: WhatsApp + Call work correctly
+ *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
+ *     — reacts instantly when user changes language
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -24,6 +26,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from "@/hooks/useCamPay";
+import { useLang, t } from "@/hooks/useFarmFreshLang";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -82,25 +85,19 @@ const DEMO: Record<string, FarmProduct> = {
   s8: { id: "s8", title: "Pineapples (Large)", category: "Fruits", unit: "piece", pricePerUnitXAF: 600, stockQuantity: 25, isOrganic: false, availableForDelivery: true, sellerName: "Littoral Tropicals", sellerCity: "Edea, Littoral", sellerRating: 4.6, sellerPhone: "+237698901234", images: ["https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=600&q=85"], description: "Sweet, juicy pineapples from coastal farms near Edea. Extra large size.", isDemo: true },
 };
 
-// ── DirectPayModal — inline CamPay payment from the detail page ───────────────
+// ── DirectPayModal ────────────────────────────────────────────────────────────
 
 interface DirectPayModalProps {
-  total: number;
-  productTitle: string;
-  quantity: number;
-  unit: string;
-  onClose: () => void;
-  onPay: (phone: string) => void;
-  status: string;
-  payRef: string;
-  errorMsg: string;
-  countdown: number;
+  total: number; productTitle: string; quantity: number; unit: string;
+  onClose: () => void; onPay: (phone: string) => void;
+  status: string; payRef: string; errorMsg: string; countdown: number;
 }
 
 function DirectPayModal({
   total, productTitle, quantity, unit,
   onClose, onPay, status, payRef, errorMsg, countdown,
 }: DirectPayModalProps) {
+  const lang = useLang();
   const [phone,      setPhone]      = useState("");
   const [phoneError, setPhoneError] = useState("");
 
@@ -119,146 +116,114 @@ function DirectPayModal({
   }
 
   const canClose = status !== "submitting" && status !== "waiting";
+  const mins = Math.floor(countdown / 60);
+  const secs = countdown % 60;
 
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4"
-      onClick={e => { if (e.target === e.currentTarget && canClose) onClose(); }}
-    >
+      onClick={e => { if (e.target === e.currentTarget && canClose) onClose(); }}>
       <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
-        {/* Header */}
         <div className="bg-green-700 px-6 py-5 text-white">
           <div className="flex items-center gap-2 mb-1">
             <Smartphone className="w-5 h-5" />
-            <span className="font-bold text-lg">Pay with Mobile Money</span>
+            <span className="font-bold text-lg">{t("payWithMoMo", lang)}</span>
           </div>
-          <p className="text-green-100 text-sm">Powered by CamPay</p>
+          <p className="text-green-100 text-sm">{t("poweredBy", lang)}</p>
         </div>
-
         <div className="px-6 py-5 space-y-4">
-          {/* Order summary */}
           <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3">
             <p className="text-xs text-gray-500 mb-0.5">{productTitle} × {quantity} {unit}</p>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">Total</span>
+              <span className="text-gray-600 text-sm">{t("total", lang)}</span>
               <span className="text-green-700 font-bold text-lg">{total.toLocaleString("fr-CM")} XAF</span>
             </div>
           </div>
 
-          {/* SUCCESS */}
           {status === "success" && (
             <div className="flex flex-col items-center gap-2 py-4">
               <CheckCircle2 className="w-12 h-12 text-green-500" />
-              <p className="font-semibold text-gray-800">Payment Confirmed! 🎉</p>
-              <p className="text-xs text-gray-500 text-center">Your order is being processed.</p>
-              {payRef && (
-                <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">
-                  Ref: {payRef}
-                </p>
-              )}
+              <p className="font-semibold text-gray-800">{t("paymentConfirmed", lang)}</p>
+              <p className="text-xs text-gray-500 text-center">{t("orderProcessed", lang)}</p>
+              {payRef && <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">Ref: {payRef}</p>}
             </div>
           )}
 
-          {/* WAITING */}
           {status === "waiting" && (
             <div className="flex flex-col items-center gap-3 py-4">
               <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
-              <p className="font-semibold text-gray-800 text-center">Check your phone!</p>
-              <p className="text-xs text-gray-500 text-center">
-                A payment request was sent to your number. Enter your PIN to approve.
-              </p>
+              <p className="font-semibold text-gray-800 text-center">{t("checkPhone", lang)}</p>
+              <p className="text-xs text-gray-500 text-center">{t("enterPin", lang)}</p>
               <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-3 py-2 text-xs font-semibold">
                 <Clock className="w-3.5 h-3.5" />
                 {countdown > 0
-                  ? `Waiting… ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, "0")}`
-                  : "Processing…"}
+                  ? (t("waiting", lang) as (m: number, s: number) => string)(mins, secs)
+                  : t("processing", lang)}
               </div>
             </div>
           )}
 
-          {/* SUBMITTING */}
           {status === "submitting" && (
             <div className="flex flex-col items-center gap-3 py-6">
               <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
-              <p className="text-sm text-gray-600 text-center">Sending payment request…</p>
+              <p className="text-sm text-gray-600 text-center">{t("sendingRequest", lang)}</p>
             </div>
           )}
 
-          {/* FAILED / TIMEOUT */}
           {(status === "failed" || status === "timeout") && (
             <div className="flex flex-col items-center gap-2 py-3">
               <XCircle className="w-10 h-10 text-red-500" />
-              <p className="font-semibold text-gray-800">Payment Failed</p>
+              <p className="font-semibold text-gray-800">{t("payFailed", lang)}</p>
               <p className="text-xs text-red-500 text-center">{errorMsg}</p>
               <p className="text-xs text-gray-400 text-center">
-                Questions?{" "}
-                <a href="mailto:support@bambeh.com" className="text-green-600 underline">
-                  support@bambeh.com
-                </a>
+                {t("questions", lang)}{" "}
+                <a href="mailto:support@bambeh.com" className="text-green-600 underline">support@bambeh.com</a>
               </p>
             </div>
           )}
 
-          {/* IDLE / RETRY — phone input */}
           {(status === "idle" || status === "failed" || status === "timeout") && (
             <>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  MTN or Orange Money number
+                  {t("mtnOrOrange", lang)}
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 select-none">
-                    +237
-                  </span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 select-none">+237</span>
                   <input
-                    type="tel"
-                    value={phone}
-                    onChange={e => handlePhoneChange(e.target.value)}
-                    placeholder="6XXXXXXXX"
-                    maxLength={9}
+                    type="tel" value={phone} onChange={e => handlePhoneChange(e.target.value)}
+                    placeholder="6XXXXXXXX" maxLength={9}
                     className={`w-full pl-14 pr-14 py-3 border-2 rounded-xl text-sm focus:outline-none transition-all ${
-                      operator === "mtn"
-                        ? "border-yellow-400 bg-yellow-50"
-                        : operator === "orange"
-                        ? "border-orange-400 bg-orange-50"
-                        : phoneError
-                        ? "border-red-300"
-                        : "border-gray-200 focus:border-green-500"
-                    }`}
-                  />
+                      operator === "mtn" ? "border-yellow-400 bg-yellow-50"
+                        : operator === "orange" ? "border-orange-400 bg-orange-50"
+                        : phoneError ? "border-red-300"
+                        : "border-gray-200 focus:border-green-500"}`} />
                   {operator && (
                     <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                      operator === "mtn"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-orange-100 text-orange-800"
-                    }`}>
+                      operator === "mtn" ? "bg-yellow-100 text-yellow-800" : "bg-orange-100 text-orange-800"}`}>
                       {operator === "mtn" ? "📶 MTN" : "🟠 Orange"}
                     </span>
                   )}
                 </div>
                 {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
-                <p className="text-xs text-gray-400 mt-1">
-                  A USSD prompt will appear on your phone. Enter your PIN to pay.
-                </p>
+                <p className="text-xs text-gray-400 mt-1">{t("ussdPrompt", lang)}</p>
               </div>
-
               <button
-                disabled={phone.length < 9}
-                onClick={handlePay}
+                disabled={phone.length < 9} onClick={handlePay}
                 className="w-full bg-green-700 disabled:bg-green-300 text-white py-3.5 rounded-2xl font-bold">
-                Confirm & Pay {total.toLocaleString("fr-CM")} XAF
+                {(t("confirmPay", lang) as (n: number) => string)(total)}
               </button>
             </>
           )}
 
           <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 pt-1">
             <Shield className="w-3.5 h-3.5" />
-            <span>Secured &amp; encrypted via CamPay</span>
+            <span>{t("securedEncrypted", lang)}</span>
           </div>
 
           {canClose && (
             <button onClick={onClose} className="w-full text-sm text-gray-500 hover:text-gray-700 py-1 transition-colors">
-              Cancel
+              {t("cancel", lang)}
             </button>
           )}
         </div>
@@ -273,7 +238,8 @@ const FarmFreshDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  useViewTracker(id, 'farm_products'); // ✅ increments view_count in Supabase
+  const lang = useLang();
+  useViewTracker(id, "farm_products");
 
   const [product,      setProduct]      = useState<FarmProduct | null>(null);
   const [loading,      setLoading]      = useState(true);
@@ -287,65 +253,57 @@ const FarmFreshDetail: React.FC = () => {
   const [orderDone,    setOrderDone]    = useState(false);
   const [orderRef,     setOrderRef]     = useState("");
 
-  // ── Load product ─────────────────────────────────────────────────────────
+  const isRtl = lang === "ar";
 
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true); setError(null);
 
-    // Demo shortcut
     if (DEMO[id]) { setProduct(DEMO[id]); setLoading(false); return; }
 
-    if (!isUUID(id)) { setError("Product not found"); setLoading(false); return; }
+    if (!isUUID(id)) { setError(t("productNotFound", lang) as string); setLoading(false); return; }
 
     try {
-      // FIXED column names: seller_id join, title, price_per_unit_xaf
       const { data, error: dbErr } = await supabase
         .from("farm_products")
         .select("*, profiles:seller_id(display_name, city, rating, phone)")
         .eq("id", id)
         .single();
 
-      if (dbErr || !data) { setError("Product not found"); return; }
+      if (dbErr || !data) { setError(t("productNotFound", lang) as string); return; }
 
       const pr = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
-
-      // Filter out products with no image
       const imgs: string[] = data.images && data.images.length > 0
         ? data.images
-        : data.image_url
-        ? [data.image_url]
-        : [];
+        : data.image_url ? [data.image_url] : [];
 
       setProduct({
-        id:                 data.id,
-        sellerId:           data.seller_id,
-        sellerName:         pr?.display_name ?? "Seller",
-        sellerCity:         pr?.city ?? "Cameroon",
-        sellerRating:       pr?.rating ?? 0,
-        sellerPhone:        pr?.phone,
-        title:              data.title ?? data.name ?? "Product",
-        description:        data.description ?? "",
-        pricePerUnitXAF:    data.price_per_unit_xaf ?? data.price ?? 0,
-        unit:               data.unit ?? "kg",
-        stockQuantity:      data.stock_quantity ?? 0,
-        images:             imgs,
-        isOrganic:          Boolean(data.is_organic),
-        harvestDate:        data.harvest_date,
-        category:           data.category ?? "",
+        id:                   data.id,
+        sellerId:             data.seller_id,
+        sellerName:           pr?.display_name ?? "Seller",
+        sellerCity:           pr?.city ?? "Cameroon",
+        sellerRating:         pr?.rating ?? 0,
+        sellerPhone:          pr?.phone,
+        title:                data.title ?? data.name ?? "Product",
+        description:          data.description ?? "",
+        pricePerUnitXAF:      data.price_per_unit_xaf ?? data.price ?? 0,
+        unit:                 data.unit ?? "kg",
+        stockQuantity:        data.stock_quantity ?? 0,
+        images:               imgs,
+        isOrganic:            Boolean(data.is_organic),
+        harvestDate:          data.harvest_date,
+        category:             data.category ?? "",
         availableForDelivery: Boolean(data.available_for_delivery),
-        isDemo:             false,
+        isDemo:               false,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error loading");
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, lang]);
 
   useEffect(() => { void load(); }, [load]);
-
-  // ── Actions ───────────────────────────────────────────────────────────────
 
   const handleFavorite = () => { if (!product) return; setFavorited(toggleFavStorage(product)); };
 
@@ -354,7 +312,7 @@ const FarmFreshDetail: React.FC = () => {
     const url = `https://bambeh.com/#/farm-fresh/${product.id}`;
     if (navigator.share) {
       try { await navigator.share({ title: product.title, text: `${product.title} on Bambeh Farm Fresh`, url }); return; }
-      catch { /* fall through to clipboard */ }
+      catch { /* fall through */ }
     }
     navigator.clipboard.writeText(url).catch(() => {});
     setCopied(true); setTimeout(() => setCopied(false), 2000);
@@ -362,74 +320,38 @@ const FarmFreshDetail: React.FC = () => {
 
   function handleAddToCart() {
     if (!product) return;
-    addToCart({
-      id:          product.id,
-      title:       product.title,
-      priceXAF:    product.pricePerUnitXAF,
-      quantity,
-      imageUrl:    product.images[0] ?? "",
-      listingType: "farm-fresh",
-      unit:        product.unit,
-      sellerName:  product.sellerName,
-    });
+    addToCart({ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, imageUrl: product.images[0] ?? "", listingType: "farm-fresh", unit: product.unit, sellerName: product.sellerName });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }
 
-  function handleBuyNow() {
-    handleAddToCart();
-    navigate("/cart");
-  }
+  function handleBuyNow() { handleAddToCart(); navigate("/cart"); }
 
-  // totalXAF used by both the bottom bar render and the CamPay hook
   const totalXAF = (product?.pricePerUnitXAF ?? 0) * quantity;
 
-  // ── Direct CamPay payment from detail page ──────────────────────────────
   const { status: payStatus, errorMsg: payError, reference: payRef,
           countdown: payCountdown, initPayment, reset: resetPay } = useCamPay({
     onSuccess: async (ref) => {
       if (!product) return;
-      // Add to cart so it appears in cart history, then record order
-      addToCart({
-        id:          product.id,
-        title:       product.title,
-        priceXAF:    product.pricePerUnitXAF,
-        quantity,
-        imageUrl:    product.images[0] ?? "",
-        listingType: "farm-fresh",
-        unit:        product.unit,
-        sellerName:  product.sellerName,
-      });
+      addToCart({ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, imageUrl: product.images[0] ?? "", listingType: "farm-fresh", unit: product.unit, sellerName: product.sellerName });
       try {
         const { data: { session } } = await supabase.auth.getSession();
         await supabase.from("orders").insert({
-          id:        `ORD_${Date.now()}_${Math.random().toString(36).slice(2,8).toUpperCase()}`,
+          id:        `ORD_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
           user_id:   session?.user?.id ?? null,
           items:     [{ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, unit: product.unit, listingType: "farm-fresh" }],
-          subtotal:  totalXAF,
-          total:     totalXAF,
-          reference: ref,
-          status:    "paid",
-          paid_at:   new Date().toISOString(),
+          subtotal:  totalXAF, total: totalXAF, reference: ref,
+          status:    "paid", paid_at: new Date().toISOString(),
         });
       } catch { /* non-critical */ }
-      setOrderRef(ref);
-      setOrderDone(true);
-      setShowPayModal(false);
+      setOrderRef(ref); setOrderDone(true); setShowPayModal(false);
     },
   });
 
   async function handleDirectPay(phone: string) {
     if (!product) return;
-    await initPayment({
-      amount:      totalXAF,
-      phone,
-      description: `Bambeh Farm Fresh — ${product.title} x${quantity}`,
-      externalRef: `ff_${product.id}_${Date.now()}`,
-    });
+    await initPayment({ amount: totalXAF, phone, description: `Bambeh Farm Fresh — ${product.title} x${quantity}`, externalRef: `ff_${product.id}_${Date.now()}` });
   }
-
-  // ── Loading / error states ────────────────────────────────────────────────
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -438,71 +360,56 @@ const FarmFreshDetail: React.FC = () => {
   );
 
   if (error || !product) return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4" dir={isRtl ? "rtl" : "ltr"}>
       <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-600">
-        <ArrowLeft className="w-4 h-4" />Back
+        <ArrowLeft className="w-4 h-4" />{t("back", lang)}
       </button>
       <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl">
         <AlertCircle className="w-5 h-5 text-red-500" />
-        <p className="text-sm text-red-600">{error ?? "Product not found"}</p>
+        <p className="text-sm text-red-600">{error ?? t("productNotFound", lang) as string}</p>
       </div>
       <button onClick={() => navigate("/farm-fresh")} className="bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
-        Browse Farm Fresh
+        {t("browseFF", lang)}
       </button>
     </div>
   );
 
-  const waMsg = encodeURIComponent(
-    `Hi ${product.sellerName}, I saw your listing on Bambeh: ${product.title} — ${fmtXAF(product.pricePerUnitXAF)}/${product.unit}. Is it still available?`
-  );
-
-  // ── Order success screen ──────────────────────────────────────────────────
   if (orderDone) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-6" dir={isRtl ? "rtl" : "ltr"}>
         <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
           <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Order Placed! 🎉</h2>
-          <p className="text-sm text-gray-500 mb-3">Payment confirmed. Your order is being processed.</p>
-          {orderRef && (
-            <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600 mb-4 inline-block">
-              Ref: {orderRef}
-            </p>
-          )}
-          <button onClick={() => navigate("/orders")}
-            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold mb-2">
-            Track Order
-          </button>
-          <button onClick={() => navigate("/farm-fresh")}
-            className="w-full text-gray-500 text-sm py-2">
-            Keep Shopping
-          </button>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">{t("orderPlaced", lang)}</h2>
+          <p className="text-sm text-gray-500 mb-3">{t("payConfirmed", lang)}</p>
+          {orderRef && <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600 mb-4 inline-block">Ref: {orderRef}</p>}
+          <button onClick={() => navigate("/orders")} className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold mb-2">{t("trackOrder", lang)}</button>
+          <button onClick={() => navigate("/farm-fresh")} className="w-full text-gray-500 text-sm py-2">{t("keepShopping", lang)}</button>
         </div>
       </div>
     );
   }
 
-  // ── Main render ───────────────────────────────────────────────────────────
+  const waMsg = encodeURIComponent(
+    `Hi ${product.sellerName}, I saw your listing on Bambeh: ${product.title} — ${fmtXAF(product.pricePerUnitXAF)}/${product.unit}. Is it still available?`
+  );
 
   return (
-    <div className="max-w-lg mx-auto pb-36 bg-white min-h-screen">
-
-      {/* Toast messages */}
+    <div className="max-w-lg mx-auto pb-36 bg-white min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
+      {/* Toasts */}
       {copied && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white text-sm px-4 py-2 rounded-full shadow-lg">
-          Link copied!
+          {t("linkCopied", lang)}
         </div>
       )}
       {added && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-700 text-white text-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-          <CheckCircle className="w-4 h-4" /> Added to cart
+          <CheckCircle className="w-4 h-4" /> {t("addedToCart", lang)}
         </div>
       )}
 
       {/* Image section */}
       <div className="relative">
-        <button
-          onClick={() => navigate(-1)}
+        <button onClick={() => navigate(-1)}
           className="absolute top-4 left-4 z-20 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md">
           <ArrowLeft className="w-4 h-4 text-gray-700" />
         </button>
@@ -514,20 +421,14 @@ const FarmFreshDetail: React.FC = () => {
             <Heart className={`w-4 h-4 ${favorited ? "text-red-500 fill-red-500" : "text-gray-600"}`} />
           </button>
         </div>
-
         <div className="h-72 bg-gray-100 overflow-hidden">
           {product.images.length > 0 ? (
-            <img
-              src={product.images[imgIdx]}
-              alt={product.title}
-              className="w-full h-full object-cover"
-              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-            />
+            <img src={product.images[imgIdx]} alt={product.title} className="w-full h-full object-cover"
+              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🌿</div>
           )}
         </div>
-
         {product.images.length > 1 && (
           <div className="flex gap-1.5 justify-center mt-2">
             {product.images.map((_, i) => (
@@ -536,29 +437,26 @@ const FarmFreshDetail: React.FC = () => {
             ))}
           </div>
         )}
-
         {product.isDemo && (
           <div className="absolute bottom-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full">
-            DEMO — Sample Item
+            {t("demoSample", lang)}
           </div>
         )}
         {product.isOrganic && (
           <div className="absolute top-16 right-4 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <Leaf className="w-3 h-3" />Organic
+            <Leaf className="w-3 h-3" />{t("organic", lang)}
           </div>
         )}
       </div>
 
       {/* Content */}
       <div className="p-4 space-y-4">
-
-        {/* Title + price */}
         <div>
           <p className="text-xs text-green-600 font-semibold uppercase tracking-wide mb-1">{product.category}</p>
           <h1 className="text-2xl font-bold text-gray-900">{product.title}</h1>
           {product.harvestDate && (
             <p className="text-xs text-gray-400 mt-1">
-              Harvested: {new Date(product.harvestDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+              {t("harvested", lang)} {new Date(product.harvestDate).toLocaleDateString(lang === "ar" ? "ar-DZ" : lang === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}
             </p>
           )}
         </div>
@@ -569,18 +467,18 @@ const FarmFreshDetail: React.FC = () => {
             <p className="text-green-600 font-medium">/ {product.unit}</p>
           </div>
           {product.stockQuantity > 0 && (
-            <p className="text-sm text-green-600">Stock: {product.stockQuantity} {product.unit} available</p>
+            <p className="text-sm text-green-600">{t("stock", lang)} {product.stockQuantity} {product.unit}</p>
           )}
           {product.availableForDelivery && (
             <div className="flex items-center gap-1.5 mt-2 text-xs text-blue-600 bg-blue-50 rounded-lg px-2.5 py-1.5">
-              <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />Delivery available
+              <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />{t("deliveryAvail", lang)}
             </div>
           )}
         </div>
 
         {/* Seller card */}
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Seller</h3>
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{t("seller", lang)}</h3>
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-lg">
               {product.sellerName.charAt(0)}
@@ -596,37 +494,34 @@ const FarmFreshDetail: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            <a
-              href={`https://wa.me/${(product.sellerPhone || "+237600000000").replace(/\s/g, "")}?text=${waMsg}`}
+            <a href={`https://wa.me/${(product.sellerPhone || "+237600000000").replace(/\s/g, "")}?text=${waMsg}`}
               target="_blank" rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 transition">
-              <MessageCircle className="w-4 h-4" />WhatsApp
+              <MessageCircle className="w-4 h-4" />{t("whatsapp", lang)}
             </a>
-            <a
-              href={`tel:${product.sellerPhone || "+237600000000"}`}
+            <a href={`tel:${product.sellerPhone || "+237600000000"}`}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
-              <Phone className="w-4 h-4" />Call
+              <Phone className="w-4 h-4" />{t("call", lang)}
             </a>
           </div>
         </div>
 
         {/* Group buying CTA */}
-        <button
-          onClick={() => navigate(`/group-buying?product=${product.id}&type=farm-fresh`)}
+        <button onClick={() => navigate(`/group-buying?product=${product.id}&type=farm-fresh`)}
           className="w-full flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-2xl hover:bg-blue-100 transition active:scale-[0.98]">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
             <Users className="w-5 h-5 text-blue-600" />
           </div>
           <div className="flex-1 text-left">
-            <p className="font-semibold text-blue-900 text-sm">Join Group Buying</p>
-            <p className="text-xs text-blue-600">Pool orders with other buyers and save more</p>
+            <p className="font-semibold text-blue-900 text-sm">{t("joinGroupBuy", lang)}</p>
+            <p className="text-xs text-blue-600">{t("joinGroupBuySub", lang)}</p>
           </div>
           <span className="text-blue-500 text-sm font-semibold">→</span>
         </button>
 
         {/* Description */}
         <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-          <h3 className="font-bold text-gray-900 mb-2 text-sm">About this Produce</h3>
+          <h3 className="font-bold text-gray-900 mb-2 text-sm">{t("aboutProduce", lang)}</h3>
           <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
         </div>
 
@@ -634,74 +529,55 @@ const FarmFreshDetail: React.FC = () => {
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-2">
           <Shield className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-amber-700">
-            <strong>Safety tip:</strong> Always use Bambeh Escrow for payments. Meet in a safe, public place for pickup.
+            <strong>{t("safetyTip", lang)}</strong> {t("safetyText", lang)}
           </p>
         </div>
 
-        <button
-          onClick={() => navigate(`/report-issue?item=${product.id}&type=farm-fresh`)}
+        <button onClick={() => navigate(`/report-issue?item=${product.id}&type=farm-fresh`)}
           className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition mx-auto">
-          <Flag className="w-3.5 h-3.5" />Report this listing
+          <Flag className="w-3.5 h-3.5" />{t("reportListing", lang)}
         </button>
       </div>
 
-      {/* Fixed bottom bar: quantity + Add to Cart + Pay Now */}
+      {/* Fixed bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 max-w-lg mx-auto">
-        {/* Quantity selector */}
         <div className="flex items-center gap-3 mb-2.5">
           <div className="flex items-center gap-0 border border-gray-300 rounded-xl overflow-hidden flex-shrink-0">
-            <button
-              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+            <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
               className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition">
               <Minus className="w-4 h-4 text-gray-600" />
             </button>
             <span className="w-9 text-center text-sm font-bold text-gray-900">{quantity}</span>
-            <button
-              onClick={() => setQuantity(q => Math.min(product.stockQuantity || 999, q + 1))}
+            <button onClick={() => setQuantity(q => Math.min(product.stockQuantity || 999, q + 1))}
               className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition">
               <Plus className="w-4 h-4 text-gray-600" />
             </button>
           </div>
           <div className="flex-1 text-right">
-            <p className="text-xs text-gray-400">Total</p>
+            <p className="text-xs text-gray-400">{t("total", lang)}</p>
             <p className="font-bold text-green-700">{fmtXAF(totalXAF)}</p>
           </div>
         </div>
-
-        {/* Action buttons */}
         <div className="flex gap-2">
-          <button
-            onClick={handleAddToCart}
+          <button onClick={handleAddToCart}
             className={`flex-1 py-3 border-2 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition active:scale-[0.98] ${
-              added
-                ? "border-green-500 bg-green-500 text-white"
-                : "border-green-600 text-green-700 hover:bg-green-50"
-            }`}>
+              added ? "border-green-500 bg-green-500 text-white" : "border-green-600 text-green-700 hover:bg-green-50"}`}>
             <ShoppingCart className="w-4 h-4" />
-            {added ? "Added!" : "Add to Cart"}
+            {added ? t("addedBtn", lang) : t("addToCartBtn", lang)}
           </button>
-          <button
-            onClick={() => { resetPay(); setShowPayModal(true); }}
+          <button onClick={() => { resetPay(); setShowPayModal(true); }}
             className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition active:scale-[0.98]">
-            <Smartphone className="w-4 h-4" /> Pay Now
+            <Smartphone className="w-4 h-4" /> {t("payNow", lang)}
           </button>
         </div>
       </div>
 
-      {/* ── CamPay Direct Payment Modal ─────────────────────────────────── */}
       {showPayModal && (
         <DirectPayModal
-          total={totalXAF}
-          productTitle={product.title}
-          quantity={quantity}
-          unit={product.unit}
+          total={totalXAF} productTitle={product.title} quantity={quantity} unit={product.unit}
           onClose={() => { setShowPayModal(false); resetPay(); }}
-          onPay={handleDirectPay}
-          status={payStatus}
-          payRef={payRef}
-          errorMsg={payError}
-          countdown={payCountdown}
-        />
+          onPay={handleDirectPay} status={payStatus} payRef={payRef}
+          errorMsg={payError} countdown={payCountdown} />
       )}
     </div>
   );

@@ -1,17 +1,20 @@
 /**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
- * ✅ ADDED: view_count shown on each product card (below the Add to Cart button)
+ * ✅ FeaturedAdsStrip import REMOVED (was crashing the page)
+ * ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
+ *    — reacts instantly when user changes language
+ * ✅ view_count shown on each product card
  * All original logic preserved exactly.
  */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Leaf, Search, Plus, MapPin, Loader2, RefreshCw,
-  ShoppingBag, ShoppingCart, Users, Tag, Eye,
+  ShoppingBag, ShoppingCart, Users, Eye,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ FEATURED ADS
+import { useLang, t } from "@/hooks/useFarmFreshLang";
 
 interface FarmProduct {
   id: string;
@@ -30,7 +33,7 @@ interface FarmProduct {
   description?: string;
   sellerName?: string;
   sellerPhone?: string;
-  view_count?: number; // ✅ NEW
+  view_count?: number;
 }
 
 interface AdSlot {
@@ -48,12 +51,14 @@ const DEMO_PRODUCTS: FarmProduct[] = [
   { id: "s8", title: "Pineapples (Large)", price_per_unit_xaf: 600, unit: "piece", category: "Fruits", location: "Edea, Littoral", is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", sellerName: "Littoral Tropicals", sellerPhone: "+237698901234", description: "Sweet, extra-large pineapples from coastal farms." },
 ];
 
-const AD_SLOTS: AdSlot[] = [
-  { id: "ad1", isAd: true, title: "Group Buying", subtitle: "Buy together, save more", cta: "Join a Group", route: "/group-buying", emoji: "🤝" },
-  { id: "ad2", isAd: true, title: "Sell Your Produce", subtitle: "Reach buyers across Cameroon", cta: "List Now", route: "/farm-fresh/sell", emoji: "🌿" },
-];
+// Category keys map to translation keys
+const CATEGORY_KEYS = [
+  "catAll", "catVegetables", "catFruits", "catTubers",
+  "catGrains", "catLegumes", "catHerbs", "catDairy",
+] as const;
 
-const CATEGORIES = ["All", "Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy"];
+// Raw category values (used for filtering — always English, matches DB)
+const CATEGORY_VALUES = ["All", "Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy"];
 
 function hasImage(p: FarmProduct): boolean {
   if (p.image_url && p.image_url.trim() !== "") return true;
@@ -65,10 +70,12 @@ function getImage(p: FarmProduct): string { return (p.image_url || p.images?.[0]
 export default function FarmFreshPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const lang = useLang();
+
   const [products, setProducts] = useState<FarmProduct[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [search,   setSearch]   = useState("");
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState("All"); // always stored as English value
   const [addedId,  setAddedId]  = useState<string | null>(null);
 
   async function fetchProducts() {
@@ -76,7 +83,7 @@ export default function FarmFreshPage() {
     try {
       const { data, error } = await supabase
         .from("farm_products")
-        .select("*, view_count") // ✅ includes view_count
+        .select("*, view_count")
         .eq("is_available", true)
         .order("created_at", { ascending: false })
         .limit(80);
@@ -99,11 +106,11 @@ export default function FarmFreshPage() {
             description: d.description,
             sellerName: d.seller_name,
             sellerPhone: d.seller_phone,
-            view_count: d.view_count ?? 0, // ✅ NEW
+            view_count: d.view_count ?? 0,
           }))
         : [];
 
-      const realWithPhotos  = realItems.filter(hasImage);
+      const realWithPhotos   = realItems.filter(hasImage);
       const realWithoutPhoto = realItems.filter(p => !hasImage(p));
       const demoWithPhotos   = DEMO_PRODUCTS.filter(hasImage);
 
@@ -138,37 +145,46 @@ export default function FarmFreshPage() {
     return matchSearch && matchCategory;
   });
 
+  // Build ad slots with translated text
+  const adSlots = [
+    { id: "ad1", isAd: true as const, ...t("groupBuyingAd", lang), route: "/group-buying", emoji: "🤝" },
+    { id: "ad2", isAd: true as const, ...t("sellProduceAd", lang), route: "/farm-fresh/sell", emoji: "🌿" },
+  ];
+
   // Insert ad slots every 8 cards
   const gridItems: (FarmProduct | AdSlot)[] = [];
   let adIdx = 0;
   filtered.forEach((p, i) => {
     gridItems.push(p);
-    if ((i + 1) % 8 === 0 && adIdx < AD_SLOTS.length) { gridItems.push(AD_SLOTS[adIdx++]); }
+    if ((i + 1) % 8 === 0 && adIdx < adSlots.length) { gridItems.push(adSlots[adIdx++]); }
   });
 
+  // RTL support for Arabic
+  const isRtl = lang === "ar";
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" dir={isRtl ? "rtl" : "ltr"}>
       {/* Sticky header */}
       <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <Leaf className="w-5 h-5 text-green-600" /> Farm Fresh
+            <Leaf className="w-5 h-5 text-green-600" /> {t("farmFresh", lang)}
           </h1>
           <div className="flex gap-2">
             <button onClick={fetchProducts} className="p-2 text-gray-400 hover:text-green-600 rounded-xl hover:bg-gray-100"><RefreshCw className="w-4 h-4" /></button>
-            <button onClick={() => navigate("/farm-fresh/sell")} className="bg-green-600 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1"><Plus className="w-4 h-4" /> Sell</button>
+            <button onClick={() => navigate("/farm-fresh/sell")} className="bg-green-600 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1"><Plus className="w-4 h-4" /> {t("sell", lang)}</button>
           </div>
         </div>
         <div className="relative px-4 pb-3">
-          <Search className="absolute left-7 top-2.5 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search produce, location..."
-            className="w-full pl-9 pr-4 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none" />
+          <Search className={`absolute ${isRtl ? "right-7" : "left-7"} top-2.5 w-4 h-4 text-gray-400`} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("searchPlaceholder", lang)}
+            className={`w-full ${isRtl ? "pr-9 pl-4" : "pl-9 pr-4"} py-2 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none`} />
         </div>
         <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
-          {CATEGORIES.map(c => (
-            <button key={c} onClick={() => setCategory(c)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${category === c ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-              {c}
+          {CATEGORY_KEYS.map((key, idx) => (
+            <button key={CATEGORY_VALUES[idx]} onClick={() => setCategory(CATEGORY_VALUES[idx])}
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${category === CATEGORY_VALUES[idx] ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+              {t(key, lang)}
             </button>
           ))}
         </div>
@@ -176,26 +192,27 @@ export default function FarmFreshPage() {
 
       {/* Hero banner */}
       <div className="mx-4 mt-4 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl p-4 text-white mb-3">
-        <h2 className="font-bold text-lg mb-1">🌿 Buy Direct from Farmers</h2>
-        <p className="text-green-100 text-sm mb-3">Fresh produce, fair prices. Visible to buyers worldwide.</p>
+        <h2 className="font-bold text-lg mb-1">{t("buyDirect", lang)}</h2>
+        <p className="text-green-100 text-sm mb-3">{t("buyDirectSub", lang)}</p>
         <button onClick={() => navigate("/group-buying")} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-sm font-semibold transition">
-          <Users className="w-4 h-4" /> Join Group Buying — Save More
+          <Users className="w-4 h-4" /> {t("joinGroup", lang)}
         </button>
       </div>
 
-      {/* ✅ FEATURED ADS STRIP — farm-fresh category only */}
-      <FeaturedAdsStrip category="farm-fresh" showHeader={false} maxVisible={20} />
-
       {/* Product grid */}
       <div className="px-4 pb-24">
-        {!loading && <p className="mb-3 text-xs text-gray-500">{realCount > 0 ? `${realCount} real listing${realCount !== 1 ? "s" : ""} + sample items` : `Showing ${DEMO_PRODUCTS.length} sample items — be the first to list real produce!`}</p>}
+        {!loading && <p className="mb-3 text-xs text-gray-500">
+          {realCount > 0
+            ? (t("realListings", lang) as (n: number) => string)(realCount)
+            : (t("showingSamples", lang) as (n: number) => string)(DEMO_PRODUCTS.length)}
+        </p>}
         {loading ? (
-          <div className="flex flex-col items-center py-12 gap-3"><Loader2 className="w-8 h-8 animate-spin text-green-600" /><p className="text-sm text-gray-500">Loading fresh produce…</p></div>
+          <div className="flex flex-col items-center py-12 gap-3"><Loader2 className="w-8 h-8 animate-spin text-green-600" /><p className="text-sm text-gray-500">{t("loading", lang)}</p></div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12">
             <ShoppingBag className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-            <p className="font-semibold text-gray-700 mb-1">No produce found</p>
-            <button onClick={() => navigate("/farm-fresh/sell")} className="mt-4 bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">List Your Produce</button>
+            <p className="font-semibold text-gray-700 mb-1">{t("noProduceFound", lang)}</p>
+            <button onClick={() => navigate("/farm-fresh/sell")} className="mt-4 bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">{t("listYourProduce", lang)}</button>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
@@ -219,14 +236,14 @@ export default function FarmFreshPage() {
                   className="bg-white rounded-2xl overflow-hidden shadow-sm border cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]">
                   <div className="h-36 bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center overflow-hidden relative">
                     {noPhoto ? (
-                      <div className="flex flex-col items-center gap-1 px-2 text-center"><span className="text-4xl">🌿</span>{!p.isDemo && <span className="text-xs text-gray-400 leading-tight">No photo yet</span>}</div>
+                      <div className="flex flex-col items-center gap-1 px-2 text-center"><span className="text-4xl">🌿</span>{!p.isDemo && <span className="text-xs text-gray-400 leading-tight">{t("noPhotoYet", lang)}</span>}</div>
                     ) : (
                       <img src={img} alt={p.title} loading="lazy" className="w-full h-full object-cover"
                         onError={e => { const el = e.target as HTMLImageElement; el.style.display = "none"; }} />
                     )}
                     {p.isDemo && <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">DEMO</div>}
-                    {noPhoto && !p.isDemo && <div className="absolute top-2 left-2 bg-gray-100 text-gray-500 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-200">📷 No photo</div>}
-                    {p.is_organic && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">Bio</div>}
+                    {noPhoto && !p.isDemo && <div className="absolute top-2 left-2 bg-gray-100 text-gray-500 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-200">📷 {t("noPhotoYet", lang)}</div>}
+                    {p.is_organic && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">{t("organic", lang)}</div>}
                   </div>
                   <div className="p-3">
                     <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-1 line-clamp-1">{p.title}</h3>
@@ -236,12 +253,11 @@ export default function FarmFreshPage() {
                     </div>
                     <button onClick={e => handleAddToCart(e, p)}
                       className={`w-full py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition ${isAdded ? "bg-green-100 text-green-700" : "bg-green-600 hover:bg-green-700 text-white active:scale-95"}`}>
-                      <ShoppingCart className="w-3.5 h-3.5" />{isAdded ? "Added ✓" : "Add to Cart"}
+                      <ShoppingCart className="w-3.5 h-3.5" />{isAdded ? t("added", lang) : t("addToCart", lang)}
                     </button>
-                    {/* ✅ NEW: View count */}
                     {!p.isDemo && (
                       <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
-                        <Eye className="w-3 h-3" />{p.view_count ?? 0} views
+                        <Eye className="w-3 h-3" />{p.view_count ?? 0} {t("views", lang)}
                       </div>
                     )}
                   </div>
@@ -251,19 +267,19 @@ export default function FarmFreshPage() {
           </div>
         )}
       </div>
-      <CartFloater />
+      <CartFloater lang={lang} />
     </div>
   );
 }
 
-function CartFloater() {
+function CartFloater({ lang }: { lang: ReturnType<typeof useLang> }) {
   const navigate = useNavigate();
   const { items } = useCart();
   const count = items.reduce((s, i) => s + i.quantity, 0);
   if (count === 0) return null;
   return (
     <button onClick={() => navigate("/cart")} className="fixed bottom-24 right-4 z-40 bg-green-600 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 font-semibold text-sm active:scale-95 transition">
-      <ShoppingCart className="w-4 h-4" /> Cart ({count})
+      <ShoppingCart className="w-4 h-4" /> {t("cart", lang)} ({count})
     </button>
   );
 }

@@ -8,6 +8,8 @@
  *  ✅ Falls back to localStorage for guest/sample-item orders
  *  ✅ Cameroon +237 phone prefix on phone field
  *  ✅ FCFA formatter on total
+ *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
+ *     — reacts instantly when user changes language
  */
 
 import { useState, useEffect } from "react";
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
+import { useLang, t } from "@/hooks/useFarmFreshLang";
 
 // ── UUID check ────────────────────────────────────────────────────────────────
 function isUUID(s: string) {
@@ -36,7 +39,6 @@ interface Product {
   description?: string;
 }
 
-// ── Sample products matching FarmFreshPage demo data ─────────────────────────
 const SAMPLE_PRODUCTS: Record<string, Product> = {
   s1: { id: "s1", name: "Fresh Tomatoes",      price: 500,  unit: "kg",    location: "Bafoussam",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80" },
   s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "Yaoundé",    is_organic: false, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" },
@@ -44,11 +46,10 @@ const SAMPLE_PRODUCTS: Record<string, Product> = {
   s4: { id: "s4", name: "Fresh Maize (Corn)",   price: 300,  unit: "cob",   location: "Bamenda",    is_organic: false, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80" },
   s5: { id: "s5", name: "Groundnuts (1kg bag)", price: 1200, unit: "kg",    location: "Ngaoundéré", is_organic: false, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80" },
   s6: { id: "s6", name: "Bitter Leaf (Ndolé)",  price: 200,  unit: "bunch", location: "Yaoundé",    is_organic: true,  image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" },
-  s7: { id: "s7", name: "Fresh Avocados",        price: 800,  unit: "kg",    location: "Dschang, West",      is_organic: true,  image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80" },
-  s8: { id: "s8", name: "Pineapples (Large)",    price: 600,  unit: "piece", location: "Edea, Littoral",     is_organic: false, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80" },
+  s7: { id: "s7", name: "Fresh Avocados",        price: 800,  unit: "kg",    location: "Dschang, West",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80" },
+  s8: { id: "s8", name: "Pineapples (Large)",    price: 600,  unit: "piece", location: "Edea, Littoral",  is_organic: false, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80" },
 };
 
-// ── FCFA formatter ────────────────────────────────────────────────────────────
 const fmtXAF = (n: number) =>
   new Intl.NumberFormat("fr-CM").format(Math.round(n)) + " FCFA";
 
@@ -56,6 +57,7 @@ export default function FarmFreshOrderPage() {
   const { productId } = useParams<{ productId: string }>();
   const [params]      = useSearchParams();
   const navigate      = useNavigate();
+  const lang          = useLang();
 
   const [product,    setProduct]    = useState<Product | null>(null);
   const [loading,    setLoading]    = useState(true);
@@ -69,6 +71,8 @@ export default function FarmFreshOrderPage() {
   const [error,      setError]      = useState<string | null>(null);
   const [isDemo,     setIsDemo]     = useState(false);
 
+  const isRtl = lang === "ar";
+
   useEffect(() => {
     if (productId) void loadProduct(productId);
   }, [productId]);
@@ -76,7 +80,6 @@ export default function FarmFreshOrderPage() {
   async function loadProduct(id: string) {
     setLoading(true);
 
-    // 1 — Sample data (s1–s8)
     if (SAMPLE_PRODUCTS[id]) {
       setProduct(SAMPLE_PRODUCTS[id]);
       setIsDemo(true);
@@ -84,7 +87,6 @@ export default function FarmFreshOrderPage() {
       return;
     }
 
-    // 2 — Supabase (real UUID)
     if (isUUID(id)) {
       try {
         const { data, error: dbErr } = await supabase
@@ -110,19 +112,18 @@ export default function FarmFreshOrderPage() {
       } catch { /* fall through */ }
     }
 
-    // 3 — localStorage fallback
     try {
       const stored = JSON.parse(localStorage.getItem("bambeh_farm_products") ?? "[]") as Product[];
       const found  = stored.find(p => p.id === id);
       if (found) { setProduct(found); setLoading(false); return; }
     } catch { /* ignore */ }
 
-    setLoading(false); // product not found
+    setLoading(false);
   }
 
   async function placeOrder() {
-    if (!address.trim()) { setError("Please enter your delivery address."); return; }
-    if (!phoneValid)     { setError("Please enter a valid phone number.");   return; }
+    if (!address.trim()) { setError(t("enterAddress", lang) as string); return; }
+    if (!phoneValid)     { setError(t("enterPhone", lang) as string);   return; }
 
     setSubmitting(true);
     setError(null);
@@ -131,20 +132,18 @@ export default function FarmFreshOrderPage() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session?.user && !isDemo) {
-        // Save to Supabase
         const { error: orderErr } = await supabase.from("farm_orders").insert({
           buyer_id:   session.user.id,
           product_id: product?.id,
           quantity:   qty,
           address:    address.trim(),
-          phone:      phone, // full international number e.g. +237671234567
+          phone,
           note:       note.trim() || null,
           total_xaf:  (product?.price ?? 0) * qty,
           status:     "pending",
         });
         if (orderErr) throw orderErr;
       } else {
-        // Guest or demo — localStorage fallback
         const orders = JSON.parse(localStorage.getItem("bambeh_farm_orders") ?? "[]");
         orders.unshift({
           id:        Date.now().toString(),
@@ -182,33 +181,29 @@ export default function FarmFreshOrderPage() {
   // ── Success ──────────────────────────────────────────────────────────────
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-50 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-green-50 p-6" dir={isRtl ? "rtl" : "ltr"}>
         <div className="bg-white rounded-2xl p-8 text-center max-w-sm w-full shadow">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Order Placed! 🌿</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t("orderPlacedTitle", lang)}</h2>
           {isDemo ? (
-            <p className="text-gray-500 text-sm mb-2">
-              This was a <strong>demo order</strong> — no real transaction was made.
-            </p>
+            <p className="text-gray-500 text-sm mb-2">{t("demoOrderNote", lang)}</p>
           ) : (
             <p className="text-gray-500 text-sm mb-2">
-              The farmer will contact you at <strong>{phone}</strong> to confirm delivery.
+              {(t("farmerContact", lang) as (phone: string) => string)(phone)}
             </p>
           )}
-          <p className="text-gray-400 text-xs mb-6">Total: {fmtXAF((product?.price ?? 0) * qty)}</p>
+          <p className="text-gray-400 text-xs mb-6">{t("total", lang)}: {fmtXAF((product?.price ?? 0) * qty)}</p>
           <div className="flex flex-col gap-3">
-            <button
-              onClick={() => navigate("/farm-fresh")}
+            <button onClick={() => navigate("/farm-fresh")}
               className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold">
-              Back to Farm Fresh
+              {t("backToFarmFresh", lang)}
             </button>
             {!isDemo && (
-              <button
-                onClick={() => navigate("/orders")}
+              <button onClick={() => navigate("/orders")}
                 className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm">
-                View My Orders
+                {t("viewMyOrders", lang)}
               </button>
             )}
           </div>
@@ -220,12 +215,12 @@ export default function FarmFreshOrderPage() {
   // ── Not found ────────────────────────────────────────────────────────────
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-6" dir={isRtl ? "rtl" : "ltr"}>
         <div className="text-center">
           <Leaf className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-700 font-semibold mb-2">Product not found</p>
+          <p className="text-gray-700 font-semibold mb-2">{t("productNotFound", lang)}</p>
           <button onClick={() => navigate("/farm-fresh")} className="text-green-600 underline text-sm">
-            Back to Farm Fresh
+            {t("backToFarmFresh", lang)}
           </button>
         </div>
       </div>
@@ -235,17 +230,15 @@ export default function FarmFreshOrderPage() {
   const total = product.price * qty;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-xl">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-gray-900 truncate">Order: {product.name}</h2>
-          {isDemo && (
-            <p className="text-xs text-yellow-600 font-medium">⚠ Demo item — no real transaction</p>
-          )}
+          <h2 className="font-bold text-gray-900 truncate">{t("orderHeader", lang)} {product.name}</h2>
+          {isDemo && <p className="text-xs text-yellow-600 font-medium">{t("demoWarning", lang)}</p>}
         </div>
       </div>
 
@@ -271,78 +264,71 @@ export default function FarmFreshOrderPage() {
             </div>
             {product.is_organic && (
               <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full mt-1">
-                🌿 Organic
+                🌿 {t("organic", lang)}
               </span>
             )}
-            <p className="text-green-600 font-bold text-sm mt-1">
-              {fmtXAF(product.price)} / {product.unit}
-            </p>
+            <p className="text-green-600 font-bold text-sm mt-1">{fmtXAF(product.price)} / {product.unit}</p>
           </div>
         </div>
 
         {/* Quantity */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border">
-          <h3 className="font-semibold text-gray-900 mb-3">Quantity</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">{t("quantity", lang)}</h3>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setQty(q => Math.max(1, q - 1))}
+            <button onClick={() => setQty(q => Math.max(1, q - 1))}
               className="w-11 h-11 rounded-full border-2 border-gray-300 flex items-center justify-center text-xl font-bold text-gray-600 active:scale-95">
               −
             </button>
             <span className="text-2xl font-bold text-gray-900 w-10 text-center">{qty}</span>
-            <button
-              onClick={() => setQty(q => q + 1)}
+            <button onClick={() => setQty(q => q + 1)}
               className="w-11 h-11 rounded-full border-2 border-green-500 flex items-center justify-center text-xl font-bold text-green-600 active:scale-95">
               +
             </button>
             <span className="text-gray-500 text-sm">{product.unit}(s)</span>
           </div>
           <div className="mt-4 pt-3 border-t flex justify-between items-center">
-            <span className="text-gray-600 text-sm">Total</span>
+            <span className="text-gray-600 text-sm">{t("total", lang)}</span>
             <span className="font-bold text-green-700 text-xl">{fmtXAF(total)}</span>
           </div>
         </div>
 
         {/* Delivery details */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border space-y-4">
-          <h3 className="font-semibold text-gray-900">Delivery Details</h3>
+          <h3 className="font-semibold text-gray-900">{t("deliveryDetails", lang)}</h3>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Delivery Address <span className="text-red-500">*</span>
+              {t("deliveryAddress", lang)} <span className="text-red-500">*</span>
             </label>
             <input
               value={address}
               onChange={e => setAddress(e.target.value)}
-              placeholder="e.g. Carrefour Elig-Essono, Quartier Omnisport, Yaoundé"
+              placeholder={t("addressPlaceholder", lang) as string}
               className="w-full border-2 border-gray-200 focus:border-green-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors" />
           </div>
 
           <AfricanPhoneInput
-            label="Phone Number"
+            label={t("phoneNumber", lang) as string}
             required
-            onChange={(fullNumber, isValid) => {
-              setPhone(fullNumber);
-              setPhoneValid(isValid);
-            }}
+            onChange={(fullNumber, isValid) => { setPhone(fullNumber); setPhoneValid(isValid); }}
           />
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Special Instructions (optional)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              {t("specialInstructions", lang)}
+            </label>
             <textarea
               value={note}
               onChange={e => setNote(e.target.value)}
               rows={2}
-              placeholder="e.g. Call me before delivery, deliver in the morning..."
+              placeholder={t("instructPlaceholder", lang) as string}
               className="w-full border-2 border-gray-200 focus:border-green-500 rounded-xl px-4 py-3 text-sm outline-none resize-none transition-colors" />
           </div>
         </div>
 
         {isDemo && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
-            <p className="text-xs text-yellow-700 font-medium">
-              ⚠ <strong>Demo item:</strong> This is a sample product. Your order will be saved locally for preview purposes — no real transaction or delivery will occur.
-            </p>
+            <p className="text-xs text-yellow-700 font-medium">{t("demoNotice", lang)}</p>
           </div>
         )}
       </div>
@@ -359,8 +345,8 @@ export default function FarmFreshOrderPage() {
             disabled={submitting || !address.trim() || !phoneValid}
             className="w-full bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
             {submitting
-              ? <><Loader2 className="w-4 h-4 animate-spin" />Placing order...</>
-              : <><ShoppingCart className="w-5 h-5" />Place Order — {fmtXAF(total)}</>
+              ? <><Loader2 className="w-4 h-4 animate-spin" />{t("placingOrder", lang)}</>
+              : <><ShoppingCart className="w-5 h-5" />{t("placeOrder", lang)} — {fmtXAF(total)}</>
             }
           </button>
         </div>
