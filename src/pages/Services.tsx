@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Services.tsx — Bambeh Marketplace
  *
  * COMPLETE AUDIT & REWRITE — production-grade, international standard.
@@ -53,7 +53,6 @@ import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
-import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ─────────────────────────────────────────────
@@ -451,9 +450,8 @@ export default function Services() {
         </div>
 
         {/* ── Featured ads ── */}
-        <FeaturedAdsStrip category="services" showHeader={false} maxVisible={20} />
-
-        {/* ── Actions row ── */}
+        { /* Featured Ads: loaded separately */ }
+{/* ── Actions row ── */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
             {loading ? 'Loading…' : `${filtered.length} service${filtered.length !== 1 ? 's' : ''} found`}

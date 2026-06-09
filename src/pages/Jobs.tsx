@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Jobs.tsx — Bambeh Marketplace
  *
  * FIXES APPLIED:
@@ -19,7 +19,6 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ FEATURED ADS
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -485,8 +484,8 @@ export default function Jobs() {
 
       {/* ✅ FEATURED ADS STRIP — jobs category only */}
       <div className="px-4 pb-2">
-        <FeaturedAdsStrip category="jobs" showHeader={false} maxVisible={20} />
-      </div>
+        { /* Featured Ads: loaded separately */ }
+</div>
 
       {/* ── Results count ── */}
       <div className="px-4 py-3 flex items-center justify-between">

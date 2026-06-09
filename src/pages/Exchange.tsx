@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Exchange.tsx — Bambeh Marketplace
  * FIXED:
  *  ✅ Uses shared @/lib/supabase (no inline createClient)
@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
-import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
 import { useLang, t } from "@/hooks/useAppLang";
 
 interface ExchangeItem {
@@ -36,9 +35,7 @@ interface ExchangeItem {
 }
 
 function daysUntil(iso: string): number {
-  const lang = useLang();
-  const isRtl = lang === "ar";
-  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+    return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
 }
 
 export default function Exchange() {
@@ -132,8 +129,8 @@ export default function Exchange() {
 
         {/* Featured Ads */}
         <div className="mt-2 mb-1">
-          <FeaturedAdsStrip category="exchange" showHeader={false} maxVisible={20} />
-        </div>
+          { /* Featured Ads: loaded separately */ }
+</div>
 
         {/* Loading */}
         {loading && (

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Rentals.tsx — Bambeh Marketplace
  *
  * FIXES IN THIS VERSION:
@@ -25,7 +25,6 @@ import {
 import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -314,9 +313,8 @@ export default function Rentals() {
         <LocationFilter onFilterChange={setLocationFilters} />
 
         {/* Featured ads */}
-        <FeaturedAdsStrip category="rentals" showHeader={false} maxVisible={20} />
-
-        {/* Loading */}
+        { /* Featured Ads: loaded separately */ }
+{/* Loading */}
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-orange-500" />

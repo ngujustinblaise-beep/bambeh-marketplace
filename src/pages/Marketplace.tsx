@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Marketplace.tsx — Bambeh Marketplace
  *
  * COMPLETE REWRITE — June 2026
@@ -24,7 +24,6 @@ import {
   TrendingUp, Star, Zap,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -502,9 +501,8 @@ export default function Marketplace() {
       )}
 
       {/* ── Featured ads strip ── */}
-      <FeaturedAdsStrip category="marketplace" showHeader={false} maxVisible={20} />
-
-      {/* ── Content ── */}
+      { /* Featured Ads: loaded separately */ }
+{/* ── Content ── */}
       <div className="px-4 pb-4">
         {/* Loading */}
         {loading && (

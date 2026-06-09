@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/VehicleRentals.tsx — Bambeh Marketplace
  *
  * FIXES IN THIS VERSION:
@@ -25,7 +25,6 @@ import {
 import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -297,9 +296,8 @@ export default function VehicleRentals() {
         <LocationFilter onFilterChange={setLocationFilters} />
 
         {/* Featured ads */}
-        <FeaturedAdsStrip category="vehicles" showHeader={false} maxVisible={20} />
-
-        <div className="mb-3 text-sm text-gray-400">
+        { /* Featured Ads: loaded separately */ }
+<div className="mb-3 text-sm text-gray-400">
           {filtered.length} vehicle{filtered.length !== 1 ? "s" : ""} found
         </div>
 
