@@ -618,9 +618,9 @@ export default function App() {
                           <Route path="/jobs/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Job Details"><JobDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           {/* ✅ FIX: No AuthGate — marketplace items visible to all users including guests */}
                           <Route path="/marketplace/:id" element={<MainLayout><RouteErrorBoundary routeName="Item Details"><MarketplaceItemDetails /></RouteErrorBoundary></MainLayout>} />
-                          <Route path="/services/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Service Details"><ServiceDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
-                          <Route path="/rentals/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Rental Details"><RentalDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
-                          <Route path="/vehicles/:id" element={<MainLayout><AuthGate require="subscription"><RouteErrorBoundary routeName="Vehicle Details"><VehicleDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          <Route path="/services/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Service Details"><ServiceDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          <Route path="/rentals/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Rental Details"><RentalDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
+                          <Route path="/vehicles/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Vehicle Details"><VehicleDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
                           {/* ✅ FIX: require="user" not "subscription" — exchange detail visible to all logged-in users */}
                           <Route path="/exchange/:id" element={<MainLayout><AuthGate require="user"><RouteErrorBoundary routeName="Exchange Details"><ExchangeItemDetails /></RouteErrorBoundary></AuthGate></MainLayout>} />
 
