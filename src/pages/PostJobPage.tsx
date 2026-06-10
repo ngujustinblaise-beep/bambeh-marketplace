@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/PostJobPage.tsx
  * Bambeh Marketplace — 5-step Job Posting flow
  *
@@ -11,7 +11,10 @@
  *
  * FIXES APPLIED:
  *  ✅ postJob() now calls createJob() — real Supabase save (was fake setTimeout)
- *  ✅ Auth guard — redirects to /login if not signed in
+ *  ✅ Auth guard — uses useAuth() hook (same source as AuthGate) instead of
+ *     calling supabase.auth.getUser() directly, which raced with the session
+ *     restore and briefly returned null → causing a redirect to /login even
+ *     when the user was already signed in.
  *  ✅ Phone input in Step 5 replaced with AfricanPhoneInput (26 countries)
  *  ✅ mapJobType() and mapExperience() helpers for DB enum conversion
  *  ✅ On success, navigates to the real job detail page
@@ -20,8 +23,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/Locations";
-import { supabase } from "@/lib/supabase";
 import { createJob } from "@/services/jobs.service";
+import { useAuth } from "@/hooks/useAuth";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -222,6 +225,15 @@ function WCTextarea({ value, onChange, placeholder, minW, maxW, rows = 6, error 
 // ═══════════════════════════════════════════════════════════════════════════
 export default function PostJobPage() {
   const navigate = useNavigate();
+
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  // AuthGate in App.tsx already guarantees the user is signed in before this
+  // component mounts. We just read the user from the same hook AuthGate uses.
+  // Do NOT call supabase.auth.getUser() here — it races with the Supabase
+  // session restore and briefly returns null → redirecting even signed-in users.
+  const { user, loading: authLoading } = useAuth();
+  const userId = (user as any)?.id ?? (user as any)?.uid ?? null;
+
   const [step, setStep]         = useState(1);
   const [d, setD]               = useState<Draft>(BLANK);
   const [errs, setErrs]         = useState<Record<string, string>>({});
@@ -229,21 +241,6 @@ export default function PostJobPage() {
   const [posted, setPosted]     = useState(false);
   const [postedJobId, setPostedJobId] = useState<string | null>(null);
   const logoRef                 = useRef<HTMLInputElement>(null);
-
-  // ── Auth guard ──────────────────────────────────────────────────────────
-  const [userId, setUserId]           = useState<string | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        navigate("/login", { replace: true });
-      } else {
-        setUserId(data.user.id);
-      }
-      setAuthLoading(false);
-    });
-  }, [navigate]);
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -312,7 +309,6 @@ export default function PostJobPage() {
     window.scrollTo(0, 0);
   }
 
-  // ✅ FIXED: saves to Supabase via createJob()
   async function postJob() {
     const e = validate(5);
     setErrs(e);
@@ -362,7 +358,7 @@ export default function PostJobPage() {
     }
   }
 
-  // Auth loading spinner
+  // Show spinner only during initial auth resolution (typically < 300ms)
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -679,7 +675,6 @@ export default function PostJobPage() {
                 </div>
               )}
 
-              {/* ✅ FIXED: AfricanPhoneInput — supports all 26 Central & West African countries */}
               {d.appMethod === "phone" && (
                 <AfricanPhoneInput
                   value={d.appPhone}
