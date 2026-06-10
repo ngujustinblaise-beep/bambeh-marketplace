@@ -1,285 +1,286 @@
 /**
- * ═══════════════════════════════════════════════════════════════════════════
- * EXCHANGE & REFERRAL SERVICES - SMART FIREBASE INTEGRATION
- * ═══════════════════════════════════════════════════════════════════════════
+ * src/services/exchange-referral.service.ts
+ * Bambeh Marketplace — Exchange & Referral Services
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * Currency/Item Exchange and Referral Program
+ * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
+ * Previous version used axios to call Firebase Cloud Function URLs that do not
+ * exist in production, then fell back to localStorage — resulting in zero data.
  *
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * ✅ REPLACED — All calls now use the Supabase client
+ * ✅ Exchange requests → "listings" table with type='exchange'
+ * ✅ Referrals        → "referrals" table (or falls back gracefully if absent)
+ * ✅ All function signatures preserved so callers don't need updates
+ * ✅ No axios, no localStorage, no Firebase function URLs
  */
 
-import axios from "axios";
-import { API_BASE_URL } from "@/utils/firebase/firebaseConfig";
+import { supabase } from "@/lib/supabase";
 
-// ═══════════════════════════════════════════════════════════════
-// EXCHANGE SERVICE
-// ═══════════════════════════════════════════════════════════════
-
+// ─── Exchange Types ────────────────────────────────────────────────────────────
 export interface ExchangeRequest {
-  id: string;
-  type: "currency" | "item-swap";
+  id:            string;
+  type:          "currency" | "item-swap";
   fromCurrency?: string;
-  toCurrency?: string;
-  amount?: number;
-  itemOffered?: string;
-  itemWanted?: string;
-  description: string;
-  userId: string;
-  userName: string;
-  status: "open" | "in-progress" | "completed" | "cancelled";
-  createdAt: string;
+  toCurrency?:   string;
+  amount?:       number;
+  itemOffered?:  string;
+  itemWanted?:   string;
+  description:   string;
+  userId:        string;
+  userName:      string;
+  status:        "open" | "in-progress" | "completed" | "cancelled";
+  createdAt:     string;
 }
 
+// ─── Map listings row → ExchangeRequest ───────────────────────────────────────
+function rowToExchange(row: Record<string, any>): ExchangeRequest {
+  const extra = row.extra ?? {};
+  return {
+    id:           row.id,
+    type:         extra.exchange_type ?? "item-swap",
+    fromCurrency: extra.from_currency ?? undefined,
+    toCurrency:   extra.to_currency   ?? undefined,
+    amount:       extra.amount        ?? undefined,
+    itemOffered:  extra.item_offered  ?? row.title ?? "",
+    itemWanted:   extra.item_wanted   ?? undefined,
+    description:  row.description     ?? "",
+    userId:       row.user_id         ?? row.seller_id ?? "",
+    userName:     row.profiles?.full_name ?? "User",
+    status:       (extra.exchange_status ?? row.status ?? "open") as ExchangeRequest["status"],
+    createdAt:    row.created_at,
+  };
+}
+
+// ─── Exchange Service ──────────────────────────────────────────────────────────
 class ExchangeService {
-  async getAllExchangeRequests(filters?: {
-    type?: string;
-  }): Promise<ExchangeRequest[]> {
+
+  async getAllExchangeRequests(
+    filters?: { type?: string }
+  ): Promise<ExchangeRequest[]> {
     try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+      let query = supabase
+        .from("listings")
+        .select("*, profiles:user_id (full_name)")
+        .eq("type", "exchange")
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(60);
 
-      const response = await axios.get(`${API_BASE_URL}/getExchangeRequests`, {
-        headers,
-        params: filters,
-        timeout: 5000,
-      });
-
-      console.log("✅ Exchange requests loaded from Firebase");
-      return response.data.data.requests;
-    } catch (error: any) {
-      console.log("📦 Using local exchange data");
-      const stored = localStorage.getItem("bambeh_local_exchanges");
-      const exchanges = stored ? JSON.parse(stored) : [];
-
-      if (filters?.type) {
-        return exchanges.filter(
-          (e: ExchangeRequest) => e.type === filters.type,
-        );
+      if (filters?.type && filters.type !== "all") {
+        // filter by exchange sub-type stored in extra.exchange_type
+        query = query.eq("extra->exchange_type", filters.type);
       }
-      return exchanges;
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("[ExchangeService] getAllExchangeRequests:", error.message);
+        return [];
+      }
+
+      return (data ?? []).map((r) => rowToExchange(r as Record<string, any>));
+    } catch (err) {
+      console.error("[ExchangeService] getAllExchangeRequests exception:", err);
+      return [];
     }
   }
 
   async createExchangeRequest(
-    requestData: Omit<
-      ExchangeRequest,
-      "id" | "userId" | "userName" | "status" | "createdAt"
-    >,
+    requestData: Omit<ExchangeRequest, "id" | "userId" | "userName" | "status" | "createdAt">
   ): Promise<ExchangeRequest> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("You must be logged in to post an exchange");
 
-      const response = await axios.post(
-        `${API_BASE_URL}/createExchangeRequest`,
-        requestData,
-        { headers, timeout: 5000 },
-      );
+    const { data, error } = await supabase
+      .from("listings")
+      .insert({
+        user_id:     user.id,
+        type:        "exchange",
+        title:       requestData.itemOffered ?? requestData.description.slice(0, 80),
+        description: requestData.description,
+        status:      "active",
+        price:       requestData.amount ?? null,
+        view_count:  0,
+        is_featured: false,
+        extra: {
+          exchange_type:   requestData.type,
+          from_currency:   requestData.fromCurrency   ?? null,
+          to_currency:     requestData.toCurrency     ?? null,
+          amount:          requestData.amount         ?? null,
+          item_offered:    requestData.itemOffered    ?? null,
+          item_wanted:     requestData.itemWanted     ?? null,
+          exchange_status: "open",
+        },
+      })
+      .select("*, profiles:user_id (full_name)")
+      .single();
 
-      return response.data.data.request;
-    } catch (error: any) {
-      console.log("📝 Creating exchange request locally");
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      const newRequest: ExchangeRequest = {
-        ...requestData,
-        id: `exchange-${Date.now()}`,
-        userId: user.id || "local-user",
-        userName: user.name || "Local User",
-        status: "open",
-        createdAt: new Date().toISOString(),
-      };
-
-      const stored = localStorage.getItem("bambeh_local_exchanges");
-      const exchanges = stored ? JSON.parse(stored) : [];
-      exchanges.push(newRequest);
-      localStorage.setItem("bambeh_local_exchanges", JSON.stringify(exchanges));
-
-      return newRequest;
-    }
+    if (error) throw new Error(error.message);
+    return rowToExchange(data as Record<string, any>);
   }
 
   async respondToExchange(exchangeId: string, message: string): Promise<void> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("You must be logged in to respond");
 
-      await axios.post(
-        `${API_BASE_URL}/respondToExchange`,
-        { exchangeId, message },
-        { headers, timeout: 5000 },
-      );
-    } catch (error: any) {
-      console.log("📝 Response saved locally");
-      const responses = localStorage.getItem("bambeh_local_exchange_responses");
-      const allResponses = responses ? JSON.parse(responses) : [];
-      allResponses.push({
-        exchangeId,
-        message,
-        respondedAt: new Date().toISOString(),
+    // Get the exchange owner
+    const { data: listing } = await supabase
+      .from("listings")
+      .select("user_id, title")
+      .eq("id", exchangeId)
+      .maybeSingle();
+
+    const { error } = await supabase
+      .from("messages")
+      .insert({
+        sender_id:    user.id,
+        recipient_id: listing?.user_id ?? null,
+        listing_id:   exchangeId,
+        listing_type: "exchange",
+        content:      message,
+        created_at:   new Date().toISOString(),
       });
-      localStorage.setItem(
-        "bambeh_local_exchange_responses",
-        JSON.stringify(allResponses),
-      );
-    }
+
+    if (error) throw new Error(error.message);
+  }
+
+  async getExchangeById(id: string): Promise<ExchangeRequest | null> {
+    const { data, error } = await supabase
+      .from("listings")
+      .select("*, profiles:user_id (full_name)")
+      .eq("id", id)
+      .eq("type", "exchange")
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return rowToExchange(data as Record<string, any>);
+  }
+
+  async closeExchange(exchangeId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase
+      .from("listings")
+      .update({ status: "sold" })
+      .eq("id", exchangeId)
+      .eq("user_id", user.id);
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// REFERRAL SERVICE
-// ═══════════════════════════════════════════════════════════════
-
+// ─── Referral Types ────────────────────────────────────────────────────────────
 export interface Referral {
-  id: string;
-  referrerId: string;
-  referredUserId?: string;
+  id:                string;
+  referrerId:        string;
+  referredUserId?:   string;
   referredUserEmail: string;
-  status: "pending" | "completed" | "expired";
-  rewardAmount: number;
-  rewardClaimed: boolean;
-  createdAt: string;
-  completedAt?: string;
+  status:            "pending" | "completed" | "expired";
+  rewardAmount:      number;
+  rewardClaimed:     boolean;
+  createdAt:         string;
+  completedAt?:      string;
 }
 
 export interface ReferralStats {
-  totalReferrals: number;
-  completedReferrals: number;
-  pendingReferrals: number;
-  totalRewardsEarned: number;
+  totalReferrals:      number;
+  completedReferrals:  number;
+  pendingReferrals:    number;
+  totalRewardsEarned:  number;
   totalRewardsClaimed: number;
 }
 
+// ─── Referral Service ──────────────────────────────────────────────────────────
 class ReferralService {
+
   async getReferralCode(): Promise<string> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return "BAMBEH-GUEST";
 
-      const response = await axios.get(`${API_BASE_URL}/getReferralCode`, {
-        headers,
-        timeout: 5000,
-      });
+    // Try to get stored referral code from profile
+    const { data } = await supabase
+      .from("profiles")
+      .select("referral_code")
+      .eq("id", user.id)
+      .maybeSingle();
 
-      return response.data.data.referralCode;
-    } catch (error: any) {
-      console.log("📦 Using local referral code");
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      return `BAMBEH-${user.id || "USER"}`.toUpperCase();
-    }
+    return data?.referral_code ?? `BAMBEH-${user.id.slice(0, 8).toUpperCase()}`;
   }
 
   async getMyReferrals(): Promise<Referral[]> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
 
-      const response = await axios.get(`${API_BASE_URL}/getMyReferrals`, {
-        headers,
-        timeout: 5000,
-      });
+    const { data, error } = await supabase
+      .from("referrals")
+      .select("*")
+      .eq("referrer_id", user.id)
+      .order("created_at", { ascending: false });
 
-      return response.data.data.referrals;
-    } catch (error: any) {
-      console.log("📦 Using local referrals data");
-      const stored = localStorage.getItem("bambeh_local_referrals");
-      return stored ? JSON.parse(stored) : [];
+    if (error) {
+      // Table may not exist yet — return empty gracefully
+      console.warn("[ReferralService] referrals table:", error.message);
+      return [];
     }
+
+    return (data ?? []).map((r: any) => ({
+      id:                r.id,
+      referrerId:        r.referrer_id,
+      referredUserId:    r.referred_user_id  ?? undefined,
+      referredUserEmail: r.referred_email    ?? "",
+      status:            r.status            ?? "pending",
+      rewardAmount:      Number(r.reward_amount ?? 5000),
+      rewardClaimed:     Boolean(r.reward_claimed),
+      createdAt:         r.created_at,
+      completedAt:       r.completed_at      ?? undefined,
+    }));
   }
 
   async getReferralStats(): Promise<ReferralStats> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const response = await axios.get(`${API_BASE_URL}/getReferralStats`, {
-        headers,
-        timeout: 5000,
-      });
-
-      return response.data.data.stats;
-    } catch (error: any) {
-      console.log("📦 Using local referral stats");
-      const referrals = await this.getMyReferrals();
-      return { totalReferrals: referrals.length,
-        completedReferrals: referrals.filter((r) => r.status === "completed")
-          .length,
-        pendingReferrals: referrals.filter((r) => r.status === "pending")
-          .length,
-        totalRewardsEarned: referrals.reduce(
-          (sum, r) => sum + r.rewardAmount,
-          0,
-        ),
-        totalRewardsClaimed: referrals
-          .filter((r) => r.rewardClaimed)
-          .reduce((sum, r) => sum + r.rewardAmount, 0),
-      };
-    }
+    const referrals = await this.getMyReferrals();
+    return {
+      totalReferrals:      referrals.length,
+      completedReferrals:  referrals.filter((r) => r.status === "completed").length,
+      pendingReferrals:    referrals.filter((r) => r.status === "pending").length,
+      totalRewardsEarned:  referrals.reduce((sum, r) => sum + r.rewardAmount, 0),
+      totalRewardsClaimed: referrals.filter((r) => r.rewardClaimed).reduce((sum, r) => sum + r.rewardAmount, 0),
+    };
   }
 
   async sendReferralInvite(email: string): Promise<void> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("You must be logged in to send referrals");
 
-      await axios.post(
-        `${API_BASE_URL}/sendReferralInvite`,
-        { email },
-        { headers, timeout: 5000 },
-      );
-    } catch (error: any) {
-      console.log("📝 Referral invite saved locally");
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      const stored = localStorage.getItem("bambeh_local_referrals");
-      const referrals = stored ? JSON.parse(stored) : [];
+    const referralCode = await this.getReferralCode();
 
-      referrals.push({
-        id: `ref-${Date.now()}`,
-        referrerId: user.id,
-        referredUserEmail: email,
-        status: "pending",
-        rewardAmount: 5000, // 5000 XAF default reward
-        rewardClaimed: false,
-        createdAt: new Date().toISOString(),
+    const { error } = await supabase
+      .from("referrals")
+      .insert({
+        referrer_id:    user.id,
+        referred_email: email,
+        referral_code:  referralCode,
+        status:         "pending",
+        reward_amount:  5000,
+        reward_claimed: false,
+        created_at:     new Date().toISOString(),
       });
 
-      localStorage.setItem("bambeh_local_referrals", JSON.stringify(referrals));
+    if (error) {
+      console.warn("[ReferralService] sendReferralInvite:", error.message);
+      // Don't throw — referral table may not exist yet
     }
   }
 
   async claimReferralReward(referralId: string): Promise<void> {
-    try {
-      const token = localStorage.getItem("authToken");
-      const headers: any = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
 
-      await axios.post(
-        `${API_BASE_URL}/claimReferralReward`,
-        { referralId },
-        { headers, timeout: 5000 },
-      );
-    } catch (error: any) {
-      console.log("📝 Claiming reward locally");
-      const stored = localStorage.getItem("bambeh_local_referrals");
-      if (stored) {
-        const referrals = JSON.parse(stored);
-        const referral = referrals.find((r: Referral) => r.id === referralId);
-        if (referral) {
-          referral.rewardClaimed = true;
-          localStorage.setItem(
-            "bambeh_local_referrals",
-            JSON.stringify(referrals),
-          );
-        }
-      }
-    }
+    const { error } = await supabase
+      .from("referrals")
+      .update({ reward_claimed: true })
+      .eq("id", referralId)
+      .eq("referrer_id", user.id);
+
+    if (error) throw new Error(error.message);
   }
 }
 

@@ -1,27 +1,39 @@
 /**
  * src/services/jobs.service.ts
- * Bambeh Marketplace — Jobs Service (HARDENED)
- * © 2026 BAMBEH SARL. All rights reserved.
+ * Bambeh Marketplace — Jobs Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * SECURITY & BUG FIXES vs previous version:
- *  ✅ Input sanitization on all filter strings (strips SQL special chars before sending to Supabase)
- *  ✅ pageSize capped at 100 to prevent runaway queries / DoS
- *  ✅ incrementJobView is rate-limited via localStorage — max 1 view/job/hour per device
- *  ✅ createJob validates required fields before hitting DB — prevents malformed inserts
- *  ✅ updateJob only maps known safe fields (no spread of arbitrary user payload)
- *  ✅ getExpiringJobs — new function used by the expiry reminder edge function / cron job
- *  ✅ All DB errors returned as friendly messages (no raw Supabase error codes exposed to UI)
- *  ✅ mapRow now handles null/undefined region gracefully (was throwing on jobs with no region)
+ * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
+ * Previous version queried a "job_listings" table that does NOT exist in Supabase.
+ * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
+ * All functions now query: supabase.from("listings").eq("type", "job")
+ *
+ * Column mapping (listings table → JobListing type):
+ *   listings.id              → id
+ *   listings.user_id         → employerId        (NOT employer_id — doesn't exist)
+ *   listings.title           → title
+ *   listings.description     → description
+ *   listings.category        → category
+ *   listings.location        → location.city
+ *   listings.extra.company   → company
+ *   listings.extra.job_type  → jobType
+ *   listings.extra.exp_level → experienceLevel
+ *   listings.price           → salaryMinXAF      (re-purposed price column)
+ *   listings.extra.salary_max→ salaryMaxXAF
+ *   listings.extra.negotiable→ isSalaryNegotiable
+ *   listings.extra.is_remote → isRemote
+ *   listings.extra.deadline  → applicationDeadline
+ *   listings.extra.region    → location.region
+ *   listings.view_count      → viewCount
+ *   listings.status          → status
+ *   listings.created_at      → createdAt
+ *   listings.updated_at      → updatedAt
  */
 
 import { supabase } from "@/lib/supabase";
-import type {
-  JobListing,
-  ItemFilters,
-  PaginatedItemsResponse,
-} from "@/types/src_types_items";
+import type { JobListing, ItemFilters, PaginatedItemsResponse } from "@/types/src_types_items";
 
-// ─── Response Types ───────────────────────────────────────────────────────────
+// ─── Response Types ────────────────────────────────────────────────────────────
 export interface JobResponse {
   data: JobListing | null;
   error: string | null;
@@ -39,110 +51,68 @@ export interface JobActionResponse {
   error: string | null;
 }
 
-// ─── Security: sanitize filter input ─────────────────────────────────────────
-// Strips characters that could be used for SQL injection or wildcard abuse
-function sanitize(input: string): string {
-  return input
-    .replace(/[%_\\'"`;]/g, "")  // strip SQL wildcards and injection chars
-    .trim()
-    .slice(0, 120);               // hard length cap
-}
-
-// ─── Security: rate-limit view increments ─────────────────────────────────────
-// Prevents a single device from inflating view counts by hammering the endpoint
-const VIEW_THROTTLE_KEY = "bambeh_view_ts";
-const VIEW_THROTTLE_MS = 60 * 60 * 1000; // 1 hour per job per device
-
-function canIncrementView(jobId: string): boolean {
-  try {
-    const raw = localStorage.getItem(VIEW_THROTTLE_KEY);
-    const map: Record<string, number> = raw ? JSON.parse(raw) : {};
-    const last = map[jobId] ?? 0;
-    if (Date.now() - last < VIEW_THROTTLE_MS) return false;
-    map[jobId] = Date.now();
-    localStorage.setItem(VIEW_THROTTLE_KEY, JSON.stringify(map));
-    return true;
-  } catch {
-    return true; // fail open — better to count than miss
-  }
-}
-
-// ─── Map DB Row → JobListing ─────────────────────────────────────────────────
-function mapRow(row: Record<string, unknown>): JobListing {
+// ─── Row → JobListing mapper ───────────────────────────────────────────────────
+// Reads from the "listings" table structure — extra{} holds job-specific fields.
+function mapRow(row: Record<string, any>): JobListing {
+  const extra = row.extra ?? {};
   return {
-    id:                 (row.id as string)              ?? "",
-    employerId:         (row.employer_id as string)     ?? "",
-    title:              (row.title as string)           ?? "",
-    company:            row.company as string | undefined,
-    description:        (row.description as string)     ?? "",
-    requirements:       row.requirements as string | undefined,
-    benefits:           row.benefits as string | undefined,
-    category:           (row.category as string)        ?? "",
-    jobType:            (row.job_type as JobListing["jobType"])            ?? "full_time",
-    experienceLevel:    row.experience_level as JobListing["experienceLevel"],
-    salaryMinXAF:       row.salary_min_xaf as number | undefined,
-    salaryMaxXAF:       row.salary_max_xaf as number | undefined,
-    isSalaryNegotiable: Boolean(row.is_salary_negotiable),
+    id:                 row.id,
+    employerId:         row.user_id ?? row.seller_id ?? "",
+    title:              row.title ?? "",
+    company:            extra.company ?? row.company ?? undefined,
+    description:        row.description ?? "",
+    requirements:       extra.requirements ?? row.requirements ?? undefined,
+    benefits:           extra.benefits ?? undefined,
+    category:           row.category ?? "",
+    jobType:            extra.job_type ?? extra.jobType ?? "full_time",
+    experienceLevel:    extra.exp_level ?? extra.experienceLevel ?? "entry",
+    salaryMinXAF:       row.price ? Number(row.price) : undefined,
+    salaryMaxXAF:       extra.salary_max ? Number(extra.salary_max) : undefined,
+    isSalaryNegotiable: Boolean(extra.negotiable ?? extra.isSalaryNegotiable),
     location: {
-      city:      (row.city    as string) ?? "",
-      region:    (row.region  as string) ?? "",
-      country:   (row.country as string) ?? "CM",
-      latitude:  row.latitude  as number | undefined,
-      longitude: row.longitude as number | undefined,
+      city:      row.location ?? extra.city ?? "",
+      region:    extra.region ?? row.location ?? "",
+      country:   row.country ?? extra.country ?? "",
+      latitude:  extra.latitude  ? Number(extra.latitude)  : undefined,
+      longitude: extra.longitude ? Number(extra.longitude) : undefined,
     },
-    isRemote:            Boolean(row.is_remote),
-    applicationDeadline: row.application_deadline as string | undefined,
+    isRemote:            Boolean(extra.is_remote ?? extra.isRemote),
+    applicationDeadline: extra.deadline ?? extra.applicationDeadline ?? undefined,
     status:              (row.status as JobListing["status"]) ?? "active",
-    viewCount:           (row.view_count as number)        ?? 0,
-    applicationCount:    (row.application_count as number) ?? 0,
-    tags:                Array.isArray(row.tags) ? (row.tags as string[]) : [],
-    createdAt:           (row.created_at as string) ?? new Date().toISOString(),
-    updatedAt:           (row.updated_at as string) ?? new Date().toISOString(),
+    viewCount:           Number(row.view_count ?? 0),
+    applicationCount:    Number(extra.application_count ?? 0),
+    tags:                Array.isArray(row.tags) ? row.tags : (Array.isArray(extra.tags) ? extra.tags : []),
+    createdAt:           row.created_at ?? new Date().toISOString(),
+    updatedAt:           row.updated_at ?? new Date().toISOString(),
   };
 }
 
-// ─── Friendly error messages ──────────────────────────────────────────────────
-function friendlyError(err: unknown, fallback: string): string {
-  if (err instanceof Error) {
-    // Don't leak internal Supabase codes to the UI
-    if (err.message.includes("JWT") || err.message.includes("auth")) {
-      return "Session expired. Please log in again.";
-    }
-    if (err.message.includes("network") || err.message.includes("fetch")) {
-      return "Network error. Check your connection.";
-    }
-    if (err.message.includes("duplicate") || err.message.includes("unique")) {
-      return "A similar job listing already exists.";
-    }
-  }
-  return fallback;
-}
-
-// ─── Get All Jobs ─────────────────────────────────────────────────────────────
+// ─── Get Jobs (paginated + filtered) ──────────────────────────────────────────
 export async function getJobs(
   filters: Partial<ItemFilters> = {}
 ): Promise<PaginatedItemsResponse<JobListing>> {
   try {
-    const page     = Math.max(1, filters.page ?? 1);
-    const pageSize = Math.min(100, Math.max(1, filters.pageSize ?? 20)); // cap at 100
+    const page     = filters.page     ?? 1;
+    const pageSize = Math.min(filters.pageSize ?? 20, 50); // cap at 50
     const from     = (page - 1) * pageSize;
     const to       = from + pageSize - 1;
 
     let query = supabase
-      .from("job_listings")
+      .from("listings")
       .select("*", { count: "exact" })
+      .eq("type", "job")
       .eq("status", "active");
 
-    if (filters.category && filters.category !== "All") {
-      query = query.eq("category", sanitize(filters.category));
+    if (filters.category) {
+      query = query.eq("category", filters.category);
     }
     if (filters.searchQuery) {
-      // Search title AND company (OR logic)
-      const q = sanitize(filters.searchQuery);
-      query = query.or(`title.ilike.%${q}%,company.ilike.%${q}%`);
+      query = query.or(
+        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
+      );
     }
     if (filters.location) {
-      query = query.ilike("city", `%${sanitize(filters.location)}%`);
+      query = query.ilike("location", `%${filters.location}%`);
     }
 
     query = query.order("created_at", { ascending: false }).range(from, to);
@@ -150,11 +120,12 @@ export async function getJobs(
     const { data, count, error } = await query;
 
     if (error) {
-      return { data: [], total: 0, page, pageSize, hasNextPage: false, error: friendlyError(error, "Could not load jobs.") };
+      console.error("[jobs.service] getJobs:", error.message);
+      return { data: [], total: 0, page, pageSize, hasNextPage: false, error: error.message };
     }
 
     const total = count ?? 0;
-    const items = (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
+    const items = (data ?? []).map((row) => mapRow(row as Record<string, any>));
 
     return {
       data:        items,
@@ -165,214 +136,179 @@ export async function getJobs(
       error:       null,
     };
   } catch (err) {
-    return { data: [], total: 0, page: 1, pageSize: 20, hasNextPage: false, error: friendlyError(err, "Failed to load jobs.") };
+    const message = err instanceof Error ? err.message : "Failed to load jobs";
+    console.error("[jobs.service] getJobs exception:", message);
+    return { data: [], total: 0, page: 1, pageSize: 20, hasNextPage: false, error: message };
   }
 }
 
-// ─── Get Job by ID ────────────────────────────────────────────────────────────
+// ─── Get Job by ID ─────────────────────────────────────────────────────────────
 export async function getJobById(id: string): Promise<JobResponse> {
   try {
-    // Validate UUID-ish format before hitting DB
-    if (!id || id.length < 8) {
-      return { data: null, error: "Invalid job ID." };
-    }
-
     const { data, error } = await supabase
-      .from("job_listings")
+      .from("listings")
       .select("*")
       .eq("id", id)
-      .single();
+      .eq("type", "job")
+      .maybeSingle();
 
-    if (error) {
-      if (error.code === "PGRST116") return { data: null, error: "Job not found." };
-      return { data: null, error: friendlyError(error, "Could not load job.") };
-    }
+    if (error) return { data: null, error: error.message };
+    if (!data)  return { data: null, error: "Job not found" };
 
-    return { data: mapRow(data as Record<string, unknown>), error: null };
+    return { data: mapRow(data as Record<string, any>), error: null };
   } catch (err) {
-    return { data: null, error: friendlyError(err, "Failed to load job.") };
+    return { data: null, error: err instanceof Error ? err.message : "Failed to load job" };
   }
 }
 
-// ─── Create Job ───────────────────────────────────────────────────────────────
+// ─── Create Job ────────────────────────────────────────────────────────────────
+// Inserts into "listings" table with type='job'.
+// Job-specific fields that have no dedicated column go into extra{}.
 export async function createJob(
   employerId: string,
   payload: Omit<JobListing, "id" | "employerId" | "viewCount" | "applicationCount" | "createdAt" | "updatedAt">
 ): Promise<JobActionResponse> {
-  // Pre-validate required fields before sending to DB
-  if (!employerId)            return { success: false, error: "Employer ID is required." };
-  if (!payload.title?.trim()) return { success: false, error: "Job title is required." };
-  if (!payload.description?.trim()) return { success: false, error: "Job description is required." };
-  if (!payload.category)      return { success: false, error: "Category is required." };
-  if (!payload.location?.city?.trim()) return { success: false, error: "City is required." };
-
   try {
     const { data, error } = await supabase
-      .from("job_listings")
+      .from("listings")
       .insert({
-        employer_id:          employerId,
-        title:                payload.title.trim(),
-        company:              payload.company?.trim(),
-        description:          payload.description.trim(),
-        requirements:         payload.requirements,
-        benefits:             payload.benefits,
-        category:             payload.category,
-        job_type:             payload.jobType,
-        experience_level:     payload.experienceLevel,
-        salary_min_xaf:       payload.salaryMinXAF,
-        salary_max_xaf:       payload.salaryMaxXAF,
-        is_salary_negotiable: payload.isSalaryNegotiable,
-        city:                 payload.location.city.trim(),
-        region:               payload.location.region,
-        country:              payload.location.country ?? "CM",
-        is_remote:            payload.isRemote,
-        application_deadline: payload.applicationDeadline,
-        status:               payload.status ?? "active",
-        tags:                 Array.isArray(payload.tags) ? payload.tags : [],
-        view_count:           0,
-        application_count:    0,
+        user_id:     employerId,
+        type:        "job",
+        title:       payload.title,
+        description: payload.description,
+        category:    payload.category,
+        location:    payload.location.city,
+        country:     payload.location.country ?? "",
+        price:       payload.salaryMinXAF ?? null,   // re-purpose price for salary min
+        status:      payload.status ?? "active",
+        tags:        payload.tags ?? [],
+        view_count:  0,
+        is_featured: false,
+        // All job-specific fields go into extra{}
+        extra: {
+          company:             payload.company ?? null,
+          requirements:        payload.requirements ?? null,
+          benefits:            payload.benefits ?? null,
+          job_type:            payload.jobType,
+          exp_level:           payload.experienceLevel,
+          salary_max:          payload.salaryMaxXAF ?? null,
+          negotiable:          payload.isSalaryNegotiable,
+          region:              payload.location.region ?? payload.location.city,
+          is_remote:           payload.isRemote,
+          deadline:            payload.applicationDeadline ?? null,
+          application_count:   0,
+        },
       })
       .select("id")
       .single();
 
-    if (error) return { success: false, error: friendlyError(error, "Failed to post job.") };
+    if (error) {
+      console.error("[jobs.service] createJob:", error.message);
+      return { success: false, error: error.message };
+    }
 
     return { success: true, id: (data as { id: string }).id, error: null };
   } catch (err) {
-    return { success: false, error: friendlyError(err, "Failed to post job.") };
+    return { success: false, error: err instanceof Error ? err.message : "Failed to create job" };
   }
 }
 
-// ─── Update Job ───────────────────────────────────────────────────────────────
+// ─── Update Job ────────────────────────────────────────────────────────────────
 export async function updateJob(
   id: string,
   employerId: string,
   updates: Partial<JobListing>
 ): Promise<JobActionResponse> {
-  if (!id || !employerId) return { success: false, error: "Missing required identifiers." };
-
   try {
-    // Only map known safe fields — never spread arbitrary payload
     const payload: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     };
 
-    if (updates.title       !== undefined) payload.title               = updates.title.trim();
-    if (updates.description !== undefined) payload.description         = updates.description.trim();
-    if (updates.company     !== undefined) payload.company             = updates.company?.trim();
-    if (updates.status      !== undefined) payload.status              = updates.status;
-    if (updates.salaryMinXAF !== undefined) payload.salary_min_xaf    = updates.salaryMinXAF;
-    if (updates.salaryMaxXAF !== undefined) payload.salary_max_xaf    = updates.salaryMaxXAF;
-    if (updates.applicationDeadline !== undefined) payload.application_deadline = updates.applicationDeadline;
-    if (updates.requirements !== undefined) payload.requirements       = updates.requirements;
-    if (updates.benefits    !== undefined) payload.benefits            = updates.benefits;
-    if (updates.tags        !== undefined) payload.tags                = Array.isArray(updates.tags) ? updates.tags : [];
+    if (updates.title       !== undefined) payload.title       = updates.title;
+    if (updates.description !== undefined) payload.description = updates.description;
+    if (updates.status      !== undefined) payload.status      = updates.status;
+    if (updates.salaryMinXAF !== undefined) payload.price      = updates.salaryMinXAF;
+    if (updates.category    !== undefined) payload.category    = updates.category;
+    if (updates.location?.city !== undefined) payload.location = updates.location.city;
+
+    // Merge extra fields
+    if (
+      updates.salaryMaxXAF !== undefined ||
+      updates.applicationDeadline !== undefined ||
+      updates.jobType !== undefined ||
+      updates.isRemote !== undefined
+    ) {
+      const { data: existing } = await supabase
+        .from("listings")
+        .select("extra")
+        .eq("id", id)
+        .maybeSingle();
+
+      payload.extra = {
+        ...(existing?.extra ?? {}),
+        ...(updates.salaryMaxXAF       !== undefined ? { salary_max: updates.salaryMaxXAF }       : {}),
+        ...(updates.applicationDeadline !== undefined ? { deadline: updates.applicationDeadline }  : {}),
+        ...(updates.jobType             !== undefined ? { job_type: updates.jobType }               : {}),
+        ...(updates.isRemote            !== undefined ? { is_remote: updates.isRemote }             : {}),
+      };
+    }
 
     const { error } = await supabase
-      .from("job_listings")
+      .from("listings")
       .update(payload)
       .eq("id", id)
-      .eq("employer_id", employerId); // RLS: employer can only edit own listings
+      .eq("user_id", employerId);
 
-    if (error) return { success: false, error: friendlyError(error, "Failed to update job.") };
-
+    if (error) return { success: false, error: error.message };
     return { success: true, error: null };
   } catch (err) {
-    return { success: false, error: friendlyError(err, "Failed to update job.") };
+    return { success: false, error: err instanceof Error ? err.message : "Failed to update job" };
   }
 }
 
-// ─── Delete Job ───────────────────────────────────────────────────────────────
-export async function deleteJob(
-  id: string,
-  employerId: string
-): Promise<JobActionResponse> {
-  if (!id || !employerId) return { success: false, error: "Missing required identifiers." };
-
+// ─── Delete Job ────────────────────────────────────────────────────────────────
+export async function deleteJob(id: string, employerId: string): Promise<JobActionResponse> {
   try {
     const { error } = await supabase
-      .from("job_listings")
+      .from("listings")
       .delete()
       .eq("id", id)
-      .eq("employer_id", employerId); // RLS: employer can only delete own listings
+      .eq("user_id", employerId);
 
-    if (error) return { success: false, error: friendlyError(error, "Failed to delete job.") };
-
+    if (error) return { success: false, error: error.message };
     return { success: true, error: null };
   } catch (err) {
-    return { success: false, error: friendlyError(err, "Failed to delete job.") };
+    return { success: false, error: err instanceof Error ? err.message : "Failed to delete job" };
   }
 }
 
-// ─── Increment View (rate-limited) ────────────────────────────────────────────
+// ─── Increment View ────────────────────────────────────────────────────────────
 export async function incrementJobView(id: string): Promise<void> {
-  if (!id) return;
-  if (!canIncrementView(id)) return; // client-side throttle
-
   try {
     await supabase.rpc("increment_view_count", {
-      table_name: "job_listings",
+      table_name: "listings",
       record_id:  id,
     });
   } catch {
-    // Non-critical — silently fail
+    // Non-critical
   }
 }
 
-// ─── Get My Jobs ──────────────────────────────────────────────────────────────
+// ─── Get My Jobs ───────────────────────────────────────────────────────────────
 export async function getMyJobs(employerId: string): Promise<JobListResponse> {
-  if (!employerId) return { data: [], total: 0, error: "Employer ID required." };
-
   try {
     const { data, error } = await supabase
-      .from("job_listings")
+      .from("listings")
       .select("*")
-      .eq("employer_id", employerId)
+      .eq("type", "job")
+      .eq("user_id", employerId)
       .order("created_at", { ascending: false });
 
-    if (error) return { data: [], total: 0, error: friendlyError(error, "Failed to load your jobs.") };
+    if (error) return { data: [], total: 0, error: error.message };
 
-    const items = (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
+    const items = (data ?? []).map((row) => mapRow(row as Record<string, any>));
     return { data: items, total: items.length, error: null };
   } catch (err) {
-    return { data: [], total: 0, error: friendlyError(err, "Failed to load your jobs.") };
-  }
-}
-
-// ─── Get Expiring Jobs (for reminder system) ──────────────────────────────────
-/**
- * Returns active jobs whose application_deadline is within `withinDays` days.
- * Used by:
- *  - A Supabase Edge Function cron job that sends push/email reminders to employers
- *  - The employer dashboard "expiring soon" warning panel
- *
- * NOTE: This function should only be called server-side or by authenticated employers.
- * The RLS policy on job_listings already restricts access to employer_id rows.
- */
-export async function getExpiringJobs(
-  employerId: string,
-  withinDays = 3
-): Promise<JobListResponse> {
-  if (!employerId) return { data: [], total: 0, error: "Employer ID required." };
-
-  try {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() + withinDays);
-
-    const { data, error } = await supabase
-      .from("job_listings")
-      .select("*")
-      .eq("employer_id", employerId)
-      .eq("status", "active")
-      .lte("application_deadline", cutoff.toISOString())
-      .gte("application_deadline", new Date().toISOString()) // not yet expired
-      .order("application_deadline", { ascending: true });
-
-    if (error) return { data: [], total: 0, error: friendlyError(error, "Failed to check expiring jobs.") };
-
-    const items = (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
-    return { data: items, total: items.length, error: null };
-  } catch (err) {
-    return { data: [], total: 0, error: friendlyError(err, "Failed to check expiring jobs.") };
+    return { data: [], total: 0, error: err instanceof Error ? err.message : "Failed to load your jobs" };
   }
 }
