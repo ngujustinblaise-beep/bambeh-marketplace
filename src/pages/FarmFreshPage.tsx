@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
  * ✅ FeaturedAdsStrip import REMOVED (was crashing the page)
  * ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
-import { useLang, t } from "@/hooks/useFarmFreshLang";
 import { useLang, t } from "@/hooks/useAppLang";
 
 interface FarmProduct {
@@ -62,8 +61,6 @@ const CATEGORY_KEYS = [
 const CATEGORY_VALUES = ["All", "Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy"];
 
 function hasImage(p: FarmProduct): boolean {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   if (p.image_url && p.image_url.trim() !== "") return true;
   if (p.images && p.images.length > 0 && p.images[0].trim() !== "") return true;
   return false;
@@ -79,6 +76,9 @@ export default function FarmFreshPage() {
   const [search,   setSearch]   = useState("");
   const [category, setCategory] = useState("All"); // always stored as English value
   const [addedId,  setAddedId]  = useState<string | null>(null);
+
+  const lang  = useLang();
+  const isRtl = lang === "ar";
 
   async function fetchProducts() {
     setLoading(true);

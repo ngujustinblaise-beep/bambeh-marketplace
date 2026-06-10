@@ -14,7 +14,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { AlertCircle } from "lucide-react";
-import { useLang, t } from "@/hooks/useFarmFreshLang";
 import { useLang, t } from "@/hooks/useAppLang";
 
 const CATEGORIES = ["Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy", "Other"];

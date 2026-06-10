@@ -19,13 +19,13 @@
  */
 
 import React, { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";          // ✅ unified client
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Check, AlertCircle, Loader2 } from "lucide-react";
 import type { AdCategory } from "@/hooks/useFeaturedAds";
 
-// ─── Constants ─────────────────────────────────────────────────────────────
+// ─── Constants ───────────────────────────────────────────────────────────────
 
 const CATEGORIES: { value: AdCategory; label: string }[] = [
   { value: "marketplace",   label: "Marketplace"   },
@@ -41,12 +41,12 @@ const CATEGORIES: { value: AdCategory; label: string }[] = [
 ];
 
 const LANGUAGES = [
-  { code: "en",  label: "English"   },
-  { code: "fr",  label: "Français"  },
-  { code: "ha",  label: "Hausa"     },
-  { code: "ar",  label: "العربية"  },
-  { code: "pcm", label: "Pidgin"    },
-  { code: "ful", label: "Fulfulde"  },
+  { code: "en",  label: "English"  },
+  { code: "fr",  label: "Français" },
+  { code: "ha",  label: "Hausa"    },
+  { code: "ar",  label: "العربية" },
+  { code: "pcm", label: "Pidgin"   },
+  { code: "ful", label: "Fulfulde" },
 ];
 
 // ─── Form state type ─────────────────────────────────────────────────────────
@@ -113,13 +113,13 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
         "Vendor";
 
       const { error: sbErr } = await supabase.from("featured_ads").insert({
-        vendor_id:    currentUser.id,
+        seller_id: currentUser.id,
         vendor_name:  vendorName,
         category:     form.category,
         title:        form.title,
         description:  form.description,
         price:        form.price ? parseFloat(form.price) : null,
-        image_url:    form.image_url  || null,
+        image_url:    form.image_url   || null,
         listing_path: form.listing_path || null,
         is_active:    true,
         is_promoted:  false,
@@ -267,7 +267,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
               : "bg-teal-600 hover:bg-teal-700 active:scale-95 disabled:opacity-60"
           }`}
         >
-          {loading  ? <><Loader2 className="w-4 h-4 animate-spin" /> Posting…</>
+          {loading   ? <><Loader2 className="w-4 h-4 animate-spin" /> Posting…</>
            : success ? <><Check className="w-4 h-4" /> Posted!</>
            : "Post Featured Ad"}
         </button>

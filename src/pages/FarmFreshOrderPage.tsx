@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
-import { useLang, t } from "@/hooks/useFarmFreshLang";
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ── UUID check ────────────────────────────────────────────────────────────────
