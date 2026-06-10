@@ -18,6 +18,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
 import { useLang, t } from "@/hooks/useAppLang";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 interface ExchangeItem {
   id:          string;
@@ -35,7 +36,7 @@ interface ExchangeItem {
 }
 
 function daysUntil(iso: string): number {
-    return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
 }
 
 export default function Exchange() {
@@ -129,8 +130,8 @@ export default function Exchange() {
 
         {/* Featured Ads */}
         <div className="mt-2 mb-1">
-          { /* Featured Ads: loaded separately */ }
-</div>
+          <FeaturedAdsStrip category="exchange" showHeader={false} maxVisible={20} />
+        </div>
 
         {/* Loading */}
         {loading && (

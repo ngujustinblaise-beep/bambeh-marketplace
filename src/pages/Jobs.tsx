@@ -20,6 +20,7 @@ import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
 import { useLang, t } from "@/hooks/useAppLang";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -484,8 +485,8 @@ export default function Jobs() {
 
       {/* ✅ FEATURED ADS STRIP — jobs category only */}
       <div className="px-4 pb-2">
-        { /* Featured Ads: loaded separately */ }
-</div>
+        <FeaturedAdsStrip category="jobs" showHeader={false} maxVisible={20} />
+      </div>
 
       {/* ── Results count ── */}
       <div className="px-4 py-3 flex items-center justify-between">

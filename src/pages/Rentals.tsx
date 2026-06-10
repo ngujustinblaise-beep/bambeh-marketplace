@@ -26,6 +26,7 @@ import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
 import { useLang, t } from "@/hooks/useAppLang";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Property {
@@ -313,8 +314,9 @@ export default function Rentals() {
         <LocationFilter onFilterChange={setLocationFilters} />
 
         {/* Featured ads */}
-        { /* Featured Ads: loaded separately */ }
-{/* Loading */}
+        <FeaturedAdsStrip category="rentals" showHeader={false} maxVisible={20} />
+
+        {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-orange-500" />

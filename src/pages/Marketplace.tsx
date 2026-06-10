@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLang, t } from "@/hooks/useAppLang";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Item {
@@ -501,8 +502,9 @@ export default function Marketplace() {
       )}
 
       {/* ── Featured ads strip ── */}
-      { /* Featured Ads: loaded separately */ }
-{/* ── Content ── */}
+      <FeaturedAdsStrip category="marketplace" showHeader={false} maxVisible={20} />
+
+      {/* ── Content ── */}
       <div className="px-4 pb-4">
         {/* Loading */}
         {loading && (

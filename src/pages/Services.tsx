@@ -54,6 +54,7 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/fi
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
 import { useLang, t } from "@/hooks/useAppLang";
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─────────────────────────────────────────────
 // Types
@@ -450,8 +451,9 @@ export default function Services() {
         </div>
 
         {/* ── Featured ads ── */}
-        { /* Featured Ads: loaded separately */ }
-{/* ── Actions row ── */}
+        <FeaturedAdsStrip category="services" showHeader={false} maxVisible={20} />
+
+        {/* ── Actions row ── */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
             {loading ? 'Loading…' : `${filtered.length} service${filtered.length !== 1 ? 's' : ''} found`}
