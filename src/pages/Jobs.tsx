@@ -1,15 +1,12 @@
 /**
  * src/pages/Jobs.tsx — Bambeh Marketplace
  *
- * FIXES APPLIED:
- *  ✅ Removed ALL hardcoded DEMO_JOBS — reads real data from Supabase
- *  ✅ Uses jobs.service.ts (getJobs) which queries the "job_listings" table
- *  ✅ Realtime subscription — new jobs posted appear instantly on all phones
- *  ✅ Proper loading, error, and empty states
- *  ✅ Saved jobs persist to localStorage (same pattern as Marketplace favorites)
- *  ✅ All filters (search, category, type, region, location) still work
- *  ✅ LocationFilter component preserved exactly as before
- *  ✅ JobCard UI preserved exactly — zero visual changes
+ * FIX: Removed illegal useLang() hook call from timeAgo() plain function.
+ *      React hooks may only be called inside React function components.
+ *      Calling a hook inside a plain helper function causes a crash that
+ *      triggers RouteErrorBoundary → "Oops, something went wrong".
+ *
+ * CHANGE: timeAgo() is now a pure function with no hook dependency.
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
@@ -19,7 +16,7 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLang } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -34,7 +31,6 @@ const JOB_TYPES = [
   "Internship", "Remote", "Freelance", "Temporary",
 ];
 
-// Map the DB job_type values to the display labels used in filters
 const JOB_TYPE_MAP: Record<string, string> = {
   full_time:  "Full-time",
   part_time:  "Part-time",
@@ -51,9 +47,8 @@ const REGIONS = [
 const SAVED_KEY = "bambeh_saved_jobs";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+// FIX: timeAgo is a plain function — no hooks allowed here.
 function timeAgo(dateStr: string): string {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
   if (diff === 0) return "Today";
   if (diff === 1) return "1d ago";
@@ -85,7 +80,6 @@ function persistSaved(saved: Set<string>) {
 }
 
 // ─── Job Card ─────────────────────────────────────────────────────────────────
-// Kept exactly the same visual design as before
 function JobCard({
   job,
   saved,
@@ -108,7 +102,6 @@ function JobCard({
       <div className="p-4">
         {/* Top row */}
         <div className="flex items-start gap-3">
-          {/* Company logo / initial */}
           <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/20 flex items-center
                           justify-center text-2xl flex-shrink-0 font-bold text-teal-600">
             {job.company ? job.company.charAt(0).toUpperCase() : "💼"}
@@ -200,7 +193,7 @@ function JobCard({
           🚀 Apply Now
         </div>
 
-        {/* ✅ View count */}
+        {/* View count */}
         <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
           <Eye className="w-3 h-3" />
           {(job as any).view_count ?? 0} views
@@ -213,13 +206,13 @@ function JobCard({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Jobs() {
   const navigate = useNavigate();
+  // FIX: useLang() called here at the top of the component, not inside helpers
+  const lang = useLang();
 
-  // ── Data state ──────────────────────────────────────────────────────────────
   const [jobs,    setJobs]    = useState<JobListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
 
-  // ── Filter state (preserved exactly from before) ─────────────────────────
   const [search,      setSearch]      = useState("");
   const [category,    setCategory]    = useState("All");
   const [jobType,     setJobType]     = useState("All Types");
@@ -229,7 +222,6 @@ export default function Jobs() {
   const [saved,       setSaved]       = useState<Set<string>>(readSaved);
   const [locationFilters, setLocationFilters] = useState<LocationFilters>(EMPTY_LOCATION);
 
-  // ── Fetch from Supabase via jobs.service ──────────────────────────────────
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -249,11 +241,9 @@ export default function Jobs() {
     }
   }, []);
 
-  // ── On mount: fetch + Realtime subscription ──────────────────────────────
   useEffect(() => {
     void fetchJobs();
 
-    // New job posted on any phone → appears here instantly
     const channel = supabase
       .channel("jobs_realtime")
       .on(
@@ -262,7 +252,6 @@ export default function Jobs() {
         (payload) => {
           const row = payload.new as Record<string, unknown>;
           if (row.status !== "active") return;
-          // Map the raw DB row to a JobListing shape
           const newJob: JobListing = {
             id:                 row.id as string,
             employerId:         row.employer_id as string,
@@ -297,12 +286,10 @@ export default function Jobs() {
     return () => { void supabase.removeChannel(channel); };
   }, [fetchJobs]);
 
-  // ── Persist saved jobs ───────────────────────────────────────────────────
   useEffect(() => {
     persistSaved(saved);
   }, [saved]);
 
-  // ── Client-side filtering (same logic as before) ─────────────────────────
   const filtered = useMemo(() => {
     let list = jobs.filter((j) => {
       const displayType = JOB_TYPE_MAP[j.jobType] ?? j.jobType;
@@ -310,14 +297,13 @@ export default function Jobs() {
 
       if (search &&
           !j.title.toLowerCase().includes(search.toLowerCase()) &&
-          !( j.company?.toLowerCase().includes(search.toLowerCase()) ?? false)
+          !(j.company?.toLowerCase().includes(search.toLowerCase()) ?? false)
       ) return false;
 
       if (category !== "All" && j.category !== category) return false;
       if (jobType !== "All Types" && displayType !== jobType) return false;
       if (region !== "All Regions" && !loc.includes(region.toLowerCase())) return false;
 
-      // Location filter (fine-grained)
       if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
       if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
       if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
@@ -340,7 +326,6 @@ export default function Jobs() {
     region   !== "All Regions",
   ].filter(Boolean).length;
 
-  // ── Actions ──────────────────────────────────────────────────────────────
   function handleSave(id: string, e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -362,11 +347,10 @@ export default function Jobs() {
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
 
-      {/* ── Hero ── */}
+      {/* Hero */}
       <div className="bg-gradient-to-br from-teal-600 to-teal-800 px-4 pt-5 pb-7">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-white font-bold text-2xl">Find Jobs 💼</h1>
@@ -392,7 +376,7 @@ export default function Jobs() {
         </div>
       </div>
 
-      {/* ── Filter bar ── */}
+      {/* Filter bar */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700
                       px-4 py-2.5 flex items-center gap-2 overflow-x-auto scrollbar-hide">
         <button
@@ -436,7 +420,7 @@ export default function Jobs() {
         ))}
       </div>
 
-      {/* ── Expanded filters ── */}
+      {/* Expanded filters */}
       {showFilters && (
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
           <div className="grid grid-cols-2 gap-3">
@@ -478,17 +462,17 @@ export default function Jobs() {
         </div>
       )}
 
-      {/* ── Location filter (preserved from original) ── */}
+      {/* Location filter */}
       <div className="px-4 pt-4">
         <LocationFilter onFilterChange={setLocationFilters} />
       </div>
 
-      {/* ✅ FEATURED ADS STRIP — jobs category only */}
+      {/* Featured ads strip */}
       <div className="px-4 pb-2">
         <FeaturedAdsStrip category="jobs" showHeader={false} maxVisible={20} />
       </div>
 
-      {/* ── Results count ── */}
+      {/* Results count */}
       <div className="px-4 py-3 flex items-center justify-between">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold text-gray-900 dark:text-white">{filtered.length}</span> jobs found
@@ -504,10 +488,9 @@ export default function Jobs() {
         )}
       </div>
 
-      {/* ── Body ── */}
+      {/* Body */}
       <div className="px-4 space-y-3">
 
-        {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
@@ -515,7 +498,6 @@ export default function Jobs() {
           </div>
         )}
 
-        {/* Error */}
         {!loading && error && (
           <div className="text-center py-16">
             <p className="text-4xl mb-3">⚠️</p>
@@ -529,7 +511,6 @@ export default function Jobs() {
           </div>
         )}
 
-        {/* No jobs at all in DB */}
         {!loading && !error && jobs.length === 0 && (
           <div className="text-center py-20">
             <BriefcaseIcon className="w-14 h-14 mx-auto mb-3 text-gray-300" />
@@ -544,7 +525,6 @@ export default function Jobs() {
           </div>
         )}
 
-        {/* No results for current filters */}
         {!loading && !error && jobs.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16">
             <p className="text-5xl mb-3">🔍</p>
@@ -566,7 +546,6 @@ export default function Jobs() {
           </div>
         )}
 
-        {/* Job cards */}
         {!loading && !error && filtered.map((job) => (
           <JobCard
             key={job.id}

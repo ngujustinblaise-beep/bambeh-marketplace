@@ -100,9 +100,8 @@ const LISTING_LIFESPAN_DAYS = 30;
 // ─────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────
+// FIX: Removed illegal useLang() hook call — hooks cannot be called inside plain functions.
 function daysOld(dateStr: string): number {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
 }
 

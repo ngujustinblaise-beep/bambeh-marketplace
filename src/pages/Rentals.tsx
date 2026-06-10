@@ -109,9 +109,8 @@ const TYPES  = ["All Types", "Apartment", "Villa", "Studio", "House", "Office", 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 /** Returns true if a listing expires within `days` days */
+// FIX: Removed illegal useLang() hook call — hooks cannot be called inside plain functions.
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   if (!expiresAt) return false;
   const diff = new Date(expiresAt).getTime() - Date.now();
   return diff > 0 && diff <= days * 86_400_000;

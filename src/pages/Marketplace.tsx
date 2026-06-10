@@ -1,19 +1,14 @@
 /**
  * src/pages/Marketplace.tsx — Bambeh Marketplace
  *
- * COMPLETE REWRITE — June 2026
- *  ✅ Queries `listings` table (canonical table) using seller_id
- *  ✅ No demo / mock data — all listings from Supabase
- *  ✅ Real-time INSERT / UPDATE / DELETE subscription
- *  ✅ view_count displayed on each card
- *  ✅ Images read from `images` JSONB array OR `extra.image_url`
- *  ✅ Favourites persisted to localStorage
- *  ✅ Cart badge in header (synced with CART_KEY)
- *  ✅ Safe area padding — bottom nav never covers content
- *  ✅ Ad expiry reminder banner for the logged-in seller's items
- *  ✅ Pull-to-refresh gesture (touch)
- *  ✅ Network-aware error recovery
- *  ✅ Accessible ARIA labels
+ * FIX: Removed illegal useLang() / useLang-dependent code from readFavIds()
+ *      plain helper function. React hooks may only be called inside React
+ *      function components. Calling them in plain functions causes a crash
+ *      which triggers RouteErrorBoundary → "Oops, something went wrong".
+ *
+ * CHANGE: readFavIds() is now a pure function with no hook dependency.
+ *         The `lang` / `isRtl` variables that were incorrectly placed inside
+ *         readFavIds() have been removed (they were unused there anyway).
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -21,10 +16,9 @@ import { useNavigate } from "react-router-dom";
 import {
   Search, ShoppingBag, Heart, MapPin, Plus, Loader2,
   RefreshCw, PackageOpen, Eye, ShoppingCart, Bell, X,
-  TrendingUp, Star, Zap,
+  TrendingUp, Zap,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -67,12 +61,12 @@ const CATEGORIES = [
 
 const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
-const EXPIRY_WARN_DAYS = 3; // warn when listing expires within 3 days
+const EXPIRY_WARN_DAYS = 3;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+// FIX: Pure function — no hooks. The useLang() / isRtl lines that were here
+//      before were illegal hook calls and caused the page crash.
 function readFavIds(): Set<string> {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   try {
     return new Set(
       (JSON.parse(localStorage.getItem(FAV_KEY) || "[]") as { id: string }[])
@@ -279,16 +273,15 @@ export default function Marketplace() {
   const [sortBy,       setSortBy]       = useState<"newest" | "price_asc" | "price_desc" | "popular">("newest");
   const touchStartY = useRef<number | null>(null);
 
-  // ── Cart count sync (localStorage event + polling) ─────────────────────────
+  // Cart count sync
   useEffect(() => {
     const sync = () => setCartCount(readCartCount());
     window.addEventListener("storage", sync);
-    // Also poll every 3s since localStorage events don't fire in same tab
     const interval = setInterval(sync, 3000);
     return () => { window.removeEventListener("storage", sync); clearInterval(interval); };
   }, []);
 
-  // ── Fetch listings ──────────────────────────────────────────────────────────
+  // Fetch listings
   const fetchItems = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -315,7 +308,6 @@ export default function Marketplace() {
       const mapped = (data ?? []).map(mapRow);
       setItems(mapped);
 
-      // Check expiry alerts for current user's listings
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const alerts: ExpiryAlert[] = mapped
@@ -333,7 +325,6 @@ export default function Marketplace() {
     }
   }, []);
 
-  // ── Initial load + realtime subscription ───────────────────────────────────
   useEffect(() => {
     void fetchItems();
 
@@ -361,7 +352,6 @@ export default function Marketplace() {
     return () => { void supabase.removeChannel(channel); };
   }, [fetchItems]);
 
-  // ── Pull to refresh ─────────────────────────────────────────────────────────
   function handleTouchStart(e: React.TouchEvent) {
     touchStartY.current = e.touches[0].clientY;
   }
@@ -372,7 +362,6 @@ export default function Marketplace() {
     touchStartY.current = null;
   }
 
-  // ── Toggle favourite ────────────────────────────────────────────────────────
   function toggleFav(e: React.MouseEvent, item: Item) {
     e.stopPropagation();
     const adding = !favs.has(item.id);
@@ -384,7 +373,6 @@ export default function Marketplace() {
     saveFav(item, adding);
   }
 
-  // ── Filter + sort ──────────────────────────────────────────────────────────
   let filtered = items.filter((i) => {
     const q = search.toLowerCase();
     const matchSearch = !q ||
@@ -399,10 +387,9 @@ export default function Marketplace() {
     case "price_asc":  filtered = [...filtered].sort((a, b) => a.price - b.price); break;
     case "price_desc": filtered = [...filtered].sort((a, b) => b.price - a.price); break;
     case "popular":    filtered = [...filtered].sort((a, b) => b.view_count - a.view_count); break;
-    default: break; // newest is already default from Supabase order
+    default: break;
   }
 
-  // Featured items pinned to top
   filtered = [
     ...filtered.filter((i) => i.isFeatured),
     ...filtered.filter((i) => !i.isFeatured),
@@ -413,9 +400,9 @@ export default function Marketplace() {
       className="min-h-screen bg-gray-50 pb-24"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}>
-      {/* ── Sticky header ── */}
+
+      {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 shadow-sm px-4 pt-4 pb-3">
-        {/* Title row */}
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-teal-600" />
@@ -430,7 +417,6 @@ export default function Marketplace() {
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-teal-600" : ""}`} />
             </button>
 
-            {/* Cart button with badge */}
             <button
               onClick={() => navigate("/cart")}
               className="relative p-2 text-gray-400 hover:text-teal-600 rounded-xl hover:bg-gray-100 transition-colors"
@@ -493,7 +479,7 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* ── Expiry reminder ── */}
+      {/* Expiry reminder */}
       {showExpiry && expiryAlerts.length > 0 && (
         <ExpiryReminderBanner
           alerts={expiryAlerts}
@@ -501,12 +487,11 @@ export default function Marketplace() {
         />
       )}
 
-      {/* ── Featured ads strip ── */}
+      {/* Featured ads strip */}
       <FeaturedAdsStrip category="marketplace" showHeader={false} maxVisible={20} />
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="px-4 pb-4">
-        {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
@@ -514,7 +499,6 @@ export default function Marketplace() {
           </div>
         )}
 
-        {/* Error */}
         {!loading && error && (
           <div className="text-center py-16">
             <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -531,7 +515,6 @@ export default function Marketplace() {
           </div>
         )}
 
-        {/* Empty — no listings at all */}
         {!loading && !error && items.length === 0 && (
           <div className="text-center py-20 text-gray-500">
             <PackageOpen className="w-14 h-14 mx-auto mb-3 text-gray-300" />
@@ -546,7 +529,6 @@ export default function Marketplace() {
           </div>
         )}
 
-        {/* Empty search result */}
         {!loading && !error && items.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16 text-gray-500">
             <Search className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -561,10 +543,8 @@ export default function Marketplace() {
           </div>
         )}
 
-        {/* Grid */}
         {!loading && !error && filtered.length > 0 && (
           <>
-            {/* Sort bar */}
             <div className="flex items-center justify-between mb-3 pt-3">
               <p className="text-xs text-gray-400 font-medium">
                 {filtered.length} listing{filtered.length !== 1 ? "s" : ""}
@@ -598,7 +578,6 @@ export default function Marketplace() {
               ))}
             </div>
 
-            {/* Bottom padding for nav */}
             <p className="text-center text-xs text-gray-300 mt-6">
               — {filtered.length} listing{filtered.length !== 1 ? "s" : ""} loaded —
             </p>
