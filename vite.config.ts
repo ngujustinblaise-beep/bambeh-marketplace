@@ -18,10 +18,15 @@
  *    Max age: 30 days. These files are content-hashed so stale is impossible.
  *
  *  SUPABASE API (listings, jobs, profiles)
- *  → NetworkFirst with 4s timeout: try network, fall back to cache if slow/offline.
- *    4s timeout is calibrated for  3G — fast enough to not feel slow,
- *    long enough to give a 3G connection a real chance before going offline.
+ *  → NetworkFirst with 8s timeout: try network, fall back to cache if slow/offline.
+ *    8s timeout is calibrated for Cameroonian 3G/2G — long enough to give a
+ *    slow connection a real chance before falling back to cache.
  *    Cache TTL: 5 minutes (matches queryClient staleTime).
+ *
+ *  SUPABASE ANALYTICS
+ *  → NetworkOnly: analytics_events returns 520 errors when intercepted by the
+ *    service worker. NetworkOnly lets it fail silently without filling the
+ *    console with ERR_FAILED spam or poisoning the API cache.
  *
  *  SUPABASE STORAGE (product images, avatars, vendor banners)
  *  → CacheFirst: images rarely change. Serve from cache immediately.
@@ -56,6 +61,15 @@
  *   ai-vendor           ~??  KB  ✅ lazy — only loads on /chatbot route
  *   misc-vendor         ~60 KB   ✅
  *   All others          <50 KB   ✅
+ *
+ * ─── FIXES (v6.1) ────────────────────────────────────────────────────────────
+ *   FIX 1: analytics_events rule added BEFORE REST catch-all (NetworkOnly)
+ *           — stops ERR_FAILED 520 console spam from Supabase telemetry
+ *   FIX 2: REST API networkTimeoutSeconds raised 4s → 8s
+ *           — Cameroonian 3G/2G needs more breathing room before cache fallback
+ *   FIX 3: REST API cacheableResponse statuses [0, 200] → [200]
+ *           — status 0 = opaque/failed response; caching failures and
+ *             re-serving them caused the "no-response" workbox errors
  */
 
 import { defineConfig } from "vite";
@@ -233,7 +247,7 @@ export default defineConfig({
 
         // ── SW activation ─────────────────────────────────────────────────
         // skipWaiting: new SW activates immediately without waiting for
-        // all tabs to close. Critical for  users who leave app open
+        // all tabs to close. Critical for users who leave app open
         // for days and would otherwise never get updates.
         skipWaiting: true,
         clientsClaim: true,
@@ -251,26 +265,46 @@ export default defineConfig({
         // ── Runtime caching ───────────────────────────────────────────────
         runtimeCaching: [
 
-          // 1. SUPABASE REST API — NetworkFirst, 4s timeout
-          // 4s calibrated for  3G. Serves stale cache if offline/slow.
-          // TTL matches queryClient staleTime (5 minutes).
+          // ── FIX 1: SUPABASE ANALYTICS — NetworkOnly ───────────────────
+          // Must be declared BEFORE the REST catch-all below.
+          // analytics_events returns HTTP 520 (Cloudflare error) when the
+          // service worker intercepts it. NetworkOnly lets it pass through
+          // directly — if it fails, it fails silently without poisoning the
+          // API cache or flooding the console with ERR_FAILED errors.
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/analytics_events.*/i,
+            handler: "NetworkOnly",
+          },
+
+          // 1. SUPABASE REST API — NetworkFirst
+          // ── FIX 2: networkTimeoutSeconds raised 4 → 8 ─────────────────
+          //    Cameroonian 3G/2G connections need more breathing room.
+          //    4s was too aggressive — requests were timing out and falling
+          //    back to stale cache even when the network was usable.
+          // ── FIX 3: cacheableResponse statuses [0, 200] → [200] ────────
+          //    Status 0 = opaque response (cross-origin failure / offline).
+          //    Caching status-0 responses means a failed fetch gets stored
+          //    and re-served as if it were real data, causing the workbox
+          //    "no-response" errors seen in the console.
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/.*/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "supabase-api-v1",
-              networkTimeoutSeconds: 4,
+              networkTimeoutSeconds: 8,           // FIX 2: was 4
               expiration: {
                 maxEntries: 150,
                 maxAgeSeconds: 5 * 60,
               },
-              cacheableResponse: { statuses: [0, 200] },
+              cacheableResponse: { statuses: [200] }, // FIX 3: was [0, 200]
             },
           },
 
           // 2. SUPABASE STORAGE — CacheFirst
           // Images cached 7 days. Zero network wait on repeat visits.
           // Biggest perceived performance win on 2G — images appear instantly.
+          // Status 0 is intentionally kept here: storage images are served
+          // via CDN as opaque cross-origin responses and are safe to cache.
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*/i,
             handler: "CacheFirst",
@@ -406,4 +440,3 @@ export default defineConfig({
     exclude: ["firebase", "@firebase/app"],
   },
 });
-
