@@ -57,7 +57,7 @@ const strings = {
     sendBtn:      (n: string) => `Envoyer ${n || '0'} pièces`,
     sending:      'Envoi…',
     disclaimer:   'Les transferts sont instantanés et irréversibles.',
-    errRecipient: 'Veuillez entrer l'email du destinataire.',
+    errRecipient: `Veuillez entrer l'email du destinataire.`,
     errMinAmount: 'Le minimum est 10 pièces.',
     errBalance:   (b: number) => `Vous n'avez que ${b} pièces.`,
     errNotFound:  "Aucun utilisateur avec cet email. Demandez-lui de s'inscrire sur Bambeh.",

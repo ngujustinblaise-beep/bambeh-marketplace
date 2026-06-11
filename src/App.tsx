@@ -942,27 +942,27 @@ export default function App() {
                           path="/subscription"
                           element={<MainLayout><SubscriptionPlans /></MainLayout>}
                         />
-                        <Route
-                          path="/zerm/purchase"
-                          element={
-                            <MainLayout>
-                              <AuthGate require="subscription"><ZermPurchase /></AuthGate>
-                            </MainLayout>
-                          }
-                        />
+
+                        {/* ── ZERM COINS WALLET ──────────────────────────────────
+                         *  AuthGate: "user" (not "subscription") — any logged-in
+                         *  user can access their wallet and buy coins.
+                         *  /coins/buy   ← primary route (was /zerm/purchase → 404)
+                         *  /coins/purchase + /zerm/purchase kept as redirects so
+                         *  old links / push notifications still work.
+                         * ──────────────────────────────────────────────────────── */}
                         <Route
                           path="/coins"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsPage /></AuthGate>
+                              <AuthGate require="user"><CoinsPage /></AuthGate>
                             </MainLayout>
                           }
                         />
                         <Route
-                          path="/coins/history"
+                          path="/coins/buy"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsHistory /></AuthGate>
+                              <AuthGate require="user"><ZermPurchase /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -970,10 +970,21 @@ export default function App() {
                           path="/coins/transfer"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsTransfer /></AuthGate>
+                              <AuthGate require="user"><CoinsTransfer /></AuthGate>
                             </MainLayout>
                           }
                         />
+                        <Route
+                          path="/coins/history"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><CoinsHistory /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        {/* Legacy redirects — keeps old links alive */}
+                        <Route path="/coins/purchase"  element={<Navigate to="/coins/buy" replace />} />
+                        <Route path="/zerm/purchase"   element={<Navigate to="/coins/buy" replace />} />
 
                         {/* ── 9. VENDOR PUBLIC ───────────────────────────────────── */}
                         <Route path="/vendor" element={<Navigate to="/vendor/home" replace />} />
