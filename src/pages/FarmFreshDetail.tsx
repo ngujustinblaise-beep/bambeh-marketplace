@@ -1,582 +1,434 @@
-﻿/**
- * src/pages/FarmFreshDetail.tsx â€” Bambeh Marketplace  UPGRADED VERSION
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * FarmFreshDetail.tsx — BAMBEH MARKETPLACE
+ * Individual farm product detail page
+ * Route: /farm-fresh/:id
  *
- * FIXES applied:
- *  âœ… DB query now reads correct columns: title, price_per_unit_xaf, seller_id
- *  âœ… "Add to Cart" button â†’ CartContext â†’ can pay via CamPay in Cart
- *  âœ… "Buy Now" = Add to Cart + navigate to /cart
- *  âœ… "Join Group Buy" CTA linking to /group-buying
- *  âœ… Images with no URL show nothing (no broken placeholder)
- *  âœ… Demo IDs s1â€“s8 handled inline (no DB call)
- *  âœ… Worldwide visibility: any logged-in user anywhere can view
- *  âœ… Seller contact: WhatsApp + Call work correctly
- *  âœ… Full i18n: English, French, Pidgin, Arabic, Fulfulde
- *     â€” reacts instantly when user changes language
+ * ✅ Farmer profile & location       ✅ Product description & freshness date
+ * ✅ Harvest calendar indicator      ✅ Order options (bulk / single)
+ * ✅ Delivery / collection options   ✅ WhatsApp contact farmer
+ * ✅ Nutritional info                ✅ Related farm products
+ * ✅ Freshness guarantee badge
+ * © 2026 Bambeh Marketplace
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useViewTracker } from "@/hooks/useViewTracker";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  ArrowLeft, ShoppingCart, MapPin, Star, Leaf,
-  RefreshCw, AlertCircle, Plus, Minus, Heart, Share2,
-  MessageCircle, Phone, Flag, Shield, Users, CheckCircle,
-  Smartphone, Loader2, CheckCircle2, XCircle, Clock, Lock,
-} from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import { useCart } from "@/contexts/CartContext";
-import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from "@/hooks/useCamPay";
-import { useLang, t } from "@/hooks/useAppLang";
+  ArrowLeft, MapPin, Star, ShoppingCart, Heart, Share2,
+  Copy, MessageCircle, CheckCircle, Truck, Leaf,
+  Calendar, ShieldCheck, Users, ChevronRight, Clock,
+  Package, Thermometer,
+} from 'lucide-react';
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-function isUUID(s: string) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
-}
-
-const fmtXAF = (n: number) =>
-  new Intl.NumberFormat("fr-CM", { maximumFractionDigits: 0 }).format(n) + " FCFA";
-
-const FAV_KEY = "bambeh_favorites";
-
-function isFavd(id: string) {
-  try {
-    return (JSON.parse(localStorage.getItem(FAV_KEY) || "[]") as any[]).some((f: any) => f.id === id);
-  } catch { return false; }
-}
-
-function toggleFavStorage(p: FarmProduct) {
-  try {
-    const s: any[] = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
-    const i = s.findIndex((f: any) => f.id === p.id);
-    if (i >= 0) s.splice(i, 1);
-    else s.unshift({
-      id: p.id, title: p.title,
-      price: `${fmtXAF(p.pricePerUnitXAF)}/${p.unit}`,
-      image: p.images[0], category: p.category,
-      type: "farm-fresh", location: p.sellerCity,
-      savedAt: new Date().toISOString(),
-    });
-    localStorage.setItem(FAV_KEY, JSON.stringify(s));
-    return i < 0;
-  } catch { return false; }
-}
-
-// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+// ── Types ─────────────────────────────────────────────────────────────────────
 interface FarmProduct {
-  id: string; sellerId?: string; sellerName: string; sellerCity: string;
-  sellerRating: number; sellerPhone?: string; title: string; description: string;
-  pricePerUnitXAF: number; unit: string; stockQuantity: number; images: string[];
-  isOrganic: boolean; harvestDate?: string; category: string;
-  availableForDelivery: boolean; isDemo?: boolean;
+  id: string; name: string; emoji: string; category: string;
+  shortDesc: string; fullDesc: string;
+  pricePerUnit: number; unit: string;
+  bulkMinQty: number; bulkPrice: number; bulkUnit: string;
+  farmer: { name: string; avatar: string; location: string; rating: number; sales: number; since: string; certified: boolean; phone: string };
+  harvestDate: string; bestBefore: string;
+  inSeason: boolean; availableQty: number;
+  deliveryOptions: { label: string; cost: number | 'free'; time: string }[];
+  certifications: string[];
+  nutritionFacts: { label: string; value: string }[];
+  highlights: string[];
+  relatedIds: string[];
 }
 
-// â”€â”€ Built-in demo items (s1â€“s8 only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const fmtXAF = (n: number) => `${n.toLocaleString('fr-CM')} XAF`;
 
-const DEMO: Record<string, FarmProduct> = {
-  s1: { id: "s1", title: "Fresh Tomatoes", category: "Vegetables", unit: "kg", pricePerUnitXAF: 500, stockQuantity: 50, isOrganic: true, availableForDelivery: true, sellerName: "Fon's Farm", sellerCity: "Bafoussam, West", sellerRating: 4.8, sellerPhone: "+237671234567", images: ["https://images.unsplash.com/photo-1546470427-e212876f0173?w=600&q=85"], description: "Sun-ripened tomatoes harvested fresh from highland farms in Bafoussam. Perfect for cooking, sauces, and salads. No pesticides â€” 100% organic.", isDemo: true },
-  s2: { id: "s2", title: "Plantains (1 bunch)", category: "Fruits", unit: "bunch", pricePerUnitXAF: 1500, stockQuantity: 30, isOrganic: false, availableForDelivery: true, sellerName: "Mama Ngo's Produce", sellerCity: "YaoundÃ©, Centre", sellerRating: 4.6, sellerPhone: "+237682345678", images: ["https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&q=85"], description: "Fresh ripe plantains, 12â€“15 fingers per bunch. Sourced from farms in the Centre region.", isDemo: true },
-  s3: { id: "s3", title: "Cocoyams (Macabo)", category: "Tubers", unit: "kg", pricePerUnitXAF: 800, stockQuantity: 100, isOrganic: true, availableForDelivery: false, sellerName: "Douala Fresh", sellerCity: "Douala, Littoral", sellerRating: 4.5, sellerPhone: "+237693456789", images: ["https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&q=85"], description: "Fresh macabo cocoyams, firm and starchy. Ideal for Eru and NdolÃ©. Organically grown.", isDemo: true },
-  s4: { id: "s4", title: "Fresh Maize (Corn)", category: "Grains", unit: "cob", pricePerUnitXAF: 300, stockQuantity: 200, isOrganic: false, availableForDelivery: true, sellerName: "NW Farm Co-op", sellerCity: "Bamenda, NW Region", sellerRating: 4.7, sellerPhone: "+237654567890", images: ["https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=85"], description: "Sweet juicy corn from Bamenda highlands. Ready to grill or boil.", isDemo: true },
-  s5: { id: "s5", title: "Groundnuts (1kg bag)", category: "Legumes", unit: "kg", pricePerUnitXAF: 1200, stockQuantity: 80, isOrganic: false, availableForDelivery: true, sellerName: "Adamaoua Nuts", sellerCity: "NgaoundÃ©rÃ©, Adamaoua", sellerRating: 4.9, sellerPhone: "+237665678901", images: ["https://images.unsplash.com/photo-1567581935884-3349723552ca?w=600&q=85"], description: "Premium shelled groundnuts from the Adamaoua savannah. Great for peanut paste and soup.", isDemo: true },
-  s6: { id: "s6", title: "Bitter Leaf (NdolÃ©)", category: "Vegetables", unit: "bunch", pricePerUnitXAF: 200, stockQuantity: 40, isOrganic: true, availableForDelivery: false, sellerName: "Centre Fresh Greens", sellerCity: "YaoundÃ©, Centre", sellerRating: 4.4, sellerPhone: "+237676789012", images: ["https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=85"], description: "Fresh bitter leaf (vernonia amygdalina) for authentic NdolÃ©. Already washed and ready.", isDemo: true },
-  s7: { id: "s7", title: "Fresh Avocados", category: "Fruits", unit: "kg", pricePerUnitXAF: 800, stockQuantity: 60, isOrganic: true, availableForDelivery: true, sellerName: "Highlands Harvest", sellerCity: "Dschang, West", sellerRating: 4.8, sellerPhone: "+237687890123", images: ["https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&q=85"], description: "Hand-picked avocados from highland farms in Dschang. Perfectly ripe, creamy and nutritious.", isDemo: true },
-  s8: { id: "s8", title: "Pineapples (Large)", category: "Fruits", unit: "piece", pricePerUnitXAF: 600, stockQuantity: 25, isOrganic: false, availableForDelivery: true, sellerName: "Littoral Tropicals", sellerCity: "Edea, Littoral", sellerRating: 4.6, sellerPhone: "+237698901234", images: ["https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=600&q=85"], description: "Sweet, juicy pineapples from coastal farms near Edea. Extra large size.", isDemo: true },
+// ── Mock product data ─────────────────────────────────────────────────────────
+const ALL_PRODUCTS: Record<string, FarmProduct> = {
+  'ff-001': {
+    id: 'ff-001', name: 'Fresh Plantains (Matoke)', emoji: '🍌', category: 'Fruits',
+    shortDesc: 'Ripe cooking plantains from Mungo Valley, harvested this week.',
+    fullDesc: 'Premium matoke plantains grown in the fertile volcanic soils of the Mungo Valley. Harvested at optimal ripeness — firm enough for frying, soft enough for boiling. No artificial ripening agents. Direct from farm to your table within 48 hours of harvest. Perfect for ndolé, roasting, or fried plantains (aloco).',
+    pricePerUnit: 500, unit: 'bunch (≈ 8–12 fingers)',
+    bulkMinQty: 10, bulkPrice: 420, bulkUnit: 'bunch',
+    farmer: { name: 'Pierre Nkemdirim', avatar: '👨🏾', location: 'Mungo Valley, Littoral Region', rating: 4.9, sales: 834, since: '2019', certified: true, phone: '+237 6XX XXX XXX' },
+    harvestDate: 'Feb 25, 2026', bestBefore: 'Mar 3, 2026',
+    inSeason: true, availableQty: 250,
+    deliveryOptions: [
+      { label: 'Yaoundé – collection point (Marché Melen)', cost: 'free', time: 'Every Tuesday & Friday' },
+      { label: 'Douala – collection point (Marché Sandaga)', cost: 'free', time: 'Every Monday & Thursday' },
+      { label: 'Home delivery (Yaoundé)', cost: 2000, time: '1–2 days' },
+      { label: 'Home delivery (Douala)', cost: 2500, time: '1–2 days' },
+    ],
+    certifications: ['Organic Cameroon Certified', 'Fair Trade', 'Chemical-Free'],
+    nutritionFacts: [{ label: 'Calories', value: '122 kcal / 100g' }, { label: 'Carbohydrates', value: '31.9g' }, { label: 'Dietary fiber', value: '2.3g' }, { label: 'Potassium', value: '499mg' }, { label: 'Vitamin C', value: '18.4mg' }, { label: 'Vitamin B6', value: '0.3mg' }],
+    highlights: ['Harvested this week — maximum freshness', 'Grown in Mungo Valley volcanic soil', 'Zero pesticides or artificial fertilisers', 'Supports a family farm with 5 employees', 'Available in bulk for restaurants & markets'],
+    relatedIds: ['ff-002', 'ff-003', 'ff-004'],
+  },
+  'ff-002': {
+    id: 'ff-002', name: 'Organic Cocoa Beans (1kg)', emoji: '☕', category: 'Cash Crops',
+    shortDesc: 'Single-origin Cameroonian cocoa beans from South Region cooperative.',
+    fullDesc: 'Premium fermented and sun-dried cocoa beans from the South Region of Cameroon. Grown by a cooperative of 45 smallholder farmers. Grade 1 quality, ideal for artisan chocolate makers. Flavour profile: fruity, floral, with hints of red berries. Fair-trade certified — 70% of proceeds go directly to farmers.',
+    pricePerUnit: 3500, unit: 'kg',
+    bulkMinQty: 5, bulkPrice: 2800, bulkUnit: 'kg',
+    farmer: { name: 'Coopérative Cacao Sud', avatar: '🌱', location: 'Ebolowa, South Region', rating: 5.0, sales: 312, since: '2017', certified: true, phone: '+237 6XX XXX XXX' },
+    harvestDate: 'Feb 2026', bestBefore: 'Aug 2027',
+    inSeason: true, availableQty: 850,
+    deliveryOptions: [
+      { label: 'Nationwide delivery', cost: 3000, time: '3–5 days' },
+      { label: 'Yaoundé collection', cost: 'free', time: '2–3 days' },
+    ],
+    certifications: ['Fair Trade Certified', 'Organic Cameroon', 'Rain Forest Alliance'],
+    nutritionFacts: [{ label: 'Protein', value: '12.5g / 100g' }, { label: 'Fat', value: '46g (cocoa butter)' }, { label: 'Theobromine', value: '2057mg' }, { label: 'Iron', value: '3.6mg' }, { label: 'Magnesium', value: '272mg' }],
+    highlights: ['Grade 1 — export quality', 'Fermented 6 days, sun-dried 7 days', 'Single-origin — traceable to farm', 'Fair trade: 70% goes to farmers', 'Used by leading artisan chocolatiers in France'],
+    relatedIds: ['ff-001', 'ff-003'],
+  },
+  'ff-003': {
+    id: 'ff-003', name: 'Red Palm Oil (Unrefined) – 5L', emoji: '🫙', category: 'Cooking Oils',
+    shortDesc: 'Cold-pressed unrefined red palm oil from West Region, no additives.',
+    fullDesc: 'Traditional red palm oil extracted using traditional cold-press methods in Bafang, West Region. 100% pure, no bleaching, no deodorising, no additives. Rich in beta-carotene (Vitamin A precursor) and Vitamin E. Deep red colour and authentic palm oil aroma. Essential for ndolé, eru, and mbongo tchobi.',
+    pricePerUnit: 6500, unit: '5-litre jerry',
+    bulkMinQty: 3, bulkPrice: 5800, bulkUnit: '5L',
+    farmer: { name: 'Huilerie Traditionnelle Bafang', avatar: '🫙', location: 'Bafang, West Region', rating: 4.8, sales: 1567, since: '2015', certified: true, phone: '+237 6XX XXX XXX' },
+    harvestDate: 'Jan–Feb 2026 press', bestBefore: 'Jan 2027',
+    inSeason: true, availableQty: 120,
+    deliveryOptions: [
+      { label: 'Yaoundé delivery', cost: 1500, time: '1–2 days' },
+      { label: 'Douala delivery', cost: 1500, time: '2–3 days' },
+      { label: 'Nationwide', cost: 3500, time: '3–7 days' },
+    ],
+    certifications: ['Artisanal Production', 'Chemical-Free', 'Traditional Method Certified'],
+    nutritionFacts: [{ label: 'Vitamin A (β-carotene)', value: '500 μg RE / 100g' }, { label: 'Vitamin E (tocotrienols)', value: '73mg / 100g' }, { label: 'Saturated fat', value: '49%' }, { label: 'Unsaturated fat', value: '51%' }],
+    highlights: ['Cold-pressed, no chemicals', 'Rich orange-red colour — full beta-carotene', 'Traditional Bafang production method', 'Used by top Cameroonian restaurants', '12-month shelf life unopened'],
+    relatedIds: ['ff-001', 'ff-004'],
+  },
+  'ff-004': {
+    id: 'ff-004', name: 'Ndolé Leaves (Fresh) – 500g', emoji: '🌿', category: 'Vegetables',
+    shortDesc: 'Fresh bitterleaf / ndolé, hand-cleaned, ready to cook.',
+    fullDesc: 'Fresh Vernonia amygdalina (ndolé / bitterleaf), hand-picked and washed from farms in Mfou. Pre-cleaned and shredded — ready to cook. Delivered same day of harvest for restaurants; next morning for individual orders. Perfect for Cameroon\'s most beloved dish.',
+    pricePerUnit: 1200, unit: '500g bundle',
+    bulkMinQty: 5, bulkPrice: 950, bulkUnit: 'bundle',
+    farmer: { name: 'Marché Vert Mfou', avatar: '🥬', location: 'Mfou, Centre Region', rating: 4.7, sales: 2341, since: '2021', certified: false, phone: '+237 6XX XXX XXX' },
+    harvestDate: 'Harvested daily', bestBefore: '3 days from delivery',
+    inSeason: true, availableQty: 500,
+    deliveryOptions: [
+      { label: 'Yaoundé delivery (daily run)', cost: 500, time: 'Same day by 5pm if ordered before noon' },
+      { label: 'Yaoundé collection (Marché Melen)', cost: 'free', time: 'Ready by 7am daily' },
+    ],
+    certifications: ['Pesticide-Free', 'Daily harvest'],
+    nutritionFacts: [{ label: 'Protein', value: '4.8g / 100g' }, { label: 'Calcium', value: '156mg' }, { label: 'Iron', value: '2.8mg' }, { label: 'Vitamins', value: 'A, C, E' }],
+    highlights: ['Harvested and delivered same day', 'Pre-cleaned — saves 30 minutes prep time', 'Pesticide-free from Mfou farms', 'Freshness guaranteed or 100% refund', 'Bulk discounts for restaurants'],
+    relatedIds: ['ff-001', 'ff-003'],
+  },
 };
 
-// â”€â”€ DirectPayModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-interface DirectPayModalProps {
-  total: number; productTitle: string; quantity: number; unit: string;
-  onClose: () => void; onPay: (phone: string) => void;
-  status: string; payRef: string; errorMsg: string; countdown: number;
-}
-
-function DirectPayModal({
-  total, productTitle, quantity, unit,
-  onClose, onPay, status, payRef, errorMsg, countdown,
-}: DirectPayModalProps) {
-  const [phone,      setPhone]      = useState("");
-  const [phoneError, setPhoneError] = useState("");
-
-  const operator = phone.length >= 3 ? detectOperator(normalizePhone(phone)) : null;
-
-  function handlePhoneChange(v: string) {
-    const digits = v.replace(/\D/g, "").slice(0, 9);
-    setPhone(digits);
-    setPhoneError("");
-  }
-
-  function handlePay() {
-    const err = validateCamPhone(phone);
-    if (err) { setPhoneError(err); return; }
-    onPay(normalizePhone(phone));
-  }
-
-  const canClose = status !== "submitting" && status !== "waiting";
-  const mins = Math.floor(countdown / 60);
-  const secs = countdown % 60;
-
-  return (
-    <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4"
-      onClick={e => { if (e.target === e.currentTarget && canClose) onClose(); }}>
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
-        <div className="bg-green-700 px-6 py-5 text-white">
-          <div className="flex items-center gap-2 mb-1">
-            <Smartphone className="w-5 h-5" />
-            <span className="font-bold text-lg">{t("payWithMoMo", lang)}</span>
-          </div>
-          <p className="text-green-100 text-sm">{t("poweredBy", lang)}</p>
-        </div>
-        <div className="px-6 py-5 space-y-4">
-          <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3">
-            <p className="text-xs text-gray-500 mb-0.5">{productTitle} Ã— {quantity} {unit}</p>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">{t("total", lang)}</span>
-              <span className="text-green-700 font-bold text-lg">{total.toLocaleString("fr-CM")} XAF</span>
-            </div>
-          </div>
-
-          {status === "success" && (
-            <div className="flex flex-col items-center gap-2 py-4">
-              <CheckCircle2 className="w-12 h-12 text-green-500" />
-              <p className="font-semibold text-gray-800">{t("paymentConfirmed", lang)}</p>
-              <p className="text-xs text-gray-500 text-center">{t("orderProcessed", lang)}</p>
-              {payRef && <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">Ref: {payRef}</p>}
-            </div>
-          )}
-
-          {status === "waiting" && (
-            <div className="flex flex-col items-center gap-3 py-4">
-              <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
-              <p className="font-semibold text-gray-800 text-center">{t("checkPhone", lang)}</p>
-              <p className="text-xs text-gray-500 text-center">{t("enterPin", lang)}</p>
-              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-3 py-2 text-xs font-semibold">
-                <Clock className="w-3.5 h-3.5" />
-                {countdown > 0
-                  ? (t("waiting", lang) as (m: number, s: number) => string)(mins, secs)
-                  : t("processing", lang)}
-              </div>
-            </div>
-          )}
-
-          {status === "submitting" && (
-            <div className="flex flex-col items-center gap-3 py-6">
-              <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
-              <p className="text-sm text-gray-600 text-center">{t("sendingRequest", lang)}</p>
-            </div>
-          )}
-
-          {(status === "failed" || status === "timeout") && (
-            <div className="flex flex-col items-center gap-2 py-3">
-              <XCircle className="w-10 h-10 text-red-500" />
-              <p className="font-semibold text-gray-800">{t("payFailed", lang)}</p>
-              <p className="text-xs text-red-500 text-center">{errorMsg}</p>
-              <p className="text-xs text-gray-400 text-center">
-                {t("questions", lang)}{" "}
-                <a href="mailto:support@bambeh.com" className="text-green-600 underline">support@bambeh.com</a>
-              </p>
-            </div>
-          )}
-
-          {(status === "idle" || status === "failed" || status === "timeout") && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  {t("mtnOrOrange", lang)}
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 select-none">+237</span>
-                  <input
-                    type="tel" value={phone} onChange={e => handlePhoneChange(e.target.value)}
-                    placeholder="6XXXXXXXX" maxLength={9}
-                    className={`w-full pl-14 pr-14 py-3 border-2 rounded-xl text-sm focus:outline-none transition-all ${
-                      operator === "mtn" ? "border-yellow-400 bg-yellow-50"
-                        : operator === "orange" ? "border-orange-400 bg-orange-50"
-                        : phoneError ? "border-red-300"
-                        : "border-gray-200 focus:border-green-500"}`} />
-                  {operator && (
-                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                      operator === "mtn" ? "bg-yellow-100 text-yellow-800" : "bg-orange-100 text-orange-800"}`}>
-                      {operator === "mtn" ? "ðŸ“¶ MTN" : "ðŸŸ  Orange"}
-                    </span>
-                  )}
-                </div>
-                {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
-                <p className="text-xs text-gray-400 mt-1">{t("ussdPrompt", lang)}</p>
-              </div>
-              <button
-                disabled={phone.length < 9} onClick={handlePay}
-                className="w-full bg-green-700 disabled:bg-green-300 text-white py-3.5 rounded-2xl font-bold">
-                {(t("confirmPay", lang) as (n: number) => string)(total)}
-              </button>
-            </>
-          )}
-
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 pt-1">
-            <Shield className="w-3.5 h-3.5" />
-            <span>{t("securedEncrypted", lang)}</span>
-          </div>
-
-          {canClose && (
-            <button onClick={onClose} className="w-full text-sm text-gray-500 hover:text-gray-700 py-1 transition-colors">
-              {t("cancel", lang)}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+// ── Main Component ─────────────────────────────────────────────────────────────
 const FarmFreshDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
-  useViewTracker(id, "farm_products");
+  const product = id ? ALL_PRODUCTS[id] : null;
 
-  const [product,      setProduct]      = useState<FarmProduct | null>(null);
-  const [loading,      setLoading]      = useState(true);
-  const [error,        setError]        = useState<string | null>(null);
-  const [quantity,     setQuantity]     = useState(1);
-  const [imgIdx,       setImgIdx]       = useState(0);
-  const [favorited,    setFavorited]    = useState(() => isFavd(id ?? ""));
-  const [copied,       setCopied]       = useState(false);
-  const [added,        setAdded]        = useState(false);
-  const [showPayModal, setShowPayModal] = useState(false);
-  const [orderDone,    setOrderDone]    = useState(false);
-  const [orderRef,     setOrderRef]     = useState("");
+  const [qty, setQty] = useState(1);
+  const [isBulk, setIsBulk] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [wishlisted, setWishlisted] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [selectedDelivery, setSelectedDelivery] = useState(0);
 
+  useEffect(() => {
+    const wl: string[] = JSON.parse(localStorage.getItem('Bambeh_wishlist') || '[]');
+    setWishlisted(wl.includes(id || ''));
+    if (product?.bulkMinQty) setQty(1);
+  }, [id]);
 
-  const load = useCallback(async () => {
-    if (!id) return;
-    setLoading(true); setError(null);
-
-    if (DEMO[id]) { setProduct(DEMO[id]); setLoading(false); return; }
-
-    if (!isUUID(id)) { setError(t("productNotFound", lang) as string); setLoading(false); return; }
-
-    try {
-      const { data, error: dbErr } = await supabase
-        .from("farm_products")
-        .select("*, profiles:seller_id(display_name, city, rating, phone)")
-        .eq("id", id)
-        .single();
-
-      if (dbErr || !data) { setError(t("productNotFound", lang) as string); return; }
-
-      const pr = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
-      const imgs: string[] = data.images && data.images.length > 0
-        ? data.images
-        : data.image_url ? [data.image_url] : [];
-
-      setProduct({
-        id:                   data.id,
-        sellerId:             data.seller_id,
-        sellerName:           pr?.display_name ?? "Seller",
-        sellerCity:           pr?.city ?? "Cameroon",
-        sellerRating:         pr?.rating ?? 0,
-        sellerPhone:          pr?.phone,
-        title:                data.title ?? data.name ?? "Product",
-        description:          data.description ?? "",
-        pricePerUnitXAF:      data.price_per_unit_xaf ?? data.price ?? 0,
-        unit:                 data.unit ?? "kg",
-        stockQuantity:        data.stock_quantity ?? 0,
-        images:               imgs,
-        isOrganic:            Boolean(data.is_organic),
-        harvestDate:          data.harvest_date,
-        category:             data.category ?? "",
-        availableForDelivery: Boolean(data.available_for_delivery),
-        isDemo:               false,
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Error loading");
-    } finally {
-      setLoading(false);
-    }
-  }, [id, lang]);
-
-  useEffect(() => { void load(); }, [load]);
-
-  const handleFavorite = () => { if (!product) return; setFavorited(toggleFavStorage(product)); };
-
-  const handleShare = async () => {
+  const addToCart = () => {
     if (!product) return;
-    const url = `https://bambeh.com/#/farm-fresh/${product.id}`;
-    if (navigator.share) {
-      try { await navigator.share({ title: product.title, text: `${product.title} on Bambeh Farm Fresh`, url }); return; }
-      catch { /* fall through */ }
-    }
-    navigator.clipboard.writeText(url).catch(() => {});
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
+    const unitPrice = isBulk ? product.bulkPrice : product.pricePerUnit;
+    const cart = JSON.parse(localStorage.getItem('Bambeh_cart') || '[]');
+    const idx = cart.findIndex((x: any) => x.id === product.id);
+    if (idx >= 0) cart[idx].qty = (cart[idx].qty || 1) + qty;
+    else cart.push({ id: product.id, name: product.name, price: unitPrice, qty, image: product.emoji, category: 'Farm Fresh' });
+    localStorage.setItem('Bambeh_cart', JSON.stringify(cart));
+    setAddedToCart(true); setTimeout(() => setAddedToCart(false), 2500);
   };
 
-  function handleAddToCart() {
-    if (!product) return;
-    addToCart({ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, imageUrl: product.images[0] ?? "", listingType: "farm-fresh", unit: product.unit, sellerName: product.sellerName });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  }
-
-  function handleBuyNow() { handleAddToCart(); navigate("/cart"); }
-
-  const totalXAF = (product?.pricePerUnitXAF ?? 0) * quantity;
-
-  const { status: payStatus, errorMsg: payError, reference: payRef,
-          countdown: payCountdown, initPayment, reset: resetPay } = useCamPay({
-    onSuccess: async (ref) => {
-      if (!product) return;
-      addToCart({ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, imageUrl: product.images[0] ?? "", listingType: "farm-fresh", unit: product.unit, sellerName: product.sellerName });
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        await supabase.from("orders").insert({
-          id:        `ORD_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
-          user_id:   session?.user?.id ?? null,
-          items:     [{ id: product.id, title: product.title, priceXAF: product.pricePerUnitXAF, quantity, unit: product.unit, listingType: "farm-fresh" }],
-          subtotal:  totalXAF, total: totalXAF, reference: ref,
-          status:    "paid", paid_at: new Date().toISOString(),
-        });
-      } catch { /* non-critical */ }
-      setOrderRef(ref); setOrderDone(true); setShowPayModal(false);
-    },
-  });
-
-  async function handleDirectPay(phone: string) {
-    if (!product) return;
-    await initPayment({ amount: totalXAF, phone, description: `Bambeh Farm Fresh â€” ${product.title} x${quantity}`, externalRef: `ff_${product.id}_${Date.now()}` });
-  }
-
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <RefreshCw className="w-6 h-6 text-green-500 animate-spin" />
+  if (!product) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="text-center">
+        <div className="text-6xl mb-4">🌾</div>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+        <p className="text-gray-500 mb-6">This product may be out of season or unavailable.</p>
+        <Link to="/farm-fresh" className="px-6 py-3 bg-green-600 text-white rounded-xl font-bold">Browse Farm Fresh</Link>
+      </div>
     </div>
   );
 
-  if (error || !product) return (
-    <div className="p-4 space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-600">
-        <ArrowLeft className="w-4 h-4" />{t("back", lang)}
-      </button>
-      <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl">
-        <AlertCircle className="w-5 h-5 text-red-500" />
-        <p className="text-sm text-red-600">{error ?? t("productNotFound", lang) as string}</p>
-      </div>
-      <button onClick={() => navigate("/farm-fresh")} className="bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
-        {t("browseFF", lang)}
-      </button>
-    </div>
-  );
-
-  if (orderDone) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-6">
-        <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
-          <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-1">{t("orderPlaced", lang)}</h2>
-          <p className="text-sm text-gray-500 mb-3">{t("payConfirmed", lang)}</p>
-          {orderRef && <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600 mb-4 inline-block">Ref: {orderRef}</p>}
-          <button onClick={() => navigate("/orders")} className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold mb-2">{t("trackOrder", lang)}</button>
-          <button onClick={() => navigate("/farm-fresh")} className="w-full text-gray-500 text-sm py-2">{t("keepShopping", lang)}</button>
-        </div>
-      </div>
-    );
-  }
-
-  const waMsg = encodeURIComponent(
-    `Hi ${product.sellerName}, I saw your listing on Bambeh: ${product.title} â€” ${fmtXAF(product.pricePerUnitXAF)}/${product.unit}. Is it still available?`
-  );
+  const unitPrice = isBulk ? product.bulkPrice : product.pricePerUnit;
+  const totalPrice = unitPrice * qty;
+  const relatedProducts = product.relatedIds.map(rid => ALL_PRODUCTS[rid]).filter(Boolean);
+  const shareUrl = `https://bambeh.cm/farm-fresh/${id}`;
 
   return (
-    <div className="max-w-lg mx-auto pb-36 bg-white min-h-screen">
-      {/* Toasts */}
-      {copied && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white text-sm px-4 py-2 rounded-full shadow-lg">
-          {t("linkCopied", lang)}
-        </div>
-      )}
-      {added && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-700 text-white text-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-          <CheckCircle className="w-4 h-4" /> {t("addedToCart", lang)}
-        </div>
-      )}
+    <div className="min-h-screen bg-gray-50 pb-32">
 
-      {/* Image section */}
-      <div className="relative">
-        <button onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 z-20 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md">
-          <ArrowLeft className="w-4 h-4 text-gray-700" />
-        </button>
-        <div className="absolute top-4 right-4 z-20 flex gap-2">
-          <button onClick={handleShare} className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md">
-            <Share2 className="w-4 h-4 text-gray-600" />
+      {/* Top bar */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+            <ArrowLeft className="w-5 h-5" /><span className="text-sm font-medium">Back</span>
           </button>
-          <button onClick={handleFavorite} className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md">
-            <Heart className={`w-4 h-4 ${favorited ? "text-red-500 fill-red-500" : "text-gray-600"}`} />
-          </button>
+          <div className="flex gap-2">
+            <button onClick={() => setWishlisted(!wishlisted)} className={`p-2.5 rounded-xl border ${wishlisted ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}>
+              <Heart className={`w-5 h-5 ${wishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+            </button>
+            <button onClick={() => setShareOpen(true)} className="p-2.5 rounded-xl border border-gray-200">
+              <Share2 className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
         </div>
-        <div className="h-72 bg-gray-100 overflow-hidden">
-          {product.images.length > 0 ? (
-            <img src={product.images[imgIdx]} alt={product.title} className="w-full h-full object-cover"
-              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">ðŸŒ¿</div>
-          )}
-        </div>
-        {product.images.length > 1 && (
-          <div className="flex gap-1.5 justify-center mt-2">
-            {product.images.map((_, i) => (
-              <button key={i} onClick={() => setImgIdx(i)}
-                className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-green-600" : "bg-gray-300"}`} />
-            ))}
-          </div>
-        )}
-        {product.isDemo && (
-          <div className="absolute bottom-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full">
-            {t("demoSample", lang)}
-          </div>
-        )}
-        {product.isOrganic && (
-          <div className="absolute top-16 right-4 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <Leaf className="w-3 h-3" />{t("organic", lang)}
-          </div>
-        )}
       </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-4">
-        <div>
-          <p className="text-xs text-green-600 font-semibold uppercase tracking-wide mb-1">{product.category}</p>
-          <h1 className="text-2xl font-bold text-gray-900">{product.title}</h1>
-          {product.harvestDate && (
-            <p className="text-xs text-gray-400 mt-1">
-              {t("harvested", lang)} {new Date(product.harvestDate).toLocaleDateString(lang === "ar" ? "ar-DZ" : lang === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}
-            </p>
-          )}
-        </div>
+      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
-          <div className="flex items-baseline gap-2 mb-1">
-            <p className="text-3xl font-black text-green-800">{fmtXAF(product.pricePerUnitXAF)}</p>
-            <p className="text-green-600 font-medium">/ {product.unit}</p>
-          </div>
-          {product.stockQuantity > 0 && (
-            <p className="text-sm text-green-600">{t("stock", lang)} {product.stockQuantity} {product.unit}</p>
-          )}
-          {product.availableForDelivery && (
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-blue-600 bg-blue-50 rounded-lg px-2.5 py-1.5">
-              <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />{t("deliveryAvail", lang)}
+        {/* Hero */}
+        <div className="bg-gradient-to-br from-green-600 to-teal-700 rounded-3xl text-white overflow-hidden">
+          <div className="p-6">
+            <div className="flex gap-2 mb-4">
+              {product.inSeason && (
+                <span className="flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                  <Leaf className="w-3 h-3" />In Season
+                </span>
+              )}
+              <span className="bg-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{product.category}</span>
             </div>
-          )}
-        </div>
-
-        {/* Seller card */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{t("seller", lang)}</h3>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-lg">
-              {product.sellerName.charAt(0)}
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-gray-900">{product.sellerName}</p>
-              <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-                <MapPin className="w-3 h-3" />{product.sellerCity}
-                {product.sellerRating > 0 && (
-                  <><span>Â·</span><Star className="w-3 h-3 text-yellow-400 fill-yellow-400" /><span>{product.sellerRating.toFixed(1)}</span></>
-                )}
+            <div className="flex items-start gap-5">
+              <div className="text-7xl">{product.emoji}</div>
+              <div>
+                <h1 className="text-xl font-black leading-snug">{product.name}</h1>
+                <p className="text-green-100 text-sm mt-1">{product.shortDesc}</p>
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="text-2xl font-black">{fmtXAF(product.pricePerUnit)}</div>
+                  <div className="text-green-200 text-sm">per {product.unit}</div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
-            <a href={`https://wa.me/${(product.sellerPhone || "+237600000000").replace(/\s/g, "")}?text=${waMsg}`}
-              target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 transition">
-              <MessageCircle className="w-4 h-4" />{t("whatsapp", lang)}
-            </a>
-            <a href={`tel:${product.sellerPhone || "+237600000000"}`}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
-              <Phone className="w-4 h-4" />{t("call", lang)}
-            </a>
+          {/* Freshness bar */}
+          <div className="bg-black/20 px-6 py-3 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-green-200" />
+              <span className="text-green-100">Harvested: <strong className="text-white">{product.harvestDate}</strong></span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-white/20 px-2.5 py-1 rounded-xl">
+              <Thermometer className="w-3.5 h-3.5 text-green-200" />
+              <span className="text-xs font-semibold">Best before: {product.bestBefore}</span>
+            </div>
           </div>
         </div>
 
-        {/* Group buying CTA */}
-        <button onClick={() => navigate(`/group-buying?product=${product.id}&type=farm-fresh`)}
-          className="w-full flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-2xl hover:bg-blue-100 transition active:scale-[0.98]">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <Users className="w-5 h-5 text-blue-600" />
+        {/* Bulk toggle */}
+        {product.bulkMinQty && (
+          <div className="bg-white rounded-2xl shadow-sm p-4">
+            <div className="flex gap-3">
+              <button onClick={() => { setIsBulk(false); setQty(1); }}
+                className={`flex-1 py-3 rounded-xl font-bold text-sm border transition-all ${!isBulk ? 'bg-teal-600 text-white border-teal-600' : 'border-gray-200 text-gray-600'}`}>
+                Single {product.unit}
+                <div className={`text-xs mt-0.5 ${!isBulk ? 'text-teal-100' : 'text-gray-400'}`}>{fmtXAF(product.pricePerUnit)}</div>
+              </button>
+              <button onClick={() => { setIsBulk(true); setQty(product.bulkMinQty); }}
+                className={`flex-1 py-3 rounded-xl font-bold text-sm border transition-all ${isBulk ? 'bg-teal-600 text-white border-teal-600' : 'border-gray-200 text-gray-600'}`}>
+                Bulk (min. {product.bulkMinQty})
+                <div className={`text-xs mt-0.5 ${isBulk ? 'text-teal-100' : 'text-gray-400'}`}>{fmtXAF(product.bulkPrice)} / {product.bulkUnit}</div>
+              </button>
+            </div>
+            {isBulk && <p className="text-green-600 text-xs font-semibold mt-2 text-center">💚 You save {fmtXAF((product.pricePerUnit - product.bulkPrice) * qty)} vs single price</p>}
           </div>
-          <div className="flex-1 text-left">
-            <p className="font-semibold text-blue-900 text-sm">{t("joinGroupBuy", lang)}</p>
-            <p className="text-xs text-blue-600">{t("joinGroupBuySub", lang)}</p>
-          </div>
-          <span className="text-blue-500 text-sm font-semibold">â†’</span>
-        </button>
+        )}
 
         {/* Description */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-          <h3 className="font-bold text-gray-900 mb-2 text-sm">{t("aboutProduce", lang)}</h3>
-          <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <h2 className="font-bold text-gray-900 mb-2">About This Product</h2>
+          <p className="text-gray-600 text-sm leading-relaxed">{product.fullDesc}</p>
         </div>
 
-        {/* Safety tip */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-2">
-          <Shield className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">
-            <strong>{t("safetyTip", lang)}</strong> {t("safetyText", lang)}
-          </p>
-        </div>
-
-        <button onClick={() => navigate(`/report-issue?item=${product.id}&type=farm-fresh`)}
-          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition mx-auto">
-          <Flag className="w-3.5 h-3.5" />{t("reportListing", lang)}
-        </button>
-      </div>
-
-      {/* Fixed bottom bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 max-w-lg mx-auto">
-        <div className="flex items-center gap-3 mb-2.5">
-          <div className="flex items-center gap-0 border border-gray-300 rounded-xl overflow-hidden flex-shrink-0">
-            <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition">
-              <Minus className="w-4 h-4 text-gray-600" />
-            </button>
-            <span className="w-9 text-center text-sm font-bold text-gray-900">{quantity}</span>
-            <button onClick={() => setQuantity(q => Math.min(product.stockQuantity || 999, q + 1))}
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition">
-              <Plus className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
-          <div className="flex-1 text-right">
-            <p className="text-xs text-gray-400">{t("total", lang)}</p>
-            <p className="font-bold text-green-700">{fmtXAF(totalXAF)}</p>
+        {/* Highlights */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2"><Leaf className="w-4 h-4 text-green-600" />Why Buy This</h2>
+          <div className="space-y-2">
+            {product.highlights.map((h, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <span className="text-gray-700 text-sm">{h}</span>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="flex gap-2">
-          <button onClick={handleAddToCart}
-            className={`flex-1 py-3 border-2 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition active:scale-[0.98] ${
-              added ? "border-green-500 bg-green-500 text-white" : "border-green-600 text-green-700 hover:bg-green-50"}`}>
-            <ShoppingCart className="w-4 h-4" />
-            {added ? t("addedBtn", lang) : t("addToCartBtn", lang)}
-          </button>
-          <button onClick={() => { resetPay(); setShowPayModal(true); }}
-            className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition active:scale-[0.98]">
-            <Smartphone className="w-4 h-4" /> {t("payNow", lang)}
-          </button>
+
+        {/* Certifications */}
+        {product.certifications.length > 0 && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
+            <p className="font-semibold text-green-800 text-sm mb-2">Certifications & Guarantees</p>
+            <div className="flex flex-wrap gap-2">
+              {product.certifications.map((c, i) => (
+                <span key={i} className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border border-green-200">✓ {c}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Nutrition */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <h2 className="font-bold text-gray-900 mb-3">Nutrition Facts</h2>
+          <div className="divide-y divide-gray-100">
+            {product.nutritionFacts.map((n, i) => (
+              <div key={i} className="flex justify-between py-2 text-sm">
+                <span className="text-gray-500">{n.label}</span>
+                <span className="font-medium text-gray-900">{n.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Delivery options */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2"><Truck className="w-4 h-4 text-teal-600" />Delivery & Collection</h2>
+          <div className="space-y-2">
+            {product.deliveryOptions.map((d, i) => (
+              <button key={i} onClick={() => setSelectedDelivery(i)}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${selectedDelivery === i ? 'border-teal-400 bg-teal-50' : 'border-gray-200 hover:bg-gray-50'}`}>
+                <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 ${selectedDelivery === i ? 'border-teal-500 bg-teal-500' : 'border-gray-300'}`}>
+                  {selectedDelivery === i && <div className="w-full h-full flex items-center justify-center"><div className="w-2 h-2 bg-white rounded-full" /></div>}
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900 text-sm">{d.label}</p>
+                  <p className="text-gray-500 text-xs">{d.time}</p>
+                </div>
+                <div className="text-sm font-bold">
+                  {d.cost === 'free' ? <span className="text-green-600">FREE</span> : <span className="text-gray-700">{fmtXAF(d.cost as number)}</span>}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Farmer card */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <h2 className="font-bold text-gray-900 mb-4">Your Farmer</h2>
+          <div className="flex items-center gap-4">
+            <div className="text-4xl">{product.farmer.avatar}</div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-gray-900">{product.farmer.name}</p>
+                {product.farmer.certified && (
+                  <span className="flex items-center gap-0.5 text-green-600 text-xs font-semibold bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                    <CheckCircle className="w-3 h-3" />Certified
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1 text-gray-500 text-xs mt-0.5">
+                <MapPin className="w-3 h-3" />{product.farmer.location}
+              </div>
+              <div className="flex items-center gap-3 mt-1 text-xs">
+                <span className="flex items-center gap-1"><Star className="w-3 h-3 text-amber-400 fill-amber-400" /><strong>{product.farmer.rating}</strong></span>
+                <span className="text-gray-400">·</span>
+                <span className="text-gray-500">{product.farmer.sales.toLocaleString()} orders</span>
+                <span className="text-gray-400">·</span>
+                <span className="text-gray-500">Since {product.farmer.since}</span>
+              </div>
+            </div>
+          </div>
+          <a
+            href={`https://wa.me/${product.farmer.phone.replace(/\s/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm hover:bg-[#1da851] transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" />WhatsApp Farmer
+          </a>
+        </div>
+
+        {/* Related */}
+        {relatedProducts.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-bold text-gray-900">More from the Farm</h2>
+              <Link to="/farm-fresh" className="text-green-600 text-sm font-semibold">See all →</Link>
+            </div>
+            <div className="space-y-3">
+              {relatedProducts.map(rp => (
+                <Link key={rp.id} to={`/farm-fresh/${rp.id}`} className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
+                  <span className="text-3xl">{rp.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm truncate">{rp.name}</p>
+                    <p className="text-gray-500 text-xs">{rp.shortDesc.substring(0, 50)}...</p>
+                    <p className="text-teal-700 font-bold text-sm mt-1">{fmtXAF(rp.pricePerUnit)} / {rp.unit}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Freshness guarantee */}
+        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 flex gap-3">
+          <ShieldCheck className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-green-800 text-sm">Freshness Guarantee</p>
+            <p className="text-green-700 text-xs mt-0.5">If your produce arrives wilted, damaged, or below standard, report within 24 hours and we will send a replacement or issue a full refund.</p>
+          </div>
         </div>
       </div>
 
-      {showPayModal && (
-        <DirectPayModal
-          total={totalXAF} productTitle={product.title} quantity={quantity} unit={product.unit}
-          onClose={() => { setShowPayModal(false); resetPay(); }}
-          onPay={handleDirectPay} status={payStatus} payRef={payRef}
-          errorMsg={payError} countdown={payCountdown} />
+      {/* Sticky bottom bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600 font-medium">{isBulk ? `Bundles (min ${product.bulkMinQty})` : 'Quantity'}</span>
+              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+                <button onClick={() => setQty(q => Math.max(isBulk ? product.bulkMinQty : 1, q - (isBulk ? product.bulkMinQty : 1)))}
+                  className="w-8 h-8 flex items-center justify-center font-bold text-gray-700 hover:bg-white rounded-lg">−</button>
+                <span className="w-10 text-center font-bold text-sm">{qty}</span>
+                <button onClick={() => setQty(q => Math.min(product.availableQty, q + (isBulk ? product.bulkMinQty : 1)))}
+                  className="w-8 h-8 flex items-center justify-center font-bold text-gray-700 hover:bg-white rounded-lg">+</button>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-black text-gray-900">{fmtXAF(totalPrice)}</div>
+              <div className="text-xs text-gray-400">{qty} × {isBulk ? `${product.bulkUnit} bulk` : product.unit}</div>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={addToCart}
+              className={`flex-1 py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${addedToCart ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-gray-900 text-white hover:bg-gray-800'}`}>
+              {addedToCart ? <><CheckCircle className="w-4 h-4" />Added!</> : <><ShoppingCart className="w-4 h-4" />Add to Cart</>}
+            </button>
+            <button onClick={() => navigate('/payment/checkout')}
+              className="flex-1 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700 transition-all shadow-md">
+              🌿 Order Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Share sheet */}
+      {shareOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end px-4 pb-6" onClick={() => setShareOpen(false)}>
+          <div className="bg-white rounded-3xl w-full max-w-md mx-auto p-5" onClick={e => e.stopPropagation()}>
+            <h3 className="font-bold text-gray-900 text-lg mb-4">Share This Product</h3>
+            <div className="space-y-3">
+              <a href={`https://wa.me/?text=${encodeURIComponent(`🌿 Check this out on Bambeh FarmFresh! ${product.name} — ${fmtXAF(product.pricePerUnit)} / ${product.unit}. Fresh from Cameroon farms! ${shareUrl}`)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-2xl text-[#128C7E] font-semibold">
+                <MessageCircle className="w-5 h-5" />Share on WhatsApp
+              </a>
+              <button onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                className="w-full flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-700 font-semibold">
+                <Copy className="w-5 h-5 text-gray-400" />{copied ? '✓ Copied!' : 'Copy Link'}
+              </button>
+            </div>
+            <button onClick={() => setShareOpen(false)} className="w-full mt-3 py-3 text-gray-500 text-sm">Cancel</button>
+          </div>
+        </div>
       )}
     </div>
   );

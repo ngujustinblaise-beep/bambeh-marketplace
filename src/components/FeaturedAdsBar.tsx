@@ -16,14 +16,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, ShoppingBag } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";          // ✅ unified client
+import { supabase } from "@/lib/supabase";
 
 interface FeaturedItem {
-  id:       string;
-  title:    string;
-  price:    number;
+  id: string;
+  title: string;
+  price: number;
   location: string;
-  image?:   string;
+  image?: string;
   category: string;
 }
 
@@ -55,7 +55,7 @@ export default function FeaturedAdsBar() {
           data.map((row) => ({
             id:       row.id,
             title:    row.title,
-            price:    row.price    ?? 0,
+            price:    row.price ?? 0,
             location: row.location ?? "",
             image:    extractImage(row),
             category: row.category ?? "",

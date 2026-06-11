@@ -1,9 +1,11 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * Register.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/auth/Register.tsx
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
+ *
+ * ✅ ADDED: Welcome message + notification sent on every new account creation
  */
 
 import { useState } from "react";
@@ -15,10 +17,104 @@ import {
 } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// ✅ BAMBEH WELCOME MESSAGE CONFIG
+// Fill in the correct values for your Supabase tables below.
+// ─────────────────────────────────────────────────────────────────────────────
+const BAMBEH_CONFIG = {
+  // The UUID of the Bambeh system/admin account that sends the welcome message.
+  // Get it from: Supabase → Authentication → Users → find "Bambeh Team" or admin user
+  // Then paste the UUID here:
+  SYSTEM_USER_ID: "00000000-0000-0000-0000-000000000001", // ← REPLACE with real admin UUID
+
+  // Your messages table name (check Supabase → Table Editor)
+  MESSAGES_TABLE: "messages",         // common options: "messages", "chats", "direct_messages"
+
+  // Your notifications table name
+  NOTIFICATIONS_TABLE: "notifications", // common options: "notifications", "alerts"
+
+  // Column names in your messages table
+  MSG_COLUMNS: {
+    sender_id:   "sender_id",         // who sent it
+    receiver_id: "receiver_id",       // who receives it (new user)
+    content:     "content",           // message body column name — may be "body", "text", "message"
+    created_at:  "created_at",
+  },
+
+  // Column names in your notifications table
+  NOTIF_COLUMNS: {
+    user_id:     "user_id",           // who the notification is for
+    title:       "title",
+    body:        "body",              // may be "message", "content", "description"
+    type:        "type",              // notification category
+    is_read:     "is_read",
+    created_at:  "created_at",
+  },
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Send a welcome message + notification to the newly registered user. Non-fatal. */
+async function sendWelcomeMessageAndNotification(
+  userId: string,
+  fullName: string,
+): Promise<void> {
+  const firstName = fullName.trim().split(" ")[0] || "there";
+
+  const welcomeText =
+    `🎉 Welcome to Bambeh, ${firstName}! ` +
+    `We're so glad you're here.\n\n` +
+    `Bambeh is the pulse of African commerce — you can buy and sell anything, ` +
+    `discover Farm Fresh produce, join Group Buying deals, and much more.\n\n` +
+    `Here's how to get started:\n` +
+    `• 🛍️ Browse listings on the home page\n` +
+    `• 📦 Post your first listing — it takes 2 minutes\n` +
+    `• 🌿 Check out Farm Fresh for fresh produce\n` +
+    `• 🤝 Join a Group Buy and save more\n\n` +
+    `If you ever need help, tap the chat bubble or visit our Help Centre.\n\n` +
+    `Happy trading! 🌍\n— The Bambeh Team`;
+
+  const now = new Date().toISOString();
+
+  // ── 1. Insert welcome message into the chat/messages table ─────────────────
+  try {
+    const { MESSAGES_TABLE, SYSTEM_USER_ID, MSG_COLUMNS: c } = BAMBEH_CONFIG;
+
+    await supabase.from(MESSAGES_TABLE).insert({
+      [c.sender_id]:   SYSTEM_USER_ID,
+      [c.receiver_id]: userId,
+      [c.content]:     welcomeText,
+      [c.created_at]:  now,
+      // Extra columns your table may have — safe to leave if they have defaults:
+      is_read:         false,
+      message_type:    "welcome",
+    });
+  } catch (msgErr) {
+    // Non-fatal — log and continue
+    console.warn("[Register] Welcome message insert failed:", msgErr);
+  }
+
+  // ── 2. Insert welcome notification ─────────────────────────────────────────
+  try {
+    const { NOTIFICATIONS_TABLE, NOTIF_COLUMNS: c } = BAMBEH_CONFIG;
+
+    await supabase.from(NOTIFICATIONS_TABLE).insert({
+      [c.user_id]:    userId,
+      [c.title]:      "Welcome to Bambeh! 🎉",
+      [c.body]:       `Hi ${firstName}! Your account is ready. Tap to see your welcome message.`,
+      [c.type]:       "welcome",
+      [c.is_read]:    false,
+      [c.created_at]: now,
+      // Extra fields your table may have:
+      link:           "/chat",        // where tapping the notification goes
+      icon:           "🎉",
+    });
+  } catch (notifErr) {
+    console.warn("[Register] Welcome notification insert failed:", notifErr);
+  }
+}
+
 // ── Friendly error messages for common Supabase errors ───────────────────────
 function friendlyError(msg: string): string {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   const m = msg.toLowerCase();
   if (m.includes("user already registered") || m.includes("already been registered"))
     return "An account with this email already exists. Try signing in instead.";
@@ -56,22 +152,20 @@ export default function Register() {
   const [success,       setSuccess]       = useState(false);
   const [emailSent,     setEmailSent]     = useState(false);
 
-  // Auto-suggest username from full name
+  const autoUsername = (name: string) =>
+    name.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "").slice(0, 20);
+
   const handleFullNameChange = (e) => {
     const name = e.target.value;
     setFormData(prev => ({
       ...prev,
       fullName: name,
-      // Only auto-fill username if user hasn't typed one yet
       username: prev.username === "" || prev.username === autoUsername(prev.fullName)
         ? autoUsername(name)
         : prev.username,
     }));
     setError("");
   };
-
-  const autoUsername = (name: string) =>
-    name.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "").slice(0, 20);
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -80,24 +174,17 @@ export default function Register() {
 
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = () => {
-    if (!formData.fullName.trim())
-      return "Full name is required.";
-    if (!formData.username.trim())
-      return "Username is required.";
-    if (formData.username.length < 3)
-      return "Username must be at least 3 characters.";
+    if (!formData.fullName.trim())          return "Full name is required.";
+    if (!formData.username.trim())          return "Username is required.";
+    if (formData.username.length < 3)       return "Username must be at least 3 characters.";
     if (!/^[a-zA-Z0-9_]+$/.test(formData.username))
       return "Username can only contain letters, numbers, and underscores — no spaces.";
-    if (!formData.phone.trim())
-      return "Phone number is required.";
+    if (!formData.phone.trim())             return "Phone number is required.";
     if (!/^\+?[0-9]{8,15}$/.test(formData.phone.replace(/\s/g, "")))
       return "Enter a valid phone number (e.g. +237612345678).";
-    if (!formData.email.includes("@"))
-      return "A valid email address is required.";
-    if (formData.password.length < 8)
-      return "Password must be at least 8 characters.";
-    if (formData.password !== formData.confirmPassword)
-      return "Passwords do not match.";
+    if (!formData.email.includes("@"))      return "A valid email address is required.";
+    if (formData.password.length < 8)       return "Password must be at least 8 characters.";
+    if (formData.password !== formData.confirmPassword) return "Passwords do not match.";
     return null;
   };
 
@@ -109,8 +196,7 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      // Step 1: Create the auth user. The handle_new_user() trigger
-      // will automatically create the profiles row from metadata.
+      // Step 1: Create the auth user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email:    formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -128,13 +214,7 @@ export default function Register() {
       const user = data?.user;
       if (!user) throw new Error("Account could not be created. Please try again.");
 
-      // Step 2: Belt-and-suspenders profile upsert.
-      // This handles the case where email confirmation is ON and the trigger
-      // couldn't write (no active session). We use the anon key here;
-      // RLS "Users can insert own profile" covers this.
-      // We intentionally do NOT throw on profile errors — the trigger is the
-      // primary path. If both fail, the user still exists and can log in;
-      // the profile will be lazily created on first login.
+      // Step 2: Belt-and-suspenders profile upsert
       try {
         await supabase.from("profiles").upsert({
           id:         user.id,
@@ -146,11 +226,14 @@ export default function Register() {
           avatar_url: null,
         }, { onConflict: "id" });
       } catch (profileErr) {
-        // Non-fatal — trigger already handled it or will handle on confirm
         console.warn("[Register] Profile upsert skipped:", profileErr);
       }
 
-      // If Supabase returns identities[] empty, email confirmation is required
+      // ✅ Step 3: Send welcome message + notification (non-fatal)
+      // Fire-and-forget — we don't await or block on this
+      sendWelcomeMessageAndNotification(user.id, formData.fullName.trim())
+        .catch(e => console.warn("[Register] Welcome send failed silently:", e));
+
       const needsConfirmation = !data.session && data.user?.identities?.length === 0;
       setEmailSent(needsConfirmation);
       setSuccess(true);
@@ -195,7 +278,7 @@ export default function Register() {
             <>
               <p className="text-gray-500 mb-2">Account created successfully.</p>
               <p className="text-gray-400 text-sm">
-                You can log in with your <strong>username</strong>, <strong>phone number</strong>, or <strong>email</strong>.
+                Check your <strong>Messages</strong> for a welcome note from the Bambeh Team! 🎉
               </p>
               <p className="text-gray-400 text-sm mt-1">Taking you to the marketplace…</p>
             </>
@@ -234,7 +317,7 @@ export default function Register() {
               <span className="text-white text-2xl font-black">B</span>
             </div>
             <h1 className="text-2xl font-black text-gray-900">Join Bambeh</h1>
-            <p className="text-gray-500 text-sm mt-1">Cameroon's #1 Marketplace</p>
+            <p className="text-gray-500 text-sm mt-1">Bambeh Marketplace — The Pulse of African Commerce</p>
           </div>
 
           {/* Error banner */}
@@ -354,7 +437,6 @@ export default function Register() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {/* Strength bar */}
               {pwStrength && (
                 <div className="mt-2">
                   <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
