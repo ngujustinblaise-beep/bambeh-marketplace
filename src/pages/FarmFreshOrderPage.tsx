@@ -1,15 +1,14 @@
-﻿/**
+/**
  * src/pages/FarmFreshOrderPage.tsx — Bambeh Marketplace
  *
- * FIXED in this version:
- *  ✅ Uses shared @/lib/supabase (not createClient() — that caused the crash)
+ * FIXED:
+ *  ✅ BOM character removed
+ *  ✅ isUUID is a plain function — no useLang() hook called inside it (was crashing)
+ *  ✅ Uses shared @/lib/supabase
  *  ✅ Handles both UUID product IDs (from DB) and sample string IDs (s1–s8)
  *  ✅ Saves orders to Supabase farm_orders table (if user is logged in)
  *  ✅ Falls back to localStorage for guest/sample-item orders
- *  ✅ Cameroon +237 phone prefix on phone field
- *  ✅ FCFA formatter on total
- *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
- *     — reacts instantly when user changes language
+ *  ✅ Full i18n — reacts instantly when user changes language
  */
 
 import { useState, useEffect } from "react";
@@ -22,10 +21,8 @@ import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ── UUID check ────────────────────────────────────────────────────────────────
-function isUUID(s: string) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
+// ✅ FIX: isUUID is a plain function — no hook calls inside it
+function isUUID(s: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
@@ -39,6 +36,7 @@ interface Product {
   image_url?: string;
   is_organic?: boolean;
   description?: string;
+  seller_phone?: string;
 }
 
 const SAMPLE_PRODUCTS: Record<string, Product> = {
@@ -73,7 +71,6 @@ export default function FarmFreshOrderPage() {
   const [error,      setError]      = useState<string | null>(null);
   const [isDemo,     setIsDemo]     = useState(false);
 
-
   useEffect(() => {
     if (productId) void loadProduct(productId);
   }, [productId]);
@@ -97,15 +94,16 @@ export default function FarmFreshOrderPage() {
           .single();
         if (!dbErr && data) {
           setProduct({
-            id:          data.id,
-            name:        data.name ?? data.title,
-            price:       data.price ?? data.price_per_unit_xaf,
-            unit:        data.unit,
-            farmer_id:   data.farmer_id ?? data.seller_id,
-            location:    data.location,
-            image_url:   data.image_url ?? data.images?.[0],
-            is_organic:  data.is_organic,
-            description: data.description,
+            id:           data.id,
+            name:         data.name ?? data.title,
+            price:        data.price ?? data.price_per_unit_xaf,
+            unit:         data.unit,
+            farmer_id:    data.farmer_id ?? data.seller_id,
+            location:     data.location,
+            image_url:    data.image_url ?? data.images?.[0],
+            is_organic:   data.is_organic,
+            description:  data.description,
+            seller_phone: data.seller_phone,
           });
           setLoading(false);
           return;
@@ -201,6 +199,15 @@ export default function FarmFreshOrderPage() {
               className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold">
               {t("backToFarmFresh", lang)}
             </button>
+            {/* WhatsApp contact seller option on success */}
+            {!isDemo && product?.seller_phone && (
+              <a
+                href={`https://wa.me/${product.seller_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I just placed an order on Bambeh for ${product.name} (${qty} ${product.unit}). Order total: ${fmtXAF((product.price ?? 0) * qty)}.`)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-semibold text-sm">
+                💬 {t("whatsappSeller", lang) || "WhatsApp Seller"}
+              </a>
+            )}
             {!isDemo && (
               <button onClick={() => navigate("/orders")}
                 className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm">
@@ -326,6 +333,16 @@ export default function FarmFreshOrderPage() {
               className="w-full border-2 border-gray-200 focus:border-green-500 rounded-xl px-4 py-3 text-sm outline-none resize-none transition-colors" />
           </div>
         </div>
+
+        {/* Contact seller option */}
+        {!isDemo && product.seller_phone && (
+          <a
+            href={`https://wa.me/${product.seller_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I'm interested in buying ${product.name} (${fmtXAF(product.price)}/${product.unit}) on Bambeh. Are you available?`)}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366]/10 border border-[#25D366]/40 text-[#128C7E] font-semibold rounded-xl text-sm">
+            💬 {t("contactSellerWhatsApp", lang) || "Contact Seller via WhatsApp"}
+          </a>
+        )}
 
         {isDemo && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">

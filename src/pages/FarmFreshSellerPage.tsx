@@ -1,7 +1,9 @@
-﻿/**
+/**
  * src/pages/FarmFreshSellerPage.tsx — Bambeh Marketplace
  *
- * FIXES in this version:
+ * FIXES:
+ *  ✅ BOM character removed from file start
+ *  ✅ validateImg no longer calls useLang() (hooks can't be called outside components)
  *  ✅ farmer_id + seller_id BOTH inserted (DB has farmer_id NOT NULL)
  *  ✅ Storage RLS graceful fallback: if image upload fails RLS, listing
  *     is saved WITHOUT photos and user gets a clear warning (not a crash)
@@ -22,9 +24,8 @@ const UNITS      = ["kg", "g", "bunch", "cob", "litre", "bag", "crate", "piece"]
 const MAX_IMG   = 5 * 1024 * 1024;
 const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
+// ✅ FIX: validateImg is a plain function — no hooks inside it
 function validateImg(f: File): string | null {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   if (!IMG_TYPES.includes(f.type)) return "Only JPG, PNG or WebP images allowed.";
   if (f.size > MAX_IMG) return `File too large (max 5 MB). Got ${(f.size / 1024 / 1024).toFixed(1)} MB.`;
   return null;
@@ -143,7 +144,7 @@ const DRAFT_KEY = "bambeh_draft_farm_produce";
  */
 async function tryUploadImage(dataUrl: string, fileName: string): Promise<string | null> {
   try {
-    const res = await fetch(dataUrl);
+    const res  = await fetch(dataUrl);
     const blob = await res.blob();
     const ext  = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
     const path = `farm-fresh/${Date.now()}-${fileName.replace(/\s/g, "-")}.${ext}`;
@@ -169,7 +170,6 @@ export default function FarmFreshSellerPage() {
   const navigate = useNavigate();
   const fileRef  = useRef<HTMLInputElement>(null);
   const lang     = useLang();
-  const isRtl    = lang === "ar";
 
   const [step,           setStep]           = useState(1);
   const [d,              setD]              = useState<Draft>(BLANK);
@@ -181,7 +181,7 @@ export default function FarmFreshSellerPage() {
   const [posted,         setPosted]         = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   const [loginRequired,  setLoginRequired]  = useState(false);
-  const [uploadWarning,  setUploadWarning]  = useState(""); // soft photo-upload failure
+  const [uploadWarning,  setUploadWarning]  = useState("");
 
   const stepLabels = [
     t("step1Label", lang) as string,
@@ -211,7 +211,7 @@ export default function FarmFreshSellerPage() {
     const remaining = 6 - imagePreviews.length;
 
     for (const f of Array.from(files).slice(0, remaining)) {
-      const err = validateImg(f);
+      const err = validateImg(f); // ✅ plain function call — no hook
       if (err) { errors.push(err); continue; }
       validFiles.push(f);
       await new Promise<void>(res => {
@@ -229,13 +229,13 @@ export default function FarmFreshSellerPage() {
   function validate(s: number): Record<string, string> {
     const e: Record<string, string> = {};
     if (s === 1) {
-      if (!d.title.trim()) e.title = "Produce name is required";
-      if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0) e.price = "Valid price is required";
+      if (!d.title.trim()) e.title = t("errorProduceName", lang) as string || "Produce name is required";
+      if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0) e.price = t("errorPrice", lang) as string || "Valid price is required";
     }
     if (s === 2) {
-      if (!d.location.trim()) e.location = "Location is required";
+      if (!d.location.trim()) e.location = t("errorLocation", lang) as string || "Location is required";
       if (!d.description.trim() || d.description.trim().length < 20)
-        e.description = "Description must be at least 20 characters";
+        e.description = t("errorDescription", lang) as string || "Description must be at least 20 characters";
     }
     return e;
   }
@@ -266,10 +266,7 @@ export default function FarmFreshSellerPage() {
       for (let i = 0; i < imageFiles.length; i++) {
         setUploadProgress(`Uploading photo ${i + 1} of ${imageFiles.length}…`);
         const url = await tryUploadImage(imagePreviews[i], imageFiles[i].name);
-        if (url) {
-          uploadedUrls.push(url);
-        }
-        // null = upload failed silently; we'll warn the user after DB insert
+        if (url) uploadedUrls.push(url);
       }
 
       const photosFailed = imageFiles.length > 0 && uploadedUrls.length === 0;
@@ -277,10 +274,9 @@ export default function FarmFreshSellerPage() {
       setUploadProgress("Saving listing…");
 
       // ── 2. Insert with BOTH farmer_id AND seller_id ───────────────────────
-      // The DB has farmer_id (NOT NULL) AND seller_id — we write both to be safe.
       const { error: dbErr } = await supabase.from("farm_products").insert({
-        farmer_id:              session.user.id,   // ✅ NOT NULL column in DB
-        seller_id:              session.user.id,   // ✅ also populate seller_id
+        farmer_id:              session.user.id,
+        seller_id:              session.user.id,
         title:                  d.title.trim(),
         description:            d.description.trim(),
         price_per_unit_xaf:     Number(d.price),
@@ -537,7 +533,7 @@ export default function FarmFreshSellerPage() {
 
             {uploadProgress && (
               <div className="bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
-                <span className="animate-spin">⟳</span> {uploadProgress}
+                <span className="animate-spin inline-block">⟳</span> {uploadProgress}
               </div>
             )}
             {errs.submit && (

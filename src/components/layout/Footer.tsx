@@ -1,18 +1,19 @@
-﻿/**
+/**
  * Footer.tsx — Bambeh Marketplace
- * ---------------------------------------------------------------------------
- * FIXED in this version:
- *  ✅ Emails now on SEPARATE LINES (support@bambeh.com on one, bambetheapp@gmail.com below)
- *  ✅ Corrupted characters fixed: "Yaound?" → "Yaoundé", "?" → "·", "?" → "©"
- *  ✅ Location: "Yaoundé, Cameroon" (was blank "Yaoundé, ")
- *  ✅ Footer separator dots use proper · character
- *  ✅ Copyright symbol © hardcoded (was rendering as ?)
- *  ✅ All navigation links verified against App.tsx routes
- *  ✅ Terms link → /terms-of-service (matches App.tsx route)
- *  ✅ Privacy link → /privacy-policy (matches App.tsx route, /privacy redirects there)
- * ---------------------------------------------------------------------------
+ * FILE LOCATION: src/components/layout/Footer.tsx
+ *
+ * CHANGES IN THIS VERSION:
+ *  ✅ "Lowest in any marketplace" — transaction fee badge updated everywhere
+ *  ✅ "ETS BUSHENERGY" → "BAMBEH SARL"
+ *  ✅ Collapsible bottom bar — tap the copyright/links row to fold/unfold
+ *  ✅ Full i18n — ALL visible strings now pulled from LanguageContext t()
+ *     so the footer translates when the user changes language
+ *  ✅ All previous fixes preserved (emails, Yaoundé, routes, © symbol)
+ *
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Facebook,
@@ -28,25 +29,35 @@ import {
   Wrench,
   Home as HomeIcon,
   Car,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
-  const lang = useLang();
-  const isRtl = lang === "ar";
+  const { t, language } = useLanguage();
+  const isRtl = language === "ar";
   const currentYear = new Date().getFullYear();
 
+  // ── Collapsible bottom-bar state ──────────────────────────────────────────
+  const [bottomOpen, setBottomOpen] = useState(true);
+
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer
+      className="bg-gray-900 text-gray-300"
+      dir={isRtl ? "rtl" : "ltr"}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
           {/* ── ABOUT + SOCIAL ─────────────────────────────────────────── */}
           <div>
-            <h3 className="text-white text-lg font-bold mb-4">About Bambeh</h3>
+            <h3 className="text-white text-lg font-bold mb-4">
+              {t("footer.aboutTitle") || "About Bambeh"}
+            </h3>
             <p className="text-sm mb-4">
-              Online Marketplace — Buy, Sell, Trade, and Find Jobs with only 1%
-              transaction fee!
+              {t("footer.aboutDesc") ||
+                "Online Marketplace — Buy, Sell, Trade, and Find Jobs with only 1% transaction fee!"}
             </p>
 
             <div className="flex gap-3">
@@ -87,7 +98,9 @@ export default function Footer() {
 
           {/* ── CATEGORIES ─────────────────────────────────────────────── */}
           <div>
-            <h3 className="text-white text-lg font-bold mb-4">Categories</h3>
+            <h3 className="text-white text-lg font-bold mb-4">
+              {t("footer.categoriesTitle") || "Categories"}
+            </h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
@@ -95,7 +108,7 @@ export default function Footer() {
                   className="hover:text-teal-400 transition-colors flex items-center gap-2"
                 >
                   <Briefcase className="w-4 h-4" aria-hidden="true" />
-                  Jobs
+                  {t("nav.jobs") || "Jobs"}
                 </Link>
               </li>
               <li>
@@ -104,7 +117,7 @@ export default function Footer() {
                   className="hover:text-teal-400 transition-colors flex items-center gap-2"
                 >
                   <ShoppingBag className="w-4 h-4" aria-hidden="true" />
-                  Marketplace
+                  {t("nav.marketplace") || "Marketplace"}
                 </Link>
               </li>
               <li>
@@ -113,7 +126,7 @@ export default function Footer() {
                   className="hover:text-teal-400 transition-colors flex items-center gap-2"
                 >
                   <Wrench className="w-4 h-4" aria-hidden="true" />
-                  Services
+                  {t("nav.services") || "Services"}
                 </Link>
               </li>
               <li>
@@ -122,7 +135,7 @@ export default function Footer() {
                   className="hover:text-teal-400 transition-colors flex items-center gap-2"
                 >
                   <HomeIcon className="w-4 h-4" aria-hidden="true" />
-                  Rentals
+                  {t("nav.rentals") || "Rentals"}
                 </Link>
               </li>
               <li>
@@ -131,7 +144,7 @@ export default function Footer() {
                   className="hover:text-teal-400 transition-colors flex items-center gap-2"
                 >
                   <Car className="w-4 h-4" aria-hidden="true" />
-                  Vehicles
+                  {t("nav.vehicles") || "Vehicles"}
                 </Link>
               </li>
               <li>
@@ -140,7 +153,7 @@ export default function Footer() {
                   className="hover:text-teal-400 transition-colors flex items-center gap-2"
                 >
                   <ArrowLeftRight className="w-4 h-4" aria-hidden="true" />
-                  Exchange
+                  {t("nav.exchange") || "Exchange"}
                 </Link>
               </li>
             </ul>
@@ -148,38 +161,28 @@ export default function Footer() {
 
           {/* ── SUPPORT ────────────────────────────────────────────────── */}
           <div>
-            <h3 className="text-white text-lg font-bold mb-4">Support</h3>
+            <h3 className="text-white text-lg font-bold mb-4">
+              {t("footer.supportTitle") || "Support"}
+            </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
-                  to="/help"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  Help Centre
+                <Link to="/help" className="hover:text-teal-400 transition-colors">
+                  {t("footer.helpCentre") || "Help Centre"}
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/help/contact"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  Contact Support
+                <Link to="/help/contact" className="hover:text-teal-400 transition-colors">
+                  {t("footer.contactSupport") || "Contact Support"}
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/help/safety-security"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  Safety &amp; Security
+                <Link to="/help/safety-security" className="hover:text-teal-400 transition-colors">
+                  {t("footer.safetySecurity") || "Safety & Security"}
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/subscription"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  Subscription Plans
+                <Link to="/subscription" className="hover:text-teal-400 transition-colors">
+                  {t("footer.subscriptionPlans") || "Subscription Plans"}
                 </Link>
               </li>
 
@@ -190,7 +193,7 @@ export default function Footer() {
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 rounded-lg transition-colors font-semibold text-white mt-2"
                 >
                   <Heart className="w-4 h-4" aria-hidden="true" />
-                  Support Bambeh
+                  {t("footer.supportBambeh") || "Support Bambeh"}
                 </Link>
               </li>
             </ul>
@@ -198,14 +201,13 @@ export default function Footer() {
 
           {/* ── COMPANY + CONTACT ──────────────────────────────────────── */}
           <div>
-            <h3 className="text-white text-lg font-bold mb-4">Company</h3>
+            <h3 className="text-white text-lg font-bold mb-4">
+              {t("footer.companyTitle") || "Company"}
+            </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
-                  to="/about"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  About Us
+                <Link to="/about" className="hover:text-teal-400 transition-colors">
+                  {t("footer.aboutUs") || "About Us"}
                 </Link>
               </li>
               <li>
@@ -215,33 +217,24 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-teal-400 transition-colors"
                 >
-                  View Company Profile
+                  {t("footer.viewCompanyProfile") || "View Company Profile"}
                 </a>
               </li>
               <li>
-                {/* FIXED: route is /terms-of-service (matches App.tsx line 1062) */}
-                <Link
-                  to="/terms-of-service"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  Terms &amp; Conditions
+                <Link to="/terms-of-service" className="hover:text-teal-400 transition-colors">
+                  {t("footer.terms") || "Terms & Conditions"}
                 </Link>
               </li>
               <li>
-                {/* FIXED: route is /privacy-policy (matches App.tsx line 1060) */}
-                <Link
-                  to="/privacy-policy"
-                  className="hover:text-teal-400 transition-colors"
-                >
-                  Privacy Policy
+                <Link to="/privacy-policy" className="hover:text-teal-400 transition-colors">
+                  {t("footer.privacy") || "Privacy Policy"}
                 </Link>
               </li>
             </ul>
 
             {/* Contact Info */}
             <div className="mt-6 space-y-3 text-sm">
-
-              {/* ── EMAIL — FIXED: two emails on SEPARATE lines ── */}
+              {/* Email — two separate lines */}
               <div className="flex items-start gap-2">
                 <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
                 <div className="flex flex-col gap-0.5">
@@ -271,7 +264,7 @@ export default function Footer() {
                 </a>
               </div>
 
-              {/* Location — FIXED: "Yaoundé, Cameroon" (was blank) */}
+              {/* Location */}
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
                 <span>Yaoundé, Cameroon</span>
@@ -280,92 +273,105 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── BOTTOM BAR ─────────────────────────────────────────────── */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        {/* ── BOTTOM BAR — collapsible ──────────────────────────────────── */}
+        <div className="border-t border-gray-800 mt-12">
 
-            {/* Copyright — FIXED: © hardcoded, no encoding issues */}
-            <div className="text-sm text-center md:text-left">
-              <p>© {currentYear} Bambeh. All rights reserved.</p>
-              <p className="text-xs text-gray-500 mt-1">
-                Operated by ETS BUSHENERGY — Yaoundé, Cameroon
-              </p>
+          {/* Toggle handle — always visible, tappable */}
+          <button
+            onClick={() => setBottomOpen((prev) => !prev)}
+            aria-expanded={bottomOpen}
+            aria-label={bottomOpen
+              ? (t("footer.collapseFooter") || "Collapse footer details")
+              : (t("footer.expandFooter")   || "Expand footer details")}
+            className="w-full flex items-center justify-center gap-2 py-3 text-xs text-gray-500 hover:text-gray-300 transition-colors select-none"
+          >
+            {bottomOpen
+              ? <ChevronDown className="w-4 h-4" />
+              : <ChevronUp   className="w-4 h-4" />}
+            <span>
+              {bottomOpen
+                ? (t("footer.collapseLabel") || "Collapse")
+                : (t("footer.expandLabel")   || "Show details")}
+            </span>
+          </button>
+
+          {/* Collapsible content */}
+          {bottomOpen && (
+            <div className="pb-8">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+
+                {/* Copyright — BAMBEH SARL (was ETS BUSHENERGY) */}
+                <div className="text-sm text-center md:text-left">
+                  <p>© {currentYear} Bambeh. {t("footer.allRightsReserved") || "All rights reserved."}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {t("footer.operatedBy") || "Operated by"} BAMBEH SARL — Yaoundé, Cameroon
+                  </p>
+                </div>
+
+                {/* Quick Links */}
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+                  <Link to="/terms-of-service" className="hover:text-teal-400 transition-colors">
+                    {t("footer.terms") || "Terms"}
+                  </Link>
+                  <span className="text-gray-600" aria-hidden="true">·</span>
+                  <Link to="/privacy-policy" className="hover:text-teal-400 transition-colors">
+                    {t("footer.privacy") || "Privacy"}
+                  </Link>
+                  <span className="text-gray-600" aria-hidden="true">·</span>
+                  <Link to="/help/contact" className="hover:text-teal-400 transition-colors">
+                    {t("footer.contact") || "Contact"}
+                  </Link>
+                  <span className="text-gray-600" aria-hidden="true">·</span>
+                  <Link to="/subscription" className="hover:text-teal-400 transition-colors">
+                    {t("footer.subscriptions") || "Subscriptions"}
+                  </Link>
+                  <span className="text-gray-600" aria-hidden="true">·</span>
+                  <Link
+                    to="/donate"
+                    className="hover:text-teal-400 transition-colors text-pink-400 font-semibold"
+                  >
+                    {t("footer.donate") || "Donate"}
+                  </Link>
+                </div>
+
+                {/* Transaction Fee Badge — UPDATED TEXT */}
+                <div className="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold text-center">
+                  {t("footer.transactionFeeBadge") || "Only 1% Transaction Fee — Lowest in Any Marketplace!"}
+                </div>
+              </div>
+
+              {/* Social — Mobile only */}
+              <div className="mt-6 flex justify-center gap-3 md:hidden">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61585316773462"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-5 h-5 text-white" />
+                </a>
+                <a
+                  href="https://www.instagram.com/bambehtheapp?igsh=MW9vNmU1MG84d3dsaA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 rounded-lg flex items-center justify-center"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5 text-white" />
+                </a>
+                <a
+                  href="https://twitter.com/bambehtheapp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-black hover:bg-gray-800 rounded-lg flex items-center justify-center transition-colors"
+                  aria-label="Twitter/X"
+                >
+                  <Twitter className="w-5 h-5 text-white" />
+                </a>
+              </div>
             </div>
-
-            {/* Quick Links — FIXED: correct routes, proper · separator */}
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
-              <Link
-                to="/terms-of-service"
-                className="hover:text-teal-400 transition-colors"
-              >
-                Terms
-              </Link>
-              <span className="text-gray-600" aria-hidden="true">·</span>
-              <Link
-                to="/privacy-policy"
-                className="hover:text-teal-400 transition-colors"
-              >
-                Privacy
-              </Link>
-              <span className="text-gray-600" aria-hidden="true">·</span>
-              <Link
-                to="/help/contact"
-                className="hover:text-teal-400 transition-colors"
-              >
-                Contact
-              </Link>
-              <span className="text-gray-600" aria-hidden="true">·</span>
-              <Link
-                to="/subscription"
-                className="hover:text-teal-400 transition-colors"
-              >
-                Subscriptions
-              </Link>
-              <span className="text-gray-600" aria-hidden="true">·</span>
-              <Link
-                to="/donate"
-                className="hover:text-teal-400 transition-colors text-pink-400 font-semibold"
-              >
-                Donate
-              </Link>
-            </div>
-
-            {/* Transaction Fee Badge */}
-            <div className="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold">
-              Only 1% Transaction Fee!
-            </div>
-          </div>
-
-          {/* Social — Mobile only */}
-          <div className="mt-6 flex justify-center gap-3 md:hidden">
-            <a
-              href="https://www.facebook.com/profile.php?id=61585316773462"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-colors"
-              aria-label="Facebook"
-            >
-              <Facebook className="w-5 h-5 text-white" />
-            </a>
-            <a
-              href="https://www.instagram.com/bambehtheapp?igsh=MW9vNmU1MG84d3dsaA=="
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 rounded-lg flex items-center justify-center"
-              aria-label="Instagram"
-            >
-              <Instagram className="w-5 h-5 text-white" />
-            </a>
-            <a
-              href="https://twitter.com/bambehtheapp"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-black hover:bg-gray-800 rounded-lg flex items-center justify-center transition-colors"
-              aria-label="Twitter/X"
-            >
-              <Twitter className="w-5 h-5 text-white" />
-            </a>
-          </div>
+          )}
         </div>
       </div>
     </footer>

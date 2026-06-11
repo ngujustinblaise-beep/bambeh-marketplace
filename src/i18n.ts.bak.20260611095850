@@ -19,10 +19,7 @@ i18n
   // Initialize i18next
   .init({
     // Default language
-    fallbackLng: "fr",
-    returnEmptyString: false,
-    saveMissing: true,
-    missingKeyHandler: (lng, ns, key) => { if (typeof window !== "undefined") console.warn("[i18n] missing:", lng, ns, key); }, // French as default for 
+    fallbackLng: "fr", // French as default for 
 
     // Supported languages
     supportedLngs: ["en", "fr"],

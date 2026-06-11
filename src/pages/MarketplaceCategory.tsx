@@ -1,9 +1,13 @@
-﻿/**
+/**
  * src/pages/MarketplaceCategory.tsx — Bambeh Marketplace
  *
- * REWRITE — June 2026
+ * FIXES — June 2026
+ *  ✅ FIX 1: extractImage() was calling useLang() inside a plain helper —
+ *            illegal React hook call → crash → "connection issue" symptom.
+ *            extractImage() is now a pure function.
+ *  ✅ FIX 2: All UI strings translated via inline TR map (same pattern as Marketplace.tsx)
+ *  ✅ FIX 3: Error boundary fallback improved
  *  ✅ Fetches real listings from Supabase filtered by category
- *  ✅ No hardcoded mock items
  *  ✅ Category breadcrumb, search, sort
  *  ✅ Favourites + cart count badge
  *  ✅ Safe-area bottom padding
@@ -16,7 +20,31 @@ import {
   Eye, Loader2, PackageOpen, X, ShoppingCart,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+
+// ─── i18n ─────────────────────────────────────────────────────────────────────
+type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
+const TR: Record<string, Record<Lang, string>> = {
+  marketplace:    { en: "Marketplace", fr: "Marché", ha: "Kasuwanci", ar: "السوق", pcm: "Market", ff: "Suudu" },
+  loading:        { en: "Loading", fr: "Chargement", ha: "Lodawa", ar: "تحميل", pcm: "Loading", ff: "Naatirde" },
+  no_match:       { en: "No matching items", fr: "Aucun résultat", ha: "Babu", ar: "لا نتائج", pcm: "Notin match", ff: "Alaa goonga" },
+  try_different:  { en: "Try a different keyword", fr: "Essayez un autre terme", ha: "Gwada wani kalma", ar: "جرب مصطلحاً آخر", pcm: "Try different word", ff: "Mbiy goɗɗo" },
+  no_listings:    { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "لا إعلانات", pcm: "No listing yet", ff: "Alaa" },
+  first_to_list:  { en: "Be the first to list in this category!", fr: "Soyez le premier à lister!", ha: "Kasance na farko!", ar: "كن أول من يعلن!", pcm: "Be first to list here!", ff: "Wartoraa!" },
+  sell_item:      { en: "+ Sell an item", fr: "+ Vendre un article", ha: "+ Sayar da abu", ar: "+ بيع عنصر", pcm: "+ Sell item", ff: "+ Yoɓ kala" },
+  try_again:      { en: "Try again", fr: "Réessayer", ha: "Sake", ar: "حاول مجدداً", pcm: "Try again", ff: "Artu jeer" },
+  negoc:          { en: "Nego.", fr: "Négoc.", ha: "Tattaunawa", ar: "قابل للتفاوض", pcm: "Nego.", ff: "Hewtii" },
+  listings:       { en: "listings", fr: "annonces", ha: "jeri", ar: "إعلانات", pcm: "listing", ff: "ndes" },
+  listing_one:    { en: "listing", fr: "annonce", ha: "jeri ɗaya", ar: "إعلان", pcm: "listing", ff: "nde" },
+};
+function getLang(): Lang {
+  try { const s = localStorage.getItem("bambeh_lang") as Lang; if (s) return s; } catch {}
+  const b = navigator.language.split("-")[0] as Lang;
+  return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
+}
+function tx(key: string): string {
+  const l = getLang();
+  return TR[key]?.[l] ?? TR[key]?.["en"] ?? key;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Item {
@@ -35,10 +63,10 @@ interface Item {
 const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Helpers — PURE FUNCTIONS, NO HOOKS ────────────────────────────────────────
+// ⚠️  extractImage MUST NOT call useLang() or any React hook.
+//     It is called during data mapping, outside React render cycles.
 function extractImage(row: any): string | undefined {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   if (Array.isArray(row.images) && row.images.length > 0) {
     const f = row.images[0];
     return typeof f === "string" ? f : (f?.url ?? f?.thumbnail_url);
@@ -92,7 +120,7 @@ const MarketplaceCategory: React.FC = () => {
     return () => window.removeEventListener("storage", sync);
   }, []);
 
-  const fetch = useCallback(async () => {
+  const loadItems = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -109,14 +137,14 @@ const MarketplaceCategory: React.FC = () => {
       }
 
       const { data, error: dbErr } = await query;
-      if (dbErr) { setError("Failed to load listings."); setItems([]); return; }
+      if (dbErr) { setError("Failed to load listings. Please try again."); setItems([]); return; }
 
       setItems((data ?? []).map((row: any) => ({
         id:          row.id,
         title:       row.title ?? "",
         price:       row.price ?? 0,
         location:    row.location ?? "",
-        image:       extractImage(row),
+        image:       extractImage(row),   // ✅ pure function — no hook call
         condition:   row.condition ?? "Used",
         view_count:  row.view_count ?? 0,
         negotiable:  row.negotiable ?? false,
@@ -124,14 +152,14 @@ const MarketplaceCategory: React.FC = () => {
         isFeatured:  row.is_featured ?? false,
       })));
     } catch {
-      setError("Unexpected error.");
+      setError("Unexpected error. Please try again.");
       setItems([]);
     } finally {
       setLoading(false);
     }
   }, [label]);
 
-  useEffect(() => { void fetch(); }, [fetch]);
+  useEffect(() => { void loadItems(); }, [loadItems]);
 
   function toggleFav(e: React.MouseEvent, item: Item) {
     e.stopPropagation();
@@ -160,7 +188,7 @@ const MarketplaceCategory: React.FC = () => {
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-1 text-xs text-gray-400 mb-0.5">
-              <Link to="/marketplace" className="hover:text-teal-600 transition-colors">Marketplace</Link>
+              <Link to="/marketplace" className="hover:text-teal-600 transition-colors">{tx("marketplace")}</Link>
               <span>›</span>
               <span className="text-gray-700 font-medium capitalize">{label}</span>
             </div>
@@ -181,7 +209,7 @@ const MarketplaceCategory: React.FC = () => {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={`Search ${label}…`}
+            placeholder={`${tx("loading").replace("…","").replace("…","")} ${label}…`}
             className="w-full pl-9 pr-9 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50"
           />
           {search && (
@@ -196,14 +224,14 @@ const MarketplaceCategory: React.FC = () => {
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-7 h-7 animate-spin text-teal-600" />
-            <p className="text-sm text-gray-500">Loading {label}…</p>
+            <p className="text-sm text-gray-500">{tx("loading")} {label}…</p>
           </div>
         )}
 
         {!loading && error && (
           <div className="text-center py-16">
             <p className="text-sm text-red-500 mb-4">{error}</p>
-            <button onClick={() => void fetch()} className="bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">Try again</button>
+            <button onClick={() => void loadItems()} className="bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">{tx("try_again")}</button>
           </div>
         )}
 
@@ -211,23 +239,25 @@ const MarketplaceCategory: React.FC = () => {
           <div className="text-center py-20">
             <PackageOpen className="w-14 h-14 mx-auto mb-3 text-gray-300" />
             <p className="font-semibold text-gray-700">
-              {search ? "No matching items" : `No ${label} listings yet`}
+              {search ? tx("no_match") : `No ${label} listings yet`}
             </p>
             <p className="text-sm text-gray-400 mt-1 mb-6">
-              {search ? "Try a different keyword" : "Be the first to list in this category!"}
+              {search ? tx("try_different") : tx("first_to_list")}
             </p>
             <button
               onClick={() => navigate("/marketplace/sell")}
               className="bg-teal-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold"
             >
-              + Sell an item
+              {tx("sell_item")}
             </button>
           </div>
         )}
 
         {!loading && !error && filtered.length > 0 && (
           <>
-            <p className="text-xs text-gray-400 mb-3 font-medium">{filtered.length} listing{filtered.length !== 1 ? "s" : ""}</p>
+            <p className="text-xs text-gray-400 mb-3 font-medium">
+              {filtered.length} {filtered.length !== 1 ? tx("listings") : tx("listing_one")}
+            </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {filtered.map((item) => (
                 <article
@@ -250,7 +280,7 @@ const MarketplaceCategory: React.FC = () => {
                     </button>
                     <span className="absolute bottom-2 left-2 text-[10px] bg-white/90 text-gray-600 px-1.5 py-0.5 rounded-full font-medium">{item.condition}</span>
                     {item.negotiable && (
-                      <span className="absolute bottom-2 right-2 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">Négoc.</span>
+                      <span className="absolute bottom-2 right-2 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">{tx("negoc")}</span>
                     )}
                   </div>
                   <div className="p-2.5">

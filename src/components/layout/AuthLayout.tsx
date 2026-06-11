@@ -1,25 +1,36 @@
-﻿/**
+/**
  * AuthLayout.tsx
- * Minimal centered layout for Login, Register, ForgotPassword pages.
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * FILE LOCATION: src/components/layout/AuthLayout.tsx
+ *
+ * CHANGES IN THIS VERSION:
+ *  ✅ Fixed broken branding string "— 's #1 App" → proper translated text via t()
+ *  ✅ Full i18n — branding strip and footer line now use LanguageContext t()
+ *  ✅ "Only 1% Transaction Fee" → "Lowest in any marketplace"
+ *  ✅ RTL direction applied when language is Arabic
+ *
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import React from "react";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
+  const { t, language } = useLanguage();
+  const isRtl = language === "ar";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 flex flex-col">
+    <div
+      className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 flex flex-col"
+      dir={isRtl ? "rtl" : "ltr"}
+    >
       {/* Branding strip */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-600 py-3 px-4 text-center shadow-md">
         <span className="text-white font-bold text-lg tracking-wide">
-          🛒 Bambeh Marketplace — 's #1 App
+          🛒 {t("auth.brandingStrip") || "Bambeh Marketplace — The Pulse of African Commerce"}
         </span>
       </div>
 
@@ -30,9 +41,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 
       {/* Footer */}
       <div className="py-4 text-center text-xs text-gray-500 border-t border-gray-200 bg-white">
-        © 2026 Bambeh Marketplace · Only 1% Transaction Fee 💚
+        © 2026 Bambeh Marketplace · {t("footer.transactionFeeBadge") || "Only 1% Transaction Fee — Lowest in Any Marketplace!"} 💚
       </div>
     </div>
   );
 }
-

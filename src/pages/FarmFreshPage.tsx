@@ -1,10 +1,10 @@
 /**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
- * ✅ FeaturedAdsStrip import REMOVED (was crashing the page)
- * ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde
- *    — reacts instantly when user changes language
+ * ✅ No BOM character
+ * ✅ Full i18n: reacts instantly when user changes language
  * ✅ view_count shown on each product card
- * All original logic preserved exactly.
+ * ✅ Realtime Supabase subscription for new listings
+ * ✅ "Contact Seller" WhatsApp option on card
  */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -51,13 +51,11 @@ const DEMO_PRODUCTS: FarmProduct[] = [
   { id: "s8", title: "Pineapples (Large)", price_per_unit_xaf: 600, unit: "piece", category: "Fruits", location: "Edea, Littoral", is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", sellerName: "Littoral Tropicals", sellerPhone: "+237698901234", description: "Sweet, extra-large pineapples from coastal farms." },
 ];
 
-// Category keys map to translation keys
 const CATEGORY_KEYS = [
   "catAll", "catVegetables", "catFruits", "catTubers",
   "catGrains", "catLegumes", "catHerbs", "catDairy",
 ] as const;
 
-// Raw category values (used for filtering — always English, matches DB)
 const CATEGORY_VALUES = ["All", "Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy"];
 
 function hasImage(p: FarmProduct): boolean {
@@ -74,7 +72,7 @@ export default function FarmFreshPage() {
   const [products, setProducts] = useState<FarmProduct[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [search,   setSearch]   = useState("");
-  const [category, setCategory] = useState("All"); // always stored as English value
+  const [category, setCategory] = useState("All");
   const [addedId,  setAddedId]  = useState<string | null>(null);
 
   const lang  = useLang();
@@ -102,7 +100,7 @@ export default function FarmFreshPage() {
             images: d.images,
             is_organic: d.is_organic ?? false,
             is_available: d.is_available ?? true,
-            seller_id: d.seller_id || "",
+            seller_id: d.seller_id || d.farmer_id || "",
             created_at: d.created_at,
             isDemo: false,
             description: d.description,
@@ -147,21 +145,17 @@ export default function FarmFreshPage() {
     return matchSearch && matchCategory;
   });
 
-  // Build ad slots with translated text
   const adSlots = [
     { id: "ad1", isAd: true as const, ...t("groupBuyingAd", lang), route: "/group-buying", emoji: "🤝" },
     { id: "ad2", isAd: true as const, ...t("sellProduceAd", lang), route: "/farm-fresh/sell", emoji: "🌿" },
   ];
 
-  // Insert ad slots every 8 cards
   const gridItems: (FarmProduct | AdSlot)[] = [];
   let adIdx = 0;
   filtered.forEach((p, i) => {
     gridItems.push(p);
     if ((i + 1) % 8 === 0 && adIdx < adSlots.length) { gridItems.push(adSlots[adIdx++]); }
   });
-
-  // RTL support for Arabic
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -178,7 +172,7 @@ export default function FarmFreshPage() {
         </div>
         <div className="relative px-4 pb-3">
           <Search className={`absolute ${isRtl ? "right-7" : "left-7"} top-2.5 w-4 h-4 text-gray-400`} />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("searchPlaceholder", lang)}
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("searchPlaceholder", lang) as string}
             className={`w-full ${isRtl ? "pr-9 pl-4" : "pl-9 pr-4"} py-2 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none`} />
         </div>
         <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
@@ -208,7 +202,10 @@ export default function FarmFreshPage() {
             : (t("showingSamples", lang) as (n: number) => string)(DEMO_PRODUCTS.length)}
         </p>}
         {loading ? (
-          <div className="flex flex-col items-center py-12 gap-3"><Loader2 className="w-8 h-8 animate-spin text-green-600" /><p className="text-sm text-gray-500">{t("loading", lang)}</p></div>
+          <div className="flex flex-col items-center py-12 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+            <p className="text-sm text-gray-500">{t("loading", lang)}</p>
+          </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12">
             <ShoppingBag className="w-12 h-12 text-gray-200 mx-auto mb-3" />

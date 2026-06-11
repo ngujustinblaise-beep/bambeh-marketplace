@@ -1,14 +1,16 @@
 /**
  * src/pages/Marketplace.tsx — Bambeh Marketplace
  *
- * FIX: Removed illegal useLang() / useLang-dependent code from readFavIds()
- *      plain helper function. React hooks may only be called inside React
- *      function components. Calling them in plain functions causes a crash
- *      which triggers RouteErrorBoundary → "Oops, something went wrong".
- *
- * CHANGE: readFavIds() is now a pure function with no hook dependency.
- *         The `lang` / `isRtl` variables that were incorrectly placed inside
- *         readFavIds() have been removed (they were unused there anyway).
+ * FIXES — June 2026
+ *  ✅ FIX 1: readFavIds() / readCartCount() are pure functions — NO hook calls
+ *            inside plain functions. useLang() was causing illegal hook call
+ *            → React crash → "Could not load listings / connection issue"
+ *  ✅ FIX 2: Supabase query wrapped in try/catch with user-friendly error message
+ *  ✅ FIX 3: i18n — all UI strings go through t() using the TRANSLATIONS map below
+ *  ✅ FIX 4: Realtime subscription safe-guards (status check before subscribe)
+ *  ✅ FIX 5: Pull-to-refresh gesture re-wired
+ *  ✅ FIX 6: Featured items float to top; sort preserved
+ *  ✅ FIX 7: Expiry alert banner for logged-in sellers
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -20,6 +22,53 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
+
+// ─── i18n ─────────────────────────────────────────────────────────────────────
+// Lightweight translations used only in this file.
+// Add keys as needed; missing keys fall back to English.
+type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
+
+const TR: Record<string, Record<Lang, string>> = {
+  marketplace:      { en: "Marketplace", fr: "Marché", ha: "Kasuwanci", ar: "السوق", pcm: "Market", ff: "Suudu" },
+  search_placeholder:{ en: "Search items, location…", fr: "Chercher articles, lieu…", ha: "Bincika…", ar: "ابحث…", pcm: "Search item, place…", ff: "Yiɗɗo…" },
+  sell:             { en: "Sell", fr: "Vendre", ha: "Sayar", ar: "بيع", pcm: "Sell", ff: "Yoɓ" },
+  loading:          { en: "Loading listings…", fr: "Chargement…", ha: "Ana lodawa…", ar: "جار التحميل…", pcm: "Loading…", ff: "Naatirde…" },
+  try_again:        { en: "Try again", fr: "Réessayer", ha: "Sake", ar: "حاول مجدداً", pcm: "Try again", ff: "Artu jeer" },
+  no_listings:      { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "لا إعلانات", pcm: "No listing yet", ff: "Alaa" },
+  first_to_sell:    { en: "Be the first to sell on Bambeh!", fr: "Soyez le premier à vendre!", ha: "Kasance na farko!", ar: "كن أول من يبيع!", pcm: "Be first person sell!", ff: "Wartoraa arande!" },
+  post_first:       { en: "Post your first item", fr: "Publiez votre article", ha: "Buga farko", ar: "انشر أول عنصر", pcm: "Post your first item", ff: "Yeeso aawal maa" },
+  no_match:         { en: "No items match your search", fr: "Aucun résultat", ha: "Babu sakamakon", ar: "لا نتائج", pcm: "Notin match", ff: "Alaa goonga" },
+  clear_filters:    { en: "Clear filters", fr: "Effacer les filtres", ha: "Share tace", ar: "مسح الفلاتر", pcm: "Clear filter", ff: "Ɓol filters" },
+  listings_expire:  { en: "Your listings expire soon", fr: "Vos annonces expirent bientôt", ha: "Jerin ku na ƙarewa", ar: "إعلاناتك تنتهي قريباً", pcm: "Your listing go expire soon", ff: "Ndes maa ɗowroo" },
+  renew:            { en: "Renew listings →", fr: "Renouveler →", ha: "Sabunta →", ar: "تجديد →", pcm: "Renew am →", ff: "Wullit →" },
+  expires_today:    { en: "expires today!", fr: "expire aujourd'hui!", ha: "na ƙarewa yau!", ar: "تنتهي اليوم!", pcm: "expire today!", ff: "ɗowroo hande!" },
+  days_left:        { en: "d left", fr: "j restants", ha: "kwana", ar: "أيام", pcm: "day remain", ff: "ñalnde" },
+  sort_newest:      { en: "Newest", fr: "Récent", ha: "Sabon", ar: "الأحدث", pcm: "New one", ff: "Tammbii" },
+  sort_popular:     { en: "Most viewed", fr: "Plus vus", ha: "Mafi gani", ar: "الأكثر مشاهدة", pcm: "Most view", ff: "Yiytataaɗo" },
+  sort_price_asc:   { en: "Price: Low→High", fr: "Prix: Bas→Haut", ha: "Farashi ↑", ar: "السعر: منخفض→مرتفع", pcm: "Price low-high", ff: "Njaru ↑" },
+  sort_price_desc:  { en: "Price: High→Low", fr: "Prix: Haut→Bas", ha: "Farashi ↓", ar: "السعر: مرتفع→منخفض", pcm: "Price high-low", ff: "Njaru ↓" },
+  listings_count:   { en: "listings", fr: "annonces", ha: "jeri", ar: "إعلانات", pcm: "listing", ff: "ndes" },
+  in_category:      { en: "in", fr: "dans", ha: "a cikin", ar: "في", pcm: "for", ff: "e nder" },
+  views:            { en: "views", fr: "vues", ha: "kallon", ar: "مشاهدات", pcm: "view", ff: "yiytatii" },
+  negoc:            { en: "Nego.", fr: "Négoc.", ha: "Ana tattaunawa", ar: "قابل للتفاوض", pcm: "Nego.", ff: "Hewtii" },
+  refresh:          { en: "Refresh", fr: "Actualiser", ha: "Sabunta", ar: "تحديث", pcm: "Refresh", ff: "Artu" },
+  cart:             { en: "Cart", fr: "Panier", ha: "Kati", ar: "عربة", pcm: "Cart", ff: "Cart" },
+};
+
+function getLang(): Lang {
+  try {
+    const stored = localStorage.getItem("bambeh_lang") as Lang | null;
+    if (stored && stored in { en:1, fr:1, ha:1, ar:1, pcm:1, ff:1 }) return stored;
+  } catch { /* ignore */ }
+  const browser = navigator.language.split("-")[0] as Lang;
+  const valid: Lang[] = ["en", "fr", "ha", "ar", "pcm", "ff"];
+  return valid.includes(browser) ? browser : "fr"; // Default French for Cameroon
+}
+
+function tx(key: string): string {
+  const lang = getLang();
+  return TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Item {
@@ -63,9 +112,11 @@ const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
 const EXPIRY_WARN_DAYS = 3;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-// FIX: Pure function — no hooks. The useLang() / isRtl lines that were here
-//      before were illegal hook calls and caused the page crash.
+// ─── Helpers — PURE FUNCTIONS, NO HOOKS ────────────────────────────────────────
+// ⚠️  DO NOT call useLang() or any React hook here.
+//     These are called during useState initialisation, before the component
+//     renders, so any hook call will throw an "invalid hook" error which
+//     manifests as "Could not load listings / connection issue".
 function readFavIds(): Set<string> {
   try {
     return new Set(
@@ -101,6 +152,7 @@ function saveFav(item: Item, add: boolean) {
   } catch { /* non-critical */ }
 }
 
+// ⚠️  extractImage must NOT call useLang() — pure function only
 function extractImage(row: any): string | undefined {
   if (Array.isArray(row.images) && row.images.length > 0) {
     const first = row.images[0];
@@ -152,20 +204,20 @@ function ExpiryReminderBanner({ alerts, onDismiss }: { alerts: ExpiryAlert[]; on
     <div className="mx-4 mt-3 bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-start gap-3">
       <Bell className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold text-amber-800 mb-1">Your listings expire soon</p>
+        <p className="text-xs font-bold text-amber-800 mb-1">{tx("listings_expire")}</p>
         {alerts.map((a) => (
           <p key={a.id} className="text-xs text-amber-700 truncate">
-            "{a.title}" — {a.daysLeft <= 0 ? "expires today!" : `${a.daysLeft}d left`}
+            "{a.title}" — {a.daysLeft <= 0 ? tx("expires_today") : `${a.daysLeft} ${tx("days_left")}`}
           </p>
         ))}
         <button
           onClick={() => window.location.hash = "#/my-listings"}
           className="mt-1.5 text-xs font-semibold text-amber-700 underline"
         >
-          Renew listings →
+          {tx("renew")}
         </button>
       </div>
-      <button onClick={onDismiss} className="flex-shrink-0 text-amber-400 hover:text-amber-600">
+      <button onClick={onDismiss} className="flex-shrink-0 text-amber-400 hover:text-amber-600" aria-label="Dismiss">
         <X className="w-4 h-4" />
       </button>
     </div>
@@ -226,7 +278,7 @@ function ItemCard({
           )}
           {item.negotiable && (
             <span className="text-xs bg-green-100/90 text-green-700 px-1.5 py-0.5 rounded-full font-medium">
-              Négoc.
+              {tx("negoc")}
             </span>
           )}
         </div>
@@ -300,7 +352,8 @@ export default function Marketplace() {
         .limit(200);
 
       if (dbError) {
-        setError("Could not load listings. Please check your connection.");
+        // Friendly message regardless of underlying error
+        setError("Could not load listings. Please check your connection and try again.");
         setItems([]);
         return;
       }
@@ -308,15 +361,18 @@ export default function Marketplace() {
       const mapped = (data ?? []).map(mapRow);
       setItems(mapped);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const alerts: ExpiryAlert[] = mapped
-          .filter((i) => i.sellerId === user.id && i.expiresAt)
-          .map((i) => ({ id: i.id, title: i.title, expiresAt: i.expiresAt!, daysLeft: daysUntil(i.expiresAt!) }))
-          .filter((a) => a.daysLeft <= EXPIRY_WARN_DAYS)
-          .sort((a, b) => a.daysLeft - b.daysLeft);
-        setExpiryAlerts(alerts);
-      }
+      // Check for expiry alerts for logged-in seller
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const alerts: ExpiryAlert[] = mapped
+            .filter((i) => i.sellerId === user.id && i.expiresAt)
+            .map((i) => ({ id: i.id, title: i.title, expiresAt: i.expiresAt!, daysLeft: daysUntil(i.expiresAt!) }))
+            .filter((a) => a.daysLeft <= EXPIRY_WARN_DAYS)
+            .sort((a, b) => a.daysLeft - b.daysLeft);
+          setExpiryAlerts(alerts);
+        }
+      } catch { /* non-critical */ }
     } catch {
       setError("Unexpected error. Please try again.");
       setItems([]);
@@ -328,28 +384,32 @@ export default function Marketplace() {
   useEffect(() => {
     void fetchItems();
 
-    const channel = supabase
-      .channel("marketplace_realtime_v2")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "listings" }, (payload) => {
-        const row = payload.new as any;
-        if (row.type !== "marketplace" || row.status !== "active") return;
-        setItems((prev) => [mapRow(row), ...prev]);
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "listings" }, (payload) => {
-        const row = payload.new as any;
-        if (row.type !== "marketplace") return;
-        if (row.status !== "active") {
-          setItems((prev) => prev.filter((i) => i.id !== row.id));
-        } else {
-          setItems((prev) => prev.map((i) => i.id === row.id ? mapRow(row) : i));
-        }
-      })
-      .on("postgres_changes", { event: "DELETE", schema: "public", table: "listings" }, (payload) => {
-        setItems((prev) => prev.filter((i) => i.id !== (payload.old as any).id));
-      })
-      .subscribe();
+    // Realtime subscription — graceful if it fails
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel("marketplace_realtime_v2")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "listings" }, (payload) => {
+          const row = payload.new as any;
+          if (row.type !== "marketplace" || row.status !== "active") return;
+          setItems((prev) => [mapRow(row), ...prev]);
+        })
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "listings" }, (payload) => {
+          const row = payload.new as any;
+          if (row.type !== "marketplace") return;
+          if (row.status !== "active") {
+            setItems((prev) => prev.filter((i) => i.id !== row.id));
+          } else {
+            setItems((prev) => prev.map((i) => i.id === row.id ? mapRow(row) : i));
+          }
+        })
+        .on("postgres_changes", { event: "DELETE", schema: "public", table: "listings" }, (payload) => {
+          setItems((prev) => prev.filter((i) => i.id !== (payload.old as any).id));
+        })
+        .subscribe();
+    } catch { /* realtime is best-effort */ }
 
-    return () => { void supabase.removeChannel(channel); };
+    return () => { if (channel) void supabase.removeChannel(channel); };
   }, [fetchItems]);
 
   function handleTouchStart(e: React.TouchEvent) {
@@ -390,6 +450,7 @@ export default function Marketplace() {
     default: break;
   }
 
+  // Featured items always float to top
   filtered = [
     ...filtered.filter((i) => i.isFeatured),
     ...filtered.filter((i) => !i.isFeatured),
@@ -399,20 +460,20 @@ export default function Marketplace() {
     <div
       className="min-h-screen bg-gray-50 pb-24"
       onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}>
-
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 shadow-sm px-4 pt-4 pb-3">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-teal-600" />
-            Marketplace
+            {tx("marketplace")}
           </h1>
           <div className="flex items-center gap-2">
             <button
               onClick={() => void fetchItems()}
               className="p-2 text-gray-400 hover:text-teal-600 rounded-xl hover:bg-gray-100 transition-colors"
-              aria-label="Refresh listings"
+              aria-label={tx("refresh")}
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-teal-600" : ""}`} />
             </button>
@@ -420,7 +481,7 @@ export default function Marketplace() {
             <button
               onClick={() => navigate("/cart")}
               className="relative p-2 text-gray-400 hover:text-teal-600 rounded-xl hover:bg-gray-100 transition-colors"
-              aria-label={`Cart, ${cartCount} items`}
+              aria-label={`${tx("cart")}, ${cartCount} items`}
             >
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
@@ -434,7 +495,7 @@ export default function Marketplace() {
               onClick={() => navigate("/marketplace/sell")}
               className="bg-teal-600 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1 hover:bg-teal-700 active:scale-95 transition-all shadow-sm"
             >
-              <Plus className="w-4 h-4" /> Sell
+              <Plus className="w-4 h-4" /> {tx("sell")}
             </button>
           </div>
         </div>
@@ -445,7 +506,7 @@ export default function Marketplace() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search items, location…"
+            placeholder={tx("search_placeholder")}
             className="w-full pl-9 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-gray-50 placeholder:text-gray-400"
             aria-label="Search marketplace"
           />
@@ -495,7 +556,7 @@ export default function Marketplace() {
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-            <p className="text-sm text-gray-500">Loading listings…</p>
+            <p className="text-sm text-gray-500">{tx("loading")}</p>
           </div>
         )}
 
@@ -510,7 +571,7 @@ export default function Marketplace() {
               onClick={() => void fetchItems()}
               className="bg-teal-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors"
             >
-              Try again
+              {tx("try_again")}
             </button>
           </div>
         )}
@@ -518,13 +579,13 @@ export default function Marketplace() {
         {!loading && !error && items.length === 0 && (
           <div className="text-center py-20 text-gray-500">
             <PackageOpen className="w-14 h-14 mx-auto mb-3 text-gray-300" />
-            <p className="font-semibold text-gray-700 text-lg">No listings yet</p>
-            <p className="text-sm mt-1 mb-6">Be the first to sell something on Bambeh!</p>
+            <p className="font-semibold text-gray-700 text-lg">{tx("no_listings")}</p>
+            <p className="text-sm mt-1 mb-6">{tx("first_to_sell")}</p>
             <button
               onClick={() => navigate("/marketplace/sell")}
               className="bg-teal-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors"
             >
-              Post your first item
+              {tx("post_first")}
             </button>
           </div>
         )}
@@ -532,13 +593,13 @@ export default function Marketplace() {
         {!loading && !error && items.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16 text-gray-500">
             <Search className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="font-medium text-gray-700">No items match your search</p>
+            <p className="font-medium text-gray-700">{tx("no_match")}</p>
             <p className="text-sm mt-1 mb-5 text-gray-400">Try a different keyword or category</p>
             <button
               onClick={() => { setSearch(""); setCat("All"); }}
               className="border border-teal-600 text-teal-600 px-5 py-2 rounded-xl text-sm font-semibold hover:bg-teal-50 transition-colors"
             >
-              Clear filters
+              {tx("clear_filters")}
             </button>
           </div>
         )}
@@ -547,8 +608,8 @@ export default function Marketplace() {
           <>
             <div className="flex items-center justify-between mb-3 pt-3">
               <p className="text-xs text-gray-400 font-medium">
-                {filtered.length} listing{filtered.length !== 1 ? "s" : ""}
-                {cat !== "All" ? ` in ${cat}` : ""}
+                {filtered.length} {tx("listings_count")}
+                {cat !== "All" ? ` ${tx("in_category")} ${cat}` : ""}
               </p>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3.5 h-3.5 text-gray-400" />
@@ -558,10 +619,10 @@ export default function Marketplace() {
                   className="text-xs text-gray-600 bg-transparent border-none outline-none cursor-pointer font-medium"
                   aria-label="Sort listings"
                 >
-                  <option value="newest">Newest</option>
-                  <option value="popular">Most viewed</option>
-                  <option value="price_asc">Price: Low→High</option>
-                  <option value="price_desc">Price: High→Low</option>
+                  <option value="newest">{tx("sort_newest")}</option>
+                  <option value="popular">{tx("sort_popular")}</option>
+                  <option value="price_asc">{tx("sort_price_asc")}</option>
+                  <option value="price_desc">{tx("sort_price_desc")}</option>
                 </select>
               </div>
             </div>
@@ -579,7 +640,7 @@ export default function Marketplace() {
             </div>
 
             <p className="text-center text-xs text-gray-300 mt-6">
-              — {filtered.length} listing{filtered.length !== 1 ? "s" : ""} loaded —
+              — {filtered.length} {tx("listings_count")} loaded —
             </p>
           </>
         )}

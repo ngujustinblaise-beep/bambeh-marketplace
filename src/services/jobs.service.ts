@@ -3,31 +3,36 @@
  * Bambeh Marketplace — Jobs Service
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
- * Previous version queried a "job_listings" table that does NOT exist in Supabase.
- * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
- * All functions now query: supabase.from("listings").eq("type", "job")
+ * ─── IMPORTANT ───────────────────────────────────────────────────────────────
+ * Bambeh uses ONE "listings" table for ALL content types.
+ * Jobs are stored as: listings WHERE type = 'job'
+ * Job-specific fields are stored in the listings.extra JSONB column.
  *
- * Column mapping (listings table → JobListing type):
- *   listings.id              → id
- *   listings.user_id         → employerId        (NOT employer_id — doesn't exist)
- *   listings.title           → title
- *   listings.description     → description
- *   listings.category        → category
- *   listings.location        → location.city
- *   listings.extra.company   → company
- *   listings.extra.job_type  → jobType
- *   listings.extra.exp_level → experienceLevel
- *   listings.price           → salaryMinXAF      (re-purposed price column)
- *   listings.extra.salary_max→ salaryMaxXAF
- *   listings.extra.negotiable→ isSalaryNegotiable
- *   listings.extra.is_remote → isRemote
- *   listings.extra.deadline  → applicationDeadline
- *   listings.extra.region    → location.region
- *   listings.view_count      → viewCount
- *   listings.status          → status
- *   listings.created_at      → createdAt
- *   listings.updated_at      → updatedAt
+ * Column mapping (listings → JobListing):
+ *   listings.id                → id
+ *   listings.user_id           → employerId
+ *   listings.title             → title
+ *   listings.description       → description
+ *   listings.category          → category
+ *   listings.location          → location.city
+ *   listings.country           → location.country
+ *   listings.price             → salaryMinXAF  (re-purposed)
+ *   listings.tags              → tags
+ *   listings.view_count        → viewCount
+ *   listings.status            → status
+ *   listings.extra.company     → company
+ *   listings.extra.job_type    → jobType
+ *   listings.extra.exp_level   → experienceLevel
+ *   listings.extra.salary_max  → salaryMaxXAF
+ *   listings.extra.negotiable  → isSalaryNegotiable
+ *   listings.extra.region      → location.region
+ *   listings.extra.is_remote   → isRemote
+ *   listings.extra.deadline    → applicationDeadline
+ *   listings.extra.application_count → applicationCount
+ *   listings.extra.apply_method      → applyMethod  ('whatsapp'|'call'|'email'|'in_app')
+ *   listings.extra.apply_contact     → applyContact (phone/email string)
+ *   listings.extra.requirements      → requirements
+ *   listings.extra.benefits          → benefits
  */
 
 import { supabase } from "@/lib/supabase";
@@ -52,16 +57,15 @@ export interface JobActionResponse {
 }
 
 // ─── Row → JobListing mapper ───────────────────────────────────────────────────
-// Reads from the "listings" table structure — extra{} holds job-specific fields.
 function mapRow(row: Record<string, any>): JobListing {
-  const extra = row.extra ?? {};
+  const extra = (row.extra ?? {}) as Record<string, any>;
   return {
-    id:                 row.id,
+    id:                 row.id ?? "",
     employerId:         row.user_id ?? row.seller_id ?? "",
     title:              row.title ?? "",
     company:            extra.company ?? row.company ?? undefined,
     description:        row.description ?? "",
-    requirements:       extra.requirements ?? row.requirements ?? undefined,
+    requirements:       extra.requirements ?? undefined,
     benefits:           extra.benefits ?? undefined,
     category:           row.category ?? "",
     jobType:            extra.job_type ?? extra.jobType ?? "full_time",
@@ -71,17 +75,19 @@ function mapRow(row: Record<string, any>): JobListing {
     isSalaryNegotiable: Boolean(extra.negotiable ?? extra.isSalaryNegotiable),
     location: {
       city:      row.location ?? extra.city ?? "",
-      region:    extra.region ?? row.location ?? "",
-      country:   row.country ?? extra.country ?? "",
+      region:    extra.region ?? "",
+      country:   row.country  ?? extra.country ?? "Cameroon",
       latitude:  extra.latitude  ? Number(extra.latitude)  : undefined,
       longitude: extra.longitude ? Number(extra.longitude) : undefined,
     },
     isRemote:            Boolean(extra.is_remote ?? extra.isRemote),
     applicationDeadline: extra.deadline ?? extra.applicationDeadline ?? undefined,
+    applyMethod:         extra.apply_method ?? "in_app",
+    applyContact:        extra.apply_contact ?? undefined,
     status:              (row.status as JobListing["status"]) ?? "active",
     viewCount:           Number(row.view_count ?? 0),
     applicationCount:    Number(extra.application_count ?? 0),
-    tags:                Array.isArray(row.tags) ? row.tags : (Array.isArray(extra.tags) ? extra.tags : []),
+    tags:                Array.isArray(row.tags) ? row.tags : Array.isArray(extra.tags) ? extra.tags : [],
     createdAt:           row.created_at ?? new Date().toISOString(),
     updatedAt:           row.updated_at ?? new Date().toISOString(),
   };
@@ -92,8 +98,8 @@ export async function getJobs(
   filters: Partial<ItemFilters> = {}
 ): Promise<PaginatedItemsResponse<JobListing>> {
   try {
-    const page     = filters.page     ?? 1;
-    const pageSize = Math.min(filters.pageSize ?? 20, 50); // cap at 50
+    const page     = filters.page ?? 1;
+    const pageSize = Math.min(filters.pageSize ?? 20, 80);
     const from     = (page - 1) * pageSize;
     const to       = from + pageSize - 1;
 
@@ -103,17 +109,13 @@ export async function getJobs(
       .eq("type", "job")
       .eq("status", "active");
 
-    if (filters.category) {
-      query = query.eq("category", filters.category);
-    }
+    if (filters.category) query = query.eq("category", filters.category);
     if (filters.searchQuery) {
       query = query.or(
         `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
       );
     }
-    if (filters.location) {
-      query = query.ilike("location", `%${filters.location}%`);
-    }
+    if (filters.location) query = query.ilike("location", `%${filters.location}%`);
 
     query = query.order("created_at", { ascending: false }).range(from, to);
 
@@ -127,18 +129,11 @@ export async function getJobs(
     const total = count ?? 0;
     const items = (data ?? []).map((row) => mapRow(row as Record<string, any>));
 
-    return {
-      data:        items,
-      total,
-      page,
-      pageSize,
-      hasNextPage: from + pageSize < total,
-      error:       null,
-    };
+    return { data: items, total, page, pageSize, hasNextPage: from + pageSize < total, error: null };
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load jobs";
-    console.error("[jobs.service] getJobs exception:", message);
-    return { data: [], total: 0, page: 1, pageSize: 20, hasNextPage: false, error: message };
+    const msg = err instanceof Error ? err.message : "Failed to load jobs";
+    console.error("[jobs.service] getJobs exception:", msg);
+    return { data: [], total: 0, page: 1, pageSize: 20, hasNextPage: false, error: msg };
   }
 }
 
@@ -162,8 +157,6 @@ export async function getJobById(id: string): Promise<JobResponse> {
 }
 
 // ─── Create Job ────────────────────────────────────────────────────────────────
-// Inserts into "listings" table with type='job'.
-// Job-specific fields that have no dedicated column go into extra{}.
 export async function createJob(
   employerId: string,
   payload: Omit<JobListing, "id" | "employerId" | "viewCount" | "applicationCount" | "createdAt" | "updatedAt">
@@ -178,25 +171,26 @@ export async function createJob(
         description: payload.description,
         category:    payload.category,
         location:    payload.location.city,
-        country:     payload.location.country ?? "",
-        price:       payload.salaryMinXAF ?? null,   // re-purpose price for salary min
+        country:     payload.location.country ?? "Cameroon",
+        price:       payload.salaryMinXAF ?? null,
         status:      payload.status ?? "active",
         tags:        payload.tags ?? [],
         view_count:  0,
         is_featured: false,
-        // All job-specific fields go into extra{}
         extra: {
-          company:             payload.company ?? null,
-          requirements:        payload.requirements ?? null,
-          benefits:            payload.benefits ?? null,
-          job_type:            payload.jobType,
-          exp_level:           payload.experienceLevel,
-          salary_max:          payload.salaryMaxXAF ?? null,
-          negotiable:          payload.isSalaryNegotiable,
-          region:              payload.location.region ?? payload.location.city,
-          is_remote:           payload.isRemote,
-          deadline:            payload.applicationDeadline ?? null,
-          application_count:   0,
+          company:           payload.company ?? null,
+          requirements:      payload.requirements ?? null,
+          benefits:          payload.benefits ?? null,
+          job_type:          payload.jobType,
+          exp_level:         payload.experienceLevel,
+          salary_max:        payload.salaryMaxXAF ?? null,
+          negotiable:        payload.isSalaryNegotiable,
+          region:            payload.location.region ?? payload.location.city,
+          is_remote:         payload.isRemote,
+          deadline:          payload.applicationDeadline ?? null,
+          apply_method:      (payload as any).applyMethod ?? "in_app",
+          apply_contact:     (payload as any).applyContact ?? null,
+          application_count: 0,
         },
       })
       .select("id")
@@ -220,9 +214,7 @@ export async function updateJob(
   updates: Partial<JobListing>
 ): Promise<JobActionResponse> {
   try {
-    const payload: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
-    };
+    const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
 
     if (updates.title       !== undefined) payload.title       = updates.title;
     if (updates.description !== undefined) payload.description = updates.description;
@@ -231,7 +223,6 @@ export async function updateJob(
     if (updates.category    !== undefined) payload.category    = updates.category;
     if (updates.location?.city !== undefined) payload.location = updates.location.city;
 
-    // Merge extra fields
     if (
       updates.salaryMaxXAF !== undefined ||
       updates.applicationDeadline !== undefined ||
@@ -239,25 +230,19 @@ export async function updateJob(
       updates.isRemote !== undefined
     ) {
       const { data: existing } = await supabase
-        .from("listings")
-        .select("extra")
-        .eq("id", id)
-        .maybeSingle();
+        .from("listings").select("extra").eq("id", id).maybeSingle();
 
       payload.extra = {
         ...(existing?.extra ?? {}),
-        ...(updates.salaryMaxXAF       !== undefined ? { salary_max: updates.salaryMaxXAF }       : {}),
-        ...(updates.applicationDeadline !== undefined ? { deadline: updates.applicationDeadline }  : {}),
-        ...(updates.jobType             !== undefined ? { job_type: updates.jobType }               : {}),
-        ...(updates.isRemote            !== undefined ? { is_remote: updates.isRemote }             : {}),
+        ...(updates.salaryMaxXAF         !== undefined ? { salary_max: updates.salaryMaxXAF }          : {}),
+        ...(updates.applicationDeadline  !== undefined ? { deadline: updates.applicationDeadline }     : {}),
+        ...(updates.jobType              !== undefined ? { job_type: updates.jobType }                 : {}),
+        ...(updates.isRemote             !== undefined ? { is_remote: updates.isRemote }               : {}),
       };
     }
 
     const { error } = await supabase
-      .from("listings")
-      .update(payload)
-      .eq("id", id)
-      .eq("user_id", employerId);
+      .from("listings").update(payload).eq("id", id).eq("user_id", employerId);
 
     if (error) return { success: false, error: error.message };
     return { success: true, error: null };
@@ -270,10 +255,7 @@ export async function updateJob(
 export async function deleteJob(id: string, employerId: string): Promise<JobActionResponse> {
   try {
     const { error } = await supabase
-      .from("listings")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", employerId);
+      .from("listings").delete().eq("id", id).eq("user_id", employerId);
 
     if (error) return { success: false, error: error.message };
     return { success: true, error: null };
@@ -285,12 +267,9 @@ export async function deleteJob(id: string, employerId: string): Promise<JobActi
 // ─── Increment View ────────────────────────────────────────────────────────────
 export async function incrementJobView(id: string): Promise<void> {
   try {
-    await supabase.rpc("increment_view_count", {
-      table_name: "listings",
-      record_id:  id,
-    });
+    await supabase.rpc("increment_view_count", { table_name: "listings", record_id: id });
   } catch {
-    // Non-critical
+    // Non-critical — silently fail
   }
 }
 
@@ -310,5 +289,50 @@ export async function getMyJobs(employerId: string): Promise<JobListResponse> {
     return { data: items, total: items.length, error: null };
   } catch (err) {
     return { data: [], total: 0, error: err instanceof Error ? err.message : "Failed to load your jobs" };
+  }
+}
+
+// ─── Apply for Job (in-app) ────────────────────────────────────────────────────
+export async function applyForJob(
+  jobId: string,
+  applicantId: string
+): Promise<JobActionResponse> {
+  try {
+    // Check for duplicate application
+    const { data: existing } = await supabase
+      .from("job_applications")
+      .select("id")
+      .eq("job_id", jobId)
+      .eq("applicant_id", applicantId)
+      .maybeSingle();
+
+    if (existing) return { success: false, error: "already_applied" };
+
+    const { error } = await supabase.from("job_applications").insert({
+      job_id:       jobId,
+      applicant_id: applicantId,
+      status:       "pending",
+      applied_at:   new Date().toISOString(),
+    });
+
+    if (error) return { success: false, error: error.message };
+
+    // Bump application count
+    try {
+      const { data: row } = await supabase
+        .from("listings").select("extra").eq("id", jobId).maybeSingle();
+      if (row) {
+        const extra = row.extra ?? {};
+        const newCount = Number(extra.application_count ?? 0) + 1;
+        await supabase
+          .from("listings")
+          .update({ extra: { ...extra, application_count: newCount } })
+          .eq("id", jobId);
+      }
+    } catch { /* non-critical */ }
+
+    return { success: true, error: null };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to apply" };
   }
 }

@@ -31,7 +31,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ NEW
-import { useLang, t } from "@/hooks/useAppLang";
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -71,11 +71,10 @@ const APP_URL  = "https://bambeh.com";
 const APP_NAME = "Bambeh — The Pulse of African Commerce";
 
 function buildShareText(t: (k: string) => string): string {
-  const lang = useLang();
-  const isRtl = lang === "ar";
+  // NOTE: do NOT call hooks here — this is a plain helper function, not a component.
   const translated = t("share.appMessage");
   if (translated && translated !== "share.appMessage") return translated;
-  return "🛒 Check out Bambeh — The Pulse of African Commerce! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee!";
+  return "🛒 Check out Bambeh — The Pulse of African Commerce! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee — lowest in any marketplace!";
 }
 
 function whatsappUrl(text: string, url: string) {
@@ -256,7 +255,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           className="flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-xl transition-all text-teal-600 hover:text-teal-700"
         >
           <Share2 className="w-6 h-6" />
-          <span className="text-xs font-medium text-teal-600">Share</span>
+          <span className="text-xs font-medium text-teal-600">{t("common.share") || "Share"}</span>
         </button>
       </div>
     </nav>

@@ -1,0 +1,261 @@
+﻿[
+    {
+        "Severity":  "HIGH",
+        "Category":  "Mojibake",
+        "File":  "C:\\Dev\\bambe-android\\src\\i18n\\appTranslations.ts",
+        "Line":  289,
+        "Message":  "waiting: \"Veuillez patienter...\",:${String(s).padStart(2, \"0\")}`, fr: (m: number, s: number) =\u003e `En attente de confirmationâ€¦ ${m}:${String(s).padStart(2, \"0\")}`, pcm: (m: number, s: number) =\u003e `Waiting for confirmationâ€¦ ${m}:${String(s).padStart(2, \"0\")}`, ar: (m: number, s: number) =\u003e `Ø§Ù†ØªØ¸Ø§Ø± Ø§Ù„ØªØ£ÙƒÙŠØ¯â€¦ ${m}:${String(s).padStart(2, \"0\")}`, ff: (m: number, s: number) =\u003e `E yaÉ—de jaÉ“ngolâ€¦ ${m}:${String(s).padStart(2, \"0\")}` },"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\errors\\AppErrorBoundary.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\errors\\AppErrorBoundary.tsx",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\VideoPlayer\\VideoPlayer.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\AppErrorBoundary.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\AppErrorBoundary.tsx",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\TestAuth.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\hooks\\useCamPay.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\hooks\\useSubscription.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\admin\\AdminDashboard.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\FarmFreshSellerPage.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\MarketplaceCategory.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\MarketplaceCategory.tsx",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\PaymentPending.tsx",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\payment\\notchpayService.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\payment\\notchpayService.ts",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\api.config.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\chat.service.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\chat.service.ts",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\firestoreService.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\firestoreService.ts",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\notchpayService.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\services\\paymentService.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\utils\\api\\SecureAPIClient.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoCatch",
+        "File":  "C:\\Dev\\bambe-android\\src\\utils\\api\\SecureAPIClient.ts",
+        "Line":  0,
+        "Message":  "fetch() without .catch / try-catch"
+    },
+    {
+        "Severity":  "MED",
+        "Category":  "Fetch-NoTimeout",
+        "File":  "C:\\Dev\\bambe-android\\src\\utils\\performance\\BundleAnalyzer.ts",
+        "Line":  0,
+        "Message":  "fetch() without AbortController/timeout"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\common\\ListingCard.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\Jobs\\PostJobListing.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\listings\\ListingCard.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\components\\listings\\ListingGrid.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\vendor\\FeaturedListings.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\vendor\\VendorManageListings.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\EditJobListing.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\EditMarketplaceListing.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\EditServiceListing.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\MyListings.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    },
+    {
+        "Severity":  "HIGH",
+        "Category":  "AuthGate-Missing",
+        "File":  "C:\\Dev\\bambe-android\\src\\pages\\PostJobListing.tsx",
+        "Line":  0,
+        "Message":  "Listing wizard has no early auth check"
+    }
+]

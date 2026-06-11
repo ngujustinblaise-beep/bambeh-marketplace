@@ -1,25 +1,20 @@
-﻿/**
+/**
  * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
  *
- * COMPLETE REWRITE — June 2026
- *
- * BUGS FIXED:
- *  ✅ increment_view_count RPC now passes correct params (table_name + record_id)
- *  ✅ phone / whatsappText declared BEFORE usage (was causing silent ReferenceError in some builds)
- *  ✅ Queries `listings` table (not marketplace_items)
- *  ✅ No hardcoded demo data whatsoever
- *
- * NEW FEATURES:
- *  ✅ Cart mini-panel shown inline (visible + connected to /cart)
+ * FIXES — June 2026
+ *  ✅ FIX 1: readCart() was calling useLang() inside a plain helper — illegal
+ *            hook call → crash. readCart() is now a pure function.
+ *  ✅ FIX 2: All UI strings translated (English / French / Hausa / Arabic / Pidgin / Fulfulde)
+ *  ✅ FIX 3: increment_view_count RPC passes correct params (table_name + record_id)
+ *  ✅ FIX 4: phone / whatsappText declared BEFORE JSX (was silent ReferenceError)
+ *  ✅ FIX 5: Queries `listings` table only — no stale marketplace_items reference
+ *  ✅ Cart mini-panel — inline, connected to /cart
  *  ✅ "Add to Cart" persists to localStorage (same CART_KEY as Cart page)
- *  ✅ "Buy Now" → checkout immediately (navigate to /payment/checkout)
- *  ✅ "Save for Later" → adds to cart without redirecting
- *  ✅ Cart badge in top-right header
- *  ✅ Seller profile tap → /vendor/:sellerId
- *  ✅ WhatsApp + Call contact
+ *  ✅ "Buy Now" → /payment/checkout
+ *  ✅ WhatsApp + Call + Chat contact options
  *  ✅ Share (Web Share API + clipboard fallback)
  *  ✅ Safety tip + Report link
- *  ✅ Safe-area bottom padding (nav bar never covers CTA)
+ *  ✅ Safe-area bottom padding
  *  ✅ Accessible ARIA labels throughout
  *  ✅ Image lazy-loading with graceful fallback
  */
@@ -30,10 +25,55 @@ import {
   RefreshCw, ArrowLeft, Heart, ShoppingCart, Share2,
   MapPin, Tag, Phone, ChevronLeft, ChevronRight,
   AlertCircle, Package, ShieldCheck, Flag, CheckCircle,
-  Eye, Clock, Zap, MessageCircle, Star,
+  Eye, Clock, Zap, MessageCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+
+// ─── i18n ─────────────────────────────────────────────────────────────────────
+type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
+const TR: Record<string, Record<Lang, string>> = {
+  loading:         { en: "Loading listing…", fr: "Chargement…", ha: "Ana lodawa…", ar: "جار التحميل…", pcm: "Loading…", ff: "Naatirde…" },
+  not_found:       { en: "Listing not found", fr: "Annonce introuvable", ha: "Ba a samu ba", ar: "الإعلان غير موجود", pcm: "Listing no dey", ff: "Alaa" },
+  removed:         { en: "This item may have been sold or removed.", fr: "Cet article a peut-être été vendu ou supprimé.", ha: "Wannan abu an sayar ko an cire", ar: "ربما تم بيع هذا العنصر أو إزالته.", pcm: "Dis item don sell or remove.", ff: "Ko nde dawnii ko nde ɓennii." },
+  browse:          { en: "Browse Marketplace", fr: "Parcourir le marché", ha: "Duba kasuwa", ar: "تصفح السوق", pcm: "Browse Market", ff: "Yiyto Suudu" },
+  description:     { en: "Description", fr: "Description", ha: "Bayanai", ar: "الوصف", pcm: "Description", ff: "Pijirde" },
+  no_description:  { en: "No description provided.", fr: "Aucune description.", ha: "Babu bayanai.", ar: "لا يوجد وصف.", pcm: "No description.", ff: "Alaa pijirde." },
+  contact_seller:  { en: "Contact Seller", fr: "Contacter le vendeur", ha: "Tuntuɓi mai siyarwa", ar: "تواصل مع البائع", pcm: "Contact Seller", ff: "Newnin Yoɓoowo" },
+  view_profile:    { en: "View Profile", fr: "Voir le profil", ha: "Duba profile", ar: "عرض الملف الشخصي", pcm: "See Profile", ff: "Yiy Profil" },
+  whatsapp:        { en: "WhatsApp", fr: "WhatsApp", ha: "WhatsApp", ar: "واتساب", pcm: "WhatsApp", ff: "WhatsApp" },
+  call:            { en: "Call", fr: "Appeler", ha: "Kira", ar: "اتصل", pcm: "Call", ff: "Ewnu" },
+  chat:            { en: "Chat", fr: "Chat", ha: "Zanta", ar: "دردشة", pcm: "Chat", ff: "Haɓɓu" },
+  safety_tip:      { en: "Safety tip:", fr: "Conseil de sécurité :", ha: "Tip na aminci:", ar: "نصيحة أمان:", pcm: "Safety tip:", ff: "Miijo sehilal:" },
+  safety_msg:      { en: "Use Bambeh Escrow to protect your purchase. Never send money before inspecting the item.", fr: "Utilisez l'Escrow Bambeh pour protéger votre achat. N'envoyez jamais d'argent avant d'inspecter l'article.", ha: "Yi amfani da Bambeh Escrow don kare siyan ka. Kada ka aika kudi kafin bincika kaya.", ar: "استخدم ضمان Bambeh لحماية مشترياتك. لا ترسل الأموال قبل فحص العنصر.", pcm: "Use Bambeh Escrow protect your buy. No send money before you see item.", ff: "Huɓɓin Bambeh Escrow ngam waɗtu soodannde maa. Taa aawa mbaydi tawi anndaaki kala ngoo." },
+  meet_safely:     { en: "How to meet safely →", fr: "Comment se rencontrer en toute sécurité →", ha: "Yadda za a gana lafiya →", ar: "كيفية الاجتماع بأمان →", pcm: "How to meet safe →", ff: "No rewata sehilal →" },
+  report:          { en: "Report this listing", fr: "Signaler cette annonce", ha: "Rahoton wannan jeri", ar: "الإبلاغ عن هذا الإعلان", pcm: "Report dis listing", ff: "Tiindirgo nde" },
+  your_cart:       { en: "Your Cart", fr: "Votre panier", ha: "Katonku", ar: "سلتك", pcm: "Your Cart", ff: "Cart maa" },
+  items_in_cart:   { en: "items", fr: "articles", ha: "kaya", ar: "عناصر", pcm: "items", ff: "kala" },
+  view_cart:       { en: "View Cart", fr: "Voir le panier", ha: "Duba kato", ar: "عرض السلة", pcm: "See Cart", ff: "Yiy Cart" },
+  checkout:        { en: "Checkout Now", fr: "Payer maintenant", ha: "Biya yanzu", ar: "الدفع الآن", pcm: "Pay now", ff: "Haaɓtu hannde" },
+  add_to_cart:     { en: "Add to Cart", fr: "Ajouter au panier", ha: "Ƙara zuwa kato", ar: "أضف إلى السلة", pcm: "Add to Cart", ff: "Ɓeydu e Cart" },
+  added:           { en: "Added!", fr: "Ajouté!", ha: "An ƙara!", ar: "تمت الإضافة!", pcm: "Added!", ff: "Ɓeydaama!" },
+  in_cart:         { en: "In Cart", fr: "Dans le panier", ha: "A cikin kato", ar: "في السلة", pcm: "In Cart", ff: "E nder Cart" },
+  buy_now:         { en: "Buy Now", fr: "Acheter", ha: "Saya yanzu", ar: "اشتر الآن", pcm: "Buy Now", ff: "Soo Hannde" },
+  views:           { en: "views", fr: "vues", ha: "kallon", ar: "مشاهدات", pcm: "view", ff: "yiytatii" },
+  featured:        { en: "Featured", fr: "En vedette", ha: "Babban zaɓi", ar: "مميز", pcm: "Featured", ff: "Yiɗaaɗo" },
+  negotiable:      { en: "Price negotiable", fr: "Prix négociable", ha: "Ana tattaunawa", ar: "السعر قابل للتفاوض", pcm: "Price nego", ff: "Njaru hewtii" },
+  expires_today:   { en: "This listing expires today!", fr: "Cette annonce expire aujourd'hui!", ha: "Wannan jeri na ƙarewa yau!", ar: "ينتهي هذا الإعلان اليوم!", pcm: "Dis listing expire today!", ff: "Nde ɗowroo hande!" },
+  expires_in:      { en: "This listing expires in", fr: "Cette annonce expire dans", ha: "Wannan jeri na ƙarewa a cikin", ar: "ينتهي هذا الإعلان خلال", pcm: "Dis listing expire for", ff: "Nde ɗowroo e nder" },
+  days:            { en: "day(s)", fr: "jour(s)", ha: "kwana", ar: "يوم/أيام", pcm: "day(s)", ff: "ñalnde(ɗe)" },
+  qty_each:        { en: "XAF each", fr: "XAF l'unité", ha: "XAF kowanne", ar: "فرنك إفريقي للقطعة", pcm: "XAF each one", ff: "XAF ɓe kala" },
+  no_image:        { en: "No image", fr: "Pas d'image", ha: "Babu hoto", ar: "لا توجد صورة", pcm: "No picture", ff: "Alaa foto" },
+  seller:          { en: "Bambeh Seller", fr: "Vendeur Bambeh", ha: "Mai siyarwa Bambeh", ar: "بائع Bambeh", pcm: "Bambeh Seller", ff: "Yoɓoowo Bambeh" },
+};
+function getLang(): Lang {
+  try { const s = localStorage.getItem("bambeh_lang") as Lang; if (s) return s; } catch {}
+  const b = navigator.language.split("-")[0] as Lang;
+  return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
+}
+function tx(key: string): string {
+  const l = getLang();
+  return TR[key]?.[l] ?? TR[key]?.["en"] ?? key;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ListingDetail {
@@ -79,17 +119,18 @@ const CONDITION_COLOR: Record<string, string> = {
   Used:        "bg-gray-100 text-gray-600 border-gray-200",
 };
 
-// ─── Cart Helpers ─────────────────────────────────────────────────────────────
+// ─── Cart Helpers — PURE FUNCTIONS, NO HOOKS ──────────────────────────────────
+// ⚠️  readCart() MUST NOT call useLang() or any React hook.
+//     It is used as the useState initialiser for `cart`, meaning React calls
+//     it *before* the component function body runs its hooks — any hook call
+//     here throws "Rules of Hooks" which manifests as a crash / connection error.
 function readCart(): CartItem[] {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
   catch { return []; }
 }
 
 function writeCart(cart: CartItem[]) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  // Trigger storage event for same-tab listeners
   window.dispatchEvent(new Event("storage"));
 }
 
@@ -202,7 +243,7 @@ function MiniCart({
       <div className="bg-teal-600 text-white px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ShoppingCart className="w-4 h-4" />
-          <span className="text-sm font-bold">Your Cart ({cart.reduce((s, c) => s + c.quantity, 0)} items)</span>
+          <span className="text-sm font-bold">{tx("your_cart")} ({cart.reduce((s, c) => s + c.quantity, 0)} {tx("items_in_cart")})</span>
         </div>
         <span className="text-sm font-bold">{fmt(cartTotal(cart))} XAF</span>
       </div>
@@ -239,7 +280,7 @@ function MiniCart({
               className="text-gray-300 hover:text-red-400 transition-colors ml-1 flex-shrink-0"
               aria-label={`Remove ${c.title} from cart`}
             >
-              <Flag className="w-3.5 h-3.5 rotate-0" />
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         ))}
@@ -250,13 +291,13 @@ function MiniCart({
           onClick={onViewCart}
           className="flex-1 py-2.5 border border-teal-300 text-teal-700 rounded-xl text-sm font-semibold hover:bg-teal-50 transition-colors"
         >
-          View Cart
+          {tx("view_cart")}
         </button>
         <button
           onClick={onCheckout}
           className="flex-1 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors shadow-sm"
         >
-          Checkout Now
+          {tx("checkout")}
         </button>
       </div>
     </div>
@@ -275,7 +316,7 @@ export default function MarketplaceItemDetails() {
   const [fav,      setFav]      = useState(false);
   const [qty,      setQty]      = useState(1);
   const [cartDone, setCartDone] = useState(false);
-  const [cart,     setCart]     = useState<CartItem[]>(readCart);
+  const [cart,     setCart]     = useState<CartItem[]>(readCart);  // ✅ readCart is now pure
   const [shared,   setShared]   = useState(false);
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
@@ -321,7 +362,7 @@ export default function MarketplaceItemDetails() {
         negotiable:   (data as any).negotiable ?? false,
         images:       extractImages(data),
         sellerId:     (data as any).seller_id,
-        sellerName:   profile?.full_name ?? "Bambeh Seller",
+        sellerName:   profile?.full_name ?? tx("seller"),
         sellerAvatar: profile?.avatar_url ?? undefined,
         postedAt:     (data as any).created_at,
         viewCount:    (data as any).view_count ?? 0,
@@ -345,7 +386,7 @@ export default function MarketplaceItemDetails() {
 
   useEffect(() => { void load(); }, [load]);
 
-  // ── Sync cart from localStorage when tab regains focus ─────────────────────
+  // Sync cart from localStorage when tab regains focus
   useEffect(() => {
     const sync = () => setCart(readCart());
     window.addEventListener("storage", sync);
@@ -387,7 +428,7 @@ export default function MarketplaceItemDetails() {
         setShared(true);
         setTimeout(() => setShared(false), 2000);
         return;
-      } catch { /* user cancelled or not supported */ }
+      } catch { /* user cancelled */ }
     }
     try {
       await navigator.clipboard.writeText(url);
@@ -410,7 +451,7 @@ export default function MarketplaceItemDetails() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <RefreshCw className="w-7 h-7 text-teal-500 animate-spin" />
-          <p className="text-sm text-gray-400">Loading listing…</p>
+          <p className="text-sm text-gray-400">{tx("loading")}</p>
         </div>
       </div>
     );
@@ -422,24 +463,24 @@ export default function MarketplaceItemDetails() {
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
           <Package className="w-10 h-10 text-gray-300" />
         </div>
-        <p className="font-bold text-gray-700 text-lg mb-2">Listing not found</p>
+        <p className="font-bold text-gray-700 text-lg mb-2">{tx("not_found")}</p>
         <p className="text-sm text-gray-500 text-center mb-6 max-w-xs">
-          {error ?? "This item may have been sold or removed by the seller."}
+          {error ?? tx("removed")}
         </p>
         <button
           onClick={() => navigate("/marketplace")}
           className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition-colors"
         >
-          Browse Marketplace
+          {tx("browse")}
         </button>
       </div>
     );
   }
 
-  // ── Derived values (declared BEFORE JSX to avoid ReferenceError) ────────────
-  const rawPhone      = (item.phone || "+237600000000").replace(/\D/g, "");
-  const phone         = rawPhone.startsWith("237") ? rawPhone : `237${rawPhone}`;
-  const whatsappText  = encodeURIComponent(
+  // ── Derived values — declared BEFORE JSX to avoid ReferenceError ────────────
+  const rawPhone     = (item.phone || "+237600000000").replace(/\D/g, "");
+  const phone        = rawPhone.startsWith("237") ? rawPhone : `237${rawPhone}`;
+  const whatsappText = encodeURIComponent(
     `Hi ${item.sellerName}, I found your listing on Bambeh Marketplace:\n"${item.title}" — ${fmt(item.price)} XAF\nIs it still available?`,
   );
   const conditionClass = CONDITION_COLOR[item.condition] ?? "bg-gray-100 text-gray-600 border-gray-200";
@@ -463,7 +504,6 @@ export default function MarketplaceItemDetails() {
         <p className="text-sm font-semibold text-gray-800 truncate max-w-[180px]">{item.title}</p>
 
         <div className="flex items-center gap-1">
-          {/* Cart badge */}
           <button
             onClick={() => navigate("/cart")}
             className="relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors"
@@ -503,7 +543,7 @@ export default function MarketplaceItemDetails() {
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 gap-2">
             <Package className="w-14 h-14" />
-            <p className="text-sm">No image</p>
+            <p className="text-sm">{tx("no_image")}</p>
           </div>
         )}
 
@@ -519,7 +559,7 @@ export default function MarketplaceItemDetails() {
         {/* Featured badge */}
         {item.isFeatured && (
           <div className="absolute top-4 left-4 flex items-center gap-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full shadow">
-            <Zap className="w-3 h-3" /> Featured
+            <Zap className="w-3 h-3" /> {tx("featured")}
           </div>
         )}
 
@@ -552,14 +592,10 @@ export default function MarketplaceItemDetails() {
                 />
               ))}
             </div>
+            <div className="absolute bottom-3 right-3 bg-black/40 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
+              {imgIdx + 1}/{item.images.length}
+            </div>
           </>
-        )}
-
-        {/* Image counter */}
-        {item.images.length > 1 && (
-          <div className="absolute bottom-3 right-3 bg-black/40 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
-            {imgIdx + 1}/{item.images.length}
-          </div>
         )}
       </div>
 
@@ -585,7 +621,7 @@ export default function MarketplaceItemDetails() {
             </span>
             <span className="flex items-center gap-1">
               <Eye className="w-3.5 h-3.5" />
-              {item.viewCount} views
+              {item.viewCount} {tx("views")}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
@@ -597,7 +633,10 @@ export default function MarketplaceItemDetails() {
           {expiryDays !== null && expiryDays <= 3 && (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-orange-600 bg-orange-50 px-2.5 py-1.5 rounded-lg">
               <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-              {expiryDays <= 0 ? "This listing expires today!" : `This listing expires in ${expiryDays} day${expiryDays > 1 ? "s" : ""}`}
+              {expiryDays <= 0
+                ? tx("expires_today")
+                : `${tx("expires_in")} ${expiryDays} ${tx("days")}`
+              }
             </div>
           )}
         </div>
@@ -609,11 +648,11 @@ export default function MarketplaceItemDetails() {
               {fmt(item.price * qty)} <span className="text-base font-bold">XAF</span>
             </p>
             {qty > 1 && (
-              <p className="text-xs text-teal-500 mt-0.5">{fmt(item.price)} XAF each</p>
+              <p className="text-xs text-teal-500 mt-0.5">{fmt(item.price)} {tx("qty_each")}</p>
             )}
             {item.negotiable && (
               <div className="mt-1 inline-flex items-center gap-1 text-xs text-green-700 font-semibold bg-green-100 px-2 py-0.5 rounded-full">
-                <CheckCircle className="w-3 h-3" /> Price negotiable
+                <CheckCircle className="w-3 h-3" /> {tx("negotiable")}
               </div>
             )}
           </div>
@@ -640,9 +679,9 @@ export default function MarketplaceItemDetails() {
 
         {/* ── Description ── */}
         <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-          <h3 className="font-bold text-gray-900 mb-2 text-sm tracking-wide">Description</h3>
+          <h3 className="font-bold text-gray-900 mb-2 text-sm tracking-wide">{tx("description")}</h3>
           <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-            {item.description || "No description provided."}
+            {item.description || tx("no_description")}
           </p>
         </div>
 
@@ -657,7 +696,7 @@ export default function MarketplaceItemDetails() {
 
         {/* ── Contact Seller ── */}
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Contact Seller</h3>
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{tx("contact_seller")}</h3>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 overflow-hidden flex-shrink-0">
               {item.sellerAvatar ? (
@@ -679,7 +718,7 @@ export default function MarketplaceItemDetails() {
               onClick={() => navigate(`/vendor/${item.sellerId}`)}
               className="text-xs text-teal-600 font-semibold hover:underline flex-shrink-0"
             >
-              View Profile
+              {tx("view_profile")}
             </button>
           </div>
 
@@ -695,7 +734,7 @@ export default function MarketplaceItemDetails() {
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L.057 23.882a.5.5 0 00.612.612l6.035-1.467A11.942 11.942 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.694-.502-5.239-1.38l-.374-.214-3.885.945.964-3.759-.235-.39A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
               </svg>
-              WhatsApp
+              {tx("whatsapp")}
             </a>
             <a
               href={`tel:+${phone}`}
@@ -703,7 +742,7 @@ export default function MarketplaceItemDetails() {
               aria-label="Call seller"
             >
               <Phone className="w-4 h-4" />
-              Call
+              {tx("call")}
             </a>
             <button
               onClick={() => navigate(`/chat?sellerId=${item.sellerId}&listingId=${item.id}`)}
@@ -711,7 +750,7 @@ export default function MarketplaceItemDetails() {
               aria-label="Chat with seller"
             >
               <MessageCircle className="w-4 h-4" />
-              Chat
+              {tx("chat")}
             </button>
           </div>
         </div>
@@ -721,12 +760,12 @@ export default function MarketplaceItemDetails() {
           <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-xs text-amber-700 leading-relaxed">
-              <strong>Safety tip:</strong> Use Bambeh Escrow to protect your purchase. Never send money before inspecting the item.{" "}
+              <strong>{tx("safety_tip")}</strong>{" "}{tx("safety_msg")}{" "}
               <button
                 onClick={() => navigate("/meet-safely")}
                 className="underline font-semibold hover:text-amber-900"
               >
-                How to meet safely →
+                {tx("meet_safely")}
               </button>
             </p>
           </div>
@@ -739,13 +778,12 @@ export default function MarketplaceItemDetails() {
           aria-label="Report this listing"
         >
           <Flag className="w-3.5 h-3.5" />
-          Report this listing
+          {tx("report")}
         </button>
 
       </div>
 
       {/* ── Fixed bottom action bar ── */}
-      {/* pb-safe ensures it doesn't overlap bottom nav */}
       <div className="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-100 px-4 py-3 flex gap-2.5 max-w-lg mx-auto shadow-lg">
         {/* Fav */}
         <button
@@ -758,7 +796,7 @@ export default function MarketplaceItemDetails() {
           <Heart className={`w-5 h-5 transition-colors ${fav ? "text-red-500 fill-red-500" : "text-gray-500"}`} />
         </button>
 
-        {/* Add to cart / Save for later */}
+        {/* Add to cart */}
         <button
           onClick={() => handleAddToCart(false)}
           aria-label={cartDone ? "Added to cart" : `Add to cart — ${fmt(item.price * qty)} XAF`}
@@ -771,11 +809,11 @@ export default function MarketplaceItemDetails() {
           }`}
         >
           {cartDone ? (
-            <><CheckCircle className="w-4 h-4" /> Added!</>
+            <><CheckCircle className="w-4 h-4" /> {tx("added")}</>
           ) : isInCart ? (
-            <><ShoppingCart className="w-4 h-4" /> In Cart ({cartItemQty})</>
+            <><ShoppingCart className="w-4 h-4" /> {tx("in_cart")} ({cartItemQty})</>
           ) : (
-            <><ShoppingCart className="w-4 h-4" /> Add to Cart</>
+            <><ShoppingCart className="w-4 h-4" /> {tx("add_to_cart")}</>
           )}
         </button>
 
@@ -785,7 +823,7 @@ export default function MarketplaceItemDetails() {
           aria-label={`Buy now — ${fmt(item.price * qty)} XAF`}
           className="flex-1 h-12 bg-teal-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-teal-700 active:scale-95 transition-all shadow-md"
         >
-          Buy Now
+          {tx("buy_now")}
         </button>
       </div>
     </div>
