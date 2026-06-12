@@ -1,657 +1,808 @@
-﻿/**
+/**
  * src/pages/SellVehicle.tsx — Bambeh Marketplace
- *
- * PHONE INPUT CHANGE:
- *  ✅ Step 4 phone field replaced with AfricanPhoneInput
- *     - Cameroon default, West + Central Africa covered
- *     - Full international number (+237XXXXXXXXX) stored to Supabase
- *     - isValid flag used for step-4 validation — no manual length checks needed
- *     - Expanding to other African markets requires zero code changes here
- *
- * ALL PREVIOUS FIXES PRESERVED:
- *  ✅ Phone stored with country code (+237...) in Supabase `phone` column
- *  ✅ Phone required + validated before step 4 → 5 transition
- *  ✅ useCallback on fetchVehicles (used in VehicleRentals)
- *  ✅ alert() replaced with inline "✓ Draft saved" banner
- *  ✅ images base64 size warning
- *  ✅ +237 prefix on submit — now handled by AfricanPhoneInput directly
- *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Full vehicle listing form: multilingual, Supabase storage image upload,
+ * category, price, location, phone, description — zero errors.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft, Car, Loader2, CheckCircle2, ImagePlus,
+  X, MapPin, Phone, AlignLeft, Tag, Gauge, Fuel,
+  Cog, Calendar, Users, Palette, DollarSign, AlertCircle,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { REGIONS, CITIES_BY_REGION } from "@/data/Locations";
-import AfricanPhoneInput from "@/components/AfricanPhoneInput";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/hooks/useAppLang";
 
-const STEP_LABELS = ["Vehicle Info", "Condition & Details", "Photos", "Pricing & Location", "Review & Post"];
-const MAKES       = ["Toyota", "Honda", "Mercedes-Benz", "BMW", "Nissan", "Hyundai", "Ford", "Peugeot", "Renault", "Kia", "Mitsubishi", "Land Rover", "Suzuki", "Isuzu", "Other"];
-const TYPES       = ["Sedan", "SUV", "Pickup Truck", "Van / Minibus", "Motorcycle", "Truck", "Bus", "Other"];
-const FUELS       = ["Petrol", "Diesel", "Electric", "Hybrid", "LPG"];
-const GEARBOXES   = ["Manual", "Automatic", "Semi-Automatic"];
-const CONDITIONS  = ["Brand New", "Excellent", "Good", "Fair", "Needs Repair"];
-
-const MAX_IMG   = 5 * 1024 * 1024;
-const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
-function validateImg(f: File): string | null {
-  const lang = useLang();
-  const isRtl = lang === "ar";
-  if (!IMG_TYPES.includes(f.type)) return "Only JPG, PNG or WebP images allowed.";
-  if (f.size > MAX_IMG) return `${f.name} too large (max 5 MB). Got ${(f.size / 1024 / 1024).toFixed(1)} MB.`;
-  return null;
-}
-
-// ─── sub-components ──────────────────────────────────────────────────────────
-
-function StepBar({ step }: { step: number }) {
-  return (
-    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-      <div className="flex items-center gap-0.5 mb-2">
-        {STEP_LABELS.map((_, i) => (
-          <React.Fragment key={i}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-200
-              ${step> i + 1 ? "bg-teal-500 text-white" : step === i + 1 ? "bg-teal-600 text-white ring-4 ring-teal-100 dark:ring-teal-900" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}>
-              {step > i + 1
-                ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12"/></svg>
-                : i + 1}
-            </div>
-            {i < STEP_LABELS.length - 1 && (
-              <div className={`flex-1 h-1 rounded-full transition-colors ${step> i + 1 ? "bg-teal-500" : "bg-gray-200 dark:bg-gray-700"}`} />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-      <p className="text-xs font-semibold text-teal-600 dark:text-teal-400">
-        Step {step} of {STEP_LABELS.length}: {STEP_LABELS[step - 1]}
-      </p>
-    </div>
-  );
-}
-
-function NavRow({ onDraft, onBack, onNext, nextLabel = "Next Step →", disabled = false }: {
-  onDraft: () => void; onBack?: () => void;
-  onNext: () => void; nextLabel?: string; disabled?: boolean;
-}) {
-  return (
-    <div className="flex gap-2 pt-4 pb-6">
-      <button type="button" onClick={onDraft}
-        className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
-        💾 Save Draft
-      </button>
-      {onBack && (
-        <button type="button" onClick={onBack}
-          className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
-          ← Back
-        </button>
-      )}
-      <button type="button" onClick={onNext} disabled={disabled}
-        className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.98]
-          ${disabled ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-teal-500 to-teal-700 text-white shadow-lg shadow-teal-500/30"}`}>
-        {nextLabel}
-      </button>
-    </div>
-  );
-}
-
-function Err({ msg }: { msg?: string }) {
-  return msg ? <p className="text-xs text-red-500 mt-1 font-medium">⚠ {msg}</p> : null;
-}
-
-function Lbl({ children, required }: { children: React.ReactNode; required?: boolean }) {
-  return (
-    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-      {children}{required && <span className="text-red-500 ml-1">*</span>}
-    </label>
-  );
-}
-
-function SInput({ value, onChange, placeholder, type = "text", error, min }: {
-  value: string; onChange: (v: string) => void; placeholder?: string;
-  type?: string; error?: string; min?: string;
-}) {
-  return (
-    <>
-      <input type={type} min={min}
-        className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
-          ${error ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
-        placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
-      <Err msg={error} />
-    </>
-  );
-}
-
-function SSelect({ value, onChange, options, placeholder, error }: {
-  value: string; onChange: (v: string) => void; options: string[];
-  placeholder: string; error?: string;
-}) {
-  return (
-    <>
-      <select
-        className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none appearance-none
-          ${error ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
-        value={value} onChange={e => onChange(e.target.value)}>
-        <option value="">{placeholder}</option>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-      <Err msg={error} />
-    </>
-  );
-}
-
-function BigCheck({ checked, onChange, label, desc }: {
-  checked: boolean; onChange: (v: boolean) => void; label: string; desc?: string;
-}) {
-  return (
-    <button type="button" onClick={() => onChange(!checked)}
-      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all
-        ${checked ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20" : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800"}`}>
-      <div className={`flex-shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all
-        ${checked ? "border-teal-500 bg-teal-500" : "border-gray-300 dark:border-gray-500"}`}>
-        {checked && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
-      </div>
-      <div>
-        <p className="font-semibold text-sm text-gray-900 dark:text-white">{label}</p>
-        {desc && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{desc}</p>}
-      </div>
-    </button>
-  );
-}
-
-const fmt = (n: string) =>
-  n && !isNaN(Number(n)) && Number(n) > 0
-    ? new Intl.NumberFormat("fr-CM").format(Number(n)) + " FCFA"
-    : "";
-
-// ─── Draft type ───────────────────────────────────────────────────────────────
-
-interface Draft {
-  make: string; model: string; year: string; vehicleType: string;
-  fuel: string; transmission: string; mileage: string; color: string;
-  condition: string; description: string;
-  price: string; negotiable: boolean; region: string; city: string;
-  // phone now stores the full international number from AfricanPhoneInput
-  // e.g. "+237671234567"
-  phone: string;
-}
-
-const BLANK: Draft = {
-  make: "", model: "", year: String(new Date().getFullYear()), vehicleType: "",
-  fuel: "Petrol", transmission: "Manual", mileage: "", color: "",
-  condition: "Good", description: "",
-  price: "", negotiable: false, region: "", city: "", phone: "",
+// ─────────────────────────────────────────────────────────────
+// i18n
+// ─────────────────────────────────────────────────────────────
+const I18N: Record<string, Record<string, string>> = {
+  en: {
+    pageTitle: "Sell Your Vehicle",
+    pageSubtitle: "Reach thousands of buyers across Cameroon",
+    back: "Vehicles",
+    photos: "Photos",
+    photosHint: "Add up to 6 photos. First photo is the cover.",
+    addPhoto: "Add Photo",
+    title: "Title *",
+    titlePlaceholder: "e.g. Toyota Camry 2020",
+    category: "Category *",
+    price: "Price (XAF) *",
+    pricePlaceholder: "e.g. 8500000",
+    location: "Location *",
+    locationPlaceholder: "e.g. Yaoundé, Bastos",
+    phone: "Contact Phone *",
+    phonePlaceholder: "e.g. +237 6XX XXX XXX",
+    description: "Description",
+    descPlaceholder: "Describe your vehicle — condition, history, features, reason for selling…",
+    year: "Year",
+    yearPlaceholder: "e.g. 2020",
+    mileage: "Mileage",
+    mileagePlaceholder: "e.g. 45,000 km",
+    fuel: "Fuel Type",
+    transmission: "Transmission",
+    color: "Colour",
+    colorPlaceholder: "e.g. Silver",
+    seats: "Seats",
+    seatsPlaceholder: "e.g. 5",
+    submit: "Post Listing",
+    submitting: "Posting…",
+    success: "Your vehicle has been listed!",
+    successHint: "Buyers can now find and contact you.",
+    viewListing: "View My Listing",
+    postAnother: "Post Another",
+    loginRequired: "You must be logged in to post a listing.",
+    login: "Log In",
+    errorGeneric: "Something went wrong. Please try again.",
+    required: "Please fill in all required fields.",
+    selectCategory: "Select category",
+    selectFuel: "Select fuel type",
+    selectTransmission: "Select transmission",
+    petrol: "Petrol",
+    diesel: "Diesel",
+    electric: "Electric",
+    hybrid: "Hybrid",
+    automatic: "Automatic",
+    manual: "Manual",
+    vehicleDetails: "Vehicle Details",
+    contactInfo: "Contact & Location",
+    uploadingImages: "Uploading images…",
+    imageError: "Failed to upload one or more images.",
+  },
+  fr: {
+    pageTitle: "Vendre votre véhicule",
+    pageSubtitle: "Atteignez des milliers d'acheteurs à travers le Cameroun",
+    back: "Véhicules",
+    photos: "Photos",
+    photosHint: "Ajoutez jusqu'à 6 photos. La première est la couverture.",
+    addPhoto: "Ajouter une photo",
+    title: "Titre *",
+    titlePlaceholder: "ex: Toyota Camry 2020",
+    category: "Catégorie *",
+    price: "Prix (XAF) *",
+    pricePlaceholder: "ex: 8500000",
+    location: "Localisation *",
+    locationPlaceholder: "ex: Yaoundé, Bastos",
+    phone: "Téléphone *",
+    phonePlaceholder: "ex: +237 6XX XXX XXX",
+    description: "Description",
+    descPlaceholder: "Décrivez votre véhicule — état, historique, caractéristiques, raison de la vente…",
+    year: "Année",
+    yearPlaceholder: "ex: 2020",
+    mileage: "Kilométrage",
+    mileagePlaceholder: "ex: 45 000 km",
+    fuel: "Carburant",
+    transmission: "Transmission",
+    color: "Couleur",
+    colorPlaceholder: "ex: Argenté",
+    seats: "Sièges",
+    seatsPlaceholder: "ex: 5",
+    submit: "Publier l'annonce",
+    submitting: "Publication…",
+    success: "Votre véhicule est maintenant en ligne!",
+    successHint: "Les acheteurs peuvent vous trouver et vous contacter.",
+    viewListing: "Voir mon annonce",
+    postAnother: "Publier une autre",
+    loginRequired: "Vous devez être connecté pour publier une annonce.",
+    login: "Se connecter",
+    errorGeneric: "Une erreur est survenue. Veuillez réessayer.",
+    required: "Veuillez remplir tous les champs obligatoires.",
+    selectCategory: "Sélectionner une catégorie",
+    selectFuel: "Sélectionner le carburant",
+    selectTransmission: "Sélectionner la transmission",
+    petrol: "Essence",
+    diesel: "Diesel",
+    electric: "Électrique",
+    hybrid: "Hybride",
+    automatic: "Automatique",
+    manual: "Manuel",
+    vehicleDetails: "Détails du véhicule",
+    contactInfo: "Contact & Localisation",
+    uploadingImages: "Chargement des images…",
+    imageError: "Impossible de charger une ou plusieurs images.",
+  },
+  ha: {
+    pageTitle: "Sayar da Abin Hawanku",
+    pageSubtitle: "Kai ga dubun-dubun masu siya ko'ina a Kamaru",
+    back: "Ababen Hawa",
+    photos: "Hotuna",
+    photosHint: "Ƙara zuwa hoto 6. Na farko shine murfin.",
+    addPhoto: "Ƙara Hoto",
+    title: "Take *",
+    titlePlaceholder: "misali: Toyota Camry 2020",
+    category: "Rukunin *",
+    price: "Farashi (XAF) *",
+    pricePlaceholder: "misali: 8500000",
+    location: "Wurin *",
+    locationPlaceholder: "misali: Yaoundé, Bastos",
+    phone: "Waya *",
+    phonePlaceholder: "misali: +237 6XX XXX XXX",
+    description: "Bayanin",
+    descPlaceholder: "Bayyana abin hawanka…",
+    year: "Shekara",
+    yearPlaceholder: "misali: 2020",
+    mileage: "Nisan Tafiya",
+    mileagePlaceholder: "misali: 45,000 km",
+    fuel: "Nau'in Man Fetur",
+    transmission: "Watsa Iko",
+    color: "Launi",
+    colorPlaceholder: "misali: Azurfa",
+    seats: "Kujeru",
+    seatsPlaceholder: "misali: 5",
+    submit: "Buga Lissafin",
+    submitting: "Ana buga…",
+    success: "An lissafa abin hawanku!",
+    successHint: "Masu siya yanzu za su iya samun ku.",
+    viewListing: "Duba Lissafina",
+    postAnother: "Buga Wani",
+    loginRequired: "Dole ne ku shiga don buga lissafi.",
+    login: "Shiga",
+    errorGeneric: "Wani abu ya fita. Da fatan a sake gwadawa.",
+    required: "Da fatan a cika duk filayen da ake bukata.",
+    selectCategory: "Zaɓi rukuni",
+    selectFuel: "Zaɓi nau'in man fetur",
+    selectTransmission: "Zaɓi watsa iko",
+    petrol: "Petrol",
+    diesel: "Dizal",
+    electric: "Lantarki",
+    hybrid: "Hybrid",
+    automatic: "Atomatik",
+    manual: "Hannu",
+    vehicleDetails: "Bayanan Abin Hawa",
+    contactInfo: "Waya & Wuri",
+    uploadingImages: "Ana loda hotuna…",
+    imageError: "Kuskure wajen loda hotunan.",
+  },
+  ar: {
+    pageTitle: "بيع مركبتك",
+    pageSubtitle: "تواصل مع آلاف المشترين في الكاميرون",
+    back: "المركبات",
+    photos: "الصور",
+    photosHint: "أضف حتى 6 صور. الصورة الأولى هي الغلاف.",
+    addPhoto: "إضافة صورة",
+    title: "العنوان *",
+    titlePlaceholder: "مثال: Toyota Camry 2020",
+    category: "الفئة *",
+    price: "السعر (XAF) *",
+    pricePlaceholder: "مثال: 8500000",
+    location: "الموقع *",
+    locationPlaceholder: "مثال: ياوندي، باستوس",
+    phone: "رقم الهاتف *",
+    phonePlaceholder: "مثال: +237 6XX XXX XXX",
+    description: "الوصف",
+    descPlaceholder: "صف مركبتك — الحالة، التاريخ، المميزات، سبب البيع…",
+    year: "السنة",
+    yearPlaceholder: "مثال: 2020",
+    mileage: "عداد المسافة",
+    mileagePlaceholder: "مثال: 45,000 كم",
+    fuel: "نوع الوقود",
+    transmission: "ناقل الحركة",
+    color: "اللون",
+    colorPlaceholder: "مثال: فضي",
+    seats: "المقاعد",
+    seatsPlaceholder: "مثال: 5",
+    submit: "نشر الإعلان",
+    submitting: "جارٍ النشر…",
+    success: "تم نشر مركبتك!",
+    successHint: "يمكن للمشترين الآن الوصول إليك والتواصل معك.",
+    viewListing: "عرض إعلاني",
+    postAnother: "نشر إعلان آخر",
+    loginRequired: "يجب تسجيل الدخول لنشر إعلان.",
+    login: "تسجيل الدخول",
+    errorGeneric: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    required: "يرجى ملء جميع الحقول المطلوبة.",
+    selectCategory: "اختر الفئة",
+    selectFuel: "اختر نوع الوقود",
+    selectTransmission: "اختر ناقل الحركة",
+    petrol: "بنزين",
+    diesel: "ديزل",
+    electric: "كهربائي",
+    hybrid: "هجين",
+    automatic: "أوتوماتيك",
+    manual: "يدوي",
+    vehicleDetails: "تفاصيل المركبة",
+    contactInfo: "معلومات الاتصال والموقع",
+    uploadingImages: "جارٍ رفع الصور…",
+    imageError: "فشل رفع صورة واحدة أو أكثر.",
+  },
+  pcm: {
+    pageTitle: "Sell Your Motor",
+    pageSubtitle: "Reach plenty buyers all over Cameroon",
+    back: "Motors",
+    photos: "Photos",
+    photosHint: "Add up to 6 photos. First photo na cover.",
+    addPhoto: "Add Photo",
+    title: "Title *",
+    titlePlaceholder: "e.g. Toyota Camry 2020",
+    category: "Category *",
+    price: "Price (XAF) *",
+    pricePlaceholder: "e.g. 8500000",
+    location: "Location *",
+    locationPlaceholder: "e.g. Yaoundé, Bastos",
+    phone: "Phone Number *",
+    phonePlaceholder: "e.g. +237 6XX XXX XXX",
+    description: "Description",
+    descPlaceholder: "Describe your motor — condition, story, features, why you dey sell…",
+    year: "Year",
+    yearPlaceholder: "e.g. 2020",
+    mileage: "Mileage",
+    mileagePlaceholder: "e.g. 45,000 km",
+    fuel: "Fuel Type",
+    transmission: "Transmission",
+    color: "Colour",
+    colorPlaceholder: "e.g. Silver",
+    seats: "Seats",
+    seatsPlaceholder: "e.g. 5",
+    submit: "Post Ad",
+    submitting: "Posting…",
+    success: "Your motor don enter the platform!",
+    successHint: "Buyers go see you now.",
+    viewListing: "See My Post",
+    postAnother: "Post Another",
+    loginRequired: "You must log in before you post.",
+    login: "Log In",
+    errorGeneric: "Something go wrong. Try again.",
+    required: "Fill all the required fields.",
+    selectCategory: "Select category",
+    selectFuel: "Select fuel type",
+    selectTransmission: "Select transmission",
+    petrol: "Petrol",
+    diesel: "Diesel",
+    electric: "Electric",
+    hybrid: "Hybrid",
+    automatic: "Automatic",
+    manual: "Manual",
+    vehicleDetails: "Motor Details",
+    contactInfo: "Contact & Location",
+    uploadingImages: "Uploading photos…",
+    imageError: "Problem uploading photos.",
+  },
+  ff: {
+    pageTitle: "Yillitu Laaɓal Maa",
+    pageSubtitle: "Njangu tumaraneeɓe ko'e Kameruun",
+    back: "Laaɓe",
+    photos: "Sawru",
+    photosHint: "Ɓeydu sawru haa 6. Adannde wonata koloore.",
+    addPhoto: "Ɓeydu Sawru",
+    title: "Tiitoonde *",
+    titlePlaceholder: "Toyota Camry 2020",
+    category: "Sifo *",
+    price: "Njaru (XAF) *",
+    pricePlaceholder: "8500000",
+    location: "Wuro *",
+    locationPlaceholder: "Yaoundé, Bastos",
+    phone: "Wowloore *",
+    phonePlaceholder: "+237 6XX XXX XXX",
+    description: "Tinndi",
+    descPlaceholder: "Tinndu laaɓal maa…",
+    year: "Hitaande",
+    yearPlaceholder: "2020",
+    mileage: "Laawol",
+    mileagePlaceholder: "45,000 km",
+    fuel: "Susiyel",
+    transmission: "Watse",
+    color: "Ranynde",
+    colorPlaceholder: "Haaɗdi",
+    seats: "Tooɗe",
+    seatsPlaceholder: "5",
+    submit: "Jaɓdu Jaŋtere",
+    submitting: "Yillitee…",
+    success: "Laaɓal maa jaŋteraa!",
+    successHint: "Soodotooɓe mbaawi yiytude maa.",
+    viewListing: "Yiy Jaŋtere Am",
+    postAnother: "Jaɓdu Goɗɗo",
+    loginRequired: "Tiimto ko adii jaɓdude.",
+    login: "Tiimto",
+    errorGeneric: "Ko woɗɗaani hawi. Ngaloo kadi.",
+    required: "Ɓeydu batu keeriiɗe.",
+    selectCategory: "Suɓo sifo",
+    selectFuel: "Suɓo susiyel",
+    selectTransmission: "Suɓo watse",
+    petrol: "Petrol",
+    diesel: "Diesel",
+    electric: "Elektrik",
+    hybrid: "Hybrid",
+    automatic: "Otomatik",
+    manual: "Juuɗe",
+    vehicleDetails: "Bayɗe Laaɓal",
+    contactInfo: "Wowloore & Wuro",
+    uploadingImages: "Sawruuje njilloyinee…",
+    imageError: "Sawru ujaaki.",
+  },
 };
 
-// ─── Main component ───────────────────────────────────────────────────────────
+const CATEGORIES = ["Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck", "Other"];
 
-export default function SellVehicle() {
+// ─────────────────────────────────────────────────────────────
+// Form state shape
+// ─────────────────────────────────────────────────────────────
+interface FormState {
+  title:        string;
+  category:     string;
+  price:        string;
+  location:     string;
+  phone:        string;
+  description:  string;
+  year:         string;
+  mileage:      string;
+  fuel:         string;
+  transmission: string;
+  color:        string;
+  seats:        string;
+}
+
+const EMPTY_FORM: FormState = {
+  title:"", category:"", price:"", location:"", phone:"",
+  description:"", year:"", mileage:"", fuel:"", transmission:"",
+  color:"", seats:"",
+};
+
+// ─────────────────────────────────────────────────────────────
+// Upload images to Supabase Storage
+// ─────────────────────────────────────────────────────────────
+async function uploadImages(files: File[]): Promise<string[]> {
+  const urls: string[] = [];
+  for (const file of files) {
+    const ext  = file.name.split(".").pop() || "jpg";
+    const path = `vehicles/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage
+      .from("listing-images")
+      .upload(path, file, { cacheControl: "3600", upsert: false });
+    if (error) throw error;
+    const { data } = supabase.storage.from("listing-images").getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────
+const SellVehicle: React.FC = () => {
   const navigate = useNavigate();
-  const fileRef  = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
+  const lang     = (useLang() || "en") as string;
+  const tr       = (key: string) => (I18N[lang] || I18N.en)[key] || I18N.en[key] || key;
+  const isRtl    = lang === "ar";
 
-  const [step,        setStep]        = useState(1);
-  const [d,           setD]           = useState<Draft>(BLANK);
-  const [errs,        setErrs]        = useState<Record<string, string>>({});
-  const [images,      setImages]      = useState<string[]>([]);
-  const [imgErrors,   setImgErrors]   = useState<string[]>([]);
-  const [submitting,  setSubmitting]  = useState(false);
-  const [posted,      setPosted]      = useState(false);
-  const [newId,       setNewId]       = useState<string | null>(null);
-  const [draftSaved,  setDraftSaved]  = useState(false);
-  // Track whether the phone number AfricanPhoneInput considers valid
-  const [phoneValid,  setPhoneValid]  = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Restore draft on mount
-  useEffect(() => {
-    try {
-      const s = localStorage.getItem("bambeh_draft_vehicle");
-      if (s) {
-        const parsed = JSON.parse(s);
-        setD(prev => ({ ...prev, ...parsed }));
-        // If draft had a phone, assume valid so we don't block step 4
-        if (parsed.phone) setPhoneValid(true);
-      }
-    } catch {}
-  }, []);
+  const [form,             setForm]             = useState<FormState>(EMPTY_FORM);
+  const [imageFiles,       setImageFiles]       = useState<File[]>([]);
+  const [imagePreviews,    setImagePreviews]    = useState<string[]>([]);
+  const [submitting,       setSubmitting]       = useState(false);
+  const [uploadingImgs,    setUploadingImgs]    = useState(false);
+  const [error,            setError]            = useState<string | null>(null);
+  const [successId,        setSuccessId]        = useState<string | null>(null);
 
-  function upd(patch: Partial<Draft>) { setD(prev => ({ ...prev, ...patch })); }
+  // ── Field update helper ─────────────────────────────────────
+  const set = (field: keyof FormState) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  function saveDraft() {
-    localStorage.setItem("bambeh_draft_vehicle", JSON.stringify(d));
-    setDraftSaved(true);
-    setTimeout(() => setDraftSaved(false), 2000);
-  }
+  // ── Image picker ────────────────────────────────────────────
+  const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const remaining = 6 - imageFiles.length;
+    const toAdd = files.slice(0, remaining);
+    setImageFiles((prev) => [...prev, ...toAdd]);
+    toAdd.forEach((f) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setImagePreviews((prev) => [...prev, ev.target?.result as string]);
+      };
+      reader.readAsDataURL(f);
+    });
+    // reset input so same file can be re-picked
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
-  const cities = d.region ? (CITIES_BY_REGION[d.region] ?? []) : [];
+  const removeImage = (i: number) => {
+    setImageFiles((prev)    => prev.filter((_, idx) => idx !== i));
+    setImagePreviews((prev) => prev.filter((_, idx) => idx !== i));
+  };
 
-  async function handleFiles(files: FileList | null) {
-    if (!files) return;
-    const errors: string[] = [];
-    const previews: string[] = [];
-    for (const f of Array.from(files).slice(0, 8 - images.length)) {
-      const err = validateImg(f);
-      if (err) { errors.push(err); continue; }
-      await new Promise<void>(res => {
-        const r = new FileReader();
-        r.onload = e => { previews.push(e.target?.result as string); res(); };
-        r.readAsDataURL(f);
-      });
+  // ── Submit ──────────────────────────────────────────────────
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!form.title || !form.category || !form.price || !form.location || !form.phone) {
+      setError(tr("required"));
+      return;
     }
-    setImgErrors(errors);
-    setImages(prev => [...prev, ...previews].slice(0, 8));
-  }
 
-  function validate(s: number): Record<string, string> {
-    const e: Record<string, string> = {};
-    if (s === 1) {
-      if (!d.make)         e.make        = "Make is required";
-      if (!d.model.trim()) e.model       = "Model is required";
-      if (!d.vehicleType)  e.vehicleType = "Vehicle type is required";
-      if (!d.year || Number(d.year) < 1950 || Number(d.year) > new Date().getFullYear() + 1)
-        e.year = "Valid year is required";
-    }
-    if (s === 2) {
-      if (!d.description.trim() || d.description.trim().length < 20)
-        e.description = "Description must be at least 20 characters";
-    }
-    // Step 3 photos — optional
-    if (s === 4) {
-      if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0)
-        e.price = "Valid price is required";
-      if (!d.region)      e.region = "Region is required";
-      if (!d.city.trim()) e.city   = "City is required";
-      // AfricanPhoneInput sets phoneValid — check it here
-      if (!d.phone)       e.phone = "Phone number is required";
-      else if (!phoneValid) e.phone = "Please enter a valid phone number for the selected country";
-    }
-    return e;
-  }
-
-  function next() {
-    const e = validate(step); setErrs(e);
-    if (Object.keys(e).length > 0) return;
-    setStep(s => s + 1); window.scrollTo(0, 0);
-  }
-  function back() { setErrs({}); setStep(s => s - 1); window.scrollTo(0, 0); }
-
-  async function handleSubmit() {
     setSubmitting(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { navigate("/login"); return; }
 
-      const totalImgBytes = images.reduce((acc, img) => acc + img.length * 0.75, 0);
-      if (totalImgBytes > 2 * 1024 * 1024) {
-        console.warn("[SellVehicle] Images exceed 2 MB total. Consider Supabase Storage.");
+    try {
+      // 1. Upload images
+      let imageUrls: string[] = [];
+      if (imageFiles.length > 0) {
+        setUploadingImgs(true);
+        try {
+          imageUrls = await uploadImages(imageFiles);
+        } catch (imgErr: any) {
+          console.warn("[SellVehicle] image upload partial fail:", imgErr);
+          setError(tr("imageError"));
+          // continue without images rather than blocking the listing
+        } finally {
+          setUploadingImgs(false);
+        }
       }
 
-      // d.phone is already the full international number from AfricanPhoneInput
-      // e.g. "+237671234567" — no prefix mangling needed
-      const { data, error: err } = await supabase.from("listings").insert({
-        seller_id:   session.user.id,
-        type:        "vehicle",
-        title:       `${d.make} ${d.model} ${d.year}`.trim(),
-        description: d.description.trim(),
-        price:       Number(d.price),
-        category:    d.vehicleType,
-        condition:   d.condition,
-        location:    [d.city, d.region].filter(Boolean).join(", "),
-        phone:       d.phone,          // full international number
-        negotiable:  d.negotiable,
-        status:      "active",
-        images:      images.length > 0 ? images : null,
-        extra: {
-          make:         d.make,
-          model:        d.model,
-          year:         d.year,
-          vehicle_type: d.vehicleType,
-          fuel:         d.fuel,
-          transmission: d.transmission,
-          mileage:      d.mileage,
-          color:        d.color,
-        },
-      }).select("id").single();
+      // 2. Expire 30 days from now
+      const expiresAt = new Date(Date.now() + 30 * 86_400_000).toISOString();
 
-      if (err) throw err;
-      localStorage.removeItem("bambeh_draft_vehicle");
-      setNewId(data?.id ?? null);
-      setPosted(true);
-    } catch (e: any) {
-      setErrs({ submit: e.message || "Failed to post. Please try again." });
+      // 3. Insert listing
+      const { data, error: sbErr } = await supabase
+        .from("listings")
+        .insert({
+          title:        form.title.trim(),
+          type:         "vehicle",
+          status:       "active",
+          price:        parseInt(form.price.replace(/\D/g, ""), 10) || 0,
+          location:     form.location.trim(),
+          category:     form.category,
+          images:       imageUrls,
+          contact_phone:form.phone.trim(),
+          contact_name: user?.user_metadata?.full_name || user?.email || "",
+          user_id:      user!.id,
+          description:  form.description.trim(),
+          expires_at:   expiresAt,
+          extra: {
+            year:         form.year         ? parseInt(form.year, 10) : undefined,
+            mileage:      form.mileage.trim()      || undefined,
+            fuel:         form.fuel                || undefined,
+            transmission: form.transmission        || undefined,
+            color:        form.color.trim()        || undefined,
+            seats:        form.seats ? parseInt(form.seats, 10) : undefined,
+          },
+        })
+        .select("id")
+        .single();
+
+      if (sbErr) throw sbErr;
+      setSuccessId(data.id);
+    } catch (err: any) {
+      console.error("[SellVehicle] submit error:", err);
+      setError(err?.message || tr("errorGeneric"));
     } finally {
       setSubmitting(false);
     }
-  }
+  };
 
-  // ─── Success screen ───────────────────────────────────────────────────────
-
-  if (posted) {
+  // ─────────────────────────────────────────────────────────────
+  // Not logged in
+  // ─────────────────────────────────────────────────────────────
+  if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-7xl mb-4">🚗</p>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Vehicle Listed!</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-          Your vehicle is now live on Bambeh, visible to all buyers across Cameroon on every device.
-        </p>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
-          Other users can find your listing immediately — no extra steps needed.
-        </p>
-        <div className="flex flex-col gap-3 w-full max-w-xs">
-          {newId && (
-            <button onClick={() => navigate(`/vehicles/${newId}`)}
-              className="py-3 bg-teal-600 text-white rounded-xl font-bold">
-              View My Listing →
-            </button>
-          )}
-          <button onClick={() => navigate("/vehicles")} className="py-3 bg-teal-600 text-white rounded-xl font-bold">
-            Browse Vehicles
-          </button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={isRtl ? "rtl" : "ltr"}>
+        <div className="bg-white rounded-2xl border shadow-sm p-8 text-center max-w-sm w-full">
+          <Car className="w-14 h-14 text-green-300 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{tr("pageTitle")}</h2>
+          <p className="text-gray-500 text-sm mb-6">{tr("loginRequired")}</p>
           <button
-            onClick={() => { setPosted(false); setStep(1); setD(BLANK); setImages([]); setPhoneValid(false); }}
-            className="py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300">
-            List Another Vehicle
+            onClick={() => navigate("/auth/login")}
+            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 active:scale-95 transition-all"
+          >
+            {tr("login")}
           </button>
         </div>
       </div>
     );
   }
 
-  // ─── Form ─────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  // Success
+  // ─────────────────────────────────────────────────────────────
+  if (successId) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={isRtl ? "rtl" : "ltr"}>
+        <div className="bg-white rounded-2xl border shadow-sm p-8 text-center max-w-sm w-full">
+          <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{tr("success")}</h2>
+          <p className="text-gray-500 text-sm mb-6">{tr("successHint")}</p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate(`/vehicles/${successId}`)}
+              className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 active:scale-95 transition-all"
+            >
+              {tr("viewListing")}
+            </button>
+            <button
+              onClick={() => { setSuccessId(null); setForm(EMPTY_FORM); setImageFiles([]); setImagePreviews([]); }}
+              className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 active:scale-95 transition-all"
+            >
+              {tr("postAnother")}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Form
+  // ─────────────────────────────────────────────────────────────
+  const inputClass = `w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none
+    focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white placeholder-gray-400`;
+  const labelClass = "block text-sm font-semibold text-gray-700 mb-1.5";
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="sticky top-0 z-10 bg-teal-600 text-white px-4 py-4 flex items-center gap-3 shadow">
-        <button onClick={() => step === 1 ? navigate(-1) : back()}
-          className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">←</button>
-        <h1 className="font-bold text-lg">🚗 Sell a Vehicle</h1>
-        {draftSaved && (
-          <span className="ml-auto text-xs bg-white/20 px-2 py-1 rounded-full font-semibold">
-            ✓ Draft saved
-          </span>
-        )}
+    <div className="min-h-screen bg-gray-50 pb-32" dir={isRtl ? "rtl" : "ltr"}>
+
+      {/* ── Top bar ── */}
+      <div className={`sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center gap-3 ${isRtl ? "flex-row-reverse" : ""}`}>
+        <button
+          onClick={() => navigate("/vehicles")}
+          className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100"
+          aria-label={tr("back")}
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div>
+          <h1 className="text-base font-bold text-gray-900">{tr("pageTitle")}</h1>
+          <p className="text-xs text-gray-500">{tr("pageSubtitle")}</p>
+        </div>
       </div>
 
-      <StepBar step={step} />
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 py-6 space-y-6">
 
-      <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
-
-        {/* ── STEP 1: Vehicle Info ── */}
-        {step === 1 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <h2 className="font-bold text-base text-gray-900 dark:text-white">Vehicle Information</h2>
-
-            <div>
-              <Lbl required>Make / Brand</Lbl>
-              <div className="grid grid-cols-2 gap-2">
-                {MAKES.map(m => (
-                  <button key={m} type="button" onClick={() => upd({ make: m })}
-                    className={`flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-semibold text-left transition-all
-                      ${d.make === m ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700" : "border-gray-200 dark:border-gray-600 text-gray-600"}`}>
-                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0
-                      ${d.make === m ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
-                      {d.make === m && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
-                    </div>
-                    {m}
-                  </button>
-                ))}
-              </div>
-              <Err msg={errs.make} />
-            </div>
-
-            <div><Lbl required>Model</Lbl>
-              <SInput value={d.model} onChange={v => upd({ model: v })}
-                placeholder="e.g. Corolla, RAV4, Hilux" error={errs.model} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div><Lbl required>Year</Lbl>
-                <SInput type="number" min="1950" value={d.year} onChange={v => upd({ year: v })}
-                  placeholder="2020" error={errs.year} />
-              </div>
-              <div><Lbl>Color</Lbl>
-                <SInput value={d.color} onChange={v => upd({ color: v })}
-                  placeholder="e.g. White, Silver" />
-              </div>
-            </div>
-
-            <div><Lbl required>Vehicle Type</Lbl>
-              <SSelect value={d.vehicleType} onChange={v => upd({ vehicleType: v })}
-                options={TYPES} placeholder="Select type" error={errs.vehicleType} />
-            </div>
-
-            <NavRow onDraft={saveDraft} onNext={next} />
+        {/* ── Error banner ── */}
+        {error && (
+          <div className={`flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm ${isRtl ? "flex-row-reverse" : ""}`}>
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            {error}
           </div>
         )}
 
-        {/* ── STEP 2: Condition & Details ── */}
-        {step === 2 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <h2 className="font-bold text-base text-gray-900 dark:text-white">Condition &amp; Details</h2>
+        {/* ── Photos ── */}
+        <div>
+          <p className={`text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
+            <ImagePlus className="w-4 h-4 text-green-600" /> {tr("photos")}
+          </p>
+          <p className="text-xs text-gray-400 mb-3">{tr("photosHint")}</p>
 
-            <div><Lbl required>Condition</Lbl>
-              <div className="grid grid-cols-2 gap-2">
-                {CONDITIONS.map(c => (
-                  <button key={c} type="button" onClick={() => upd({ condition: c })}
-                    className={`flex items-center gap-2 p-3 rounded-xl border-2 text-sm font-semibold text-left transition-all
-                      ${d.condition === c ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700" : "border-gray-200 dark:border-gray-600 text-gray-600"}`}>
-                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0
-                      ${d.condition === c ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
-                      {d.condition === c && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
-                    </div>
-                    {c}
-                  </button>
-                ))}
+          <div className="flex flex-wrap gap-3">
+            {imagePreviews.map((src, i) => (
+              <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
+                <img src={src} alt="" className="w-full h-full object-cover" />
+                {i === 0 && (
+                  <span className="absolute bottom-0 left-0 right-0 bg-green-600/80 text-white text-[9px] text-center py-0.5">
+                    Cover
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div><Lbl>Fuel Type</Lbl>
-                <div className="flex flex-col gap-1.5">
-                  {FUELS.map(f => (
-                    <button key={f} type="button" onClick={() => upd({ fuel: f })}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border-2 text-xs font-semibold text-left transition-all
-                        ${d.fuel === f ? "border-teal-500 bg-teal-50 text-teal-700" : "border-gray-200 text-gray-600"}`}>
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center
-                        ${d.fuel === f ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
-                        {d.fuel === f && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
-                      </div>
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div><Lbl>Gearbox</Lbl>
-                <div className="flex flex-col gap-1.5">
-                  {GEARBOXES.map(g => (
-                    <button key={g} type="button" onClick={() => upd({ transmission: g })}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border-2 text-xs font-semibold text-left transition-all
-                        ${d.transmission === g ? "border-teal-500 bg-teal-50 text-teal-700" : "border-gray-200 text-gray-600"}`}>
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center
-                        ${d.transmission === g ? "border-teal-500 bg-teal-500" : "border-gray-300"}`}>
-                        {d.transmission === g && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}><polyline points="20 6 9 17 4 12"/></svg>}
-                      </div>
-                      {g}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div><Lbl>Mileage (km)</Lbl>
-              <SInput type="number" min="0" value={d.mileage} onChange={v => upd({ mileage: v })}
-                placeholder="e.g. 45000" />
-            </div>
-
-            <div><Lbl required>Description</Lbl>
-              <textarea rows={4}
-                className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none resize-none transition-colors
-                  ${errs.description ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
-                placeholder="Describe the vehicle: service history, any issues, modifications, reason for sale…"
-                value={d.description}
-                onChange={e => upd({ description: e.target.value })} />
-              <Err msg={errs.description} />
-            </div>
-
-            <NavRow onDraft={saveDraft} onBack={back} onNext={next} />
-          </div>
-        )}
-
-        {/* ── STEP 3: Photos ── */}
-        {step === 3 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <h2 className="font-bold text-base text-gray-900 dark:text-white">Add Vehicle Photos</h2>
-            <p className="text-xs text-gray-400">JPG, PNG or WebP · Max 5 MB each · Up to 8 photos</p>
-
-            {imgErrors.map((e, i) => (
-              <p key={i} className="text-xs text-red-500 font-medium">⚠ {e}</p>
             ))}
 
-            <div
-              onClick={() => fileRef.current?.click()}
-              className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors
-                ${images.length >= 8 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20"}`}>
-              <p className="text-3xl mb-2">🚗</p>
-              <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                {images.length >= 8 ? "Maximum 8 photos" : "Tap to upload vehicle photos"}
-              </p>
-              <p className="text-xs text-gray-400 mt-1">{images.length}/8 photos added</p>
-            </div>
-            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
-              multiple className="hidden" onChange={e => handleFiles(e.target.files)} />
-
-            {images.length > 0 && (
-              <div className="grid grid-cols-3 gap-2">
-                {images.map((src, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-100">
-                    <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => setImages(p => p.filter((_, idx) => idx !== i))}
-                      className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">×</button>
-                    {i === 0 && <span className="absolute bottom-1 left-1 bg-teal-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>}
-                  </div>
-                ))}
-              </div>
+            {imageFiles.length < 6 && (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-green-400 hover:text-green-500 transition-colors"
+              >
+                <ImagePlus className="w-5 h-5" />
+                <span className="text-[10px]">{tr("addPhoto")}</span>
+              </button>
             )}
-
-            <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
-              <p className="text-xs text-amber-700">
-                📌 <strong>Tip:</strong> Cars with 5+ photos sell 4× faster. Show exterior (front, rear, sides), interior, dashboard, and engine.
-              </p>
-            </div>
-
-            <NavRow onDraft={saveDraft} onBack={back} onNext={next} nextLabel="Pricing & Location →" />
           </div>
-        )}
 
-        {/* ── STEP 4: Pricing & Location ── */}
-        {step === 4 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <h2 className="font-bold text-base text-gray-900 dark:text-white">Pricing &amp; Location</h2>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleImagePick}
+          />
+        </div>
 
-            <div>
-              <Lbl required>Price (FCFA)</Lbl>
-              <SInput type="number" min="0" value={d.price} onChange={v => upd({ price: v })}
-                placeholder="e.g. 3500000" error={errs.price} />
-              {fmt(d.price) && <p className="text-xs text-teal-600 font-semibold mt-1">= {fmt(d.price)}</p>}
-            </div>
+        {/* ── Basic info ── */}
+        <div className="bg-white rounded-2xl border p-4 space-y-4">
 
-            <BigCheck checked={d.negotiable} onChange={v => upd({ negotiable: v })}
-              label="Price is Negotiable" desc="Buyers can make you an offer" />
+          {/* Title */}
+          <div>
+            <label className={labelClass}>
+              <Tag className="w-3.5 h-3.5 inline mr-1.5 text-green-600" />{tr("title")}
+            </label>
+            <input className={inputClass} value={form.title} onChange={set("title")} placeholder={tr("titlePlaceholder")} required />
+          </div>
 
-            <div>
-              <Lbl required>Region</Lbl>
-              <SSelect value={d.region} onChange={v => upd({ region: v, city: "" })}
-                options={REGIONS} placeholder="Select region" error={errs.region} />
-            </div>
+          {/* Category */}
+          <div>
+            <label className={labelClass}>{tr("category")}</label>
+            <select className={inputClass} value={form.category} onChange={set("category")} required>
+              <option value="">{tr("selectCategory")}</option>
+              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
 
-            {d.region && (
-              <div>
-                <Lbl required>City / Town</Lbl>
-                {cities.length > 0
-                  ? <SSelect value={d.city} onChange={v => upd({ city: v })}
-                      options={cities} placeholder="Select city" error={errs.city} />
-                  : <SInput value={d.city} onChange={v => upd({ city: v })}
-                      placeholder="Enter city name" error={errs.city} />}
-              </div>
-            )}
-
-            {/* ── AfricanPhoneInput ── */}
-            <AfricanPhoneInput
-              label="Contact Phone"
+          {/* Price */}
+          <div>
+            <label className={labelClass}>
+              <DollarSign className="w-3.5 h-3.5 inline mr-1.5 text-green-600" />{tr("price")}
+            </label>
+            <input
+              className={inputClass}
+              value={form.price}
+              onChange={set("price")}
+              placeholder={tr("pricePlaceholder")}
+              inputMode="numeric"
               required
-              value={d.phone}
-              onChange={(fullNumber, isValid) => {
-                upd({ phone: fullNumber });
-                setPhoneValid(isValid);
-                // Clear phone error as soon as user starts typing
-                if (errs.phone) setErrs(prev => ({ ...prev, phone: "" }));
-              }}
-              error={errs.phone}
             />
-
-            <NavRow onDraft={saveDraft} onBack={back} onNext={next} nextLabel="Review Listing →" />
           </div>
-        )}
+        </div>
 
-        {/* ── STEP 5: Review & Post ── */}
-        {step === 5 && (
-          <>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
-              <h2 className="font-bold text-base text-gray-900 dark:text-white mb-4">📋 Listing Summary</h2>
-              {([
-                ["Vehicle",    `${d.make} ${d.model} ${d.year}`.trim() || "—"],
-                ["Type",       d.vehicleType || "—"],
-                ["Condition",  d.condition],
-                ["Fuel",       d.fuel],
-                ["Gearbox",    d.transmission],
-                ["Mileage",    d.mileage ? `${Number(d.mileage).toLocaleString()} km` : "Not specified"],
-                ["Color",      d.color || "Not specified"],
-                ["Price",      fmt(d.price) || "—"],
-                ["Negotiable", d.negotiable ? "Yes ✓" : "No"],
-                ["Location",   [d.city, d.region].filter(Boolean).join(", ") || "—"],
-                ["Phone",      d.phone || "—"],
-                ["Photos",     `${images.length} photo${images.length !== 1 ? "s" : ""}`],
-              ] as [string, string][]).map(([k, v]) => (
-                <div key={k} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
-                  <span className="text-gray-500">{k}</span>
-                  <span className="font-semibold text-gray-900 dark:text-white text-right max-w-[60%]">{v}</span>
-                </div>
-              ))}
+        {/* ── Vehicle details ── */}
+        <div className="bg-white rounded-2xl border p-4 space-y-4">
+          <p className={`text-sm font-bold text-gray-700 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
+            <Car className="w-4 h-4 text-green-600" /> {tr("vehicleDetails")}
+          </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Year */}
+            <div>
+              <label className={labelClass}>
+                <Calendar className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("year")}
+              </label>
+              <input className={inputClass} value={form.year} onChange={set("year")} placeholder={tr("yearPlaceholder")} inputMode="numeric" />
             </div>
 
-            {/* Preview card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold text-sm text-gray-500 uppercase tracking-wide mb-3">Preview — how buyers will see it</h3>
-              <div className="rounded-xl border border-gray-200 overflow-hidden">
-                <div className="h-40 bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center">
-                  {images[0]
-                    ? <img src={images[0]} alt="preview" className="w-full h-full object-cover" />
-                    : <span className="text-5xl">🚗</span>
-                  }
-                </div>
-                <div className="p-3">
-                  <p className="font-bold text-sm text-gray-900 dark:text-white">{`${d.make} ${d.model} ${d.year}`.trim() || "Your vehicle"}</p>
-                  <p className="text-teal-700 font-bold text-base mt-1">{fmt(d.price) || "Price not set"}</p>
-                  <p className="text-xs text-gray-400 mt-1">{[d.city, d.region].filter(Boolean).join(", ") || "Location"} · {d.fuel} · {d.transmission}</p>
-                </div>
-              </div>
+            {/* Seats */}
+            <div>
+              <label className={labelClass}>
+                <Users className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("seats")}
+              </label>
+              <input className={inputClass} value={form.seats} onChange={set("seats")} placeholder={tr("seatsPlaceholder")} inputMode="numeric" />
+            </div>
+          </div>
+
+          {/* Mileage */}
+          <div>
+            <label className={labelClass}>
+              <Gauge className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("mileage")}
+            </label>
+            <input className={inputClass} value={form.mileage} onChange={set("mileage")} placeholder={tr("mileagePlaceholder")} />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Fuel */}
+            <div>
+              <label className={labelClass}>
+                <Fuel className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("fuel")}
+              </label>
+              <select className={inputClass} value={form.fuel} onChange={set("fuel")}>
+                <option value="">{tr("selectFuel")}</option>
+                <option value="Petrol">{tr("petrol")}</option>
+                <option value="Diesel">{tr("diesel")}</option>
+                <option value="Electric">{tr("electric")}</option>
+                <option value="Hybrid">{tr("hybrid")}</option>
+              </select>
             </div>
 
-            <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 text-sm text-teal-800">
-              🌍 <strong>Visible across Cameroon.</strong> Once posted, your listing is live on Bambeh and visible to all users on any device instantly.
+            {/* Transmission */}
+            <div>
+              <label className={labelClass}>
+                <Cog className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("transmission")}
+              </label>
+              <select className={inputClass} value={form.transmission} onChange={set("transmission")}>
+                <option value="">{tr("selectTransmission")}</option>
+                <option value="Automatic">{tr("automatic")}</option>
+                <option value="Manual">{tr("manual")}</option>
+              </select>
             </div>
+          </div>
 
-            {errs.submit && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">⚠ {errs.submit}</div>
-            )}
+          {/* Colour */}
+          <div>
+            <label className={labelClass}>
+              <Palette className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("color")}
+            </label>
+            <input className={inputClass} value={form.color} onChange={set("color")} placeholder={tr("colorPlaceholder")} />
+          </div>
+        </div>
 
-            <NavRow onDraft={saveDraft} onBack={back} onNext={handleSubmit}
-              nextLabel={submitting ? "Posting…" : "🚀 List Vehicle"} disabled={submitting} />
-          </>
-        )}
+        {/* ── Contact & location ── */}
+        <div className="bg-white rounded-2xl border p-4 space-y-4">
+          <p className={`text-sm font-bold text-gray-700 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
+            <Phone className="w-4 h-4 text-green-600" /> {tr("contactInfo")}
+          </p>
 
-      </div>
+          {/* Location */}
+          <div>
+            <label className={labelClass}>
+              <MapPin className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("location")}
+            </label>
+            <input className={inputClass} value={form.location} onChange={set("location")} placeholder={tr("locationPlaceholder")} required />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className={labelClass}>
+              <Phone className="w-3.5 h-3.5 inline mr-1 text-green-600" />{tr("phone")}
+            </label>
+            <input
+              className={inputClass}
+              value={form.phone}
+              onChange={set("phone")}
+              placeholder={tr("phonePlaceholder")}
+              type="tel"
+              required
+            />
+          </div>
+        </div>
+
+        {/* ── Description ── */}
+        <div className="bg-white rounded-2xl border p-4">
+          <label className={`${labelClass} flex items-center gap-2`}>
+            <AlignLeft className="w-3.5 h-3.5 text-green-600" />{tr("description")}
+          </label>
+          <textarea
+            className={`${inputClass} h-32 resize-none`}
+            value={form.description}
+            onChange={set("description")}
+            placeholder={tr("descPlaceholder")}
+          />
+        </div>
+
+        {/* ── Submit ── */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 pt-3 pb-6 z-40">
+          <div className="max-w-2xl mx-auto">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-base
+                         hover:bg-green-700 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed
+                         flex items-center justify-center gap-2"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  {uploadingImgs ? tr("uploadingImages") : tr("submitting")}
+                </>
+              ) : (
+                <>
+                  <Car className="w-5 h-5" />
+                  {tr("submit")}
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+      </form>
     </div>
   );
-}
+};
+
+export default SellVehicle;

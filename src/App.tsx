@@ -242,6 +242,7 @@ const TontinePage         = lazy(() => import("@/pages/TontinePage"));
 const TontineDetail       = lazy(() => import("@/pages/TontineDetail"));
 const TontineCreate       = lazy(() => import("@/pages/TontineCreate"));
 const FarmFreshPage       = lazy(() => import("@/pages/FarmFreshPage"));
+const FarmFreshDetail     = lazy(() => import("@/pages/FarmFreshDetail"));
 const FarmFreshOrderPage  = lazy(() => import("@/pages/FarmFreshOrderPage"));
 const FarmFreshSellerPage = lazy(() => import("@/pages/FarmFreshSellerPage"));
 const MakeOfferPage       = lazy(() => import("@/pages/MakeOfferPage"));
@@ -417,6 +418,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/subscription",
     "/referral",
     "/donate",
+    "/farm-fresh",
   ];
 
   const isPublic = publicPrefixes.some((p) => location.pathname.startsWith(p));
@@ -1233,6 +1235,14 @@ export default function App() {
                           element={
                             <MainLayout>
                               <AuthGate require="subscription"><FarmFreshPage /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        <Route
+                          path="/farm-fresh/:id"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="subscription"><FarmFreshDetail /></AuthGate>
                             </MainLayout>
                           }
                         />

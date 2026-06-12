@@ -1,25 +1,18 @@
 /**
- * src/services/exchange-referral.service.ts
- * Bambeh Marketplace — Exchange & Referral Services
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * src/services/exchange-referral.service.ts — Bambeh Marketplace
  *
- * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
- * Previous version used axios to call Firebase Cloud Function URLs that do not
- * exist in production, then fell back to localStorage — resulting in zero data.
- *
- * ✅ REPLACED — All calls now use the Supabase client
- * ✅ Exchange requests → "listings" table with type='exchange'
- * ✅ Referrals        → "referrals" table (or falls back gracefully if absent)
- * ✅ All function signatures preserved so callers don't need updates
- * ✅ No axios, no localStorage, no Firebase function URLs
+ * ✅ Pure Supabase — no axios, no localStorage, no Firebase URL calls
+ * ✅ Exchange requests stored in "listings" table (type='exchange')
+ * ✅ Referrals stored in "referrals" table (graceful fallback if absent)
+ * ✅ All function signatures preserved — no caller changes needed
  */
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 
 // ─── Exchange Types ────────────────────────────────────────────────────────────
 export interface ExchangeRequest {
   id:            string;
-  type:          "currency" | "item-swap";
+  type:          'currency' | 'item-swap';
   fromCurrency?: string;
   toCurrency?:   string;
   amount?:       number;
@@ -28,25 +21,24 @@ export interface ExchangeRequest {
   description:   string;
   userId:        string;
   userName:      string;
-  status:        "open" | "in-progress" | "completed" | "cancelled";
+  status:        'open' | 'in-progress' | 'completed' | 'cancelled';
   createdAt:     string;
 }
 
-// ─── Map listings row → ExchangeRequest ───────────────────────────────────────
 function rowToExchange(row: Record<string, any>): ExchangeRequest {
   const extra = row.extra ?? {};
   return {
     id:           row.id,
-    type:         extra.exchange_type ?? "item-swap",
+    type:         extra.exchange_type ?? 'item-swap',
     fromCurrency: extra.from_currency ?? undefined,
     toCurrency:   extra.to_currency   ?? undefined,
     amount:       extra.amount        ?? undefined,
-    itemOffered:  extra.item_offered  ?? row.title ?? "",
+    itemOffered:  extra.item_offered  ?? row.title ?? '',
     itemWanted:   extra.item_wanted   ?? undefined,
-    description:  row.description     ?? "",
-    userId:       row.user_id         ?? row.seller_id ?? "",
-    userName:     row.profiles?.full_name ?? "User",
-    status:       (extra.exchange_status ?? row.status ?? "open") as ExchangeRequest["status"],
+    description:  row.description     ?? '',
+    userId:       row.user_id         ?? row.seller_id ?? '',
+    userName:     row.profiles?.full_name ?? 'User',
+    status:       (extra.exchange_status ?? row.status ?? 'open') as ExchangeRequest['status'],
     createdAt:    row.created_at,
   };
 }
@@ -54,51 +46,43 @@ function rowToExchange(row: Record<string, any>): ExchangeRequest {
 // ─── Exchange Service ──────────────────────────────────────────────────────────
 class ExchangeService {
 
-  async getAllExchangeRequests(
-    filters?: { type?: string }
-  ): Promise<ExchangeRequest[]> {
+  async getAllExchangeRequests(filters?: { type?: string }): Promise<ExchangeRequest[]> {
     try {
       let query = supabase
-        .from("listings")
-        .select("*, profiles:user_id (full_name)")
-        .eq("type", "exchange")
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
+        .from('listings')
+        .select('*, profiles:user_id (full_name)')
+        .eq('type', 'exchange')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
         .limit(60);
 
-      if (filters?.type && filters.type !== "all") {
-        // filter by exchange sub-type stored in extra.exchange_type
-        query = query.eq("extra->exchange_type", filters.type);
+      if (filters?.type && filters.type !== 'all') {
+        query = query.eq('extra->exchange_type', filters.type);
       }
 
       const { data, error } = await query;
-
-      if (error) {
-        console.error("[ExchangeService] getAllExchangeRequests:", error.message);
-        return [];
-      }
-
-      return (data ?? []).map((r) => rowToExchange(r as Record<string, any>));
+      if (error) { console.error('[ExchangeService]', error.message); return []; }
+      return (data ?? []).map(r => rowToExchange(r as Record<string, any>));
     } catch (err) {
-      console.error("[ExchangeService] getAllExchangeRequests exception:", err);
+      console.error('[ExchangeService] exception:', err);
       return [];
     }
   }
 
   async createExchangeRequest(
-    requestData: Omit<ExchangeRequest, "id" | "userId" | "userName" | "status" | "createdAt">
+    requestData: Omit<ExchangeRequest, 'id' | 'userId' | 'userName' | 'status' | 'createdAt'>
   ): Promise<ExchangeRequest> {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("You must be logged in to post an exchange");
+    if (!user) throw new Error('You must be logged in to post an exchange');
 
     const { data, error } = await supabase
-      .from("listings")
+      .from('listings')
       .insert({
         user_id:     user.id,
-        type:        "exchange",
+        type:        'exchange',
         title:       requestData.itemOffered ?? requestData.description.slice(0, 80),
         description: requestData.description,
-        status:      "active",
+        status:      'active',
         price:       requestData.amount ?? null,
         view_count:  0,
         is_featured: false,
@@ -109,10 +93,10 @@ class ExchangeService {
           amount:          requestData.amount         ?? null,
           item_offered:    requestData.itemOffered    ?? null,
           item_wanted:     requestData.itemWanted     ?? null,
-          exchange_status: "open",
+          exchange_status: 'open',
         },
       })
-      .select("*, profiles:user_id (full_name)")
+      .select('*, profiles:user_id (full_name)')
       .single();
 
     if (error) throw new Error(error.message);
@@ -121,22 +105,21 @@ class ExchangeService {
 
   async respondToExchange(exchangeId: string, message: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("You must be logged in to respond");
+    if (!user) throw new Error('You must be logged in to respond');
 
-    // Get the exchange owner
     const { data: listing } = await supabase
-      .from("listings")
-      .select("user_id, title")
-      .eq("id", exchangeId)
+      .from('listings')
+      .select('user_id, title')
+      .eq('id', exchangeId)
       .maybeSingle();
 
     const { error } = await supabase
-      .from("messages")
+      .from('messages')
       .insert({
         sender_id:    user.id,
         recipient_id: listing?.user_id ?? null,
         listing_id:   exchangeId,
-        listing_type: "exchange",
+        listing_type: 'exchange',
         content:      message,
         created_at:   new Date().toISOString(),
       });
@@ -146,10 +129,10 @@ class ExchangeService {
 
   async getExchangeById(id: string): Promise<ExchangeRequest | null> {
     const { data, error } = await supabase
-      .from("listings")
-      .select("*, profiles:user_id (full_name)")
-      .eq("id", id)
-      .eq("type", "exchange")
+      .from('listings')
+      .select('*, profiles:user_id (full_name)')
+      .eq('id', id)
+      .eq('type', 'exchange')
       .maybeSingle();
 
     if (error || !data) return null;
@@ -161,10 +144,10 @@ class ExchangeService {
     if (!user) return;
 
     await supabase
-      .from("listings")
-      .update({ status: "sold" })
-      .eq("id", exchangeId)
-      .eq("user_id", user.id);
+      .from('listings')
+      .update({ status: 'sold' })
+      .eq('id', exchangeId)
+      .eq('user_id', user.id);
   }
 }
 
@@ -174,7 +157,7 @@ export interface Referral {
   referrerId:        string;
   referredUserId?:   string;
   referredUserEmail: string;
-  status:            "pending" | "completed" | "expired";
+  status:            'pending' | 'completed' | 'expired';
   rewardAmount:      number;
   rewardClaimed:     boolean;
   createdAt:         string;
@@ -194,13 +177,12 @@ class ReferralService {
 
   async getReferralCode(): Promise<string> {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return "BAMBEH-GUEST";
+    if (!user) return 'BAMBEH-GUEST';
 
-    // Try to get stored referral code from profile
     const { data } = await supabase
-      .from("profiles")
-      .select("referral_code")
-      .eq("id", user.id)
+      .from('profiles')
+      .select('referral_code')
+      .eq('id', user.id)
       .maybeSingle();
 
     return data?.referral_code ?? `BAMBEH-${user.id.slice(0, 8).toUpperCase()}`;
@@ -211,23 +193,19 @@ class ReferralService {
     if (!user) return [];
 
     const { data, error } = await supabase
-      .from("referrals")
-      .select("*")
-      .eq("referrer_id", user.id)
-      .order("created_at", { ascending: false });
+      .from('referrals')
+      .select('*')
+      .eq('referrer_id', user.id)
+      .order('created_at', { ascending: false });
 
-    if (error) {
-      // Table may not exist yet — return empty gracefully
-      console.warn("[ReferralService] referrals table:", error.message);
-      return [];
-    }
+    if (error) { console.warn('[ReferralService] referrals table:', error.message); return []; }
 
     return (data ?? []).map((r: any) => ({
       id:                r.id,
       referrerId:        r.referrer_id,
       referredUserId:    r.referred_user_id  ?? undefined,
-      referredUserEmail: r.referred_email    ?? "",
-      status:            r.status            ?? "pending",
+      referredUserEmail: r.referred_email    ?? '',
+      status:            r.status            ?? 'pending',
       rewardAmount:      Number(r.reward_amount ?? 5000),
       rewardClaimed:     Boolean(r.reward_claimed),
       createdAt:         r.created_at,
@@ -239,46 +217,44 @@ class ReferralService {
     const referrals = await this.getMyReferrals();
     return {
       totalReferrals:      referrals.length,
-      completedReferrals:  referrals.filter((r) => r.status === "completed").length,
-      pendingReferrals:    referrals.filter((r) => r.status === "pending").length,
+      completedReferrals:  referrals.filter(r => r.status === 'completed').length,
+      pendingReferrals:    referrals.filter(r => r.status === 'pending').length,
       totalRewardsEarned:  referrals.reduce((sum, r) => sum + r.rewardAmount, 0),
-      totalRewardsClaimed: referrals.filter((r) => r.rewardClaimed).reduce((sum, r) => sum + r.rewardAmount, 0),
+      totalRewardsClaimed: referrals.filter(r => r.rewardClaimed).reduce((sum, r) => sum + r.rewardAmount, 0),
     };
   }
 
   async sendReferralInvite(email: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("You must be logged in to send referrals");
+    if (!user) throw new Error('You must be logged in to send referrals');
 
     const referralCode = await this.getReferralCode();
 
     const { error } = await supabase
-      .from("referrals")
+      .from('referrals')
       .insert({
         referrer_id:    user.id,
         referred_email: email,
         referral_code:  referralCode,
-        status:         "pending",
+        status:         'pending',
         reward_amount:  5000,
         reward_claimed: false,
         created_at:     new Date().toISOString(),
       });
 
-    if (error) {
-      console.warn("[ReferralService] sendReferralInvite:", error.message);
-      // Don't throw — referral table may not exist yet
-    }
+    if (error) console.warn('[ReferralService] sendReferralInvite:', error.message);
+    // Don't throw — referrals table may not exist yet
   }
 
   async claimReferralReward(referralId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+    if (!user) throw new Error('Not authenticated');
 
     const { error } = await supabase
-      .from("referrals")
+      .from('referrals')
       .update({ reward_claimed: true })
-      .eq("id", referralId)
-      .eq("referrer_id", user.id);
+      .eq('id', referralId)
+      .eq('referrer_id', user.id);
 
     if (error) throw new Error(error.message);
   }

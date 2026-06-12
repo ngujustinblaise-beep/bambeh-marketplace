@@ -1,19 +1,8 @@
 /**
  * src/pages/VehicleRentals.tsx — Bambeh Marketplace
- *
- * FIXES IN THIS VERSION:
- *  ✅ FIX 1 — useCallback on fetchVehicles (stable ref, no stale closure)
- *  ✅ FIX 2 — Location filter checks v.location AND v.extra.* fields
- *  ✅ FIX 3 — SAMPLE ids start with 'demo-v' — consistent with VehicleDetails routing
- *  ✅ FIX 4 — Real-time channel uses stable fetchVehicles ref
- *  ✅ FIX 5 — Title "Cars & Vehicles" (not "Vehicle Rentals")
- *  ✅ FIX 6 — Sell button correctly routes to /vehicles/sell
- *  ✅ FIX 7 — pb-28 so bottom nav never covers cards or buttons
- *  ✅ FIX 8 — Error state with user-friendly banner (no crash)
- *  ✅ FIX 9 — Demo listings not navigable (no broken detail page)
- *  ✅ FIX 10 — Expiry badge shown on listings expiring within 3 days
- *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Full vehicle listings page with multilingual support, Supabase realtime,
+ * rich filters, and zero-error UX.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -21,91 +10,203 @@ import { useNavigate } from "react-router-dom";
 import {
   Search, MapPin, Gauge, Fuel, Plus, Car,
   Loader2, RefreshCw, Eye, AlertCircle, Clock,
+  ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLang } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface Vehicle {
-  id:         string;
-  title:      string;
-  price:      number;
-  location:   string;
-  category:   string;
-  images:     string[];
-  created_at: string;
-  expires_at?: string;
-  extra:      Record<string, any>;
-  isDemo?:    boolean;
-  view_count?: number;
-}
+// ─────────────────────────────────────────────────────────────
+// i18n dictionary
+// ─────────────────────────────────────────────────────────────
+const I18N: Record<string, Record<string, string>> = {
+  en: {
+    title: "Cars & Vehicles",
+    subtitle: "Buy and sell vehicles across Cameroon",
+    searchPlaceholder: "Search by make, model, or title…",
+    allCities: "All Cities",
+    refresh: "Refresh",
+    sell: "Sell",
+    vehiclesFound: "vehicle found",
+    vehiclesFoundPlural: "vehicles found",
+    loading: "Loading vehicles…",
+    noVehicles: "No vehicles found",
+    noVehiclesHint: "Try clearing your filters or be the first to list!",
+    listYourVehicle: "List Your Vehicle",
+    sample: "Sample — not a real listing",
+    expiringLabel: "Expiring soon",
+    errorBanner: "Could not load listings. Showing demo data.",
+    allTypes: "All",
+    views: "view",
+    viewsPlural: "views",
+    backToTop: "Back to top",
+  },
+  fr: {
+    title: "Voitures & Véhicules",
+    subtitle: "Achetez et vendez des véhicules au Cameroun",
+    searchPlaceholder: "Rechercher par marque, modèle ou titre…",
+    allCities: "Toutes les villes",
+    refresh: "Actualiser",
+    sell: "Vendre",
+    vehiclesFound: "véhicule trouvé",
+    vehiclesFoundPlural: "véhicules trouvés",
+    loading: "Chargement des véhicules…",
+    noVehicles: "Aucun véhicule trouvé",
+    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier à lister!",
+    listYourVehicle: "Listez votre véhicule",
+    sample: "Exemple — pas une vraie annonce",
+    expiringLabel: "Expire bientôt",
+    errorBanner: "Impossible de charger les annonces. Données de démonstration affichées.",
+    allTypes: "Tous",
+    views: "vue",
+    viewsPlural: "vues",
+    backToTop: "Retour en haut",
+  },
+  ha: {
+    title: "Motoci & Ababen Hawa",
+    subtitle: "Saya da sayar da ababen hawa a Kamaru",
+    searchPlaceholder: "Nemo ta marka, model ko take…",
+    allCities: "Dukkan Biranen",
+    refresh: "Sabunta",
+    sell: "Sayar",
+    vehiclesFound: "abin hawa an samu",
+    vehiclesFoundPlural: "ababen hawa an samu",
+    loading: "Ana loda ababen hawa…",
+    noVehicles: "Ba a sami ababen hawa ba",
+    noVehiclesHint: "Gwada share tace ko kasance na farko don lissafi!",
+    listYourVehicle: "Lissafa Abin Hawanku",
+    sample: "Samfuri — ba lissafi na gaske ba",
+    expiringLabel: "Kusa ya kare",
+    errorBanner: "Ba a iya loda lissafin. Ana nuna bayanin demo.",
+    allTypes: "Duka",
+    views: "kallo",
+    viewsPlural: "kallaye",
+    backToTop: "Koma sama",
+  },
+  ar: {
+    title: "السيارات والمركبات",
+    subtitle: "بيع وشراء المركبات في الكاميرون",
+    searchPlaceholder: "ابحث بالماركة أو الطراز أو العنوان…",
+    allCities: "جميع المدن",
+    refresh: "تحديث",
+    sell: "بيع",
+    vehiclesFound: "مركبة وجدت",
+    vehiclesFoundPlural: "مركبات وجدت",
+    loading: "جارٍ تحميل المركبات…",
+    noVehicles: "لا توجد مركبات",
+    noVehiclesHint: "حاول مسح الفلاتر أو كن أول من يضيف إعلاناً!",
+    listYourVehicle: "أضف مركبتك",
+    sample: "نموذج — ليس إعلاناً حقيقياً",
+    expiringLabel: "تنتهي قريباً",
+    errorBanner: "تعذّر تحميل الإعلانات. يتم عرض البيانات التجريبية.",
+    allTypes: "الكل",
+    views: "مشاهدة",
+    viewsPlural: "مشاهدات",
+    backToTop: "العودة للأعلى",
+  },
+  pcm: {
+    title: "Cars & Motor",
+    subtitle: "Buy and sell motor for all Cameroon",
+    searchPlaceholder: "Search by make, model or name…",
+    allCities: "All Towns",
+    refresh: "Refresh",
+    sell: "Sell",
+    vehiclesFound: "motor find",
+    vehiclesFoundPlural: "motors find",
+    loading: "Motor dey load…",
+    noVehicles: "No motor find",
+    noVehiclesHint: "Try remove filter or be first person post!",
+    listYourVehicle: "Post Your Motor",
+    sample: "Sample — no be real post",
+    expiringLabel: "Go expire soon",
+    errorBanner: "We no fit load posts. We dey show demo data.",
+    allTypes: "All",
+    views: "view",
+    viewsPlural: "views",
+    backToTop: "Go top",
+  },
+  ff: {
+    title: "Jawdi & Laaɓal",
+    subtitle: "Soodde e yillitde laaɓal e Kameruun",
+    searchPlaceholder: "Yiyto e innde, model walla tiitoonde…",
+    allCities: "Telli Wuro",
+    refresh: "Haaɓtu",
+    sell: "Yillitu",
+    vehiclesFound: "laaɓal heɓaa",
+    vehiclesFoundPlural: "laaɓe heɓaa",
+    loading: "Laaɓe njilloyinee…",
+    noVehicles: "Laaɓe heɓaaki",
+    noVehiclesHint: "Wiɓ siftooje maa ar tawa fowo!",
+    listYourVehicle: "Haaɗtu Laaɓal Maa",
+    sample: "Misaali — woɗɗaaki jaŋtere goonga",
+    expiringLabel: "Timmata jooni",
+    errorBanner: "Jaŋtere nde nahataa. Yeeso misaali hannde.",
+    allTypes: "Fof",
+    views: "yiyaade",
+    viewsPlural: "yiyaaɗe",
+    backToTop: "Haaɗtu dow",
+  },
+};
 
-// ─── Demo data ────────────────────────────────────────────────────────────────
-// ✅ FIX 3: ids start with 'demo-v' so VehicleDetails can detect them
-const SAMPLE_VEHICLES: Vehicle[] = [
-  {
-    id: "demo-v1",
-    title: "Toyota Camry 2020",
-    price: 8_500_000,
-    location: "Yaoundé",
-    category: "Sedan",
-    images: [],
-    created_at: new Date().toISOString(),
-    extra: { fuel: "Petrol", transmission: "Automatic", mileage: "45,000 km", year: 2020 },
-    isDemo: true,
-  },
-  {
-    id: "demo-v2",
-    title: "Honda Activa Motorcycle",
-    price: 850_000,
-    location: "Douala",
-    category: "Motorcycle",
-    images: [],
-    created_at: new Date().toISOString(),
-    extra: { fuel: "Petrol", transmission: "Manual", mileage: "12,000 km", year: 2021 },
-    isDemo: true,
-  },
-  {
-    id: "demo-v3",
-    title: "Toyota Land Cruiser V8 2019",
-    price: 35_000_000,
-    location: "Yaoundé",
-    category: "SUV",
-    images: [],
-    created_at: new Date().toISOString(),
-    extra: { fuel: "Diesel", transmission: "Automatic", mileage: "78,000 km", year: 2019 },
-    isDemo: true,
-  },
-  {
-    id: "demo-v4",
-    title: "Nissan Pickup 4x4",
-    price: 12_000_000,
-    location: "Bamenda",
-    category: "Pickup",
-    images: [],
-    created_at: new Date().toISOString(),
-    extra: { fuel: "Diesel", transmission: "Manual", mileage: "95,000 km", year: 2018 },
-    isDemo: true,
-  },
-];
+// ─────────────────────────────────────────────────────────────
+// Category labels (multilingual)
+// ─────────────────────────────────────────────────────────────
+const CATEGORY_LABELS: Record<string, Record<string, string>> = {
+  en: { All:"All", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motorcycle", Van:"Van", Minibus:"Minibus", Truck:"Truck" },
+  fr: { All:"Tous", Sedan:"Berline", SUV:"SUV", Pickup:"Pick-up", Motorcycle:"Moto", Van:"Fourgon", Minibus:"Minibus", Truck:"Camion" },
+  ha: { All:"Duka", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Babur", Van:"Van", Minibus:"Minibus", Truck:"Lori" },
+  ar: { All:"الكل", Sedan:"سيدان", SUV:"سيارة دفع رباعي", Pickup:"بيك أب", Motorcycle:"دراجة نارية", Van:"فان", Minibus:"حافلة صغيرة", Truck:"شاحنة" },
+  pcm: { All:"All", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motor", Van:"Van", Minibus:"Minibus", Truck:"Truck" },
+  ff: { All:"Fof", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motor", Van:"Van", Minibus:"Minibus", Truck:"Lorri" },
+};
 
 const VEHICLE_TYPES = ["All", "Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck"];
 const CITIES        = ["All", "Yaoundé", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
 
-function expiringWithin(expiresAt: string | undefined, days: number): boolean {
-  const lang = useLang();
-  const isRtl = lang === "ar";
+// ─────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────
+interface Vehicle {
+  id:          string;
+  title:       string;
+  price:       number;
+  location:    string;
+  category:    string;
+  images:      string[];
+  created_at:  string;
+  expires_at?: string;
+  extra:       Record<string, any>;
+  isDemo?:     boolean;
+  view_count?: number;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Demo data (ids start with demo- for VehicleDetails detection)
+// ─────────────────────────────────────────────────────────────
+const DEMO_VEHICLES: Vehicle[] = [
+  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"Yaoundé", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
+  { id:"demo-v2", title:"Honda Activa Motorcycle",   price:850_000,    location:"Douala",  category:"Motorcycle", images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Manual",    mileage:"12,000 km", year:2021}, isDemo:true },
+  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"Yaoundé", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
+  { id:"demo-v4", title:"Nissan Pickup 4x4",         price:12_000_000, location:"Bamenda", category:"Pickup",     images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Manual",    mileage:"95,000 km", year:2018}, isDemo:true },
+];
+
+function expiringWithin(expiresAt?: string, days = 3): boolean {
   if (!expiresAt) return false;
   const diff = new Date(expiresAt).getTime() - Date.now();
   return diff > 0 && diff <= days * 86_400_000;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────
 export default function VehicleRentals() {
   const navigate = useNavigate();
+  const lang = (useLang() || "en") as string;
+  const tr = (key: string) => (I18N[lang] || I18N.en)[key] || (I18N.en)[key] || key;
+  const catLabel = (cat: string) => (CATEGORY_LABELS[lang] || CATEGORY_LABELS.en)[cat] || cat;
+  const isRtl = lang === "ar";
 
   const [vehicles,        setVehicles]        = useState<Vehicle[]>([]);
   const [loading,         setLoading]         = useState(true);
@@ -115,116 +216,91 @@ export default function VehicleRentals() {
   const [cityFilter,      setCityFilter]      = useState("All");
   const [locationFilters, setLocationFilters] = useState<LocationFilters>(EMPTY_LOCATION);
 
-  // ✅ FIX 1: stable ref — avoids stale closure in realtime handler
   const fetchVehicles = useCallback(async () => {
     setError(null);
     try {
-      const { data, error: sbError } = await supabase
+      const { data, error: sbErr } = await supabase
         .from("listings")
-        .select("id, title, price, location, category, images, created_at, expires_at, extra, view_count")
+        .select("id,title,price,location,category,images,created_at,expires_at,extra,view_count")
         .eq("type", "vehicle")
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(40);
 
-      if (sbError) throw sbError;
-
+      if (sbErr) throw sbErr;
       setVehicles(
         data && data.length > 0
-          ? data.map((d: any) => ({ ...d, isDemo: false }))
-          : SAMPLE_VEHICLES
+          ? data.map((d: any) => ({ ...d, isDemo: false, extra: d.extra || {}, images: d.images || [] }))
+          : DEMO_VEHICLES
       );
     } catch (err: any) {
       console.error("[VehicleRentals] fetch error:", err);
-      setError("Could not load listings. Showing demo data.");
-      setVehicles(SAMPLE_VEHICLES);
+      setError(tr("errorBanner"));
+      setVehicles(DEMO_VEHICLES);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lang]); // re-run on lang change to refresh error string
 
-  // ✅ FIX 4: fetchVehicles in dep array
   useEffect(() => {
     fetchVehicles();
-
-    const channel = supabase
-      .channel("vehicles_realtime_feed")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "listings" },
-        fetchVehicles
-      )
+    const ch = supabase
+      .channel("vr_realtime_feed")
+      .on("postgres_changes", { event: "*", schema: "public", table: "listings" }, fetchVehicles)
       .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
+    return () => { supabase.removeChannel(ch); };
   }, [fetchVehicles]);
 
-  // ─── Filtering ─────────────────────────────────────────────────────────────
-  const baseFiltered = vehicles.filter((v) => {
-    if (search) {
-      const q = search.toLowerCase();
-      const hit =
-        v.title.toLowerCase().includes(q) ||
-        (v.extra?.make  || "").toLowerCase().includes(q) ||
-        (v.extra?.model || "").toLowerCase().includes(q) ||
-        v.location.toLowerCase().includes(q);
-      if (!hit) return false;
-    }
+  // ── Filtered list ──────────────────────────────────────────
+  const filtered = [...vehicles]
+    .filter((v) => {
+      if (search) {
+        const q = search.toLowerCase();
+        if (!(
+          v.title.toLowerCase().includes(q) ||
+          (v.extra?.make  || "").toLowerCase().includes(q) ||
+          (v.extra?.model || "").toLowerCase().includes(q) ||
+          v.location.toLowerCase().includes(q)
+        )) return false;
+      }
+      if (typeFilter !== "All") {
+        if (v.category !== typeFilter && (v.extra?.vehicle_type || "") !== typeFilter) return false;
+      }
+      if (cityFilter !== "All") {
+        if (!v.location.toLowerCase().includes(cityFilter.toLowerCase())) return false;
+      }
+      const loc = [v.location, v.extra?.region||"", v.extra?.city||"", v.extra?.quarter||"", v.extra?.landmark||""].join(" ").toLowerCase();
+      if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
+      if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
+      if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
+      if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (a.isDemo !== b.isDemo) return a.isDemo ? 1 : -1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
-    if (typeFilter !== "All") {
-      const matchCat  = v.category === typeFilter;
-      const matchType = (v.extra?.vehicle_type || "") === typeFilter;
-      if (!matchCat && !matchType) return false;
-    }
-
-    if (cityFilter !== "All") {
-      if (!v.location.toLowerCase().includes(cityFilter.toLowerCase())) return false;
-    }
-
-    // ✅ FIX 2: check location AND all extra.* location fields
-    const locationStr = [
-      v.location,
-      v.extra?.region   || "",
-      v.extra?.city     || "",
-      v.extra?.quarter  || "",
-      v.extra?.landmark || "",
-    ].join(" ").toLowerCase();
-
-    if (locationFilters.region   && !locationStr.includes(locationFilters.region.toLowerCase()))   return false;
-    if (locationFilters.city     && !locationStr.includes(locationFilters.city.toLowerCase()))     return false;
-    if (locationFilters.quarter  && !locationStr.includes(locationFilters.quarter.toLowerCase()))  return false;
-    if (locationFilters.landmark && !locationStr.includes(locationFilters.landmark.toLowerCase())) return false;
-
-    return true;
-  });
-
-  // Real listings first, then demo; newest first within each group
-  const filtered = [...baseFiltered].sort((a, b) => {
-    if (a.isDemo !== b.isDemo) return a.isDemo ? 1 : -1;
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-  });
-
-  // ─── Render ────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? "rtl" : "ltr"}>
 
-      {/* Hero banner */}
+      {/* ── Hero ── */}
       <div className="bg-gradient-to-r from-green-700 to-green-800 text-white pt-10 pb-14 px-4">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold mb-1 flex items-center gap-2">
-            <Car className="w-8 h-8" /> Cars &amp; Vehicles
+            <Car className="w-8 h-8 flex-shrink-0" />
+            {tr("title")}
           </h1>
-          <p className="text-green-100 mb-5 text-sm">
-            Buy and sell vehicles across Cameroon
-          </p>
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <p className="text-green-100 mb-5 text-sm">{tr("subtitle")}</p>
+
+          <div className={`relative`}>
+            <Search className={`absolute ${isRtl ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400`} />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by make, model, or title…"
-              className="w-full pl-12 pr-4 py-3 rounded-xl text-gray-900 outline-none
-                         focus:ring-2 focus:ring-white/40 text-sm"
+              placeholder={tr("searchPlaceholder")}
+              className={`w-full ${isRtl ? "pr-12 pl-4" : "pl-12 pr-4"} py-3 rounded-xl text-gray-900 outline-none focus:ring-2 focus:ring-white/40 text-sm`}
             />
           </div>
         </div>
@@ -232,115 +308,108 @@ export default function VehicleRentals() {
 
       <div className="max-w-2xl mx-auto px-4 -mt-4">
 
-        {/* Filters card */}
+        {/* ── Filters card ── */}
         <div className="bg-white rounded-2xl shadow-sm p-4 mb-4 space-y-3">
-          {/* Type chips */}
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {VEHICLE_TYPES.map((t) => (
+            {VEHICLE_TYPES.map((type) => (
               <button
-                key={t}
-                onClick={() => setTypeFilter(t)}
+                key={type}
+                onClick={() => setTypeFilter(type)}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition
-                  ${typeFilter === t
+                  ${typeFilter === type
                     ? "bg-green-600 text-white shadow-sm"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
               >
-                {t}
+                {catLabel(type)}
               </button>
             ))}
           </div>
 
-          {/* City + actions */}
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
             <select
               value={cityFilter}
               onChange={(e) => setCityFilter(e.target.value)}
-              className="flex-1 border rounded-xl px-3 py-2 text-sm outline-none
-                         focus:ring-2 focus:ring-green-500 bg-white"
+              className="flex-1 border rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500 bg-white"
             >
               {CITIES.map((c) => (
-                <option key={c} value={c}>{c === "All" ? "All Cities" : c}</option>
+                <option key={c} value={c}>{c === "All" ? tr("allCities") : c}</option>
               ))}
             </select>
 
             <button
               onClick={fetchVehicles}
               disabled={loading}
-              className="p-2 text-gray-500 hover:text-green-600 rounded-xl hover:bg-gray-100
-                         disabled:opacity-40"
-              aria-label="Refresh listings"
+              className="p-2 text-gray-500 hover:text-green-600 rounded-xl hover:bg-gray-100 disabled:opacity-40"
+              aria-label={tr("refresh")}
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </button>
 
-            {/* ✅ FIX 6: confirmed correct route — SellVehicle.tsx saves to Supabase */}
             <button
               onClick={() => navigate("/vehicles/sell")}
               className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold
                          flex items-center gap-1 hover:bg-green-700 active:scale-95 transition-all"
             >
-              <Plus className="w-4 h-4" /> Sell
+              <Plus className="w-4 h-4" />
+              {tr("sell")}
             </button>
           </div>
         </div>
 
-        {/* Error banner */}
+        {/* ── Error banner ── */}
         {error && (
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200
-                          text-amber-700 rounded-xl px-4 py-3 mb-4 text-sm">
+          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-4 py-3 mb-4 text-sm">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {error}
           </div>
         )}
 
-        {/* Location filter */}
+        {/* ── Location filter ── */}
         <LocationFilter onFilterChange={setLocationFilters} />
 
-        {/* Featured ads */}
+        {/* ── Featured strip ── */}
         <FeaturedAdsStrip category="vehicles" showHeader={false} maxVisible={20} />
 
+        {/* ── Count ── */}
         <div className="mb-3 text-sm text-gray-400">
-          {filtered.length} vehicle{filtered.length !== 1 ? "s" : ""} found
+          {filtered.length} {filtered.length === 1 ? tr("vehiclesFound") : tr("vehiclesFoundPlural")}
         </div>
 
-        {/* Loading */}
+        {/* ── Loading ── */}
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-green-600" />
-            <p className="text-sm text-gray-400">Loading vehicles…</p>
+            <p className="text-sm text-gray-400">{tr("loading")}</p>
           </div>
         )}
 
-        {/* Empty state */}
+        {/* ── Empty ── */}
         {!loading && filtered.length === 0 && (
           <div className="text-center py-16">
             <Car className="w-14 h-14 text-gray-200 mx-auto mb-3" />
-            <p className="font-semibold text-gray-700 mb-1">No vehicles found</p>
-            <p className="text-sm text-gray-400 mb-4">Try clearing your filters or be the first to list!</p>
+            <p className="font-semibold text-gray-700 mb-1">{tr("noVehicles")}</p>
+            <p className="text-sm text-gray-400 mb-4">{tr("noVehiclesHint")}</p>
             <button
               onClick={() => navigate("/vehicles/sell")}
-              className="bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold
-                         hover:bg-green-700 active:scale-95 transition-all"
+              className="bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-700 active:scale-95 transition-all"
             >
-              List Your Vehicle
+              {tr("listYourVehicle")}
             </button>
           </div>
         )}
 
-        {/* Vehicle cards */}
+        {/* ── Cards ── */}
         {!loading && filtered.length > 0 && (
           <div className="space-y-4">
             {filtered.map((v) => (
               <div
                 key={v.id}
                 onClick={() => !v.isDemo && navigate(`/vehicles/${v.id}`)}
-                className={`bg-white rounded-2xl shadow-sm border overflow-hidden
-                  ${!v.isDemo ? "cursor-pointer hover:shadow-md active:scale-[0.99]" : "opacity-90"}
-                  transition-all`}
+                className={`bg-white rounded-2xl shadow-sm border overflow-hidden transition-all
+                  ${!v.isDemo ? "cursor-pointer hover:shadow-md active:scale-[0.99]" : "opacity-90"}`}
               >
                 {/* Image */}
-                <div className="h-44 bg-gradient-to-br from-green-50 to-emerald-50
-                                flex items-center justify-center overflow-hidden relative">
+                <div className="h-44 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center overflow-hidden relative">
                   {v.images?.[0] ? (
                     <img
                       src={v.images[0]}
@@ -352,26 +421,21 @@ export default function VehicleRentals() {
                     <span className="text-5xl">🚗</span>
                   )}
                   {v.isDemo && <DemoBadge />}
-
-                  {/* ✅ FIX 10: expiry badge */}
                   {expiringWithin(v.expires_at, 3) && (
-                    <div className="absolute bottom-2 left-2 bg-red-500/90 text-white text-xs
-                                    px-2 py-1 rounded-full flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> Expiring soon
+                    <div className="absolute bottom-2 left-2 bg-red-500/90 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {tr("expiringLabel")}
                     </div>
                   )}
                 </div>
 
-                {/* Info */}
+                {/* Body */}
                 <div className="p-4">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-bold text-gray-900 text-sm flex-1 leading-snug">
-                      {v.title}
-                    </h3>
+                  <div className={`flex items-start justify-between gap-2 mb-1 ${isRtl ? "flex-row-reverse" : ""}`}>
+                    <h3 className="font-bold text-gray-900 text-sm flex-1 leading-snug">{v.title}</h3>
                     {v.category && (
-                      <span className="flex-shrink-0 text-xs bg-green-50 text-green-700
-                                       px-2 py-0.5 rounded-full font-medium">
-                        {v.category}
+                      <span className="flex-shrink-0 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                        {catLabel(v.category)}
                       </span>
                     )}
                   </div>
@@ -380,34 +444,27 @@ export default function VehicleRentals() {
                     {v.price.toLocaleString()} XAF
                   </p>
 
-                  <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />{v.location}
-                    </span>
-                    {v.extra?.mileage && (
-                      <span className="flex items-center gap-1">
-                        <Gauge className="w-3 h-3" />{v.extra.mileage}
-                      </span>
-                    )}
-                    {v.extra?.fuel && (
-                      <span className="flex items-center gap-1">
-                        <Fuel className="w-3 h-3" />{v.extra.fuel}
-                      </span>
-                    )}
-                    {v.extra?.transmission && (
-                      <span className="capitalize">{v.extra.transmission}</span>
-                    )}
-                    {v.extra?.year && (
-                      <span>{v.extra.year}</span>
-                    )}
+                  <div className={`flex items-center gap-4 text-xs text-gray-500 flex-wrap ${isRtl ? "flex-row-reverse" : ""}`}>
+                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{v.location}</span>
+                    {v.extra?.mileage     && <span className="flex items-center gap-1"><Gauge className="w-3 h-3"/>{v.extra.mileage}</span>}
+                    {v.extra?.fuel        && <span className="flex items-center gap-1"><Fuel className="w-3 h-3"/>{v.extra.fuel}</span>}
+                    {v.extra?.transmission && <span className="capitalize">{v.extra.transmission}</span>}
+                    {v.extra?.year        && <span>{v.extra.year}</span>}
                   </div>
 
                   {v.isDemo ? (
-                    <p className="text-xs text-yellow-600 mt-2 italic">Sample — not a real listing</p>
+                    <p className="text-xs text-yellow-600 mt-2 italic">{tr("sample")}</p>
                   ) : (
-                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                    <div className={`flex items-center gap-1 text-xs text-gray-400 mt-1 ${isRtl ? "flex-row-reverse" : ""}`}>
                       <Eye className="w-3 h-3" />
-                      {v.view_count ?? 0} view{v.view_count !== 1 ? "s" : ""}
+                      {(v.view_count ?? 0)} {(v.view_count ?? 0) === 1 ? tr("views") : tr("viewsPlural")}
+                    </div>
+                  )}
+
+                  {/* Tap hint for non-demo */}
+                  {!v.isDemo && (
+                    <div className={`flex items-center justify-end mt-2 text-green-600 ${isRtl ? "flex-row-reverse justify-start" : ""}`}>
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   )}
                 </div>

@@ -1,20 +1,17 @@
 /**
  * src/services/exchange-expiry-reminder.ts — Bambeh Marketplace
  *
- * Checks the current user's exchange listings that expire within 3 days
- * and creates in-app notification rows so they see a reminder badge.
+ * Call scheduleExpiryReminders() once at app start (App.tsx useEffect).
+ * Call renewExchangeListing(itemId) from the detail page "Renew" button.
  *
- * Call this once on app start (in App.tsx or a top-level hook).
- *
- * Usage:
- *   import { scheduleExpiryReminders } from '@/services/exchange-expiry-reminder';
- *   // in App.tsx useEffect:
- *   scheduleExpiryReminders();
+ * ✅ Idempotent upsert — safe to call on every app open
+ * ✅ In-app notification row per expiring item
+ * ✅ renewExchangeListing resets expires_at + clears the notification
  */
 
 import { supabase } from '@/lib/supabase';
 
-const REMINDER_DAYS = 3; // warn when ≤ 3 days remain
+const REMINDER_DAYS = 3;
 
 export async function scheduleExpiryReminders(): Promise<void> {
   try {
@@ -25,7 +22,6 @@ export async function scheduleExpiryReminders(): Promise<void> {
     const now    = new Date();
     const cutoff = new Date(now.getTime() + REMINDER_DAYS * 24 * 3600 * 1000).toISOString();
 
-    // Find active listings expiring within the threshold
     const { data: expiring, error } = await supabase
       .from('exchange_items')
       .select('id, title, expires_at')
@@ -37,7 +33,6 @@ export async function scheduleExpiryReminders(): Promise<void> {
 
     if (error || !expiring?.length) return;
 
-    // For each expiring listing, upsert a notification (won't duplicate on re-run)
     for (const item of expiring) {
       const daysLeft = Math.ceil(
         (new Date(item.expires_at as string).getTime() - now.getTime()) / 86_400_000
@@ -50,14 +45,13 @@ export async function scheduleExpiryReminders(): Promise<void> {
         .from('notifications')
         .upsert(
           {
-            user_id:    userId,
-            type:       'exchange_expiry',
-            title:      'Listing Expiring Soon',
-            body:       message,
-            link:       `/exchange/${item.id as string}`,
-            is_read:    false,
-            // idempotency key: one reminder per item per expiry date
-            metadata:   { exchange_item_id: item.id, expires_at: item.expires_at },
+            user_id:  userId,
+            type:     'exchange_expiry',
+            title:    'Listing Expiring Soon',
+            body:     message,
+            link:     `/exchange/${item.id as string}`,
+            is_read:  false,
+            metadata: { exchange_item_id: item.id, expires_at: item.expires_at },
           },
           {
             onConflict:       'user_id,type,metadata->exchange_item_id',
@@ -66,14 +60,10 @@ export async function scheduleExpiryReminders(): Promise<void> {
         );
     }
   } catch {
-    // Reminders are best-effort — never crash the app
+    // Best-effort — never crash the app
   }
 }
 
-/**
- * Renew a listing for another 30 days.
- * Call from the item detail page "Renew" button (owner only).
- */
 export async function renewExchangeListing(itemId: string): Promise<{ error: string | null }> {
   try {
     const { data: { session } } = await supabase.auth.getSession();
@@ -85,11 +75,11 @@ export async function renewExchangeListing(itemId: string): Promise<{ error: str
       .from('exchange_items')
       .update({ expires_at: newExpiry, status: 'active' })
       .eq('id', itemId)
-      .eq('user_id', session.user.id); // owner-only guard at query level
+      .eq('user_id', session.user.id);
 
     if (error) return { error: error.message };
 
-    // Mark the expiry reminder as read
+    // Mark the expiry reminder as read/dismissed
     await supabase
       .from('notifications')
       .update({ is_read: true })
