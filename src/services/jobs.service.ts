@@ -20,14 +20,15 @@
  *   listings.tags              → tags
  *   listings.view_count        → viewCount
  *   listings.status            → status
- *   listings.extra.company     → company
- *   listings.extra.job_type    → jobType
- *   listings.extra.exp_level   → experienceLevel
- *   listings.extra.salary_max  → salaryMaxXAF
- *   listings.extra.negotiable  → isSalaryNegotiable
- *   listings.extra.region      → location.region
- *   listings.extra.is_remote   → isRemote
- *   listings.extra.deadline    → applicationDeadline
+ *   listings.extra.company          → company
+ *   listings.extra.logo_url         → companyLogoUrl  ← NEW: company logo
+ *   listings.extra.job_type         → jobType
+ *   listings.extra.exp_level        → experienceLevel
+ *   listings.extra.salary_max       → salaryMaxXAF
+ *   listings.extra.negotiable       → isSalaryNegotiable
+ *   listings.extra.region           → location.region
+ *   listings.extra.is_remote        → isRemote
+ *   listings.extra.deadline         → applicationDeadline
  *   listings.extra.application_count → applicationCount
  *   listings.extra.apply_method      → applyMethod  ('whatsapp'|'call'|'email'|'in_app')
  *   listings.extra.apply_contact     → applyContact (phone/email string)
@@ -64,6 +65,7 @@ function mapRow(row: Record<string, any>): JobListing {
     employerId:         row.user_id ?? row.seller_id ?? "",
     title:              row.title ?? "",
     company:            extra.company ?? row.company ?? undefined,
+    companyLogoUrl:     extra.logo_url ?? undefined,          // ← company logo
     description:        row.description ?? "",
     requirements:       extra.requirements ?? undefined,
     benefits:           extra.benefits ?? undefined,
@@ -179,6 +181,7 @@ export async function createJob(
         is_featured: false,
         extra: {
           company:           payload.company ?? null,
+          logo_url:          (payload as any).companyLogoUrl ?? null,
           requirements:      payload.requirements ?? null,
           benefits:          payload.benefits ?? null,
           job_type:          payload.jobType,
@@ -223,21 +226,28 @@ export async function updateJob(
     if (updates.category    !== undefined) payload.category    = updates.category;
     if (updates.location?.city !== undefined) payload.location = updates.location.city;
 
-    if (
+    const needsExtraUpdate =
       updates.salaryMaxXAF !== undefined ||
       updates.applicationDeadline !== undefined ||
       updates.jobType !== undefined ||
-      updates.isRemote !== undefined
-    ) {
+      updates.isRemote !== undefined ||
+      updates.requirements !== undefined ||
+      updates.benefits !== undefined ||
+      (updates as any).companyLogoUrl !== undefined;
+
+    if (needsExtraUpdate) {
       const { data: existing } = await supabase
         .from("listings").select("extra").eq("id", id).maybeSingle();
 
       payload.extra = {
         ...(existing?.extra ?? {}),
-        ...(updates.salaryMaxXAF         !== undefined ? { salary_max: updates.salaryMaxXAF }          : {}),
-        ...(updates.applicationDeadline  !== undefined ? { deadline: updates.applicationDeadline }     : {}),
-        ...(updates.jobType              !== undefined ? { job_type: updates.jobType }                 : {}),
-        ...(updates.isRemote             !== undefined ? { is_remote: updates.isRemote }               : {}),
+        ...(updates.salaryMaxXAF        !== undefined ? { salary_max: updates.salaryMaxXAF }        : {}),
+        ...(updates.applicationDeadline !== undefined ? { deadline: updates.applicationDeadline }   : {}),
+        ...(updates.jobType             !== undefined ? { job_type: updates.jobType }               : {}),
+        ...(updates.isRemote            !== undefined ? { is_remote: updates.isRemote }             : {}),
+        ...(updates.requirements        !== undefined ? { requirements: updates.requirements }       : {}),
+        ...(updates.benefits            !== undefined ? { benefits: updates.benefits }               : {}),
+        ...((updates as any).companyLogoUrl !== undefined ? { logo_url: (updates as any).companyLogoUrl } : {}),
       };
     }
 
@@ -317,7 +327,7 @@ export async function applyForJob(
 
     if (error) return { success: false, error: error.message };
 
-    // Bump application count
+    // Bump application count (non-critical)
     try {
       const { data: row } = await supabase
         .from("listings").select("extra").eq("id", jobId).maybeSingle();

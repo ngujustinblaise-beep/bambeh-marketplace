@@ -12,7 +12,7 @@ import "@/lib/net-interceptor";
  */
 
 // ─── 1. React Core ────────────────────────────────────────────────────────────
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, createContext, useContext, useState, useCallback } from "react";
 
 // ─── 1b. TanStack Query (React Query v5) ──────────────────────────────────────
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -68,6 +68,408 @@ import {
 
 // ─── 5. Internal Providers ────────────────────────────────────────────────────
 import AppProviders from "@/providers/AppProviders";
+
+// ─── 5b. LANGUAGE CONTEXT (inline — no external file dependency) ──────────────
+// Self-contained so the app never crashes due to a missing context file.
+type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
+type LangCtx = { language: LangCode; setLanguage: (l: string) => void; t: (k: string) => string; isRtl: boolean };
+
+const LANG_KEY = "Bambeh_language";
+
+function _resolveCode(raw: string | null): LangCode {
+  const valid: LangCode[] = ["en", "fr", "pidgin", "ar", "ff"];
+  if (raw === "pcm" || raw === "pidgin_english") return "pidgin";
+  if (raw === "ful" || raw === "fulfulde")        return "ff";
+  return valid.includes(raw as LangCode) ? (raw as LangCode) : "en";
+}
+
+// ─── Flat translation table (all pages, all 5 languages) ─────────────────────
+const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
+  en: {
+    // Nav
+    home:"Home", jobs:"Jobs", marketplace:"Marketplace", services:"Services",
+    rentals:"Rentals", vehicles:"Vehicles", exchange:"Exchange", community:"Community",
+    sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
+    logout:"Logout", settings:"Settings", favorites:"Favorites", orders:"Orders",
+    back:"Back", cancel:"Cancel", save:"Save", loading:"Loading…",
+    error:"Something went wrong. Please try again.", retry:"Retry", seeAll:"See all",
+    tryAgain:"Try Again", share:"Share", copyLink:"Link copied!",
+    // Jobs list
+    jobsTitle:"Find Jobs 💼", postJob:"+ Post Job",
+    jobSearchPlaceholder:"Search jobs or companies…",
+    opportunities:"opportunities across Cameroon",
+    filters:"Filters", mostRecent:"Most Recent",
+    clearFilters:"✕ Clear all filters", jobType:"Job Type", region:"Region",
+    jobsFound:"jobs found", newestFirst:"newest first", refresh:"↻ Refresh",
+    noJobs:"No jobs posted yet", noJobsHint:"Be the first to post a job opportunity!",
+    noMatch:"No jobs match your filters", clearAll:"Clear all filters",
+    applyNow:"🚀 Apply Now", views:"views", negotiable:"Negotiable",
+    salaryNotSpec:"Salary not specified", deadline:"Deadline", remote:"Remote",
+    jobError:"Could not load jobs. Check your connection.", salary:"Monthly Salary",
+    // Jobs category
+    allJobs:"All Jobs", opportunity:"opportunity", opportunitiesPlural:"opportunities",
+    noJobsCategory:"No jobs posted yet", checkBack:"Check back soon or post one yourself!",
+    viewApply:"View & Apply →", loadMore:"Load More Jobs",
+    closed:"⛔ Closed — Deadline passed", closingSoon:"⏰ Closing soon",
+    today:"Today!", dLeft:"d left",
+    // Job detail
+    jobNotFound:"Job not found", jobLoading:"Loading job details…",
+    jobDescription:"Job Description", requirements:"Requirements & Skills",
+    benefits:"Benefits & Perks", jobApplyNow:"Apply Now",
+    applyWhatsApp:"Apply via WhatsApp", applyCall:"Call to Apply",
+    applyEmail:"Apply via Email", applied:"Application Sent ✓",
+    applying:"Sending application…", alreadyApplied:"You already applied for this job",
+    expired:"This job has expired", deadline2:"Application deadline",
+    candidates:"applicants", views2:"views", published:"Published",
+    saved:"Saved", unsaved:"Bookmark", loginToApply:"Log in to apply",
+    // Post job
+    postJobTitle:"Post a Job", postJobSubtitle:"Find the right talent across Cameroon",
+    jobTitle:"Job Title *", jobTitlePh:"e.g. Senior Software Engineer",
+    company:"Company / Organisation", companyPh:"Name of your company",
+    jobCategory:"Job Category *", employmentType:"Employment Type *",
+    experienceLevel:"Experience Level *", cityLocation:"City / Location *",
+    cityPh:"e.g. Douala, Yaoundé…", regionLabel:"Region",
+    isRemote:"Remote work available", salaryMin:"Min Salary (FCFA/month)",
+    salaryMax:"Max Salary (FCFA/month)", salaryPh:"e.g. 150000",
+    salaryNegotiable:"Salary is negotiable", applicationDeadline:"Application Deadline",
+    jobDescription2:"Job Description *",
+    jobDescPh:"Describe the role, responsibilities, and what a typical day looks like…",
+    requirementsPh:"List qualifications, skills, and experience required…",
+    benefitsLabel:"Benefits & Perks",
+    benefitsPh:"Health insurance, transport allowance, bonuses…",
+    tagsLabel:"Skills / Tags (comma separated)", tagsPh:"React, Node.js, Marketing…",
+    howApply:"How should candidates apply?",
+    applyInApp:"📱 Through Bambeh Platform", applyWhatsAppOpt:"💬 WhatsApp",
+    applyCallOpt:"📞 Phone Call", applyEmailOpt:"📧 Email",
+    applyContactPh:"Enter phone number or email for applications",
+    publishing:"Publishing your job…", jobPosted:"Job posted successfully!",
+    publishJob:"Publish Job", fillRequired:"Please fill all required fields (*)",
+    loginRequired:"You must be logged in to post a job",
+    companyLogoLabel:"Company Logo", chooseImage:"Choose image",
+    // FarmFresh categories
+    catAll:"All", catVegetables:"Vegetables", catFruits:"Fruits", catTubers:"Tubers",
+    catGrains:"Grains", catLegumes:"Legumes", catHerbs:"Herbs", catDairy:"Dairy",
+    // Cart/payment
+    cartEmpty:"Your cart is empty", continueShopping:"Continue Shopping",
+    checkout:"Checkout", subtotal:"Subtotal", fee1pct:"Bambeh Fee (1%)", total:"Total",
+    payWithMoMo:"Pay with MTN MoMo", payWithOrange:"Pay with Orange Money",
+    payNow:"Pay Now", paymentPending:"Payment Pending", paymentSuccess:"Payment Successful!",
+    paymentFailed:"Payment Failed",
+  },
+  fr: {
+    home:"Accueil", jobs:"Emplois", marketplace:"Marché", services:"Services",
+    rentals:"Locations", vehicles:"Véhicules", exchange:"Échange", community:"Communauté",
+    sell:"Vendre", buy:"Acheter", search:"Rechercher", login:"Connexion",
+    register:"S'inscrire", logout:"Déconnexion", settings:"Paramètres",
+    favorites:"Favoris", orders:"Commandes", back:"Retour", cancel:"Annuler",
+    save:"Enregistrer", loading:"Chargement…", error:"Une erreur est survenue.",
+    retry:"Réessayer", seeAll:"Voir tout", tryAgain:"Réessayer",
+    share:"Partager", copyLink:"Lien copié !",
+    jobsTitle:"Trouver un emploi 💼", postJob:"+ Publier une offre",
+    jobSearchPlaceholder:"Rechercher emplois ou entreprises…",
+    opportunities:"opportunités au Cameroun",
+    filters:"Filtres", mostRecent:"Plus récent",
+    clearFilters:"✕ Effacer tous les filtres", jobType:"Type d'emploi", region:"Région",
+    jobsFound:"offres trouvées", newestFirst:"plus récent d'abord",
+    refresh:"↻ Actualiser", noJobs:"Aucune offre publiée",
+    noJobsHint:"Soyez le premier à publier une offre !",
+    noMatch:"Aucune offre ne correspond", clearAll:"Effacer les filtres",
+    applyNow:"🚀 Postuler maintenant", views:"vues", negotiable:"Négociable",
+    salaryNotSpec:"Salaire non précisé", deadline:"Date limite", remote:"Télétravail",
+    jobError:"Impossible de charger les offres.", salary:"Salaire mensuel",
+    allJobs:"Tous les emplois", opportunity:"opportunité",
+    opportunitiesPlural:"opportunités", noJobsCategory:"Aucune offre publiée",
+    checkBack:"Revenez bientôt ou publiez une offre !",
+    viewApply:"Voir & Postuler →", loadMore:"Charger plus d'offres",
+    closed:"⛔ Fermé — Délai dépassé", closingSoon:"⏰ Ferme bientôt",
+    today:"Aujourd'hui !", dLeft:"j restants",
+    jobNotFound:"Offre introuvable", jobLoading:"Chargement…",
+    jobDescription:"Description du poste", requirements:"Exigences & Compétences",
+    benefits:"Avantages", jobApplyNow:"Postuler maintenant",
+    applyWhatsApp:"Postuler via WhatsApp", applyCall:"Appeler pour postuler",
+    applyEmail:"Postuler par email", applied:"Candidature envoyée ✓",
+    applying:"Envoi en cours…", alreadyApplied:"Vous avez déjà postulé",
+    expired:"Cette offre a expiré", deadline2:"Date limite",
+    candidates:"candidats", views2:"vues", published:"Publié le",
+    saved:"Sauvegardé", unsaved:"Sauvegarder", loginToApply:"Connectez-vous pour postuler",
+    postJobTitle:"Publier une offre", postJobSubtitle:"Trouvez les meilleurs talents au Cameroun",
+    jobTitle:"Intitulé du poste *", jobTitlePh:"ex. Ingénieur logiciel senior",
+    company:"Entreprise / Organisation", companyPh:"Nom de votre entreprise",
+    jobCategory:"Catégorie *", employmentType:"Type de contrat *",
+    experienceLevel:"Niveau d'expérience *", cityLocation:"Ville / Lieu *",
+    cityPh:"ex. Douala, Yaoundé…", regionLabel:"Région",
+    isRemote:"Télétravail possible", salaryMin:"Salaire min (FCFA/mois)",
+    salaryMax:"Salaire max (FCFA/mois)", salaryPh:"ex. 150000",
+    salaryNegotiable:"Salaire négociable", applicationDeadline:"Date limite de candidature",
+    jobDescription2:"Description du poste *",
+    jobDescPh:"Décrivez le poste, les responsabilités…",
+    requirementsPh:"Qualifications, compétences requises…",
+    benefitsLabel:"Avantages", benefitsPh:"Assurance maladie, transport, primes…",
+    tagsLabel:"Compétences / Tags (virgule)", tagsPh:"React, Node.js, Marketing…",
+    howApply:"Comment les candidats doivent-ils postuler ?",
+    applyInApp:"📱 Via la plateforme Bambeh", applyWhatsAppOpt:"💬 WhatsApp",
+    applyCallOpt:"📞 Appel téléphonique", applyEmailOpt:"📧 Email",
+    applyContactPh:"Entrez le numéro ou email pour les candidatures",
+    publishing:"Publication en cours…", jobPosted:"Offre publiée avec succès !",
+    publishJob:"Publier l'offre", fillRequired:"Veuillez remplir tous les champs obligatoires (*)",
+    loginRequired:"Vous devez être connecté pour publier une offre",
+    companyLogoLabel:"Logo de l'entreprise", chooseImage:"Choisir une image",
+    catAll:"Tout", catVegetables:"Légumes", catFruits:"Fruits", catTubers:"Tubercules",
+    catGrains:"Céréales", catLegumes:"Légumineuses", catHerbs:"Herbes",
+    catDairy:"Produits laitiers",
+    cartEmpty:"Votre panier est vide", continueShopping:"Continuer les achats",
+    checkout:"Passer à la caisse", subtotal:"Sous-total",
+    fee1pct:"Frais Bambeh (1 %)", total:"Total",
+    payWithMoMo:"Payer avec MTN MoMo", payWithOrange:"Payer avec Orange Money",
+    payNow:"Payer maintenant", paymentPending:"Paiement en attente",
+    paymentSuccess:"Paiement réussi !", paymentFailed:"Paiement échoué",
+  },
+  pidgin: {
+    home:"Home", jobs:"Jobs", marketplace:"Market", services:"Services",
+    rentals:"Rentals", vehicles:"Cars", exchange:"Exchange", community:"Community",
+    sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
+    logout:"Logout", settings:"Settings", favorites:"Favorites", orders:"Orders",
+    back:"Back", cancel:"Cancel", save:"Save", loading:"E dey load…",
+    error:"Something spoil. Try again.", retry:"Try Again", seeAll:"See all",
+    tryAgain:"Try again", share:"Share", copyLink:"Link don copy!",
+    jobsTitle:"Find Work 💼", postJob:"+ Post Work",
+    jobSearchPlaceholder:"Search work or company…",
+    opportunities:"opportunities for Cameroon",
+    filters:"Filter", mostRecent:"New new",
+    clearFilters:"✕ Clear all filter", jobType:"Work Type", region:"Region",
+    jobsFound:"work dey", newestFirst:"new ones first", refresh:"↻ Refresh",
+    noJobs:"No work yet", noJobsHint:"You be the first to post work!",
+    noMatch:"No work match your filter", clearAll:"Clear filter",
+    applyNow:"🚀 Apply Now", views:"people see am", negotiable:"E fit negotiate",
+    salaryNotSpec:"No salary talk", deadline:"Last date", remote:"Online work",
+    jobError:"We no fit load work.", salary:"Month salary",
+    allJobs:"All Work", opportunity:"opportunity", opportunitiesPlural:"opportunities",
+    noJobsCategory:"No work yet", checkBack:"Come back later or post work!",
+    viewApply:"See & Apply →", loadMore:"Load more work",
+    closed:"⛔ E don close", closingSoon:"⏰ E go close soon",
+    today:"Today!", dLeft:"days left",
+    jobNotFound:"Work no dey", jobLoading:"Dey load…",
+    jobDescription:"Work description", requirements:"Wetin dem need",
+    benefits:"Bonus things", jobApplyNow:"Apply Now",
+    applyWhatsApp:"Apply for WhatsApp", applyCall:"Call make apply",
+    applyEmail:"Send email apply", applied:"You don apply ✓",
+    applying:"Dey send am…", alreadyApplied:"You don apply before",
+    expired:"Work don finish", deadline2:"Last date",
+    candidates:"people apply", views2:"people see am", published:"Dem post am",
+    saved:"You don save am", unsaved:"Save am", loginToApply:"Login first apply",
+    postJobTitle:"Post Work", postJobSubtitle:"Find correct person for Cameroon",
+    jobTitle:"Work Name *", jobTitlePh:"e.g. Big software engineer",
+    company:"Company / Organisation", companyPh:"Your company name",
+    jobCategory:"Work type *", employmentType:"Work arrangement *",
+    experienceLevel:"Experience level *", cityLocation:"Town / Place *",
+    cityPh:"e.g. Douala, Yaoundé…", regionLabel:"Region",
+    isRemote:"Online work dey", salaryMin:"Small salary (FCFA/month)",
+    salaryMax:"Big salary (FCFA/month)", salaryPh:"e.g. 150000",
+    salaryNegotiable:"Salary e fit talk", applicationDeadline:"Last date to apply",
+    jobDescription2:"Work description *",
+    jobDescPh:"Tell us wetin the work be, wetin dem go do everyday…",
+    requirementsPh:"List all the things dem need…",
+    benefitsLabel:"Bonus things", benefitsPh:"Health, transport, bonus things…",
+    tagsLabel:"Skills (separate with comma)", tagsPh:"React, Node.js, Marketing…",
+    howApply:"How dem go apply?", applyInApp:"📱 Through Bambeh",
+    applyWhatsAppOpt:"💬 WhatsApp", applyCallOpt:"📞 Phone call",
+    applyEmailOpt:"📧 Email", applyContactPh:"Enter number or email",
+    publishing:"Dey post your work…", jobPosted:"Your work don post!",
+    publishJob:"Post the work", fillRequired:"Fill all * fields abeg",
+    loginRequired:"You need login first",
+    companyLogoLabel:"Company Logo", chooseImage:"Choose picture",
+    catAll:"All", catVegetables:"Vegetables", catFruits:"Fruits", catTubers:"Tubers",
+    catGrains:"Grains", catLegumes:"Legumes", catHerbs:"Herbs", catDairy:"Dairy",
+    cartEmpty:"Your cart empty", continueShopping:"Continue Shopping",
+    checkout:"Go Pay", subtotal:"Subtotal", fee1pct:"Bambeh Fee (1%)", total:"Total",
+    payWithMoMo:"Pay with MTN MoMo", payWithOrange:"Pay with Orange Money",
+    payNow:"Pay Now", paymentPending:"Payment Pending",
+    paymentSuccess:"Payment Don Enter!", paymentFailed:"Payment Fail",
+  },
+  ar: {
+    home:"الرئيسية", jobs:"الوظائف", marketplace:"السوق", services:"الخدمات",
+    rentals:"الإيجارات", vehicles:"المركبات", exchange:"التبادل", community:"المجتمع",
+    sell:"بيع", buy:"شراء", search:"بحث", login:"تسجيل الدخول",
+    register:"إنشاء حساب", logout:"تسجيل الخروج", settings:"الإعدادات",
+    favorites:"المفضلة", orders:"الطلبات", back:"رجوع", cancel:"إلغاء",
+    save:"حفظ", loading:"جارٍ التحميل…", error:"حدث خطأ. يرجى المحاولة مجدداً.",
+    retry:"إعادة المحاولة", seeAll:"عرض الكل", tryAgain:"حاول مرة أخرى",
+    share:"مشاركة", copyLink:"تم نسخ الرابط!",
+    jobsTitle:"البحث عن عمل 💼", postJob:"+ نشر وظيفة",
+    jobSearchPlaceholder:"البحث عن وظائف أو شركات…",
+    opportunities:"فرصة عمل في الكاميرون",
+    filters:"تصفية", mostRecent:"الأحدث",
+    clearFilters:"✕ مسح جميع التصفيات", jobType:"نوع الوظيفة", region:"المنطقة",
+    jobsFound:"وظيفة موجودة", newestFirst:"الأحدث أولاً", refresh:"↻ تحديث",
+    noJobs:"لا توجد وظائف بعد", noJobsHint:"كن أول من ينشر فرصة عمل!",
+    noMatch:"لا توجد وظائف مطابقة", clearAll:"مسح الكل",
+    applyNow:"🚀 تقدم الآن", views:"مشاهدة", negotiable:"قابل للتفاوض",
+    salaryNotSpec:"الراتب غير محدد", deadline:"آخر موعد", remote:"عن بُعد",
+    jobError:"تعذر تحميل الوظائف.", salary:"الراتب الشهري",
+    allJobs:"جميع الوظائف", opportunity:"فرصة", opportunitiesPlural:"فرص",
+    noJobsCategory:"لا توجد وظائف بعد", checkBack:"عد قريباً أو انشر وظيفة!",
+    viewApply:"عرض وتقديم →", loadMore:"تحميل المزيد",
+    closed:"⛔ مغلق — انتهى الموعد", closingSoon:"⏰ ينتهي قريباً",
+    today:"اليوم!", dLeft:"أيام متبقية",
+    jobNotFound:"الوظيفة غير موجودة", jobLoading:"جارٍ التحميل…",
+    jobDescription:"وصف الوظيفة", requirements:"المتطلبات والمهارات",
+    benefits:"المزايا والمكافآت", jobApplyNow:"تقدم الآن",
+    applyWhatsApp:"التقديم عبر واتساب", applyCall:"اتصل للتقديم",
+    applyEmail:"التقديم بالبريد الإلكتروني", applied:"تم إرسال الطلب ✓",
+    applying:"جارٍ الإرسال…", alreadyApplied:"لقد تقدمت بالفعل",
+    expired:"انتهت صلاحية الوظيفة", deadline2:"آخر موعد",
+    candidates:"متقدم", views2:"مشاهدة", published:"نُشر في",
+    saved:"محفوظ", unsaved:"حفظ", loginToApply:"سجّل دخولك للتقديم",
+    postJobTitle:"نشر وظيفة", postJobSubtitle:"اعثر على المواهب في الكاميرون",
+    jobTitle:"المسمى الوظيفي *", jobTitlePh:"مثل: مهندس برمجيات أول",
+    company:"الشركة / المؤسسة", companyPh:"اسم شركتك",
+    jobCategory:"الفئة *", employmentType:"نوع التوظيف *",
+    experienceLevel:"مستوى الخبرة *", cityLocation:"المدينة / الموقع *",
+    cityPh:"مثل: دوالا، ياوندي…", regionLabel:"المنطقة",
+    isRemote:"يتوفر عمل عن بُعد", salaryMin:"الحد الأدنى للراتب (فرنك/شهر)",
+    salaryMax:"الحد الأقصى للراتب", salaryPh:"مثل: 150000",
+    salaryNegotiable:"الراتب قابل للتفاوض",
+    applicationDeadline:"آخر موعد للتقديم",
+    jobDescription2:"وصف الوظيفة *", jobDescPh:"اوصف الدور والمسؤوليات…",
+    requirementsPh:"اذكر المؤهلات والمهارات المطلوبة…",
+    benefitsLabel:"المزايا والمكافآت", benefitsPh:"تأمين صحي، بدل نقل، مكافآت…",
+    tagsLabel:"المهارات / الوسوم", tagsPh:"React, Node.js, تسويق…",
+    howApply:"كيف يتقدم المرشحون؟", applyInApp:"📱 عبر منصة بامبيه",
+    applyWhatsAppOpt:"💬 واتساب", applyCallOpt:"📞 مكالمة هاتفية",
+    applyEmailOpt:"📧 البريد الإلكتروني",
+    applyContactPh:"أدخل الرقم أو البريد الإلكتروني",
+    publishing:"جارٍ النشر…", jobPosted:"تم نشر الوظيفة بنجاح!",
+    publishJob:"نشر الوظيفة", fillRequired:"يرجى ملء جميع الحقول المطلوبة (*)",
+    loginRequired:"يجب تسجيل الدخول لنشر وظيفة",
+    companyLogoLabel:"شعار الشركة", chooseImage:"اختر صورة",
+    catAll:"الكل", catVegetables:"خضروات", catFruits:"فواكه", catTubers:"درنات",
+    catGrains:"حبوب", catLegumes:"بقوليات", catHerbs:"أعشاب",
+    catDairy:"منتجات الألبان",
+    cartEmpty:"سلتك فارغة", continueShopping:"متابعة التسوق",
+    checkout:"إتمام الشراء", subtotal:"المجموع الجزئي",
+    fee1pct:"رسوم بامبيه (1٪)", total:"الإجمالي",
+    payWithMoMo:"الدفع عبر MTN MoMo", payWithOrange:"الدفع عبر Orange Money",
+    payNow:"ادفع الآن", paymentPending:"في انتظار الدفع",
+    paymentSuccess:"تم الدفع بنجاح!", paymentFailed:"فشل الدفع",
+  },
+  ff: {
+    home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"Ɓalɗe",
+    rentals:"Hireeli", vehicles:"Ottooji", exchange:"Yoƴtaari", community:"Ɓiɓɓe",
+    sell:"Fiyee", buy:"Soodee", search:"Ƴeewee", login:"Naatdee",
+    register:"Restoree", logout:"Fuɗɗodee", settings:"Haɓɓitorde",
+    favorites:"Faaɓaaɓe", orders:"Sarwiiji", back:"Heddii", cancel:"Haɗ",
+    save:"Dannee", loading:"E nder loodi…", error:"Huunde waɓɓi. Ɓettoo.",
+    retry:"Ɓettoo", seeAll:"Hol fof", tryAgain:"Eɗɗoo yeeso",
+    share:"Siiwtindiraa", copyLink:"Ñolndi jaɓɓaama!",
+    jobsTitle:"Yiyde Golle 💼", postJob:"+ Fewtu Golle",
+    jobSearchPlaceholder:"Yiylo golle walla liggey…",
+    opportunities:"golle e Kameruun",
+    filters:"Tippitorɗe", mostRecent:"Ɓuuɓɗum",
+    clearFilters:"✕ Huccit tippitorɗe fof", jobType:"Suudu Golle", region:"Leydi",
+    jobsFound:"golle heɓtaama", newestFirst:"ɓuuɓɗum ɓoo", refresh:"↻ Heɓtu",
+    noJobs:"Alaa golle fewti", noJobsHint:"Ardi fewtu golle!",
+    noMatch:"Alaa golle faayi", clearAll:"Huccit tippitorɗe",
+    applyNow:"🚀 Dañ Golle", views:"yiylaama", negotiable:"Naggi",
+    salaryNotSpec:"Njobdi alaa", deadline:"Balɗe ɓennoo", remote:"E Ɓanndu",
+    jobError:"Golle naataani.", salary:"Njobdi koorka",
+    allJobs:"Golle fof", opportunity:"sago", opportunitiesPlural:"sagoji",
+    noJobsCategory:"Alaa golle", checkBack:"Ardi tuma ɓee ko fewtu!",
+    viewApply:"Yii & Dañ →", loadMore:"Nanngin Golleli",
+    closed:"⛔ Uddii", closingSoon:"⏰ Ɓennoo seeɗa",
+    today:"Hannde!", dLeft:"balɗe",
+    jobNotFound:"Golle heɓaani", jobLoading:"Nannginii…",
+    jobDescription:"Jaŋtugol Golle", requirements:"Ko heɓetee",
+    benefits:"Nafaaji", jobApplyNow:"Dañ Golle",
+    applyWhatsApp:"Jokkude e WhatsApp", applyCall:"Noddu ngam Dañde",
+    applyEmail:"Imeel ngam Dañde", applied:"Jokkunde nootii ✓",
+    applying:"Nannginii…", alreadyApplied:"Ko njimonaa yoodi",
+    expired:"Golle ɓenni", deadline2:"Balɗe ɓennoo",
+    candidates:"jokkooɓe", views2:"yiylaama", published:"Fewtiima",
+    saved:"Adanaama", unsaved:"Adana", loginToApply:"Naatir ngam dañde",
+    postJobTitle:"Fewtu Golle", postJobSubtitle:"Yiydaa ɗoo e Kameruun",
+    jobTitle:"Innde Golle *", jobTitlePh:"taa. Injiniir ɓaleejo",
+    company:"Liggey / Ƙulle", companyPh:"Innde liggey maa",
+    jobCategory:"Suudu Golle *", employmentType:"Suudu Kontoraaji *",
+    experienceLevel:"Karallaagal *", cityLocation:"Wuro / Ɓoggol *",
+    cityPh:"taa. Douala, Yaoundé…", regionLabel:"Leydi",
+    isRemote:"E Ɓanndu ɗon", salaryMin:"Njobdi bilahi (FCFA/koorka)",
+    salaryMax:"Njobdi heeli (FCFA/koorka)", salaryPh:"taa. 150000",
+    salaryNegotiable:"Njobdi naggi", applicationDeadline:"Balɗe ɓennoo",
+    jobDescription2:"Jaŋtugol Golle *", jobDescPh:"Jaŋtu golle ndee…",
+    requirementsPh:"Jaŋtu ko heɓetee, ɗemɗe…",
+    benefitsLabel:"Nafaaji", benefitsPh:"Laamu cellal, njuɓɓudi…",
+    tagsLabel:"Ɗemɗe (tippuɗe e tiindol)", tagsPh:"React, Node.js…",
+    howApply:"No jokkorɗe poti jokkude?", applyInApp:"📱 E Bambeh",
+    applyWhatsAppOpt:"💬 WhatsApp", applyCallOpt:"📞 Noddaare",
+    applyEmailOpt:"📧 Imeel", applyContactPh:"Naatnu numeerol maa imeel",
+    publishing:"Fewtinaama…", jobPosted:"Golle fewtiima!",
+    publishJob:"Fewtu Golle", fillRequired:"Heɓtu goɗɗe fof peewnaaɗe (*)",
+    loginRequired:"Naatir ngam fewtoyde golle",
+    companyLogoLabel:"Sawru Liggey", chooseImage:"Soodii sawru",
+    catAll:"Fof", catVegetables:"Leɗɗe", catFruits:"Biɗɗo", catTubers:"Yonnde",
+    catGrains:"Ganɗal", catLegumes:"Kuɓɓe", catHerbs:"Caali", catDairy:"Kosam",
+    cartEmpty:"Sagas maa fotaani", continueShopping:"Jokku Sooding",
+    checkout:"Ñammbu", subtotal:"Dow", fee1pct:"Ñamiri Bambeh (1%)", total:"Timmol",
+    payWithMoMo:"Ñammbu MTN MoMo", payWithOrange:"Ñammbu Orange Money",
+    payNow:"Ñammbu Ɗoo", paymentPending:"E Yoɓde…",
+    paymentSuccess:"Yoɓde Danɗii!", paymentFailed:"Yoɓde Waɓɓi",
+  },
+};
+
+// ─── The context itself ───────────────────────────────────────────────────────
+const LanguageContext = createContext<LangCtx>({
+  language: "en",
+  setLanguage: () => {},
+  t: (k) => k,
+  isRtl: false,
+});
+
+export const useLanguage = () => useContext(LanguageContext);
+
+const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLangState] = useState<LangCode>(() =>
+    _resolveCode(localStorage.getItem(LANG_KEY))
+  );
+
+  const applyDom = useCallback((lang: LangCode) => {
+    document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+  }, []);
+
+  useEffect(() => {
+    applyDom(language);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === LANG_KEY && e.newValue) {
+        const next = _resolveCode(e.newValue);
+        setLangState(next);
+        applyDom(next);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [language, applyDom]);
+
+  const setLanguage = useCallback((lang: string) => {
+    const next = _resolveCode(lang);
+    setLangState(next);
+    localStorage.setItem(LANG_KEY, next);
+    applyDom(next);
+    // Notify useLang() hook instances on all pages instantly
+    window.dispatchEvent(new CustomEvent("bambeh:langchange", { detail: next }));
+  }, [applyDom]);
+
+  const t = useCallback(
+    (key: string): string =>
+      LANG_STRINGS[language]?.[key] ?? LANG_STRINGS.en?.[key] ?? key,
+    [language]
+  );
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t, isRtl: language === "ar" }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
 
 // ─── 6. Layouts (Eager — used on nearly every route) ─────────────────────────
 import MainLayout from "@/components/layout/MainLayout";
@@ -605,6 +1007,8 @@ export default function App() {
           <QueryClientProvider client={queryClient}>
             {/* CartProvider wraps entire app so cart is accessible from any page */}
             <CartProvider>
+            {/* LanguageProvider: instant translation across ALL pages */}
+            <LanguageProvider>
             <AppProviders>
               <AppInner />
               <NetworkProvider>
@@ -1302,6 +1706,7 @@ export default function App() {
               </HashRouter>
             </NetworkProvider>
             </AppProviders>
+            </LanguageProvider>
             </CartProvider>
             {import.meta.env.DEV && (
               <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
