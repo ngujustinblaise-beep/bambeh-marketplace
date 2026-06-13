@@ -8,8 +8,10 @@
  * ✅ Subscription context
  * ✅ Auth store initialization
  * ✅ Capacitor compatible
+ * ✅ LanguageProvider — fixes blank screen caused by useLanguage() crash
+ * ✅ ErrorBoundary — shows readable crash screen instead of blank page
  *
- * © 2025 Bambeh. All rights reserved.
+ * © 2025–2026 BAMBEH SARL. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -19,6 +21,8 @@ import ReactDOM from "react-dom/client";
 import "./i18n"; // Initialize i18n FIRST
 import App from "./App";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
+import { LanguageProvider } from "./context/LanguageContext";  // ✅ ADDED
+import { ErrorBoundary } from "./components/ErrorBoundary";    // ✅ ADDED
 import { useAuthStore } from "@/store/authStore";
 import "./index.css";
 
@@ -51,9 +55,15 @@ const initializeApp = async () => {
 
     root.render(
       <React.StrictMode>
-        <SubscriptionProvider>
-          <App />
-        </SubscriptionProvider>
+        {/* ✅ ErrorBoundary: outermost — catches any crash and shows readable error */}
+        <ErrorBoundary>
+          {/* ✅ LanguageProvider: must wrap App so useLanguage() works everywhere */}
+          <LanguageProvider>
+            <SubscriptionProvider>
+              <App />
+            </SubscriptionProvider>
+          </LanguageProvider>
+        </ErrorBoundary>
       </React.StrictMode>,
     );
 
@@ -62,8 +72,10 @@ const initializeApp = async () => {
   } catch (error) {
     console.error("❌ Fatal error during app initialization:", error);
 
+    // Show a readable error screen if React itself fails to mount
     const rootElement = document.getElementById("root");
     if (rootElement) {
+      const msg = error instanceof Error ? error.message : "Unknown error";
       rootElement.innerHTML = `
         <div style="
           display: flex;
@@ -71,35 +83,62 @@ const initializeApp = async () => {
           justify-content: center;
           align-items: center;
           min-height: 100vh;
-          background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+          background: #0f172a;
           color: white;
           padding: 2rem;
           text-align: center;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+          font-family: monospace;
         ">
-          <h1 style="font-size: 2rem; margin-bottom: 1rem;">⚠️ Initialization Error</h1>
-          <p style="font-size: 1rem; margin-bottom: 2rem; max-width: 600px;">
-            We're sorry, but there was an error loading the application.
-            Please try refreshing the page.
-          </p>
+          <div style="font-size:3rem;margin-bottom:1rem;">💥</div>
+          <h1 style="font-size: 1.5rem; margin-bottom: 1rem; color:#f87171;">
+            Bambeh Failed to Start
+          </h1>
+          <div style="
+            background:#1e293b;
+            border:1px solid #334155;
+            border-radius:8px;
+            padding:1rem;
+            max-width:500px;
+            word-break:break-word;
+            margin-bottom:2rem;
+            font-size:0.85rem;
+            color:#fde68a;
+          ">
+            ${msg}
+          </div>
           <button
             onclick="window.location.reload()"
             style="
               padding: 1rem 2rem;
               font-size: 1rem;
-              background: white;
-              color: #14b8a6;
+              background: #0d9488;
+              color: white;
               border: none;
               border-radius: 8px;
               cursor: pointer;
               font-weight: 600;
-              box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+              margin-bottom:1rem;
             "
           >
-            Refresh Page
+            🔄 Reload App
           </button>
-          <p style="margin-top: 2rem; font-size: 0.875rem; opacity: 0.8;">
-            Error: ${error instanceof Error ? error.message : "Unknown error"}
+          <button
+            onclick="localStorage.clear();sessionStorage.clear();window.location.reload()"
+            style="
+              padding: 0.75rem 1.5rem;
+              font-size: 0.875rem;
+              background: #7c3aed;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              font-weight: 600;
+            "
+          >
+            🗑️ Clear Data &amp; Reload
+          </button>
+          <p style="margin-top:2rem;font-size:0.75rem;color:#475569;">
+            © 2025–2026 BAMBEH SARL — send the error above to your developer
           </p>
         </div>
       `;
