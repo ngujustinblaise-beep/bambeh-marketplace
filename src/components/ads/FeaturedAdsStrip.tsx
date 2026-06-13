@@ -47,7 +47,7 @@ import {
   type AdCategory,
   type FeaturedAd,
 } from "@/hooks/useFeaturedAds";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 // ─── Category icon + colour map ───────────────────────────────────────────────
 
@@ -251,7 +251,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
   className   = "",
 }) => {
   const navigate = useNavigate();
-  const { language } = useLanguage() as { language: string; t: (k: string) => string };
+  const { language } = useLanguage();
   const lang = language ?? "en";
   const ui   = useUiStrings(lang);
 

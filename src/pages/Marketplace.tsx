@@ -3,14 +3,16 @@
  *
  * FIXES — June 2026
  *  ✅ FIX 1: readFavIds() / readCartCount() are pure functions — NO hook calls
- *            inside plain functions. useLang() was causing illegal hook call
- *            → React crash → "Could not load listings / connection issue"
- *  ✅ FIX 2: Supabase query wrapped in try/catch with user-friendly error message
- *  ✅ FIX 3: i18n — all UI strings go through t() using the TRANSLATIONS map below
- *  ✅ FIX 4: Realtime subscription safe-guards (status check before subscribe)
- *  ✅ FIX 5: Pull-to-refresh gesture re-wired
- *  ✅ FIX 6: Featured items float to top; sort preserved
- *  ✅ FIX 7: Expiry alert banner for logged-in sellers
+ *  ✅ FIX 2: Language switches INSTANTLY via useLangState() + "langChange" event
+ *  ✅ FIX 3: Supabase query wrapped in try/catch with user-friendly error message
+ *  ✅ FIX 4: All UI strings go through tx() with reactive lang
+ *  ✅ FIX 5: Realtime subscription safe-guards
+ *  ✅ FIX 6: Pull-to-refresh gesture
+ *  ✅ FIX 7: Featured items float to top; sort preserved
+ *  ✅ FIX 8: Expiry alert banner for logged-in sellers
+ *  ✅ FIX 9: Voice control aria-labels on all interactive elements
+ *
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -24,50 +26,59 @@ import { supabase } from "@/lib/supabase";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
-// Lightweight translations used only in this file.
-// Add keys as needed; missing keys fall back to English.
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 
 const TR: Record<string, Record<Lang, string>> = {
-  marketplace:      { en: "Marketplace", fr: "Marché", ha: "Kasuwanci", ar: "السوق", pcm: "Market", ff: "Suudu" },
-  search_placeholder:{ en: "Search items, location…", fr: "Chercher articles, lieu…", ha: "Bincika…", ar: "ابحث…", pcm: "Search item, place…", ff: "Yiɗɗo…" },
-  sell:             { en: "Sell", fr: "Vendre", ha: "Sayar", ar: "بيع", pcm: "Sell", ff: "Yoɓ" },
-  loading:          { en: "Loading listings…", fr: "Chargement…", ha: "Ana lodawa…", ar: "جار التحميل…", pcm: "Loading…", ff: "Naatirde…" },
-  try_again:        { en: "Try again", fr: "Réessayer", ha: "Sake", ar: "حاول مجدداً", pcm: "Try again", ff: "Artu jeer" },
-  no_listings:      { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "لا إعلانات", pcm: "No listing yet", ff: "Alaa" },
-  first_to_sell:    { en: "Be the first to sell on Bambeh!", fr: "Soyez le premier à vendre!", ha: "Kasance na farko!", ar: "كن أول من يبيع!", pcm: "Be first person sell!", ff: "Wartoraa arande!" },
-  post_first:       { en: "Post your first item", fr: "Publiez votre article", ha: "Buga farko", ar: "انشر أول عنصر", pcm: "Post your first item", ff: "Yeeso aawal maa" },
-  no_match:         { en: "No items match your search", fr: "Aucun résultat", ha: "Babu sakamakon", ar: "لا نتائج", pcm: "Notin match", ff: "Alaa goonga" },
-  clear_filters:    { en: "Clear filters", fr: "Effacer les filtres", ha: "Share tace", ar: "مسح الفلاتر", pcm: "Clear filter", ff: "Ɓol filters" },
-  listings_expire:  { en: "Your listings expire soon", fr: "Vos annonces expirent bientôt", ha: "Jerin ku na ƙarewa", ar: "إعلاناتك تنتهي قريباً", pcm: "Your listing go expire soon", ff: "Ndes maa ɗowroo" },
-  renew:            { en: "Renew listings →", fr: "Renouveler →", ha: "Sabunta →", ar: "تجديد →", pcm: "Renew am →", ff: "Wullit →" },
-  expires_today:    { en: "expires today!", fr: "expire aujourd'hui!", ha: "na ƙarewa yau!", ar: "تنتهي اليوم!", pcm: "expire today!", ff: "ɗowroo hande!" },
-  days_left:        { en: "d left", fr: "j restants", ha: "kwana", ar: "أيام", pcm: "day remain", ff: "ñalnde" },
-  sort_newest:      { en: "Newest", fr: "Récent", ha: "Sabon", ar: "الأحدث", pcm: "New one", ff: "Tammbii" },
-  sort_popular:     { en: "Most viewed", fr: "Plus vus", ha: "Mafi gani", ar: "الأكثر مشاهدة", pcm: "Most view", ff: "Yiytataaɗo" },
-  sort_price_asc:   { en: "Price: Low→High", fr: "Prix: Bas→Haut", ha: "Farashi ↑", ar: "السعر: منخفض→مرتفع", pcm: "Price low-high", ff: "Njaru ↑" },
-  sort_price_desc:  { en: "Price: High→Low", fr: "Prix: Haut→Bas", ha: "Farashi ↓", ar: "السعر: مرتفع→منخفض", pcm: "Price high-low", ff: "Njaru ↓" },
-  listings_count:   { en: "listings", fr: "annonces", ha: "jeri", ar: "إعلانات", pcm: "listing", ff: "ndes" },
-  in_category:      { en: "in", fr: "dans", ha: "a cikin", ar: "في", pcm: "for", ff: "e nder" },
-  views:            { en: "views", fr: "vues", ha: "kallon", ar: "مشاهدات", pcm: "view", ff: "yiytatii" },
-  negoc:            { en: "Nego.", fr: "Négoc.", ha: "Ana tattaunawa", ar: "قابل للتفاوض", pcm: "Nego.", ff: "Hewtii" },
-  refresh:          { en: "Refresh", fr: "Actualiser", ha: "Sabunta", ar: "تحديث", pcm: "Refresh", ff: "Artu" },
-  cart:             { en: "Cart", fr: "Panier", ha: "Kati", ar: "عربة", pcm: "Cart", ff: "Cart" },
+  marketplace:       { en: "Marketplace",                fr: "Marché",                     ha: "Kasuwanci",              ar: "السوق",                        pcm: "Market",                  ff: "Suudu" },
+  search_placeholder:{ en: "Search items, location…",    fr: "Chercher articles, lieu…",   ha: "Bincika…",               ar: "ابحث…",                        pcm: "Search item, place…",     ff: "Yiɗɗo…" },
+  sell:              { en: "Sell",                        fr: "Vendre",                     ha: "Sayar",                  ar: "بيع",                          pcm: "Sell",                    ff: "Yoɓ" },
+  loading:           { en: "Loading listings…",           fr: "Chargement…",                ha: "Ana lodawa…",            ar: "جار التحميل…",                 pcm: "Loading…",                ff: "Naatirde…" },
+  try_again:         { en: "Try again",                   fr: "Réessayer",                  ha: "Sake",                   ar: "حاول مجدداً",                  pcm: "Try again",               ff: "Artu jeer" },
+  no_listings:       { en: "No listings yet",             fr: "Aucune annonce",             ha: "Babu jeri",              ar: "لا إعلانات",                   pcm: "No listing yet",          ff: "Alaa" },
+  first_to_sell:     { en: "Be the first to sell on Bambeh!", fr: "Soyez le premier à vendre!", ha: "Kasance na farko!",  ar: "كن أول من يبيع!",             pcm: "Be first person sell!",   ff: "Wartoraa arande!" },
+  post_first:        { en: "Post your first item",        fr: "Publiez votre article",      ha: "Buga farko",             ar: "انشر أول عنصر",                pcm: "Post your first item",    ff: "Yeeso aawal maa" },
+  no_match:          { en: "No items match your search",  fr: "Aucun résultat",             ha: "Babu sakamakon",         ar: "لا نتائج",                     pcm: "Notin match",             ff: "Alaa goonga" },
+  clear_filters:     { en: "Clear filters",               fr: "Effacer les filtres",        ha: "Share tace",             ar: "مسح الفلاتر",                  pcm: "Clear filter",            ff: "Ɓol filters" },
+  listings_expire:   { en: "Your listings expire soon",   fr: "Vos annonces expirent bientôt", ha: "Jerin ku na ƙarewa", ar: "إعلاناتك تنتهي قريباً",        pcm: "Your listing go expire soon", ff: "Ndes maa ɗowroo" },
+  renew:             { en: "Renew listings →",            fr: "Renouveler →",               ha: "Sabunta →",              ar: "تجديد →",                      pcm: "Renew am →",              ff: "Wullit →" },
+  expires_today:     { en: "expires today!",              fr: "expire aujourd'hui!",        ha: "na ƙarewa yau!",         ar: "تنتهي اليوم!",                 pcm: "expire today!",           ff: "ɗowroo hande!" },
+  days_left:         { en: "d left",                      fr: "j restants",                 ha: "kwana",                  ar: "أيام",                         pcm: "day remain",              ff: "ñalnde" },
+  sort_newest:       { en: "Newest",                      fr: "Récent",                     ha: "Sabon",                  ar: "الأحدث",                       pcm: "New one",                 ff: "Tammbii" },
+  sort_popular:      { en: "Most viewed",                 fr: "Plus vus",                   ha: "Mafi gani",              ar: "الأكثر مشاهدة",                pcm: "Most view",               ff: "Yiytataaɗo" },
+  sort_price_asc:    { en: "Price: Low→High",             fr: "Prix: Bas→Haut",             ha: "Farashi ↑",              ar: "السعر: منخفض→مرتفع",           pcm: "Price low-high",          ff: "Njaru ↑" },
+  sort_price_desc:   { en: "Price: High→Low",             fr: "Prix: Haut→Bas",             ha: "Farashi ↓",              ar: "السعر: مرتفع→منخفض",           pcm: "Price high-low",          ff: "Njaru ↓" },
+  listings_count:    { en: "listings",                    fr: "annonces",                   ha: "jeri",                   ar: "إعلانات",                      pcm: "listing",                 ff: "ndes" },
+  in_category:       { en: "in",                          fr: "dans",                       ha: "a cikin",                ar: "في",                           pcm: "for",                     ff: "e nder" },
+  views:             { en: "views",                       fr: "vues",                       ha: "kallon",                 ar: "مشاهدات",                      pcm: "view",                    ff: "yiytatii" },
+  negoc:             { en: "Nego.",                       fr: "Négoc.",                     ha: "Ana tattaunawa",         ar: "قابل للتفاوض",                 pcm: "Nego.",                   ff: "Hewtii" },
+  refresh:           { en: "Refresh",                     fr: "Actualiser",                 ha: "Sabunta",                ar: "تحديث",                        pcm: "Refresh",                 ff: "Artu" },
+  cart:              { en: "Cart",                        fr: "Panier",                     ha: "Kati",                   ar: "عربة",                         pcm: "Cart",                    ff: "Cart" },
+  connection_issue:  { en: "Connection issue",            fr: "Problème de connexion",      ha: "Matsalar hanyar sadarwa",ar: "مشكلة في الاتصال",             pcm: "Connection problem",      ff: "Juumre naatirde" },
 };
 
+// ─── Language helpers — PURE ───────────────────────────────────────────────────
 function getLang(): Lang {
   try {
-    const stored = localStorage.getItem("bambeh_lang") as Lang | null;
-    if (stored && stored in { en:1, fr:1, ha:1, ar:1, pcm:1, ff:1 }) return stored;
+    const s = localStorage.getItem("bambeh_lang") as Lang;
+    if (s && ["en","fr","ha","ar","pcm","ff"].includes(s)) return s;
   } catch { /* ignore */ }
-  const browser = navigator.language.split("-")[0] as Lang;
-  const valid: Lang[] = ["en", "fr", "ha", "ar", "pcm", "ff"];
-  return valid.includes(browser) ? browser : "fr"; // Default French for Cameroon
+  const b = navigator.language.split("-")[0] as Lang;
+  return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
 }
 
-function tx(key: string): string {
-  const lang = getLang();
-  return TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
+// ─── Hook: reactive language (fires instantly when user changes language) ───────
+function useLangState(): Lang {
+  const [lang, setLang] = useState<Lang>(getLang);
+  useEffect(() => {
+    const update = () => setLang(getLang());
+    window.addEventListener("langChange", update);
+    window.addEventListener("storage",   update);
+    return () => {
+      window.removeEventListener("langChange", update);
+      window.removeEventListener("storage",   update);
+    };
+  }, []);
+  return lang;
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -113,15 +124,10 @@ const CART_KEY = "bambeh_cart";
 const EXPIRY_WARN_DAYS = 3;
 
 // ─── Helpers — PURE FUNCTIONS, NO HOOKS ────────────────────────────────────────
-// ⚠️  DO NOT call useLang() or any React hook here.
-//     These are called during useState initialisation, before the component
-//     renders, so any hook call will throw an "invalid hook" error which
-//     manifests as "Could not load listings / connection issue".
 function readFavIds(): Set<string> {
   try {
     return new Set(
-      (JSON.parse(localStorage.getItem(FAV_KEY) || "[]") as { id: string }[])
-        .map((f) => f.id),
+      (JSON.parse(localStorage.getItem(FAV_KEY) || "[]") as { id: string }[]).map((f) => f.id),
     );
   } catch { return new Set(); }
 }
@@ -138,13 +144,7 @@ function saveFav(item: Item, add: boolean) {
     const saved: any[] = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
     const idx = saved.findIndex((f) => f.id === item.id);
     if (add && idx < 0) {
-      saved.unshift({
-        id: item.id, title: item.title,
-        price: `${item.price.toLocaleString("fr-CM")} XAF`,
-        image: item.image, category: item.category,
-        type: "marketplace", location: item.location,
-        savedAt: new Date().toISOString(),
-      });
+      saved.unshift({ id: item.id, title: item.title, price: `${item.price.toLocaleString("fr-CM")} XAF`, image: item.image, category: item.category, type: "marketplace", location: item.location, savedAt: new Date().toISOString() });
     } else if (!add && idx >= 0) {
       saved.splice(idx, 1);
     }
@@ -152,7 +152,6 @@ function saveFav(item: Item, add: boolean) {
   } catch { /* non-critical */ }
 }
 
-// ⚠️  extractImage must NOT call useLang() — pure function only
 function extractImage(row: any): string | undefined {
   if (Array.isArray(row.images) && row.images.length > 0) {
     const first = row.images[0];
@@ -181,9 +180,7 @@ function mapRow(row: any): Item {
 }
 
 function daysUntil(isoDate: string): number {
-  return Math.ceil(
-    (new Date(isoDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-  );
+  return Math.ceil((new Date(isoDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
 function relativeTime(isoDate: string): string {
@@ -198,7 +195,15 @@ function relativeTime(isoDate: string): string {
 }
 
 // ─── Expiry Reminder Banner ────────────────────────────────────────────────────
-function ExpiryReminderBanner({ alerts, onDismiss }: { alerts: ExpiryAlert[]; onDismiss: () => void }) {
+function ExpiryReminderBanner({
+  alerts,
+  onDismiss,
+  tx,
+}: {
+  alerts: ExpiryAlert[];
+  onDismiss: () => void;
+  tx: (key: string) => string;
+}) {
   if (!alerts.length) return null;
   return (
     <div className="mx-4 mt-3 bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-start gap-3">
@@ -211,13 +216,14 @@ function ExpiryReminderBanner({ alerts, onDismiss }: { alerts: ExpiryAlert[]; on
           </p>
         ))}
         <button
-          onClick={() => window.location.hash = "#/my-listings"}
+          onClick={() => window.location.hash = "#/marketplace/drafts"}
           className="mt-1.5 text-xs font-semibold text-amber-700 underline"
+          aria-label="Renew expiring listings"
         >
           {tx("renew")}
         </button>
       </div>
-      <button onClick={onDismiss} className="flex-shrink-0 text-amber-400 hover:text-amber-600" aria-label="Dismiss">
+      <button onClick={onDismiss} className="flex-shrink-0 text-amber-400 hover:text-amber-600" aria-label="Dismiss expiry notice">
         <X className="w-4 h-4" />
       </button>
     </div>
@@ -226,16 +232,20 @@ function ExpiryReminderBanner({ alerts, onDismiss }: { alerts: ExpiryAlert[]; on
 
 // ─── Item Card ────────────────────────────────────────────────────────────────
 function ItemCard({
-  item, isFav, onFav, onClick,
+  item, isFav, onFav, onClick, tx,
 }: {
   item: Item;
   isFav: boolean;
   onFav: (e: React.MouseEvent) => void;
   onClick: () => void;
+  tx: (key: string) => string;
 }) {
   return (
     <article
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
       className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98]"
       aria-label={`${item.title}, ${item.price.toLocaleString("fr-CM")} XAF`}
     >
@@ -253,18 +263,15 @@ function ItemCard({
           <ShoppingBag className="w-10 h-10 text-teal-200" />
         )}
 
-        {/* Fav button */}
         <button
           onClick={onFav}
           aria-label={isFav ? "Remove from favourites" : "Save to favourites"}
+          aria-pressed={isFav}
           className="absolute top-2 right-2 p-1.5 bg-white/95 rounded-full shadow-sm hover:scale-110 transition-transform"
         >
-          <Heart
-            className={`w-3.5 h-3.5 transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-gray-400"}`}
-          />
+          <Heart className={`w-3.5 h-3.5 transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
         </button>
 
-        {/* Badges */}
         <div className="absolute bottom-2 left-2 flex gap-1">
           <span className="text-xs bg-white/90 backdrop-blur-sm text-gray-700 px-1.5 py-0.5 rounded-full font-medium">
             {item.condition}
@@ -287,9 +294,7 @@ function ItemCard({
       {/* Info */}
       <div className="p-2.5">
         <p className="text-[10px] font-medium text-teal-600 mb-0.5 uppercase tracking-wide">{item.category}</p>
-        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-tight mb-1.5">
-          {item.title}
-        </h3>
+        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-tight mb-1.5">{item.title}</h3>
         <p className="text-teal-700 font-bold text-sm">
           {item.price.toLocaleString("fr-CM")} <span className="text-xs font-semibold">XAF</span>
         </p>
@@ -312,6 +317,9 @@ function ItemCard({
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function Marketplace() {
   const navigate = useNavigate();
+  const lang     = useLangState();   // ✅ hook at top level
+  const tx       = (key: string) => TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
+  const isRtl    = lang === "ar";
 
   const [items,        setItems]        = useState<Item[]>([]);
   const [loading,      setLoading]      = useState(true);
@@ -340,19 +348,13 @@ export default function Marketplace() {
     try {
       const { data, error: dbError } = await supabase
         .from("listings")
-        .select(`
-          id, title, price, category, location,
-          description, images, extra, condition,
-          created_at, status, view_count, negotiable,
-          seller_id, expires_at, is_featured
-        `)
+        .select(`id, title, price, category, location, description, images, extra, condition, created_at, status, view_count, negotiable, seller_id, expires_at, is_featured`)
         .eq("type", "marketplace")
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(200);
 
       if (dbError) {
-        // Friendly message regardless of underlying error
         setError("Could not load listings. Please check your connection and try again.");
         setItems([]);
         return;
@@ -361,7 +363,7 @@ export default function Marketplace() {
       const mapped = (data ?? []).map(mapRow);
       setItems(mapped);
 
-      // Check for expiry alerts for logged-in seller
+      // Check expiry alerts for logged-in seller
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -384,11 +386,11 @@ export default function Marketplace() {
   useEffect(() => {
     void fetchItems();
 
-    // Realtime subscription — graceful if it fails
+    // Realtime subscription
     let channel: ReturnType<typeof supabase.channel> | null = null;
     try {
       channel = supabase
-        .channel("marketplace_realtime_v2")
+        .channel("marketplace_realtime_v3")
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "listings" }, (payload) => {
           const row = payload.new as any;
           if (row.type !== "marketplace" || row.status !== "active") return;
@@ -412,9 +414,7 @@ export default function Marketplace() {
     return () => { if (channel) void supabase.removeChannel(channel); };
   }, [fetchItems]);
 
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartY.current = e.touches[0].clientY;
-  }
+  function handleTouchStart(e: React.TouchEvent) { touchStartY.current = e.touches[0].clientY; }
   function handleTouchEnd(e: React.TouchEvent) {
     if (touchStartY.current === null) return;
     const diff = e.changedTouches[0].clientY - touchStartY.current;
@@ -438,7 +438,8 @@ export default function Marketplace() {
     const matchSearch = !q ||
       i.title.toLowerCase().includes(q) ||
       i.location.toLowerCase().includes(q) ||
-      i.category.toLowerCase().includes(q);
+      i.category.toLowerCase().includes(q) ||
+      i.description.toLowerCase().includes(q);
     const matchCat = cat === "All" || i.category === cat;
     return matchSearch && matchCat;
   });
@@ -450,17 +451,15 @@ export default function Marketplace() {
     default: break;
   }
 
-  // Featured items always float to top
-  filtered = [
-    ...filtered.filter((i) => i.isFeatured),
-    ...filtered.filter((i) => !i.isFeatured),
-  ];
+  filtered = [...filtered.filter((i) => i.isFeatured), ...filtered.filter((i) => !i.isFeatured)];
 
   return (
     <div
       className="min-h-screen bg-gray-50 pb-24"
+      dir={isRtl ? "rtl" : "ltr"}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      aria-label={tx("marketplace")}
     >
       {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 shadow-sm px-4 pt-4 pb-3">
@@ -494,6 +493,7 @@ export default function Marketplace() {
             <button
               onClick={() => navigate("/marketplace/sell")}
               className="bg-teal-600 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1 hover:bg-teal-700 active:scale-95 transition-all shadow-sm"
+              aria-label={tx("sell")}
             >
               <Plus className="w-4 h-4" /> {tx("sell")}
             </button>
@@ -508,7 +508,7 @@ export default function Marketplace() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder={tx("search_placeholder")}
             className="w-full pl-9 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-gray-50 placeholder:text-gray-400"
-            aria-label="Search marketplace"
+            aria-label={tx("search_placeholder")}
           />
           {search && (
             <button
@@ -522,17 +522,18 @@ export default function Marketplace() {
         </div>
 
         {/* Categories */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" role="tablist" aria-label="Filter by category">
           {CATEGORIES.map(({ label, emoji }) => (
             <button
               key={label}
+              role="tab"
+              aria-selected={cat === label}
               onClick={() => setCat(label)}
               className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
                 cat === label
                   ? "bg-teal-600 text-white shadow-sm"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
-              aria-pressed={cat === label}
             >
               <span>{emoji}</span> {label}
             </button>
@@ -542,10 +543,7 @@ export default function Marketplace() {
 
       {/* Expiry reminder */}
       {showExpiry && expiryAlerts.length > 0 && (
-        <ExpiryReminderBanner
-          alerts={expiryAlerts}
-          onDismiss={() => setShowExpiry(false)}
-        />
+        <ExpiryReminderBanner alerts={expiryAlerts} onDismiss={() => setShowExpiry(false)} tx={tx} />
       )}
 
       {/* Featured ads strip */}
@@ -565,11 +563,12 @@ export default function Marketplace() {
             <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
               <ShoppingBag className="w-7 h-7 text-red-400" />
             </div>
-            <p className="font-semibold text-gray-800 mb-1">Connection issue</p>
+            <p className="font-semibold text-gray-800 mb-1">{tx("connection_issue")}</p>
             <p className="text-sm text-red-500 mb-5">{error}</p>
             <button
               onClick={() => void fetchItems()}
               className="bg-teal-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors"
+              aria-label={tx("try_again")}
             >
               {tx("try_again")}
             </button>
@@ -627,7 +626,7 @@ export default function Marketplace() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {filtered.map((item) => (
                 <ItemCard
                   key={item.id}
@@ -635,12 +634,13 @@ export default function Marketplace() {
                   isFav={favs.has(item.id)}
                   onFav={(e) => toggleFav(e, item)}
                   onClick={() => navigate(`/marketplace/${item.id}`)}
+                  tx={tx}
                 />
               ))}
             </div>
 
             <p className="text-center text-xs text-gray-300 mt-6">
-              — {filtered.length} {tx("listings_count")} loaded —
+              — {filtered.length} {tx("listings_count")} —
             </p>
           </>
         )}

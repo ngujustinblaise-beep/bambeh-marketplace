@@ -227,6 +227,24 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
+// ─── Error boundary — wraps FeaturedAdsStrip so its errors never kill Jobs page ─
+class AdStripBoundary extends React.Component<
+  { children: React.ReactNode },
+  { failed: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { failed: false };
+  }
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(e: Error) {
+    console.warn("[Jobs] FeaturedAdsStrip non-fatal error:", e.message);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 export default function Jobs() {
   const navigate = useNavigate();
   // Use the context t() directly — re-renders whenever language changes
@@ -264,7 +282,7 @@ export default function Jobs() {
 
     // Realtime: new jobs appear instantly
     const channel = supabase
-      .channel("jobs_realtime_v3")
+      .channel(`jobs_rt_${Date.now()}`)
       .on("postgres_changes",
         { event: "INSERT", schema: "public", table: "listings" },
         (payload) => {
@@ -438,7 +456,9 @@ export default function Jobs() {
 
       {/* Featured ads */}
       <div className="px-4 pb-2">
-        <FeaturedAdsStrip category="jobs" showHeader={false} maxVisible={20} />
+        <AdStripBoundary>
+          <FeaturedAdsStrip category="jobs" showHeader={false} maxVisible={20} />
+        </AdStripBoundary>
       </div>
 
       {/* Results count */}
