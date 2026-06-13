@@ -20,7 +20,7 @@ import {
   ShoppingBag, ShoppingCart, Users, Eye, AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/components/CartDrawer";
 import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -169,16 +169,24 @@ export default function FarmFreshPage() {
   // ── Add to cart ───────────────────────────────────────────────────────────
   function handleAddToCart(e: React.MouseEvent, p: FarmProduct) {
     e.stopPropagation();
-    addToCart({
-      id:          p.id,
-      title:       p.title,
-      priceXAF:    p.price_per_unit_xaf,
-      quantity:    1,
-      unit:        p.unit,
-      imageUrl:    getImage(p),
-      listingType: "farm-fresh",
-      sellerName:  p.sellerName || "Farmer",
-    });
+    try {
+      (addToCart as any)({
+        id:          p.id,
+        title:       p.title,
+        priceXAF:    p.price_per_unit_xaf,
+        price:       p.price_per_unit_xaf,
+        quantity:    1,
+        unit:        p.unit,
+        imageUrl:    getImage(p),
+        image:       getImage(p),
+        listingType: "farm-fresh",
+        type:        "farm-fresh",
+        sellerName:  p.sellerName || "Farmer",
+        name:        p.title,
+      });
+    } catch (err) {
+      console.warn("addToCart error:", err);
+    }
     setAddedId(p.id);
     setTimeout(() => setAddedId(null), 1500);
   }
@@ -310,7 +318,7 @@ export default function FarmFreshPage() {
       {fetchErr && (
         <div className="mx-4 mb-3 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl px-3 py-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>{fetchErr} — {t("showingSamples", lang) as (n: number) => string}(DEMO_PRODUCTS.length)</span>
+          <span>{fetchErr} — Showing {DEMO_PRODUCTS.length} sample listings</span>
         </div>
       )}
 
@@ -320,8 +328,8 @@ export default function FarmFreshPage() {
         {!loading && (
           <p className="mb-3 text-xs text-gray-500">
             {realCount > 0
-              ? (t("realListings", lang) as (n: number) => string)(realCount)
-              : (t("showingSamples", lang) as (n: number) => string)(DEMO_PRODUCTS.length)}
+              ? `${realCount} listing${realCount !== 1 ? "s" : ""} from local farmers`
+              : `Showing ${DEMO_PRODUCTS.length} sample listings`}
           </p>
         )}
 
