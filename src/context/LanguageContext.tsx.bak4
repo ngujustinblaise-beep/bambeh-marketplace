@@ -848,27 +848,6 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ar: {
-    "footer.aboutDesc": "بامبيه هو نبض التجارة الأفريقية. اشترِ، وبع، وابحث عن وظائف، واستأجر، وتواصل في جميع أنحاء الكاميرون وخارجها.",
-    "footer.aboutUs": "معلومات عنا",
-    "footer.allRightsReserved": "جميع الحقوق محفوظة",
-    "footer.contact": "اتصل بنا",
-    "footer.contactSupport": "الاتصال بالدعم",
-    "footer.donate": "تبرع",
-    "footer.helpCentre": "مركز المساعدة",
-    "footer.privacy": "الخصوصية",
-    "footer.safetySecurity": "الأمان والحماية",
-    "footer.subscriptionPlans": "خطط الاشتراك",
-    "footer.subscriptions": "الاشتراكات",
-    "footer.supportBambeh": "دعم بامبيه",
-    "footer.terms": "الشروط",
-    "footer.transactionFeeBadge": "رسوم معاملات 1% فقط — الأقل في أي سوق",
-    "footer.viewCompanyProfile": "عرض ملف الشركة",
-    "nav.jobs": "الوظائف",
-    "nav.marketplace": "السوق",
-    "nav.services": "الخدمات",
-    "nav.rentals": "الإيجارات",
-    "nav.vehicles": "المركبات",
-    "nav.exchange": "تبادل",
     "footer.aboutTitle": "\u0639\u0646 \u0628\u0627\u0645\u0628\u064a\u0647",
     "footer.categoriesTitle": "\u0627\u0644\u0641\u0626\u0627\u062a",
     "footer.supportTitle": "\u0627\u0644\u062f\u0639\u0645",
@@ -1118,27 +1097,6 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ff: {
-    "footer.aboutDesc": "Bambeh woni ɓernde yeeyruki Afrik. Sood, yeey, ɗonca gollorɗe, lura cuuɗi, boo jokku yimɓe haa njaajeendi Kamerun e sella muudum.",
-    "footer.aboutUs": "Haala ameen / Haar dow ameen",
-    "footer.allRightsReserved": "Hakkeeji ɗon maru fof",
-    "footer.contact": "Jokkondiral",
-    "footer.contactSupport": "Jokku e Wallitaare",
-    "footer.donate": "Dokkal / Hokke njoɓdi",
-    "footer.helpCentre": "Hoɗo Ballal",
-    "footer.privacy": "Sirri",
-    "footer.safetySecurity": "Kisndam e Jam",
-    "footer.subscriptionPlans": "Nooneji iiri njoɓdi",
-    "footer.subscriptions": "Njoɓdi iiri gollal",
-    "footer.supportBambeh": "Wallu Bambeh",
-    "footer.terms": "Sariyaaji / Sarɗiiji",
-    "footer.transactionFeeBadge": "Ko hebi njoɓdi teemedere ɗon reeta go'o (1%) - ɓuri les haa luumo kootoye",
-    "footer.viewCompanyProfile": "Yeew kuugal kampani",
-    "nav.jobs": "Gollorɗe",
-    "nav.marketplace": "Luumo",
-    "nav.services": "Kuugal / Sarwiisji",
-    "nav.rentals": "Luraaji cuuɗi",
-    "nav.vehicles": "Otooɓe / Mootaji",
-    "nav.exchange": "Njaldinaare",
     "footer.aboutTitle": "Haar dow Bambeh / Habaru Bambeh",
     "footer.categoriesTitle": "Iiriiri / Nooneji",
     "footer.supportTitle": "Wallitaare / Ballal",
@@ -1474,6 +1432,5 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useLanguage = () => useContext(LanguageContext);
-
 
 
