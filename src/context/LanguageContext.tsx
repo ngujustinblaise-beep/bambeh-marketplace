@@ -30,7 +30,7 @@ const translations: Record<string, Record<string, string>> = {
     "footer.contactSupport": "Contact Support",
     "footer.donate": "Donate",
     "footer.expandFooter": "Expand footer",
-    "footer.expandLabel": "More",
+    "footer.expandLabel": "Show",
     "footer.helpCentre": "Help Centre",
     "footer.operatedBy": "Operated by",
     "footer.privacy": "Privacy",
@@ -315,7 +315,7 @@ const translations: Record<string, Record<string, string>> = {
     "footer.contactSupport": "Contacter le support",
     "footer.donate": "Faire un don",
     "footer.expandFooter": "Afficher le pied de page",
-    "footer.expandLabel": "Plus",
+    "footer.expandLabel": "Afficher",
     "footer.helpCentre": "Centre d'aide",
     "footer.operatedBy": "Exploit\u00e9 par",
     "footer.privacy": "Confidentialit\u00e9",
@@ -591,7 +591,7 @@ const translations: Record<string, Record<string, string>> = {
     "footer.contactSupport": "Contact Support",
     "footer.donate": "Donate",
     "footer.expandFooter": "Open footer",
-    "footer.expandLabel": "More",
+    "footer.expandLabel": "Show",
     "footer.helpCentre": "Help Center",
     "footer.operatedBy": "Dem dey run am by",
     "footer.privacy": "Privacy",
@@ -848,6 +848,9 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ar: {
+    "footer.operatedBy": "مُدار بواسطة",
+    "footer.collapseLabel": "إخفاء",
+    "footer.expandLabel": "إظهار",
     "footer.aboutDesc": "بامبيه هو نبض التجارة الأفريقية. اشترِ، وبع، وابحث عن وظائف، واستأجر، وتواصل في جميع أنحاء الكاميرون وخارجها.",
     "footer.aboutUs": "معلومات عنا",
     "footer.allRightsReserved": "جميع الحقوق محفوظة",
@@ -1118,6 +1121,9 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ff: {
+    "footer.operatedBy": "Huwtinaama ko haani e / Yiilaama ko haani e",
+    "footer.collapseLabel": "Suwɗu",
+    "footer.expandLabel": "Suttin",
     "footer.aboutDesc": "Bambeh woni ɓernde yeeyruki Afrik. Sood, yeey, ɗonca gollorɗe, lura cuuɗi, boo jokku yimɓe haa njaajeendi Kamerun e sella muudum.",
     "footer.aboutUs": "Haala ameen / Haar dow ameen",
     "footer.allRightsReserved": "Hakkeeji ɗon maru fof",
@@ -1474,6 +1480,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useLanguage = () => useContext(LanguageContext);
+
 
 
 

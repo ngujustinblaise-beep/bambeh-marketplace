@@ -36,8 +36,6 @@ const SAMPLE_ORDERS: Order[] = [
 
 // ── Status colour helper ──────────────────────────────────────────────────────
 function statusStyle(status: string) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   switch (status.toLowerCase()) {
     case "delivered":      return "bg-green-100 text-green-700";
     case "in transit":     return "bg-orange-100 text-orange-700";
@@ -194,3 +192,4 @@ export default function Orders() {
     </div>
   );
 }
+

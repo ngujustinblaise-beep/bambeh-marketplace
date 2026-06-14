@@ -19,8 +19,6 @@ const TYPE_ICONS: Record<string,React.ReactNode> = { marketplace:<ShoppingBag cl
 const TABS = [{key:"all",label:"All"},{key:"marketplace",label:"Items"},{key:"job",label:"Jobs"},{key:"service",label:"Services"},{key:"farm-fresh",label:"Farm"},{key:"vehicle",label:"Vehicles"},{key:"rental",label:"Rentals"},{key:"deal",label:"Deals"}];
 
 function fmtPrice(p:string|number|undefined){if(!p)return null;if(typeof p==="number")return`${p.toLocaleString("fr-CM")} XAF`;return String(p);}
-  const lang = useLang();
-  const isRtl = lang === "ar";
 
 export default function Favorites(){
   const navigate=useNavigate();
@@ -139,3 +137,4 @@ export default function Favorites(){
     </div>
   );
 }
+
