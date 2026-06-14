@@ -1,18 +1,18 @@
-/**
+﻿/**
  * AuthLayout.tsx
  * FILE LOCATION: src/components/layout/AuthLayout.tsx
  *
  * CHANGES IN THIS VERSION:
- *  ✅ Fixed broken branding string "— 's #1 App" → proper translated text via t()
- *  ✅ Full i18n — branding strip and footer line now use LanguageContext t()
- *  ✅ "Only 1% Transaction Fee" → "Lowest in any marketplace"
- *  ✅ RTL direction applied when language is Arabic
+ *  âœ… Fixed broken branding string "â€” 's #1 App" â†’ proper translated text via t()
+ *  âœ… Full i18n â€” branding strip and footer line now use LanguageContext t()
+ *  âœ… "Only 1% Transaction Fee" â†’ "Lowest in any marketplace"
+ *  âœ… RTL direction applied when language is Arabic
  *
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import React from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Branding strip */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-600 py-3 px-4 text-center shadow-md">
         <span className="text-white font-bold text-lg tracking-wide">
-          🛒 {t("auth.brandingStrip") || "Bambeh Marketplace — The Pulse of African Commerce"}
+          ðŸ›’ {t("auth.brandingStrip") || "Bambeh Marketplace â€” The Pulse of African Commerce"}
         </span>
       </div>
 
@@ -41,8 +41,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 
       {/* Footer */}
       <div className="py-4 text-center text-xs text-gray-500 border-t border-gray-200 bg-white">
-        © 2026 Bambeh Marketplace · {t("footer.transactionFeeBadge") || "Only 1% Transaction Fee — Lowest in Any Marketplace!"} 💚
+        Â© 2026 Bambeh Marketplace Â· {t("footer.transactionFeeBadge") || "Only 1% Transaction Fee â€” Lowest in Any Marketplace!"} ðŸ’š
       </div>
     </div>
   );
 }
+
