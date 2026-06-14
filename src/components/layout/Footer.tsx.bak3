@@ -267,7 +267,7 @@ export default function Footer() {
               {/* Location */}
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-                <span>Yaound&eacute;, Cameroon</span>
+                <span>YaoundÃ©, Cameroon</span>
               </div>
             </div>
           </div>
@@ -302,9 +302,9 @@ export default function Footer() {
 
                 {/* Copyright â€” BAMBEH SARL (was ETS BUSHENERGY) */}
                 <div className="text-sm text-center md:text-left">
-                  <p>&copy; {currentYear} Bambeh. {t("footer.allRightsReserved") || "All rights reserved."}</p>
+                  <p>Â© {currentYear} Bambeh. {t("footer.allRightsReserved") || "All rights reserved."}</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {t("footer.operatedBy") || "Operated by"} BAMBEH SARL &mdash; Yaound&eacute;, Cameroon
+                    {t("footer.operatedBy") || "Operated by"} BAMBEH SARL â€” YaoundÃ©, Cameroon
                   </p>
                 </div>
 
@@ -313,19 +313,19 @@ export default function Footer() {
                   <Link to="/terms-of-service" className="hover:text-teal-400 transition-colors">
                     {t("footer.terms") || "Terms"}
                   </Link>
-                  <span className="text-gray-600" aria-hidden="true">&middot;</span>
+                  <span className="text-gray-600" aria-hidden="true">Â·</span>
                   <Link to="/privacy-policy" className="hover:text-teal-400 transition-colors">
                     {t("footer.privacy") || "Privacy"}
                   </Link>
-                  <span className="text-gray-600" aria-hidden="true">&middot;</span>
+                  <span className="text-gray-600" aria-hidden="true">Â·</span>
                   <Link to="/help/contact" className="hover:text-teal-400 transition-colors">
                     {t("footer.contact") || "Contact"}
                   </Link>
-                  <span className="text-gray-600" aria-hidden="true">&middot;</span>
+                  <span className="text-gray-600" aria-hidden="true">Â·</span>
                   <Link to="/subscription" className="hover:text-teal-400 transition-colors">
                     {t("footer.subscriptions") || "Subscriptions"}
                   </Link>
-                  <span className="text-gray-600" aria-hidden="true">&middot;</span>
+                  <span className="text-gray-600" aria-hidden="true">Â·</span>
                   <Link
                     to="/donate"
                     className="hover:text-teal-400 transition-colors text-pink-400 font-semibold"
@@ -377,5 +377,4 @@ export default function Footer() {
     </footer>
   );
 }
-
 
