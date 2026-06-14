@@ -21,16 +21,25 @@ import {
   Globe, Shield, Bell, User, Lock, AlertCircle, CheckCircle, Loader
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage, AVAILABLE_LANGUAGES, LanguageCode } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage as useGlobalLang } from "@/App";
 
 type Tab = "general" | "notifications" | "privacy" | "security";
+
+const AVAILABLE_LANGUAGES = [
+  { code: "en", name: "English" },
+  { code: "fr", name: "French" },
+  { code: "pidgin", name: "Pidgin" },
+  { code: "ar", name: "Arabic" },
+  { code: "ff", name: "Fulfulde" },
+];
 
 const UserSettings: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
-  const { language, setLanguage, t } = useLanguage();  // ← connected to global language
+  const { t, language } = useLanguage();
+  const { setLanguage } = useGlobalLang();  // ← connected to global language
 
   const [activeTab,    setActiveTab]    = useState<Tab>("general");
   const [photoLoading, setPhotoLoading] = useState(false);
@@ -142,7 +151,7 @@ const UserSettings: React.FC = () => {
     - Re-renders the whole app in the chosen language
   */
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLanguage(e.target.value as LanguageCode);
+    setLanguage(e.target.value);
   };
 
   // ── RENDER ───────────────────────────────────────────────────────────────
@@ -250,7 +259,7 @@ const UserSettings: React.FC = () => {
             >
               {AVAILABLE_LANGUAGES.map(lang => (
                 <option key={lang.code} value={lang.code}>
-                  {lang.flag} {lang.nativeName} ({lang.name})
+                  {lang.name}
                 </option>
               ))}
             </select>
@@ -463,3 +472,4 @@ const UserSettings: React.FC = () => {
 };
 
 export default UserSettings;
+

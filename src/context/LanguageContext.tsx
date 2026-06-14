@@ -11,6 +11,12 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 // â”€â”€â”€ Translation map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const translations: Record<string, Record<string, string>> = {
   en: {
+    "settings.language": "Language",
+    "common.logout": "Logout",
+    "common.settings": "Settings",
+    "nav.favorites": "Favorites",
+    "nav.orders": "Orders",
+    "nav.myListings": "My Listings",
     "fav.title": "Favorites",
     "fav.saved": "saved",
     "fav.loginSync": "Log in to sync your favorites across all devices.",
@@ -313,6 +319,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   fr: {
+    "settings.language": "Langue",
+    "common.logout": "Déconnexion",
+    "common.settings": "Paramètres",
+    "nav.favorites": "Favoris",
+    "nav.orders": "Commandes",
+    "nav.myListings": "Mes annonces",
     "fav.title": "Favoris",
     "fav.saved": "enregistrés",
     "fav.loginSync": "Connectez-vous pour synchroniser vos favoris sur tous vos appareils.",
@@ -606,6 +618,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   pidgin: {
+    "settings.language": "Language",
+    "common.logout": "Comot",
+    "common.settings": "Settings",
+    "nav.favorites": "Favorites",
+    "nav.orders": "Orders",
+    "nav.myListings": "My Listings",
     "fav.title": "Favorites",
     "fav.saved": "save",
     "fav.loginSync": "Login so your favorites fit follow you for all your devices.",
@@ -899,6 +917,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ar: {
+    "settings.language": "اللغة",
+    "common.logout": "تسجيل الخروج",
+    "common.settings": "الإعدادات",
+    "nav.favorites": "المفضلة",
+    "nav.orders": "الطلبات",
+    "nav.myListings": "إعلاناتي",
     "fav.title": "المفضلة",
     "fav.saved": "تم حفظها",
     "fav.loginSync": "تسجيل الدخول لمزامنة مفضلاتك عبر جميع الأجهزة.",
@@ -1189,6 +1213,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ff: {
+    "settings.language": "Ɗemngal",
+    "common.logout": "Yaltude",
+    "common.settings": "Teelte",
+    "nav.favorites": "Cuɓaaɗi",
+    "nav.orders": "Umrooje",
+    "nav.myListings": "Ko njeeyetee am",
     "fav.title": "Cuɓaaɗi",
     "fav.saved": "resama",
     "fav.loginSync": "Nastu ngam hawritingo cuɓaaɗi ma haa masiinji ma fof.",
@@ -1565,6 +1595,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useLanguage = () => useContext(LanguageContext);
+
 
 
 
