@@ -25,7 +25,7 @@ import Header from "@/components/layout/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Home, ShoppingBag, MessageCircle, Bell, User, Zap,
-  Share2, X, Copy, Check, Facebook, Twitter, MessageSquare
+  Share2, X, Copy, Check, Facebook, Twitter, MessageSquare, ChevronUp, ChevronDown
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -166,6 +166,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied,        setCopied]        = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
 
   const shareText = buildShareText(t);
   const shareUrl  = APP_URL;
@@ -213,7 +214,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // ── Mobile bottom nav ─────────────────────────────────────────────────────
   const renderMobileBottomNav = () => (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white shadow-2xl border-t border-gray-100">
+    <>
+      <button
+        type="button"
+        onClick={() => setNavHidden((v) => !v)}
+        aria-label={navHidden ? "Show navigation" : "Hide navigation"}
+        className={`md:hidden fixed left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-12 h-7 rounded-t-xl bg-teal-600 text-white shadow-lg transition-all duration-300 ${navHidden ? "bottom-0" : "bottom-16"}`}
+      >
+        {navHidden ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+      </button>
+    <nav className={`md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white shadow-2xl border-t border-gray-100 transition-transform duration-300 ${navHidden ? "translate-y-full" : "translate-y-0"}`}>
       <div className="flex items-center justify-around px-2 py-2">
         {mobileNavItems.map((item) => {
           if (item.requiresAuth && !currentUser) return null;
@@ -259,6 +269,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </button>
       </div>
     </nav>
+    </>
   );
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -308,3 +319,4 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 };
 
 export default MainLayout;
+
