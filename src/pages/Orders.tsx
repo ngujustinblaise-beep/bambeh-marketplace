@@ -17,7 +17,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Package, MapPin, Clock, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Order {
   id: string;
@@ -55,8 +55,32 @@ function statusIcon(status: string) {
   }
 }
 
+function statusLabel(status: string, t: (k: string) => string) {
+  switch (status.toLowerCase()) {
+    case "in transit":       return t("orders.status.inTransit");
+    case "delivered":        return t("orders.status.delivered");
+    case "processing":       return t("orders.status.processing");
+    case "shipped":          return t("orders.status.shipped");
+    case "out for delivery": return t("orders.status.outForDelivery");
+    case "cancelled":        return t("orders.status.cancelled");
+    default:                 return status;
+  }
+}
+function statusLabel(status: string, t: (k: string) => string) {
+  switch (status.toLowerCase()) {
+    case "in transit":       return t("orders.status.inTransit");
+    case "delivered":        return t("orders.status.delivered");
+    case "processing":       return t("orders.status.processing");
+    case "shipped":          return t("orders.status.shipped");
+    case "out for delivery": return t("orders.status.outForDelivery");
+    case "cancelled":        return t("orders.status.cancelled");
+    default:                 return status;
+  }
+}
 export default function Orders() {
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
+  const { t, language } = useLanguage();
   const [orders,  setOrders]  = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -98,16 +122,16 @@ export default function Orders() {
   useEffect(() => { fetchOrders(); }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 pb-24">
+    <div dir={language === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 py-8 pb-24">
       <div className="container mx-auto px-4 max-w-2xl">
 
         {/* Page header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t("orders.title")}</h1>
           <button
             onClick={fetchOrders}
             className="p-2 text-gray-400 hover:text-teal-600 rounded-xl hover:bg-gray-100 transition-colors"
-            aria-label="Refresh orders"
+            aria-label={t("orders.refresh")}
           >
             <RefreshCw className="w-5 h-5" />
           </button>
@@ -117,7 +141,7 @@ export default function Orders() {
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-            <p className="text-sm text-gray-500">Loading your orders...</p>
+            <p className="text-sm text-gray-500">{t("orders.loading")}</p>
           </div>
         )}
 
@@ -125,13 +149,13 @@ export default function Orders() {
         {!loading && orders.length === 0 && (
           <div className="text-center py-16">
             <Package className="w-14 h-14 text-gray-200 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-gray-700 mb-2">No orders yet</h2>
-            <p className="text-gray-500 text-sm mb-6">When you buy something on Bambeh, your orders will appear here.</p>
+            <h2 className="text-xl font-bold text-gray-700 mb-2">{t("orders.noneYet")}</h2>
+            <p className="text-gray-500 text-sm mb-6">{t("orders.emptyDesc")}</p>
             <button
               onClick={() => navigate("/marketplace")}
               className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition-colors"
             >
-              Browse Marketplace
+              {t("orders.browseMarketplace")}
             </button>
           </div>
         )}
@@ -150,7 +174,7 @@ export default function Orders() {
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900 text-base leading-tight">{order.item}</h3>
-                      <p className="text-sm text-gray-500 mt-0.5">Order #{order.orderNumber}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">{t("orders.orderNum")}{order.orderNumber}</p>
                       <p className="text-sm font-semibold text-teal-600 mt-0.5">
                         {order.total.toLocaleString()} XAF
                       </p>
@@ -166,7 +190,7 @@ export default function Orders() {
                   <div className="flex flex-col items-end gap-3 flex-shrink-0">
                     <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold ${statusStyle(order.status)}`}>
                       {statusIcon(order.status)}
-                      {order.status}
+                      {statusLabel(order.status, t)}
                     </span>
 
                     {/*
@@ -180,7 +204,7 @@ export default function Orders() {
                       className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold text-sm transition-colors"
                     >
                       <MapPin className="w-4 h-4" />
-                      Track Order
+                      {t("orders.track")}
                     </Link>
                   </div>
                 </div>
