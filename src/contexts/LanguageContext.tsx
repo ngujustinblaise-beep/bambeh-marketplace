@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * LANGUAGE CONTEXT - MULTI-LANGUAGE TRANSLATION SYSTEM
  * FILE LOCATION: src/contexts/LanguageContext.tsx

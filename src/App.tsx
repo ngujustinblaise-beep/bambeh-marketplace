@@ -1,7 +1,7 @@
 ﻿import "@/lib/net-interceptor";
 /**
- * App.tsx â€” Bambeh Online Marketplace
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * App.tsx — Bambeh Online Marketplace
+ * © 2026 BAMBEH SARL. All rights reserved.
  * support@bambeh.com | bambeh.com
  *
  * FIXED: Removed // @ts-nocheck directive.
@@ -11,18 +11,18 @@
  *          share banner restricted to home page only.
  */
 
-// â”€â”€â”€ 1. React Core â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 1. React Core ────────────────────────────────────────────────────────────
 import React, { Suspense, lazy, useEffect, createContext, useContext, useState, useCallback } from "react";
 
-// â”€â”€â”€ 1b. TanStack Query (React Query v5) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 1b. TanStack Query (React Query v5) ──────────────────────────────────────
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "@/lib/queryClient";
 
-// â”€â”€â”€ 1c. Per-Route Error Boundary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 1c. Per-Route Error Boundary ─────────────────────────────────────────────
 import { RouteErrorBoundary } from "@/components/app/RouteErrorBoundary";
 
-// â”€â”€â”€ 2. Third-Party Libraries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 2. Third-Party Libraries ─────────────────────────────────────────────────
 import {
   HashRouter,
   Routes,
@@ -39,15 +39,15 @@ import { App as CapacitorApp } from "@capacitor/app";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { SplashScreen } from "@capacitor/splash-screen";
 
-// â”€â”€â”€ 3. Internal Utils / Services â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 3. Internal Utils / Services ─────────────────────────────────────────────
 import { initializeAnalytics } from "@/utils/analytics/AnalyticsInit";
 
-// â”€â”€â”€ 3b. BAMBEH SARL â€” CamPay & Cart Integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 3b. BAMBEH SARL — CamPay & Cart Integration ─────────────────────────────
 import { CartProvider } from "@/components/CartDrawer";
 import { CartDrawer }   from "@/components/CartDrawer";
 import { DonateButton } from "@/components/DonateButton";
 
-// â”€â”€â”€ 4. Internal Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 4. Internal Components ───────────────────────────────────────────────────
 import {
   AppErrorBoundary,
   RouteTracker,
@@ -66,10 +66,10 @@ import {
   MonthlyFeedbackBanner
 } from "@/hooks/useMonthlyFeedback";
 
-// â”€â”€â”€ 5. Internal Providers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 5. Internal Providers ────────────────────────────────────────────────────
 import AppProviders from "@/providers/AppProviders";
 
-// â”€â”€â”€ 5b. LANGUAGE CONTEXT (inline â€” no external file dependency) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 5b. LANGUAGE CONTEXT (inline — no external file dependency) ──────────────
 // Self-contained so the app never crashes due to a missing context file.
 type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
 type LangCtx = { language: LangCode; setLanguage: (l: string) => void; t: (k: string) => string; isRtl: boolean };
@@ -83,7 +83,7 @@ function _resolveCode(raw: string | null): LangCode {
   return valid.includes(raw as LangCode) ? (raw as LangCode) : "en";
 }
 
-// â”€â”€â”€ Flat translation table (all pages, all 5 languages) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Flat translation table (all pages, all 5 languages) ─────────────────────
 const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
   en: {
     // Nav
@@ -91,34 +91,34 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     rentals:"Rentals", vehicles:"Vehicles", exchange:"Exchange", community:"Community",
     sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
     logout:"Logout", settings:"Settings", favorites:"Favorites", orders:"Orders",
-    back:"Back", cancel:"Cancel", save:"Save", loading:"Loadingâ€¦",
+    back:"Back", cancel:"Cancel", save:"Save", loading:"Loading…",
     error:"Something went wrong. Please try again.", retry:"Retry", seeAll:"See all",
     tryAgain:"Try Again", share:"Share", copyLink:"Link copied!",
     // Jobs list
-    jobsTitle:"Find Jobs ðŸ’¼", postJob:"+ Post Job",
-    jobSearchPlaceholder:"Search jobs or companiesâ€¦",
+    jobsTitle:"Find Jobs 💼", postJob:"+ Post Job",
+    jobSearchPlaceholder:"Search jobs or companies…",
     opportunities:"opportunities across Cameroon",
     filters:"Filters", mostRecent:"Most Recent",
-    clearFilters:"âœ• Clear all filters", jobType:"Job Type", region:"Region",
-    jobsFound:"jobs found", newestFirst:"newest first", refresh:"â†» Refresh",
+    clearFilters:"✕ Clear all filters", jobType:"Job Type", region:"Region",
+    jobsFound:"jobs found", newestFirst:"newest first", refresh:"↻ Refresh",
     noJobs:"No jobs posted yet", noJobsHint:"Be the first to post a job opportunity!",
     noMatch:"No jobs match your filters", clearAll:"Clear all filters",
-    applyNow:"ðŸš€ Apply Now", views:"views", negotiable:"Negotiable",
+    applyNow:"🚀 Apply Now", views:"views", negotiable:"Negotiable",
     salaryNotSpec:"Salary not specified", deadline:"Deadline", remote:"Remote",
     jobError:"Could not load jobs. Check your connection.", salary:"Monthly Salary",
     // Jobs category
     allJobs:"All Jobs", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No jobs posted yet", checkBack:"Check back soon or post one yourself!",
-    viewApply:"View & Apply â†’", loadMore:"Load More Jobs",
-    closed:"â›” Closed â€” Deadline passed", closingSoon:"â° Closing soon",
+    viewApply:"View & Apply →", loadMore:"Load More Jobs",
+    closed:"⛔ Closed — Deadline passed", closingSoon:"⏰ Closing soon",
     today:"Today!", dLeft:"d left",
     // Job detail
-    jobNotFound:"Job not found", jobLoading:"Loading job detailsâ€¦",
+    jobNotFound:"Job not found", jobLoading:"Loading job details…",
     jobDescription:"Job Description", requirements:"Requirements & Skills",
     benefits:"Benefits & Perks", jobApplyNow:"Apply Now",
     applyWhatsApp:"Apply via WhatsApp", applyCall:"Call to Apply",
-    applyEmail:"Apply via Email", applied:"Application Sent âœ“",
-    applying:"Sending applicationâ€¦", alreadyApplied:"You already applied for this job",
+    applyEmail:"Apply via Email", applied:"Application Sent ✓",
+    applying:"Sending application…", alreadyApplied:"You already applied for this job",
     expired:"This job has expired", deadline2:"Application deadline",
     candidates:"applicants", views2:"views", published:"Published",
     saved:"Saved", unsaved:"Bookmark", loginToApply:"Log in to apply",
@@ -128,21 +128,21 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     company:"Company / Organisation", companyPh:"Name of your company",
     jobCategory:"Job Category *", employmentType:"Employment Type *",
     experienceLevel:"Experience Level *", cityLocation:"City / Location *",
-    cityPh:"e.g. Douala, YaoundÃ©â€¦", regionLabel:"Region",
+    cityPh:"e.g. Douala, Yaoundé…", regionLabel:"Region",
     isRemote:"Remote work available", salaryMin:"Min Salary (FCFA/month)",
     salaryMax:"Max Salary (FCFA/month)", salaryPh:"e.g. 150000",
     salaryNegotiable:"Salary is negotiable", applicationDeadline:"Application Deadline",
     jobDescription2:"Job Description *",
-    jobDescPh:"Describe the role, responsibilities, and what a typical day looks likeâ€¦",
-    requirementsPh:"List qualifications, skills, and experience requiredâ€¦",
+    jobDescPh:"Describe the role, responsibilities, and what a typical day looks like…",
+    requirementsPh:"List qualifications, skills, and experience required…",
     benefitsLabel:"Benefits & Perks",
-    benefitsPh:"Health insurance, transport allowance, bonusesâ€¦",
-    tagsLabel:"Skills / Tags (comma separated)", tagsPh:"React, Node.js, Marketingâ€¦",
+    benefitsPh:"Health insurance, transport allowance, bonuses…",
+    tagsLabel:"Skills / Tags (comma separated)", tagsPh:"React, Node.js, Marketing…",
     howApply:"How should candidates apply?",
-    applyInApp:"ðŸ“± Through Bambeh Platform", applyWhatsAppOpt:"ðŸ’¬ WhatsApp",
-    applyCallOpt:"ðŸ“ž Phone Call", applyEmailOpt:"ðŸ“§ Email",
+    applyInApp:"📱 Through Bambeh Platform", applyWhatsAppOpt:"💬 WhatsApp",
+    applyCallOpt:"📞 Phone Call", applyEmailOpt:"📧 Email",
     applyContactPh:"Enter phone number or email for applications",
-    publishing:"Publishing your jobâ€¦", jobPosted:"Job posted successfully!",
+    publishing:"Publishing your job…", jobPosted:"Job posted successfully!",
     publishJob:"Publish Job", fillRequired:"Please fill all required fields (*)",
     loginRequired:"You must be logged in to post a job",
     companyLogoLabel:"Company Logo", chooseImage:"Choose image",
@@ -157,103 +157,103 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     paymentFailed:"Payment Failed",
   },
   fr: {
-    home:"Accueil", jobs:"Emplois", marketplace:"MarchÃ©", services:"Services",
-    rentals:"Locations", vehicles:"VÃ©hicules", exchange:"Ã‰change", community:"CommunautÃ©",
+    home:"Accueil", jobs:"Emplois", marketplace:"Marché", services:"Services",
+    rentals:"Locations", vehicles:"Véhicules", exchange:"Échange", community:"Communauté",
     sell:"Vendre", buy:"Acheter", search:"Rechercher", login:"Connexion",
-    register:"S'inscrire", logout:"DÃ©connexion", settings:"ParamÃ¨tres",
+    register:"S'inscrire", logout:"Déconnexion", settings:"Paramètres",
     favorites:"Favoris", orders:"Commandes", back:"Retour", cancel:"Annuler",
-    save:"Enregistrer", loading:"Chargementâ€¦", error:"Une erreur est survenue.",
-    retry:"RÃ©essayer", seeAll:"Voir tout", tryAgain:"RÃ©essayer",
-    share:"Partager", copyLink:"Lien copiÃ© !",
-    jobsTitle:"Trouver un emploi ðŸ’¼", postJob:"+ Publier une offre",
-    jobSearchPlaceholder:"Rechercher emplois ou entreprisesâ€¦",
-    opportunities:"opportunitÃ©s au Cameroun",
-    filters:"Filtres", mostRecent:"Plus rÃ©cent",
-    clearFilters:"âœ• Effacer tous les filtres", jobType:"Type d'emploi", region:"RÃ©gion",
-    jobsFound:"offres trouvÃ©es", newestFirst:"plus rÃ©cent d'abord",
-    refresh:"â†» Actualiser", noJobs:"Aucune offre publiÃ©e",
-    noJobsHint:"Soyez le premier Ã  publier une offre !",
+    save:"Enregistrer", loading:"Chargement…", error:"Une erreur est survenue.",
+    retry:"Réessayer", seeAll:"Voir tout", tryAgain:"Réessayer",
+    share:"Partager", copyLink:"Lien copié !",
+    jobsTitle:"Trouver un emploi 💼", postJob:"+ Publier une offre",
+    jobSearchPlaceholder:"Rechercher emplois ou entreprises…",
+    opportunities:"opportunités au Cameroun",
+    filters:"Filtres", mostRecent:"Plus récent",
+    clearFilters:"✕ Effacer tous les filtres", jobType:"Type d'emploi", region:"Région",
+    jobsFound:"offres trouvées", newestFirst:"plus récent d'abord",
+    refresh:"↻ Actualiser", noJobs:"Aucune offre publiée",
+    noJobsHint:"Soyez le premier à publier une offre !",
     noMatch:"Aucune offre ne correspond", clearAll:"Effacer les filtres",
-    applyNow:"ðŸš€ Postuler maintenant", views:"vues", negotiable:"NÃ©gociable",
-    salaryNotSpec:"Salaire non prÃ©cisÃ©", deadline:"Date limite", remote:"TÃ©lÃ©travail",
+    applyNow:"🚀 Postuler maintenant", views:"vues", negotiable:"Négociable",
+    salaryNotSpec:"Salaire non précisé", deadline:"Date limite", remote:"Télétravail",
     jobError:"Impossible de charger les offres.", salary:"Salaire mensuel",
-    allJobs:"Tous les emplois", opportunity:"opportunitÃ©",
-    opportunitiesPlural:"opportunitÃ©s", noJobsCategory:"Aucune offre publiÃ©e",
-    checkBack:"Revenez bientÃ´t ou publiez une offre !",
-    viewApply:"Voir & Postuler â†’", loadMore:"Charger plus d'offres",
-    closed:"â›” FermÃ© â€” DÃ©lai dÃ©passÃ©", closingSoon:"â° Ferme bientÃ´t",
+    allJobs:"Tous les emplois", opportunity:"opportunité",
+    opportunitiesPlural:"opportunités", noJobsCategory:"Aucune offre publiée",
+    checkBack:"Revenez bientôt ou publiez une offre !",
+    viewApply:"Voir & Postuler →", loadMore:"Charger plus d'offres",
+    closed:"⛔ Fermé — Délai dépassé", closingSoon:"⏰ Ferme bientôt",
     today:"Aujourd'hui !", dLeft:"j restants",
-    jobNotFound:"Offre introuvable", jobLoading:"Chargementâ€¦",
-    jobDescription:"Description du poste", requirements:"Exigences & CompÃ©tences",
+    jobNotFound:"Offre introuvable", jobLoading:"Chargement…",
+    jobDescription:"Description du poste", requirements:"Exigences & Compétences",
     benefits:"Avantages", jobApplyNow:"Postuler maintenant",
     applyWhatsApp:"Postuler via WhatsApp", applyCall:"Appeler pour postuler",
-    applyEmail:"Postuler par email", applied:"Candidature envoyÃ©e âœ“",
-    applying:"Envoi en coursâ€¦", alreadyApplied:"Vous avez dÃ©jÃ  postulÃ©",
-    expired:"Cette offre a expirÃ©", deadline2:"Date limite",
-    candidates:"candidats", views2:"vues", published:"PubliÃ© le",
-    saved:"SauvegardÃ©", unsaved:"Sauvegarder", loginToApply:"Connectez-vous pour postuler",
+    applyEmail:"Postuler par email", applied:"Candidature envoyée ✓",
+    applying:"Envoi en cours…", alreadyApplied:"Vous avez déjà postulé",
+    expired:"Cette offre a expiré", deadline2:"Date limite",
+    candidates:"candidats", views2:"vues", published:"Publié le",
+    saved:"Sauvegardé", unsaved:"Sauvegarder", loginToApply:"Connectez-vous pour postuler",
     postJobTitle:"Publier une offre", postJobSubtitle:"Trouvez les meilleurs talents au Cameroun",
-    jobTitle:"IntitulÃ© du poste *", jobTitlePh:"ex. IngÃ©nieur logiciel senior",
+    jobTitle:"Intitulé du poste *", jobTitlePh:"ex. Ingénieur logiciel senior",
     company:"Entreprise / Organisation", companyPh:"Nom de votre entreprise",
-    jobCategory:"CatÃ©gorie *", employmentType:"Type de contrat *",
-    experienceLevel:"Niveau d'expÃ©rience *", cityLocation:"Ville / Lieu *",
-    cityPh:"ex. Douala, YaoundÃ©â€¦", regionLabel:"RÃ©gion",
-    isRemote:"TÃ©lÃ©travail possible", salaryMin:"Salaire min (FCFA/mois)",
+    jobCategory:"Catégorie *", employmentType:"Type de contrat *",
+    experienceLevel:"Niveau d'expérience *", cityLocation:"Ville / Lieu *",
+    cityPh:"ex. Douala, Yaoundé…", regionLabel:"Région",
+    isRemote:"Télétravail possible", salaryMin:"Salaire min (FCFA/mois)",
     salaryMax:"Salaire max (FCFA/mois)", salaryPh:"ex. 150000",
-    salaryNegotiable:"Salaire nÃ©gociable", applicationDeadline:"Date limite de candidature",
+    salaryNegotiable:"Salaire négociable", applicationDeadline:"Date limite de candidature",
     jobDescription2:"Description du poste *",
-    jobDescPh:"DÃ©crivez le poste, les responsabilitÃ©sâ€¦",
-    requirementsPh:"Qualifications, compÃ©tences requisesâ€¦",
-    benefitsLabel:"Avantages", benefitsPh:"Assurance maladie, transport, primesâ€¦",
-    tagsLabel:"CompÃ©tences / Tags (virgule)", tagsPh:"React, Node.js, Marketingâ€¦",
+    jobDescPh:"Décrivez le poste, les responsabilités…",
+    requirementsPh:"Qualifications, compétences requises…",
+    benefitsLabel:"Avantages", benefitsPh:"Assurance maladie, transport, primes…",
+    tagsLabel:"Compétences / Tags (virgule)", tagsPh:"React, Node.js, Marketing…",
     howApply:"Comment les candidats doivent-ils postuler ?",
-    applyInApp:"ðŸ“± Via la plateforme Bambeh", applyWhatsAppOpt:"ðŸ’¬ WhatsApp",
-    applyCallOpt:"ðŸ“ž Appel tÃ©lÃ©phonique", applyEmailOpt:"ðŸ“§ Email",
-    applyContactPh:"Entrez le numÃ©ro ou email pour les candidatures",
-    publishing:"Publication en coursâ€¦", jobPosted:"Offre publiÃ©e avec succÃ¨s !",
+    applyInApp:"📱 Via la plateforme Bambeh", applyWhatsAppOpt:"💬 WhatsApp",
+    applyCallOpt:"📞 Appel téléphonique", applyEmailOpt:"📧 Email",
+    applyContactPh:"Entrez le numéro ou email pour les candidatures",
+    publishing:"Publication en cours…", jobPosted:"Offre publiée avec succès !",
     publishJob:"Publier l'offre", fillRequired:"Veuillez remplir tous les champs obligatoires (*)",
-    loginRequired:"Vous devez Ãªtre connectÃ© pour publier une offre",
+    loginRequired:"Vous devez être connecté pour publier une offre",
     companyLogoLabel:"Logo de l'entreprise", chooseImage:"Choisir une image",
-    catAll:"Tout", catVegetables:"LÃ©gumes", catFruits:"Fruits", catTubers:"Tubercules",
-    catGrains:"CÃ©rÃ©ales", catLegumes:"LÃ©gumineuses", catHerbs:"Herbes",
+    catAll:"Tout", catVegetables:"Légumes", catFruits:"Fruits", catTubers:"Tubercules",
+    catGrains:"Céréales", catLegumes:"Légumineuses", catHerbs:"Herbes",
     catDairy:"Produits laitiers",
     cartEmpty:"Votre panier est vide", continueShopping:"Continuer les achats",
-    checkout:"Passer Ã  la caisse", subtotal:"Sous-total",
+    checkout:"Passer à la caisse", subtotal:"Sous-total",
     fee1pct:"Frais Bambeh (1 %)", total:"Total",
     payWithMoMo:"Payer avec MTN MoMo", payWithOrange:"Payer avec Orange Money",
     payNow:"Payer maintenant", paymentPending:"Paiement en attente",
-    paymentSuccess:"Paiement rÃ©ussi !", paymentFailed:"Paiement Ã©chouÃ©",
+    paymentSuccess:"Paiement réussi !", paymentFailed:"Paiement échoué",
   },
   pidgin: {
     home:"Home", jobs:"Jobs", marketplace:"Market", services:"Services",
     rentals:"Rentals", vehicles:"Cars", exchange:"Exchange", community:"Community",
     sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
     logout:"Logout", settings:"Settings", favorites:"Favorites", orders:"Orders",
-    back:"Back", cancel:"Cancel", save:"Save", loading:"E dey loadâ€¦",
+    back:"Back", cancel:"Cancel", save:"Save", loading:"E dey load…",
     error:"Something spoil. Try again.", retry:"Try Again", seeAll:"See all",
     tryAgain:"Try again", share:"Share", copyLink:"Link don copy!",
-    jobsTitle:"Find Work ðŸ’¼", postJob:"+ Post Work",
-    jobSearchPlaceholder:"Search work or companyâ€¦",
+    jobsTitle:"Find Work 💼", postJob:"+ Post Work",
+    jobSearchPlaceholder:"Search work or company…",
     opportunities:"opportunities for Cameroon",
     filters:"Filter", mostRecent:"New new",
-    clearFilters:"âœ• Clear all filter", jobType:"Work Type", region:"Region",
-    jobsFound:"work dey", newestFirst:"new ones first", refresh:"â†» Refresh",
+    clearFilters:"✕ Clear all filter", jobType:"Work Type", region:"Region",
+    jobsFound:"work dey", newestFirst:"new ones first", refresh:"↻ Refresh",
     noJobs:"No work yet", noJobsHint:"You be the first to post work!",
     noMatch:"No work match your filter", clearAll:"Clear filter",
-    applyNow:"ðŸš€ Apply Now", views:"people see am", negotiable:"E fit negotiate",
+    applyNow:"🚀 Apply Now", views:"people see am", negotiable:"E fit negotiate",
     salaryNotSpec:"No salary talk", deadline:"Last date", remote:"Online work",
     jobError:"We no fit load work.", salary:"Month salary",
     allJobs:"All Work", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No work yet", checkBack:"Come back later or post work!",
-    viewApply:"See & Apply â†’", loadMore:"Load more work",
-    closed:"â›” E don close", closingSoon:"â° E go close soon",
+    viewApply:"See & Apply →", loadMore:"Load more work",
+    closed:"⛔ E don close", closingSoon:"⏰ E go close soon",
     today:"Today!", dLeft:"days left",
-    jobNotFound:"Work no dey", jobLoading:"Dey loadâ€¦",
+    jobNotFound:"Work no dey", jobLoading:"Dey load…",
     jobDescription:"Work description", requirements:"Wetin dem need",
     benefits:"Bonus things", jobApplyNow:"Apply Now",
     applyWhatsApp:"Apply for WhatsApp", applyCall:"Call make apply",
-    applyEmail:"Send email apply", applied:"You don apply âœ“",
-    applying:"Dey send amâ€¦", alreadyApplied:"You don apply before",
+    applyEmail:"Send email apply", applied:"You don apply ✓",
+    applying:"Dey send am…", alreadyApplied:"You don apply before",
     expired:"Work don finish", deadline2:"Last date",
     candidates:"people apply", views2:"people see am", published:"Dem post am",
     saved:"You don save am", unsaved:"Save am", loginToApply:"Login first apply",
@@ -262,19 +262,19 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     company:"Company / Organisation", companyPh:"Your company name",
     jobCategory:"Work type *", employmentType:"Work arrangement *",
     experienceLevel:"Experience level *", cityLocation:"Town / Place *",
-    cityPh:"e.g. Douala, YaoundÃ©â€¦", regionLabel:"Region",
+    cityPh:"e.g. Douala, Yaoundé…", regionLabel:"Region",
     isRemote:"Online work dey", salaryMin:"Small salary (FCFA/month)",
     salaryMax:"Big salary (FCFA/month)", salaryPh:"e.g. 150000",
     salaryNegotiable:"Salary e fit talk", applicationDeadline:"Last date to apply",
     jobDescription2:"Work description *",
-    jobDescPh:"Tell us wetin the work be, wetin dem go do everydayâ€¦",
-    requirementsPh:"List all the things dem needâ€¦",
-    benefitsLabel:"Bonus things", benefitsPh:"Health, transport, bonus thingsâ€¦",
-    tagsLabel:"Skills (separate with comma)", tagsPh:"React, Node.js, Marketingâ€¦",
-    howApply:"How dem go apply?", applyInApp:"ðŸ“± Through Bambeh",
-    applyWhatsAppOpt:"ðŸ’¬ WhatsApp", applyCallOpt:"ðŸ“ž Phone call",
-    applyEmailOpt:"ðŸ“§ Email", applyContactPh:"Enter number or email",
-    publishing:"Dey post your workâ€¦", jobPosted:"Your work don post!",
+    jobDescPh:"Tell us wetin the work be, wetin dem go do everyday…",
+    requirementsPh:"List all the things dem need…",
+    benefitsLabel:"Bonus things", benefitsPh:"Health, transport, bonus things…",
+    tagsLabel:"Skills (separate with comma)", tagsPh:"React, Node.js, Marketing…",
+    howApply:"How dem go apply?", applyInApp:"📱 Through Bambeh",
+    applyWhatsAppOpt:"💬 WhatsApp", applyCallOpt:"📞 Phone call",
+    applyEmailOpt:"📧 Email", applyContactPh:"Enter number or email",
+    publishing:"Dey post your work…", jobPosted:"Your work don post!",
     publishJob:"Post the work", fillRequired:"Fill all * fields abeg",
     loginRequired:"You need login first",
     companyLogoLabel:"Company Logo", chooseImage:"Choose picture",
@@ -287,136 +287,136 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     paymentSuccess:"Payment Don Enter!", paymentFailed:"Payment Fail",
   },
   ar: {
-    home:"Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©", jobs:"Ø§Ù„ÙˆØ¸Ø§Ø¦Ù", marketplace:"Ø§Ù„Ø³ÙˆÙ‚", services:"Ø§Ù„Ø®Ø¯Ù…Ø§Øª",
-    rentals:"Ø§Ù„Ø¥ÙŠØ¬Ø§Ø±Ø§Øª", vehicles:"Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª", exchange:"Ø§Ù„ØªØ¨Ø§Ø¯Ù„", community:"Ø§Ù„Ù…Ø¬ØªÙ…Ø¹",
-    sell:"Ø¨ÙŠØ¹", buy:"Ø´Ø±Ø§Ø¡", search:"Ø¨Ø­Ø«", login:"ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„",
-    register:"Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨", logout:"ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬", settings:"Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª",
-    favorites:"Ø§Ù„Ù…ÙØ¶Ù„Ø©", orders:"Ø§Ù„Ø·Ù„Ø¨Ø§Øª", back:"Ø±Ø¬ÙˆØ¹", cancel:"Ø¥Ù„ØºØ§Ø¡",
-    save:"Ø­ÙØ¸", loading:"Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦", error:"Ø­Ø¯Ø« Ø®Ø·Ø£. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø¬Ø¯Ø¯Ø§Ù‹.",
-    retry:"Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©", seeAll:"Ø¹Ø±Ø¶ Ø§Ù„ÙƒÙ„", tryAgain:"Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰",
-    share:"Ù…Ø´Ø§Ø±ÙƒØ©", copyLink:"ØªÙ… Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·!",
-    jobsTitle:"Ø§Ù„Ø¨Ø­Ø« Ø¹Ù† Ø¹Ù…Ù„ ðŸ’¼", postJob:"+ Ù†Ø´Ø± ÙˆØ¸ÙŠÙØ©",
-    jobSearchPlaceholder:"Ø§Ù„Ø¨Ø­Ø« Ø¹Ù† ÙˆØ¸Ø§Ø¦Ù Ø£Ùˆ Ø´Ø±ÙƒØ§Øªâ€¦",
-    opportunities:"ÙØ±ØµØ© Ø¹Ù…Ù„ ÙÙŠ Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ†",
-    filters:"ØªØµÙÙŠØ©", mostRecent:"Ø§Ù„Ø£Ø­Ø¯Ø«",
-    clearFilters:"âœ• Ù…Ø³Ø­ Ø¬Ù…ÙŠØ¹ Ø§Ù„ØªØµÙÙŠØ§Øª", jobType:"Ù†ÙˆØ¹ Ø§Ù„ÙˆØ¸ÙŠÙØ©", region:"Ø§Ù„Ù…Ù†Ø·Ù‚Ø©",
-    jobsFound:"ÙˆØ¸ÙŠÙØ© Ù…ÙˆØ¬ÙˆØ¯Ø©", newestFirst:"Ø§Ù„Ø£Ø­Ø¯Ø« Ø£ÙˆÙ„Ø§Ù‹", refresh:"â†» ØªØ­Ø¯ÙŠØ«",
-    noJobs:"Ù„Ø§ ØªÙˆØ¬Ø¯ ÙˆØ¸Ø§Ø¦Ù Ø¨Ø¹Ø¯", noJobsHint:"ÙƒÙ† Ø£ÙˆÙ„ Ù…Ù† ÙŠÙ†Ø´Ø± ÙØ±ØµØ© Ø¹Ù…Ù„!",
-    noMatch:"Ù„Ø§ ØªÙˆØ¬Ø¯ ÙˆØ¸Ø§Ø¦Ù Ù…Ø·Ø§Ø¨Ù‚Ø©", clearAll:"Ù…Ø³Ø­ Ø§Ù„ÙƒÙ„",
-    applyNow:"ðŸš€ ØªÙ‚Ø¯Ù… Ø§Ù„Ø¢Ù†", views:"Ù…Ø´Ø§Ù‡Ø¯Ø©", negotiable:"Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙØ§ÙˆØ¶",
-    salaryNotSpec:"Ø§Ù„Ø±Ø§ØªØ¨ ØºÙŠØ± Ù…Ø­Ø¯Ø¯", deadline:"Ø¢Ø®Ø± Ù…ÙˆØ¹Ø¯", remote:"Ø¹Ù† Ø¨ÙØ¹Ø¯",
-    jobError:"ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„ÙˆØ¸Ø§Ø¦Ù.", salary:"Ø§Ù„Ø±Ø§ØªØ¨ Ø§Ù„Ø´Ù‡Ø±ÙŠ",
-    allJobs:"Ø¬Ù…ÙŠØ¹ Ø§Ù„ÙˆØ¸Ø§Ø¦Ù", opportunity:"ÙØ±ØµØ©", opportunitiesPlural:"ÙØ±Øµ",
-    noJobsCategory:"Ù„Ø§ ØªÙˆØ¬Ø¯ ÙˆØ¸Ø§Ø¦Ù Ø¨Ø¹Ø¯", checkBack:"Ø¹Ø¯ Ù‚Ø±ÙŠØ¨Ø§Ù‹ Ø£Ùˆ Ø§Ù†Ø´Ø± ÙˆØ¸ÙŠÙØ©!",
-    viewApply:"Ø¹Ø±Ø¶ ÙˆØªÙ‚Ø¯ÙŠÙ… â†’", loadMore:"ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø²ÙŠØ¯",
-    closed:"â›” Ù…ØºÙ„Ù‚ â€” Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ù…ÙˆØ¹Ø¯", closingSoon:"â° ÙŠÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ø§Ù‹",
-    today:"Ø§Ù„ÙŠÙˆÙ…!", dLeft:"Ø£ÙŠØ§Ù… Ù…ØªØ¨Ù‚ÙŠØ©",
-    jobNotFound:"Ø§Ù„ÙˆØ¸ÙŠÙØ© ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯Ø©", jobLoading:"Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦",
-    jobDescription:"ÙˆØµÙ Ø§Ù„ÙˆØ¸ÙŠÙØ©", requirements:"Ø§Ù„Ù…ØªØ·Ù„Ø¨Ø§Øª ÙˆØ§Ù„Ù…Ù‡Ø§Ø±Ø§Øª",
-    benefits:"Ø§Ù„Ù…Ø²Ø§ÙŠØ§ ÙˆØ§Ù„Ù…ÙƒØ§ÙØ¢Øª", jobApplyNow:"ØªÙ‚Ø¯Ù… Ø§Ù„Ø¢Ù†",
-    applyWhatsApp:"Ø§Ù„ØªÙ‚Ø¯ÙŠÙ… Ø¹Ø¨Ø± ÙˆØ§ØªØ³Ø§Ø¨", applyCall:"Ø§ØªØµÙ„ Ù„Ù„ØªÙ‚Ø¯ÙŠÙ…",
-    applyEmail:"Ø§Ù„ØªÙ‚Ø¯ÙŠÙ… Ø¨Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ", applied:"ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø·Ù„Ø¨ âœ“",
-    applying:"Ø¬Ø§Ø±Ù Ø§Ù„Ø¥Ø±Ø³Ø§Ù„â€¦", alreadyApplied:"Ù„Ù‚Ø¯ ØªÙ‚Ø¯Ù…Øª Ø¨Ø§Ù„ÙØ¹Ù„",
-    expired:"Ø§Ù†ØªÙ‡Øª ØµÙ„Ø§Ø­ÙŠØ© Ø§Ù„ÙˆØ¸ÙŠÙØ©", deadline2:"Ø¢Ø®Ø± Ù…ÙˆØ¹Ø¯",
-    candidates:"Ù…ØªÙ‚Ø¯Ù…", views2:"Ù…Ø´Ø§Ù‡Ø¯Ø©", published:"Ù†ÙØ´Ø± ÙÙŠ",
-    saved:"Ù…Ø­ÙÙˆØ¸", unsaved:"Ø­ÙØ¸", loginToApply:"Ø³Ø¬Ù‘Ù„ Ø¯Ø®ÙˆÙ„Ùƒ Ù„Ù„ØªÙ‚Ø¯ÙŠÙ…",
-    postJobTitle:"Ù†Ø´Ø± ÙˆØ¸ÙŠÙØ©", postJobSubtitle:"Ø§Ø¹Ø«Ø± Ø¹Ù„Ù‰ Ø§Ù„Ù…ÙˆØ§Ù‡Ø¨ ÙÙŠ Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ†",
-    jobTitle:"Ø§Ù„Ù…Ø³Ù…Ù‰ Ø§Ù„ÙˆØ¸ÙŠÙÙŠ *", jobTitlePh:"Ù…Ø«Ù„: Ù…Ù‡Ù†Ø¯Ø³ Ø¨Ø±Ù…Ø¬ÙŠØ§Øª Ø£ÙˆÙ„",
-    company:"Ø§Ù„Ø´Ø±ÙƒØ© / Ø§Ù„Ù…Ø¤Ø³Ø³Ø©", companyPh:"Ø§Ø³Ù… Ø´Ø±ÙƒØªÙƒ",
-    jobCategory:"Ø§Ù„ÙØ¦Ø© *", employmentType:"Ù†ÙˆØ¹ Ø§Ù„ØªÙˆØ¸ÙŠÙ *",
-    experienceLevel:"Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø®Ø¨Ø±Ø© *", cityLocation:"Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© / Ø§Ù„Ù…ÙˆÙ‚Ø¹ *",
-    cityPh:"Ù…Ø«Ù„: Ø¯ÙˆØ§Ù„Ø§ØŒ ÙŠØ§ÙˆÙ†Ø¯ÙŠâ€¦", regionLabel:"Ø§Ù„Ù…Ù†Ø·Ù‚Ø©",
-    isRemote:"ÙŠØªÙˆÙØ± Ø¹Ù…Ù„ Ø¹Ù† Ø¨ÙØ¹Ø¯", salaryMin:"Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ø¯Ù†Ù‰ Ù„Ù„Ø±Ø§ØªØ¨ (ÙØ±Ù†Ùƒ/Ø´Ù‡Ø±)",
-    salaryMax:"Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰ Ù„Ù„Ø±Ø§ØªØ¨", salaryPh:"Ù…Ø«Ù„: 150000",
-    salaryNegotiable:"Ø§Ù„Ø±Ø§ØªØ¨ Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙØ§ÙˆØ¶",
-    applicationDeadline:"Ø¢Ø®Ø± Ù…ÙˆØ¹Ø¯ Ù„Ù„ØªÙ‚Ø¯ÙŠÙ…",
-    jobDescription2:"ÙˆØµÙ Ø§Ù„ÙˆØ¸ÙŠÙØ© *", jobDescPh:"Ø§ÙˆØµÙ Ø§Ù„Ø¯ÙˆØ± ÙˆØ§Ù„Ù…Ø³Ø¤ÙˆÙ„ÙŠØ§Øªâ€¦",
-    requirementsPh:"Ø§Ø°ÙƒØ± Ø§Ù„Ù…Ø¤Ù‡Ù„Ø§Øª ÙˆØ§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©â€¦",
-    benefitsLabel:"Ø§Ù„Ù…Ø²Ø§ÙŠØ§ ÙˆØ§Ù„Ù…ÙƒØ§ÙØ¢Øª", benefitsPh:"ØªØ£Ù…ÙŠÙ† ØµØ­ÙŠØŒ Ø¨Ø¯Ù„ Ù†Ù‚Ù„ØŒ Ù…ÙƒØ§ÙØ¢Øªâ€¦",
-    tagsLabel:"Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª / Ø§Ù„ÙˆØ³ÙˆÙ…", tagsPh:"React, Node.js, ØªØ³ÙˆÙŠÙ‚â€¦",
-    howApply:"ÙƒÙŠÙ ÙŠØªÙ‚Ø¯Ù… Ø§Ù„Ù…Ø±Ø´Ø­ÙˆÙ†ØŸ", applyInApp:"ðŸ“± Ø¹Ø¨Ø± Ù…Ù†ØµØ© Ø¨Ø§Ù…Ø¨ÙŠÙ‡",
-    applyWhatsAppOpt:"ðŸ’¬ ÙˆØ§ØªØ³Ø§Ø¨", applyCallOpt:"ðŸ“ž Ù…ÙƒØ§Ù„Ù…Ø© Ù‡Ø§ØªÙÙŠØ©",
-    applyEmailOpt:"ðŸ“§ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
-    applyContactPh:"Ø£Ø¯Ø®Ù„ Ø§Ù„Ø±Ù‚Ù… Ø£Ùˆ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
-    publishing:"Ø¬Ø§Ø±Ù Ø§Ù„Ù†Ø´Ø±â€¦", jobPosted:"ØªÙ… Ù†Ø´Ø± Ø§Ù„ÙˆØ¸ÙŠÙØ© Ø¨Ù†Ø¬Ø§Ø­!",
-    publishJob:"Ù†Ø´Ø± Ø§Ù„ÙˆØ¸ÙŠÙØ©", fillRequired:"ÙŠØ±Ø¬Ù‰ Ù…Ù„Ø¡ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø© (*)",
-    loginRequired:"ÙŠØ¬Ø¨ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù†Ø´Ø± ÙˆØ¸ÙŠÙØ©",
-    companyLogoLabel:"Ø´Ø¹Ø§Ø± Ø§Ù„Ø´Ø±ÙƒØ©", chooseImage:"Ø§Ø®ØªØ± ØµÙˆØ±Ø©",
-    catAll:"Ø§Ù„ÙƒÙ„", catVegetables:"Ø®Ø¶Ø±ÙˆØ§Øª", catFruits:"ÙÙˆØ§ÙƒÙ‡", catTubers:"Ø¯Ø±Ù†Ø§Øª",
-    catGrains:"Ø­Ø¨ÙˆØ¨", catLegumes:"Ø¨Ù‚ÙˆÙ„ÙŠØ§Øª", catHerbs:"Ø£Ø¹Ø´Ø§Ø¨",
-    catDairy:"Ù…Ù†ØªØ¬Ø§Øª Ø§Ù„Ø£Ù„Ø¨Ø§Ù†",
-    cartEmpty:"Ø³Ù„ØªÙƒ ÙØ§Ø±ØºØ©", continueShopping:"Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„ØªØ³ÙˆÙ‚",
-    checkout:"Ø¥ØªÙ…Ø§Ù… Ø§Ù„Ø´Ø±Ø§Ø¡", subtotal:"Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ø§Ù„Ø¬Ø²Ø¦ÙŠ",
-    fee1pct:"Ø±Ø³ÙˆÙ… Ø¨Ø§Ù…Ø¨ÙŠÙ‡ (1Ùª)", total:"Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ",
-    payWithMoMo:"Ø§Ù„Ø¯ÙØ¹ Ø¹Ø¨Ø± MTN MoMo", payWithOrange:"Ø§Ù„Ø¯ÙØ¹ Ø¹Ø¨Ø± Orange Money",
-    payNow:"Ø§Ø¯ÙØ¹ Ø§Ù„Ø¢Ù†", paymentPending:"ÙÙŠ Ø§Ù†ØªØ¸Ø§Ø± Ø§Ù„Ø¯ÙØ¹",
-    paymentSuccess:"ØªÙ… Ø§Ù„Ø¯ÙØ¹ Ø¨Ù†Ø¬Ø§Ø­!", paymentFailed:"ÙØ´Ù„ Ø§Ù„Ø¯ÙØ¹",
+    home:"الرئيسية", jobs:"الوظائف", marketplace:"السوق", services:"الخدمات",
+    rentals:"الإيجارات", vehicles:"المركبات", exchange:"التبادل", community:"المجتمع",
+    sell:"بيع", buy:"شراء", search:"بحث", login:"تسجيل الدخول",
+    register:"إنشاء حساب", logout:"تسجيل الخروج", settings:"الإعدادات",
+    favorites:"المفضلة", orders:"الطلبات", back:"رجوع", cancel:"إلغاء",
+    save:"حفظ", loading:"جارٍ التحميل…", error:"حدث خطأ. يرجى المحاولة مجدداً.",
+    retry:"إعادة المحاولة", seeAll:"عرض الكل", tryAgain:"حاول مرة أخرى",
+    share:"مشاركة", copyLink:"تم نسخ الرابط!",
+    jobsTitle:"البحث عن عمل 💼", postJob:"+ نشر وظيفة",
+    jobSearchPlaceholder:"البحث عن وظائف أو شركات…",
+    opportunities:"فرصة عمل في الكاميرون",
+    filters:"تصفية", mostRecent:"الأحدث",
+    clearFilters:"✕ مسح جميع التصفيات", jobType:"نوع الوظيفة", region:"المنطقة",
+    jobsFound:"وظيفة موجودة", newestFirst:"الأحدث أولاً", refresh:"↻ تحديث",
+    noJobs:"لا توجد وظائف بعد", noJobsHint:"كن أول من ينشر فرصة عمل!",
+    noMatch:"لا توجد وظائف مطابقة", clearAll:"مسح الكل",
+    applyNow:"🚀 تقدم الآن", views:"مشاهدة", negotiable:"قابل للتفاوض",
+    salaryNotSpec:"الراتب غير محدد", deadline:"آخر موعد", remote:"عن بُعد",
+    jobError:"تعذر تحميل الوظائف.", salary:"الراتب الشهري",
+    allJobs:"جميع الوظائف", opportunity:"فرصة", opportunitiesPlural:"فرص",
+    noJobsCategory:"لا توجد وظائف بعد", checkBack:"عد قريباً أو انشر وظيفة!",
+    viewApply:"عرض وتقديم →", loadMore:"تحميل المزيد",
+    closed:"⛔ مغلق — انتهى الموعد", closingSoon:"⏰ ينتهي قريباً",
+    today:"اليوم!", dLeft:"أيام متبقية",
+    jobNotFound:"الوظيفة غير موجودة", jobLoading:"جارٍ التحميل…",
+    jobDescription:"وصف الوظيفة", requirements:"المتطلبات والمهارات",
+    benefits:"المزايا والمكافآت", jobApplyNow:"تقدم الآن",
+    applyWhatsApp:"التقديم عبر واتساب", applyCall:"اتصل للتقديم",
+    applyEmail:"التقديم بالبريد الإلكتروني", applied:"تم إرسال الطلب ✓",
+    applying:"جارٍ الإرسال…", alreadyApplied:"لقد تقدمت بالفعل",
+    expired:"انتهت صلاحية الوظيفة", deadline2:"آخر موعد",
+    candidates:"متقدم", views2:"مشاهدة", published:"نُشر في",
+    saved:"محفوظ", unsaved:"حفظ", loginToApply:"سجّل دخولك للتقديم",
+    postJobTitle:"نشر وظيفة", postJobSubtitle:"اعثر على المواهب في الكاميرون",
+    jobTitle:"المسمى الوظيفي *", jobTitlePh:"مثل: مهندس برمجيات أول",
+    company:"الشركة / المؤسسة", companyPh:"اسم شركتك",
+    jobCategory:"الفئة *", employmentType:"نوع التوظيف *",
+    experienceLevel:"مستوى الخبرة *", cityLocation:"المدينة / الموقع *",
+    cityPh:"مثل: دوالا، ياوندي…", regionLabel:"المنطقة",
+    isRemote:"يتوفر عمل عن بُعد", salaryMin:"الحد الأدنى للراتب (فرنك/شهر)",
+    salaryMax:"الحد الأقصى للراتب", salaryPh:"مثل: 150000",
+    salaryNegotiable:"الراتب قابل للتفاوض",
+    applicationDeadline:"آخر موعد للتقديم",
+    jobDescription2:"وصف الوظيفة *", jobDescPh:"اوصف الدور والمسؤوليات…",
+    requirementsPh:"اذكر المؤهلات والمهارات المطلوبة…",
+    benefitsLabel:"المزايا والمكافآت", benefitsPh:"تأمين صحي، بدل نقل، مكافآت…",
+    tagsLabel:"المهارات / الوسوم", tagsPh:"React, Node.js, تسويق…",
+    howApply:"كيف يتقدم المرشحون؟", applyInApp:"📱 عبر منصة بامبيه",
+    applyWhatsAppOpt:"💬 واتساب", applyCallOpt:"📞 مكالمة هاتفية",
+    applyEmailOpt:"📧 البريد الإلكتروني",
+    applyContactPh:"أدخل الرقم أو البريد الإلكتروني",
+    publishing:"جارٍ النشر…", jobPosted:"تم نشر الوظيفة بنجاح!",
+    publishJob:"نشر الوظيفة", fillRequired:"يرجى ملء جميع الحقول المطلوبة (*)",
+    loginRequired:"يجب تسجيل الدخول لنشر وظيفة",
+    companyLogoLabel:"شعار الشركة", chooseImage:"اختر صورة",
+    catAll:"الكل", catVegetables:"خضروات", catFruits:"فواكه", catTubers:"درنات",
+    catGrains:"حبوب", catLegumes:"بقوليات", catHerbs:"أعشاب",
+    catDairy:"منتجات الألبان",
+    cartEmpty:"سلتك فارغة", continueShopping:"متابعة التسوق",
+    checkout:"إتمام الشراء", subtotal:"المجموع الجزئي",
+    fee1pct:"رسوم بامبيه (1٪)", total:"الإجمالي",
+    payWithMoMo:"الدفع عبر MTN MoMo", payWithOrange:"الدفع عبر Orange Money",
+    payNow:"ادفع الآن", paymentPending:"في انتظار الدفع",
+    paymentSuccess:"تم الدفع بنجاح!", paymentFailed:"فشل الدفع",
   },
   ff: {
-    home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"ÆalÉ—e",
-    rentals:"Hireeli", vehicles:"Ottooji", exchange:"YoÆ´taari", community:"ÆiÉ“É“e",
-    sell:"Fiyee", buy:"Soodee", search:"Æ³eewee", login:"Naatdee",
-    register:"Restoree", logout:"FuÉ—É—odee", settings:"HaÉ“É“itorde",
-    favorites:"FaaÉ“aaÉ“e", orders:"Sarwiiji", back:"Heddii", cancel:"HaÉ—",
-    save:"Dannee", loading:"E nder loodiâ€¦", error:"Huunde waÉ“É“i. Æettoo.",
-    retry:"Æettoo", seeAll:"Hol fof", tryAgain:"EÉ—É—oo yeeso",
-    share:"Siiwtindiraa", copyLink:"Ã‘olndi jaÉ“É“aama!",
-    jobsTitle:"Yiyde Golle ðŸ’¼", postJob:"+ Fewtu Golle",
-    jobSearchPlaceholder:"Yiylo golle walla liggeyâ€¦",
+    home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"Ɓalɗe",
+    rentals:"Hireeli", vehicles:"Ottooji", exchange:"Yoƴtaari", community:"Ɓiɓɓe",
+    sell:"Fiyee", buy:"Soodee", search:"Ƴeewee", login:"Naatdee",
+    register:"Restoree", logout:"Fuɗɗodee", settings:"Haɓɓitorde",
+    favorites:"Faaɓaaɓe", orders:"Sarwiiji", back:"Heddii", cancel:"Haɗ",
+    save:"Dannee", loading:"E nder loodi…", error:"Huunde waɓɓi. Ɓettoo.",
+    retry:"Ɓettoo", seeAll:"Hol fof", tryAgain:"Eɗɗoo yeeso",
+    share:"Siiwtindiraa", copyLink:"Ñolndi jaɓɓaama!",
+    jobsTitle:"Yiyde Golle 💼", postJob:"+ Fewtu Golle",
+    jobSearchPlaceholder:"Yiylo golle walla liggey…",
     opportunities:"golle e Kameruun",
-    filters:"TippitorÉ—e", mostRecent:"ÆuuÉ“É—um",
-    clearFilters:"âœ• Huccit tippitorÉ—e fof", jobType:"Suudu Golle", region:"Leydi",
-    jobsFound:"golle heÉ“taama", newestFirst:"É“uuÉ“É—um É“oo", refresh:"â†» HeÉ“tu",
+    filters:"Tippitorɗe", mostRecent:"Ɓuuɓɗum",
+    clearFilters:"✕ Huccit tippitorɗe fof", jobType:"Suudu Golle", region:"Leydi",
+    jobsFound:"golle heɓtaama", newestFirst:"ɓuuɓɗum ɓoo", refresh:"↻ Heɓtu",
     noJobs:"Alaa golle fewti", noJobsHint:"Ardi fewtu golle!",
-    noMatch:"Alaa golle faayi", clearAll:"Huccit tippitorÉ—e",
-    applyNow:"ðŸš€ DaÃ± Golle", views:"yiylaama", negotiable:"Naggi",
-    salaryNotSpec:"Njobdi alaa", deadline:"BalÉ—e É“ennoo", remote:"E Æanndu",
+    noMatch:"Alaa golle faayi", clearAll:"Huccit tippitorɗe",
+    applyNow:"🚀 Dañ Golle", views:"yiylaama", negotiable:"Naggi",
+    salaryNotSpec:"Njobdi alaa", deadline:"Balɗe ɓennoo", remote:"E Ɓanndu",
     jobError:"Golle naataani.", salary:"Njobdi koorka",
     allJobs:"Golle fof", opportunity:"sago", opportunitiesPlural:"sagoji",
-    noJobsCategory:"Alaa golle", checkBack:"Ardi tuma É“ee ko fewtu!",
-    viewApply:"Yii & DaÃ± â†’", loadMore:"Nanngin Golleli",
-    closed:"â›” Uddii", closingSoon:"â° Æennoo seeÉ—a",
-    today:"Hannde!", dLeft:"balÉ—e",
-    jobNotFound:"Golle heÉ“aani", jobLoading:"Nannginiiâ€¦",
-    jobDescription:"JaÅ‹tugol Golle", requirements:"Ko heÉ“etee",
-    benefits:"Nafaaji", jobApplyNow:"DaÃ± Golle",
-    applyWhatsApp:"Jokkude e WhatsApp", applyCall:"Noddu ngam DaÃ±de",
-    applyEmail:"Imeel ngam DaÃ±de", applied:"Jokkunde nootii âœ“",
-    applying:"Nannginiiâ€¦", alreadyApplied:"Ko njimonaa yoodi",
-    expired:"Golle É“enni", deadline2:"BalÉ—e É“ennoo",
-    candidates:"jokkooÉ“e", views2:"yiylaama", published:"Fewtiima",
-    saved:"Adanaama", unsaved:"Adana", loginToApply:"Naatir ngam daÃ±de",
-    postJobTitle:"Fewtu Golle", postJobSubtitle:"Yiydaa É—oo e Kameruun",
-    jobTitle:"Innde Golle *", jobTitlePh:"taa. Injiniir É“aleejo",
-    company:"Liggey / Æ˜ulle", companyPh:"Innde liggey maa",
+    noJobsCategory:"Alaa golle", checkBack:"Ardi tuma ɓee ko fewtu!",
+    viewApply:"Yii & Dañ →", loadMore:"Nanngin Golleli",
+    closed:"⛔ Uddii", closingSoon:"⏰ Ɓennoo seeɗa",
+    today:"Hannde!", dLeft:"balɗe",
+    jobNotFound:"Golle heɓaani", jobLoading:"Nannginii…",
+    jobDescription:"Jaŋtugol Golle", requirements:"Ko heɓetee",
+    benefits:"Nafaaji", jobApplyNow:"Dañ Golle",
+    applyWhatsApp:"Jokkude e WhatsApp", applyCall:"Noddu ngam Dañde",
+    applyEmail:"Imeel ngam Dañde", applied:"Jokkunde nootii ✓",
+    applying:"Nannginii…", alreadyApplied:"Ko njimonaa yoodi",
+    expired:"Golle ɓenni", deadline2:"Balɗe ɓennoo",
+    candidates:"jokkooɓe", views2:"yiylaama", published:"Fewtiima",
+    saved:"Adanaama", unsaved:"Adana", loginToApply:"Naatir ngam dañde",
+    postJobTitle:"Fewtu Golle", postJobSubtitle:"Yiydaa ɗoo e Kameruun",
+    jobTitle:"Innde Golle *", jobTitlePh:"taa. Injiniir ɓaleejo",
+    company:"Liggey / Ƙulle", companyPh:"Innde liggey maa",
     jobCategory:"Suudu Golle *", employmentType:"Suudu Kontoraaji *",
-    experienceLevel:"Karallaagal *", cityLocation:"Wuro / Æoggol *",
-    cityPh:"taa. Douala, YaoundÃ©â€¦", regionLabel:"Leydi",
-    isRemote:"E Æanndu É—on", salaryMin:"Njobdi bilahi (FCFA/koorka)",
+    experienceLevel:"Karallaagal *", cityLocation:"Wuro / Ɓoggol *",
+    cityPh:"taa. Douala, Yaoundé…", regionLabel:"Leydi",
+    isRemote:"E Ɓanndu ɗon", salaryMin:"Njobdi bilahi (FCFA/koorka)",
     salaryMax:"Njobdi heeli (FCFA/koorka)", salaryPh:"taa. 150000",
-    salaryNegotiable:"Njobdi naggi", applicationDeadline:"BalÉ—e É“ennoo",
-    jobDescription2:"JaÅ‹tugol Golle *", jobDescPh:"JaÅ‹tu golle ndeeâ€¦",
-    requirementsPh:"JaÅ‹tu ko heÉ“etee, É—emÉ—eâ€¦",
-    benefitsLabel:"Nafaaji", benefitsPh:"Laamu cellal, njuÉ“É“udiâ€¦",
-    tagsLabel:"ÆŠemÉ—e (tippuÉ—e e tiindol)", tagsPh:"React, Node.jsâ€¦",
-    howApply:"No jokkorÉ—e poti jokkude?", applyInApp:"ðŸ“± E Bambeh",
-    applyWhatsAppOpt:"ðŸ’¬ WhatsApp", applyCallOpt:"ðŸ“ž Noddaare",
-    applyEmailOpt:"ðŸ“§ Imeel", applyContactPh:"Naatnu numeerol maa imeel",
-    publishing:"Fewtinaamaâ€¦", jobPosted:"Golle fewtiima!",
-    publishJob:"Fewtu Golle", fillRequired:"HeÉ“tu goÉ—É—e fof peewnaaÉ—e (*)",
+    salaryNegotiable:"Njobdi naggi", applicationDeadline:"Balɗe ɓennoo",
+    jobDescription2:"Jaŋtugol Golle *", jobDescPh:"Jaŋtu golle ndee…",
+    requirementsPh:"Jaŋtu ko heɓetee, ɗemɗe…",
+    benefitsLabel:"Nafaaji", benefitsPh:"Laamu cellal, njuɓɓudi…",
+    tagsLabel:"Ɗemɗe (tippuɗe e tiindol)", tagsPh:"React, Node.js…",
+    howApply:"No jokkorɗe poti jokkude?", applyInApp:"📱 E Bambeh",
+    applyWhatsAppOpt:"💬 WhatsApp", applyCallOpt:"📞 Noddaare",
+    applyEmailOpt:"📧 Imeel", applyContactPh:"Naatnu numeerol maa imeel",
+    publishing:"Fewtinaama…", jobPosted:"Golle fewtiima!",
+    publishJob:"Fewtu Golle", fillRequired:"Heɓtu goɗɗe fof peewnaaɗe (*)",
     loginRequired:"Naatir ngam fewtoyde golle",
     companyLogoLabel:"Sawru Liggey", chooseImage:"Soodii sawru",
-    catAll:"Fof", catVegetables:"LeÉ—É—e", catFruits:"BiÉ—É—o", catTubers:"Yonnde",
-    catGrains:"GanÉ—al", catLegumes:"KuÉ“É“e", catHerbs:"Caali", catDairy:"Kosam",
+    catAll:"Fof", catVegetables:"Leɗɗe", catFruits:"Biɗɗo", catTubers:"Yonnde",
+    catGrains:"Ganɗal", catLegumes:"Kuɓɓe", catHerbs:"Caali", catDairy:"Kosam",
     cartEmpty:"Sagas maa fotaani", continueShopping:"Jokku Sooding",
-    checkout:"Ã‘ammbu", subtotal:"Dow", fee1pct:"Ã‘amiri Bambeh (1%)", total:"Timmol",
-    payWithMoMo:"Ã‘ammbu MTN MoMo", payWithOrange:"Ã‘ammbu Orange Money",
-    payNow:"Ã‘ammbu ÆŠoo", paymentPending:"E YoÉ“deâ€¦",
-    paymentSuccess:"YoÉ“de DanÉ—ii!", paymentFailed:"YoÉ“de WaÉ“É“i",
+    checkout:"Ñammbu", subtotal:"Dow", fee1pct:"Ñamiri Bambeh (1%)", total:"Timmol",
+    payWithMoMo:"Ñammbu MTN MoMo", payWithOrange:"Ñammbu Orange Money",
+    payNow:"Ñammbu Ɗoo", paymentPending:"E Yoɓde…",
+    paymentSuccess:"Yoɓde Danɗii!", paymentFailed:"Yoɓde Waɓɓi",
   },
 };
 
-// â”€â”€â”€ The context itself â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── The context itself ───────────────────────────────────────────────────────
 const LanguageContext = createContext<LangCtx>({
   language: "en",
   setLanguage: () => {},
@@ -471,18 +471,18 @@ const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children })
   );
 };
 
-// â”€â”€â”€ 6. Layouts (Eager â€” used on nearly every route) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 6. Layouts (Eager — used on nearly every route) ─────────────────────────
 import MainLayout from "@/components/layout/MainLayout";
 import AuthLayout from "@/components/layout/AuthLayout";
 import VendorLayout from "@/components/layout/VendorLayout";
 
-// â”€â”€â”€ 7. Eager Page Imports (first-screen only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 7. Eager Page Imports (first-screen only) ────────────────────────────────
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 
-// â”€â”€â”€ 8. Lazy Page Imports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
@@ -662,9 +662,9 @@ const PaymentPending  = lazy(() => import("@/pages/payment/PaymentPending"));
 const PaymentSuccess  = lazy(() => import("@/pages/payment/PaymentSuccess"));
 const PaymentFailed   = lazy(() => import("@/pages/payment/PaymentFailed"));
 
-// â”€â”€â”€ 9. Inline Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── 9. Inline Components ─────────────────────────────────────────────────────
 
-// â”€â”€ BackToTopButton â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── BackToTopButton ──────────────────────────────────────────────────────────
 const BackToTopButton = React.memo(function BackToTopButton() {
   const [visible, setVisible] = React.useState(false);
 
@@ -711,7 +711,7 @@ const BackToTopButton = React.memo(function BackToTopButton() {
   );
 });
 
-// â”€â”€ RouteAwareWidgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── RouteAwareWidgets ────────────────────────────────────────────────────────
 const WIDGET_HIDDEN_PATHS = ["/language", "/terms-acceptance"];
 
 // Share banner shows ONLY on home page to avoid covering content on other pages
@@ -733,7 +733,7 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
   );
 });
 
-// â”€â”€ LoadingFallback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── LoadingFallback ──────────────────────────────────────────────────────────
 const LoadingFallback = React.memo(function LoadingFallback() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -774,8 +774,8 @@ const LoadingFallback = React.memo(function LoadingFallback() {
   );
 });
 
-// â”€â”€ OnboardingFlowGuard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// FIX: guardPassed initialised to `true` directly â€” eliminates the one-tick
+// ── OnboardingFlowGuard ──────────────────────────────────────────────────────
+// FIX: guardPassed initialised to `true` directly — eliminates the one-tick
 // LoadingFallback flash that occurred when it was initialised to `false`.
 // The useEffect was only setting it to true immediately anyway; removing it
 // is correct and has no behavioural side-effects.
@@ -786,7 +786,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
 
   // FIX: Expanded publicPrefixes to include all legitimately public pages.
   // Previously, routes like /about, /search, /seller/*, /spotlight, etc. were
-  // missing â€” causing first-time users to be bounced to /language when
+  // missing — causing first-time users to be bounced to /language when
   // browsing public content before completing onboarding.
   const publicPrefixes = [
     "/login",
@@ -846,14 +846,14 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   return <>{children}</>;
 });
 
-// â”€â”€ AppInner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── AppInner ─────────────────────────────────────────────────────────────────
 // Thin wrapper rendered INSIDE AppProviders so hooks that need context are safe.
 function AppInner() {
   useMonthlyFeedback();
   return null;
 }
 
-// â”€â”€â”€ CAPACITOR INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CAPACITOR INIT ───────────────────────────────────────────────────────────
 const initializeCapacitor = async (): Promise<void> => {
   if (!Capacitor.isNativePlatform()) return;
 
@@ -901,7 +901,7 @@ const initializeCapacitor = async (): Promise<void> => {
     logger.warn("BackButton listener failed:", e);
   }
 
-  // FIX: NotchPay deep link handler â€” HashRouter stores routes in url.hash,
+  // FIX: NotchPay deep link handler — HashRouter stores routes in url.hash,
   // NOT url.pathname. Reading pathname always returns "/" with HashRouter.
   try {
     CapacitorApp.addListener("appUrlOpen", (event: { url: string }) => {
@@ -947,7 +947,7 @@ const initializeCapacitor = async (): Promise<void> => {
   }
 };
 
-// â”€â”€ WelcomeWrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── WelcomeWrapper ───────────────────────────────────────────────────────────
 const WelcomeWrapper = React.memo(function WelcomeWrapper() {
   useEffect(() => {
     // FIX: Use localStorage (not sessionStorage) so the welcome screen is not
@@ -957,7 +957,7 @@ const WelcomeWrapper = React.memo(function WelcomeWrapper() {
   return <BambehWelcomeScreen />;
 });
 
-// â”€â”€ AdminRouteWrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── AdminRouteWrapper ────────────────────────────────────────────────────────
 const AdminRouteWrapper: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => (
@@ -968,26 +968,26 @@ const AdminRouteWrapper: React.FC<{ children: React.ReactNode }> = ({
   </AuthGate>
 );
 
-// â”€â”€ NavigationBridge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── NavigationBridge ─────────────────────────────────────────────────────────
 function NavigationBridge() {
   const navigate = useNavigate();
   useEffect(() => {
     NavigationService.register(navigate);
     // FIX: Do NOT pass null on cleanup. If NavigationBridge ever remounts
     // (HMR, React StrictMode double-invoke) the cleanup would null-out the
-    // service just as the new mount re-registers â€” creating a window where
+    // service just as the new mount re-registers — creating a window where
     // a Capacitor deep link fires null() and crashes.
     // The new mount's register() call is sufficient to keep the ref fresh.
     return () => {
-      // intentionally empty â€” re-mount handles re-registration
+      // intentionally empty — re-mount handles re-registration
     };
   }, [navigate]);
   return null;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN APP
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════════════════════════════════════
 export default function App() {
 
   useEffect(() => {
@@ -1023,12 +1023,12 @@ export default function App() {
                     <Suspense fallback={<LoadingFallback />}>
                       <Routes>
 
-                        {/* â”€â”€ 1. ONBOARDING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 1. ONBOARDING ──────────────────────────────────────── */}
                         <Route path="/welcome" element={<WelcomeWrapper />} />
                         <Route path="/language" element={<LanguageSelection />} />
                         <Route path="/terms-acceptance" element={<TermsAcceptance />} />
 
-                        {/* â”€â”€ 2. AUTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 2. AUTH ─────────────────────────────────────────────── */}
                         <Route
                           path="/login"
                           element={<AuthLayout><Login /></AuthLayout>}
@@ -1046,7 +1046,7 @@ export default function App() {
                           element={<AuthLayout><ForgotCredentials /></AuthLayout>}
                         />
 
-                        {/* â”€â”€ 3. PUBLIC MARKETPLACE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
                         <Route path="/home" element={<Navigate to="/" replace />} />
                         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
@@ -1089,7 +1089,7 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 4. CATEGORY PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 4. CATEGORY PAGES ─────────────────────────────────── */}
                         <Route
                           path="/marketplace/category/:category"
                           element={<MainLayout><MarketplaceCategory /></MainLayout>}
@@ -1099,7 +1099,7 @@ export default function App() {
                           element={<MainLayout><JobsCategory /></MainLayout>}
                         />
 
-                        {/* â”€â”€ 5. STATIC SUB-ROUTES â€” must come BEFORE dynamic :id routes â”€â”€ */}
+                        {/* ── 5. STATIC SUB-ROUTES — must come BEFORE dynamic :id routes ── */}
                         <Route
                           path="/jobs/post"
                           element={
@@ -1172,7 +1172,7 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 6. DETAIL PAGES â”€â”€ */}
+                        {/* ── 6. DETAIL PAGES ── */}
                         <Route
                           path="/jobs/:id"
                           element={
@@ -1222,7 +1222,7 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 7. USER PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 7. USER PAGES ──────────────────────────────────────── */}
                         <Route
                           path="/profile"
                           element={
@@ -1352,19 +1352,19 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 8. SUBSCRIPTION / ZERM COINS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 8. SUBSCRIPTION / ZERM COINS ──────────────────────── */}
                         <Route
                           path="/subscription"
                           element={<MainLayout><SubscriptionPlans /></MainLayout>}
                         />
 
-                        {/* â”€â”€ ZERM COINS WALLET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                         *  AuthGate: "user" (not "subscription") â€” any logged-in
+                        {/* ── ZERM COINS WALLET ──────────────────────────────────
+                         *  AuthGate: "user" (not "subscription") — any logged-in
                          *  user can access their wallet and buy coins.
-                         *  /coins/buy   â† primary route (was /zerm/purchase â†’ 404)
+                         *  /coins/buy   ← primary route (was /zerm/purchase → 404)
                          *  /coins/purchase + /zerm/purchase kept as redirects so
                          *  old links / push notifications still work.
-                         * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                         * ──────────────────────────────────────────────────────── */}
                         <Route
                           path="/coins"
                           element={
@@ -1397,11 +1397,11 @@ export default function App() {
                             </MainLayout>
                           }
                         />
-                        {/* Legacy redirects â€” keeps old links alive */}
+                        {/* Legacy redirects — keeps old links alive */}
                         <Route path="/coins/purchase"  element={<Navigate to="/coins/buy" replace />} />
                         <Route path="/zerm/purchase"   element={<Navigate to="/coins/buy" replace />} />
 
-                        {/* â”€â”€ 9. VENDOR PUBLIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 9. VENDOR PUBLIC ───────────────────────────────────── */}
                         <Route path="/vendor" element={<Navigate to="/vendor/home" replace />} />
                         <Route path="/vendor/portal" element={<VendorLayout><VendorPortal /></VendorLayout>} />
                         <Route path="/vendor/home" element={<VendorLayout><VendorHome /></VendorLayout>} />
@@ -1421,7 +1421,7 @@ export default function App() {
                         <Route path="/vendor-signin" element={<Navigate to="/vendor/signin" replace />} />
                         <Route path="/vendor/manage-listings" element={<Navigate to="/vendor/listings" replace />} />
 
-                        {/* â”€â”€ 10. VENDOR PROTECTED â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 10. VENDOR PROTECTED ───────────────────────────────── */}
                         <Route path="/vendor/dashboard" element={<AuthGate require="vendor"><VendorLayout><VendorSecureDashboard /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/analytics" element={<AuthGate require="vendor"><VendorLayout><VendorAnalyticsEnhanced /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/listings" element={<AuthGate require="vendor"><VendorLayout><VendorManageListings /></VendorLayout></AuthGate>} />
@@ -1456,7 +1456,7 @@ export default function App() {
                         <Route path="/vendor/premium/verified-seller" element={<AuthGate require="vendor"><VendorLayout><VerifiedSeller /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/premium/auto-messaging" element={<AuthGate require="vendor"><VendorLayout><AutoMessaging /></VendorLayout></AuthGate>} />
 
-                        {/* â”€â”€ 11. ADMIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 11. ADMIN ─────────────────────────────────────────── */}
                         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
                         <Route
                           path="/admin/login"
@@ -1476,7 +1476,7 @@ export default function App() {
                         <Route path="/admin/live-chat" element={<AdminRouteWrapper><AdminLiveChat /></AdminRouteWrapper>} />
                         <Route path="/admin/users" element={<AdminRouteWrapper><AdminUserManagement /></AdminRouteWrapper>} />
 
-                        {/* â”€â”€ 12. HELP CENTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 12. HELP CENTER ────────────────────────────────────── */}
                         <Route path="/help" element={<MainLayout><Help /></MainLayout>} />
                         <Route path="/help/contact" element={<MainLayout><ContactSupport /></MainLayout>} />
                         <Route path="/help/guides" element={<MainLayout><HelpGuides /></MainLayout>} />
@@ -1494,7 +1494,7 @@ export default function App() {
                         <Route path="/help/meeting-safely" element={<MainLayout><MeetingSafely /></MainLayout>} />
                         <Route path="/help/reporting-issues" element={<MainLayout><ReportingIssues /></MainLayout>} />
 
-                        {/* â”€â”€ 13. GENERAL PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 13. GENERAL PAGES ──────────────────────────────────── */}
                         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
                         <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
                         <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
@@ -1534,7 +1534,7 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 14. PAYMENT (CamPay) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 14. PAYMENT (CamPay) ───────────────────────────────── */}
                         <Route
                           path="/payment/checkout"
                           element={
@@ -1576,11 +1576,11 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 15. REDIRECTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 15. REDIRECTS ──────────────────────────────────────── */}
                         <Route path="/sell-item" element={<Navigate to="/marketplace/sell" replace />} />
                         <Route path="/post-job" element={<Navigate to="/jobs/post" replace />} />
 
-                        {/* â”€â”€ 16. BAMBEH FEATURES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 16. BAMBEH FEATURES ────────────────────────────────── */}
                         <Route path="/splash" element={<SplashScreenPage />} />
                         <Route path="/spotlight" element={<MainLayout><HeavyLiftSpotlight /></MainLayout>} />
                         <Route
@@ -1700,7 +1700,7 @@ export default function App() {
                           }
                         />
 
-                        {/* â”€â”€ 17. 404 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── 17. 404 ────────────────────────────────────────────── */}
                         <Route
                           path="*"
                           element={<MainLayout><NotFoundPage /></MainLayout>}

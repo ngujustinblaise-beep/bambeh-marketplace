@@ -1,16 +1,16 @@
 ﻿/**
- * Footer.tsx â€” Bambeh Marketplace
+ * Footer.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/Footer.tsx
  *
  * CHANGES IN THIS VERSION:
- *  âœ… "Lowest in any marketplace" â€” transaction fee badge updated everywhere
- *  âœ… "ETS BUSHENERGY" â†’ "BAMBEH SARL"
- *  âœ… Collapsible bottom bar â€” tap the copyright/links row to fold/unfold
- *  âœ… Full i18n â€” ALL visible strings now pulled from LanguageContext t()
+ *  ✅ "Lowest in any marketplace" — transaction fee badge updated everywhere
+ *  ✅ "ETS BUSHENERGY" → "BAMBEH SARL"
+ *  ✅ Collapsible bottom bar — tap the copyright/links row to fold/unfold
+ *  ✅ Full i18n — ALL visible strings now pulled from LanguageContext t()
  *     so the footer translates when the user changes language
- *  âœ… All previous fixes preserved (emails, YaoundÃ©, routes, Â© symbol)
+ *  ✅ All previous fixes preserved (emails, Yaoundé, routes, © symbol)
  *
- * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import { useState } from "react";
@@ -39,7 +39,7 @@ export default function Footer() {
   const isRtl = language === "ar";
   const currentYear = new Date().getFullYear();
 
-  // â”€â”€ Collapsible bottom-bar state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Collapsible bottom-bar state ──────────────────────────────────────────
   const [bottomOpen, setBottomOpen] = useState(true);
 
   return (
@@ -50,14 +50,14 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {/* â”€â”€ ABOUT + SOCIAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── ABOUT + SOCIAL ─────────────────────────────────────────── */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">
               {t("footer.aboutTitle") || "About Bambeh"}
             </h3>
             <p className="text-sm mb-4">
               {t("footer.aboutDesc") ||
-                "Online Marketplace â€” Buy, Sell, Trade, and Find Jobs with only 1% transaction fee!"}
+                "Online Marketplace — Buy, Sell, Trade, and Find Jobs with only 1% transaction fee!"}
             </p>
 
             <div className="flex gap-3">
@@ -96,7 +96,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* â”€â”€ CATEGORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── CATEGORIES ─────────────────────────────────────────────── */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">
               {t("footer.categoriesTitle") || "Categories"}
@@ -159,7 +159,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* â”€â”€ SUPPORT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── SUPPORT ────────────────────────────────────────────────── */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">
               {t("footer.supportTitle") || "Support"}
@@ -199,7 +199,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* â”€â”€ COMPANY + CONTACT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── COMPANY + CONTACT ──────────────────────────────────────── */}
           <div>
             <h3 className="text-white text-lg font-bold mb-4">
               {t("footer.companyTitle") || "Company"}
@@ -234,7 +234,7 @@ export default function Footer() {
 
             {/* Contact Info */}
             <div className="mt-6 space-y-3 text-sm">
-              {/* Email â€” two separate lines */}
+              {/* Email — two separate lines */}
               <div className="flex items-start gap-2">
                 <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
                 <div className="flex flex-col gap-0.5">
@@ -273,10 +273,10 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* â”€â”€ BOTTOM BAR â€” collapsible â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── BOTTOM BAR — collapsible ──────────────────────────────────── */}
         <div className="border-t border-gray-800 mt-12">
 
-          {/* Toggle handle â€” always visible, tappable */}
+          {/* Toggle handle — always visible, tappable */}
           <button
             onClick={() => setBottomOpen((prev) => !prev)}
             aria-expanded={bottomOpen}
@@ -300,7 +300,7 @@ export default function Footer() {
             <div className="pb-8">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
 
-                {/* Copyright â€” BAMBEH SARL (was ETS BUSHENERGY) */}
+                {/* Copyright — BAMBEH SARL (was ETS BUSHENERGY) */}
                 <div className="text-sm text-center md:text-left">
                   <p>&copy; {currentYear} Bambeh. {t("footer.allRightsReserved") || "All rights reserved."}</p>
                   <p className="text-xs text-gray-500 mt-1">
@@ -334,13 +334,13 @@ export default function Footer() {
                   </Link>
                 </div>
 
-                {/* Transaction Fee Badge â€” UPDATED TEXT */}
+                {/* Transaction Fee Badge — UPDATED TEXT */}
                 <div className="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold text-center">
-                  {t("footer.transactionFeeBadge") || "Only 1% Transaction Fee â€” Lowest in Any Marketplace!"}
+                  {t("footer.transactionFeeBadge") || "Only 1% Transaction Fee — Lowest in Any Marketplace!"}
                 </div>
               </div>
 
-              {/* Social â€” Mobile only */}
+              {/* Social — Mobile only */}
               <div className="mt-6 flex justify-center gap-3 md:hidden">
                 <a
                   href="https://www.facebook.com/profile.php?id=61585316773462"
