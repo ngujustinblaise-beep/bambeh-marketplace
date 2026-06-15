@@ -479,8 +479,7 @@ import VendorLayout from "@/components/layout/VendorLayout";
 // ─── 7. Eager Page Imports (first-screen only) ────────────────────────────────
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
-import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
+import AuthPage from "@/pages/auth/AuthPage";
 
 // ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
@@ -1029,14 +1028,8 @@ export default function App() {
                         <Route path="/terms-acceptance" element={<TermsAcceptance />} />
 
                         {/* ── 2. AUTH ─────────────────────────────────────────────── */}
-                        <Route
-                          path="/login"
-                          element={<AuthLayout><Login /></AuthLayout>}
-                        />
-                        <Route
-                          path="/register"
-                          element={<AuthLayout><Register /></AuthLayout>}
-                        />
+                        <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
+                        <Route path="/register" element={<Navigate to="/login" replace />} />
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}
