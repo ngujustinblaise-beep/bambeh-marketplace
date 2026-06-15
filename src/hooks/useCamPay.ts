@@ -103,6 +103,7 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollRef     = useRef<ReturnType<typeof setInterval> | null>(null);
   const cancelledRef = useRef(false);
+  const attemptRef = useRef(0);
 
   const clearTimers = () => {
     if (timerRef.current)  clearInterval(timerRef.current);
@@ -117,7 +118,8 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     setReference('');
     setCountdown(0);
     // Allow future payment attempts
-    setTimeout(() => { cancelledRef.current = false; }, 100);
+    attemptRef.current++;
+    cancelledRef.current = false;
   }, []);
 
   const initPayment = useCallback(async (params: InitPaymentParams) => {
@@ -127,6 +129,8 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     const phone9       = normalizePhone(phone);
     const phoneForApi  = `237${phone9}`;
 
+    attemptRef.current++;
+    const currentAttempt = attemptRef.current;
     setStatus('submitting');
     setErrorMsg('');
     cancelledRef.current = false;
@@ -180,6 +184,7 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     const MAX_ATTEMPTS = Math.floor(MAX_SECONDS / 8); // ~37 attempts
 
     pollRef.current = setInterval(async () => {
+      if (currentAttempt !== attemptRef.current) return;
       if (cancelledRef.current) { clearTimers(); return; }
       attempts++;
 
@@ -226,3 +231,4 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
 
   return { status, errorMsg, reference, countdown, initPayment, reset };
 }
+
