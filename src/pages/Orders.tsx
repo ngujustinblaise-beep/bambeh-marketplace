@@ -66,20 +66,8 @@ function statusLabel(status: string, t: (k: string) => string) {
     default:                 return status;
   }
 }
-function statusLabel(status: string, t: (k: string) => string) {
-  switch (status.toLowerCase()) {
-    case "in transit":       return t("orders.status.inTransit");
-    case "delivered":        return t("orders.status.delivered");
-    case "processing":       return t("orders.status.processing");
-    case "shipped":          return t("orders.status.shipped");
-    case "out for delivery": return t("orders.status.outForDelivery");
-    case "cancelled":        return t("orders.status.cancelled");
-    default:                 return status;
-  }
-}
 export default function Orders() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
   const { t, language } = useLanguage();
   const [orders,  setOrders]  = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
