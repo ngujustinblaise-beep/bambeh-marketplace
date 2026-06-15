@@ -16,14 +16,14 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import {
   Package, Truck, CheckCircle, Clock, MapPin,
   Phone, MessageCircle, ArrowLeft, Copy,
   AlertCircle, RefreshCw, Home, Store,
   Calendar, User, CreditCard, ChevronRight,
 } from 'lucide-react';
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Order status types
 type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
@@ -84,10 +84,24 @@ const STATUS_CONFIG: Record<OrderStatus, { color: string; bgColor: string; icon:
   cancelled:        { color: 'text-red-600',    bgColor: 'bg-red-100',    icon: AlertCircle,  label: 'Cancelled'        },
 };
 
+function statusLabel(status: OrderStatus, t: (k: string) => string) {
+  switch (status) {
+    case "pending":          return t("tracking.status.pending");
+    case "confirmed":        return t("tracking.status.confirmed");
+    case "processing":       return t("orders.status.processing");
+    case "shipped":          return t("orders.status.shipped");
+    case "out_for_delivery": return t("orders.status.outForDelivery");
+    case "delivered":        return t("orders.status.delivered");
+    case "cancelled":        return t("orders.status.cancelled");
+    default:                 return status;
+  }
+}
 export default function OrderTracking() {
-  const lang = useLang();
-  const isRtl = lang === "ar";
-  const { orderId } = useParams<{ orderId: string }>();
+  const { t, language } = useLanguage();
+  const isRtl = language === "ar";
+  const [searchParams] = useSearchParams();
+  const params = useParams<{ orderId?: string; id?: string }>();
+  const orderId = params.orderId || params.id || searchParams.get("orderId") || undefined;
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -199,7 +213,7 @@ export default function OrderTracking() {
 
       setOrder(mockOrder);
     } catch (err) {
-      setError('Unable to load order details. Please try again.');
+      setError(t("tracking.loadError"));
     } finally {
       setLoading(false);
     }
@@ -220,7 +234,7 @@ export default function OrderTracking() {
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'Pending';
+    if (!dateString) return t("tracking.datePending");
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
@@ -242,10 +256,10 @@ export default function OrderTracking() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-teal-500 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading order details...</p>
+          <p className="text-gray-600 font-medium">{t("tracking.loading")}</p>
         </div>
       </div>
     );
@@ -254,14 +268,14 @@ export default function OrderTracking() {
   // Error state
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Order Not Found</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t("tracking.notFound")}</h2>
           <p className="text-gray-600 mb-6">
-            {error || `We couldn't find order #${orderId}. Please check the order ID and try again.`}
+            {error || t("tracking.notFoundDesc")}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
@@ -269,14 +283,14 @@ export default function OrderTracking() {
               className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors font-medium"
             >
               <RefreshCw className="w-4 h-4" />
-              Try Again
+              {t("tracking.tryAgain")}
             </button>
             <Link
               to="/profile?tab=orders"
               className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
             >
               <Package className="w-4 h-4" />
-              My Orders
+              {t("orders.title")}
             </Link>
           </div>
         </div>
@@ -288,7 +302,7 @@ export default function OrderTracking() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-600 text-white">
         <div className="container mx-auto px-4 py-6">
@@ -298,7 +312,7 @@ export default function OrderTracking() {
               className="flex items-center gap-2 hover:bg-white/10 px-3 py-2 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="hidden sm:inline">Back</span>
+              <span className="hidden sm:inline">{t("tracking.back")}</span>
             </button>
             <button
               onClick={handleRefresh}
@@ -306,18 +320,18 @@ export default function OrderTracking() {
               className="flex items-center gap-2 hover:bg-white/10 px-3 py-2 rounded-lg transition-colors"
             >
               <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Refresh</span>
+              <span className="hidden sm:inline">{t("tracking.refresh")}</span>
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-teal-200 text-sm mb-1">Order Number</p>
+            <p className="text-teal-200 text-sm mb-1">{t("tracking.orderNumber")}</p>
             <h1 className="text-2xl font-bold mb-4">{order.orderNumber}</h1>
 
             {/* Current Status Badge */}
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${statusConfig.bgColor}`}>
               <StatusIcon className={`w-5 h-5 ${statusConfig.color}`} />
-              <span className={`font-semibold ${statusConfig.color}`}>{statusConfig.label}</span>
+              <span className={`font-semibold ${statusConfig.color}`}>{statusLabel(order.status, t)}</span>
             </div>
           </div>
         </div>
@@ -329,7 +343,7 @@ export default function OrderTracking() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm mb-1">
-                {order.status === 'delivered' ? 'Delivered On' : 'Estimated Delivery'}
+                {order.status === "delivered" ? t("tracking.deliveredOn") : t("tracking.estDelivery")}
               </p>
               <p className="text-xl font-bold text-gray-900">
                 {formatDate(order.actualDelivery || order.estimatedDelivery)}
@@ -341,11 +355,11 @@ export default function OrderTracking() {
           </div>
         </div>
 
-        {/* Tracking Timeline */}
+        {/* {t("tracking.timeline")} */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-teal-600" />
-            Tracking Timeline
+            {t("tracking.timeline")}
           </h2>
 
           <div className="relative">
@@ -404,17 +418,17 @@ export default function OrderTracking() {
           </div>
         </div>
 
-        {/* Courier Details */}
+        {/* {t("tracking.courierDetails")} */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Truck className="w-5 h-5 text-teal-600" />
-            Courier Details
+            {t("tracking.courierDetails")}
           </h2>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Courier</p>
+                <p className="text-gray-500 text-sm">{t("tracking.courier")}</p>
                 <p className="font-semibold text-gray-900">{order.courier.name}</p>
               </div>
               {order.courier.phone && (
@@ -429,7 +443,7 @@ export default function OrderTracking() {
 
             <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
               <div>
-                <p className="text-gray-500 text-sm">Tracking Number</p>
+                <p className="text-gray-500 text-sm">{t("tracking.trackingNumber")}</p>
                 <p className="font-mono font-semibold text-gray-900">{order.courier.trackingNumber}</p>
               </div>
               <button
@@ -437,17 +451,17 @@ export default function OrderTracking() {
                 className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
               >
                 <Copy className="w-4 h-4" />
-                {copied ? 'Copied!' : 'Copy'}
+                {copied ? t("tracking.copied") : t("tracking.copy")}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Shipping Address */}
+        {/* {t("tracking.shippingAddress")} */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Home className="w-5 h-5 text-teal-600" />
-            Shipping Address
+            {t("tracking.shippingAddress")}
           </h2>
 
           <div className="bg-gray-50 rounded-lg p-4">
@@ -465,7 +479,7 @@ export default function OrderTracking() {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Package className="w-5 h-5 text-teal-600" />
-            Order Items ({order.items.length})
+            {t("tracking.orderItems")} ({order.items.length})
           </h2>
 
           <div className="space-y-4">
@@ -483,7 +497,7 @@ export default function OrderTracking() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-gray-900 truncate">{item.name}</h3>
-                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                  <p className="text-sm text-gray-500">{t("tracking.qty")} {item.quantity}</p>
                   <p className="font-semibold text-teal-600">{formatCurrency(item.price)}</p>
                 </div>
               </div>
@@ -493,15 +507,15 @@ export default function OrderTracking() {
           {/* Order Total */}
           <div className="mt-6 pt-4 border-t border-gray-200 space-y-2">
             <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
+              <span>{t("tracking.subtotal")}</span>
               <span>{formatCurrency(order.subtotal)}</span>
             </div>
             <div className="flex justify-between text-gray-600">
-              <span>Shipping</span>
+              <span>{t("tracking.shipping")}</span>
               <span>{formatCurrency(order.shipping)}</span>
             </div>
             <div className="flex justify-between font-bold text-gray-900 text-lg pt-2 border-t border-gray-200">
-              <span>Total</span>
+              <span>{t("tracking.total")}</span>
               <span className="text-teal-600">{formatCurrency(order.total)}</span>
             </div>
           </div>
@@ -510,7 +524,7 @@ export default function OrderTracking() {
           <div className="mt-4 flex items-center gap-3 bg-gray-50 rounded-lg p-4">
             <CreditCard className="w-5 h-5 text-gray-500" />
             <div>
-              <p className="text-sm text-gray-500">Payment Method</p>
+              <p className="text-sm text-gray-500">{t("tracking.paymentMethod")}</p>
               <p className="font-medium text-gray-900">{order.paymentMethod}</p>
             </div>
           </div>
@@ -518,7 +532,7 @@ export default function OrderTracking() {
 
         {/* Help & Support */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Need Help?</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">{t("tracking.needHelp")}</h2>
 
           <div className="grid grid-cols-2 gap-4">
             <Link
@@ -526,14 +540,14 @@ export default function OrderTracking() {
               className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <MessageCircle className="w-6 h-6 text-teal-600" />
-              <span className="text-sm font-medium text-gray-700">Chat Support</span>
+              <span className="text-sm font-medium text-gray-700">{t("tracking.chatSupport")}</span>
             </Link>
             <Link
               to="/help/orders"
               className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <Package className="w-6 h-6 text-teal-600" />
-              <span className="text-sm font-medium text-gray-700">Order Help</span>
+              <span className="text-sm font-medium text-gray-700">{t("tracking.orderHelp")}</span>
             </Link>
           </div>
         </div>
@@ -545,14 +559,14 @@ export default function OrderTracking() {
             className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium text-gray-700"
           >
             <ArrowLeft className="w-5 h-5" />
-            Back to Orders
+            {t("tracking.backToOrders")}
           </Link>
           <Link
             to="/marketplace"
             className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-teal-500 text-white rounded-xl hover:bg-teal-600 transition-colors font-medium"
           >
             <Store className="w-5 h-5" />
-            Continue Shopping
+            {t("tracking.continueShopping")}
           </Link>
         </div>
       </div>
