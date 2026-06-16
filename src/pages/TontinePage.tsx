@@ -1,19 +1,19 @@
-﻿/**
+/**
  * TontinePage.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/TontinePage.tsx
  *
- * FIX FROM ORIGINAL:
- * The original page already read from Supabase (good!).
- * The only problem reported: "In the new group there is no create button."
+ * i18n FIX (this version):
+ *  - Repointed OFF the dead "@/hooks/useAppLang" stub and ONTO the working
+ *    "@/context/LanguageContext" (same source the live language selector uses).
+ *  - All visible text now translates live: EN / FR / Pidgin / Arabic / Fulfulde (ff).
+ *  - Arabic gets dir="rtl" on the page root.
+ *  - Icons (lucide + emoji) are LEFT EXACTLY AS-IS — only human text is translated.
+ *  - Status badges translated via a pure statusLabel(status, s) map.
+ *  - Demo group NAMES are fixtures (shown only when there is no real data) and
+ *    are intentionally left as-is, like other DB/seed data.
  *
- * FIXED: The "New Group" button was only in the header (small, easy to miss).
- * Now there is ALSO a large, obvious "Create Njangi Group" button:
- *   - At the bottom of the "My Groups" tab when the list is empty
- *   - As a floating action button on both tabs
- *   - The existing small header button is kept too
- *
- * Everything else (Supabase reads, real-time, demo data) is kept exactly
- * as it was since it was already working correctly.
+ * Everything else (Supabase reads, real-time channel, create buttons) is kept
+ * exactly as it was.
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -25,7 +25,104 @@ import {
   ChevronRight, Shield, Loader2, RefreshCw
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage } from "@/context/LanguageContext";
+
+// ── i18n strings (local table, keyed by the live language code) ─────────────
+type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
+
+const T: Record<Lang, {
+  title: string; newGroup: string; refresh: string;
+  statMyGroups: string; statPool: string; statActive: string;
+  tabMy: string; tabDiscover: string;
+  emptyMyTitle: string; emptyDiscoverTitle: string;
+  emptyMyBody: string; emptyDiscoverBody: string;
+  createBtn: string; viewMine: string;
+  members: string; perMonth: string; perWeek: string;
+  secureTitle: string; secureBody: string; createFab: string;
+  stOpen: string; stActive: string; stCompleted: string; stPaused: string;
+  spotsLeft: (n: number) => string;
+}> = {
+  en: {
+    title: "Tontine / Njangi", newGroup: "New Group", refresh: "Refresh",
+    statMyGroups: "My Groups", statPool: "Pool (XAF)", statActive: "Active",
+    tabMy: "My Groups", tabDiscover: "Discover",
+    emptyMyTitle: "You haven't joined any groups yet",
+    emptyDiscoverTitle: "No open groups to join right now",
+    emptyMyBody: "Start your own Njangi group and invite your friends and family.",
+    emptyDiscoverBody: "Check back later or create your own group.",
+    createBtn: "Create Njangi Group", viewMine: "View my groups instead",
+    members: "members", perMonth: "mo", perWeek: "wk",
+    secureTitle: "Secure & Transparent",
+    secureBody: "All tontine transactions are recorded and visible to all group members on all devices.",
+    createFab: "Create",
+    stOpen: "open", stActive: "active", stCompleted: "completed", stPaused: "paused",
+    spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} left — Join Now!`,
+  },
+  fr: {
+    title: "Tontine / Njangi", newGroup: "Nouveau groupe", refresh: "Actualiser",
+    statMyGroups: "Mes groupes", statPool: "Cagnotte (XAF)", statActive: "Actifs",
+    tabMy: "Mes groupes", tabDiscover: "Découvrir",
+    emptyMyTitle: "Vous n'avez rejoint aucun groupe",
+    emptyDiscoverTitle: "Aucun groupe ouvert pour le moment",
+    emptyMyBody: "Créez votre propre groupe Njangi et invitez vos amis et votre famille.",
+    emptyDiscoverBody: "Revenez plus tard ou créez votre propre groupe.",
+    createBtn: "Créer un groupe Njangi", viewMine: "Voir plutôt mes groupes",
+    members: "membres", perMonth: "mois", perWeek: "sem",
+    secureTitle: "Sécurisé et transparent",
+    secureBody: "Toutes les transactions de la tontine sont enregistrées et visibles par tous les membres du groupe, sur tous les appareils.",
+    createFab: "Créer",
+    stOpen: "ouvert", stActive: "actif", stCompleted: "terminé", stPaused: "en pause",
+    spotsLeft: (n) => `${n} place${n !== 1 ? "s" : ""} restante${n !== 1 ? "s" : ""} — Rejoignez !`,
+  },
+  pidgin: {
+    title: "Tontine / Njangi", newGroup: "New Group", refresh: "Refresh",
+    statMyGroups: "My Groups", statPool: "Money Pool (XAF)", statActive: "Active",
+    tabMy: "My Groups", tabDiscover: "Discover",
+    emptyMyTitle: "You never join any group yet",
+    emptyDiscoverTitle: "No open group dey to join now",
+    emptyMyBody: "Start your own Njangi group, call your padi dem and family.",
+    emptyDiscoverBody: "Come check later or create your own group.",
+    createBtn: "Create Njangi Group", viewMine: "See my groups instead",
+    members: "members", perMonth: "mo", perWeek: "wk",
+    secureTitle: "Safe & Open",
+    secureBody: "All tontine transaction dem dey recorded and all group members fit see am for any phone.",
+    createFab: "Create",
+    stOpen: "open", stActive: "active", stCompleted: "done", stPaused: "pause",
+    spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} remain — Join Now!`,
+  },
+  ar: {
+    title: "Tontine / Njangi", newGroup: "مجموعة جديدة", refresh: "تحديث",
+    statMyGroups: "مجموعاتي", statPool: "الصندوق (XAF)", statActive: "نشِطة",
+    tabMy: "مجموعاتي", tabDiscover: "اكتشف",
+    emptyMyTitle: "لم تنضم إلى أي مجموعة بعد",
+    emptyDiscoverTitle: "لا توجد مجموعات مفتوحة للانضمام الآن",
+    emptyMyBody: "أنشئ مجموعة نجانغي خاصة بك وادعُ أصدقاءك وعائلتك.",
+    emptyDiscoverBody: "تحقق لاحقًا أو أنشئ مجموعتك الخاصة.",
+    createBtn: "إنشاء مجموعة نجانغي", viewMine: "عرض مجموعاتي بدلاً من ذلك",
+    members: "أعضاء", perMonth: "شهر", perWeek: "أسبوع",
+    secureTitle: "آمن وشفّار",
+    secureBody: "تُسجَّل جميع معاملات التونتين وتكون مرئية لجميع أعضاء المجموعة على كل الأجهزة.",
+    createFab: "إنشاء",
+    stOpen: "مفتوحة", stActive: "نشِطة", stCompleted: "مكتملة", stPaused: "متوقّفة",
+    spotsLeft: (n) => `بقي ${n} مكان — انضم الآن!`,
+  },
+  ff: {
+    title: "Tontine / Njangi", newGroup: "Fedde hesere", refresh: "Hesɗitin",
+    statMyGroups: "Pelle am", statPool: "Kaalis mooɓtaaɗo (XAF)", statActive: "Gollotooɗe",
+    tabMy: "Pelle am", tabDiscover: "Yiytu",
+    emptyMyTitle: "A naataali fedde woo tawo",
+    emptyDiscoverTitle: "Alaa pelle udditaaɗe ngam naatude jooni",
+    emptyMyBody: "Fuɗɗu fedde Njangi maa, noddaa yiɓɓe maa e ɓesngu maa.",
+    emptyDiscoverBody: "Rutto ɓaawo walla fuɗɗu fedde maa.",
+    createBtn: "Sosu Fedde Njangi", viewMine: "Yiy pelle am",
+    members: "yimɓe", perMonth: "lewru", perWeek: "yontere",
+    secureTitle: "Hooltaaɗo & Laaɓɗo",
+    secureBody: "Liɓɓite tontine fof ina winndaa, ina njiyee e yimɓe fedde fof e kaɓirɗe fof.",
+    createFab: "Sosu",
+    stOpen: "udditii", stActive: "gollii", stCompleted: "gasii", stPaused: "dartii",
+    spotsLeft: (n) => `Heddii nokkuuje ${n} — Naatu jooni!`,
+  },
+};
 
 interface TontineGroup {
   id: string; name: string; contributionXaf: number; frequency: string;
@@ -40,8 +137,23 @@ const DEMO_GROUPS: TontineGroup[] = [
 ];
 
 export default function TontinePage() {
-  const lang = useLang();
+  const { language } = useLanguage();
+  const lang: Lang = (language in T ? language : "en") as Lang;
+  const s = T[lang];
   const isRtl = lang === "ar";
+  const dateLocale = lang === "fr" ? "fr-CM" : "en-GB";
+
+  // Pure status → localized label
+  const statusLabel = (status: string): string => {
+    switch (status) {
+      case "active":    return s.stActive;
+      case "open":      return s.stOpen;
+      case "completed": return s.stCompleted;
+      case "paused":    return s.stPaused;
+      default:          return status;
+    }
+  };
+
   const navigate = useNavigate();
   const [groups,  setGroups]  = useState<TontineGroup[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,35 +220,31 @@ export default function TontinePage() {
   const discoverGroups = groups.filter(g => !g.isMine && g.status === "open" && g.currentMembers < g.maxMembers);
   const display        = tab === "my" ? myGroups : discoverGroups;
 
-  const totalSaved  = myGroups.reduce((s, g) => s + g.totalPoolXaf, 0);
+  const totalSaved  = myGroups.reduce((acc, g) => acc + g.totalPoolXaf, 0);
   const activeCount = myGroups.filter(g => g.status === "active").length;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32">
+    <div className="min-h-screen bg-gray-50 pb-32" dir={isRtl ? "rtl" : "ltr"}>
 
       {/* Header */}
       <div className="bg-gradient-to-br from-purple-700 to-purple-800 px-4 pt-8 pb-16">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-white font-bold text-xl flex items-center gap-2">
-            <Users className="w-6 h-6" /> Tontine / Njangi
+            <Users className="w-6 h-6" /> {s.title}
           </h1>
           <div className="flex gap-2">
             <button
               onClick={fetchGroups}
               className="bg-white/20 text-white p-2 rounded-xl"
-              aria-label="Refresh"
+              aria-label={s.refresh}
             >
               <RefreshCw className="w-4 h-4" />
             </button>
-            {/*
-              Existing "New Group" button in header — kept as-is.
-              Additional create buttons added below for better visibility.
-            */}
             <button
               onClick={() => navigate("/tontine/create")}
               className="bg-white/20 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1"
             >
-              <Plus className="w-4 h-4" /> New Group
+              <Plus className="w-4 h-4" /> {s.newGroup}
             </button>
           </div>
         </div>
@@ -144,9 +252,9 @@ export default function TontinePage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            [myGroups.length.toString(), "My Groups", "👥"],
-            [totalSaved > 0 ? `${Math.round(totalSaved/1000)}k` : "0", "Pool (XAF)", "💰"],
-            [activeCount.toString(), "Active", "✅"],
+            [myGroups.length.toString(), s.statMyGroups, "👥"],
+            [totalSaved > 0 ? `${Math.round(totalSaved/1000)}k` : "0", s.statPool, "💰"],
+            [activeCount.toString(), s.statActive, "✅"],
           ].map(([v, l, e]) => (
             <div key={String(l)} className="bg-white/10 rounded-xl p-2.5 text-center">
               <p className="text-white font-bold text-sm">{e} {v}</p>
@@ -159,15 +267,15 @@ export default function TontinePage() {
       <div className="px-4 -mt-6">
         {/* Tabs */}
         <div className="flex gap-2 mb-4">
-          {(["my", "discover"] as const).map(t => (
+          {(["my", "discover"] as const).map(tk => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={tk}
+              onClick={() => setTab(tk)}
               className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
-                tab === t ? "bg-purple-700 text-white shadow-sm" : "bg-white border text-gray-600"
+                tab === tk ? "bg-purple-700 text-white shadow-sm" : "bg-white border text-gray-600"
               }`}
             >
-              {t === "my" ? "My Groups" : `Discover (${discoverGroups.length})`}
+              {tk === "my" ? s.tabMy : `${s.tabDiscover} (${discoverGroups.length})`}
             </button>
           ))}
         </div>
@@ -184,24 +292,18 @@ export default function TontinePage() {
           <div className="text-center py-10">
             <Users className="w-14 h-14 mx-auto mb-4 text-gray-200" />
             <p className="text-gray-600 font-semibold text-base mb-1">
-              {tab === "my" ? "You haven't joined any groups yet" : "No open groups to join right now"}
+              {tab === "my" ? s.emptyMyTitle : s.emptyDiscoverTitle}
             </p>
             <p className="text-gray-400 text-sm mb-6">
-              {tab === "my"
-                ? "Start your own Njangi group and invite your friends and family."
-                : "Check back later or create your own group."}
+              {tab === "my" ? s.emptyMyBody : s.emptyDiscoverBody}
             </p>
 
-            {/*
-              FIX: This is the new, large, obvious "Create Njangi Group" button.
-              The original page had no create button visible when the group list was empty.
-            */}
             <button
               onClick={() => navigate("/tontine/create")}
               className="bg-purple-700 hover:bg-purple-800 text-white px-8 py-3.5 rounded-2xl font-bold text-base flex items-center gap-2 mx-auto transition-colors shadow-lg shadow-purple-200"
             >
               <Plus className="w-5 h-5" />
-              Create Njangi Group
+              {s.createBtn}
             </button>
 
             {tab === "discover" && (
@@ -209,7 +311,7 @@ export default function TontinePage() {
                 onClick={() => setTab("my")}
                 className="mt-3 text-purple-600 text-sm underline"
               >
-                View my groups instead
+                {s.viewMine}
               </button>
             )}
           </div>
@@ -220,6 +322,7 @@ export default function TontinePage() {
           <div className="space-y-3">
             {display.map(group => {
               const progressPct = Math.min(100, Math.round((group.currentMembers / group.maxMembers) * 100));
+              const spots = group.maxMembers - group.currentMembers;
               return (
                 <div
                   key={group.id}
@@ -230,7 +333,7 @@ export default function TontinePage() {
                     <div>
                       <h3 className="font-bold text-gray-900">{group.name}</h3>
                       <p className="text-sm text-gray-500 capitalize">
-                        {group.frequency} · {group.currentMembers}/{group.maxMembers} members
+                        {group.frequency} · {group.currentMembers}/{group.maxMembers} {s.members}
                       </p>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
@@ -238,7 +341,7 @@ export default function TontinePage() {
                       group.status === "open"   ? "bg-yellow-50 text-yellow-700" :
                                                   "bg-gray-100 text-gray-500"
                     }`}>
-                      {group.status}
+                      {statusLabel(group.status)}
                     </span>
                   </div>
 
@@ -251,14 +354,14 @@ export default function TontinePage() {
                     <div className="flex items-center gap-1">
                       <DollarSign className="w-3.5 h-3.5 text-purple-600" />
                       <span className="font-bold text-purple-700">
-                        {group.contributionXaf.toLocaleString()} XAF/{group.frequency === "monthly" ? "mo" : "wk"}
+                        {group.contributionXaf.toLocaleString()} XAF/{group.frequency === "monthly" ? s.perMonth : s.perWeek}
                       </span>
                     </div>
                     <div className="flex items-center gap-1 text-gray-400 text-xs">
                       {group.nextPayoutDate && (
                         <>
                           <Calendar className="w-3 h-3" />
-                          {new Date(group.nextPayoutDate).toLocaleDateString("en-GB", { day:"numeric", month:"short" })}
+                          {new Date(group.nextPayoutDate).toLocaleDateString(dateLocale, { day:"numeric", month:"short" })}
                         </>
                       )}
                       <ChevronRight className="w-4 h-4 ml-1" />
@@ -267,7 +370,7 @@ export default function TontinePage() {
 
                   {group.status === "open" && group.currentMembers < group.maxMembers && tab === "discover" && (
                     <div className="mt-3 py-2 bg-green-50 border border-green-200 rounded-xl text-center text-green-700 font-semibold text-sm">
-                      {group.maxMembers - group.currentMembers} spot{group.maxMembers - group.currentMembers !== 1 ? "s" : ""} left — Join Now!
+                      {s.spotsLeft(spots)}
                     </div>
                   )}
                 </div>
@@ -280,30 +383,24 @@ export default function TontinePage() {
         <div className="mt-4 bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3">
           <Shield className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-purple-800">Secure & Transparent</p>
-            <p className="text-xs text-purple-600 mt-0.5">
-              All tontine transactions are recorded and visible to all group members on all devices.
-            </p>
+            <p className="text-sm font-semibold text-purple-800">{s.secureTitle}</p>
+            <p className="text-xs text-purple-600 mt-0.5">{s.secureBody}</p>
           </div>
         </div>
       </div>
 
-      {/*
-        FIX: Floating "Create Group" button always visible at the bottom.
-        This means no matter what tab the user is on, they can always
-        start a new Njangi group with one tap.
-      */}
+      {/* Floating "Create Group" button */}
       <div className="fixed bottom-20 right-4 z-40">
         <button
           onClick={() => navigate("/tontine/create")}
           className="bg-purple-700 hover:bg-purple-800 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-colors active:scale-95"
-          aria-label="Create new Njangi group"
-          title="Create Njangi Group"
+          aria-label={s.createBtn}
+          title={s.createBtn}
         >
           <Plus className="w-7 h-7" />
         </button>
         <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs text-gray-500 whitespace-nowrap">
-          Create
+          {s.createFab}
         </span>
       </div>
     </div>
