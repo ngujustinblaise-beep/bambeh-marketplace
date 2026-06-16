@@ -29,9 +29,9 @@ type Tab = "general" | "notifications" | "privacy" | "security";
 
 const AVAILABLE_LANGUAGES = [
   { code: "en", name: "English" },
-  { code: "fr", name: "French" },
+  { code: "fr", name: "Français" },
   { code: "pidgin", name: "Pidgin" },
-  { code: "ar", name: "Arabic" },
+  { code: "ar", name: "العربية" },
   { code: "ff", name: "Fulfulde" },
 ];
 
@@ -73,12 +73,12 @@ const UserSettings: React.FC = () => {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setPhotoError("Please select an image file (JPG, PNG, etc.)");
+      setPhotoError(t("settings.errImageType"));
       return;
     }
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setPhotoError("Image must be smaller than 5MB");
+      setPhotoError(t("settings.errImageSize"));
       return;
     }
 
@@ -113,9 +113,9 @@ const UserSettings: React.FC = () => {
 
       if (profileError) throw new Error(profileError.message);
 
-      setPhotoSuccess("Profile photo updated successfully!");
+      setPhotoSuccess(t("settings.photoSuccess"));
     } catch (err: any) {
-      setPhotoError(err.message || "Photo upload failed. Please try again.");
+      setPhotoError(err.message || t("settings.photoFail"));
     } finally {
       setPhotoLoading(false);
       // Clear file input so same file can be selected again
@@ -156,7 +156,7 @@ const UserSettings: React.FC = () => {
 
   // ── RENDER ───────────────────────────────────────────────────────────────
   return (
-    <div className="max-w-2xl mx-auto py-6 px-4 pb-24">
+    <div dir={language === "ar" ? "rtl" : "ltr"} className="max-w-2xl mx-auto py-6 px-4 pb-24">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
         {t("common.settings")}
       </h1>
@@ -174,7 +174,7 @@ const UserSettings: React.FC = () => {
                 : "text-gray-500 hover:text-gray-700")
             }
           >
-            {tab.label}
+            {t("settings.tab." + tab.id)}
           </button>
         ))}
       </div>
@@ -186,7 +186,7 @@ const UserSettings: React.FC = () => {
           {/* Profile photo section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <User className="w-4 h-4" /> Profile Photo
+              <User className="w-4 h-4" /> {t("settings.profilePhoto")}
             </h3>
 
             <div className="flex items-center gap-4">
@@ -212,11 +212,11 @@ const UserSettings: React.FC = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-60"
                 >
                   {photoLoading
-                    ? <><Loader className="w-4 h-4 animate-spin" /> Uploading...</>
-                    : <><Camera className="w-4 h-4" /> Change Photo</>
+                    ? <><Loader className="w-4 h-4 animate-spin" /> {t("settings.uploading")}</>
+                    : <><Camera className="w-4 h-4" /> {t("settings.changePhoto")}</>
                   }
                 </button>
-                <p className="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
+                <p className="text-xs text-gray-400 mt-1">{t("settings.photoHint")}</p>
               </div>
             </div>
 
@@ -264,14 +264,14 @@ const UserSettings: React.FC = () => {
               ))}
             </select>
             <p className="text-xs text-gray-400 mt-2">
-              This changes the language of the entire app immediately.
+              {t("settings.langHint")}
             </p>
           </div>
 
           {/* Account links */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <User className="w-4 h-4" /> Account
+              <User className="w-4 h-4" /> {t("settings.account")}
             </h3>
 
             <div className="space-y-1">
@@ -280,7 +280,7 @@ const UserSettings: React.FC = () => {
                 to="/profile"
                 className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <span className="text-sm text-gray-700">Edit Profile</span>
+                <span className="text-sm text-gray-700">{t("settings.editProfile")}</span>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
 
@@ -334,7 +334,7 @@ const UserSettings: React.FC = () => {
                 to="/subscription"
                 className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <span className="text-sm text-gray-700">Subscription Plans</span>
+                <span className="text-sm text-gray-700">{t("settings.subscriptionPlans")}</span>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
             </div>
@@ -346,19 +346,19 @@ const UserSettings: React.FC = () => {
             This clears the Supabase session so user can log back in.
           */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="font-semibold text-gray-800 mb-3">Session</h3>
+            <h3 className="font-semibold text-gray-800 mb-3">{t("settings.session")}</h3>
             <button
               onClick={handleLogout}
               disabled={logoutLoading}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60"
             >
               {logoutLoading
-                ? <><Loader className="w-4 h-4 animate-spin" /> Signing out...</>
+                ? <><Loader className="w-4 h-4 animate-spin" /> {t("settings.signingOut")}</>
                 : <><LogOut className="w-4 h-4" /> {t("common.logout")}</>
               }
             </button>
             <p className="text-xs text-gray-400 text-center mt-2">
-              You can log back in with your username, phone, or email.
+              {t("settings.logoutHint")}
             </p>
           </div>
         </div>
@@ -368,22 +368,22 @@ const UserSettings: React.FC = () => {
       {activeTab === "notifications" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
           <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-            <Bell className="w-4 h-4" /> Notification Preferences
+            <Bell className="w-4 h-4" /> {t("settings.notifPrefs")}
           </h3>
           {[
-            "Order Updates",
-            "New Messages",
-            "Promotions",
-            "Price Alerts",
-            "System Alerts",
-            "Community Posts",
-            "New Jobs",
+            "settings.notif.orderUpdates",
+            "settings.notif.newMessages",
+            "settings.notif.promotions",
+            "settings.notif.priceAlerts",
+            "settings.notif.systemAlerts",
+            "settings.notif.communityPosts",
+            "settings.notif.newJobs",
           ].map((label) => (
             <label
               key={label}
               className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0 cursor-pointer"
             >
-              <span className="text-sm text-gray-700">{label}</span>
+              <span className="text-sm text-gray-700">{t(label)}</span>
               <input
                 type="checkbox"
                 defaultChecked
@@ -398,13 +398,13 @@ const UserSettings: React.FC = () => {
       {activeTab === "privacy" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Shield className="w-4 h-4" /> Privacy Controls
+            <Shield className="w-4 h-4" /> {t("settings.privacyControls")}
           </h3>
           {[
-            "Show my profile to other users",
-            "Allow others to see my listings",
-            "Show my online status",
-            "Allow direct messages from strangers",
+            "settings.privacy.showProfile",
+            "settings.privacy.allowListings",
+            "settings.privacy.showOnline",
+            "settings.privacy.allowDM",
           ].map((label) => (
             <label
               key={label}
@@ -415,15 +415,15 @@ const UserSettings: React.FC = () => {
                 defaultChecked
                 className="w-4 h-4 accent-teal-600"
               />
-              <span className="text-sm text-gray-700">{label}</span>
+              <span className="text-sm text-gray-700">{t(label)}</span>
             </label>
           ))}
           <div className="mt-4 space-y-2 border-t border-gray-100 pt-4">
             <Link to="/privacy-policy" className="block text-sm text-teal-600 hover:underline py-1">
-              Privacy Policy
+              {t("settings.privacyPolicy")}
             </Link>
             <Link to="/terms-of-service" className="block text-sm text-teal-600 hover:underline py-1">
-              Terms of Service
+              {t("settings.termsOfService")}
             </Link>
           </div>
         </div>
@@ -434,15 +434,15 @@ const UserSettings: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Lock className="w-4 h-4" /> Security
+              <Lock className="w-4 h-4" /> {t("settings.security")}
             </h3>
             <Link
               to="/forgot-password"
               className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50"
             >
               <div>
-                <p className="text-sm font-medium text-gray-700">Change Password</p>
-                <p className="text-xs text-gray-400">Update your account password</p>
+                <p className="text-sm font-medium text-gray-700">{t("settings.changePassword")}</p>
+                <p className="text-xs text-gray-400">{t("settings.changePasswordHint")}</p>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400" />
             </Link>
@@ -451,18 +451,18 @@ const UserSettings: React.FC = () => {
               className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50"
             >
               <div>
-                <p className="text-sm font-medium text-gray-700">Account Recovery</p>
-                <p className="text-xs text-gray-400">Recover username or reset password</p>
+                <p className="text-sm font-medium text-gray-700">{t("settings.accountRecovery")}</p>
+                <p className="text-xs text-gray-400">{t("settings.accountRecoveryHint")}</p>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400" />
             </Link>
           </div>
 
           <div className="bg-red-50 rounded-xl border border-red-100 p-6">
-            <h3 className="font-semibold text-red-700 mb-2">Danger Zone</h3>
-            <p className="text-xs text-red-500 mb-4">These actions cannot be undone.</p>
+            <h3 className="font-semibold text-red-700 mb-2">{t("settings.dangerZone")}</h3>
+            <p className="text-xs text-red-500 mb-4">{t("settings.dangerHint")}</p>
             <button className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors">
-              Deactivate Account
+              {t("settings.deactivate")}
             </button>
           </div>
         </div>
