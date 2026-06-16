@@ -11,6 +11,12 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 // ─── Translation map ──────────────────────────────────────────────────────────
 const translations: Record<string, Record<string, string>> = {
   en: {
+    "subBadge.free": "Free",
+    "subBadge.basic": "Basic",
+    "subBadge.premium": "Premium",
+    "subBadge.enterprise": "Enterprise",
+    "subBanner.text": "Upgrade to unlock all features — from 2,000 XAF/month",
+    "subBanner.upgrade": "Upgrade",
     "myListings.title": "My Listings",
     "myListings.totalAds": "Total Ads",
     "myListings.active": "Active",
@@ -387,6 +393,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   fr: {
+    "subBadge.free": "Gratuit",
+    "subBadge.basic": "Basique",
+    "subBadge.premium": "Premium",
+    "subBadge.enterprise": "Entreprise",
+    "subBanner.text": "Passez à un forfait supérieur pour tout débloquer — à partir de 2 000 XAF/mois",
+    "subBanner.upgrade": "Améliorer",
     "myListings.title": "Mes annonces",
     "myListings.totalAds": "Total des annonces",
     "myListings.active": "Actives",
@@ -754,6 +766,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   pidgin: {
+    "subBadge.free": "Free",
+    "subBadge.basic": "Basic",
+    "subBadge.premium": "Premium",
+    "subBadge.enterprise": "Enterprise",
+    "subBanner.text": "Upgrade make you open all feature dem — start for 2,000 XAF/month",
+    "subBanner.upgrade": "Upgrade",
     "myListings.title": "My Listings",
     "myListings.totalAds": "All Ads",
     "myListings.active": "Active",
@@ -1121,6 +1139,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ar: {
+    "subBadge.free": "مجاني",
+    "subBadge.basic": "أساسي",
+    "subBadge.premium": "بريميوم",
+    "subBadge.enterprise": "مؤسسات",
+    "subBanner.text": "ارتقِ بخطتك لفتح كل الميزات — ابتداءً من 2,000 فرنك/شهر",
+    "subBanner.upgrade": "ترقية",
     "myListings.title": "إعلاناتي",
     "myListings.totalAds": "إجمالي الإعلانات",
     "myListings.active": "نشطة",
@@ -1485,6 +1509,12 @@ const translations: Record<string, Record<string, string>> = {
   },
 
   ff: {
+    "subBadge.free": "Meere",
+    "subBadge.basic": "Basic",
+    "subBadge.premium": "Premium",
+    "subBadge.enterprise": "Enterprise",
+    "subBanner.text": "ƴeftu plaan maa ngam uddite golle fof — gila 2,000 XAF/lewru",
+    "subBanner.upgrade": "ƴeftu",
     "myListings.title": "Njeeyaaji am",
     "myListings.totalAds": "Njeeyaaji fof",
     "myListings.active": "Ɖi ngolloti",
