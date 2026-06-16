@@ -155,8 +155,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     payWithMoMo:"Pay with MTN MoMo", payWithOrange:"Pay with Orange Money",
     payNow:"Pay Now", paymentPending:"Payment Pending", paymentSuccess:"Payment Successful!",
     paymentFailed:"Payment Failed",
-    donation:"Donation", securePayment:"Secure Payment", processingPayment:"Processing Payment",
-    viewWallet:"View Wallet", added:"added to your wallet", buyCoins:"Buy Zerm Coins",
   },
   fr: {
     home:"Accueil", jobs:"Emplois", marketplace:"Marché", services:"Services",
@@ -225,8 +223,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     payWithMoMo:"Payer avec MTN MoMo", payWithOrange:"Payer avec Orange Money",
     payNow:"Payer maintenant", paymentPending:"Paiement en attente",
     paymentSuccess:"Paiement réussi !", paymentFailed:"Paiement échoué",
-    donation:"Don", securePayment:"Paiement sécurisé", processingPayment:"Traitement du paiement",
-    viewWallet:"Voir le Portefeuille", added:"ajouté à votre portefeuille", buyCoins:"Acheter des Pièces Zerm",
   },
   pidgin: {
     home:"Home", jobs:"Jobs", marketplace:"Market", services:"Services",
@@ -289,8 +285,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     payWithMoMo:"Pay with MTN MoMo", payWithOrange:"Pay with Orange Money",
     payNow:"Pay Now", paymentPending:"Payment Pending",
     paymentSuccess:"Payment Don Enter!", paymentFailed:"Payment Fail",
-    donation:"Donashon", securePayment:"Safe Payment", processingPayment:"Payment di go on",
-    viewWallet:"Look Your Wallet", added:"don enter inside your wallet", buyCoins:"Buy Zerm Coins",
   },
   ar: {
     home:"الرئيسية", jobs:"الوظائف", marketplace:"السوق", services:"الخدمات",
@@ -357,8 +351,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     payWithMoMo:"الدفع عبر MTN MoMo", payWithOrange:"الدفع عبر Orange Money",
     payNow:"ادفع الآن", paymentPending:"في انتظار الدفع",
     paymentSuccess:"تم الدفع بنجاح!", paymentFailed:"فشل الدفع",
-    donation:"تبرع", securePayment:"دفع آمن", processingPayment:"جاري معالجة الدفع",
-    viewWallet:"عرض المحفظة", added:"تمت إضافته إلى محفظتك", buyCoins:"شراء عملات زيرم",
   },
   ff: {
     home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"Ɓalɗe",
@@ -421,8 +413,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     payWithMoMo:"Ñammbu MTN MoMo", payWithOrange:"Ñammbu Orange Money",
     payNow:"Ñammbu Ɗoo", paymentPending:"E Yoɓde…",
     paymentSuccess:"Yoɓde Danɗii!", paymentFailed:"Yoɓde Waɓɓi",
-    donation:"Dokkal", securePayment:"Joɓol hisnungol", processingPayment:"Ɗon lesta joɓol",
-    viewWallet:"Ndaar Jiiba", added:"ɓesdaama haa jiiba ma", buyCoins:"Sodu Ceede Zerm",
   },
 };
 
@@ -551,7 +541,7 @@ const JobsCategory        = lazy(() => import("@/pages/JobsCategory"));
 
 // SUBSCRIPTION / ZERM
 const SubscriptionPlans = lazy(() => import("@/pages/SubscriptionPlans"));
-const CoinsBuyPage      = lazy(() => import("@/pages/CoinsBuyPage"));
+const ZermPurchase      = lazy(() => import("@/pages/ZermPurchase"));
 const CoinsPage         = lazy(() => import("@/pages/CoinsPage"));
 const CoinsHistory      = lazy(() => import("@/pages/CoinsHistory"));
 const CoinsTransfer     = lazy(() => import("@/pages/CoinsTransfer"));
@@ -1380,7 +1370,7 @@ export default function App() {
                           path="/coins/buy"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><CoinsBuyPage /></AuthGate>
+                              <AuthGate require="user"><ZermPurchase /></AuthGate>
                             </MainLayout>
                           }
                         />

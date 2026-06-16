@@ -19,7 +19,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLanguage } from "@/context/LanguageContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -39,8 +39,6 @@ interface MyListing {
 // ── Icon helper ────────────────────────────────────────────────────────────────
 
 function ListingIcon({ type }: { type: string }) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   const cls = "w-5 h-5";
   if (type === "farm")        return <Leaf       className={`${cls} text-green-600`} />;
   if (type === "rental")      return <Home       className={`${cls} text-orange-500`} />;
@@ -52,6 +50,7 @@ function ListingIcon({ type }: { type: string }) {
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useLanguage();
   const map: Record<string, string> = {
     active:  "bg-green-100 text-green-700",
     pending: "bg-yellow-100 text-yellow-700",
@@ -60,15 +59,24 @@ function StatusBadge({ status }: { status: string }) {
   };
   return (
     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${map[status] ?? "bg-gray-100 text-gray-500"}`}>
-      {status}
+      {statusLabel(status, t)}
     </span>
   );
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
+function filterLabel(f: string, t: (k: string) => string) {
+  return t("myListings.filter." + f);
+}
+
+function statusLabel(status: string, t: (k: string) => string) {
+  const known = ["active", "pending", "expired", "sold"];
+  return known.includes(status) ? t("myListings.status." + status) : status;
+}
 export default function MyListings() {
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
   const [listings,    setListings]    = useState<MyListing[]>([]);
   const [loading,     setLoading]     = useState(true);
   const [activeFilter,setActiveFilter]= useState<string>("all");
@@ -179,7 +187,7 @@ export default function MyListings() {
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div dir={language === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-24">
 
       {/* Header */}
       <div className="bg-white border-b shadow-sm px-4 pt-4 pb-3">
@@ -187,7 +195,7 @@ export default function MyListings() {
           <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-gray-100">
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
-          <h1 className="text-xl font-bold text-gray-900">My Listings</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("myListings.title")}</h1>
           <button onClick={fetchAll} className="ml-auto p-2 rounded-xl hover:bg-gray-100">
             <RefreshCw className="w-4 h-4 text-gray-500" />
           </button>
@@ -197,16 +205,16 @@ export default function MyListings() {
         <div className="grid grid-cols-3 gap-3 mb-3">
           <div className="bg-teal-50 rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-teal-700">{listings.length}</p>
-            <p className="text-xs text-teal-600">Total Ads</p>
+            <p className="text-xs text-teal-600">{t("myListings.totalAds")}</p>
           </div>
           <div className="bg-green-50 rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-green-700">{activeCount}</p>
-            <p className="text-xs text-green-600">Active</p>
+            <p className="text-xs text-green-600">{t("myListings.active")}</p>
           </div>
           {/* ✅ Total ad views — the big number */}
           <div className="bg-blue-50 rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-blue-700">{totalViews.toLocaleString()}</p>
-            <p className="text-xs text-blue-600">Total Views</p>
+            <p className="text-xs text-blue-600">{t("myListings.totalViews")}</p>
           </div>
         </div>
 
@@ -216,7 +224,7 @@ export default function MyListings() {
             <button key={f} onClick={() => setActiveFilter(f)}
               className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium capitalize whitespace-nowrap transition-colors
                 ${activeFilter === f ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-              {f}
+              {filterLabel(f, t)}
             </button>
           ))}
         </div>
@@ -228,24 +236,24 @@ export default function MyListings() {
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-            <p className="text-sm text-gray-500">Loading your listings…</p>
+            <p className="text-sm text-gray-500">{t("myListings.loading")}</p>
           </div>
         )}
 
         {!loading && listings.length === 0 && (
           <div className="text-center py-20 text-gray-500">
             <Package className="w-14 h-14 mx-auto mb-3 text-gray-300" />
-            <p className="font-semibold text-gray-700">No listings yet</p>
-            <p className="text-sm mt-1">Start selling to see your ads here.</p>
+            <p className="font-semibold text-gray-700">{t("myListings.noneYet")}</p>
+            <p className="text-sm mt-1">{t("myListings.startSelling")}</p>
             <button onClick={() => navigate("/marketplace/sell")}
               className="mt-5 bg-teal-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold">
-              Post Your First Ad
+              {t("myListings.postFirst")}
             </button>
           </div>
         )}
 
         {!loading && filtered.length === 0 && listings.length > 0 && (
-          <p className="text-center text-sm text-gray-500 py-8">No listings in this category.</p>
+          <p className="text-center text-sm text-gray-500 py-8">{t("myListings.noneInCategory")}</p>
         )}
 
         {!loading && filtered.map(l => (
@@ -275,7 +283,7 @@ export default function MyListings() {
               <div className="flex items-center gap-2 bg-green-50 rounded-lg px-3 py-1.5">
                 <Eye className="w-4 h-4 text-green-600" />
                 <span className="font-bold text-green-700">{l.view_count ?? 0}</span>
-                <span className="text-gray-500 text-xs">ad views</span>
+                <span className="text-gray-500 text-xs">{t("myListings.adViews")}</span>
               </div>
               <p className="text-xs text-gray-400">
                 {new Date(l.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}

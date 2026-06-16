@@ -24,7 +24,7 @@ import { useLang, t } from "@/hooks/useAppLang";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const BAMBEH_FEE_RATE = 0.03;
+const BAMBEH_FEE_RATE = 0.01;
 const GOV_TAX_RATE    = 0.00002;
 
 function calcFees(subtotal: number) {
@@ -520,7 +520,7 @@ export default function Cart() {
           <div className="bg-white rounded-2xl p-5 shadow-sm border mb-4">
             <h2 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Order Summary</h2>
             <FeeRow label="Subtotal" amount={`${fmt(subtotal)} XAF`} />
-            <FeeRow label="Bambeh Fee (3%)" amount={`${fmt(appFee)} XAF`} muted
+            <FeeRow label="Bambeh Fee (1%)" amount={`${fmt(appFee)} XAF`} muted
               tooltip="A 3% platform fee that keeps Bambeh running and supports local sellers." />
             <FeeRow label="Government Tax (0.002%)" amount={`${fmt(govTax)} XAF`} muted
               tooltip="Statutory 0.002% digital tax levied by the Government of Cameroon." />
