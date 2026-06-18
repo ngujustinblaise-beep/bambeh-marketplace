@@ -11,6 +11,12 @@ const PaymentCallback: React.FC = () => {
   const [status, setStatus] = useState<Status>("loading");
   const [reference, setReference] = useState<string | null>(null);
 
+useEffect(() => {
+  if (!location.search) {
+    navigate("/", { replace: true });
+  }
+}, []);
+
   useEffect(() => {
     const ref = params.get("reference") ?? params.get("trxref") ?? params.get("ref");
     if (!ref) { setStatus("failed"); return; }

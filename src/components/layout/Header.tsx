@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
  *
@@ -21,7 +21,6 @@ import {
   Globe, Settings, Package, Heart, Gift, ChevronRight, Share2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage, AVAILABLE_LANGUAGES, LanguageCode } from '@/contexts/LanguageContext';
 import { NotificationBell } from '@/components/NotificationBell';
 import { useLang, t } from "@/hooks/useAppLang";
 

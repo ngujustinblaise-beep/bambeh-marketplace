@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  *
@@ -28,7 +28,6 @@ import {
   Share2, X, Copy, Check, Facebook, Twitter, MessageSquare, ChevronUp, ChevronDown
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ NEW
 

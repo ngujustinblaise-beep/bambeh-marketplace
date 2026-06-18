@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BottomNav.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/BottomNav.tsx
  *
@@ -9,7 +9,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Briefcase, ShoppingBag, Wrench, User, Building2 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useLang, t } from "@/hooks/useAppLang";
 
 const BottomNav = () => {

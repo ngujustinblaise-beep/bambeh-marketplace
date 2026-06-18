@@ -2,16 +2,11 @@
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  *
- * i18n (self-contained): all visible settings strings live in the local S table
- * below, keyed by the live language (EN / FR / Pidgin / Arabic / Fulfulde). The
- * page reads the active language from the global LanguageContext but does NOT
- * depend on any shared key table for these strings, so nothing can fall back to
- * raw key names. Arabic gets dir="rtl". Icons (lucide) are left exactly as-is.
- * Shared keys that already exist app-wide (page title, language header, nav
- * links, logout label) still use t().
- *
- * Original behaviour preserved: photo upload to Supabase Storage, logout,
- * language switch (re-renders whole app), and all profile/account links.
+ * i18n: all visible settings strings live in the local S table below, keyed by
+ * the live language (EN / FR / Pidgin / Arabic / Fulfulde). The page reads the
+ * active language AND setLanguage from the ONE real provider — the inline
+ * LanguageProvider exported from "@/App" — so the language selector reflects
+ * the active language and the whole page re-renders instantly on change.
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -23,9 +18,8 @@ import {
   Globe, Shield, Bell, User, Lock, AlertCircle, CheckCircle, Loader
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from "@/lib/supabase";
-import { useLanguage as useGlobalLang } from "@/App";
+import { useLanguage } from "@/App";
 
 type Tab = "general" | "notifications" | "privacy" | "security";
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
@@ -41,7 +35,7 @@ const AVAILABLE_LANGUAGES = [
 const NOTIF_KEYS = ["orderUpdates","newMessages","promotions","priceAlerts","systemAlerts","communityPosts","newJobs"] as const;
 const PRIVACY_KEYS = ["showProfile","allowListings","showOnline","allowDM"] as const;
 
-// ── i18n strings (local; keyed by live language) ──────────────────────────
+// i18n strings (local; keyed by live language)
 const S: Record<Lang, {
   tab: { general: string; notifications: string; privacy: string; security: string };
   profilePhoto: string; uploading: string; changePhoto: string; photoHint: string;
@@ -54,14 +48,11 @@ const S: Record<Lang, {
   privacyPolicy: string; termsOfService: string; security: string;
   changePassword: string; changePasswordHint: string; accountRecovery: string; accountRecoveryHint: string;
   dangerZone: string; dangerHint: string; deactivate: string;
+  pageTitle: string; languageLabel: string; logout: string;
+  myListings: string; favorites: string; orders: string;
 }> = {
   en: {
-    "tab": {
-      "general": "General",
-      "notifications": "Notifications",
-      "privacy": "Privacy",
-      "security": "Security",
-    },
+    "tab": { "general": "General", "notifications": "Notifications", "privacy": "Privacy", "security": "Security" },
     "profilePhoto": "Profile Photo",
     "uploading": "Uploading...",
     "changePhoto": "Change Photo",
@@ -78,22 +69,9 @@ const S: Record<Lang, {
     "signingOut": "Signing out...",
     "logoutHint": "You can log back in with your username, phone, or email.",
     "notifPrefs": "Notification Preferences",
-    "notif": {
-      "orderUpdates": "Order Updates",
-      "newMessages": "New Messages",
-      "promotions": "Promotions",
-      "priceAlerts": "Price Alerts",
-      "systemAlerts": "System Alerts",
-      "communityPosts": "Community Posts",
-      "newJobs": "New Jobs",
-    },
+    "notif": { "orderUpdates": "Order Updates", "newMessages": "New Messages", "promotions": "Promotions", "priceAlerts": "Price Alerts", "systemAlerts": "System Alerts", "communityPosts": "Community Posts", "newJobs": "New Jobs" },
     "privacyControls": "Privacy Controls",
-    "privacy": {
-      "showProfile": "Show my profile to other users",
-      "allowListings": "Allow others to see my listings",
-      "showOnline": "Show my online status",
-      "allowDM": "Allow direct messages from strangers",
-    },
+    "privacy": { "showProfile": "Show my profile to other users", "allowListings": "Allow others to see my listings", "showOnline": "Show my online status", "allowDM": "Allow direct messages from strangers" },
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "security": "Security",
@@ -104,14 +82,15 @@ const S: Record<Lang, {
     "dangerZone": "Danger Zone",
     "dangerHint": "These actions cannot be undone.",
     "deactivate": "Deactivate Account",
+    "pageTitle": "Settings",
+    "languageLabel": "Language",
+    "logout": "Logout",
+    "myListings": "My Listings",
+    "favorites": "Favorites",
+    "orders": "Orders",
   },
   fr: {
-    "tab": {
-      "general": "Général",
-      "notifications": "Notifications",
-      "privacy": "Confidentialité",
-      "security": "Sécurité",
-    },
+    "tab": { "general": "Général", "notifications": "Notifications", "privacy": "Confidentialité", "security": "Sécurité" },
     "profilePhoto": "Photo de profil",
     "uploading": "Téléversement...",
     "changePhoto": "Changer la photo",
@@ -128,22 +107,9 @@ const S: Record<Lang, {
     "signingOut": "Déconnexion...",
     "logoutHint": "Vous pouvez vous reconnecter avec votre nom d'utilisateur, téléphone ou e-mail.",
     "notifPrefs": "Préférences de notification",
-    "notif": {
-      "orderUpdates": "Suivi des commandes",
-      "newMessages": "Nouveaux messages",
-      "promotions": "Promotions",
-      "priceAlerts": "Alertes de prix",
-      "systemAlerts": "Alertes système",
-      "communityPosts": "Publications de la communauté",
-      "newJobs": "Nouveaux emplois",
-    },
+    "notif": { "orderUpdates": "Suivi des commandes", "newMessages": "Nouveaux messages", "promotions": "Promotions", "priceAlerts": "Alertes de prix", "systemAlerts": "Alertes système", "communityPosts": "Publications de la communauté", "newJobs": "Nouveaux emplois" },
     "privacyControls": "Contrôles de confidentialité",
-    "privacy": {
-      "showProfile": "Montrer mon profil aux autres utilisateurs",
-      "allowListings": "Autoriser les autres à voir mes annonces",
-      "showOnline": "Afficher mon statut en ligne",
-      "allowDM": "Autoriser les messages directs d'inconnus",
-    },
+    "privacy": { "showProfile": "Montrer mon profil aux autres utilisateurs", "allowListings": "Autoriser les autres à voir mes annonces", "showOnline": "Afficher mon statut en ligne", "allowDM": "Autoriser les messages directs d'inconnus" },
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
     "security": "Sécurité",
@@ -154,14 +120,15 @@ const S: Record<Lang, {
     "dangerZone": "Zone de danger",
     "dangerHint": "Ces actions sont irréversibles.",
     "deactivate": "Désactiver le compte",
+    "pageTitle": "Paramètres",
+    "languageLabel": "Langue",
+    "logout": "Déconnexion",
+    "myListings": "Mes annonces",
+    "favorites": "Favoris",
+    "orders": "Commandes",
   },
   pidgin: {
-    "tab": {
-      "general": "General",
-      "notifications": "Notifications",
-      "privacy": "Privacy",
-      "security": "Security",
-    },
+    "tab": { "general": "General", "notifications": "Notifications", "privacy": "Privacy", "security": "Security" },
     "profilePhoto": "Profile Photo",
     "uploading": "Dey upload...",
     "changePhoto": "Change Photo",
@@ -178,22 +145,9 @@ const S: Record<Lang, {
     "signingOut": "Dey commot...",
     "logoutHint": "You fit login back with your username, phone, or email.",
     "notifPrefs": "Notification Settings",
-    "notif": {
-      "orderUpdates": "Order Updates",
-      "newMessages": "New Messages",
-      "promotions": "Promotions",
-      "priceAlerts": "Price Alerts",
-      "systemAlerts": "System Alerts",
-      "communityPosts": "Community Posts",
-      "newJobs": "New Jobs",
-    },
+    "notif": { "orderUpdates": "Order Updates", "newMessages": "New Messages", "promotions": "Promotions", "priceAlerts": "Price Alerts", "systemAlerts": "System Alerts", "communityPosts": "Community Posts", "newJobs": "New Jobs" },
     "privacyControls": "Privacy Settings",
-    "privacy": {
-      "showProfile": "Make other people fit see my profile",
-      "allowListings": "Make people fit see my listings",
-      "showOnline": "Show say I dey online",
-      "allowDM": "Allow message from people wey I no know",
-    },
+    "privacy": { "showProfile": "Make other people fit see my profile", "allowListings": "Make people fit see my listings", "showOnline": "Show say I dey online", "allowDM": "Allow message from people wey I no know" },
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "security": "Security",
@@ -204,14 +158,15 @@ const S: Record<Lang, {
     "dangerZone": "Danger Zone",
     "dangerHint": "Dis actions no fit undo.",
     "deactivate": "Deactivate Account",
+    "pageTitle": "Settings",
+    "languageLabel": "Language",
+    "logout": "Comot",
+    "myListings": "My Listings",
+    "favorites": "Favorites",
+    "orders": "Orders",
   },
   ar: {
-    "tab": {
-      "general": "عام",
-      "notifications": "الإشعارات",
-      "privacy": "الخصوصية",
-      "security": "الأمان",
-    },
+    "tab": { "general": "عام", "notifications": "الإشعارات", "privacy": "الخصوصية", "security": "الأمان" },
     "profilePhoto": "صورة الملف الشخصي",
     "uploading": "جارٍ الرفع...",
     "changePhoto": "تغيير الصورة",
@@ -228,22 +183,9 @@ const S: Record<Lang, {
     "signingOut": "جارٍ تسجيل الخروج...",
     "logoutHint": "يمكنك تسجيل الدخول مجددًا باسم المستخدم أو الهاتف أو البريد الإلكتروني.",
     "notifPrefs": "تفضيلات الإشعارات",
-    "notif": {
-      "orderUpdates": "تحديثات الطلبات",
-      "newMessages": "رسائل جديدة",
-      "promotions": "العروض",
-      "priceAlerts": "تنبيهات الأسعار",
-      "systemAlerts": "تنبيهات النظام",
-      "communityPosts": "منشورات المجتمع",
-      "newJobs": "وظائف جديدة",
-    },
+    "notif": { "orderUpdates": "تحديثات الطلبات", "newMessages": "رسائل جديدة", "promotions": "العروض", "priceAlerts": "تنبيهات الأسعار", "systemAlerts": "تنبيهات النظام", "communityPosts": "منشورات المجتمع", "newJobs": "وظائف جديدة" },
     "privacyControls": "إعدادات الخصوصية",
-    "privacy": {
-      "showProfile": "إظهار ملفي الشخصي للمستخدمين الآخرين",
-      "allowListings": "السماح للآخرين برؤية إعلاناتي",
-      "showOnline": "إظهار حالة اتصالي",
-      "allowDM": "السماح بالرسائل المباشرة من الغرباء",
-    },
+    "privacy": { "showProfile": "إظهار ملفي الشخصي للمستخدمين الآخرين", "allowListings": "السماح للآخرين برؤية إعلاناتي", "showOnline": "إظهار حالة اتصالي", "allowDM": "السماح بالرسائل المباشرة من الغرباء" },
     "privacyPolicy": "سياسة الخصوصية",
     "termsOfService": "شروط الخدمة",
     "security": "الأمان",
@@ -254,14 +196,15 @@ const S: Record<Lang, {
     "dangerZone": "منطقة الخطر",
     "dangerHint": "لا يمكن التراجع عن هذه الإجراءات.",
     "deactivate": "تعطيل الحساب",
+    "pageTitle": "الإعدادات",
+    "languageLabel": "اللغة",
+    "logout": "تسجيل الخروج",
+    "myListings": "إعلاناتي",
+    "favorites": "المفضلة",
+    "orders": "الطلبات",
   },
   ff: {
-    "tab": {
-      "general": "Huunde fof",
-      "notifications": "Tintinooje",
-      "privacy": "Sirru",
-      "security": "Kisal",
-    },
+    "tab": { "general": "Huunde fof", "notifications": "Tintinooje", "privacy": "Sirru", "security": "Kisal" },
     "profilePhoto": "Natal profil",
     "uploading": "Ɗon ɓamtee...",
     "changePhoto": "Waylu natal",
@@ -278,22 +221,9 @@ const S: Record<Lang, {
     "signingOut": "Ɗon yalta...",
     "logoutHint": "A waawi kadi naatde e innde maa, telefoŋ, walla iimeel.",
     "notifPrefs": "Teelte tintinooje",
-    "notif": {
-      "orderUpdates": "Kesɗitineeji umrooje",
-      "newMessages": "Nulalji kesi",
-      "promotions": "Njeñtudi",
-      "priceAlerts": "Tintinooje coggu",
-      "systemAlerts": "Tintinooje sistem",
-      "communityPosts": "Bindi renndo",
-      "newJobs": "Golle kese",
-    },
+    "notif": { "orderUpdates": "Kesɗitineeji umrooje", "newMessages": "Nulalji kesi", "promotions": "Njeñtudi", "priceAlerts": "Tintinooje coggu", "systemAlerts": "Tintinooje sistem", "communityPosts": "Bindi renndo", "newJobs": "Golle kese" },
     "privacyControls": "Teelte sirru",
-    "privacy": {
-      "showProfile": "Hollu profil am yimɓe woɗɓe",
-      "allowListings": "Yamiru woɓɓe yiyde njeeyaaji am",
-      "showOnline": "Hollu miɗo e laawol",
-      "allowDM": "Yamiru nulalji to yimɓe ɓe anndaɗaa",
-    },
+    "privacy": { "showProfile": "Hollu profil am yimɓe woɗɓe", "allowListings": "Yamiru woɓɓe yiyde njeeyaaji am", "showOnline": "Hollu miɗo e laawol", "allowDM": "Yamiru nulalji to yimɓe ɓe anndaɗaa" },
     "privacyPolicy": "Sariya sirru",
     "termsOfService": "Sarɗiiji huutoragol",
     "security": "Kisal",
@@ -304,14 +234,19 @@ const S: Record<Lang, {
     "dangerZone": "Nokku bonki",
     "dangerHint": "Ɗii golle mbaawaa firteede.",
     "deactivate": "Ɗaɗɗu konto",
+    "pageTitle": "Teelte",
+    "languageLabel": "Ɗemngal",
+    "logout": "Yaltude",
+    "myListings": "Ko njeeyetee am",
+    "favorites": "Faaɓaaɓe",
+    "orders": "Sarwiiji",
   },
 };
 
 const UserSettings: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
-  const { t, language } = useLanguage();
-  const { setLanguage } = useGlobalLang();  // ← connected to global language
+  const { language, setLanguage } = useLanguage();  // single real provider (from @/App)
 
   const lang: Lang = (language in S ? language : "en") as Lang;
   const s = S[lang];
@@ -327,7 +262,6 @@ const UserSettings: React.FC = () => {
 
   const tabs: Tab[] = ["general", "notifications", "privacy", "security"];
 
-  // ── PHOTO UPLOAD ────────────────────────────────────────────────────────
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -348,7 +282,7 @@ const UserSettings: React.FC = () => {
     try {
       const userId   = currentUser?.id || "unknown";
       const ext      = file.name.split(".").pop();
-      const filePath = `${userId}/avatar_${Date.now()}.${ext}`;
+      const filePath = userId + "/avatar_" + Date.now() + "." + ext;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
@@ -378,7 +312,6 @@ const UserSettings: React.FC = () => {
     }
   };
 
-  // ── LOGOUT ────────────────────────────────────────────────────────────────
   const handleLogout = async () => {
     setLogoutLoading(true);
     try {
@@ -393,19 +326,16 @@ const UserSettings: React.FC = () => {
     }
   };
 
-  // ── LANGUAGE CHANGE ────────────────────────────────────────────────────────
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value);
   };
 
-  // ── RENDER ────────────────────────────────────────────────────────────────
   return (
     <div dir={isRtl ? "rtl" : "ltr"} className="max-w-2xl mx-auto py-6 px-4 pb-24">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        {t("common.settings")}
+        {s.pageTitle}
       </h1>
 
-      {/* Tab switcher */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6">
         {tabs.map((tab) => (
           <button
@@ -423,11 +353,9 @@ const UserSettings: React.FC = () => {
         ))}
       </div>
 
-      {/* ── GENERAL TAB ── */}
       {activeTab === "general" && (
         <div className="space-y-4">
 
-          {/* Profile photo section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <User className="w-4 h-4" /> {s.profilePhoto}
@@ -479,10 +407,9 @@ const UserSettings: React.FC = () => {
             )}
           </div>
 
-          {/* Language selector */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Globe className="w-4 h-4" /> {t("settings.language")}
+              <Globe className="w-4 h-4" /> {s.languageLabel}
             </h3>
             <select
               value={language}
@@ -500,7 +427,6 @@ const UserSettings: React.FC = () => {
             </p>
           </div>
 
-          {/* Account links */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <User className="w-4 h-4" /> {s.account}
@@ -521,7 +447,7 @@ const UserSettings: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <List className="w-4 h-4 text-teal-600" />
-                  <span className="text-sm text-gray-700">{t("nav.myListings")}</span>
+                  <span className="text-sm text-gray-700">{s.myListings}</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
@@ -532,7 +458,7 @@ const UserSettings: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <Heart className="w-4 h-4 text-red-500" />
-                  <span className="text-sm text-gray-700">{t("nav.favorites")}</span>
+                  <span className="text-sm text-gray-700">{s.favorites}</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
@@ -543,7 +469,7 @@ const UserSettings: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <Package className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm text-gray-700">{t("nav.orders")}</span>
+                  <span className="text-sm text-gray-700">{s.orders}</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
@@ -558,7 +484,6 @@ const UserSettings: React.FC = () => {
             </div>
           </div>
 
-          {/* Session / logout */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-gray-800 mb-3">{s.session}</h3>
             <button
@@ -568,7 +493,7 @@ const UserSettings: React.FC = () => {
             >
               {logoutLoading
                 ? <><Loader className="w-4 h-4 animate-spin" /> {s.signingOut}</>
-                : <><LogOut className="w-4 h-4" /> {t("common.logout")}</>
+                : <><LogOut className="w-4 h-4" /> {s.logout}</>
               }
             </button>
             <p className="text-xs text-gray-400 text-center mt-2">
@@ -578,7 +503,6 @@ const UserSettings: React.FC = () => {
         </div>
       )}
 
-      {/* ── NOTIFICATIONS TAB ── */}
       {activeTab === "notifications" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
           <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
@@ -600,7 +524,6 @@ const UserSettings: React.FC = () => {
         </div>
       )}
 
-      {/* ── PRIVACY TAB ── */}
       {activeTab === "privacy" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -630,7 +553,6 @@ const UserSettings: React.FC = () => {
         </div>
       )}
 
-      {/* ── SECURITY TAB ── */}
       {activeTab === "security" && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
