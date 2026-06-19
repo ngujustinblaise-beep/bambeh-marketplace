@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import { SUBSCRIPTION_PLANS, getSubscriptionPlan } from "../../config/subscriptionPlans";
 import type { SubscriptionTier } from "../../types/subscription";
@@ -39,7 +39,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">Choose a Plan</h2>
           {onClose && (
-            <button onClick={onClose} className="text-gray-400 text-2xl">×</button>
+            <button onClick={onClose} className="text-gray-400 text-2xl">Ã—</button>
           )}
         </div>
 
@@ -56,7 +56,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               <ul className="mt-2 space-y-1">
                 {p.features.map((f, i) => (
                   <li key={i} className="text-xs text-gray-600 flex gap-1">
-                    <span className="text-teal-500">✓</span>{f}
+                    <span className="text-teal-500">âœ“</span>{f}
                   </li>
                 ))}
               </ul>
@@ -83,7 +83,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         <button onClick={handleSubscribe} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl">
-          {loading ? "Processing…" : `Subscribe · ${plan?.priceXAF.toLocaleString() ?? "—"} XAF/mo`}
+          {loading ? "Processingâ€¦" : `Subscribe Â· ${plan?.priceXAF.toLocaleString() ?? "â€”"} XAF/mo`}
         </button>
       </div>
     </div>

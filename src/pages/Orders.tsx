@@ -17,7 +17,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Package, MapPin, Clock, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 interface Order {
   id: string;

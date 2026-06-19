@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/utils/performance/ImageOptimizer.ts
- * Bambeh Marketplace — Image Optimization Utilities
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Image Optimization Utilities
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 export interface ResizeOptions {
@@ -20,7 +20,7 @@ export interface OptimizedImage {
   format: string;
 }
 
-// ─── Load Image from File ─────────────────────────────────────────────────────
+// â”€â”€â”€ Load Image from File â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function loadImageFromFile(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -40,7 +40,7 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
   });
 }
 
-// ─── Canvas to Blob ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Canvas to Blob â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function canvasToBlob(
   canvas: HTMLCanvasElement,
   format: string,
@@ -61,7 +61,7 @@ function canvasToBlob(
   });
 }
 
-// ─── Resize & Compress Image ──────────────────────────────────────────────────
+// â”€â”€â”€ Resize & Compress Image â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function optimizeImage(
   file: File,
   options: ResizeOptions = {}
@@ -111,7 +111,7 @@ export async function optimizeImage(
   };
 }
 
-// ─── Create Thumbnail ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Create Thumbnail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function createThumbnail(
   file: File,
   size: number = 200
@@ -124,7 +124,7 @@ export async function createThumbnail(
   });
 }
 
-// ─── Validate Image Dimensions ────────────────────────────────────────────────
+// â”€â”€â”€ Validate Image Dimensions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function getImageDimensions(
   file: File
 ): Promise<{ width: number; height: number }> {
@@ -132,12 +132,12 @@ export async function getImageDimensions(
   return { width: img.naturalWidth, height: img.naturalHeight };
 }
 
-// ─── Convert Blob to File ─────────────────────────────────────────────────────
+// â”€â”€â”€ Convert Blob to File â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function blobToFile(blob: Blob, filename: string): File {
   return new File([blob], filename, { type: blob.type });
 }
 
-// ─── Get Supabase Image URL with Transform ─────────────────────────────────────
+// â”€â”€â”€ Get Supabase Image URL with Transform â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function getOptimizedImageUrl(
   baseUrl: string,
   options: { width?: number; height?: number; quality?: number } = {}

@@ -1,4 +1,4 @@
-class SecureAPIClient {
+﻿class SecureAPIClient {
   private readonly baseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
 
   private headers(): HeadersInit {

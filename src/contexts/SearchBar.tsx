@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/contexts/SearchBar.tsx
- * Bambeh Marketplace — Search Bar Context & Provider
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Search Bar Context & Provider
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, {
@@ -14,7 +14,7 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface SearchBarState {
   query: string;
   isOpen: boolean;
@@ -36,7 +36,7 @@ export interface SearchBarActions {
 
 type SearchBarContextValue = SearchBarState & SearchBarActions;
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SearchBarContext = createContext<SearchBarContextValue | null>(null);
 
 const RECENT_KEY = "bambeh_recent_searches";
@@ -60,7 +60,7 @@ function saveRecent(searches: string[]): void {
   }
 }
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const SearchBarProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -186,7 +186,7 @@ export const SearchBarProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function useSearchBar(): SearchBarContextValue {
   const ctx = useContext(SearchBarContext);
   if (!ctx) {

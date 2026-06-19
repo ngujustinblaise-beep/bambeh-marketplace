@@ -1,6 +1,6 @@
-/**
+﻿/**
  * LOGIN PAGE
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -221,19 +221,19 @@ export default function Login() {
     password: string,
   ) => {
     if (!usernameOrPhone || !password) {
-      console.error("❌ Authentication failed: Missing credentials");
+      console.error("âŒ Authentication failed: Missing credentials");
       return { success: false, error: "Username and password are required" };
     }
 
     const inputLowerCase = usernameOrPhone.toLowerCase().trim();
-    console.log("🔑 Attempting authentication for:", inputLowerCase);
+    console.log("ðŸ”‘ Attempting authentication for:", inputLowerCase);
 
     const account = Object.values(MASTER_ACCOUNTS).find(
       (acc) => acc.username === inputLowerCase && acc.password === password,
     );
 
     if (account) {
-      console.log("✅ Master account authenticated:", account.username);
+      console.log("âœ… Master account authenticated:", account.username);
       return { success: true, user: account.user };
     }
 
@@ -251,7 +251,7 @@ export default function Login() {
           if (matchesPhone || matchesUsername || matchesEmail) {
             if (user.password === password) {
               console.log(
-                "✅ Local user authenticated:",
+                "âœ… Local user authenticated:",
                 user.username || user.phone,
               );
               return {
@@ -283,17 +283,17 @@ export default function Login() {
       console.error("Error checking local users:", err);
     }
 
-    console.error("❌ Authentication failed: Invalid credentials");
+    console.error("âŒ Authentication failed: Invalid credentials");
     return { success: false, error: "Invalid username or password" };
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("🔐 Login form submitted");
+    console.log("ðŸ” Login form submitted");
 
     if (isLocked) {
-      console.warn("⚠️ Login blocked: Account locked");
+      console.warn("âš ï¸ Login blocked: Account locked");
       return;
     }
 
@@ -309,7 +309,7 @@ export default function Login() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      console.error("❌ Validation failed:", newErrors);
+      console.error("âŒ Validation failed:", newErrors);
       return;
     }
 
@@ -327,23 +327,23 @@ export default function Login() {
         localStorage.removeItem("Bambeh_login_lockout");
         setFailedAttempts(0);
 
-        console.log("✅ Login successful:", authResult.user.username);
+        console.log("âœ… Login successful:", authResult.user.username);
 
         if (login) {
           await login(authResult.user.username, formData.password);
         }
 
-        console.log("👤 User authenticated, redirecting to:", from);
+        console.log("ðŸ‘¤ User authenticated, redirecting to:", from);
 
         setTimeout(() => {
           navigate(from === "/login" ? "/" : from, { replace: true });
         }, 100);
       } else {
-        console.error("❌ Authentication failed");
+        console.error("âŒ Authentication failed");
         handleFailedAttempt();
       }
     } catch (err) {
-      console.error("❌ Login exception:", err);
+      console.error("âŒ Login exception:", err);
       handleFailedAttempt();
       setErrors({ login: "Login failed. Please try again." });
     } finally {

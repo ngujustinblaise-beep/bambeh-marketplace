@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REVIEW SYSTEM COMPONENT
  * FILE LOCATION: src/components/reviews/ReviewSystem.tsx
  */

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Search, BookOpen, Video, MessageCircle, FileText, Shield, ShoppingBag } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -24,22 +24,22 @@ const T: Record<string, Record<string, string>> = {
   },
   "fr": {
     "helpCenter": "Centre d'aide",
-    "findAnswers": "Trouvez des réponses à vos questions",
+    "findAnswers": "Trouvez des rÃ©ponses Ã  vos questions",
     "searchPlaceholder": "Rechercher des articles d'aide...",
     "contactSupport": "Contacter le support",
-    "videoTutorials": "Tutoriels vidéo",
+    "videoTutorials": "Tutoriels vidÃ©o",
     "browseGuides": "Parcourir les guides",
     "catGettingStarted": "Pour commencer",
     "catBuyingSelling": "Acheter et vendre",
-    "catSafetySecurity": "Sûreté et sécurité",
-    "linkCreatingAccount": "Créer un compte",
+    "catSafetySecurity": "SÃ»retÃ© et sÃ©curitÃ©",
+    "linkCreatingAccount": "CrÃ©er un compte",
     "linkProfileSetup": "Configuration du profil",
     "linkHowToPost": "Comment publier une annonce",
     "linkSettingPrice": "Fixer le bon prix",
     "linkPaymentMethods": "Moyens de paiement",
-    "linkAvoidingScams": "Éviter les arnaques",
-    "linkMeetingSafely": "Se rencontrer en sécurité",
-    "linkReportingIssues": "Signaler des problèmes"
+    "linkAvoidingScams": "Ã‰viter les arnaques",
+    "linkMeetingSafely": "Se rencontrer en sÃ©curitÃ©",
+    "linkReportingIssues": "Signaler des problÃ¨mes"
   },
   "pidgin": {
     "helpCenter": "Help Center",
@@ -61,42 +61,42 @@ const T: Record<string, Record<string, string>> = {
     "linkReportingIssues": "Report Problem dem"
   },
   "ar": {
-    "helpCenter": "مركز المساعدة",
-    "findAnswers": "اعثر على إجابات لأسئلتك",
-    "searchPlaceholder": "ابحث في مقالات المساعدة...",
-    "contactSupport": "تواصل مع الدعم",
-    "videoTutorials": "دروس فيديو",
-    "browseGuides": "تصفّح الأدلة",
-    "catGettingStarted": "البدء",
-    "catBuyingSelling": "البيع والشراء",
-    "catSafetySecurity": "السلامة والأمان",
-    "linkCreatingAccount": "إنشاء حساب",
-    "linkProfileSetup": "إعداد الملف الشخصي",
-    "linkHowToPost": "كيفية نشر إعلان",
-    "linkSettingPrice": "تحديد السعر المناسب",
-    "linkPaymentMethods": "طرق الدفع",
-    "linkAvoidingScams": "تجنّب الاحتيال",
-    "linkMeetingSafely": "اللقاء بأمان",
-    "linkReportingIssues": "الإبلاغ عن المشكلات"
+    "helpCenter": "Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©",
+    "findAnswers": "Ø§Ø¹Ø«Ø± Ø¹Ù„Ù‰ Ø¥Ø¬Ø§Ø¨Ø§Øª Ù„Ø£Ø³Ø¦Ù„ØªÙƒ",
+    "searchPlaceholder": "Ø§Ø¨Ø­Ø« ÙÙŠ Ù…Ù‚Ø§Ù„Ø§Øª Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©...",
+    "contactSupport": "ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù…",
+    "videoTutorials": "Ø¯Ø±ÙˆØ³ ÙÙŠØ¯ÙŠÙˆ",
+    "browseGuides": "ØªØµÙÙ‘Ø­ Ø§Ù„Ø£Ø¯Ù„Ø©",
+    "catGettingStarted": "Ø§Ù„Ø¨Ø¯Ø¡",
+    "catBuyingSelling": "Ø§Ù„Ø¨ÙŠØ¹ ÙˆØ§Ù„Ø´Ø±Ø§Ø¡",
+    "catSafetySecurity": "Ø§Ù„Ø³Ù„Ø§Ù…Ø© ÙˆØ§Ù„Ø£Ù…Ø§Ù†",
+    "linkCreatingAccount": "Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨",
+    "linkProfileSetup": "Ø¥Ø¹Ø¯Ø§Ø¯ Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ",
+    "linkHowToPost": "ÙƒÙŠÙÙŠØ© Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†",
+    "linkSettingPrice": "ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ù…Ù†Ø§Ø³Ø¨",
+    "linkPaymentMethods": "Ø·Ø±Ù‚ Ø§Ù„Ø¯ÙØ¹",
+    "linkAvoidingScams": "ØªØ¬Ù†Ù‘Ø¨ Ø§Ù„Ø§Ø­ØªÙŠØ§Ù„",
+    "linkMeetingSafely": "Ø§Ù„Ù„Ù‚Ø§Ø¡ Ø¨Ø£Ù…Ø§Ù†",
+    "linkReportingIssues": "Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ø§Ù„Ù…Ø´ÙƒÙ„Ø§Øª"
   },
   "ff": {
     "helpCenter": "Galle ballal",
     "findAnswers": "Yiytu jaabaaji naamne maa",
     "searchPlaceholder": "Yiylo binndi ballal...",
-    "contactSupport": "Heɓ ballal",
+    "contactSupport": "HeÉ“ ballal",
     "videoTutorials": "Jannde wideyo",
-    "browseGuides": "Ƴeew peeje",
-    "catGettingStarted": "Fuɗɗorde",
+    "browseGuides": "Æ³eew peeje",
+    "catGettingStarted": "FuÉ—É—orde",
     "catBuyingSelling": "Soodgol e yeeygol",
     "catSafetySecurity": "Kisal e hisnde",
     "linkCreatingAccount": "Sosgol konte",
     "linkProfileSetup": "Hebbingol humpito",
     "linkHowToPost": "No neldirtee jeeyngal",
-    "linkSettingPrice": "Teelgol coggu moƴƴu",
-    "linkPaymentMethods": "Mbaydiiji yoɓgol",
-    "linkAvoidingScams": "Woɗɗitagol nguyka",
+    "linkSettingPrice": "Teelgol coggu moÆ´Æ´u",
+    "linkPaymentMethods": "Mbaydiiji yoÉ“gol",
+    "linkAvoidingScams": "WoÉ—É—itagol nguyka",
     "linkMeetingSafely": "Hawrugol e kisal",
-    "linkReportingIssues": "Ƴeewtagol caɗeele"
+    "linkReportingIssues": "Æ³eewtagol caÉ—eele"
   }
 };
 
@@ -166,7 +166,7 @@ export default function Help() {
                     {category.links.map((link) => (
                       <Link key={link.path} to={link.path} className="flex items-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg">
                         <span className="text-gray-700">{tr(link.nameKey)}</span>
-                        <span className="ml-auto text-gray-400">→</span>
+                        <span className="ml-auto text-gray-400">â†’</span>
                       </Link>
                     ))}
                   </div>

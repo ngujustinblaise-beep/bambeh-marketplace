@@ -1,5 +1,5 @@
-/**
- * BambehBadgeSVGs.tsx — All 5 Bambeh badge tier SVG assets.
+﻿/**
+ * BambehBadgeSVGs.tsx â€” All 5 Bambeh badge tier SVG assets.
  * USAGE: import { GoldenBambehBadge, BadgeDisplay } from '@/components/badges/BambehBadgeSVGs';
  */
 
@@ -165,7 +165,7 @@ export function GoldenBambehBadge({ size = 56, className }: BadgeProps) {
         <ellipse cx="34.5" cy="43.5" rx="4" ry="2" fill="#8B6F0A" />
       </g>
       <circle cx="28" cy="51.5" r="5" fill="#FFD700" stroke="#8B6F0A" strokeWidth="1" filter="url(#gb-glow)" />
-      <text x="28" y="54" textAnchor="middle" fontSize="5.5" fill="#3D2800" fontFamily="Arial" fontWeight="bold">★1</text>
+      <text x="28" y="54" textAnchor="middle" fontSize="5.5" fill="#3D2800" fontFamily="Arial" fontWeight="bold">â˜…1</text>
     </svg>
   );
 }

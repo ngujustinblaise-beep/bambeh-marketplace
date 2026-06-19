@@ -1,24 +1,24 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * ESCROW PAGE - BAMBEH MARKETPLACE
  * Zerm Coins Escrow / Buyer Protection System
  * 
  * How it works:
- * 1. Buyer places order → Zerm Coins held in escrow (frozen)
+ * 1. Buyer places order â†’ Zerm Coins held in escrow (frozen)
  * 2. Seller ships / delivers
- * 3. Buyer confirms receipt → Zerm Coins released to seller
- * 4. If dispute → Admin adjudicates within 48h
+ * 3. Buyer confirms receipt â†’ Zerm Coins released to seller
+ * 4. If dispute â†’ Admin adjudicates within 48h
  * 
  * This is the #1 trust-building feature for Cameroon's market.
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type EscrowStatus = 'pending' | 'funded' | 'in_transit' | 'delivered' | 'completed' | 'disputed' | 'refunded';
 
 interface EscrowTransaction {
@@ -46,15 +46,15 @@ interface EscrowStep {
   date?: string;
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Mock escrow data (replace with Firebase fetch in production)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MOCK_ESCROW: EscrowTransaction = {
   id: 'ESC-2026-00142',
   orderId: 'ORD-2026-00892',
   itemName: 'Samsung Galaxy S24 Ultra - 256GB',
-  itemImage: 'https://via.placeholder.com/120x120/0d9488/ffffff?text=📱',
-  sellerName: 'TechZone Yaoundé',
+  itemImage: 'https://via.placeholder.com/120x120/0d9488/ffffff?text=ðŸ“±',
+  sellerName: 'TechZone YaoundÃ©',
   sellerTrustScore: 4.8,
   buyerName: 'You',
   amountXAF: 350000,
@@ -72,9 +72,9 @@ const MOCK_ESCROW: EscrowTransaction = {
   ],
 };
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Status badge colour
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const statusConfig: Record<EscrowStatus, { label: string; color: string; bg: string }> = {
   pending:     { label: 'Pending',     color: 'text-yellow-700', bg: 'bg-yellow-100' },
   funded:      { label: 'Funds Held',  color: 'text-blue-700',   bg: 'bg-blue-100' },
@@ -85,9 +85,9 @@ const statusConfig: Record<EscrowStatus, { label: string; color: string; bg: str
   refunded:    { label: 'Refunded',    color: 'text-gray-700',   bg: 'bg-gray-100' },
 };
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main Component
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const EscrowPage: React.FC = () => {
   const { orderId } = useParams<{ orderId?: string }>();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -109,21 +109,21 @@ const EscrowPage: React.FC = () => {
     if (!disputeReason.trim()) return;
     setShowDisputeModal(false);
     // TODO: Create dispute record in Firebase, notify admin
-    alert('✅ Your dispute has been raised. Our team will respond within 48 hours.');
+    alert('âœ… Your dispute has been raised. Our team will respond within 48 hours.');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
 
-        {/* ── Header ── */}
+        {/* â”€â”€ Header â”€â”€ */}
         <div className="mb-6">
           <Link to="/orders" className="flex items-center gap-2 text-teal-600 hover:text-teal-800 text-sm font-medium mb-4 transition-colors">
-            <span>←</span> Back to Orders
+            <span>â†</span> Back to Orders
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">🔒 Escrow Protection</h1>
+              <h1 className="text-2xl font-bold text-gray-900">ðŸ”’ Escrow Protection</h1>
               <p className="text-gray-500 text-sm mt-1">Order #{escrow.orderId}</p>
             </div>
             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${status.bg} ${status.color}`}>
@@ -132,37 +132,37 @@ const EscrowPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── What Is Escrow Banner ── */}
+        {/* â”€â”€ What Is Escrow Banner â”€â”€ */}
         <div className="bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-2xl p-5 mb-6 shadow-lg">
           <div className="flex items-start gap-3">
-            <span className="text-3xl">🛡️</span>
+            <span className="text-3xl">ðŸ›¡ï¸</span>
             <div>
               <h2 className="font-bold text-lg">Your Money Is Safe</h2>
               <p className="text-teal-100 text-sm mt-1">
-                Your Zerm Coins are locked in escrow — the seller <strong>cannot</strong> access them
+                Your Zerm Coins are locked in escrow â€” the seller <strong>cannot</strong> access them
                 until you confirm you received your item. If anything goes wrong, we refund you in full.
               </p>
             </div>
           </div>
         </div>
 
-        {/* ── Item Card ── */}
+        {/* â”€â”€ Item Card â”€â”€ */}
         <div className="bg-white rounded-2xl shadow-md p-5 mb-6">
           <div className="flex gap-4 items-center">
             <div className="w-20 h-20 bg-teal-50 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
-              📱
+              ðŸ“±
             </div>
             <div className="flex-1">
               <h3 className="font-bold text-gray-900 text-lg leading-tight">{escrow.itemName}</h3>
               <p className="text-gray-500 text-sm mt-1">Sold by <span className="font-semibold text-teal-600">{escrow.sellerName}</span></p>
               <div className="flex items-center gap-1 mt-1">
-                <span className="text-yellow-400">★</span>
+                <span className="text-yellow-400">â˜…</span>
                 <span className="text-sm font-medium text-gray-700">{escrow.sellerTrustScore}</span>
                 <span className="text-gray-400 text-xs">Trust Score</span>
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <div className="text-2xl font-bold text-teal-600">{escrow.amountZerm.toLocaleString()} Ƶ</div>
+              <div className="text-2xl font-bold text-teal-600">{escrow.amountZerm.toLocaleString()} Æµ</div>
               <div className="text-gray-500 text-xs mt-1">{escrow.amountXAF.toLocaleString()} XAF</div>
             </div>
           </div>
@@ -179,7 +179,7 @@ const EscrowPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Progress Steps ── */}
+        {/* â”€â”€ Progress Steps â”€â”€ */}
         <div className="bg-white rounded-2xl shadow-md p-5 mb-6">
           <h3 className="font-bold text-gray-900 mb-5">Transaction Progress</h3>
           <div className="space-y-4">
@@ -192,7 +192,7 @@ const EscrowPage: React.FC = () => {
                     step.active    ? 'bg-blue-500 text-white ring-4 ring-blue-100' :
                                      'bg-gray-100 text-gray-400'
                   }`}>
-                    {step.completed ? '✓' : step.id}
+                    {step.completed ? 'âœ“' : step.id}
                   </div>
                   {index < escrow.steps.length - 1 && (
                     <div className={`w-0.5 h-8 mt-1 ${step.completed ? 'bg-teal-400' : 'bg-gray-200'}`} />
@@ -212,7 +212,7 @@ const EscrowPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Action Buttons ── */}
+        {/* â”€â”€ Action Buttons â”€â”€ */}
         {!confirmed && (
           <div className="bg-white rounded-2xl shadow-md p-5 mb-6">
             <h3 className="font-bold text-gray-900 mb-3">Your Actions</h3>
@@ -221,7 +221,7 @@ const EscrowPage: React.FC = () => {
                 onClick={() => setShowConfirmModal(true)}
                 className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-green-500 text-white rounded-xl font-bold text-base hover:from-teal-600 hover:to-green-600 transition-all shadow-md hover:shadow-lg"
               >
-                ✅ Confirm I Received My Item
+                âœ… Confirm I Received My Item
               </button>
               <p className="text-gray-400 text-xs text-center">
                 This releases your Zerm Coins to the seller permanently.
@@ -230,7 +230,7 @@ const EscrowPage: React.FC = () => {
                 onClick={() => setShowDisputeModal(true)}
                 className="w-full py-3 bg-red-50 text-red-600 border border-red-200 rounded-xl font-semibold text-sm hover:bg-red-100 transition-all"
               >
-                ⚠️ I Have a Problem — Raise Dispute
+                âš ï¸ I Have a Problem â€” Raise Dispute
               </button>
             </div>
           </div>
@@ -238,7 +238,7 @@ const EscrowPage: React.FC = () => {
 
         {confirmed && (
           <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6 text-center">
-            <div className="text-4xl mb-2">🎉</div>
+            <div className="text-4xl mb-2">ðŸŽ‰</div>
             <h3 className="font-bold text-green-800 text-lg">Transaction Completed!</h3>
             <p className="text-green-600 text-sm mt-1">
               Zerm Coins have been released to the seller. Thank you for using Bambeh's secure escrow.
@@ -246,15 +246,15 @@ const EscrowPage: React.FC = () => {
           </div>
         )}
 
-        {/* ── How Escrow Protects You ── */}
+        {/* â”€â”€ How Escrow Protects You â”€â”€ */}
         <div className="bg-white rounded-2xl shadow-md p-5 mb-6">
           <h3 className="font-bold text-gray-900 mb-4">How Bambeh Protects You</h3>
           <div className="space-y-3">
             {[
-              { icon: '🔒', title: 'Funds Always Frozen', desc: 'Your Zerm Coins are locked the moment you order. The seller gets nothing until you confirm receipt.' },
-              { icon: '⏱️', title: '7-Day Window', desc: 'You have 7 days to confirm delivery. If you don\'t respond, we contact you to verify.' },
-              { icon: '⚖️', title: 'Fair Dispute Resolution', desc: 'Disputes are reviewed by a Bambeh admin within 48 hours. We examine chat history and evidence.' },
-              { icon: '💯', title: 'Full Refund if Scammed', desc: 'If the seller is found fraudulent, 100% of your Zerm Coins are returned immediately.' },
+              { icon: 'ðŸ”’', title: 'Funds Always Frozen', desc: 'Your Zerm Coins are locked the moment you order. The seller gets nothing until you confirm receipt.' },
+              { icon: 'â±ï¸', title: '7-Day Window', desc: 'You have 7 days to confirm delivery. If you don\'t respond, we contact you to verify.' },
+              { icon: 'âš–ï¸', title: 'Fair Dispute Resolution', desc: 'Disputes are reviewed by a Bambeh admin within 48 hours. We examine chat history and evidence.' },
+              { icon: 'ðŸ’¯', title: 'Full Refund if Scammed', desc: 'If the seller is found fraudulent, 100% of your Zerm Coins are returned immediately.' },
             ].map((item) => (
               <div key={item.title} className="flex gap-3 items-start">
                 <span className="text-2xl flex-shrink-0">{item.icon}</span>
@@ -267,25 +267,25 @@ const EscrowPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Safe Meeting Prompt ── */}
+        {/* â”€â”€ Safe Meeting Prompt â”€â”€ */}
         <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
-          <p className="text-orange-800 font-semibold text-sm">📍 Meeting in person?</p>
+          <p className="text-orange-800 font-semibold text-sm">ðŸ“ Meeting in person?</p>
           <p className="text-orange-700 text-xs mt-1">
             Always meet in a public place. Use our verified safe exchange locations.
           </p>
           <Link to="/meet-safely" className="inline-block mt-2 text-orange-600 font-semibold text-xs underline">
-            View Safe Meeting Points Near You →
+            View Safe Meeting Points Near You â†’
           </Link>
         </div>
 
       </div>
 
-      {/* ── Confirm Receipt Modal ── */}
+      {/* â”€â”€ Confirm Receipt Modal â”€â”€ */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="text-center mb-4">
-              <div className="text-5xl mb-3">✅</div>
+              <div className="text-5xl mb-3">âœ…</div>
               <h3 className="text-xl font-bold text-gray-900">Confirm Receipt?</h3>
               <p className="text-gray-600 text-sm mt-2">
                 By confirming, you release <strong>{escrow.amountZerm.toLocaleString()} Zerm</strong> ({escrow.amountXAF.toLocaleString()} XAF) 
@@ -310,12 +310,12 @@ const EscrowPage: React.FC = () => {
         </div>
       )}
 
-      {/* ── Dispute Modal ── */}
+      {/* â”€â”€ Dispute Modal â”€â”€ */}
       {showDisputeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="text-center mb-4">
-              <div className="text-5xl mb-3">⚖️</div>
+              <div className="text-5xl mb-3">âš–ï¸</div>
               <h3 className="text-xl font-bold text-gray-900">Raise a Dispute</h3>
               <p className="text-gray-600 text-sm mt-2">
                 Describe your problem. Our admin team will review and respond within 48 hours.

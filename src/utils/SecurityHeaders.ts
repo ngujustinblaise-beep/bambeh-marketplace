@@ -1,6 +1,6 @@
-/**
+﻿/**
  * SecurityHeaders.ts
- * ─────────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * WHAT CHANGED:
  *   1. Removed 'unsafe-inline' from script-src and style-src.
  *   2. Removed http: from connect-src (only https: allowed in production).
@@ -8,14 +8,14 @@
  *   4. Tightened default-src, added upgrade-insecure-requests.
  *
  * FILE LOCATION: src/utils/SecurityHeaders.ts  (or src/config/SecurityHeaders.ts)
- * ─────────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  */
 
-// ── Environment detection ─────────────────────────────────────────────────────
+// â”€â”€ Environment detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isDev = import.meta.env.DEV;
 const isProd = import.meta.env.PROD;
 
-// ── Trusted external domains ──────────────────────────────────────────────────
+// â”€â”€ Trusted external domains â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FIREBASE_DOMAINS = [
   "https://*.googleapis.com",
   "https://*.firebaseio.com",
@@ -56,21 +56,21 @@ const devExtras = isDev
   ? "ws://localhost:* http://localhost:* http://127.0.0.1:*"
   : "";
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONTENT SECURITY POLICY
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const contentSecurityPolicy = [
-  // default fallback — deny everything not explicitly listed
+  // default fallback â€” deny everything not explicitly listed
   `default-src 'self' ${CAPACITOR_DOMAINS}`,
 
-  // Scripts — NO unsafe-inline, NO unsafe-eval in production
+  // Scripts â€” NO unsafe-inline, NO unsafe-eval in production
   // Note: React itself does not require unsafe-inline for its runtime JS.
   // If you have inline <script> tags, move them to .js files.
   isProd
     ? `script-src 'self' ${GA_DOMAINS} ${CAPACITOR_DOMAINS}`
     : `script-src 'self' 'unsafe-eval' ${devExtras}`, // eval needed for Vite HMR in dev
 
-  // Styles — NO unsafe-inline in production
+  // Styles â€” NO unsafe-inline in production
   // Note: Tailwind CSS is compiled at build time so it does NOT need unsafe-inline.
   // If you have any style={{ }} JSX props that generate <style> tags, they will
   // be blocked in production. Use className instead.
@@ -81,10 +81,10 @@ export const contentSecurityPolicy = [
   // Fonts
   `font-src 'self' https://fonts.gstatic.com data:`,
 
-  // Images — allow Firebase Storage, data URIs, blob for image previews
+  // Images â€” allow Firebase Storage, data URIs, blob for image previews
   `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.googleusercontent.com`,
 
-  // API connections — NO http: in production
+  // API connections â€” NO http: in production
 [
     `connect-src 'self'`,
     FIREBASE_DOMAINS,
@@ -104,13 +104,13 @@ export const contentSecurityPolicy = [
   // Workers (Sentry uses a worker for performance monitoring)
   `worker-src 'self' blob:`,
 
-  // Frames — block all iframes (prevents clickjacking)
+  // Frames â€” block all iframes (prevents clickjacking)
   `frame-src 'none'`,
 
-  // Frame ancestors — block embedding in other sites
+  // Frame ancestors â€” block embedding in other sites
   `frame-ancestors 'none'`,
 
-  // Forms — only submit to our own origin
+  // Forms â€” only submit to our own origin
   `form-action 'self' ${NOTCHPAY_DOMAINS}`,
 
   // Block mixed content (http resources on https pages),
@@ -123,9 +123,9 @@ export const contentSecurityPolicy = [
   `base-uri 'self'`,
 ].join("; ");
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ALL SECURITY HEADERS (apply these in your server / hosting config)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const securityHeaders: Record<string, string> = {
   // Prevent browsers from MIME-sniffing responses
   "X-Content-Type-Options": "nosniff",
@@ -137,7 +137,7 @@ export const securityHeaders: Record<string, string> = {
   "X-XSS-Protection": "1; mode=block",
 
   // Force HTTPS for 2 years (includes subdomains)
-  // Only apply in production — Capacitor local dev uses http,
+  // Only apply in production â€” Capacitor local dev uses http,
   ...(isProd
     ? {
         "Strict-Transport-Security":
@@ -162,9 +162,9 @@ export const securityHeaders: Record<string, string> = {
   "Content-Security-Policy": contentSecurityPolicy,
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FIREBASE HOSTING — firebase.json
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// FIREBASE HOSTING â€” firebase.json
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Add this to your firebase.json hosting section to apply security headers:
  *
@@ -190,9 +190,9 @@ export const securityHeaders: Record<string, string> = {
  * in the browser console after loading the app.
  */
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helper: inject meta CSP tag (for Capacitor where there is no server)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function injectCSPMetaTag(): void {
   if (typeof document === "undefined") return;
   // Remove any existing CSP meta tag
@@ -205,6 +205,6 @@ export function injectCSPMetaTag(): void {
   meta.content = contentSecurityPolicy;
   document.head.appendChild(meta);
 
-// ── Export default for easy import ────────────────────────────────────────────
+// â”€â”€ Export default for easy import â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 }
 export default securityHeaders;

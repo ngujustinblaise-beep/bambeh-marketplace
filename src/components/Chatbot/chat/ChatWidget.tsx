@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 <div className="p-4 text-sm">
   <p>Chat loaded: {messages.length} messages</p>
   <p>Input: "{inputMessage}"</p>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SOCIAL SHARE BUTTON - COMPACT WITH FLOATING X
  * FILE LOCATION: src/components/common/SocialShareButton.tsx
  */
@@ -17,7 +17,7 @@ export default function SocialShareButton({ title, description, itemType, url, c
   const [copied, setCopied]       = useState(false);
 
   const shareUrl     = url || (typeof window !== 'undefined' ? window.location.href : '');
-  const shareMessage = `${title}\n\n${description}\n\n🔗 ${shareUrl}\n\n📱 Bambeh - Online Marketplace!\n💚 Only 1% Transaction Fee!`;
+  const shareMessage = `${title}\n\n${description}\n\nðŸ”— ${shareUrl}\n\nðŸ“± Bambeh - Online Marketplace!\nðŸ’š Only 1% Transaction Fee!`;
   const encodedMessage = encodeURIComponent(shareMessage);
   const encodedTitle   = encodeURIComponent(title);
   const encodedUrl     = encodeURIComponent(shareUrl);
@@ -64,7 +64,7 @@ export default function SocialShareButton({ title, description, itemType, url, c
   const shareButtons = [
     { key: 'whatsapp', label: 'WhatsApp', bg: '#dcfce7', iconBg: '#22c55e', icon: <MessageCircle size={22} color="white" />, textColor: '#166534' },
     { key: 'facebook', label: 'Facebook', bg: '#dbeafe', iconBg: '#2563eb', icon: <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>f</span>, textColor: '#1e40af' },
-    { key: 'twitter',  label: 'Twitter/X', bg: '#f3f4f6', iconBg: '#000',    icon: <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>𝕏</span>, textColor: '#1f2937' },
+    { key: 'twitter',  label: 'Twitter/X', bg: '#f3f4f6', iconBg: '#000',    icon: <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>ð•</span>, textColor: '#1f2937' },
     { key: 'gmail',    label: 'Gmail',    bg: '#fee2e2', iconBg: '#ef4444', icon: <Mail size={22} color="white" />,        textColor: '#991b1b' },
     { key: 'yahoo',    label: 'Yahoo',    bg: '#ede9fe', iconBg: '#7c3aed', icon: <Mail size={22} color="white" />,        textColor: '#5b21b6' },
   ] as const;
@@ -102,12 +102,12 @@ export default function SocialShareButton({ title, description, itemType, url, c
                     </button>
                   ))}
 
-                  {/* Instagram — copies link */}
+                  {/* Instagram â€” copies link */}
                   <button onClick={copyToClipboard} style={{ ...buttonStyle('#fce7f3'), background: 'linear-gradient(135deg, #fae8ff, #fce7f3)' }}>
                     <div style={{ ...iconCircleStyle('#ec4899'), background: 'linear-gradient(135deg, #9333ea, #ec4899, #f97316)' }}>
-                      <span style={{ fontSize: '18px' }}>📷</span>
+                      <span style={{ fontSize: '18px' }}>ðŸ“·</span>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#9d174d' }}>{copied ? '✓ Copied!' : 'Instagram'}</span>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#9d174d' }}>{copied ? 'âœ“ Copied!' : 'Instagram'}</span>
                   </button>
 
                   {/* Copy link */}

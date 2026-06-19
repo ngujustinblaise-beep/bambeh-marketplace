@@ -1,14 +1,14 @@
-/**
+﻿/**
  * src/advanced-features/chat/ChatList.tsx
- * Bambeh Marketplace — Chat Conversation List
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Chat Conversation List
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
 import { MessageCircle, Search, RefreshCw, CheckCheck, Check } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface ChatConversation {
   id: string;
   participantId: string;
@@ -29,7 +29,7 @@ interface ChatListProps {
   className?: string;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ChatList: React.FC<ChatListProps> = ({
   currentUserId,
   onSelectConversation,
@@ -115,7 +115,7 @@ const ChatList: React.FC<ChatListProps> = ({
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "À l'instant";
+    if (diffMins < 1) return "Ã€ l'instant";
     if (diffMins < 60) return `${diffMins}m`;
     if (diffHours < 24) return `${diffHours}h`;
     if (diffDays < 7) return `${diffDays}j`;
@@ -152,7 +152,7 @@ const ChatList: React.FC<ChatListProps> = ({
             type="button"
             onClick={loadConversations}
             className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label="Rafraîchir"
+            aria-label="RafraÃ®chir"
           >
             <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -181,11 +181,11 @@ const ChatList: React.FC<ChatListProps> = ({
           <div className="py-12 text-center px-4">
             <MessageCircle className="w-10 h-10 text-gray-200 mx-auto mb-3" />
             <p className="text-sm font-medium text-gray-400">
-              {searchQuery ? "Aucune conversation trouvée" : "Aucun message pour le moment"}
+              {searchQuery ? "Aucune conversation trouvÃ©e" : "Aucun message pour le moment"}
             </p>
             {!searchQuery && (
               <p className="text-xs text-gray-300 mt-1">
-                Commencez à discuter en contactant un vendeur
+                Commencez Ã  discuter en contactant un vendeur
               </p>
             )}
           </div>
@@ -236,7 +236,7 @@ const ChatList: React.FC<ChatListProps> = ({
                   )}
                   <div className="flex items-center justify-between gap-1">
                     <p className={`text-xs truncate ${conv.unreadCount > 0 ? "text-gray-700 font-medium" : "text-gray-400"}`}>
-                      {conv.lastMessage || "Démarrer la conversation..."}
+                      {conv.lastMessage || "DÃ©marrer la conversation..."}
                     </p>
                     {conv.unreadCount > 0 ? (
                       <span className="flex-shrink-0 w-5 h-5 bg-teal-600 text-white text-xs font-bold rounded-full flex items-center justify-center">

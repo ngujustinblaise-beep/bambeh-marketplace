@@ -1,9 +1,9 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { X, AlertTriangle, CheckCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type ReportCategory =
   | 'spam'
@@ -32,7 +32,7 @@ const REPORT_CATEGORIES: { value: ReportCategory; label: string; description: st
   { value: 'other',         label: 'Other',            description: 'Something else not listed above' },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function ReportModal({
   isOpen,
@@ -116,7 +116,7 @@ export default function ReportModal({
         {/* Body */}
         <div className="px-5 py-4 max-h-[70vh] overflow-y-auto">
           {submitted ? (
-            /* ── Success state ── */
+            /* â”€â”€ Success state â”€â”€ */
             <div className="py-6 text-center">
               <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
               <p className="text-lg font-semibold text-gray-900 mb-1">Report Submitted</p>
@@ -131,7 +131,7 @@ export default function ReportModal({
               </button>
             </div>
           ) : (
-            /* ── Form state ── */
+            /* â”€â”€ Form state â”€â”€ */
             <>
               {targetTitle && (
                 <div className="mb-4 p-3 bg-gray-50 rounded-lg">

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { ShoppingCart, PlusCircle, DollarSign, CreditCard } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -16,11 +16,11 @@ const T: Record<string, Record<string, string>> = {
   },
   "fr": {
     "title": "Acheter et vendre",
-    "subtitle": "Maîtrisez la place de marché",
+    "subtitle": "MaÃ®trisez la place de marchÃ©",
     "postTitle": "Comment publier une annonce",
-    "postDesc": "Créez des annonces qui donnent des résultats",
+    "postDesc": "CrÃ©ez des annonces qui donnent des rÃ©sultats",
     "priceTitle": "Fixer le bon prix",
-    "priceDesc": "Fixez des prix compétitifs",
+    "priceDesc": "Fixez des prix compÃ©titifs",
     "payTitle": "Moyens de paiement",
     "payDesc": "Comprenez vos options de paiement",
     "back": "Retour au centre d'aide"
@@ -37,25 +37,25 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "البيع والشراء",
-    "subtitle": "أتقن السوق",
-    "postTitle": "كيفية نشر إعلان",
-    "postDesc": "أنشئ إعلانات تحقق نتائج",
-    "priceTitle": "تحديد السعر المناسب",
-    "priceDesc": "سعّر سلعك بشكل تنافسي",
-    "payTitle": "طرق الدفع",
-    "payDesc": "افهم خيارات الدفع المتاحة لك",
-    "back": "العودة إلى مركز المساعدة"
+    "title": "Ø§Ù„Ø¨ÙŠØ¹ ÙˆØ§Ù„Ø´Ø±Ø§Ø¡",
+    "subtitle": "Ø£ØªÙ‚Ù† Ø§Ù„Ø³ÙˆÙ‚",
+    "postTitle": "ÙƒÙŠÙÙŠØ© Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†",
+    "postDesc": "Ø£Ù†Ø´Ø¦ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª ØªØ­Ù‚Ù‚ Ù†ØªØ§Ø¦Ø¬",
+    "priceTitle": "ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ù…Ù†Ø§Ø³Ø¨",
+    "priceDesc": "Ø³Ø¹Ù‘Ø± Ø³Ù„Ø¹Ùƒ Ø¨Ø´ÙƒÙ„ ØªÙ†Ø§ÙØ³ÙŠ",
+    "payTitle": "Ø·Ø±Ù‚ Ø§Ù„Ø¯ÙØ¹",
+    "payDesc": "Ø§ÙÙ‡Ù… Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¯ÙØ¹ Ø§Ù„Ù…ØªØ§Ø­Ø© Ù„Ùƒ",
+    "back": "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©"
   },
   "ff": {
     "title": "Soodgol e yeeygol",
     "subtitle": "Anndu luumo",
     "postTitle": "No neldirtee jeeyngal",
-    "postDesc": "Sos jeeyle ɗe njogii njeeygu",
-    "priceTitle": "Teelgol coggu moƴƴu",
-    "priceDesc": "Teel coggu kaake maa no haaɗtirta",
-    "payTitle": "Mbaydiiji yoɓgol",
-    "payDesc": "Faamu mbaydiiji yoɓgol maa",
+    "postDesc": "Sos jeeyle É—e njogii njeeygu",
+    "priceTitle": "Teelgol coggu moÆ´Æ´u",
+    "priceDesc": "Teel coggu kaake maa no haaÉ—tirta",
+    "payTitle": "Mbaydiiji yoÉ“gol",
+    "payDesc": "Faamu mbaydiiji yoÉ“gol maa",
     "back": "Rutto to galle ballal"
   }
 };
@@ -104,7 +104,7 @@ export default function BuyingSelling() {
 
         <div className="mt-8 text-center">
           <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">
-            ← {tr("back")}
+            â† {tr("back")}
           </Link>
         </div>
       </div>

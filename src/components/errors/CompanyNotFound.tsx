@@ -1,17 +1,17 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * COMPANY NOT FOUND / 404 PAGE
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * 
- * ✅ Shows when company profile doesn't exist
- * ✅ "Go Back" button
- * ✅ "Go Home" button
- * ✅ Beautiful error page
+ * âœ… Shows when company profile doesn't exist
+ * âœ… "Go Back" button
+ * âœ… "Go Home" button
+ * âœ… Beautiful error page
  * 
  * Usage: Display when clicking "View Company Profile" and company doesn't exist
  * 
- * © 2025 Bambé. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * Â© 2025 BambÃ©. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -63,9 +63,9 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
                   What happened?
                 </p>
                 <ul className="text-xs text-blue-700 space-y-1">
-                  <li>• The company may not have created a profile yet</li>
-                  <li>• The profile link may be incorrect</li>
-                  <li>• The company may have removed their profile</li>
+                  <li>â€¢ The company may not have created a profile yet</li>
+                  <li>â€¢ The profile link may be incorrect</li>
+                  <li>â€¢ The company may have removed their profile</li>
                 </ul>
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
             href="/help/contact"
       className="text-teal-600 hover:text-teal-700 font-semibold text-sm"
           >
-            Contact Support →
+            Contact Support â†’
           </a>
         </div>
       </div>
@@ -118,9 +118,9 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
   );
 
 /**
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * USAGE EXAMPLES
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * 
  * Example 1: As a full page
  * <Route path="/company/404" element={<CompanyNotFound />} />
@@ -147,6 +147,6 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
  *   }
  * };
  * 
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 }

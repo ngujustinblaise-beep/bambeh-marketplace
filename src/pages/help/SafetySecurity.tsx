@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Shield, AlertTriangle, Users, Flag } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -17,16 +17,16 @@ const T: Record<string, Record<string, string>> = {
     "back": "Back to Help Center"
   },
   "fr": {
-    "title": "Sûreté et sécurité",
-    "subtitle": "Votre sécurité est notre priorité",
-    "scamsTitle": "Éviter les arnaques",
-    "scamsDesc": "Apprenez à repérer et éviter les annonces frauduleuses",
-    "meetTitle": "Se rencontrer en sécurité",
+    "title": "SÃ»retÃ© et sÃ©curitÃ©",
+    "subtitle": "Votre sÃ©curitÃ© est notre prioritÃ©",
+    "scamsTitle": "Ã‰viter les arnaques",
+    "scamsDesc": "Apprenez Ã  repÃ©rer et Ã©viter les annonces frauduleuses",
+    "meetTitle": "Se rencontrer en sÃ©curitÃ©",
     "meetDesc": "Bonnes pratiques pour les transactions en personne",
-    "reportTitle": "Signaler des problèmes",
-    "reportDesc": "Signalez toute activité ou contenu suspect",
+    "reportTitle": "Signaler des problÃ¨mes",
+    "reportDesc": "Signalez toute activitÃ© ou contenu suspect",
     "emergency": "Urgence",
-    "emergencyMsg": "Si vous vous sentez menacé ou en danger, contactez immédiatement les autorités locales.",
+    "emergencyMsg": "Si vous vous sentez menacÃ© ou en danger, contactez immÃ©diatement les autoritÃ©s locales.",
     "back": "Retour au centre d'aide"
   },
   "pidgin": {
@@ -43,29 +43,29 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "السلامة والأمان",
-    "subtitle": "سلامتك هي أولويتنا",
-    "scamsTitle": "تجنّب الاحتيال",
-    "scamsDesc": "تعلّم كيف تتعرّف على الإعلانات الاحتيالية وتتجنّبها",
-    "meetTitle": "اللقاء بأمان",
-    "meetDesc": "أفضل الممارسات للمعاملات الشخصية",
-    "reportTitle": "الإبلاغ عن المشكلات",
-    "reportDesc": "أبلغ عن أي نشاط أو محتوى مشبوه",
-    "emergency": "طوارئ",
-    "emergencyMsg": "إذا شعرت بالتهديد أو بعدم الأمان، فاتصل بالسلطات المحلية فورًا.",
-    "back": "العودة إلى مركز المساعدة"
+    "title": "Ø§Ù„Ø³Ù„Ø§Ù…Ø© ÙˆØ§Ù„Ø£Ù…Ø§Ù†",
+    "subtitle": "Ø³Ù„Ø§Ù…ØªÙƒ Ù‡ÙŠ Ø£ÙˆÙ„ÙˆÙŠØªÙ†Ø§",
+    "scamsTitle": "ØªØ¬Ù†Ù‘Ø¨ Ø§Ù„Ø§Ø­ØªÙŠØ§Ù„",
+    "scamsDesc": "ØªØ¹Ù„Ù‘Ù… ÙƒÙŠÙ ØªØªØ¹Ø±Ù‘Ù Ø¹Ù„Ù‰ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„Ø§Ø­ØªÙŠØ§Ù„ÙŠØ© ÙˆØªØªØ¬Ù†Ù‘Ø¨Ù‡Ø§",
+    "meetTitle": "Ø§Ù„Ù„Ù‚Ø§Ø¡ Ø¨Ø£Ù…Ø§Ù†",
+    "meetDesc": "Ø£ÙØ¶Ù„ Ø§Ù„Ù…Ù…Ø§Ø±Ø³Ø§Øª Ù„Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª Ø§Ù„Ø´Ø®ØµÙŠØ©",
+    "reportTitle": "Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ø§Ù„Ù…Ø´ÙƒÙ„Ø§Øª",
+    "reportDesc": "Ø£Ø¨Ù„Øº Ø¹Ù† Ø£ÙŠ Ù†Ø´Ø§Ø· Ø£Ùˆ Ù…Ø­ØªÙˆÙ‰ Ù…Ø´Ø¨ÙˆÙ‡",
+    "emergency": "Ø·ÙˆØ§Ø±Ø¦",
+    "emergencyMsg": "Ø¥Ø°Ø§ Ø´Ø¹Ø±Øª Ø¨Ø§Ù„ØªÙ‡Ø¯ÙŠØ¯ Ø£Ùˆ Ø¨Ø¹Ø¯Ù… Ø§Ù„Ø£Ù…Ø§Ù†ØŒ ÙØ§ØªØµÙ„ Ø¨Ø§Ù„Ø³Ù„Ø·Ø§Øª Ø§Ù„Ù…Ø­Ù„ÙŠØ© ÙÙˆØ±Ù‹Ø§.",
+    "back": "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©"
   },
   "ff": {
     "title": "Kisal e hisnde",
-    "subtitle": "Kisal maa ko ko ɓuri himmude e amen",
-    "scamsTitle": "Woɗɗitagol nguyka",
-    "scamsDesc": "Janngu no anndirta e woɗɗitortoo jeeyle nguyka",
+    "subtitle": "Kisal maa ko ko É“uri himmude e amen",
+    "scamsTitle": "WoÉ—É—itagol nguyka",
+    "scamsDesc": "Janngu no anndirta e woÉ—É—itortoo jeeyle nguyka",
     "meetTitle": "Hawrugol e kisal",
-    "meetDesc": "Mbaydiiji moƴƴi ngam njulaaku ɗo yeeso e yeeso",
-    "reportTitle": "Ƴeewtagol caɗeele",
-    "reportDesc": "Ƴeewto golle walla huunde sikkitiniinde",
-    "emergency": "Heñoraare",
-    "emergencyMsg": "So aɗa hulɓinaa walla a wonaa e kisal, heɓ laamɓe nokkuure maa law.",
+    "meetDesc": "Mbaydiiji moÆ´Æ´i ngam njulaaku É—o yeeso e yeeso",
+    "reportTitle": "Æ³eewtagol caÉ—eele",
+    "reportDesc": "Æ³eewto golle walla huunde sikkitiniinde",
+    "emergency": "HeÃ±oraare",
+    "emergencyMsg": "So aÉ—a hulÉ“inaa walla a wonaa e kisal, heÉ“ laamÉ“e nokkuure maa law.",
     "back": "Rutto to galle ballal"
   }
 };
@@ -113,13 +113,13 @@ export default function SafetySecurity() {
         </div>
 
         <div className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6">
-          <h3 className="font-bold text-gray-900 mb-3">🚨 {tr("emergency")}</h3>
+          <h3 className="font-bold text-gray-900 mb-3">ðŸš¨ {tr("emergency")}</h3>
           <p className="text-gray-700">{tr("emergencyMsg")}</p>
         </div>
 
         <div className="mt-8 text-center">
           <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">
-            ← {tr("back")}
+            â† {tr("back")}
           </Link>
         </div>
       </div>

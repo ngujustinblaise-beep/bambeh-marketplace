@@ -1,16 +1,16 @@
-/**
- * src/pages/MarketplaceCategory.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/MarketplaceCategory.tsx â€” Bambeh Marketplace
  *
- * FIXES — June 2026
- *  ✅ FIX 1: extractImage() was calling useLang() inside a plain helper —
- *            illegal React hook call → crash → "connection issue" symptom.
+ * FIXES â€” June 2026
+ *  âœ… FIX 1: extractImage() was calling useLang() inside a plain helper â€”
+ *            illegal React hook call â†’ crash â†’ "connection issue" symptom.
  *            extractImage() is now a pure function.
- *  ✅ FIX 2: All UI strings translated via inline TR map (same pattern as Marketplace.tsx)
- *  ✅ FIX 3: Error boundary fallback improved
- *  ✅ Fetches real listings from Supabase filtered by category
- *  ✅ Category breadcrumb, search, sort
- *  ✅ Favourites + cart count badge
- *  ✅ Safe-area bottom padding
+ *  âœ… FIX 2: All UI strings translated via inline TR map (same pattern as Marketplace.tsx)
+ *  âœ… FIX 3: Error boundary fallback improved
+ *  âœ… Fetches real listings from Supabase filtered by category
+ *  âœ… Category breadcrumb, search, sort
+ *  âœ… Favourites + cart count badge
+ *  âœ… Safe-area bottom padding
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -21,20 +21,20 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-// ─── i18n ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 const TR: Record<string, Record<Lang, string>> = {
-  marketplace:    { en: "Marketplace", fr: "Marché", ha: "Kasuwanci", ar: "السوق", pcm: "Market", ff: "Suudu" },
-  loading:        { en: "Loading", fr: "Chargement", ha: "Lodawa", ar: "تحميل", pcm: "Loading", ff: "Naatirde" },
-  no_match:       { en: "No matching items", fr: "Aucun résultat", ha: "Babu", ar: "لا نتائج", pcm: "Notin match", ff: "Alaa goonga" },
-  try_different:  { en: "Try a different keyword", fr: "Essayez un autre terme", ha: "Gwada wani kalma", ar: "جرب مصطلحاً آخر", pcm: "Try different word", ff: "Mbiy goɗɗo" },
-  no_listings:    { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "لا إعلانات", pcm: "No listing yet", ff: "Alaa" },
-  first_to_list:  { en: "Be the first to list in this category!", fr: "Soyez le premier à lister!", ha: "Kasance na farko!", ar: "كن أول من يعلن!", pcm: "Be first to list here!", ff: "Wartoraa!" },
-  sell_item:      { en: "+ Sell an item", fr: "+ Vendre un article", ha: "+ Sayar da abu", ar: "+ بيع عنصر", pcm: "+ Sell item", ff: "+ Yoɓ kala" },
-  try_again:      { en: "Try again", fr: "Réessayer", ha: "Sake", ar: "حاول مجدداً", pcm: "Try again", ff: "Artu jeer" },
-  negoc:          { en: "Nego.", fr: "Négoc.", ha: "Tattaunawa", ar: "قابل للتفاوض", pcm: "Nego.", ff: "Hewtii" },
-  listings:       { en: "listings", fr: "annonces", ha: "jeri", ar: "إعلانات", pcm: "listing", ff: "ndes" },
-  listing_one:    { en: "listing", fr: "annonce", ha: "jeri ɗaya", ar: "إعلان", pcm: "listing", ff: "nde" },
+  marketplace:    { en: "Marketplace", fr: "MarchÃ©", ha: "Kasuwanci", ar: "Ø§Ù„Ø³ÙˆÙ‚", pcm: "Market", ff: "Suudu" },
+  loading:        { en: "Loading", fr: "Chargement", ha: "Lodawa", ar: "ØªØ­Ù…ÙŠÙ„", pcm: "Loading", ff: "Naatirde" },
+  no_match:       { en: "No matching items", fr: "Aucun rÃ©sultat", ha: "Babu", ar: "Ù„Ø§ Ù†ØªØ§Ø¦Ø¬", pcm: "Notin match", ff: "Alaa goonga" },
+  try_different:  { en: "Try a different keyword", fr: "Essayez un autre terme", ha: "Gwada wani kalma", ar: "Ø¬Ø±Ø¨ Ù…ØµØ·Ù„Ø­Ø§Ù‹ Ø¢Ø®Ø±", pcm: "Try different word", ff: "Mbiy goÉ—É—o" },
+  no_listings:    { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "Ù„Ø§ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª", pcm: "No listing yet", ff: "Alaa" },
+  first_to_list:  { en: "Be the first to list in this category!", fr: "Soyez le premier Ã  lister!", ha: "Kasance na farko!", ar: "ÙƒÙ† Ø£ÙˆÙ„ Ù…Ù† ÙŠØ¹Ù„Ù†!", pcm: "Be first to list here!", ff: "Wartoraa!" },
+  sell_item:      { en: "+ Sell an item", fr: "+ Vendre un article", ha: "+ Sayar da abu", ar: "+ Ø¨ÙŠØ¹ Ø¹Ù†ØµØ±", pcm: "+ Sell item", ff: "+ YoÉ“ kala" },
+  try_again:      { en: "Try again", fr: "RÃ©essayer", ha: "Sake", ar: "Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹", pcm: "Try again", ff: "Artu jeer" },
+  negoc:          { en: "Nego.", fr: "NÃ©goc.", ha: "Tattaunawa", ar: "Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙØ§ÙˆØ¶", pcm: "Nego.", ff: "Hewtii" },
+  listings:       { en: "listings", fr: "annonces", ha: "jeri", ar: "Ø¥Ø¹Ù„Ø§Ù†Ø§Øª", pcm: "listing", ff: "ndes" },
+  listing_one:    { en: "listing", fr: "annonce", ha: "jeri É—aya", ar: "Ø¥Ø¹Ù„Ø§Ù†", pcm: "listing", ff: "nde" },
 };
 function getLang(): Lang {
   try { const s = localStorage.getItem("bambeh_lang") as Lang; if (s) return s; } catch {}
@@ -46,7 +46,7 @@ function tx(key: string): string {
   return TR[key]?.[l] ?? TR[key]?.["en"] ?? key;
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface Item {
   id: string;
   title: string;
@@ -63,8 +63,8 @@ interface Item {
 const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
 
-// ─── Helpers — PURE FUNCTIONS, NO HOOKS ────────────────────────────────────────
-// ⚠️  extractImage MUST NOT call useLang() or any React hook.
+// â”€â”€â”€ Helpers â€” PURE FUNCTIONS, NO HOOKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// âš ï¸  extractImage MUST NOT call useLang() or any React hook.
 //     It is called during data mapping, outside React render cycles.
 function extractImage(row: any): string | undefined {
   if (Array.isArray(row.images) && row.images.length > 0) {
@@ -97,7 +97,7 @@ function saveFav(item: Item, category: string, add: boolean) {
   } catch { /* non-critical */ }
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MarketplaceCategory: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const navigate     = useNavigate();
@@ -144,7 +144,7 @@ const MarketplaceCategory: React.FC = () => {
         title:       row.title ?? "",
         price:       row.price ?? 0,
         location:    row.location ?? "",
-        image:       extractImage(row),   // ✅ pure function — no hook call
+        image:       extractImage(row),   // âœ… pure function â€” no hook call
         condition:   row.condition ?? "Used",
         view_count:  row.view_count ?? 0,
         negotiable:  row.negotiable ?? false,
@@ -189,7 +189,7 @@ const MarketplaceCategory: React.FC = () => {
           <div className="flex-1">
             <div className="flex items-center gap-1 text-xs text-gray-400 mb-0.5">
               <Link to="/marketplace" className="hover:text-teal-600 transition-colors">{tx("marketplace")}</Link>
-              <span>›</span>
+              <span>â€º</span>
               <span className="text-gray-700 font-medium capitalize">{label}</span>
             </div>
             <h1 className="text-lg font-bold text-gray-900 capitalize">{label}</h1>
@@ -209,7 +209,7 @@ const MarketplaceCategory: React.FC = () => {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={`${tx("loading").replace("…","").replace("…","")} ${label}…`}
+            placeholder={`${tx("loading").replace("â€¦","").replace("â€¦","")} ${label}â€¦`}
             className="w-full pl-9 pr-9 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50"
           />
           {search && (
@@ -224,7 +224,7 @@ const MarketplaceCategory: React.FC = () => {
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-7 h-7 animate-spin text-teal-600" />
-            <p className="text-sm text-gray-500">{tx("loading")} {label}…</p>
+            <p className="text-sm text-gray-500">{tx("loading")} {label}â€¦</p>
           </div>
         )}
 

@@ -1,9 +1,9 @@
-/**
+﻿/**
  * src/services/searchService.ts
- * Bambeh Marketplace — Universal Search Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Universal Search Service
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
- * IMPORTANT — YOUR SUPABASE SCHEMA:
+ * IMPORTANT â€” YOUR SUPABASE SCHEMA:
  * All listing types (marketplace, job, service, rental, vehicle, exchange)
  * live in ONE table: "listings" with a "type" column.
  * There is NO separate marketplace_items, job_listings, or service_listings table.
@@ -13,7 +13,7 @@
 
 import { supabase } from "@/lib/supabase";
 
-// ─── Geographic Scope ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Geographic Scope â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export type SearchScope = "cameroon" | "central_africa" | "west_africa";
 
@@ -24,39 +24,39 @@ export const SCOPE_CONFIG: Record<
   cameroon: {
     label:   "Cameroon",
     labelFr: "Cameroun",
-    emoji:   "🇨🇲",
+    emoji:   "ðŸ‡¨ðŸ‡²",
     countries: ["Cameroon", "Cameroun"],
   },
   central_africa: {
     label:   "Central Africa",
     labelFr: "Afrique Centrale",
-    emoji:   "🌍",
+    emoji:   "ðŸŒ",
     countries: [
       "Cameroon", "Cameroun", "Gabon",
       "Congo", "Republic of Congo", "Congo-Brazzaville",
       "DR Congo", "DRC", "Congo-Kinshasa",
       "Central African Republic", "CAR",
       "Chad", "Tchad",
-      "Equatorial Guinea", "Guinée Équatoriale",
-      "São Tomé and Príncipe",
+      "Equatorial Guinea", "GuinÃ©e Ã‰quatoriale",
+      "SÃ£o TomÃ© and PrÃ­ncipe",
     ],
   },
   west_africa: {
     label:   "West Africa",
     labelFr: "Afrique de l'Ouest",
-    emoji:   "🌍",
+    emoji:   "ðŸŒ",
     countries: [
-      "Nigeria", "Ghana", "Senegal", "Sénégal",
-      "Côte d'Ivoire", "Ivory Coast", "Cameroon", "Cameroun",
-      "Mali", "Burkina Faso", "Niger", "Guinea", "Guinée",
-      "Benin", "Bénin", "Togo", "Sierra Leone", "Liberia",
+      "Nigeria", "Ghana", "Senegal", "SÃ©nÃ©gal",
+      "CÃ´te d'Ivoire", "Ivory Coast", "Cameroon", "Cameroun",
+      "Mali", "Burkina Faso", "Niger", "Guinea", "GuinÃ©e",
+      "Benin", "BÃ©nin", "Togo", "Sierra Leone", "Liberia",
       "Mauritania", "Mauritanie", "Gambia", "Guinea-Bissau",
       "Cape Verde", "Cabo Verde",
     ],
   },
 };
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export type SearchCategory =
   | "all"
@@ -113,7 +113,7 @@ export interface SearchSuggestion {
   count:    number;
 }
 
-// ─── Full-Text Search ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Full-Text Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ALL types go through the single "listings" table using the "type" column.
 
 export async function search(filters: SearchFilters): Promise<SearchResponse> {
@@ -140,7 +140,7 @@ export async function search(filters: SearchFilters): Promise<SearchResponse> {
 
     const term = query.trim();
 
-    // ── All listing types from the single "listings" table ────────────────────
+    // â”€â”€ All listing types from the single "listings" table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Map category names to the "type" values stored in your listings table
     const TYPE_MAP: Record<string, string> = {
       marketplace: "marketplace",
@@ -194,7 +194,7 @@ export async function search(filters: SearchFilters): Promise<SearchResponse> {
       }
     }
 
-    // ── Vendors — separate table ───────────────────────────────────────────────
+    // â”€â”€ Vendors â€” separate table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (category === "all" || category === "vendors") {
       let q = supabase
         .from("vendor_profiles")
@@ -223,7 +223,7 @@ export async function search(filters: SearchFilters): Promise<SearchResponse> {
       }
     }
 
-    // ── Sort ──────────────────────────────────────────────────────────────────
+    // â”€â”€ Sort â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (sortBy === "price_asc") {
       results.sort((a, b) => (a.priceXAF ?? 0) - (b.priceXAF ?? 0));
     } else if (sortBy === "price_desc") {
@@ -239,8 +239,8 @@ export async function search(filters: SearchFilters): Promise<SearchResponse> {
   }
 }
 
-// ─── Search Suggestions ───────────────────────────────────────────────────────
-// Uses the single "listings" table — no more references to non-existent tables.
+// â”€â”€â”€ Search Suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Uses the single "listings" table â€” no more references to non-existent tables.
 
 export async function getSearchSuggestions(query: string): Promise<SearchSuggestion[]> {
   if (!query || query.length < 2) return [];
@@ -273,7 +273,7 @@ export async function getSearchSuggestions(query: string): Promise<SearchSuggest
   }
 }
 
-// ─── Save Search ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Save Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function saveSearch(
   userId: string,
   query: string,
@@ -295,7 +295,7 @@ export async function saveSearch(
   }
 }
 
-// ─── Get Saved Searches ───────────────────────────────────────────────────────
+// â”€â”€â”€ Get Saved Searches â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function getSavedSearches(userId: string): Promise<{
   data: Array<{ id: string; query: string; category: SearchCategory; createdAt: string }>;
   error: string | null;
@@ -320,7 +320,7 @@ export async function getSavedSearches(userId: string): Promise<{
   }
 }
 
-// ─── Record Search Analytics ──────────────────────────────────────────────────
+// â”€â”€â”€ Record Search Analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function recordSearchAnalytics(
   query: string,
   category: SearchCategory,

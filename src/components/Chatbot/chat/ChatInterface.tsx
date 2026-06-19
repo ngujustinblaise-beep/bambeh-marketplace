@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/components/Chatbot/chat/ChatInterface.tsx
- * Bambeh Marketplace — Chat Interface
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Chat Interface
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface ChatMessage {
   id: string;
   conversationId: string;
@@ -32,7 +32,7 @@ interface ChatInterfaceProps {
   className?: string;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   conversationId,
   currentUserId,
@@ -254,7 +254,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-sm text-gray-400">Dites bonjour à {participantName} 👋</p>
+            <p className="text-sm text-gray-400">Dites bonjour Ã  {participantName} ðŸ‘‹</p>
           </div>
         ) : (
           groupByDate(messages).map((group) => (
@@ -313,7 +313,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Écrire un message..."
+              placeholder="Ã‰crire un message..."
               rows={1}
               className="w-full bg-transparent outline-none text-sm text-gray-900 placeholder-gray-400 resize-none max-h-28 overflow-y-auto"
               style={{ height: "auto" }}

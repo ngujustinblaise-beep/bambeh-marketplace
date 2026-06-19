@@ -1,6 +1,6 @@
-/**
- * SellerResponseBadge.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+﻿/**
+ * SellerResponseBadge.tsx â€” Bambeh Marketplace
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * Displays seller response time badge like Jiji.cm's "Responds in 2 hours".
  * Builds buyer trust and increases conversion rates.
@@ -24,11 +24,11 @@ import { Clock, Zap, CheckCircle, MessageCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ResponseStats {
   avgResponseMinutes: number | null;
-  responseRate: number; // 0–100 percentage
+  responseRate: number; // 0â€“100 percentage
   totalResponses: number;
   label: string;
   tier: "fast" | "normal" | "slow" | "new";
@@ -42,7 +42,7 @@ interface SellerResponseBadgeProps {
   className?: string;
 }
 
-// ─── RESPONSE TIER CONFIG ─────────────────────────────────────────────────────
+// â”€â”€â”€ RESPONSE TIER CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getTier(avgMinutes: number | null, rate: number): ResponseStats["tier"] {
   if (avgMinutes === null) return "new";
@@ -88,7 +88,7 @@ const TIER_STYLES = {
   },
 };
 
-// ─── DATA FETCHER ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ DATA FETCHER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Fetches response stats for a vendor from Supabase.
@@ -135,7 +135,7 @@ async function fetchResponseStats(vendorId: string): Promise<ResponseStats> {
   }
 
   // Simple approximation: average time between consecutive messages in same conversation
-  // A proper implementation would use the first_buyer_message → first_vendor_reply gap
+  // A proper implementation would use the first_buyer_message â†’ first_vendor_reply gap
   const totalMessages = messages.length;
   const avgResponseMinutes = totalMessages > 5 ? 60 : null; // conservative estimate
 
@@ -148,7 +148,7 @@ async function fetchResponseStats(vendorId: string): Promise<ResponseStats> {
   };
 }
 
-// ─── COMPONENT ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
   vendorId,
@@ -158,7 +158,7 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
   const { data: stats, isLoading } = useQuery({
     queryKey: ["seller-response", vendorId],
     queryFn: () => fetchResponseStats(vendorId),
-    staleTime: 10 * 60 * 1000, // 10 minutes — response stats don't change fast
+    staleTime: 10 * 60 * 1000, // 10 minutes â€” response stats don't change fast
     gcTime: 30 * 60 * 1000,
     enabled: !!vendorId,
   });
@@ -173,7 +173,7 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
 
   const style = TIER_STYLES[stats.tier];
 
-  // ── Compact badge (default) ───────────────────────────────────────────────
+  // â”€â”€ Compact badge (default) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (!showDetails) {
     return (
       <div
@@ -189,7 +189,7 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
     );
   }
 
-  // ── Detailed view (for vendor profile page) ───────────────────────────────
+  // â”€â”€ Detailed view (for vendor profile page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 ${className}`}>
       <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -246,8 +246,8 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
           <span
             className={`w-2 h-2 rounded-full animate-pulse ${style.dot}`}
           />
-          {stats.tier === "fast" && "⚡ Top Responder"}
-          {stats.tier === "normal" && "✓ Active Seller"}
+          {stats.tier === "fast" && "âš¡ Top Responder"}
+          {stats.tier === "normal" && "âœ“ Active Seller"}
           {stats.tier === "slow" && "Response times may vary"}
           {stats.tier === "new" && "New on Bambeh"}
         </div>

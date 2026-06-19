@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trash2, ShoppingBag, Loader2, Briefcase, Wrench, Car, Leaf, Zap, Home } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 interface FavItem {
   id: string;

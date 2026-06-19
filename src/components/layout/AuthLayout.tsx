@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 interface AuthLayoutProps {
   children: React.ReactNode;

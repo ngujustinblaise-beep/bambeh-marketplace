@@ -1,20 +1,20 @@
-/**
- * src/pages/Rentals.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/Rentals.tsx â€” Bambeh Marketplace
  *
- * ✅ FULL REWRITE — all features production-ready:
+ * âœ… FULL REWRITE â€” all features production-ready:
  *
- *  🌐 i18n: Every visible string uses useTranslation('rentals').
- *           Supports EN / FR / HA / AR / Pidgin / Fulfulde — zero hardcoded UI text.
- *  🔄 Realtime: Supabase postgres_changes keeps the list live.
- *  🔍 Filters: search, city, type, price range, LocationFilter component.
- *  🎯 Routing: /rentals/:id for details, /rentals/list for posting.
- *  💾 Error recovery: graceful fallback to SAMPLE data on any Supabase error.
- *  📸 Images: shows first image as card cover; falls back to icon.
- *  ⏱  Expiry: "Expiring soon" badge when listing expires within 3 days.
- *  🚫 Demo-safe: demo cards are non-clickable and clearly labelled.
- *  ♿ Accessible: aria-labels, keyboard-friendly.
+ *  ðŸŒ i18n: Every visible string uses useTranslation('rentals').
+ *           Supports EN / FR / HA / AR / Pidgin / Fulfulde â€” zero hardcoded UI text.
+ *  ðŸ”„ Realtime: Supabase postgres_changes keeps the list live.
+ *  ðŸ” Filters: search, city, type, price range, LocationFilter component.
+ *  ðŸŽ¯ Routing: /rentals/:id for details, /rentals/list for posting.
+ *  ðŸ’¾ Error recovery: graceful fallback to SAMPLE data on any Supabase error.
+ *  ðŸ“¸ Images: shows first image as card cover; falls back to icon.
+ *  â±  Expiry: "Expiring soon" badge when listing expires within 3 days.
+ *  ðŸš« Demo-safe: demo cards are non-clickable and clearly labelled.
+ *  â™¿ Accessible: aria-labels, keyboard-friendly.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -30,7 +30,7 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { DemoBadge } from "@/components/listings/DemoBadge";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface Property {
   id: string;
   title: string;
@@ -49,17 +49,17 @@ interface Property {
   view_count?: number;
 }
 
-// ─── Demo/fallback data ───────────────────────────────────────────────────────
+// â”€â”€â”€ Demo/fallback data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SAMPLE: Property[] = [
-  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150_000, location: "Yaoundé", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
+  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150_000, location: "YaoundÃ©", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
   { id: "demo-2", title: "Spacious villa in Bonamoussadi",   type: "Villa",     price: 350_000, location: "Douala",  quartier: "Bonamoussadi", bedrooms: "4", bathrooms: "3", description: "4-bedroom villa with garden and parking.", postedAt: new Date().toISOString(), isDemo: true },
-  { id: "demo-3", title: "Studio near University of Yaoundé", type: "Studio",  price: 60_000,  location: "Yaoundé", quartier: "Ngoa-Ekélé", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
+  { id: "demo-3", title: "Studio near University of YaoundÃ©", type: "Studio",  price: 60_000,  location: "YaoundÃ©", quartier: "Ngoa-EkÃ©lÃ©", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
   { id: "demo-4", title: "Professional office space in Akwa",  type: "Office", price: 200_000, location: "Douala",  quartier: "Akwa", bedrooms: "N/A", bathrooms: "1", description: "Professional office space in prime location.", postedAt: new Date().toISOString(), isDemo: true },
 ];
 
 const CITIES = [
-  "allCities", "Yaoundé", "Douala", "Bafoussam", "Garoua",
-  "Maroua", "Bamenda", "Ngaoundéré", "Bertoua", "Ebolowa", "Kumba",
+  "allCities", "YaoundÃ©", "Douala", "Bafoussam", "Garoua",
+  "Maroua", "Bamenda", "NgaoundÃ©rÃ©", "Bertoua", "Ebolowa", "Kumba",
 ];
 const TYPES  = [
   "allTypes", "Apartment", "Villa", "Studio", "House",
@@ -72,7 +72,7 @@ function expiringWithin(expiresAt: string | undefined, days: number): boolean {
   return diff > 0 && diff <= days * 86_400_000;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function Rentals() {
   const navigate   = useNavigate();
   const { t, i18n } = useTranslation("rentals");
@@ -86,11 +86,11 @@ export default function Rentals() {
   const [maxPrice,         setMaxPrice]         = useState(1_000_000);
   const [locationFilters,  setLocationFilters]  = useState<LocationFilters>(EMPTY_LOCATION);
 
-  // ── i18n-aware city / type label helpers ─────────────────────────────────
+  // â”€â”€ i18n-aware city / type label helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const cityLabel  = (c: string) => c === "allCities" ? t("rentals.allCities") : c;
   const typeLabel  = (tp: string) => tp === "allTypes" ? t("rentals.allTypes") : tp;
 
-  // ── Fetch from Supabase ───────────────────────────────────────────────────
+  // â”€â”€ Fetch from Supabase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fetchProperties = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -103,7 +103,7 @@ export default function Rentals() {
         )
         .eq("status", "active")
         .order("created_at", { ascending: false })
-        .limit(60);
+        .limit(40);
 
       if (sbError) throw sbError;
 
@@ -132,7 +132,7 @@ export default function Rentals() {
       }
     } catch (err: unknown) {
       console.error("[Rentals] fetch error:", err);
-      setError(t("rentals.errorBanner"));
+      setError(t("rentals.error"));
       setProperties(SAMPLE);
     } finally {
       setLoading(false);
@@ -152,11 +152,11 @@ export default function Rentals() {
 
   // Re-translate the error banner when the language changes
   useEffect(() => {
-    if (error) setError(t("rentals.errorBanner"));
+    if (error) setError(t("rentals.error"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language]);
 
-  // ── Filtering ─────────────────────────────────────────────────────────────
+  // â”€â”€ Filtering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const filtered = [...properties]
     .filter((p) => {
       if (search) {
@@ -187,7 +187,7 @@ export default function Rentals() {
   const count   = filtered.length;
   const suffix  = count !== 1 ? "ies" : "y";
 
-  // ─── Render ────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen bg-gray-50 p-4 pb-28">
       <div className="max-w-2xl mx-auto">
@@ -233,7 +233,7 @@ export default function Rentals() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("rentals.searchPlaceholder")}
+            placeholder={t("rentals.search")}
             className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500
                        outline-none text-sm bg-white"
           />
@@ -406,3 +406,7 @@ export default function Rentals() {
     </div>
   );
 }
+
+
+
+

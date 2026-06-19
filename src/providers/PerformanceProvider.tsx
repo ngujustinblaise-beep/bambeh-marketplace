@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { createContext, useContext, useRef } from "react";
 import type { ReactNode } from "react";
 

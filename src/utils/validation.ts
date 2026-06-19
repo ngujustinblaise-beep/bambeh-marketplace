@@ -1,4 +1,4 @@
-export const sanitizeInput = (input: string): string => {
+﻿export const sanitizeInput = (input: string): string => {
   return input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/javascript:/gi, "")

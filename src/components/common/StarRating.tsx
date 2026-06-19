@@ -1,4 +1,4 @@
-/**
+﻿/**
  * STAR RATING (RatingStars variant)
  * FILE LOCATION: src/components/common/StarRating.tsx
  */

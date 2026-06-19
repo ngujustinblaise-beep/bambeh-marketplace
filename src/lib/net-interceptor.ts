@@ -1,5 +1,5 @@
-/**
- * src/lib/net-interceptor.ts — Bambeh
+﻿/**
+ * src/lib/net-interceptor.ts â€” Bambeh
  *
  * FIX: super() call was missing backticks around the template literal.
  * Original broken line:  super(Network request failed: + url);
@@ -15,7 +15,7 @@ export class NetworkError extends Error {
 
 /**
  * Wraps fetch() and throws NetworkError on network failure.
- * HTTP error status codes (4xx, 5xx) are NOT thrown — callers
+ * HTTP error status codes (4xx, 5xx) are NOT thrown â€” callers
  * must check response.ok themselves if needed.
  */
 export async function fetchWithInterceptor(

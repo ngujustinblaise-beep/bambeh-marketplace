@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import type { CartItem } from "@/types/cart";
 import { PAYMENT_METHODS } from "@/types/subscription";
@@ -30,7 +30,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ items, onClose, onSuccess
       <div className="bg-white rounded-2xl w-full max-w-sm p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Checkout</h2>
-          <button onClick={onClose} className="text-2xl text-gray-400">×</button>
+          <button onClick={onClose} className="text-2xl text-gray-400">Ã—</button>
         </div>
 
         <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
@@ -49,9 +49,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ items, onClose, onSuccess
 
         <div className="space-y-2 mb-6">
           {[
-            { id: PAYMENT_METHODS.MTN_MOMO,     label: "MTN MoMo",     icon: "🟡" },
-            { id: PAYMENT_METHODS.ORANGE_MONEY,  label: "Orange Money", icon: "🟠" },
-            { id: PAYMENT_METHODS.CARD,          label: "Card",         icon: "💳" },
+            { id: PAYMENT_METHODS.MTN_MOMO,     label: "MTN MoMo",     icon: "ðŸŸ¡" },
+            { id: PAYMENT_METHODS.ORANGE_MONEY,  label: "Orange Money", icon: "ðŸŸ " },
+            { id: PAYMENT_METHODS.CARD,          label: "Card",         icon: "ðŸ’³" },
           ].map(m => (
             <label key={m.id} className={"flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer " + (method === m.id ? "border-teal-500 bg-teal-50" : "border-gray-200")}>
               <input type="radio" name="method" value={m.id}

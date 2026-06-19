@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LOCATION TYPE DEFINITIONS
  *
  * Type definitions for  administrative divisions and location handling
@@ -183,7 +183,7 @@ export const _REGIONS_FR = [
   "Adamaoua",
   "Centre",
   "Est",
-  "Extrême-Nord",
+  "ExtrÃªme-Nord",
   "Littoral",
   "Nord",
   "Nord-Ouest",

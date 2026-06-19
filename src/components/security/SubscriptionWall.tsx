@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ---------------------------------------------------------------------------
  * SUBSCRIPTION WALL - UPGRADE PROMPT
  * ---------------------------------------------------------------------------
@@ -8,7 +8,7 @@
  * ? Direct link to subscription plans
  * ? Context-aware messaging
  * 
- * � 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 

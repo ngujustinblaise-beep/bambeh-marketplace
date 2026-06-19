@@ -1,4 +1,4 @@
-class RateLimiter {
+﻿class RateLimiter {
   private attempts: Map<string, number[]> = new Map();
 
   checkLimit(key: string, maxAttempts: number, windowMs: number): boolean {

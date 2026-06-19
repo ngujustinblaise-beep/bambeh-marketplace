@@ -1,4 +1,4 @@
-export class SecurityManager {
+﻿export class SecurityManager {
   applyHeaders(): void {
     console.debug("[Security] Headers audit complete.");
   }

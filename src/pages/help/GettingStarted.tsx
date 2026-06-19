@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Rocket } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -16,8 +16,8 @@ const T: Record<string, Record<string, string>> = {
     "title": "Pour commencer",
     "subtitle": "Bienvenue sur Bambeh !",
     "welcome": "Bienvenue !",
-    "intro": "Commençons sur Bambeh en 3 étapes simples.",
-    "step1": "1. Créez votre compte",
+    "intro": "CommenÃ§ons sur Bambeh en 3 Ã©tapes simples.",
+    "step1": "1. CrÃ©ez votre compte",
     "step2": "2. Configurez votre profil",
     "step3": "3. Comprenez les Zerm Coins"
   },
@@ -31,19 +31,19 @@ const T: Record<string, Record<string, string>> = {
     "step3": "3. Understand Zerm Coins"
   },
   "ar": {
-    "title": "البدء",
-    "subtitle": "مرحبًا بك في Bambeh!",
-    "welcome": "مرحبًا!",
-    "intro": "لنبدأ معك على Bambeh في 3 خطوات سهلة.",
-    "step1": "1. أنشئ حسابك",
-    "step2": "2. أعدّ ملفك الشخصي",
-    "step3": "3. افهم Zerm Coins"
+    "title": "Ø§Ù„Ø¨Ø¯Ø¡",
+    "subtitle": "Ù…Ø±Ø­Ø¨Ù‹Ø§ Ø¨Ùƒ ÙÙŠ Bambeh!",
+    "welcome": "Ù…Ø±Ø­Ø¨Ù‹Ø§!",
+    "intro": "Ù„Ù†Ø¨Ø¯Ø£ Ù…Ø¹Ùƒ Ø¹Ù„Ù‰ Bambeh ÙÙŠ 3 Ø®Ø·ÙˆØ§Øª Ø³Ù‡Ù„Ø©.",
+    "step1": "1. Ø£Ù†Ø´Ø¦ Ø­Ø³Ø§Ø¨Ùƒ",
+    "step2": "2. Ø£Ø¹Ø¯Ù‘ Ù…Ù„ÙÙƒ Ø§Ù„Ø´Ø®ØµÙŠ",
+    "step3": "3. Ø§ÙÙ‡Ù… Zerm Coins"
   },
   "ff": {
-    "title": "Fuɗɗorde",
+    "title": "FuÉ—É—orde",
     "subtitle": "Jam weli e Bambeh!",
     "welcome": "Jam weli!",
-    "intro": "Ngaren fuɗɗoɗen Bambeh e peƴƴe 3 newiiɗe.",
+    "intro": "Ngaren fuÉ—É—oÉ—en Bambeh e peÆ´Æ´e 3 newiiÉ—e.",
     "step1": "1. Sosu konte maa",
     "step2": "2. Hebbin humpito maa",
     "step3": "3. Faamu Zerm Coins"

@@ -1,5 +1,5 @@
-/**
- * SubscriptionGate.tsx — Subscription enforcement component.
+﻿/**
+ * SubscriptionGate.tsx â€” Subscription enforcement component.
  * FILE LOCATION: src/components/common/SubscriptionGate.tsx
  */
 
@@ -45,9 +45,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
         <div className="-mt-6 mx-6">
           <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 shadow-lg text-center">
-            <p className="text-white text-xs font-semibold uppercase tracking-wider mb-1">🔥 Best Value — Most Popular</p>
+            <p className="text-white text-xs font-semibold uppercase tracking-wider mb-1">ðŸ”¥ Best Value â€” Most Popular</p>
             <p className="text-white font-black text-3xl">100 XAF</p>
-            <p className="text-yellow-100 text-sm font-medium">per month · Full Access</p>
+            <p className="text-yellow-100 text-sm font-medium">per month Â· Full Access</p>
           </div>
         </div>
 
@@ -78,7 +78,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
                 className={`relative flex flex-col items-center p-3 rounded-2xl border-2 transition-all hover:scale-105 ${plan.color} ${isHighlighted ? 'ring-2 ring-orange-400 ring-offset-1' : ''}`}
               >
                 {isHighlighted && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">⭐ START HERE</span>
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">â­ START HERE</span>
                 )}
                 <Icon className={`w-5 h-5 ${plan.accent} mb-1`} />
                 <p className={`font-black text-sm ${plan.accent}`}>{plan.price} XAF</p>
@@ -93,7 +93,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
           <button onClick={() => handleSubscribe('bronze')}
             className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-teal-700 text-white font-bold rounded-2xl hover:from-teal-600 hover:to-teal-800 transition-all shadow-lg flex items-center justify-center gap-2">
             <Zap className="w-5 h-5" />
-            Get Full Access — From 100 XAF
+            Get Full Access â€” From 100 XAF
           </button>
           <p className="text-center text-gray-400 text-xs mt-2">Cancel anytime. No hidden fees.</p>
         </div>

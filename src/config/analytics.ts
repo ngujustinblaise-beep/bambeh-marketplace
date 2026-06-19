@@ -1,4 +1,4 @@
-// src/config/analytics.ts
+﻿// src/config/analytics.ts
 import ReactGA from "react-ga4";
 
 export const initGA = () => {

@@ -1,5 +1,5 @@
-/**
- * src/utils/firebase/firebaseConfig.ts — Bambeh Marketplace
+ï»¿/**
+ * src/utils/firebase/firebaseConfig.ts â€” Bambeh Marketplace
  * ? FIXED: getApps() guard + safe AppCheck + initializeFirebaseAppCheck export
  */
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
@@ -36,7 +36,7 @@ let appCheckInstance: AppCheck | null = null;
  * initializeFirebaseAppCheck
  *
  * Called by SecurityInitializer.tsx on app startup.
- * Safe to call multiple times — only initializes AppCheck once.
+ * Safe to call multiple times â€” only initializes AppCheck once.
  *
  * @param recaptchaSiteKey  Your reCAPTCHA v3 site key.
  *                          Falls back to VITE_RECAPTCHA_SITE_KEY env var.
@@ -44,7 +44,7 @@ let appCheckInstance: AppCheck | null = null;
 export function initializeFirebaseAppCheck(
   recaptchaSiteKey?: string,
 ): AppCheck | null {
-  // Already initialized — return the existing instance
+  // Already initialized â€” return the existing instance
   if (appCheckInstance) return appCheckInstance;
 
   const siteKey = recaptchaSiteKey ?? import.meta.env.VITE_RECAPTCHA_SITE_KEY;
@@ -59,7 +59,7 @@ export function initializeFirebaseAppCheck(
     });
     return appCheckInstance;
   } catch (e) {
-    // AppCheck may already be initialized by another code path — safe to ignore
+    // AppCheck may already be initialized by another code path â€” safe to ignore
     console.warn("[Bambeh] AppCheck init skipped:", e);
     return null;
   }
@@ -68,13 +68,13 @@ export function initializeFirebaseAppCheck(
 export { app, appCheckInstance as appCheck };
 export default app;
 
-// Alias for Firestore — used by paymentService.ts
+// Alias for Firestore â€” used by paymentService.ts
 export const firestore = db;
 
-// API base URL — used by api.service.ts and exchange services
+// API base URL â€” used by api.service.ts and exchange services
 export const API_BASE_URL: string = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
 
-// API endpoints map — used by api.service.ts
+// API endpoints map â€” used by api.service.ts
 export const API_ENDPOINTS = {
   auth: {
     login:          `${API_BASE_URL}/auth/login`,

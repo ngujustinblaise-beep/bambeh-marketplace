@@ -1,4 +1,4 @@
-// FILE: src/components/common/ListingCard.tsx
+﻿// FILE: src/components/common/ListingCard.tsx
 import { Heart, MapPin, Eye, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';

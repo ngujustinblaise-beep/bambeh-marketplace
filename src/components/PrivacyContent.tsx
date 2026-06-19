@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PRIVACY POLICY CONTENT COMPONENT
  * Official Bambeh Privacy Policy
  * Used in: Privacy.tsx

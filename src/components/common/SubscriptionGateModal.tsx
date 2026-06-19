@@ -1,13 +1,13 @@
-// FILE: src/components/common/SubscriptionGateModal.tsx
+﻿// FILE: src/components/common/SubscriptionGateModal.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Star, Zap, Lock } from 'lucide-react';
 
 const TRANSLATIONS: Record<string, Record<string, string>> = {
-  en: { title: 'Unlock This Feature', sub: 'Subscribe and let us take the load from here.', body: 'This feature is available to subscribed members. Join Bambeh today — all for as little as 100 XAF.', cta: 'View Subscription Plans', cancel: 'Maybe Later' },
-  fr: { title: 'Débloquez cette fonctionnalité', sub: 'Abonnez-vous et laissez-nous gérer le reste.', body: 'Rejoignez Bambeh — dès 100 XAF.', cta: 'Voir les forfaits', cancel: 'Peut-être plus tard' },
-  ha: { title: 'Buɗe wannan fasalin', sub: 'Yi rajista mana mu ɗauki nauyi daga nan.', body: 'Ku shiga Bambeh yau.', cta: 'Duba Tsare-tsare', cancel: 'Wataƙila daga baya' },
-  ar: { title: 'افتح هذه الميزة', sub: 'اشترك ودعنا نتحمل العبء من هنا.', body: 'انضم إلى Bambeh اليوم.', cta: 'عرض خطط الاشتراك', cancel: 'ربما لاحقاً' },
+  en: { title: 'Unlock This Feature', sub: 'Subscribe and let us take the load from here.', body: 'This feature is available to subscribed members. Join Bambeh today â€” all for as little as 100 XAF.', cta: 'View Subscription Plans', cancel: 'Maybe Later' },
+  fr: { title: 'DÃ©bloquez cette fonctionnalitÃ©', sub: 'Abonnez-vous et laissez-nous gÃ©rer le reste.', body: 'Rejoignez Bambeh â€” dÃ¨s 100 XAF.', cta: 'Voir les forfaits', cancel: 'Peut-Ãªtre plus tard' },
+  ha: { title: 'BuÉ—e wannan fasalin', sub: 'Yi rajista mana mu É—auki nauyi daga nan.', body: 'Ku shiga Bambeh yau.', cta: 'Duba Tsare-tsare', cancel: 'WataÆ™ila daga baya' },
+  ar: { title: 'Ø§ÙØªØ­ Ù‡Ø°Ù‡ Ø§Ù„Ù…ÙŠØ²Ø©', sub: 'Ø§Ø´ØªØ±Ùƒ ÙˆØ¯Ø¹Ù†Ø§ Ù†ØªØ­Ù…Ù„ Ø§Ù„Ø¹Ø¨Ø¡ Ù…Ù† Ù‡Ù†Ø§.', body: 'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Bambeh Ø§Ù„ÙŠÙˆÙ….', cta: 'Ø¹Ø±Ø¶ Ø®Ø·Ø· Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ', cancel: 'Ø±Ø¨Ù…Ø§ Ù„Ø§Ø­Ù‚Ø§Ù‹' },
 };
 
 function getLang(): string { try { return localStorage.getItem('Bambeh_language') || 'en'; } catch { return 'en'; } }

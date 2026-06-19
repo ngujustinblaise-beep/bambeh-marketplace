@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Review and Rating System Type Definitions
  */
 

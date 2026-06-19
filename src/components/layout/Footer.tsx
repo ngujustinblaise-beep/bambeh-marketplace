@@ -32,7 +32,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 export default function Footer() {
   const { t, language } = useLanguage();

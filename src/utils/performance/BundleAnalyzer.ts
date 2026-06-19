@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/utils/performance/BundleAnalyzer.ts
- * Bambeh Marketplace — Bundle Analysis Utilities
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Bundle Analysis Utilities
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -50,7 +50,7 @@ export function analyzeBundleReport(chunks: ChunkInfo[]): BundleReport {
 
   for (const chunk of chunks) {
     if (chunk.sizeBytes > CHUNK_WARN_BYTES) {
-      warnings.push(`Chunk "${chunk.name}" is ${formatBytes(chunk.sizeBytes)} — consider splitting`);
+      warnings.push(`Chunk "${chunk.name}" is ${formatBytes(chunk.sizeBytes)} â€” consider splitting`);
     }
   }
 
@@ -77,7 +77,7 @@ export function logBundleReport(report: BundleReport): void {
   }
 
   for (const warning of report.warnings) {
-    logger.warn(`[BundleAnalyzer] ⚠ ${warning}`);
+    logger.warn(`[BundleAnalyzer] âš  ${warning}`);
   }
 }
 

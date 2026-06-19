@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SECURITY BANNER COMPONENT
  * FILE LOCATION: src/components/security/SecurityBanner.tsx
  */
@@ -33,9 +33,9 @@ const SecurityBanner = () => {
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
           <p className="text-xs sm:text-sm font-medium truncate">
             <span className="hidden sm:inline">
-              🔒 Secure your account: Never share your password or verification codes with anyone!
+              ðŸ”’ Secure your account: Never share your password or verification codes with anyone!
             </span>
-            <span className="sm:hidden">🔒 Keep your account secure!</span>
+            <span className="sm:hidden">ðŸ”’ Keep your account secure!</span>
           </p>
         </div>
         <button

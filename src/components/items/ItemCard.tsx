@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/components/items/ItemCard.tsx
- * Bambeh Marketplace — Listing Item Card
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Listing Item Card
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -27,9 +27,9 @@ function formatXAF(n: number): string {
 const CONDITION_LABELS: Record<string, string> = {
   new: "Neuf",
   like_new: "Comme neuf",
-  good: "Bon état",
-  fair: "État correct",
-  poor: "À réparer",
+  good: "Bon Ã©tat",
+  fair: "Ã‰tat correct",
+  poor: "Ã€ rÃ©parer",
 };
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -78,7 +78,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">📦</div>
+            <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">ðŸ“¦</div>
           )}
         </div>
 
@@ -88,14 +88,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <p className="text-base font-bold text-teal-700 mt-0.5">{formatXAF(item.priceXAF)}</p>
           <div className="flex items-center gap-2 mt-1">
             {item.isNegotiable && (
-              <span className="text-xs text-green-600 font-medium">Négociable</span>
+              <span className="text-xs text-green-600 font-medium">NÃ©gociable</span>
             )}
             <span className="text-xs text-gray-400">{CONDITION_LABELS[item.condition] ?? item.condition}</span>
           </div>
           <div className="flex items-center gap-1 mt-1">
             <MapPin className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-400">{item.location.city}</span>
-            <span className="text-xs text-gray-300 mx-1">·</span>
+            <span className="text-xs text-gray-300 mx-1">Â·</span>
             <Eye className="w-3 h-3 text-gray-300" />
             <span className="text-xs text-gray-400">{item.viewCount}</span>
           </div>
@@ -129,7 +129,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           {imageUrl ? (
             <img src={imageUrl} alt={item.title} className="w-full h-full object-cover" onError={() => setImgError(true)} />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl">📦</div>
+            <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl">ðŸ“¦</div>
           )}
         </div>
         <div className="p-2">
@@ -160,7 +160,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">📦</div>
+          <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">ðŸ“¦</div>
         )}
 
         {/* Badges */}
@@ -173,7 +173,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           )}
           {item.isSponsored && (
             <span className="px-2 py-0.5 bg-blue-600 text-white rounded-full text-xs font-medium shadow-sm">
-              Sponsorisé
+              SponsorisÃ©
             </span>
           )}
         </div>
@@ -196,7 +196,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         {item.status !== "active" && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <span className="bg-white text-gray-900 font-bold text-sm px-3 py-1 rounded-full">
-              {item.status === "sold" ? "Vendu" : item.status === "reserved" ? "Réservé" : item.status}
+              {item.status === "sold" ? "Vendu" : item.status === "reserved" ? "RÃ©servÃ©" : item.status}
             </span>
           </div>
         )}
@@ -218,7 +218,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <div className="flex items-center justify-between mb-2">
           <p className="text-base font-bold text-teal-700">{formatXAF(item.priceXAF)}</p>
           {item.isNegotiable && (
-            <span className="text-xs text-green-600 font-medium">Négociable</span>
+            <span className="text-xs text-green-600 font-medium">NÃ©gociable</span>
           )}
         </div>
 

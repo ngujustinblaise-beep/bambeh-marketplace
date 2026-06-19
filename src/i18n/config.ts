@@ -1,10 +1,10 @@
-/**
+﻿/**
  * src/i18n/config.ts
- * Bambeh Marketplace — i18n Language Configuration
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” i18n Language Configuration
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// ─── Supported Languages ──────────────────────────────────────────────────────
+// â”€â”€â”€ Supported Languages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface LanguageConfig {
   code: string;
   name: string;
@@ -18,8 +18,8 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
   {
     code: "fr",
     name: "French",
-    nativeName: "Français",
-    flag: "🇫🇷",
+    nativeName: "FranÃ§ais",
+    flag: "ðŸ‡«ðŸ‡·",
     rtl: false,
     region: "",
   },
@@ -27,7 +27,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     code: "en",
     name: "English",
     nativeName: "English",
-    flag: "🇬🇧",
+    flag: "ðŸ‡¬ðŸ‡§",
     rtl: false,
     region: "",
   },
@@ -35,15 +35,15 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     code: "pidgin",
     name: " Pidgin",
     nativeName: "Pidgin",
-    flag: "🇨🇲",
+    flag: "ðŸ‡¨ðŸ‡²",
     rtl: false,
     region: "",
   },
   {
     code: "bassa",
     name: "Bassa",
-    nativeName: "Bàsàa",
-    flag: "🇨🇲",
+    nativeName: "BÃ sÃ a",
+    flag: "ðŸ‡¨ðŸ‡²",
     rtl: false,
     region: "Littoral",
   },
@@ -51,7 +51,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     code: "ewondo",
     name: "Ewondo",
     nativeName: "Ewondo",
-    flag: "🇨🇲",
+    flag: "ðŸ‡¨ðŸ‡²",
     rtl: false,
     region: "Centre",
   },
@@ -59,7 +59,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     code: "fulfulde",
     name: "Fulfulde",
     nativeName: "Fulfulde",
-    flag: "🇨🇲",
+    flag: "ðŸ‡¨ðŸ‡²",
     rtl: false,
     region: "Adamawa",
   },
@@ -67,7 +67,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     code: "duala",
     name: "Duala",
     nativeName: "Duala",
-    flag: "🇨🇲",
+    flag: "ðŸ‡¨ðŸ‡²",
     rtl: false,
     region: "Littoral",
   },
@@ -75,7 +75,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
     code: "ghomala",
     name: "Ghomala",
     nativeName: "Ghomala",
-    flag: "🇨🇲",
+    flag: "ðŸ‡¨ðŸ‡²",
     rtl: false,
     region: "West",
   },
@@ -84,20 +84,20 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
 export const DEFAULT_LANGUAGE = "fr";
 export const FALLBACK_LANGUAGE = "fr";
 
-// ─── Language Storage Key ─────────────────────────────────────────────────────
+// â”€â”€â”€ Language Storage Key â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const LANGUAGE_STORAGE_KEY = "Bambeh_language";
 
-// ─── Get Language Config ──────────────────────────────────────────────────────
+// â”€â”€â”€ Get Language Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function getLanguageConfig(code: string): LanguageConfig | undefined {
   return SUPPORTED_LANGUAGES.find((l) => l.code === code);
 }
 
-// ─── Is Supported Language ────────────────────────────────────────────────────
+// â”€â”€â”€ Is Supported Language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function isSupportedLanguage(code: string): boolean {
   return SUPPORTED_LANGUAGES.some((l) => l.code === code);
 }
 
-// ─── Get Stored Language ──────────────────────────────────────────────────────
+// â”€â”€â”€ Get Stored Language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function getStoredLanguage(): string {
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
@@ -110,7 +110,7 @@ export function getStoredLanguage(): string {
   return DEFAULT_LANGUAGE;
 }
 
-// ─── Store Language ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Store Language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function storeLanguage(code: string): void {
   try {
     if (isSupportedLanguage(code)) {
@@ -121,7 +121,7 @@ export function storeLanguage(code: string): void {
   }
 }
 
-// ─── Detect Browser Language ──────────────────────────────────────────────────
+// â”€â”€â”€ Detect Browser Language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function detectBrowserLanguage(): string {
   try {
     const browserLang = navigator.language.split("-")[0];
@@ -134,7 +134,7 @@ export function detectBrowserLanguage(): string {
   return DEFAULT_LANGUAGE;
 }
 
-// ─── Namespace Keys ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Namespace Keys â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const I18N_NAMESPACES = [
   "common",
   "auth",

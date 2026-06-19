@@ -1,13 +1,13 @@
-/**
+﻿/**
  * src/components/Jobs/PostJobListing.tsx
- * Bambeh Marketplace — Post Job Listing Form (Embeddable Component)
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Post Job Listing Form (Embeddable Component)
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXED:
- *  ✅ country: "Cameroon" (was "" — broke location)
- *  ✅ Company logo upload via Supabase storage
- *  ✅ i18n via useLang()
- *  ✅ Correct listings table via jobs.service (not job_listings)
+ *  âœ… country: "Cameroon" (was "" â€” broke location)
+ *  âœ… Company logo upload via Supabase storage
+ *  âœ… i18n via useLang()
+ *  âœ… Correct listings table via jobs.service (not job_listings)
  */
 
 import React, { useState, useCallback, useRef } from "react";
@@ -30,8 +30,8 @@ const JOB_CATEGORIES = [
 ];
 
 const _CITIES = [
-  "Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua",
-  "Bafoussam", "Ngaoundéré", "Kumba", "Bertoua", "Limbe",
+  "YaoundÃ©", "Douala", "Garoua", "Bamenda", "Maroua",
+  "Bafoussam", "NgaoundÃ©rÃ©", "Kumba", "Bertoua", "Limbe",
 ];
 
 const PostJobListing: React.FC<PostJobListingProps> = ({
@@ -93,11 +93,11 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
 
   const validate = (): string | null => {
     if (!form.title.trim())        return lang === "fr" ? "Le titre du poste est obligatoire" : "Job title is required";
-    if (form.title.trim().length < 5) return lang === "fr" ? "Le titre doit contenir au moins 5 caractères" : "Title too short (min 5 chars)";
-    if (!form.category)            return lang === "fr" ? "Veuillez sélectionner une catégorie" : "Please select a category";
+    if (form.title.trim().length < 5) return lang === "fr" ? "Le titre doit contenir au moins 5 caractÃ¨res" : "Title too short (min 5 chars)";
+    if (!form.category)            return lang === "fr" ? "Veuillez sÃ©lectionner une catÃ©gorie" : "Please select a category";
     if (!form.description.trim())  return lang === "fr" ? "La description est obligatoire" : "Description is required";
-    if (form.description.trim().length < 30) return lang === "fr" ? "Description trop courte (min 30 caractères)" : "Description too short (min 30 chars)";
-    if (!form.city)                return lang === "fr" ? "Veuillez sélectionner une ville" : "Please select a city";
+    if (form.description.trim().length < 30) return lang === "fr" ? "Description trop courte (min 30 caractÃ¨res)" : "Description too short (min 30 chars)";
+    if (!form.city)                return lang === "fr" ? "Veuillez sÃ©lectionner une ville" : "Please select a city";
     if (form.applyMethod !== "in_app" && !form.applyContact.trim())
       return lang === "fr" ? "Veuillez entrer un contact pour les candidatures" : "Please enter a contact for applications";
     return null;
@@ -128,7 +128,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
               .getPublicUrl(path);
             logoUrl = urlData?.publicUrl;
           }
-        } catch { /* non-critical — continue without logo */ }
+        } catch { /* non-critical â€” continue without logo */ }
         setUploadingLogo(false);
       }
 
@@ -148,7 +148,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         location: {
           city:    form.city,
           region:  form.region || form.city,
-          country: "Cameroon",             // ← FIXED: was "" before
+          country: "Cameroon",             // â† FIXED: was "" before
         },
         isRemote:            form.isRemote,
         applicationDeadline: form.applicationDeadline || undefined,
@@ -172,7 +172,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
       <div className={`text-center py-10 ${className}`}>
         <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
         <h2 className="text-xl font-bold text-gray-900 mb-1">
-          {lang === "fr" ? "Offre publiée!" : "Job posted!"}
+          {lang === "fr" ? "Offre publiÃ©e!" : "Job posted!"}
         </h2>
         <p className="text-sm text-gray-500">
           {lang === "fr" ? "Votre offre d'emploi est maintenant visible sur Bambeh." : "Your job listing is now live on Bambeh."}
@@ -213,7 +213,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
               {uploadingLogo ? <Loader2 className="w-3 h-3 animate-spin inline mr-1" /> : null}
               {lang === "fr" ? "Choisir une image" : "Choose image"}
             </button>
-            <p className="text-xs text-gray-400 mt-1">JPG, PNG · max 2MB</p>
+            <p className="text-xs text-gray-400 mt-1">JPG, PNG Â· max 2MB</p>
           </div>
           <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
         </div>
@@ -230,7 +230,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
               <Briefcase className="w-4 h-4 text-gray-400" />
             </div>
             <input type="text" value={form.title} onChange={set("title")}
-              placeholder={lang === "fr" ? "ex: Développeur Web Senior" : "e.g. Senior Software Engineer"}
+              placeholder={lang === "fr" ? "ex: DÃ©veloppeur Web Senior" : "e.g. Senior Software Engineer"}
               className="flex-1 px-3 py-2.5 text-sm outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white" maxLength={100} />
           </div>
         </div>
@@ -253,10 +253,10 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {lang === "fr" ? "Catégorie *" : "Category *"}
+            {lang === "fr" ? "CatÃ©gorie *" : "Category *"}
           </label>
           <select value={form.category} onChange={set("category")} className={inputCls}>
-            <option value="">{lang === "fr" ? "Choisir…" : "Select…"}</option>
+            <option value="">{lang === "fr" ? "Choisirâ€¦" : "Selectâ€¦"}</option>
             {JOB_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
@@ -279,12 +279,12 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {lang === "fr" ? "Expérience" : "Experience"}
+            {lang === "fr" ? "ExpÃ©rience" : "Experience"}
           </label>
           <select value={form.experienceLevel} onChange={set("experienceLevel")} className={inputCls}>
-            <option value="no_experience">{lang === "fr" ? "Sans expérience"      : "No experience"}</option>
-            <option value="entry">         {lang === "fr" ? "Débutant (0-2 ans)"  : "Entry (0-2 yrs)"}</option>
-            <option value="mid">           {lang === "fr" ? "Intermédiaire (2-5)" : "Mid (2-5 yrs)"}</option>
+            <option value="no_experience">{lang === "fr" ? "Sans expÃ©rience"      : "No experience"}</option>
+            <option value="entry">         {lang === "fr" ? "DÃ©butant (0-2 ans)"  : "Entry (0-2 yrs)"}</option>
+            <option value="mid">           {lang === "fr" ? "IntermÃ©diaire (2-5)" : "Mid (2-5 yrs)"}</option>
             <option value="senior">        {lang === "fr" ? "Senior (5+ ans)"     : "Senior (5+ yrs)"}</option>
             <option value="executive">     {lang === "fr" ? "Cadre dirigeant"     : "Executive"}</option>
           </select>
@@ -299,7 +299,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
             </div>
             <select value={form.city} onChange={set("city")}
               className="flex-1 px-2 py-2.5 text-sm outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-              <option value="">{lang === "fr" ? "Ville…" : "City…"}</option>
+              <option value="">{lang === "fr" ? "Villeâ€¦" : "Cityâ€¦"}</option>
               {_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -331,7 +331,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
           <input type="checkbox" checked={form.isSalaryNegotiable} onChange={toggle("isSalaryNegotiable")}
             className="w-4 h-4 text-teal-600 rounded" />
           <span className="text-sm text-gray-600 dark:text-gray-400">
-            {lang === "fr" ? "Salaire négociable" : "Salary negotiable"}
+            {lang === "fr" ? "Salaire nÃ©gociable" : "Salary negotiable"}
           </span>
         </label>
       </div>
@@ -342,7 +342,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
           <input type="checkbox" checked={form.isRemote} onChange={toggle("isRemote")}
             className="w-4 h-4 text-teal-600 rounded" />
           <span className="text-sm text-gray-700 dark:text-gray-300">
-            {lang === "fr" ? "Télétravail possible" : "Remote work available"}
+            {lang === "fr" ? "TÃ©lÃ©travail possible" : "Remote work available"}
           </span>
         </label>
         <div className="flex items-center gap-2 flex-1 min-w-48">
@@ -360,8 +360,8 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         </label>
         <textarea value={form.description} onChange={set("description")}
           placeholder={lang === "fr"
-            ? "Décrivez le poste, les responsabilités, l'environnement de travail…"
-            : "Describe the role, responsibilities, and day-to-day tasks…"}
+            ? "DÃ©crivez le poste, les responsabilitÃ©s, l'environnement de travailâ€¦"
+            : "Describe the role, responsibilities, and day-to-day tasksâ€¦"}
           rows={4} className={`${inputCls} resize-none`} maxLength={2000} />
         <p className="text-xs text-gray-400 text-right mt-0.5">{form.description.length}/2000</p>
       </div>
@@ -369,12 +369,12 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
       {/* Requirements */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {lang === "fr" ? "Exigences & Compétences" : "Requirements & Skills"}
+          {lang === "fr" ? "Exigences & CompÃ©tences" : "Requirements & Skills"}
         </label>
         <textarea value={form.requirements} onChange={set("requirements")}
           placeholder={lang === "fr"
-            ? "Diplômes requis, compétences techniques, langues…"
-            : "Required qualifications, skills, languages…"}
+            ? "DiplÃ´mes requis, compÃ©tences techniques, languesâ€¦"
+            : "Required qualifications, skills, languagesâ€¦"}
           rows={3} className={`${inputCls} resize-none`} maxLength={1000} />
       </div>
 
@@ -385,10 +385,10 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         </label>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { value: "in_app",   label: lang === "fr" ? "📱 Via Bambeh"      : "📱 Bambeh Platform" },
-            { value: "whatsapp", label: "💬 WhatsApp" },
-            { value: "call",     label: lang === "fr" ? "📞 Appel"           : "📞 Phone Call" },
-            { value: "email",    label: "📧 Email" },
+            { value: "in_app",   label: lang === "fr" ? "ðŸ“± Via Bambeh"      : "ðŸ“± Bambeh Platform" },
+            { value: "whatsapp", label: "ðŸ’¬ WhatsApp" },
+            { value: "call",     label: lang === "fr" ? "ðŸ“ž Appel"           : "ðŸ“ž Phone Call" },
+            { value: "email",    label: "ðŸ“§ Email" },
           ].map((opt) => (
             <button key={opt.value} type="button"
               onClick={() => setForm((p) => ({ ...p, applyMethod: opt.value }))}
@@ -402,7 +402,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         </div>
         {form.applyMethod !== "in_app" && (
           <input value={form.applyContact} onChange={set("applyContact")}
-            placeholder={lang === "fr" ? "Numéro ou email pour les candidatures" : "Phone number or email for applications"}
+            placeholder={lang === "fr" ? "NumÃ©ro ou email pour les candidatures" : "Phone number or email for applications"}
             className={`${inputCls} mt-3`} />
         )}
       </div>
@@ -427,7 +427,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
           className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {loading
-            ? (lang === "fr" ? "Publication…" : "Publishing…")
+            ? (lang === "fr" ? "Publicationâ€¦" : "Publishingâ€¦")
             : (lang === "fr" ? "Publier l'offre" : "Publish Job")}
         </button>
       </div>

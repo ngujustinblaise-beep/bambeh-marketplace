@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BambehSuccessAnimation.tsx
  * The Bambeh figure sets down his load, wipes his brow, and gives a thumbs up.
  * FILE LOCATION: src/components/ui/BambehSuccessAnimation.tsx
@@ -146,7 +146,7 @@ function BambehFigureSVG({ phase }: { phase: number }) {
           <ellipse cx="59" cy="116" rx="10" ry="5" fill="#8B6F0A" />
           {[[-18, -12], [20, -8], [-14, 8], [22, 10]].map(([dx, dy], i) => (
             <g key={i} transform={`translate(${50 + dx}, ${36 + dy})`}>
-              <text fontSize="8" textAnchor="middle" dominantBaseline="middle" fill="#FFD700">★</text>
+              <text fontSize="8" textAnchor="middle" dominantBaseline="middle" fill="#FFD700">â˜…</text>
             </g>
           ))}
         </g>
@@ -155,9 +155,9 @@ function BambehFigureSVG({ phase }: { phase: number }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function BambehSuccessAnimation({
   visible,
   message = 'Load delivered! You did it, partner.',
@@ -275,7 +275,7 @@ export default function BambehSuccessAnimation({
               color: pt.shape === 'star' ? pt.color : undefined,
             }}
           >
-            {pt.shape === 'star' ? '★' : null}
+            {pt.shape === 'star' ? 'â˜…' : null}
           </div>
         );
       })}
@@ -320,7 +320,7 @@ export default function BambehSuccessAnimation({
               }, 500);
             }}
           >
-            Let's go! 🏋️
+            Let's go! ðŸ‹ï¸
           </button>
         )}
       </div>
@@ -328,9 +328,9 @@ export default function BambehSuccessAnimation({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HOOK — useBambehSuccess
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// HOOK â€” useBambehSuccess
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function useBambehSuccess() {
   const [config, setConfig] = useState<{
     visible: boolean;

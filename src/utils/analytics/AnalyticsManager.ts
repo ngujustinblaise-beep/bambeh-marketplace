@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/utils/analytics/AnalyticsManager.ts
- * Bambeh Marketplace — Analytics Manager + singleton
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Analytics Manager + singleton
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -31,7 +31,7 @@ export interface AnalyticsProvider {
   reset(): void;
 }
 
-// ─── Manager Class ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Manager Class â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class AnalyticsManagerClass {
   private providers: AnalyticsProvider[] = [];
   private eventQueue: AnalyticsEvent[] = [];
@@ -119,10 +119,10 @@ class AnalyticsManagerClass {
   getCurrentUserId(): string | null { return this.currentUserId; }
 }
 
-// ─── Singleton instance expected by useAnalytics.ts ──────────────────────────
+// â”€â”€â”€ Singleton instance expected by useAnalytics.ts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const analyticsManager = new AnalyticsManagerClass();
 
-// ─── Standalone function aliases (used by AnalyticsInit.ts) ──────────────────
+// â”€â”€â”€ Standalone function aliases (used by AnalyticsInit.ts) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function initializeAnalyticsManager(providers: AnalyticsProvider[] = []): void {
   analyticsManager.initialize(providers);
 }

@@ -23,7 +23,7 @@ import {
   AlertCircle, RefreshCw, Home, Store,
   Calendar, User, CreditCard, ChevronRight,
 } from 'lucide-react';
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 // Order status types
 type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';

@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 
 interface TrackingCardProps {
@@ -24,11 +24,11 @@ const TrackingCard: React.FC<TrackingCardProps> = ({ orderId, status, estimatedD
 
 const DeliveryStatus: React.FC<DeliveryStatusProps> = ({ status, updatedAt }) => {
   const icons: Record<DeliveryStatusProps["status"], string> = {
-    pending:    "📦",
-    picked_up:  "🚚",
-    in_transit: "🛣️",
-    delivered:  "✅",
-    failed:     "❌",
+    pending:    "ðŸ“¦",
+    picked_up:  "ðŸšš",
+    in_transit: "ðŸ›£ï¸",
+    delivered:  "âœ…",
+    failed:     "âŒ",
   };
   return (
     <div className="flex items-center gap-2">
@@ -56,7 +56,7 @@ const ProfileTrackingButton: React.FC<ProfileTrackingButtonProps> = ({ orderId, 
       <button onClick={() => { setOpen(!open); onTrack?.(orderId); }}
         className="flex items-center gap-2 text-teal-600 text-sm font-medium
           hover:text-teal-700 transition-colors">
-        🚚 Track Order
+        ðŸšš Track Order
       </button>
       {open && (
         <div className="mt-3 space-y-3">

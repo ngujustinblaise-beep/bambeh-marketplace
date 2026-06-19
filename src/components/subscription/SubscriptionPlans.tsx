@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { SUBSCRIPTION_PLANS } from "../../config/subscriptionPlans";
 import { PAYMENT_METHODS } from "../../types/subscription";
@@ -24,7 +24,7 @@ const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({ currentTier = "fr
           <ul className="space-y-1 mb-4">
             {plan.features.map((f, i) => (
               <li key={i} className="text-sm text-gray-600 flex gap-1">
-                <span className="text-teal-500">✓</span>{f}
+                <span className="text-teal-500">âœ“</span>{f}
               </li>
             ))}
           </ul>
@@ -42,7 +42,7 @@ const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({ currentTier = "fr
           )}
           {currentTier === plan.tier && (
             <div className="text-center text-teal-600 font-medium text-sm py-2">
-              ✅ Current Plan
+              âœ… Current Plan
             </div>
           )}
         </div>

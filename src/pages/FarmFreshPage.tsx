@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/components/CartDrawer";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FarmProduct {

@@ -1,20 +1,20 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * TEST DATA SEEDER - POPULATE SAMPLE DATA FOR SEARCH
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * ✅ Seeds sample jobs, products, services, rentals, vehicles
- * ✅ Realistic  data
- * ✅ Can be called on app init or manually
- * ✅ Doesn't overwrite if data exists
+ * âœ… Seeds sample jobs, products, services, rentals, vehicles
+ * âœ… Realistic  data
+ * âœ… Can be called on app init or manually
+ * âœ… Doesn't overwrite if data exists
  *
  * Usage:
  * import { seedTestData, clearTestData } from '@/utils/TestDataSeeder';
  * seedTestData(); // Populate data
  * clearTestData(); // Clear all data
  *
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * Â© 2025 Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 // Sample Jobs
@@ -23,7 +23,7 @@ const SAMPLE_JOBS = [
     id: "job_1",
     title: "Senior Software Developer",
     company: "TechCorp ",
-    location: "Yaoundé, Centre",
+    location: "YaoundÃ©, Centre",
     salary: "500,000 - 800,000 XAF",
     type: "Full-time",
     description:
@@ -56,7 +56,7 @@ const SAMPLE_JOBS = [
     id: "job_3",
     title: "Accountant",
     company: "BGFI Bank ",
-    location: "Yaoundé, Centre",
+    location: "YaoundÃ©, Centre",
     salary: "350,000 - 500,000 XAF",
     type: "Full-time",
     description: "Manage financial records and prepare reports.",
@@ -82,7 +82,7 @@ const SAMPLE_JOBS = [
     id: "job_5",
     title: "Teacher - English",
     company: "International School of ",
-    location: "Yaoundé, Centre",
+    location: "YaoundÃ©, Centre",
     salary: "250,000 - 400,000 XAF",
     type: "Full-time",
     description: "Teach English to secondary school students.",
@@ -107,7 +107,7 @@ const SAMPLE_PRODUCTS = [
     price: "650000",
     currency: "XAF",
     condition: "Used - Like New",
-    location: "Bastos, Yaoundé",
+    location: "Bastos, YaoundÃ©",
     description:
       "Excellent condition iPhone 14 Pro Max. Battery health 95%. Comes with original box and accessories.",
     category: "Electronics",
@@ -139,7 +139,7 @@ const SAMPLE_PRODUCTS = [
     price: "450000",
     currency: "XAF",
     condition: "Used - Good",
-    location: "Mokolo, Yaoundé",
+    location: "Mokolo, YaoundÃ©",
     description:
       "HP ProBook with Intel Core i7, 16GB RAM, 512GB SSD. Perfect for work and gaming.",
     category: "Electronics",
@@ -155,7 +155,7 @@ const SAMPLE_PRODUCTS = [
     price: "280000",
     currency: "XAF",
     condition: "Used - Good",
-    location: "Biyem-Assi, Yaoundé",
+    location: "Biyem-Assi, YaoundÃ©",
     description:
       "Reliable Honda generator. Low fuel consumption. Well maintained.",
     category: "Home & Garden",
@@ -186,7 +186,7 @@ const SAMPLE_SERVICES = [
     title: "Professional House Cleaning",
     price: "15000",
     currency: "XAF",
-    location: "Yaoundé",
+    location: "YaoundÃ©",
     description:
       "Deep cleaning services for homes and offices. We bring our own equipment.",
     category: "Cleaning",
@@ -216,7 +216,7 @@ const SAMPLE_SERVICES = [
     title: "Web Development Services",
     price: "150000",
     currency: "XAF",
-    location: "Remote / Yaoundé",
+    location: "Remote / YaoundÃ©",
     description: "Professional website development. React, Node.js, WordPress.",
     category: "Technology",
     provider: "DevStudio CM",
@@ -230,7 +230,7 @@ const SAMPLE_SERVICES = [
     title: "Private Tutoring - Mathematics",
     price: "10000",
     currency: "XAF",
-    location: "Yaoundé",
+    location: "YaoundÃ©",
     description: "One-on-one math tutoring for primary and secondary students.",
     category: "Education",
     provider: "MathGenius Tutors",
@@ -262,8 +262,8 @@ const SAMPLE_RENTALS = [
     price: "350000",
     currency: "XAF",
     period: "month",
-    location: "Bastos, Yaoundé",
-    city: "Yaoundé",
+    location: "Bastos, YaoundÃ©",
+    city: "YaoundÃ©",
     description:
       "Modern 3-bedroom apartment in prestigious Bastos neighborhood. Air-conditioned, furnished.",
     bedrooms: 3,
@@ -298,10 +298,10 @@ const SAMPLE_RENTALS = [
     price: "150000",
     currency: "XAF",
     period: "month",
-    location: "Centre-ville, Yaoundé",
-    city: "Yaoundé",
+    location: "Centre-ville, YaoundÃ©",
+    city: "YaoundÃ©",
     description:
-      "Professional office space in central Yaoundé. Reception area included.",
+      "Professional office space in central YaoundÃ©. Reception area included.",
     features: ["Air Conditioning", "Security", "Parking", "Internet Ready"],
     images: [
       "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400",
@@ -332,8 +332,8 @@ const SAMPLE_RENTALS = [
     price: "50000",
     currency: "XAF",
     period: "month",
-    location: "Mokolo, Yaoundé",
-    city: "Yaoundé",
+    location: "Mokolo, YaoundÃ©",
+    city: "YaoundÃ©",
     description:
       "Prime shop location in busy Mokolo market. High foot traffic.",
     features: ["High Traffic", "Storage Room", "Security"],
@@ -358,7 +358,7 @@ const SAMPLE_VEHICLES = [
     transmission: "Automatic",
     fuel: "Petrol",
     condition: "Used - Excellent",
-    location: "Yaoundé",
+    location: "YaoundÃ©",
     description:
       "Well-maintained Toyota Corolla. One owner. Full service history.",
     images: [
@@ -397,7 +397,7 @@ const SAMPLE_VEHICLES = [
     transmission: "Automatic",
     fuel: "Petrol",
     condition: "Used - Good",
-    location: "Yaoundé",
+    location: "YaoundÃ©",
     description: "Reliable Honda SUV. Family-friendly. 4WD available.",
     images: [
       "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400",
@@ -456,29 +456,29 @@ export const seedTestData = (forceOverwrite = false) => {
   // Seed jobs
   if (forceOverwrite || !localStorage.getItem(keys.jobs)) {
     localStorage.setItem(keys.jobs, JSON.stringify(SAMPLE_JOBS));
-    console.log("✅ Seeded jobs data");
+    console.log("âœ… Seeded jobs data");
 
   // Seed products
   if (forceOverwrite || !localStorage.getItem(keys.products)) {
     localStorage.setItem(keys.products, JSON.stringify(SAMPLE_PRODUCTS));
-    console.log("✅ Seeded products data");
+    console.log("âœ… Seeded products data");
 
   // Seed services
   if (forceOverwrite || !localStorage.getItem(keys.services)) {
     localStorage.setItem(keys.services, JSON.stringify(SAMPLE_SERVICES));
-    console.log("✅ Seeded services data");
+    console.log("âœ… Seeded services data");
 
   // Seed rentals
   if (forceOverwrite || !localStorage.getItem(keys.rentals)) {
     localStorage.setItem(keys.rentals, JSON.stringify(SAMPLE_RENTALS));
-    console.log("✅ Seeded rentals data");
+    console.log("âœ… Seeded rentals data");
 
   // Seed vehicles
   if (forceOverwrite || !localStorage.getItem(keys.vehicles)) {
     localStorage.setItem(keys.vehicles, JSON.stringify(SAMPLE_VEHICLES));
-    console.log("✅ Seeded vehicles data");
+    console.log("âœ… Seeded vehicles data");
 
-  console.log("✅ Test data seeding complete!");
+  console.log("âœ… Test data seeding complete!");
 
 /**
  * Clear all test data from localStorage
@@ -495,7 +495,7 @@ export const clearTestData = () => {
   localStorage.removeItem("bambe-services");
   localStorage.removeItem("bambe-rentals");
   localStorage.removeItem("bambe-vehicles");
-  console.log("🗑️ Test data cleared");
+  console.log("ðŸ—‘ï¸ Test data cleared");
 
 /**
  * Check if test data exists

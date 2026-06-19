@@ -1,4 +1,4 @@
-/**
+﻿/**
  * APP ERROR BOUNDARY - MILITARY-GRADE ERROR HANDLING
  * FILE LOCATION: src/components/AppErrorBoundary.tsx
  */
@@ -34,7 +34,7 @@ export class AppErrorBoundary extends Component<Props, State> {
   }
 
   logErrorToService(error: Error, errorInfo: ErrorInfo) {
-    console.error('🚨 Error caught by boundary:', { error: error.toString(), errorInfo: errorInfo.componentStack, timestamp: new Date().toISOString(), url: window.location.href });
+    console.error('ðŸš¨ Error caught by boundary:', { error: error.toString(), errorInfo: errorInfo.componentStack, timestamp: new Date().toISOString(), url: window.location.href });
     try {
       fetch('/api/log-error', {
         method: 'POST',
@@ -77,7 +77,7 @@ export class AppErrorBoundary extends Component<Props, State> {
             )}
             {this.state.errorCount >= 3 && (
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-                <p className="text-yellow-800 text-sm">⚠️ Multiple errors detected. Please try clearing your cache or contact support.</p>
+                <p className="text-yellow-800 text-sm">âš ï¸ Multiple errors detected. Please try clearing your cache or contact support.</p>
               </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

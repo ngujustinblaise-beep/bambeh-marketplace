@@ -1,5 +1,5 @@
-/**
- * BambehSuccessAnimation.tsx — Bambeh figure sets down load, thumbs up.
+﻿/**
+ * BambehSuccessAnimation.tsx â€” Bambeh figure sets down load, thumbs up.
  * USAGE: <BambehSuccessAnimation visible={showSuccess} onComplete={() => setShowSuccess(false)} message="Load delivered!" />
  */
 
@@ -114,7 +114,7 @@ function BambehFigureSVG({ phase }: { phase: number }) {
           <ellipse cx="41" cy="116" rx="10" ry="5" fill="#8B6F0A" /><ellipse cx="59" cy="116" rx="10" ry="5" fill="#8B6F0A" />
           {[[-18, -12], [20, -8], [-14, 8], [22, 10]].map(([dx, dy], i) => (
             <g key={i} transform={`translate(${50 + dx}, ${36 + dy})`}>
-              <text fontSize="8" textAnchor="middle" dominantBaseline="middle" fill="#FFD700">★</text>
+              <text fontSize="8" textAnchor="middle" dominantBaseline="middle" fill="#FFD700">â˜…</text>
             </g>
           ))}
         </g>
@@ -250,7 +250,7 @@ export default function BambehSuccessAnimation({
             setExiting(true);
             setTimeout(() => { setMounted(false); onComplete?.(); }, 500);
           }}>
-            Let's go! 🏋️
+            Let's go! ðŸ‹ï¸
           </button>
         )}
       </div>

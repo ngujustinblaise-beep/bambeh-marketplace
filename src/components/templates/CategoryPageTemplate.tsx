@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CATEGORY PAGE TEMPLATE
  * FILE LOCATION: src/components/templates/CategoryPageTemplate.tsx
  */

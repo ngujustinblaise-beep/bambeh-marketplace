@@ -1,4 +1,4 @@
-import { onCLS, onFCP, onLCP, onTTFB } from "web-vitals";
+﻿import { onCLS, onFCP, onLCP, onTTFB } from "web-vitals";
 
 function sendToAnalytics(metric: any) {
   console.log(metric);

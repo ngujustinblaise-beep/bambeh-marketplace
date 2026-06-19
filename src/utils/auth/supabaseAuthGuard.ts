@@ -1,12 +1,12 @@
-/**
- * supabaseAuthGuard.ts — Bambeh Marketplace
+﻿/**
+ * supabaseAuthGuard.ts â€” Bambeh Marketplace
  * ============================================================
  * REPLACES: isAdminAuthenticated(), isUserLoggedIn(),
  *           isVendorAuthenticated(), isUserSubscribed()
  *
  * WHY: Those functions read from localStorage which any user
  * can manipulate in 5 seconds with browser DevTools.
- * These functions call Supabase's server — the JWT is
+ * These functions call Supabase's server â€” the JWT is
  * cryptographically signed and CANNOT be faked client-side.
  * ============================================================
  */
@@ -20,7 +20,7 @@ const supabase = createClient(
 
 export { supabase };
 
-// ─── TYPE DEFINITIONS ────────────────────────────────────────────────────────
+// â”€â”€â”€ TYPE DEFINITIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface AuthUser {
   id: string;
@@ -40,7 +40,7 @@ export interface VendorStatus {
   verified?: boolean;
 }
 
-// ─── 1. USER AUTH — Calls Supabase server, cannot be faked ──────────────────
+// â”€â”€â”€ 1. USER AUTH â€” Calls Supabase server, cannot be faked â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Returns the currently authenticated user, verified by Supabase JWT.
@@ -63,11 +63,11 @@ export async function getVerifiedUser(): Promise<AuthUser | null> {
   }
 }
 
-// ─── 2. SUBSCRIPTION CHECK — Reads Supabase DB, not localStorage ─────────────
+// â”€â”€â”€ 2. SUBSCRIPTION CHECK â€” Reads Supabase DB, not localStorage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Returns subscription status for a verified user.
- * Reads from the 'profiles' table in Supabase — server-enforced.
+ * Reads from the 'profiles' table in Supabase â€” server-enforced.
  * RLS policies ensure a user can ONLY read their own row.
  *
  * @example
@@ -103,7 +103,7 @@ export async function getVerifiedSubscription(
   }
 }
 
-// ─── 3. ADMIN ROLE CHECK — Reads user_roles table, not localStorage ──────────
+// â”€â”€â”€ 3. ADMIN ROLE CHECK â€” Reads user_roles table, not localStorage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Returns true ONLY if user has role='admin' in the user_roles table.
@@ -129,7 +129,7 @@ export async function getVerifiedAdmin(userId: string): Promise<boolean> {
   }
 }
 
-// ─── 4. VENDOR ROLE CHECK — Reads user_roles table ───────────────────────────
+// â”€â”€â”€ 4. VENDOR ROLE CHECK â€” Reads user_roles table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Returns vendor status for a verified user.
@@ -168,7 +168,7 @@ export async function getVerifiedVendor(
   }
 }
 
-// ─── 5. SIGN OUT — Clears Supabase session (not just localStorage) ───────────
+// â”€â”€â”€ 5. SIGN OUT â€” Clears Supabase session (not just localStorage) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Signs out the user from Supabase Auth.

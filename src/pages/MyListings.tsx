@@ -19,7 +19,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

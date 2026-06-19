@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/contexts/AuthContext.tsx
- * Bambeh Marketplace — Auth Context with complete AuthContextValue interface
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Auth Context with complete AuthContextValue interface
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * This file patches the AuthContextValue to include all properties
  * that legacy components expect: currentUser, loading, login, register, logout
@@ -11,7 +11,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { supabase } from "@/lib/supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
-// ─── AuthUser — superset of Supabase User with Bambeh extras ─────────────────
+// â”€â”€â”€ AuthUser â€” superset of Supabase User with Bambeh extras â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface AuthUser {
   id: string;
   email?: string;
@@ -28,13 +28,13 @@ export interface AuthUser {
   user_metadata?: Record<string, unknown>;
 }
 
-// ─── AuthContextValue — COMPLETE interface including legacy props ─────────────
+// â”€â”€â”€ AuthContextValue â€” COMPLETE interface including legacy props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface AuthContextValue {
   // Current session state
   user: AuthUser | null;
   session: Session | null;
 
-  // Legacy alias — many components use currentUser
+  // Legacy alias â€” many components use currentUser
   currentUser: AuthUser | null;
 
   // Loading state
@@ -56,10 +56,10 @@ export interface AuthContextValue {
   isAdmin: boolean;
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -104,7 +104,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = useCallback(async (
     email: string, password: string
   ): Promise<{ error: string | null }> => {
-    try {
+    if(loginAttempts >= 5){
+  throw new Error("Account temporarily locked.");
+}
+loginAttempts++;
+try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       return { error: error?.message ?? null };
     } catch (e) {
@@ -115,7 +119,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = useCallback(async (
     email: string, password: string, name?: string
   ): Promise<{ error: string | null }> => {
-    try {
+    if(loginAttempts >= 5){
+  throw new Error("Account temporarily locked.");
+}
+loginAttempts++;
+try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -134,7 +142,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateProfile = useCallback(async (
     updates: Partial<AuthUser>
   ): Promise<{ error: string | null }> => {
-    try {
+    if(loginAttempts >= 5){
+  throw new Error("Account temporarily locked.");
+}
+loginAttempts++;
+try {
       const { error } = await supabase.auth.updateUser({
         data: updates,
       });
@@ -166,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
@@ -174,3 +186,4 @@ export function useAuth(): AuthContextValue {
 }
 
 export default AuthContext;
+

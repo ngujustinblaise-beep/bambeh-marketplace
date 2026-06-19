@@ -1,27 +1,27 @@
-/**
+﻿/**
  * src/types/vendor.monetization.types.ts
- * Bambeh Marketplace — Vendor Monetization & Subscription Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Vendor Monetization & Subscription Types
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// ─── Subscription Tier ───────────────────────────────────────────────────────
+// â”€â”€â”€ Subscription Tier â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type SubscriptionTier =
   | "free" | "starter" | "growth" | "premium" | "enterprise";
 
 /** @alias kept for files using VendorSubscriptionTier */
 export type VendorSubscriptionTier = SubscriptionTier;
 
-// ─── Billing Period ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Billing Period â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type BillingPeriod = "monthly" | "quarterly" | "annual";
 
-// ─── Payment Provider ────────────────────────────────────────────────────────
+// â”€â”€â”€ Payment Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type PaymentProvider = "mtn_momo" | "orange_money" | "notchpay" | "cash";
 
-// ─── Subscription Status ─────────────────────────────────────────────────────
+// â”€â”€â”€ Subscription Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type SubscriptionStatus =
   | "active" | "trialing" | "past_due" | "canceled" | "unpaid" | "paused" | "expired";
 
-// ─── Feature Flags ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Feature Flags â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface VendorFeatureFlags {
   analytics: boolean;
   bulkUpload: boolean;
@@ -38,7 +38,7 @@ export interface VendorFeatureFlags {
 /** @alias kept for files using VendorSubscriptionFeatures */
 export type VendorSubscriptionFeatures = VendorFeatureFlags;
 
-// ─── Plan Limits ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Plan Limits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface PlanLimits {
   maxListings: number;
   maxImages: number;
@@ -50,7 +50,7 @@ export interface PlanLimits {
   supportResponseHours: number;
 }
 
-// ─── Subscription Plan ───────────────────────────────────────────────────────
+// â”€â”€â”€ Subscription Plan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface SubscriptionPlan {
   id: string;
   tier: SubscriptionTier;
@@ -71,7 +71,7 @@ export interface SubscriptionPlan {
 /** @alias kept for files using VendorSubscriptionPlan */
 export type VendorSubscriptionPlan = SubscriptionPlan;
 
-// ─── Subscription Change ─────────────────────────────────────────────────────
+// â”€â”€â”€ Subscription Change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface SubscriptionChange {
   vendorId: string;
   fromTier: SubscriptionTier;
@@ -81,7 +81,7 @@ export interface SubscriptionChange {
   changedAt: string;
 }
 
-// ─── Vendor Subscription ─────────────────────────────────────────────────────
+// â”€â”€â”€ Vendor Subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface VendorSubscription {
   id: string;
   vendorId: string;
@@ -109,7 +109,7 @@ export interface VendorSubscription {
   updatedAt: string;
 }
 
-// ─── Payment Transaction ─────────────────────────────────────────────────────
+// â”€â”€â”€ Payment Transaction â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface VendorPaymentTransaction {
   id: string;
   vendorId: string;
@@ -125,7 +125,7 @@ export interface VendorPaymentTransaction {
   createdAt: string;
 }
 
-// ─── Earnings & Payouts ──────────────────────────────────────────────────────
+// â”€â”€â”€ Earnings & Payouts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface VendorEarnings {
   totalSalesXAF: number;
   totalCommissionXAF: number;
@@ -148,7 +148,7 @@ export interface WithdrawalRequest {
   rejectionReason?: string;
 }
 
-// ─── Zerm Coins ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Zerm Coins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface ZermBalance {
   vendorId: string;
   totalCoins: number;
@@ -169,7 +169,7 @@ export interface ZermTransaction {
   createdAt: string;
 }
 
-// ─── Analytics Snapshot ──────────────────────────────────────────────────────
+// â”€â”€â”€ Analytics Snapshot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface VendorAnalyticsSnapshot {
   vendorId: string;
   period: "today" | "week" | "month" | "year";
@@ -192,7 +192,7 @@ export interface VendorAnalyticsSnapshot {
   generatedAt: string;
 }
 
-// ─── Commission Types ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Commission Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type CommissionableTransactionType =
   | "marketplace_sale" | "service_booking" | "rental" | "vehicle_sale"
   | "job_post" | "subscription" | "ad_placement" | "zerm_purchase";
@@ -240,7 +240,7 @@ export interface VendorCommissionSummary {
   generatedAt: string;
 }
 
-// ─── Gamification ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Gamification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type GamificationActionType =
   | "first_listing" | "five_listings" | "first_sale" | "ten_sales"
   | "profile_complete" | "verified_seller" | "positive_review"
@@ -279,7 +279,7 @@ export interface VendorGamificationStats {
   lastActiveAt: string;
 }
 
-// ─── Referral ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Referral â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface VendorReferral {
   id: string;
   referrerId: string;
@@ -309,7 +309,7 @@ export interface PositiveReviewProgress {
   rewardsUnlocked: number;
 }
 
-// ─── Commission Config ────────────────────────────────────────────────────────
+// â”€â”€â”€ Commission Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CommissionConfig {
   tier: SubscriptionTier;
   basePercent: number;
@@ -318,7 +318,7 @@ export interface CommissionConfig {
   maximumXAF?: number;
 }
 
-// ─── Plan Change ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Plan Change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface PlanChangeRequest {
   vendorId: string;
   fromTier: SubscriptionTier;
@@ -327,7 +327,7 @@ export interface PlanChangeRequest {
   reason?: string;
 }
 
-// ─── API Response Wrappers ──────────────────────────────────────────────────
+// â”€â”€â”€ API Response Wrappers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface SubscriptionResponse {
   data: VendorSubscription | null;
   error: string | null;

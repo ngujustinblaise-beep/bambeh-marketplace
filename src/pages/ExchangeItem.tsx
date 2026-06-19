@@ -1,16 +1,16 @@
-/**
- * src/pages/ExchangeItem.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/ExchangeItem.tsx â€” Bambeh Marketplace
  *
- * ✅ Full i18n: en, fr, ha, ar, pcm, ff
- * ✅ Image carousel with dot indicators
- * ✅ Live offer count via realtime
- * ✅ increment_exchange_view RPC
- * ✅ Owner: Edit / Delete / Renew
- * ✅ Non-owner: Chat / Make Offer
- * ✅ Share via Web Share API + clipboard fallback
- * ✅ Safe-area bottom padding
- * ✅ Expiry countdown banner (≤ 3 days)
- * ✅ Estimated value + cash supplement info
+ * âœ… Full i18n: en, fr, ha, ar, pcm, ff
+ * âœ… Image carousel with dot indicators
+ * âœ… Live offer count via realtime
+ * âœ… increment_exchange_view RPC
+ * âœ… Owner: Edit / Delete / Renew
+ * âœ… Non-owner: Chat / Make Offer
+ * âœ… Share via Web Share API + clipboard fallback
+ * âœ… Safe-area bottom padding
+ * âœ… Expiry countdown banner (â‰¤ 3 days)
+ * âœ… Estimated value + cash supplement info
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -25,7 +25,7 @@ import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 import { renewExchangeListing } from '@/services/exchange-expiry-reminder';
 
-// ─── i18n ──────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STRINGS = {
   en: {
     backToExchange: 'Back to Exchange',
@@ -56,39 +56,39 @@ const STRINGS = {
     renewSuccess: 'Listing renewed for 30 more days!',
     renewFailed: 'Failed to renew. Please try again.',
     expiresIn: (d: number) => d === 0 ? 'Expires in less than 24 hours' : `${d} day${d !== 1 ? 's' : ''} remaining`,
-    expiringSoon: 'Listing expiring soon —',
+    expiringSoon: 'Listing expiring soon â€”',
     openToOffers: 'Open to offers',
   },
   fr: {
-    backToExchange: 'Retour aux échanges',
+    backToExchange: 'Retour aux Ã©changes',
     itemUnavailable: 'Article non disponible',
     noLongerExists: 'Cet article n\'existe plus.',
     browseListing: 'Parcourir les annonces',
-    exchange: 'Échange',
+    exchange: 'Ã‰change',
     views: 'vues',
     offer: (n: number) => `${n} offre${n !== 1 ? 's' : ''}`,
     noPhotos: 'Pas de photos',
-    estimatedValue: 'Valeur estimée :',
-    cashTopUp: 'Complément en espèces accepté jusqu\'à',
-    lookingToSwap: 'Cherche à échanger contre',
+    estimatedValue: 'Valeur estimÃ©e :',
+    cashTopUp: 'ComplÃ©ment en espÃ¨ces acceptÃ© jusqu\'Ã ',
+    lookingToSwap: 'Cherche Ã  Ã©changer contre',
     description: 'Description',
-    listed: 'Publié le',
+    listed: 'PubliÃ© le',
     yourListing: 'Votre annonce',
-    safetyTip: 'Conseil sécurité :',
-    safetyBody: 'Rencontrez-vous toujours dans un lieu public. Ne transférez jamais d\'argent avant d\'avoir vu l\'objet. Bambeh n\'est pas responsable des transactions d\'échange.',
+    safetyTip: 'Conseil sÃ©curitÃ© :',
+    safetyBody: 'Rencontrez-vous toujours dans un lieu public. Ne transfÃ©rez jamais d\'argent avant d\'avoir vu l\'objet. Bambeh n\'est pas responsable des transactions d\'Ã©change.',
     share: 'Partager',
-    copied: 'Lien copié !',
+    copied: 'Lien copiÃ© !',
     chat: 'Chat',
     makeOffer: 'Faire une offre',
     editListing: 'Modifier',
     deleteListing: 'Supprimer',
     renewListing: 'Renouveler',
-    deleteConfirm: 'Supprimer cette annonce ? Cette action est irréversible.',
-    deleteFailed: 'Échec de la suppression. Réessayez.',
-    renewSuccess: 'Annonce renouvelée pour 30 jours de plus !',
-    renewFailed: 'Échec du renouvellement. Réessayez.',
+    deleteConfirm: 'Supprimer cette annonce ? Cette action est irrÃ©versible.',
+    deleteFailed: 'Ã‰chec de la suppression. RÃ©essayez.',
+    renewSuccess: 'Annonce renouvelÃ©e pour 30 jours de plus !',
+    renewFailed: 'Ã‰chec du renouvellement. RÃ©essayez.',
     expiresIn: (d: number) => d === 0 ? 'Expire dans moins de 24 heures' : `${d} jour${d !== 1 ? 's' : ''} restant${d !== 1 ? 's' : ''}`,
-    expiringSoon: 'Annonce expire bientôt —',
+    expiringSoon: 'Annonce expire bientÃ´t â€”',
     openToOffers: 'Ouvert aux offres',
   },
   ha: {
@@ -100,14 +100,14 @@ const STRINGS = {
     views: 'kallo',
     offer: (n: number) => `tayin ${n}`,
     noPhotos: 'Babu hotuna',
-    estimatedValue: 'Ƙimar da ake ɗauka:',
-    cashTopUp: 'An yarda da ƙarin kuɗi har',
+    estimatedValue: 'Æ˜imar da ake É—auka:',
+    cashTopUp: 'An yarda da Æ™arin kuÉ—i har',
     lookingToSwap: 'Ina neman musanya da',
     description: 'Bayani',
     listed: 'An buga',
     yourListing: 'Jerin ka',
     safetyTip: 'Shawara ta aminci:',
-    safetyBody: 'Koyaushe ku sadu a wurin jama\'a. Kada ka canja kuɗi kafin ganin abu. Bambeh ba ya da alhakin ma\'amaloli musanya.',
+    safetyBody: 'Koyaushe ku sadu a wurin jama\'a. Kada ka canja kuÉ—i kafin ganin abu. Bambeh ba ya da alhakin ma\'amaloli musanya.',
     share: 'Raba',
     copied: 'An kwafi hanyar!',
     chat: 'Tattauna',
@@ -117,43 +117,43 @@ const STRINGS = {
     renewListing: 'Sabunta',
     deleteConfirm: 'Share wannan jerin? Ba za a iya dawo da shi ba.',
     deleteFailed: 'Share ya kasa. Sake gwadawa.',
-    renewSuccess: 'An sabunta jerin don ƙarin kwanaki 30!',
+    renewSuccess: 'An sabunta jerin don Æ™arin kwanaki 30!',
     renewFailed: 'Sabuntawa ya kasa. Sake gwadawa.',
-    expiresIn: (d: number) => d === 0 ? 'Ya ƙare a cikin ƙasa da 24h' : `${d} kwanaki suka rage`,
-    expiringSoon: 'Jerin yana ƙarewa —',
-    openToOffers: 'Buɗe ga tayin',
+    expiresIn: (d: number) => d === 0 ? 'Ya Æ™are a cikin Æ™asa da 24h' : `${d} kwanaki suka rage`,
+    expiringSoon: 'Jerin yana Æ™arewa â€”',
+    openToOffers: 'BuÉ—e ga tayin',
   },
   ar: {
-    backToExchange: 'العودة إلى التبادل',
-    itemUnavailable: 'العنصر غير متاح',
-    noLongerExists: 'هذا العنصر لم يعد موجودًا.',
-    browseListing: 'تصفح قوائم التبادل',
-    exchange: 'تبادل',
-    views: 'مشاهدة',
-    offer: (n: number) => `${n} عرض`,
-    noPhotos: 'لا توجد صور',
-    estimatedValue: 'القيمة التقديرية:',
-    cashTopUp: 'يُقبل مكمل نقدي حتى',
-    lookingToSwap: 'يبحث للمبادلة بـ',
-    description: 'الوصف',
-    listed: 'نُشر في',
-    yourListing: 'إعلانك',
-    safetyTip: 'نصيحة الأمان:',
-    safetyBody: 'التقِ دائمًا في مكان عام. لا تحوّل الأموال قبل رؤية العنصر. Bambeh غير مسؤول عن معاملات التبادل.',
-    share: 'مشاركة',
-    copied: 'تم نسخ الرابط!',
-    chat: 'محادثة',
-    makeOffer: 'قدّم عرضًا',
-    editListing: 'تعديل',
-    deleteListing: 'حذف',
-    renewListing: 'تجديد',
-    deleteConfirm: 'حذف هذا الإعلان؟ لا يمكن التراجع عنه.',
-    deleteFailed: 'فشل الحذف. حاول مجددًا.',
-    renewSuccess: 'تم تجديد الإعلان لـ 30 يومًا إضافية!',
-    renewFailed: 'فشل التجديد. حاول مجددًا.',
-    expiresIn: (d: number) => d === 0 ? 'تنتهي في أقل من 24 ساعة' : `${d} يوم متبقي`,
-    expiringSoon: 'الإعلان ينتهي قريبًا —',
-    openToOffers: 'مفتوح للعروض',
+    backToExchange: 'Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ø§Ù„ØªØ¨Ø§Ø¯Ù„',
+    itemUnavailable: 'Ø§Ù„Ø¹Ù†ØµØ± ØºÙŠØ± Ù…ØªØ§Ø­',
+    noLongerExists: 'Ù‡Ø°Ø§ Ø§Ù„Ø¹Ù†ØµØ± Ù„Ù… ÙŠØ¹Ø¯ Ù…ÙˆØ¬ÙˆØ¯Ù‹Ø§.',
+    browseListing: 'ØªØµÙØ­ Ù‚ÙˆØ§Ø¦Ù… Ø§Ù„ØªØ¨Ø§Ø¯Ù„',
+    exchange: 'ØªØ¨Ø§Ø¯Ù„',
+    views: 'Ù…Ø´Ø§Ù‡Ø¯Ø©',
+    offer: (n: number) => `${n} Ø¹Ø±Ø¶`,
+    noPhotos: 'Ù„Ø§ ØªÙˆØ¬Ø¯ ØµÙˆØ±',
+    estimatedValue: 'Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„ØªÙ‚Ø¯ÙŠØ±ÙŠØ©:',
+    cashTopUp: 'ÙŠÙÙ‚Ø¨Ù„ Ù…ÙƒÙ…Ù„ Ù†Ù‚Ø¯ÙŠ Ø­ØªÙ‰',
+    lookingToSwap: 'ÙŠØ¨Ø­Ø« Ù„Ù„Ù…Ø¨Ø§Ø¯Ù„Ø© Ø¨Ù€',
+    description: 'Ø§Ù„ÙˆØµÙ',
+    listed: 'Ù†ÙØ´Ø± ÙÙŠ',
+    yourListing: 'Ø¥Ø¹Ù„Ø§Ù†Ùƒ',
+    safetyTip: 'Ù†ØµÙŠØ­Ø© Ø§Ù„Ø£Ù…Ø§Ù†:',
+    safetyBody: 'Ø§Ù„ØªÙ‚Ù Ø¯Ø§Ø¦Ù…Ù‹Ø§ ÙÙŠ Ù…ÙƒØ§Ù† Ø¹Ø§Ù…. Ù„Ø§ ØªØ­ÙˆÙ‘Ù„ Ø§Ù„Ø£Ù…ÙˆØ§Ù„ Ù‚Ø¨Ù„ Ø±Ø¤ÙŠØ© Ø§Ù„Ø¹Ù†ØµØ±. Bambeh ØºÙŠØ± Ù…Ø³Ø¤ÙˆÙ„ Ø¹Ù† Ù…Ø¹Ø§Ù…Ù„Ø§Øª Ø§Ù„ØªØ¨Ø§Ø¯Ù„.',
+    share: 'Ù…Ø´Ø§Ø±ÙƒØ©',
+    copied: 'ØªÙ… Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·!',
+    chat: 'Ù…Ø­Ø§Ø¯Ø«Ø©',
+    makeOffer: 'Ù‚Ø¯Ù‘Ù… Ø¹Ø±Ø¶Ù‹Ø§',
+    editListing: 'ØªØ¹Ø¯ÙŠÙ„',
+    deleteListing: 'Ø­Ø°Ù',
+    renewListing: 'ØªØ¬Ø¯ÙŠØ¯',
+    deleteConfirm: 'Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†ØŸ Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ø¹Ù†Ù‡.',
+    deleteFailed: 'ÙØ´Ù„ Ø§Ù„Ø­Ø°Ù. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ù‹Ø§.',
+    renewSuccess: 'ØªÙ… ØªØ¬Ø¯ÙŠØ¯ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ù„Ù€ 30 ÙŠÙˆÙ…Ù‹Ø§ Ø¥Ø¶Ø§ÙÙŠØ©!',
+    renewFailed: 'ÙØ´Ù„ Ø§Ù„ØªØ¬Ø¯ÙŠØ¯. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ù‹Ø§.',
+    expiresIn: (d: number) => d === 0 ? 'ØªÙ†ØªÙ‡ÙŠ ÙÙŠ Ø£Ù‚Ù„ Ù…Ù† 24 Ø³Ø§Ø¹Ø©' : `${d} ÙŠÙˆÙ… Ù…ØªØ¨Ù‚ÙŠ`,
+    expiringSoon: 'Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙŠÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ù‹Ø§ â€”',
+    openToOffers: 'Ù…ÙØªÙˆØ­ Ù„Ù„Ø¹Ø±ÙˆØ¶',
   },
   pcm: {
     backToExchange: 'Go Back Exchange',
@@ -184,40 +184,40 @@ const STRINGS = {
     renewSuccess: 'Listing don renew for 30 more days!',
     renewFailed: 'Renew fail. Try again.',
     expiresIn: (d: number) => d === 0 ? 'E go expire in less than 24h' : `${d} day${d !== 1 ? 's' : ''} remain`,
-    expiringSoon: 'Listing go expire soon —',
+    expiringSoon: 'Listing go expire soon â€”',
     openToOffers: 'Open to offers',
   },
   ff: {
-    backToExchange: 'Ɓeto Fewtere',
+    backToExchange: 'Æeto Fewtere',
     itemUnavailable: 'Coftal alaa',
     noLongerExists: 'Coftal ngol yahii.',
     browseListing: 'Yiy Coftali Fewtere',
     exchange: 'Fewtere',
     views: 'yiyaama',
-    offer: (n: number) => `jaɓde ${n}`,
+    offer: (n: number) => `jaÉ“de ${n}`,
     noPhotos: 'Alaa natal',
-    estimatedValue: 'Njaru keɓnaaɗo:',
-    cashTopUp: 'Kaalis njuɓɓudi heɓtaa haa',
-    lookingToSwap: 'Ɓeytata fewteraade e',
+    estimatedValue: 'Njaru keÉ“naaÉ—o:',
+    cashTopUp: 'Kaalis njuÉ“É“udi heÉ“taa haa',
+    lookingToSwap: 'Æeytata fewteraade e',
     description: 'Haalannde',
     listed: 'Hollinaama',
     yourListing: 'Coftaldi maa',
-    safetyTip: 'Taƴre cellal:',
-    safetyBody: 'Njaarno toon e nokku ɓurngo wuurde. Mos kaalis yeeso yiyugo coftal. Bambeh alaa jaɓgol fewtere.',
+    safetyTip: 'TaÆ´re cellal:',
+    safetyBody: 'Njaarno toon e nokku É“urngo wuurde. Mos kaalis yeeso yiyugo coftal. Bambeh alaa jaÉ“gol fewtere.',
     share: 'Weccit',
     copied: 'Lowe yawritaa!',
     chat: 'Haaldude',
-    makeOffer: 'Jaɓdo',
+    makeOffer: 'JaÉ“do',
     editListing: 'Waylito',
     deleteListing: 'Momtu',
-    renewListing: 'Hesɗito',
+    renewListing: 'HesÉ—ito',
     deleteConfirm: 'Momtu coftaldi? Waawaa artirde.',
-    deleteFailed: 'Momtugol hiɓi. Heɓto katin.',
-    renewSuccess: 'Coftaldi hesɗitinaama ñalawma 30!',
-    renewFailed: 'Hesɗitugol hiɓi. Heɓto katin.',
-    expiresIn: (d: number) => d === 0 ? 'Timmii hannde' : `${d} ñalawma teddii`,
-    expiringSoon: 'Coftaldi ngo timmotoo —',
-    openToOffers: 'Udditii jaɓde',
+    deleteFailed: 'Momtugol hiÉ“i. HeÉ“to katin.',
+    renewSuccess: 'Coftaldi hesÉ—itinaama Ã±alawma 30!',
+    renewFailed: 'HesÉ—itugol hiÉ“i. HeÉ“to katin.',
+    expiresIn: (d: number) => d === 0 ? 'Timmii hannde' : `${d} Ã±alawma teddii`,
+    expiringSoon: 'Coftaldi ngo timmotoo â€”',
+    openToOffers: 'Udditii jaÉ“de',
   },
 } as const;
 
@@ -304,7 +304,7 @@ const ExchangeItem: React.FC = () => {
         category:            data.category as string,
         condition:           data.condition as string,
         images:              (data.images as string[]) ?? [],
-        location:            (data.location as string) ?? '—',
+        location:            (data.location as string) ?? 'â€”',
         wantedItems:         (data.wanted_items as string) ?? s.openToOffers,
         estimatedValueXAF:   data.estimated_value_xaf as number | undefined,
         allowCashSupplement: Boolean(data.allow_cash_supplement),
@@ -347,7 +347,7 @@ const ExchangeItem: React.FC = () => {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({ title: item.title, text: `Check out "${item.title}" on Bambeh — ${url}`, url });
+        await navigator.share({ title: item.title, text: `Check out "${item.title}" on Bambeh â€” ${url}`, url });
       } else {
         await navigator.clipboard.writeText(url);
         setShared(true);
@@ -382,14 +382,14 @@ const ExchangeItem: React.FC = () => {
     setTimeout(() => setRenewMsg(null), 3000);
   }
 
-  // ─── Loading ────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <RefreshCw className="w-6 h-6 text-teal-500 animate-spin" />
     </div>
   );
 
-  // ─── Error ──────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (error || !item) return (
     <div className={`p-4 space-y-3 max-w-lg mx-auto pt-8 ${isRtl ? 'rtl' : 'ltr'}`}>
       <button type="button" onClick={() => navigate(-1)}
@@ -418,7 +418,7 @@ const ExchangeItem: React.FC = () => {
   return (
     <div className={`max-w-lg mx-auto pb-32 ${isRtl ? 'rtl' : 'ltr'}`}>
 
-      {/* ─── Image Carousel ─── */}
+      {/* â”€â”€â”€ Image Carousel â”€â”€â”€ */}
       <div className="relative h-72 bg-gray-100 overflow-hidden">
         <button type="button" onClick={() => navigate(-1)}
           className="absolute top-4 left-4 z-10 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full
@@ -436,7 +436,7 @@ const ExchangeItem: React.FC = () => {
           <>
             <img
               src={item.images[imgIdx]}
-              alt={`${item.title} — image ${imgIdx + 1}`}
+              alt={`${item.title} â€” image ${imgIdx + 1}`}
               className="w-full h-full object-cover"
             />
             {item.images.length > 1 && (
@@ -474,7 +474,7 @@ const ExchangeItem: React.FC = () => {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* ─── Renew feedback ─── */}
+        {/* â”€â”€â”€ Renew feedback â”€â”€â”€ */}
         {renewMsg && (
           <div className={`flex items-center gap-2 p-3 rounded-xl text-sm font-medium ${renewMsg === s.renewSuccess ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
             {renewMsg === s.renewSuccess ? <CheckCircle className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
@@ -482,7 +482,7 @@ const ExchangeItem: React.FC = () => {
           </div>
         )}
 
-        {/* ─── Expiry banner ─── */}
+        {/* â”€â”€â”€ Expiry banner â”€â”€â”€ */}
         {expiringSoon && (
           <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
             <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
@@ -496,13 +496,13 @@ const ExchangeItem: React.FC = () => {
                 disabled={renewing}
                 className="ml-auto text-xs font-semibold text-amber-700 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg hover:bg-amber-200 transition-colors disabled:opacity-50"
               >
-                {renewing ? '…' : s.renewListing}
+                {renewing ? 'â€¦' : s.renewListing}
               </button>
             )}
           </div>
         )}
 
-        {/* ─── Title & meta ─── */}
+        {/* â”€â”€â”€ Title & meta â”€â”€â”€ */}
         <div>
           <div className="flex items-center gap-2 mb-1">
             <ArrowLeftRight className="w-4 h-4 text-teal-600" />
@@ -523,7 +523,7 @@ const ExchangeItem: React.FC = () => {
           </div>
         </div>
 
-        {/* ─── Estimated value ─── */}
+        {/* â”€â”€â”€ Estimated value â”€â”€â”€ */}
         {item.estimatedValueXAF ? (
           <div className="bg-teal-50 border border-teal-200 rounded-xl p-3">
             <p className="text-sm text-teal-700">
@@ -537,7 +537,7 @@ const ExchangeItem: React.FC = () => {
           </div>
         ) : null}
 
-        {/* ─── Wanted ─── */}
+        {/* â”€â”€â”€ Wanted â”€â”€â”€ */}
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1.5">
             <ArrowLeftRight className="w-4 h-4 text-orange-500" />
@@ -546,7 +546,7 @@ const ExchangeItem: React.FC = () => {
           <p className="text-sm text-orange-700 leading-relaxed">{item.wantedItems}</p>
         </div>
 
-        {/* ─── Description ─── */}
+        {/* â”€â”€â”€ Description â”€â”€â”€ */}
         {item.description && (
           <div>
             <h3 className="text-sm font-bold text-gray-900 mb-1.5">{s.description}</h3>
@@ -554,7 +554,7 @@ const ExchangeItem: React.FC = () => {
           </div>
         )}
 
-        {/* ─── Owner card ─── */}
+        {/* â”€â”€â”€ Owner card â”€â”€â”€ */}
         <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
           <div className="w-10 h-10 rounded-full bg-teal-100 overflow-hidden flex items-center justify-center flex-shrink-0">
             {item.ownerAvatar ? (
@@ -574,7 +574,7 @@ const ExchangeItem: React.FC = () => {
           )}
         </div>
 
-        {/* ─── Safety tip ─── */}
+        {/* â”€â”€â”€ Safety tip â”€â”€â”€ */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
           <p className="text-xs text-blue-700 leading-relaxed">
             <span className="font-semibold">{s.safetyTip}</span> {s.safetyBody}
@@ -582,7 +582,7 @@ const ExchangeItem: React.FC = () => {
         </div>
       </div>
 
-      {/* ─── Fixed bottom action bar ─── */}
+      {/* â”€â”€â”€ Fixed bottom action bar â”€â”€â”€ */}
       <div
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex gap-2 z-50"
         style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}

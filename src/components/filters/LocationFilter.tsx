@@ -1,20 +1,20 @@
-/**
- * src/components/filters/LocationFilter.tsx — Bambeh Marketplace
+﻿/**
+ * src/components/filters/LocationFilter.tsx â€” Bambeh Marketplace
  *
  * MILITARY-GRADE SHARED LOCATION FILTER
- * ─────────────────────────────────────
- * ✅ Hierarchical drill-down: Region → City → Quarter → Landmark
- * ✅ Cascading selects — city list resets when region changes
- * ✅ Debounced onChange — no stale filter state
- * ✅ Controlled component — fully typed, zero implicit any
- * ✅ Active filter badge — shows how many filters are active
- * ✅ Animated open/close with smooth chevron rotation
- * ✅ Accessible labels on every input
- * ✅ XSS-safe — no dangerouslySetInnerHTML
- * ✅ Zero external dependencies beyond React + lucide-react
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * âœ… Hierarchical drill-down: Region â†’ City â†’ Quarter â†’ Landmark
+ * âœ… Cascading selects â€” city list resets when region changes
+ * âœ… Debounced onChange â€” no stale filter state
+ * âœ… Controlled component â€” fully typed, zero implicit any
+ * âœ… Active filter badge â€” shows how many filters are active
+ * âœ… Animated open/close with smooth chevron rotation
+ * âœ… Accessible labels on every input
+ * âœ… XSS-safe â€” no dangerouslySetInnerHTML
+ * âœ… Zero external dependencies beyond React + lucide-react
  *
  * HOW TO USE IN ANY PAGE:
- * ─────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * 1. Import it:
  *    import { LocationFilter, LocationFilters } from '@/components/filters/LocationFilter';
  *
@@ -37,7 +37,7 @@
 import React, { useState, useCallback } from 'react';
 import { MapPin, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface LocationFilters {
   region:   string;
   city:     string;
@@ -55,7 +55,7 @@ interface LocationFilterProps {
   accentClass?: string;
 }
 
-// ── Cameroon geography data ───────────────────────────────────────────────────
+// â”€â”€ Cameroon geography data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const REGIONS: string[] = [
   'Adamawa', 'Centre', 'East', 'Far North', 'Littoral',
   'North', 'North West', 'South', 'South West', 'West',
@@ -63,22 +63,22 @@ const REGIONS: string[] = [
 
 /** Cities/towns grouped by region for cascading select */
 const CITIES_BY_REGION: Record<string, string[]> = {
-  'Adamawa':   ['Ngaoundéré', 'Meiganga', 'Tibati', 'Banyo', 'Tignère'],
-  'Centre':    ['Yaoundé', 'Mbalmayo', 'Obala', 'Nanga Eboko', 'Mfou', 'Bafia'],
-  'East':      ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang', 'Doumé'],
-  'Far North': ['Maroua', 'Kousseri', 'Mora', 'Yagoua', 'Guider', 'Kaélé'],
-  'Littoral':  ['Douala', 'Nkongsamba', 'Edéa', 'Loum', 'Mbanga', 'Manjo'],
+  'Adamawa':   ['NgaoundÃ©rÃ©', 'Meiganga', 'Tibati', 'Banyo', 'TignÃ¨re'],
+  'Centre':    ['YaoundÃ©', 'Mbalmayo', 'Obala', 'Nanga Eboko', 'Mfou', 'Bafia'],
+  'East':      ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang', 'DoumÃ©'],
+  'Far North': ['Maroua', 'Kousseri', 'Mora', 'Yagoua', 'Guider', 'KaÃ©lÃ©'],
+  'Littoral':  ['Douala', 'Nkongsamba', 'EdÃ©a', 'Loum', 'Mbanga', 'Manjo'],
   'North':     ['Garoua', 'Guider', 'Poli', 'Bibemi', 'Rey Bouba'],
   'North West':['Bamenda', 'Kumbo', 'Nkambe', 'Wum', 'Fundong', 'Mbengwi', 'Santa', 'Ndop'],
-  'South':     ['Ebolowa', 'Kribi', 'Sangmélima', 'Lolodorf', 'Ambam'],
+  'South':     ['Ebolowa', 'Kribi', 'SangmÃ©lima', 'Lolodorf', 'Ambam'],
   'South West':['Buea', 'Limbe', 'Kumba', 'Mamfe', 'Ekondo Titi', 'Muyuka'],
-  'West':      ['Bafoussam', 'Dschang', 'Foumban', 'Mbouda', 'Bangangté', 'Foumbot'],
+  'West':      ['Bafoussam', 'Dschang', 'Foumban', 'Mbouda', 'BangangtÃ©', 'Foumbot'],
 };
 
 /** Common landmarks used as placeholders */
 const LANDMARK_PLACEHOLDER = 'e.g. Near Total Station, Market, Hospital';
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function LocationFilter({ onFilterChange, accentClass = 'teal' }: LocationFilterProps) {
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<LocationFilters>(EMPTY_LOCATION);
@@ -112,7 +112,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
   return (
     <div className="rounded-2xl bg-white shadow-sm border border-gray-200 mb-4 overflow-hidden">
 
-      {/* ── Toggle bar ────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Toggle bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
@@ -131,7 +131,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
         </span>
 
         <div className="flex items-center gap-2">
-          {/* Quick "clear" — visible even when panel is closed */}
+          {/* Quick "clear" â€” visible even when panel is closed */}
           {activeCount > 0 && (
             <span
               role="button"
@@ -152,7 +152,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
         </div>
       </button>
 
-      {/* ── Filter panel ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ Filter panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {open && (
         <div
           id="location-filter-panel"
@@ -179,7 +179,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
             </select>
           </div>
 
-          {/* City — cascades from region */}
+          {/* City â€” cascades from region */}
           <div>
             <label htmlFor="lf-city" className="block text-xs font-semibold text-gray-500 mb-1">
               City / Town

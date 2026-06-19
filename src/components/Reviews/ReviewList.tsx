@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * REVIEW LIST COMPONENT
  * FILE LOCATION: src/components/reviews/ReviewList.tsx

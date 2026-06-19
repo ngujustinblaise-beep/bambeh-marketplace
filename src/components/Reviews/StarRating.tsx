@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * STAR RATING COMPONENT
  * FILE LOCATION: src/components/reviews/StarRating.tsx
@@ -120,7 +120,7 @@ export function RatingDistribution({ distribution, total, className = '' }: Rati
     <div className={`space-y-2 ${className}`}>
       {rows.map(({ stars, count }) => (
         <div key={stars} className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700 w-8">{stars} ★</span>
+          <span className="text-sm font-medium text-gray-700 w-8">{stars} â˜…</span>
           <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full bg-yellow-500 transition-all duration-300" style={{ width: `${getPercentage(count)}%` }} />
           </div>

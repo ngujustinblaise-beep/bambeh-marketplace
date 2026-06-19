@@ -1,14 +1,14 @@
-/**
- * src/pages/FarmFreshOrderPage.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/FarmFreshOrderPage.tsx â€” Bambeh Marketplace
  *
  * FIXED:
- *  ✅ BOM character removed
- *  ✅ isUUID is a plain function — no useLang() hook called inside it (was crashing)
- *  ✅ Uses shared @/lib/supabase
- *  ✅ Handles both UUID product IDs (from DB) and sample string IDs (s1–s8)
- *  ✅ Saves orders to Supabase farm_orders table (if user is logged in)
- *  ✅ Falls back to localStorage for guest/sample-item orders
- *  ✅ Full i18n — reacts instantly when user changes language
+ *  âœ… BOM character removed
+ *  âœ… isUUID is a plain function â€” no useLang() hook called inside it (was crashing)
+ *  âœ… Uses shared @/lib/supabase
+ *  âœ… Handles both UUID product IDs (from DB) and sample string IDs (s1â€“s8)
+ *  âœ… Saves orders to Supabase farm_orders table (if user is logged in)
+ *  âœ… Falls back to localStorage for guest/sample-item orders
+ *  âœ… Full i18n â€” reacts instantly when user changes language
  */
 
 import { useState, useEffect } from "react";
@@ -21,7 +21,7 @@ import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ✅ FIX: isUUID is a plain function — no hook calls inside it
+// âœ… FIX: isUUID is a plain function â€” no hook calls inside it
 function isUUID(s: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
@@ -41,11 +41,11 @@ interface Product {
 
 const SAMPLE_PRODUCTS: Record<string, Product> = {
   s1: { id: "s1", name: "Fresh Tomatoes",      price: 500,  unit: "kg",    location: "Bafoussam",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80" },
-  s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "Yaoundé",    is_organic: false, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" },
+  s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "YaoundÃ©",    is_organic: false, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" },
   s3: { id: "s3", name: "Cocoyams (Macabo)",    price: 800,  unit: "kg",    location: "Douala",     is_organic: true,  image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80" },
   s4: { id: "s4", name: "Fresh Maize (Corn)",   price: 300,  unit: "cob",   location: "Bamenda",    is_organic: false, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80" },
-  s5: { id: "s5", name: "Groundnuts (1kg bag)", price: 1200, unit: "kg",    location: "Ngaoundéré", is_organic: false, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80" },
-  s6: { id: "s6", name: "Bitter Leaf (Ndolé)",  price: 200,  unit: "bunch", location: "Yaoundé",    is_organic: true,  image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" },
+  s5: { id: "s5", name: "Groundnuts (1kg bag)", price: 1200, unit: "kg",    location: "NgaoundÃ©rÃ©", is_organic: false, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80" },
+  s6: { id: "s6", name: "Bitter Leaf (NdolÃ©)",  price: 200,  unit: "bunch", location: "YaoundÃ©",    is_organic: true,  image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" },
   s7: { id: "s7", name: "Fresh Avocados",        price: 800,  unit: "kg",    location: "Dschang, West",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80" },
   s8: { id: "s8", name: "Pineapples (Large)",    price: 600,  unit: "piece", location: "Edea, Littoral",  is_organic: false, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80" },
 };
@@ -168,7 +168,7 @@ export default function FarmFreshOrderPage() {
     }
   }
 
-  // ── Loading ──────────────────────────────────────────────────────────────
+  // â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -177,7 +177,7 @@ export default function FarmFreshOrderPage() {
     );
   }
 
-  // ── Success ──────────────────────────────────────────────────────────────
+  // â”€â”€ Success â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (done) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-green-50 p-6">
@@ -205,7 +205,7 @@ export default function FarmFreshOrderPage() {
                 href={`https://wa.me/${product.seller_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I just placed an order on Bambeh for ${product.name} (${qty} ${product.unit}). Order total: ${fmtXAF((product.price ?? 0) * qty)}.`)}`}
                 target="_blank" rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-semibold text-sm">
-                💬 {t("whatsappSeller", lang) || "WhatsApp Seller"}
+                ðŸ’¬ {t("whatsappSeller", lang) || "WhatsApp Seller"}
               </a>
             )}
             {!isDemo && (
@@ -220,7 +220,7 @@ export default function FarmFreshOrderPage() {
     );
   }
 
-  // ── Not found ────────────────────────────────────────────────────────────
+  // â”€â”€ Not found â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
@@ -262,7 +262,7 @@ export default function FarmFreshOrderPage() {
           <div className="w-16 h-16 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
             {product.image_url
               ? <img src={product.image_url} alt={product.name} loading="lazy" className="w-full h-full object-cover rounded-xl" />
-              : <span className="text-3xl">🌿</span>
+              : <span className="text-3xl">ðŸŒ¿</span>
             }
           </div>
           <div className="flex-1 min-w-0">
@@ -272,7 +272,7 @@ export default function FarmFreshOrderPage() {
             </div>
             {product.is_organic && (
               <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full mt-1">
-                🌿 {t("organic", lang)}
+                ðŸŒ¿ {t("organic", lang)}
               </span>
             )}
             <p className="text-green-600 font-bold text-sm mt-1">{fmtXAF(product.price)} / {product.unit}</p>
@@ -285,7 +285,7 @@ export default function FarmFreshOrderPage() {
           <div className="flex items-center gap-4">
             <button onClick={() => setQty(q => Math.max(1, q - 1))}
               className="w-11 h-11 rounded-full border-2 border-gray-300 flex items-center justify-center text-xl font-bold text-gray-600 active:scale-95">
-              −
+              âˆ’
             </button>
             <span className="text-2xl font-bold text-gray-900 w-10 text-center">{qty}</span>
             <button onClick={() => setQty(q => q + 1)}
@@ -340,7 +340,7 @@ export default function FarmFreshOrderPage() {
             href={`https://wa.me/${product.seller_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I'm interested in buying ${product.name} (${fmtXAF(product.price)}/${product.unit}) on Bambeh. Are you available?`)}`}
             target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366]/10 border border-[#25D366]/40 text-[#128C7E] font-semibold rounded-xl text-sm">
-            💬 {t("contactSellerWhatsApp", lang) || "Contact Seller via WhatsApp"}
+            ðŸ’¬ {t("contactSellerWhatsApp", lang) || "Contact Seller via WhatsApp"}
           </a>
         )}
 
@@ -355,7 +355,7 @@ export default function FarmFreshOrderPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 shadow-xl">
         <div className="max-w-lg mx-auto">
           <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>{qty} × {fmtXAF(product.price)}</span>
+            <span>{qty} Ã— {fmtXAF(product.price)}</span>
             <span className="font-bold text-green-700 text-base">{fmtXAF(total)}</span>
           </div>
           <button
@@ -364,7 +364,7 @@ export default function FarmFreshOrderPage() {
             className="w-full bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
             {submitting
               ? <><Loader2 className="w-4 h-4 animate-spin" />{t("placingOrder", lang)}</>
-              : <><ShoppingCart className="w-5 h-5" />{t("placeOrder", lang)} — {fmtXAF(total)}</>
+              : <><ShoppingCart className="w-5 h-5" />{t("placeOrder", lang)} â€” {fmtXAF(total)}</>
             }
           </button>
         </div>

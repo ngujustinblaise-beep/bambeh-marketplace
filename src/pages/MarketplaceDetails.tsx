@@ -1,14 +1,14 @@
-/**
- * src/pages/MarketplaceDetails.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/MarketplaceDetails.tsx â€” Bambeh Marketplace
  *
- * REWRITE — June 2026
+ * REWRITE â€” June 2026
  *
- * The previous version was a stub placeholder (emoji + "Détails de l'article").
+ * The previous version was a stub placeholder (emoji + "DÃ©tails de l'article").
  * This now re-exports MarketplaceItemDetails so both routes work identically:
- *   /marketplace/:id          → MarketplaceItemDetails
- *   /marketplace/details/:id  → MarketplaceDetails (this file)
+ *   /marketplace/:id          â†’ MarketplaceItemDetails
+ *   /marketplace/details/:id  â†’ MarketplaceDetails (this file)
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * Â© 2026 BAMBEH SARL. All rights reserved.
  */
 
 export { default } from "./MarketplaceItemDetails";

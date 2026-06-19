@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { PlusCircle, Image, FileText, MapPin } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -22,19 +22,19 @@ const T: Record<string, Record<string, string>> = {
   },
   "fr": {
     "title": "Comment publier une annonce",
-    "subtitle": "Créez des annonces qui se vendent",
-    "s1Title": "Choisir une catégorie",
-    "s1Desc": "Sélectionnez la catégorie la plus appropriée pour votre article",
+    "subtitle": "CrÃ©ez des annonces qui se vendent",
+    "s1Title": "Choisir une catÃ©gorie",
+    "s1Desc": "SÃ©lectionnez la catÃ©gorie la plus appropriÃ©e pour votre article",
     "s2Title": "Ajouter des photos",
-    "s2Desc": "Téléchargez des photos nettes et bien éclairées sous plusieurs angles",
+    "s2Desc": "TÃ©lÃ©chargez des photos nettes et bien Ã©clairÃ©es sous plusieurs angles",
     "proTipLabel": "Astuce :",
     "proTip": "Les annonces avec 5 photos ou plus obtiennent 3 fois plus de vues !",
-    "s3Title": "Rédiger une description",
-    "s3Desc": "Incluez les détails clés comme l'état, les spécifications et les caractéristiques",
-    "s4Title": "Définir la localisation",
-    "s4Desc": "Ajoutez votre localisation pour aider les acheteurs à vous trouver",
+    "s3Title": "RÃ©diger une description",
+    "s3Desc": "Incluez les dÃ©tails clÃ©s comme l'Ã©tat, les spÃ©cifications et les caractÃ©ristiques",
+    "s4Title": "DÃ©finir la localisation",
+    "s4Desc": "Ajoutez votre localisation pour aider les acheteurs Ã  vous trouver",
     "earnTitle": "Gagnez des Zerm Coins",
-    "earnDesc": "Recevez 2 Zerm Coins pour chaque annonce approuvée !",
+    "earnDesc": "Recevez 2 Zerm Coins pour chaque annonce approuvÃ©e !",
     "back": "Retour au centre d'aide"
   },
   "pidgin": {
@@ -55,37 +55,37 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "كيفية نشر إعلان",
-    "subtitle": "أنشئ إعلانات تبيع",
-    "s1Title": "اختر الفئة",
-    "s1Desc": "اختر الفئة الأنسب لسلعتك",
-    "s2Title": "أضف الصور",
-    "s2Desc": "ارفع صورًا واضحة وجيدة الإضاءة من عدة زوايا",
-    "proTipLabel": "نصيحة:",
-    "proTip": "الإعلانات التي تحتوي على 5 صور أو أكثر تحصل على مشاهدات أكثر بـ3 مرات!",
-    "s3Title": "اكتب الوصف",
-    "s3Desc": "أدرج التفاصيل المهمة مثل الحالة والمواصفات والميزات",
-    "s4Title": "حدد الموقع",
-    "s4Desc": "أضف موقعك لمساعدة المشترين على العثور عليك",
-    "earnTitle": "اكسب Zerm Coins",
-    "earnDesc": "احصل على 2 Zerm Coins لكل إعلان تتم الموافقة عليه!",
-    "back": "العودة إلى مركز المساعدة"
+    "title": "ÙƒÙŠÙÙŠØ© Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†",
+    "subtitle": "Ø£Ù†Ø´Ø¦ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª ØªØ¨ÙŠØ¹",
+    "s1Title": "Ø§Ø®ØªØ± Ø§Ù„ÙØ¦Ø©",
+    "s1Desc": "Ø§Ø®ØªØ± Ø§Ù„ÙØ¦Ø© Ø§Ù„Ø£Ù†Ø³Ø¨ Ù„Ø³Ù„Ø¹ØªÙƒ",
+    "s2Title": "Ø£Ø¶Ù Ø§Ù„ØµÙˆØ±",
+    "s2Desc": "Ø§Ø±ÙØ¹ ØµÙˆØ±Ù‹Ø§ ÙˆØ§Ø¶Ø­Ø© ÙˆØ¬ÙŠØ¯Ø© Ø§Ù„Ø¥Ø¶Ø§Ø¡Ø© Ù…Ù† Ø¹Ø¯Ø© Ø²ÙˆØ§ÙŠØ§",
+    "proTipLabel": "Ù†ØµÙŠØ­Ø©:",
+    "proTip": "Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„ØªÙŠ ØªØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ 5 ØµÙˆØ± Ø£Ùˆ Ø£ÙƒØ«Ø± ØªØ­ØµÙ„ Ø¹Ù„Ù‰ Ù…Ø´Ø§Ù‡Ø¯Ø§Øª Ø£ÙƒØ«Ø± Ø¨Ù€3 Ù…Ø±Ø§Øª!",
+    "s3Title": "Ø§ÙƒØªØ¨ Ø§Ù„ÙˆØµÙ",
+    "s3Desc": "Ø£Ø¯Ø±Ø¬ Ø§Ù„ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ù…Ù‡Ù…Ø© Ù…Ø«Ù„ Ø§Ù„Ø­Ø§Ù„Ø© ÙˆØ§Ù„Ù…ÙˆØ§ØµÙØ§Øª ÙˆØ§Ù„Ù…ÙŠØ²Ø§Øª",
+    "s4Title": "Ø­Ø¯Ø¯ Ø§Ù„Ù…ÙˆÙ‚Ø¹",
+    "s4Desc": "Ø£Ø¶Ù Ù…ÙˆÙ‚Ø¹Ùƒ Ù„Ù…Ø³Ø§Ø¹Ø¯Ø© Ø§Ù„Ù…Ø´ØªØ±ÙŠÙ† Ø¹Ù„Ù‰ Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„ÙŠÙƒ",
+    "earnTitle": "Ø§ÙƒØ³Ø¨ Zerm Coins",
+    "earnDesc": "Ø§Ø­ØµÙ„ Ø¹Ù„Ù‰ 2 Zerm Coins Ù„ÙƒÙ„ Ø¥Ø¹Ù„Ø§Ù† ØªØªÙ… Ø§Ù„Ù…ÙˆØ§ÙÙ‚Ø© Ø¹Ù„ÙŠÙ‡!",
+    "back": "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©"
   },
   "ff": {
     "title": "No neldirtee jeeyngal",
-    "subtitle": "Sos jeeyle ɗe coottata",
-    "s1Title": "Suɓo dental",
-    "s1Desc": "Suɓo dental ngal ɓuri haantude kaake maa",
-    "s2Title": "Ɓeydu natal",
-    "s2Desc": "Loowu natalji laaɓuɗi, jalbuɗi, immorde e nokkuuje keewɗe",
+    "subtitle": "Sos jeeyle É—e coottata",
+    "s1Title": "SuÉ“o dental",
+    "s1Desc": "SuÉ“o dental ngal É“uri haantude kaake maa",
+    "s2Title": "Æeydu natal",
+    "s2Desc": "Loowu natalji laaÉ“uÉ—i, jalbuÉ—i, immorde e nokkuuje keewÉ—e",
     "proTipLabel": "Waaju:",
-    "proTip": "Jeeyle jogiiɗe natalji 5 walla ɓuri njogii yiyannde laaɓi 3!",
+    "proTip": "Jeeyle jogiiÉ—e natalji 5 walla É“uri njogii yiyannde laaÉ“i 3!",
     "s3Title": "Winndu sifa",
-    "s3Desc": "Naatnu kuyngal himmungal wano alhaali, sifaaji, e keɓe",
+    "s3Desc": "Naatnu kuyngal himmungal wano alhaali, sifaaji, e keÉ“e",
     "s4Title": "Teelgol nokkuure",
-    "s4Desc": "Ɓeydu nokkuure maa ngam wallude soodooɓe yiytude ma",
-    "earnTitle": "Heɓ Zerm Coins",
-    "earnDesc": "Heɓ Zerm Coins 2 e kala jeeyngal jaɓaangal!",
+    "s4Desc": "Æeydu nokkuure maa ngam wallude soodooÉ“e yiytude ma",
+    "earnTitle": "HeÉ“ Zerm Coins",
+    "earnDesc": "HeÉ“ Zerm Coins 2 e kala jeeyngal jaÉ“aangal!",
     "back": "Rutto to galle ballal"
   }
 };
@@ -133,14 +133,14 @@ export default function HowToPostAd() {
           ))}
 
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 mt-8">
-            <h3 className="font-bold text-gray-900 mb-3">🪙 {tr("earnTitle")}</h3>
+            <h3 className="font-bold text-gray-900 mb-3">ðŸª™ {tr("earnTitle")}</h3>
             <p className="text-gray-700">{tr("earnDesc")}</p>
           </div>
         </div>
 
         <div className="mt-8 text-center">
           <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">
-            ← {tr("back")}
+            â† {tr("back")}
           </Link>
         </div>
       </div>

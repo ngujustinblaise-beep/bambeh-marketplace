@@ -1,12 +1,12 @@
-/**
+﻿/**
  * src/contexts/FirebaseContext.tsx
- * Firebase FCM Context — Bambeh Marketplace
+ * Firebase FCM Context â€” Bambeh Marketplace
  *
- * Firebase Auth is REMOVED — Supabase Auth is the only auth system.
+ * Firebase Auth is REMOVED â€” Supabase Auth is the only auth system.
  * Firebase is kept for: FCM push notifications + Firestore chat + Storage.
  *
  * Components must NEVER import firebase.ts directly.
- * Use useFirebase() hook instead — resolves the Vite bundle split warning.
+ * Use useFirebase() hook instead â€” resolves the Vite bundle split warning.
  */
 
 import React, {

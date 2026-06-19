@@ -1,17 +1,17 @@
-/**
- * ════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * src/services/payment/taxCalculator.ts
  * Government Tax Calculator for Bambeh Marketplace
  *
  *  government tax: 0.2% per side of every transaction
- *   • Buyer pays:   item price + 0.2% gov tax  → platform collects it
- *   • Vendor gets:  item price - 0.2% gov tax  → deducted at withdrawal
- *   • Total gov tax per deal = 0.4% of item value
+ *   â€¢ Buyer pays:   item price + 0.2% gov tax  â†’ platform collects it
+ *   â€¢ Vendor gets:  item price - 0.2% gov tax  â†’ deducted at withdrawal
+ *   â€¢ Total gov tax per deal = 0.4% of item value
  *
- * ⚠️  Subscription payments are TAX-EXEMPT (pass isSubscription=true).
+ * âš ï¸  Subscription payments are TAX-EXEMPT (pass isSubscription=true).
  *
- * © 2026 BAMBEH SARL. All rights reserved.
- * ════════════════════════════════════════════════════════════════
+ * Â© 2026 BAMBEH SARL. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 /** Tax rate: 0.2% = 0.002 */
@@ -33,9 +33,9 @@ export interface WithdrawalTaxBreakdown {
   taxRate: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // BUYER-SIDE TAX  (applies to all marketplace payments except subscriptions)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function calculateTransferTax(amount: number): TransferTaxBreakdown {
   if (amount <= 0) throw new Error("Amount must be greater than 0");
   const govTax = Math.max(1, Math.ceil(amount * GOV_TAX_RATE));
@@ -45,9 +45,9 @@ export function calculateTransferTax(amount: number): TransferTaxBreakdown {
     taxRate: `${GOV_TAX_RATE * 100}%`,
   }; }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // VENDOR-SIDE TAX  (applies to every vendor withdrawal)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function calculateWithdrawalTax(amount: number): WithdrawalTaxBreakdown {
   if (amount <= 0) throw new Error("Amount must be greater than 0");
   const govTax = Math.max(1, Math.ceil(amount * GOV_TAX_RATE));
@@ -57,11 +57,11 @@ export function calculateWithdrawalTax(amount: number): WithdrawalTaxBreakdown {
     taxRate: `${GOV_TAX_RATE * 100}%`,
   }; }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FORMAT helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-/** Format XAF currency for display: 1500 → "1 500 XAF" */
+/** Format XAF currency for display: 1500 â†’ "1 500 XAF" */
 export function formatXAF(amount: number): string {
   return new Intl.NumberFormat("fr-CM", { style: "currency",
     currency: "XAF",

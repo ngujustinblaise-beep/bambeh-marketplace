@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type {
   SubscriptionTier, SubscriptionStatus, PaymentMethod,
   SubscriptionPayment, UserSubscription,

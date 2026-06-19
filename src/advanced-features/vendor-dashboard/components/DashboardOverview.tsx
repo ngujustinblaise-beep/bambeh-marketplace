@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 
 interface DashboardOverviewProps {
@@ -10,10 +10,10 @@ interface StatCard { label: string; value: string | number; icon: string; color:
 
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({ vendorId, vendorName }) => {
   const stats: StatCard[] = [
-    { label: "Total Sales",    value: 0,     icon: "💰", color: "text-green-600" },
-    { label: "Active Listings",value: 0,     icon: "📦", color: "text-blue-600"  },
-    { label: "Pending Orders", value: 0,     icon: "⏳", color: "text-yellow-600"},
-    { label: "Rating",         value: "—",   icon: "⭐", color: "text-teal-600"  },
+    { label: "Total Sales",    value: 0,     icon: "ðŸ’°", color: "text-green-600" },
+    { label: "Active Listings",value: 0,     icon: "ðŸ“¦", color: "text-blue-600"  },
+    { label: "Pending Orders", value: 0,     icon: "â³", color: "text-yellow-600"},
+    { label: "Rating",         value: "â€”",   icon: "â­", color: "text-teal-600"  },
   ];
 
   return (

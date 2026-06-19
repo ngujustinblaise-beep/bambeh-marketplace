@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS OF SERVICE PAGE
  * Complete legal terms for Bambeh Marketplace
  */

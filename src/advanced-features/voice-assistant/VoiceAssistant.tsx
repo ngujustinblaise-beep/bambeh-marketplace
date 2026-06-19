@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+﻿import React, { useState, useCallback } from "react";
 import TranscriptDisplay from "./components/TranscriptDisplay";
 
 interface ConversationEntry {
@@ -15,9 +15,9 @@ const VoiceAssistant: React.FC = () => {
   const toggleListen = useCallback(() => {
     setIsListening(prev => {
       if (!prev) {
-        setTranscript("Listening…");
+        setTranscript("Listeningâ€¦");
       } else {
-        if (transcript && transcript !== "Listening…") {
+        if (transcript && transcript !== "Listeningâ€¦") {
           const userTurn: ConversationEntry = {
             role: "user", text: transcript, timestamp: new Date().toISOString(),
           };
@@ -53,7 +53,7 @@ const VoiceAssistant: React.FC = () => {
             ${isListening
               ? "bg-red-500 hover:bg-red-600 animate-pulse"
               : "bg-teal-600 hover:bg-teal-700"}`}>
-          {isListening ? "⏹" : "🎤"}
+          {isListening ? "â¹" : "ðŸŽ¤"}
         </button>
       </div>
     </div>

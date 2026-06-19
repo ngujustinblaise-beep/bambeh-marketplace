@@ -1,4 +1,4 @@
-// src/services/favorites.service.ts
+﻿// src/services/favorites.service.ts
 import axios from "axios";
 import {
   API_CONFIG,

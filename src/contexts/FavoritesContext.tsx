@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FAVORITES CONTEXT
  * Manages user's favorite items (jobs, products, services, rentals)
  */

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * src/components/forms/AddMarketplaceItemForm.tsx
- * Bambeh Marketplace — Add Marketplace Item Form
+ * Bambeh Marketplace â€” Add Marketplace Item Form
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -12,8 +12,8 @@ interface AddMarketplaceItemFormProps {
   onCancel?: () => void;
 }
 
-const CATEGORIES = ["Électronique","Vêtements & Mode","Maison & Jardin","Sport & Loisirs","Véhicules","Immobilier","Livres & Éducation","Santé & Beauté","Alimentation","Autres"] as const;
-const CONDITIONS = ["Neuf","Comme neuf","Bon état","État correct","Pour pièces"] as const;
+const CATEGORIES = ["Ã‰lectronique","VÃªtements & Mode","Maison & Jardin","Sport & Loisirs","VÃ©hicules","Immobilier","Livres & Ã‰ducation","SantÃ© & BeautÃ©","Alimentation","Autres"] as const;
+const CONDITIONS = ["Neuf","Comme neuf","Bon Ã©tat","Ã‰tat correct","Pour piÃ¨ces"] as const;
 
 const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSuccess, onCancel }) => {
   const { user } = useAuth();
@@ -61,14 +61,14 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">CatÃ©gorie <span className="text-red-500">*</span></label>
             <select value={form.category} onChange={e=>set("category",e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
               <option value="">-- Choisir --</option>
               {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">État <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Ã‰tat <span className="text-red-500">*</span></label>
             <select value={form.condition} onChange={e=>set("condition",e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
               <option value="">-- Choisir --</option>
               {CONDITIONS.map(c=><option key={c} value={c}>{c}</option>)}
@@ -77,7 +77,7 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="Décrivez votre article..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" />
+          <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="DÃ©crivez votre article..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" />
         </div>
         <div className="flex gap-3 items-end">
           <div className="flex-1">
@@ -86,7 +86,7 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
           </div>
           <label className="flex items-center gap-2 pb-2.5 cursor-pointer">
             <input type="checkbox" checked={form.isNegotiable} onChange={e=>set("isNegotiable",e.target.checked)} className="w-4 h-4 text-teal-600 rounded" />
-            <span className="text-sm text-gray-700">Négociable</span>
+            <span className="text-sm text-gray-700">NÃ©gociable</span>
           </label>
         </div>
         <div>
@@ -95,7 +95,7 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
             <input type="url" value={imageInput} onChange={e=>setImageInput(e.target.value)} placeholder="https://..." className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm outline-none" />
             <button type="button" onClick={addImage} disabled={imageUrls.length>=5} className="px-3 py-2 bg-gray-100 rounded-xl text-sm font-medium hover:bg-gray-200 disabled:opacity-40">Ajouter</button>
           </div>
-          {imageUrls.length>0 && <div className="flex gap-2 mt-2 flex-wrap">{imageUrls.map((url,i)=><div key={i} className="relative"><img src={url} alt="" className="w-16 h-16 object-cover rounded-lg border"/><button type="button" onClick={()=>setImageUrls(p=>p.filter((_,j)=>j!==i))} className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">×</button></div>)}</div>}
+          {imageUrls.length>0 && <div className="flex gap-2 mt-2 flex-wrap">{imageUrls.map((url,i)=><div key={i} className="relative"><img src={url} alt="" className="w-16 h-16 object-cover rounded-lg border"/><button type="button" onClick={()=>setImageUrls(p=>p.filter((_,j)=>j!==i))} className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">Ã—</button></div>)}</div>}
         </div>
         <LocationSelector value={location} onChange={setLocation} label="Localisation" />
         {error && <p className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</p>}

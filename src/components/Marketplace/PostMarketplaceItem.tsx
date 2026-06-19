@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * POST MARKETPLACE ITEM
  */
@@ -59,11 +59,11 @@ const PostMarketplaceItem = () => {
   const [charCount, setCharCount] = useState({ title: 0, description: 0 });
 
   const categories = {
-    'Electronics & Gadgets': { icon: '📱', subcategories: ['Phones & Tablets', 'Laptops & Computers', 'Cameras', 'Audio', 'Gaming'] },
-    'Fashion & Clothing': { icon: '👗', subcategories: ['Men', 'Women', 'Kids', 'Shoes', 'Accessories'] },
-    'Home & Furniture': { icon: '🏠', subcategories: ['Living Room', 'Bedroom', 'Kitchen', 'Office', 'Decor'] },
-    'Vehicles & Parts': { icon: '🚗', subcategories: ['Cars', 'Motorcycles', 'Bicycles', 'Parts'] },
-    'Other': { icon: '📦', subcategories: ['General', 'Miscellaneous'] }
+    'Electronics & Gadgets': { icon: 'ðŸ“±', subcategories: ['Phones & Tablets', 'Laptops & Computers', 'Cameras', 'Audio', 'Gaming'] },
+    'Fashion & Clothing': { icon: 'ðŸ‘—', subcategories: ['Men', 'Women', 'Kids', 'Shoes', 'Accessories'] },
+    'Home & Furniture': { icon: 'ðŸ ', subcategories: ['Living Room', 'Bedroom', 'Kitchen', 'Office', 'Decor'] },
+    'Vehicles & Parts': { icon: 'ðŸš—', subcategories: ['Cars', 'Motorcycles', 'Bicycles', 'Parts'] },
+    'Other': { icon: 'ðŸ“¦', subcategories: ['General', 'Miscellaneous'] }
   };
 
   const conditions = [
@@ -75,7 +75,7 @@ const PostMarketplaceItem = () => {
     { value: 'for-parts', label: 'For Parts', description: 'Not fully functional' }
   ];
 
-  const majorCities = ['Yaoundé', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
+  const majorCities = ['YaoundÃ©', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -314,7 +314,7 @@ const PostMarketplaceItem = () => {
                   <Check className="w-12 h-12" />
                 </div>
                 <h2 className="text-3xl font-black text-gray-900">Mission Accomplished!</h2>
-                <p className="text-gray-500">Your item is being deployed to the Bambé Marketplace network.</p>
+                <p className="text-gray-500">Your item is being deployed to the BambÃ© Marketplace network.</p>
                 <button type="button" onClick={() => navigate('/marketplace')} className="mt-8 px-10 py-4 bg-gray-900 text-white rounded-2xl font-bold">Return to Base</button>
               </div>
             )}

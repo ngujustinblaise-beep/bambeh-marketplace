@@ -1,5 +1,5 @@
-/**
- * src/i18n/registerRentalsNamespace.ts — Bambeh Marketplace
+﻿/**
+ * src/i18n/registerRentalsNamespace.ts â€” Bambeh Marketplace
  *
  * FIXED: Wrapped in try/catch and checks i18next is initialized before
  * calling hasResourceBundle(). The old version crashed with:
@@ -13,7 +13,7 @@ try {
   // This import is synchronous only after ./i18n has already run
   i18n = require("i18next").default ?? require("i18next");
 } catch {
-  // i18next not available yet — namespace will not be registered this tick
+  // i18next not available yet â€” namespace will not be registered this tick
 }
 
 const rentalsEN = {
@@ -51,31 +51,31 @@ const rentalsEN = {
 const rentalsFR = {
   rentals: "Locations",
   postRental: "Publier une location",
-  rentalDetails: "Détails de location",
+  rentalDetails: "DÃ©tails de location",
   monthlyRent: "Loyer mensuel",
   bedrooms: "Chambres",
   bathrooms: "Salles de bain",
-  furnished: "Meublé",
-  unfurnished: "Non meublé",
+  furnished: "MeublÃ©",
+  unfurnished: "Non meublÃ©",
   available: "Disponible",
   unavailable: "Indisponible",
-  contactLandlord: "Contacter le propriétaire",
+  contactLandlord: "Contacter le propriÃ©taire",
   viewOnMap: "Voir sur la carte",
-  propertyType: "Type de propriété",
+  propertyType: "Type de propriÃ©tÃ©",
   apartment: "Appartement",
   house: "Maison",
   studio: "Studio",
   office: "Bureau",
   land: "Terrain",
-  amenities: "Équipements",
+  amenities: "Ã‰quipements",
   description: "Description",
   location: "Lieu",
-  postedBy: "Publié par",
+  postedBy: "PubliÃ© par",
   reportListing: "Signaler l'annonce",
   shareListing: "Partager l'annonce",
-  similarProperties: "Propriétés similaires",
+  similarProperties: "PropriÃ©tÃ©s similaires",
   perMonth: "/ mois",
-  negotiable: "Négociable",
+  negotiable: "NÃ©gociable",
   deposit: "Caution",
   leaseTerms: "Conditions de bail",
 };

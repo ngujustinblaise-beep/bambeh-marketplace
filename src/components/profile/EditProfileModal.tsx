@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EDIT PROFILE MODAL - Enhanced with scrollable content
  * FILE LOCATION: src/components/profile/EditProfileModal.tsx
  */
@@ -10,12 +10,12 @@ import { useAuth } from '@/contexts/AuthContext';
 interface EditProfileModalProps { onClose: () => void; }
 
 const LANGUAGES = [
-  { code: 'en',  name: 'English',        flag: '🇬🇧' },
-  { code: 'fr',  name: 'Français',        flag: '🇫🇷' },
-  { code: 'pcm', name: 'Pidgin English',  flag: '🇨🇲' },
-  { code: 'ff',  name: 'Fulfulde',        flag: '🇳🇬' },
-  { code: 'ar',  name: 'العربية',          flag: '🇸🇦' },
-  { code: 'ha',  name: 'Hausa',           flag: '🇳🇬' },
+  { code: 'en',  name: 'English',        flag: 'ðŸ‡¬ðŸ‡§' },
+  { code: 'fr',  name: 'FranÃ§ais',        flag: 'ðŸ‡«ðŸ‡·' },
+  { code: 'pcm', name: 'Pidgin English',  flag: 'ðŸ‡¨ðŸ‡²' },
+  { code: 'ff',  name: 'Fulfulde',        flag: 'ðŸ‡³ðŸ‡¬' },
+  { code: 'ar',  name: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',          flag: 'ðŸ‡¸ðŸ‡¦' },
+  { code: 'ha',  name: 'Hausa',           flag: 'ðŸ‡³ðŸ‡¬' },
 ];
 
 const REGIONS = ['Adamawa','Centre','East','Far North','Littoral','North','Northwest','South','Southwest','West'];

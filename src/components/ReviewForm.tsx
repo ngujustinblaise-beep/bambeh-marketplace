@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 
 interface ReviewFormProps {
@@ -23,7 +23,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onClose }) => {
         {[1, 2, 3, 4, 5].map(s => (
           <button key={s} onClick={() => setRating(s)}
             className={`text-2xl ${s <= rating ? "text-yellow-400" : "text-gray-300"}`}>
-            ★
+            â˜…
           </button>
         ))}
       </div>

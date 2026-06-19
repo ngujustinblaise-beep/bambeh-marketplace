@@ -1,13 +1,13 @@
-/**
- * src/pages/MarketplaceDrafts.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/MarketplaceDrafts.tsx â€” Bambeh Marketplace
  *
- * FIXES — June 2026
- *  ✅ FIX 1: useLang() / isRtl were declared but never used — removed to prevent
+ * FIXES â€” June 2026
+ *  âœ… FIX 1: useLang() / isRtl were declared but never used â€” removed to prevent
  *            potential hook ordering issues if the file is hot-reloaded.
- *  ✅ FIX 2: All UI strings translated via inline TR map
- *  ✅ FIX 3: publishDraft now sets expires_at when activating a draft
- *  ✅ Fetches real draft listings from Supabase for the logged-in seller
- *  ✅ Allows editing and activating drafts
+ *  âœ… FIX 2: All UI strings translated via inline TR map
+ *  âœ… FIX 3: publishDraft now sets expires_at when activating a draft
+ *  âœ… Fetches real draft listings from Supabase for the logged-in seller
+ *  âœ… Allows editing and activating drafts
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -15,20 +15,20 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit3, Trash2, CheckCircle, Loader2, PackageOpen, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-// ─── i18n ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 const TR: Record<string, Record<Lang, string>> = {
-  my_drafts:      { en: "My Drafts", fr: "Mes brouillons", ha: "Daftarena", ar: "مسوداتي", pcm: "My Drafts", ff: "Draftji am" },
-  loading:        { en: "Loading drafts…", fr: "Chargement…", ha: "Ana lodawa…", ar: "جار التحميل…", pcm: "Loading…", ff: "Naatirde…" },
-  retry:          { en: "Retry", fr: "Réessayer", ha: "Sake", ar: "أعد المحاولة", pcm: "Try again", ff: "Artu jeer" },
-  no_drafts:      { en: "No drafts saved", fr: "Aucun brouillon", ha: "Babu daftar", ar: "لا مسودات", pcm: "No draft dey", ff: "Alaa draftji" },
-  drafts_hint:    { en: "Items you save as drafts will appear here", fr: "Les articles sauvegardés en brouillon apparaîtront ici", ha: "Abubuwan da kuka adana a matsayin daftari za su bayyana anan", ar: "ستظهر هنا العناصر التي تحفظها كمسودات", pcm: "Item wey you save as draft go show here", ff: "Kala ndema e draft ngo jeyaa wa" },
-  create:         { en: "Create a listing", fr: "Créer une annonce", ha: "Ƙirƙiri jeri", ar: "إنشاء إعلان", pcm: "Create listing", ff: "Newnin nde" },
-  drafts_count:   { en: "drafts", fr: "brouillons", ha: "daftar", ar: "مسودات", pcm: "draft", ff: "draftji" },
-  draft_one:      { en: "draft", fr: "brouillon", ha: "daftar ɗaya", ar: "مسودة", pcm: "draft", ff: "draft" },
-  login_required: { en: "Please log in to view drafts.", fr: "Connectez-vous pour voir les brouillons.", ha: "Da fatan a shiga don ganin daftari.", ar: "الرجاء تسجيل الدخول لعرض المسودات.", pcm: "Please login to see drafts.", ff: "Newnin e nder ngam yiyde draftji." },
-  failed:         { en: "Failed to load drafts.", fr: "Échec du chargement.", ha: "An kasa lodawa.", ar: "فشل التحميل.", pcm: "Loading fail.", ff: "Naatirde waɗaani." },
-  unexpected:     { en: "Unexpected error.", fr: "Erreur inattendue.", ha: "Kuskure da ba a tsammani.", ar: "خطأ غير متوقع.", pcm: "Unexpected error.", ff: "Juumre anndaande." },
+  my_drafts:      { en: "My Drafts", fr: "Mes brouillons", ha: "Daftarena", ar: "Ù…Ø³ÙˆØ¯Ø§ØªÙŠ", pcm: "My Drafts", ff: "Draftji am" },
+  loading:        { en: "Loading draftsâ€¦", fr: "Chargementâ€¦", ha: "Ana lodawaâ€¦", ar: "Ø¬Ø§Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦", pcm: "Loadingâ€¦", ff: "Naatirdeâ€¦" },
+  retry:          { en: "Retry", fr: "RÃ©essayer", ha: "Sake", ar: "Ø£Ø¹Ø¯ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©", pcm: "Try again", ff: "Artu jeer" },
+  no_drafts:      { en: "No drafts saved", fr: "Aucun brouillon", ha: "Babu daftar", ar: "Ù„Ø§ Ù…Ø³ÙˆØ¯Ø§Øª", pcm: "No draft dey", ff: "Alaa draftji" },
+  drafts_hint:    { en: "Items you save as drafts will appear here", fr: "Les articles sauvegardÃ©s en brouillon apparaÃ®tront ici", ha: "Abubuwan da kuka adana a matsayin daftari za su bayyana anan", ar: "Ø³ØªØ¸Ù‡Ø± Ù‡Ù†Ø§ Ø§Ù„Ø¹Ù†Ø§ØµØ± Ø§Ù„ØªÙŠ ØªØ­ÙØ¸Ù‡Ø§ ÙƒÙ…Ø³ÙˆØ¯Ø§Øª", pcm: "Item wey you save as draft go show here", ff: "Kala ndema e draft ngo jeyaa wa" },
+  create:         { en: "Create a listing", fr: "CrÃ©er une annonce", ha: "Æ˜irÆ™iri jeri", ar: "Ø¥Ù†Ø´Ø§Ø¡ Ø¥Ø¹Ù„Ø§Ù†", pcm: "Create listing", ff: "Newnin nde" },
+  drafts_count:   { en: "drafts", fr: "brouillons", ha: "daftar", ar: "Ù…Ø³ÙˆØ¯Ø§Øª", pcm: "draft", ff: "draftji" },
+  draft_one:      { en: "draft", fr: "brouillon", ha: "daftar É—aya", ar: "Ù…Ø³ÙˆØ¯Ø©", pcm: "draft", ff: "draft" },
+  login_required: { en: "Please log in to view drafts.", fr: "Connectez-vous pour voir les brouillons.", ha: "Da fatan a shiga don ganin daftari.", ar: "Ø§Ù„Ø±Ø¬Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø³ÙˆØ¯Ø§Øª.", pcm: "Please login to see drafts.", ff: "Newnin e nder ngam yiyde draftji." },
+  failed:         { en: "Failed to load drafts.", fr: "Ã‰chec du chargement.", ha: "An kasa lodawa.", ar: "ÙØ´Ù„ Ø§Ù„ØªØ­Ù…ÙŠÙ„.", pcm: "Loading fail.", ff: "Naatirde waÉ—aani." },
+  unexpected:     { en: "Unexpected error.", fr: "Erreur inattendue.", ha: "Kuskure da ba a tsammani.", ar: "Ø®Ø·Ø£ ØºÙŠØ± Ù…ØªÙˆÙ‚Ø¹.", pcm: "Unexpected error.", ff: "Juumre anndaande." },
 };
 function getLang(): Lang {
   try { const s = localStorage.getItem("bambeh_lang") as Lang; if (s) return s; } catch {}
@@ -40,7 +40,7 @@ function tx(key: string): string {
   return TR[key]?.[l] ?? TR[key]?.["en"] ?? key;
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface Draft {
   id: string;
   title: string;
@@ -50,7 +50,7 @@ interface Draft {
   createdAt: string;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function MarketplaceDrafts() {
   const navigate = useNavigate();
   const [drafts,   setDrafts]   = useState<Draft[]>([]);
@@ -154,7 +154,7 @@ export default function MarketplaceDrafts() {
                   {draft.image ? (
                     <img src={draft.image} alt={draft.title} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">🛍️</div>
+                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">ðŸ›ï¸</div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

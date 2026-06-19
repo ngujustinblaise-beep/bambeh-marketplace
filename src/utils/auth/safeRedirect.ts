@@ -1,14 +1,14 @@
-/**
- * safeRedirect.ts — Bambeh Marketplace
+﻿/**
+ * safeRedirect.ts â€” Bambeh Marketplace
  * ============================================================
  * FIXES:
- *   1. Open redirect vulnerability — sanitizes all stored redirect paths
- *   2. window.location.href in backButton — provides a React Router
+ *   1. Open redirect vulnerability â€” sanitizes all stored redirect paths
+ *   2. window.location.href in backButton â€” provides a React Router
  *      compatible navigation service for use outside React components
  * ============================================================
  */
 
-// ─── 1. SAFE REDIRECT PATH ───────────────────────────────────────────────────
+// â”€â”€â”€ 1. SAFE REDIRECT PATH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Validates a redirect path before storing it in localStorage.
@@ -24,10 +24,10 @@
  * @returns The path if safe, "/" as fallback
  *
  * @example
- * safeRedirectPath("/marketplace/123")   → "/marketplace/123"
- * safeRedirectPath("http://evil.com")    → "/"
- * safeRedirectPath("//evil.com/steal")   → "/"
- * safeRedirectPath("javascript:alert(1)")→ "/"
+ * safeRedirectPath("/marketplace/123")   â†’ "/marketplace/123"
+ * safeRedirectPath("http://evil.com")    â†’ "/"
+ * safeRedirectPath("//evil.com/steal")   â†’ "/"
+ * safeRedirectPath("javascript:alert(1)")â†’ "/"
  */
 export function safeRedirectPath(path: string | null | undefined): string {
   if (!path || typeof path !== "string") return "/";
@@ -76,7 +76,7 @@ export function consumePostLoginRedirect(): string {
 }
 
 
-// ─── 2. NAVIGATION SERVICE ───────────────────────────────────────────────────
+// â”€â”€â”€ 2. NAVIGATION SERVICE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //
 // Provides React Router navigation to code that runs OUTSIDE React
 // components (like Capacitor event listeners in initializeCapacitor).

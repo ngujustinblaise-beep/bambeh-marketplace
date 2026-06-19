@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Video } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -10,7 +10,7 @@ const T: Record<string, Record<string, string>> = {
     "duration": "5 minutes"
   },
   "fr": {
-    "title": "Tutoriels vidéo",
+    "title": "Tutoriels vidÃ©o",
     "subtitle": "Regardez et apprenez",
     "gettingStarted": "Pour commencer",
     "duration": "5 minutes"
@@ -22,15 +22,15 @@ const T: Record<string, Record<string, string>> = {
     "duration": "5 minutes"
   },
   "ar": {
-    "title": "دروس فيديو",
-    "subtitle": "شاهد وتعلّم",
-    "gettingStarted": "البدء",
-    "duration": "5 دقائق"
+    "title": "Ø¯Ø±ÙˆØ³ ÙÙŠØ¯ÙŠÙˆ",
+    "subtitle": "Ø´Ø§Ù‡Ø¯ ÙˆØªØ¹Ù„Ù‘Ù…",
+    "gettingStarted": "Ø§Ù„Ø¨Ø¯Ø¡",
+    "duration": "5 Ø¯Ù‚Ø§Ø¦Ù‚"
   },
   "ff": {
     "title": "Jannde wideyo",
     "subtitle": "Ndaaru njanngaa",
-    "gettingStarted": "Fuɗɗorde",
+    "gettingStarted": "FuÉ—É—orde",
     "duration": "Hojomaaji 5"
   }
 };

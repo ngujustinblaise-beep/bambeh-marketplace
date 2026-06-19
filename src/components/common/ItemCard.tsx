@@ -1,6 +1,6 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
- * ItemCard.tsx — Military Grade Item Display Component
+ * ItemCard.tsx â€” Military Grade Item Display Component
  * FILE LOCATION: src/components/common/ItemCard.tsx
  */
 
@@ -108,7 +108,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
 
   const handleCardClick = () => { navigate(`/items/${item.id}`); };
 
-  // ── GRID ──────────────────────────────────────────────────────────
+  // â”€â”€ GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (variant === 'grid') {
     return (
       <div onClick={handleCardClick}
@@ -193,7 +193,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
     );
   }
 
-  // ── LIST ──────────────────────────────────────────────────────────
+  // â”€â”€ LIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div onClick={handleCardClick}
       className="group bg-white rounded-xl border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden flex">

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EMAIL PREFERENCES MODAL - Notification Management
  * FILE LOCATION: src/components/profile/EmailPreferencesModal.tsx
  */
@@ -47,11 +47,11 @@ export default function EmailPreferencesModal({ onClose }: EmailPreferencesModal
     setIsSaving(true);
     try {
       localStorage.setItem('Bambeh_email_preferences', JSON.stringify(preferences));
-      alert('✅ Email preferences saved successfully!');
+      alert('âœ… Email preferences saved successfully!');
       onClose();
     } catch (error) {
       console.error('Error saving preferences:', error);
-      alert('❌ Failed to save preferences. Please try again.');
+      alert('âŒ Failed to save preferences. Please try again.');
     } finally {
       setIsSaving(false);
     }

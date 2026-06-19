@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+ï»¿import { supabase } from "@/lib/supabase";
 
 export interface AnalyticsConfig {
   enabled: boolean;
@@ -60,7 +60,7 @@ export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<
       analyticsConfig = { ...defaultConfig, ...config };
     }
     if (!analyticsConfig.enabled) {
-      debugLog('Analytics disabled — skipping init');
+      debugLog('Analytics disabled â€” skipping init');
       return;
     }
     debugLog('Initializing analytics...');
@@ -73,7 +73,7 @@ export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<
   }
 }
 
-// --- Alias — App.tsx imports { initializeAnalytics } -------------------------
+// --- Alias â€” App.tsx imports { initializeAnalytics } -------------------------
 export const initializeAnalytics = initAnalytics;
 
 // --- Tracking helpers ---------------------------------------------------------

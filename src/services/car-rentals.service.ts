@@ -1,29 +1,29 @@
-/**
- * src/services/carRentals.service.ts — Bambeh Marketplace
+﻿/**
+ * src/services/carRentals.service.ts â€” Bambeh Marketplace
  *
  * SECURITY REWRITE (original had critical issues):
- *  🔴 REMOVED — axios calls to `https://your-backend-api.com/api` (placeholder, broke prod)
- *  🔴 REMOVED — localStorage.getItem('authToken') for auth header (XSS attack vector;
+ *  ðŸ”´ REMOVED â€” axios calls to `https://your-backend-api.com/api` (placeholder, broke prod)
+ *  ðŸ”´ REMOVED â€” localStorage.getItem('authToken') for auth header (XSS attack vector;
  *               any JS on page could steal the token from localStorage)
- *  🔴 REMOVED — Manual redirect to /login on 401 (bypasses React Router, loses state)
- *  ✅ REPLACED — All calls use Supabase client (session managed via httpOnly cookie /
+ *  ðŸ”´ REMOVED â€” Manual redirect to /login on 401 (bypasses React Router, loses state)
+ *  âœ… REPLACED â€” All calls use Supabase client (session managed via httpOnly cookie /
  *               in-memory token; Supabase SDK handles auth transparently)
- *  ✅ SECURITY — Row Level Security (RLS) enforced server-side; client never sees other
+ *  âœ… SECURITY â€” Row Level Security (RLS) enforced server-side; client never sees other
  *               users' private data even if they call these functions directly
- *  ✅ SECURITY — No secret keys or tokens in client code
- *  ✅ PRESERVED — All function signatures unchanged so callers don't need updates
- *  ✅ NOTE     — "car rentals" in Bambeh maps to the `listings` table with type='vehicle'
+ *  âœ… SECURITY â€” No secret keys or tokens in client code
+ *  âœ… PRESERVED â€” All function signatures unchanged so callers don't need updates
+ *  âœ… NOTE     â€” "car rentals" in Bambeh maps to the `listings` table with type='vehicle'
  *               AND the `rentals` table for property rentals. This service targets
  *               listings (vehicles for hire/sale). Adjust table name if your schema differs.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types (unchanged from original so callers don't need updates)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CarRental {
   id: string;
   make: string;
@@ -84,9 +84,9 @@ export interface BookingData {
   };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Internal helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /** Map a raw Supabase row from `listings` to a CarRental object */
 function rowToCarRental(d: any): CarRental {
@@ -116,9 +116,9 @@ function rowToCarRental(d: any): CarRental {
   };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Public API — same signatures as original; implementations now use Supabase
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Public API â€” same signatures as original; implementations now use Supabase
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Fetch all car/vehicle rentals with optional filters.
@@ -289,14 +289,14 @@ export const bookCarRental = async (
   const sellerId = vehicle?.user_id || vehicle?.seller_id || null;
 
   const content = [
-    `🚗 VEHICLE HIRE REQUEST`,
+    `ðŸš— VEHICLE HIRE REQUEST`,
     `Vehicle: ${vehicle?.title || carId}`,
-    `Dates: ${bookingData.startDate} → ${bookingData.endDate}`,
+    `Dates: ${bookingData.startDate} â†’ ${bookingData.endDate}`,
     `Pickup: ${bookingData.pickupLocation}`,
     `Drop-off: ${bookingData.dropoffLocation}`,
     `Driver: ${bookingData.driverDetails.name} | ${bookingData.driverDetails.phone}`,
     `Licence: ${bookingData.driverDetails.licenseNumber}`,
-    `— via Bambeh Marketplace`,
+    `â€” via Bambeh Marketplace`,
   ].join("\n");
 
   const { data: msg, error } = await supabase

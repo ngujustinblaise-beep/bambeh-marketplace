@@ -1,4 +1,4 @@
-/**
+﻿/**
  * USE VOICE COMMANDS HOOK
  *
  * Custom hook for voice recognition and command processing

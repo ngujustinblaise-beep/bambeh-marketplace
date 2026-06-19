@@ -1,10 +1,10 @@
-/**
+﻿/**
  * src/types/src_types_items.ts
- * Bambeh Marketplace — Marketplace Item & Listing Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Marketplace Item & Listing Types
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// ─── Listing Status ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Listing Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type ListingStatus =
   | "active"
   | "sold"
@@ -14,7 +14,7 @@ export type ListingStatus =
   | "pending_review"
   | "rejected";
 
-// ─── Listing Category ────────────────────────────────────────────────────────
+// â”€â”€â”€ Listing Category â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type ListingCategory =
   | "electronics"
   | "fashion"
@@ -32,13 +32,13 @@ export type ListingCategory =
   | "beauty"
   | "other";
 
-// ─── Item Condition ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Item Condition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type ItemCondition = "new" | "like_new" | "good" | "fair" | "poor";
 
-// ─── Delivery Option ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Delivery Option â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type DeliveryOption = "pickup" | "delivery" | "both";
 
-// ─── Payment Method ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Payment Method â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type PaymentMethod =
   | "mtn_momo"
   | "orange_money"
@@ -47,7 +47,7 @@ export type PaymentMethod =
   | "notchpay"
   | "escrow";
 
-// ─── Location ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Location â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface ItemLocation {
   city: string;
   region: string;
@@ -57,7 +57,7 @@ export interface ItemLocation {
   address?: string;
 }
 
-// ─── Item Image ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Item Image â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface ItemImage {
   id: string;
   url: string;
@@ -66,7 +66,7 @@ export interface ItemImage {
   isMain: boolean;
 }
 
-// ─── Seller Info (embedded) ──────────────────────────────────────────────────
+// â”€â”€â”€ Seller Info (embedded) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface SellerInfo {
   id: string;
   displayName: string;
@@ -79,7 +79,7 @@ export interface SellerInfo {
   location?: string;
 }
 
-// ─── Marketplace Item ────────────────────────────────────────────────────────
+// â”€â”€â”€ Marketplace Item â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface MarketplaceItem {
   id: string;
   sellerId: string;
@@ -107,7 +107,7 @@ export interface MarketplaceItem {
   updatedAt: string;
 }
 
-// ─── Job Listing ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Job Listing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type JobType =
   | "full_time"
   | "part_time"
@@ -148,7 +148,7 @@ export interface JobListing {
   updatedAt: string;
 }
 
-// ─── Service Listing ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Service Listing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface ServiceListing {
   id: string;
   providerId: string;
@@ -174,7 +174,7 @@ export interface ServiceListing {
   updatedAt: string;
 }
 
-// ─── Exchange Item ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Exchange Item â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface ExchangeItem {
   id: string;
   ownerId: string;
@@ -196,7 +196,7 @@ export interface ExchangeItem {
   updatedAt: string;
 }
 
-// ─── Create/Update Requests ──────────────────────────────────────────────────
+// â”€â”€â”€ Create/Update Requests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CreateMarketplaceItemRequest {
   title: string;
   description: string;
@@ -217,7 +217,7 @@ export interface UpdateMarketplaceItemRequest extends Partial<CreateMarketplaceI
   status?: ListingStatus;
 }
 
-// ─── Paginated Response ──────────────────────────────────────────────────────
+// â”€â”€â”€ Paginated Response â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface PaginatedItemsResponse<T> {
   data: T[];
   total: number;
@@ -227,7 +227,7 @@ export interface PaginatedItemsResponse<T> {
   error: string | null;
 }
 
-// ─── Filter Options ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Filter Options â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface ItemFilters {
   category?: ListingCategory;
   subcategory?: string;

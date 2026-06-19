@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 export const measurePageLoad = (): void => {
   if (typeof window === "undefined") return;
   const nav = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];

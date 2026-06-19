@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Minimize2, Maximize2, Send } from 'lucide-react';
 
 const MinimizableChatWidget = () => {
@@ -7,7 +7,7 @@ const MinimizableChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
-    { id: '1', text: 'Hello! Welcome to Bambe Marketplace 👋', isUser: false }
+    { id: '1', text: 'Hello! Welcome to Bambe Marketplace ðŸ‘‹', isUser: false }
   ]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef(null);

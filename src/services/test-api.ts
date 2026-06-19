@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type { ItemFilters, PaginatedItemsResponse, JobItem, MarketplaceItem } from "../types/items";
 /** @deprecated use JobItem */ export type JobListing = JobItem;
 

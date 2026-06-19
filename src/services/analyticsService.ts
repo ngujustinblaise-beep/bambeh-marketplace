@@ -1,24 +1,24 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * src/services/analyticsService.ts
- * Analytics Service — Bambeh Marketplace
+ * Analytics Service â€” Bambeh Marketplace
  *
- * FIX: analytics_events table missing → caused 404 POST errors on
+ * FIX: analytics_events table missing â†’ caused 404 POST errors on
  * EVERY page load, flooding the console and adding network overhead.
  *
  * Solution:
  *   1. Run the SQL migration (see supabase/migrations/) to create the table.
  *   2. This service verifies the table exists on first call.
- *   3. If the table is absent, analytics silently degrades — zero errors.
+ *   3. If the table is absent, analytics silently degrades â€” zero errors.
  *   4. Once the table exists, full tracking resumes automatically.
  *
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════
+ * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import { supabase } from '@/lib/supabase';
 
-// ── Configuration ─────────────────────────────────────────────────────────────
+// â”€â”€ Configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface AnalyticsConfig {
   enabled:          boolean;
@@ -39,7 +39,7 @@ const defaultConfig: AnalyticsConfig = {
   debounceMs:      500,
 };
 
-// ── Internal state ────────────────────────────────────────────────────────────
+// â”€â”€ Internal state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 let analyticsConfig         = { ...defaultConfig };
 let isInitialized           = false;
@@ -47,7 +47,7 @@ let tableVerified: boolean | null = null; // null = not checked, true/false = re
 let lastEventTime           = 0;
 let lastPath                = '';
 
-// ── Table existence check ─────────────────────────────────────────────────────
+// â”€â”€ Table existence check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Verify the analytics_events table exists before attempting inserts.
@@ -57,14 +57,14 @@ async function checkTableExists(): Promise<boolean> {
   if (tableVerified !== null) return tableVerified;
 
   try {
-    // Use a limit-0 select — minimal overhead, fails gracefully if table absent
+    // Use a limit-0 select â€” minimal overhead, fails gracefully if table absent
     const { error } = await supabase
       .from('analytics_events')
       .select('id', { count: 'exact', head: true })
       .limit(0);
 
     if (error) {
-      // Table does not exist or RLS blocks access — disable gracefully
+      // Table does not exist or RLS blocks access â€” disable gracefully
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
         console.warn(
           '[Analytics] Table "analytics_events" not found.\n' +
@@ -79,7 +79,7 @@ async function checkTableExists(): Promise<boolean> {
     }
 
     tableVerified = true;
-    debugLog('Table analytics_events verified ✅');
+    debugLog('Table analytics_events verified âœ…');
     return true;
   } catch (err) {
     tableVerified = false;
@@ -88,7 +88,7 @@ async function checkTableExists(): Promise<boolean> {
   }
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function debugLog(message: string, data?: unknown): void {
   if (analyticsConfig.debugMode) {
@@ -132,7 +132,7 @@ function setupErrorTracking(): void {
   });
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// â”€â”€ Public API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<void> {
   if (isInitialized) return;
@@ -141,7 +141,7 @@ export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<
       analyticsConfig = { ...defaultConfig, ...config };
     }
     if (!analyticsConfig.enabled) {
-      debugLog('Analytics disabled — skipping init');
+      debugLog('Analytics disabled â€” skipping init');
       return;
     }
 
@@ -152,20 +152,20 @@ export async function initAnalytics(config?: Partial<AnalyticsConfig>): Promise<
     if (analyticsConfig.trackErrors)    setupErrorTracking();
 
     isInitialized = true;
-    debugLog('Analytics initialized ✅');
+    debugLog('Analytics initialized âœ…');
   } catch (error) {
     console.error('[Analytics] Initialization error:', error);
-    // Never throw — analytics must never break the app
+    // Never throw â€” analytics must never break the app
   }
 }
 
-// Alias for backwards-compat — App.tsx imports { initializeAnalytics }
+// Alias for backwards-compat â€” App.tsx imports { initializeAnalytics }
 export const initializeAnalytics = initAnalytics;
 
 export async function trackPageView(path: string): Promise<void> {
   if (!analyticsConfig.enabled || !analyticsConfig.trackPageViews) return;
 
-  // Debounce — skip if same path within debounceMs
+  // Debounce â€” skip if same path within debounceMs
   const now = Date.now();
   if (path === lastPath && now - lastEventTime < analyticsConfig.debounceMs) return;
   lastPath      = path;

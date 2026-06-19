@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS CONTENT COMPONENT
  * Official Bambeh Terms and Conditions
  * Used in: TermsAcceptance.tsx and Terms.tsx

@@ -1,10 +1,10 @@
-/**
- * ════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * src/hooks/useAutoSaveProfile.ts
- * Auto-save Profile Hook — Issue 2 Fix
+ * Auto-save Profile Hook â€” Issue 2 Fix
  *
  * Saves profile data automatically 1.5s after user stops typing.
- * When they click "Save" button: shows "✅ All saved!" message
+ * When they click "Save" button: shows "âœ… All saved!" message
  * then navigates back to profile.
  *
  * USAGE in EditProfile.tsx or Profile.tsx:
@@ -26,10 +26,10 @@
  *   <button onClick={handleManualSave}>
  *     {saveStatus === 'saving' ? 'Saving...' : 'Save Profile'}
  *   </button>
- *   {saveStatus === 'saved' && <p>✅ All saved! Returning to profile...</p>}
+ *   {saveStatus === 'saved' && <p>âœ… All saved! Returning to profile...</p>}
  *
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * ════════════════════════════════════════════════════════════════
+ * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -56,9 +56,9 @@ interface UseAutoSaveProfileReturn {
 }
 
 /**
- * @param initial   — The initial profile data loaded from your auth context / Supabase
- * @param userId    — Current user ID (used as localStorage key)
- * @param onSave    — Optional async function to persist to backend (Supabase, Firebase, etc.)
+ * @param initial   â€” The initial profile data loaded from your auth context / Supabase
+ * @param userId    â€” Current user ID (used as localStorage key)
+ * @param onSave    â€” Optional async function to persist to backend (Supabase, Firebase, etc.)
  */
 export function useAutoSaveProfile(
   initial: ProfileData,
@@ -80,7 +80,7 @@ export function useAutoSaveProfile(
     [],
   );
 
-  // ── Core save logic ───────────────────────────────────────────────────────
+  // â”€â”€ Core save logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const performSave = useCallback(
     async (data: ProfileData, isManual: boolean) => {
       if (!isMounted.current) return;
@@ -124,7 +124,7 @@ export function useAutoSaveProfile(
     [userId, onSave, navigate],
   );
 
-  // ── Auto-save trigger — 1.5s debounce after typing ──────────────────────
+  // â”€â”€ Auto-save trigger â€” 1.5s debounce after typing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!isDirty) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -136,14 +136,14 @@ export function useAutoSaveProfile(
     };
   }, [formData, isDirty, performSave]);
 
-  // ── Set a single field ────────────────────────────────────────────────────
+  // â”€â”€ Set a single field â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const setField = useCallback((key: keyof ProfileData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     setIsDirty(true);
     setSaveStatus("idle");
   }, []);
 
-  // ── Manual save (Save button click) ──────────────────────────────────────
+  // â”€â”€ Manual save (Save button click) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleManualSave = useCallback(async () => {
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     await performSave(formData, true);

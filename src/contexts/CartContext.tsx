@@ -1,12 +1,12 @@
-/**
+﻿/**
  * src/contexts/CartContext.tsx
- * Bambeh Marketplace — Cart Context (totalItems, totalPrice, addToCart, CartItem fixes)
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Cart Context (totalItems, totalPrice, addToCart, CartItem fixes)
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 
-// ─── CartItem — full interface matching all consumer files ────────────────────
+// â”€â”€â”€ CartItem â€” full interface matching all consumer files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CartItem {
   id: string;
   // aliases used by CartDrawer / CheckoutModal
@@ -25,7 +25,7 @@ export interface CartItem {
   listingType?: string;
 }
 
-// ─── FavoriteItem ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ FavoriteItem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface FavoriteItem {
   id: string;
   type: string;
@@ -37,7 +37,7 @@ export interface FavoriteItem {
   addedAt: string;
 }
 
-// ─── CartContextType — complete interface expected by consumers ───────────────
+// â”€â”€â”€ CartContextType â€” complete interface expected by consumers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CartContextType {
   items: CartItem[];
   cartItems: CartItem[];      // alias used by some files
@@ -67,10 +67,10 @@ export interface CartContextType {
   toggleFavorite: (item: Omit<FavoriteItem, "addedAt">) => void;
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CartContext = createContext<CartContextType | null>(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -172,14 +172,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function useCart(): CartContextType {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error("useCart must be used inside <CartProvider>");
   return ctx;
 }
 
-// ─── Utility exports used by CheckoutModal ────────────────────────────────────
+// â”€â”€â”€ Utility exports used by CheckoutModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function createOrderFromCart(
   cartItems: CartItem[],
   userId: string,

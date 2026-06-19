@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 import React from "react";
 import type { SubscriptionTier } from "../../types/subscription";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 interface SubscriptionBadgeProps {
   tier: SubscriptionTier;

@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - CHAT SERVICE
+﻿/**
+ * BAMBÃ‰ MARKETPLACE - CHAT SERVICE
  * Real-time messaging with Socket.io
  * Version: 1.0.0
  */
@@ -73,7 +73,7 @@ class ChatService {
     });
   }
 
-  // ── SOCKET CONNECTION ─────────────────────────────────────────────────────
+  // â”€â”€ SOCKET CONNECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   connect(userId: string): void {
     if (this.socket?.connected) return;
@@ -108,7 +108,7 @@ class ChatService {
     this.socket.on("user_offline", (userId: string) => { this.handleOnlineStatus(userId, false); });
   }
 
-  // ── MESSAGE OPERATIONS ───────────────────────────────────────────────────
+  // â”€â”€ MESSAGE OPERATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   async sendTextMessage(conversationId: string, receiverId: string, content: string): Promise<ChatMessage> {
     try {
@@ -207,7 +207,7 @@ class ChatService {
     }
   }
 
-  // ── CONVERSATION OPERATIONS ──────────────────────────────────────────────
+  // â”€â”€ CONVERSATION OPERATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   async getConversations(): Promise<Conversation[]> {
     try {
@@ -248,7 +248,7 @@ class ChatService {
     }
   }
 
-  // ── TYPING INDICATORS ────────────────────────────────────────────────────
+  // â”€â”€ TYPING INDICATORS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   startTyping(conversationId: string): void {
     this.socket?.emit("start_typing", { conversationId, userId: this.currentUserId });
@@ -258,7 +258,7 @@ class ChatService {
     this.socket?.emit("stop_typing", { conversationId, userId: this.currentUserId });
   }
 
-  // ── EVENT HANDLERS ───────────────────────────────────────────────────────
+  // â”€â”€ EVENT HANDLERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   private handleNewMessage(message: ChatMessage): void {
     this.messageCallbacks.forEach((callback) => { callback(message); });
@@ -279,7 +279,7 @@ class ChatService {
     audio.play().catch(console.error);
   }
 
-  // ── CALLBACK REGISTRATION ────────────────────────────────────────────────
+  // â”€â”€ CALLBACK REGISTRATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   onMessage(callback: (message: ChatMessage) => void): () => void {
     const id = Math.random().toString(36);
@@ -299,7 +299,7 @@ class ChatService {
     return () => { this.onlineStatusCallbacks.delete(id); };
   }
 
-  // ── UTILITY ──────────────────────────────────────────────────────────────
+  // â”€â”€ UTILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   isConnected(): boolean { return this.socket?.connected || false; }
   getCurrentUserId(): string | null { return this.currentUserId; }

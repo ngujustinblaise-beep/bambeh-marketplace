@@ -1,7 +1,7 @@
-/**
+﻿/**
  * ACCOUNT STATUS CONTEXT - USER ACCOUNT STATE MANAGEMENT
  * FILE LOCATION: src/contexts/AccountStatusContext.tsx
- * © 2025 Bambeh. All rights reserved.
+ * Â© 2025 Bambeh. All rights reserved.
  */
 
 import React, {
@@ -111,7 +111,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: false,
   },
   frozen: {
-    title: "⚠️ Account Frozen",
+    title: "âš ï¸ Account Frozen",
     message:
       "Your account has been temporarily frozen due to suspicious activity or policy violation.",
     contactInfo:
@@ -119,7 +119,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: true,
   },
   suspended: {
-    title: "🚫 Account Suspended",
+    title: "ðŸš« Account Suspended",
     message:
       "Your account has been suspended due to violation of our Terms of Service.",
     contactInfo:
@@ -127,7 +127,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: true,
   },
   banned: {
-    title: "❌ Account Banned",
+    title: "âŒ Account Banned",
     message:
       "Your account has been permanently banned due to serious violation of our Terms of Service.",
     contactInfo:
@@ -135,7 +135,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: false,
   },
   pending_verification: {
-    title: "⏳ Verification Pending",
+    title: "â³ Verification Pending",
     message:
       "Your account is pending verification. Some features may be limited until verification is complete.",
     contactInfo:
@@ -319,7 +319,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
           newRestriction,
         ]);
 
-        console.log(`✅ Account ${accountId} frozen by ${adminName}`);
+        console.log(`âœ… Account ${accountId} frozen by ${adminName}`);
         return true;
       } catch (err) {
         setError("Failed to freeze account");
@@ -367,7 +367,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
           newRestriction,
         ]);
 
-        console.log(`✅ Account ${accountId} suspended by ${adminName}`);
+        console.log(`âœ… Account ${accountId} suspended by ${adminName}`);
         return true;
       } catch (err) {
         setError("Failed to suspend account");
@@ -408,7 +408,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
           newRestriction,
         ]);
 
-        console.log(`✅ Account ${accountId} banned by ${adminName}`);
+        console.log(`âœ… Account ${accountId} banned by ${adminName}`);
         return true;
       } catch (err) {
         setError("Failed to ban account");
@@ -443,7 +443,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
         );
 
         console.log(
-          `✅ Restriction lifted for account ${accountId} by ${adminName}`,
+          `âœ… Restriction lifted for account ${accountId} by ${adminName}`,
         );
         return true;
       } catch (err) {

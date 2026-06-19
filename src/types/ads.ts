@@ -1,4 +1,4 @@
-export type AdPlacement =
+﻿export type AdPlacement =
   | "banner_top" | "banner_bottom" | "sidebar" | "feed" | "spotlight";
 
 export type AdDuration = "7d" | "14d" | "30d" | "60d" | "90d";

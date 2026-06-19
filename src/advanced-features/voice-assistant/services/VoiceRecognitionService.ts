@@ -1,5 +1,5 @@
-/**
- * BAMB� MARKETPLACE - VOICE RECOGNITION SERVICE
+﻿/**
+ * BAMBÉ MARKETPLACE - VOICE RECOGNITION SERVICE
  * Speech recognition and synthesis using Web Speech API
  * Version: 1.0.0
  */

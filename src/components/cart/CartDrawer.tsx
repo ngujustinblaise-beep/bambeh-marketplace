@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import type { CartItem, CartContextType } from "@/types/cart";
 
@@ -19,7 +19,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose }) => {
       <div className="relative w-full max-w-sm bg-white h-full flex flex-col shadow-xl">
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-bold">Cart ({cart.items.length})</h2>
-          <button onClick={onClose} className="text-2xl text-gray-400">×</button>
+          <button onClick={onClose} className="text-2xl text-gray-400">Ã—</button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">

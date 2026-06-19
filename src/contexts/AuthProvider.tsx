@@ -1,7 +1,7 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * src/contexts/AuthProvider.tsx
- * Single Auth Source of Truth — Bambeh Marketplace
+ * Single Auth Source of Truth â€” Bambeh Marketplace
  *
  * SECURITY FIX: Removes the dual Firebase Auth + Supabase Auth system.
  * Firebase is kept for FCM push notifications ONLY (see FirebaseContext).
@@ -18,14 +18,14 @@
  *   import { useAuth } from '@/hooks/useSupabaseAuth';
  *   const { user, isVendor, isAdmin, loading } = useAuth();
  *
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════
+ * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import React from 'react';
 import { SupabaseAuthContext, useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 
-// ── Auth Provider ─────────────────────────────────────────────────────────────
+// â”€â”€ Auth Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-// ── Async Protected Route Components ─────────────────────────────────────────
+// â”€â”€ Async Protected Route Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // These replace the synchronous isVendorAuthenticated() / isAdminAuthenticated()
 // checks in App.tsx. They wait for the JWT to be verified before rendering.
 
@@ -61,7 +61,7 @@ const AuthLoadingScreen: React.FC = () => (
       backgroundColor: '#0f172a',
     }}
     aria-busy="true"
-    aria-label="Verifying session…"
+    aria-label="Verifying sessionâ€¦"
   >
     <div
       style={{
@@ -77,7 +77,7 @@ const AuthLoadingScreen: React.FC = () => (
   </div>
 );
 
-// ── Vendor Protected Route ─────────────────────────────────────────────────────
+// â”€â”€ Vendor Protected Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ProtectedProps {
   children: React.ReactNode;
@@ -104,11 +104,11 @@ export const VendorProtectedRoute: React.FC<ProtectedProps> = ({ children }) => 
   return <>{children}</>;
 };
 
-// ── Admin Protected Route ──────────────────────────────────────────────────────
+// â”€â”€ Admin Protected Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Wraps admin pages. Requires role === 'admin' in the database.
- * Both conditions must be true — isAdmin AND user must exist.
+ * Both conditions must be true â€” isAdmin AND user must exist.
  */
 export const AdminProtectedRoute: React.FC<ProtectedProps> = ({ children }) => {
   const location                    = useLocation();
@@ -127,7 +127,7 @@ export const AdminProtectedRoute: React.FC<ProtectedProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-// ── User Protected Route ───────────────────────────────────────────────────────
+// â”€â”€ User Protected Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Wraps pages that require any authenticated user.

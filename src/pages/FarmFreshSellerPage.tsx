@@ -1,15 +1,15 @@
-/**
- * src/pages/FarmFreshSellerPage.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/FarmFreshSellerPage.tsx â€” Bambeh Marketplace
  *
  * FIXES:
- *  ✅ BOM character removed from file start
- *  ✅ validateImg no longer calls useLang() (hooks can't be called outside components)
- *  ✅ farmer_id + seller_id BOTH inserted (DB has farmer_id NOT NULL)
- *  ✅ Storage RLS graceful fallback: if image upload fails RLS, listing
+ *  âœ… BOM character removed from file start
+ *  âœ… validateImg no longer calls useLang() (hooks can't be called outside components)
+ *  âœ… farmer_id + seller_id BOTH inserted (DB has farmer_id NOT NULL)
+ *  âœ… Storage RLS graceful fallback: if image upload fails RLS, listing
  *     is saved WITHOUT photos and user gets a clear warning (not a crash)
- *  ✅ Full i18n: English, French, Pidgin, Arabic, Fulfulde — live-reactive
- *  ✅ 3-step wizard: Produce Details → Location & Description → Photos & Review
- *  ✅ Draft save/restore
+ *  âœ… Full i18n: English, French, Pidgin, Arabic, Fulfulde â€” live-reactive
+ *  âœ… 3-step wizard: Produce Details â†’ Location & Description â†’ Photos & Review
+ *  âœ… Draft save/restore
  */
 
 import React, { useState, useRef, useEffect } from "react";
@@ -24,7 +24,7 @@ const UNITS      = ["kg", "g", "bunch", "cob", "litre", "bag", "crate", "piece"]
 const MAX_IMG   = 5 * 1024 * 1024;
 const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-// ✅ FIX: validateImg is a plain function — no hooks inside it
+// âœ… FIX: validateImg is a plain function â€” no hooks inside it
 function validateImg(f: File): string | null {
   if (!IMG_TYPES.includes(f.type)) return "Only JPG, PNG or WebP images allowed.";
   if (f.size > MAX_IMG) return `File too large (max 5 MB). Got ${(f.size / 1024 / 1024).toFixed(1)} MB.`;
@@ -36,7 +36,7 @@ const fmtXAF = (n: string) =>
     ? new Intl.NumberFormat("fr-CM").format(Number(n)) + " FCFA"
     : "";
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function StepBar({ step, labels }: { step: number; labels: string[] }) {
   return (
@@ -78,7 +78,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, saveDraftLabel, disabled =
       {onBack && (
         <button type="button" onClick={onBack}
           className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
-          ←
+          â†
         </button>
       )}
       <button type="button" onClick={onNext} disabled={disabled}
@@ -93,7 +93,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, saveDraftLabel, disabled =
 }
 
 function Err({ msg }: { msg?: string }) {
-  return msg ? <p className="text-xs text-red-500 mt-1 font-medium">⚠ {msg}</p> : null;
+  return msg ? <p className="text-xs text-red-500 mt-1 font-medium">âš  {msg}</p> : null;
 }
 
 function Lbl({ children, required }: { children: React.ReactNode; required?: boolean }) {
@@ -140,7 +140,7 @@ const DRAFT_KEY = "bambeh_draft_farm_produce";
 /**
  * Upload one image to Supabase Storage.
  * Returns the public URL on success, or null if the upload fails
- * (e.g. RLS policy not yet configured) — caller handles null gracefully.
+ * (e.g. RLS policy not yet configured) â€” caller handles null gracefully.
  */
 async function tryUploadImage(dataUrl: string, fileName: string): Promise<string | null> {
   try {
@@ -211,7 +211,7 @@ export default function FarmFreshSellerPage() {
     const remaining = 6 - imagePreviews.length;
 
     for (const f of Array.from(files).slice(0, remaining)) {
-      const err = validateImg(f); // ✅ plain function call — no hook
+      const err = validateImg(f); // âœ… plain function call â€” no hook
       if (err) { errors.push(err); continue; }
       validFiles.push(f);
       await new Promise<void>(res => {
@@ -261,19 +261,19 @@ export default function FarmFreshSellerPage() {
         return;
       }
 
-      // ── 1. Try uploading images (graceful — never blocks the listing) ──────
+      // â”€â”€ 1. Try uploading images (graceful â€” never blocks the listing) â”€â”€â”€â”€â”€â”€
       const uploadedUrls: string[] = [];
       for (let i = 0; i < imageFiles.length; i++) {
-        setUploadProgress(`Uploading photo ${i + 1} of ${imageFiles.length}…`);
+        setUploadProgress(`Uploading photo ${i + 1} of ${imageFiles.length}â€¦`);
         const url = await tryUploadImage(imagePreviews[i], imageFiles[i].name);
         if (url) uploadedUrls.push(url);
       }
 
       const photosFailed = imageFiles.length > 0 && uploadedUrls.length === 0;
 
-      setUploadProgress("Saving listing…");
+      setUploadProgress("Saving listingâ€¦");
 
-      // ── 2. Insert with BOTH farmer_id AND seller_id ───────────────────────
+      // â”€â”€ 2. Insert with BOTH farmer_id AND seller_id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const { error: dbErr } = await supabase.from("farm_products").insert({
         farmer_id:              session.user.id,
         seller_id:              session.user.id,
@@ -308,11 +308,11 @@ export default function FarmFreshSellerPage() {
     }
   }
 
-  // ── Success screen ────────────────────────────────────────────────────────
+  // â”€â”€ Success screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (posted) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-7xl mb-4">🌿</p>
+        <p className="text-7xl mb-4">ðŸŒ¿</p>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("produceListed", lang)}</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t("produceListedSub", lang)}</p>
         <p className="text-xs text-gray-400 mb-4">{t("produceListedSub2", lang)}</p>
@@ -335,7 +335,7 @@ export default function FarmFreshSellerPage() {
     );
   }
 
-  // ── Login required screen ─────────────────────────────────────────────────
+  // â”€â”€ Login required screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (loginRequired) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
@@ -355,13 +355,13 @@ export default function FarmFreshSellerPage() {
     );
   }
 
-  // ── Wizard ────────────────────────────────────────────────────────────────
+  // â”€â”€ Wizard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="sticky top-0 z-10 bg-green-600 text-white px-4 py-4 flex items-center gap-3 shadow">
         <button onClick={() => step === 1 ? navigate(-1) : back()}
           className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">
-          ←
+          â†
         </button>
         <h1 className="font-bold text-lg">{t("listYourProducePage", lang)}</h1>
       </div>
@@ -370,7 +370,7 @@ export default function FarmFreshSellerPage() {
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
 
-        {/* ── STEP 1 ── */}
+        {/* â”€â”€ STEP 1 â”€â”€ */}
         {step === 1 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900 dark:text-white">{t("step1Label", lang)}</h2>
@@ -427,7 +427,7 @@ export default function FarmFreshSellerPage() {
           </div>
         )}
 
-        {/* ── STEP 2 ── */}
+        {/* â”€â”€ STEP 2 â”€â”€ */}
         {step === 2 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900 dark:text-white">{t("step2Label", lang)}</h2>
@@ -451,7 +451,7 @@ export default function FarmFreshSellerPage() {
                 className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none resize-none transition-colors
                   ${errs.description ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
               <div className="flex justify-between text-xs mt-1 text-gray-400">
-                <span>{d.description.length < 20 ? t("minChars", lang) : "✓ Good"}</span>
+                <span>{d.description.length < 20 ? t("minChars", lang) : "âœ“ Good"}</span>
                 <span>{(t("charCount", lang) as (n: number) => string)(d.description.length)}</span>
               </div>
               <Err msg={errs.description} />
@@ -462,7 +462,7 @@ export default function FarmFreshSellerPage() {
           </div>
         )}
 
-        {/* ── STEP 3 ── */}
+        {/* â”€â”€ STEP 3 â”€â”€ */}
         {step === 3 && (
           <>
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
@@ -470,12 +470,12 @@ export default function FarmFreshSellerPage() {
               <p className="text-xs text-gray-400">{t("photoSub", lang)}</p>
               <p className="text-xs text-green-700 bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2">{t("photoSecure", lang)}</p>
 
-              {imgErrors.map((e, i) => <p key={i} className="text-xs text-red-500 font-medium">⚠ {e}</p>)}
+              {imgErrors.map((e, i) => <p key={i} className="text-xs text-red-500 font-medium">âš  {e}</p>)}
 
               <div onClick={() => fileRef.current?.click()}
                 className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors
                   ${imagePreviews.length >= 6 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"}`}>
-                <p className="text-3xl mb-2">📸</p>
+                <p className="text-3xl mb-2">ðŸ“¸</p>
                 <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
                   {imagePreviews.length >= 6 ? t("maxPhotos", lang) : t("tapUpload", lang)}
                 </p>
@@ -491,7 +491,7 @@ export default function FarmFreshSellerPage() {
                       <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                       <button type="button"
                         onClick={() => { setImagePreviews(p => p.filter((_, idx) => idx !== i)); setImageFiles(p => p.filter((_, idx) => idx !== i)); }}
-                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">×</button>
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">Ã—</button>
                       {i === 0 && <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>}
                     </div>
                   ))}
@@ -511,11 +511,11 @@ export default function FarmFreshSellerPage() {
               {([
                 [t("produceKey", lang), d.title],
                 [t("category",   lang), d.category],
-                [t("priceKey",   lang), fmtXAF(d.price) ? `${fmtXAF(d.price)} / ${d.unit}` : "—"],
+                [t("priceKey",   lang), fmtXAF(d.price) ? `${fmtXAF(d.price)} / ${d.unit}` : "â€”"],
                 [t("stockKey",   lang), d.quantity ? `${d.quantity} ${d.unit}` : t("notSpecified", lang)],
                 [t("organicKey", lang), d.is_organic ? t("yesOrganic", lang) : t("no", lang)],
                 [t("deliveryKey",lang), d.available_for_delivery ? t("delivAvail", lang) : t("pickupOnly", lang)],
-                [t("locationKey",lang), d.location || "—"],
+                [t("locationKey",lang), d.location || "â€”"],
                 [t("photosKey",  lang), imagePreviews.length === 0 ? t("noPhotosWarn", lang) : `${imagePreviews.length} photo${imagePreviews.length !== 1 ? "s" : ""}`],
               ] as [string, string][]).map(([k, v]) => (
                 <div key={String(k)} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
@@ -533,11 +533,11 @@ export default function FarmFreshSellerPage() {
 
             {uploadProgress && (
               <div className="bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
-                <span className="animate-spin inline-block">⟳</span> {uploadProgress}
+                <span className="animate-spin inline-block">âŸ³</span> {uploadProgress}
               </div>
             )}
             {errs.submit && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">⚠ {errs.submit}</div>
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">âš  {errs.submit}</div>
             )}
 
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">

@@ -1,4 +1,4 @@
-export interface PaymentVerifyResult {
+﻿export interface PaymentVerifyResult {
   status: "success" | "failed" | "pending";
   reference: string;
   amount?: number;

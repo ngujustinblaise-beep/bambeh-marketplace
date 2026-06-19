@@ -1,4 +1,4 @@
-export type GamificationActionType =
+﻿export type GamificationActionType =
   | "listing_created"
   | "sale_completed"
   | "review_received"

@@ -1,19 +1,19 @@
-/**
- * src/pages/ListProperty.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/ListProperty.tsx â€” Bambeh Marketplace
  *
- * ✅ FULL REWRITE — production-ready rental posting form:
+ * âœ… FULL REWRITE â€” production-ready rental posting form:
  *
- *  🌐 i18n: Every label/placeholder/CTA uses useTranslation('rentals').
+ *  ðŸŒ i18n: Every label/placeholder/CTA uses useTranslation('rentals').
  *           6-language support: EN / FR / HA / AR / Pidgin / Fulfulde.
- *  📸 Images: upload up to 8 photos → Supabase Storage bucket "rentals".
+ *  ðŸ“¸ Images: upload up to 8 photos â†’ Supabase Storage bucket "rentals".
  *             Image re-ordering by drag or remove-and-re-add.
- *  💾 Supabase: inserts to `rentals` table; status = 'active',
+ *  ðŸ’¾ Supabase: inserts to `rentals` table; status = 'active',
  *               expires_at = now + 30 days.
- *  🔒 Auth-gated: redirects to /login if not authenticated.
- *  ✅ Validation: required fields highlighted, friendly error messages.
- *  🎨 Clean, card-section layout — consistent with Bambeh orange/teal palette.
+ *  ðŸ”’ Auth-gated: redirects to /login if not authenticated.
+ *  âœ… Validation: required fields highlighted, friendly error messages.
+ *  ðŸŽ¨ Clean, card-section layout â€” consistent with Bambeh orange/teal palette.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useRef } from "react";
@@ -26,7 +26,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface FormState {
   title:        string;
   type:         string;
@@ -55,8 +55,8 @@ const PROPERTY_TYPES = [
   "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop",
 ];
 const CITIES = [
-  "Yaoundé", "Douala", "Bafoussam", "Garoua", "Maroua",
-  "Bamenda", "Ngaoundéré", "Bertoua", "Ebolowa", "Kumba", "Other",
+  "YaoundÃ©", "Douala", "Bafoussam", "Garoua", "Maroua",
+  "Bamenda", "NgaoundÃ©rÃ©", "Bertoua", "Ebolowa", "Kumba", "Other",
 ];
 const REGIONS = [
   "Adamawa", "Centre", "East", "Far North", "Littoral",
@@ -65,7 +65,7 @@ const REGIONS = [
 const BEDROOM_OPTIONS = ["Studio", "1", "2", "3", "4", "5", "6+", "N/A"];
 const BATH_OPTIONS    = ["1", "2", "3", "4+"];
 
-// ─── Image upload helpers ─────────────────────────────────────────────────────
+// â”€â”€â”€ Image upload helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function uploadImage(file: File, userId: string): Promise<string> {
   const ext  = file.name.split(".").pop() || "jpg";
   const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
@@ -80,7 +80,7 @@ async function uploadImage(file: File, userId: string): Promise<string> {
   return data.publicUrl;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ListProperty: React.FC = () => {
   const navigate = useNavigate();
   const { t }    = useTranslation("rentals");
@@ -94,7 +94,7 @@ const ListProperty: React.FC = () => {
   const [error,       setError]       = useState<string | null>(null);
   const fileInputRef  = useRef<HTMLInputElement>(null);
 
-  // ── Field update helpers ────────────────────────────────────────────────
+  // â”€â”€ Field update helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const set = (field: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -102,7 +102,7 @@ const ListProperty: React.FC = () => {
   const toggle = (field: keyof FormState) => () =>
     setForm((f) => ({ ...f, [field]: !f[field] }));
 
-  // ── Image handling ──────────────────────────────────────────────────────
+  // â”€â”€ Image handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).slice(0, 8 - imageFiles.length);
     if (!files.length) return;
@@ -120,7 +120,7 @@ const ListProperty: React.FC = () => {
     setImagePreviews((p) => p.filter((_, idx) => idx !== i));
   };
 
-  // ── Submit ──────────────────────────────────────────────────────────────
+  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -190,7 +190,7 @@ const ListProperty: React.FC = () => {
     }
   };
 
-  // ── Success screen ──────────────────────────────────────────────────────
+  // â”€â”€ Success screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (success) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
@@ -203,7 +203,7 @@ const ListProperty: React.FC = () => {
     );
   }
 
-  // ── Main form ───────────────────────────────────────────────────────────
+  // â”€â”€ Main form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen bg-gray-50 pb-28">
       <div className="max-w-2xl mx-auto">
@@ -238,7 +238,7 @@ const ListProperty: React.FC = () => {
             </div>
           )}
 
-          {/* ── Section: Basic info ─────────────────────────────────── */}
+          {/* â”€â”€ Section: Basic info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="bg-white border rounded-2xl p-4 space-y-3">
 
             {/* Title */}
@@ -288,7 +288,7 @@ const ListProperty: React.FC = () => {
             </div>
           </section>
 
-          {/* ── Section: Location ──────────────────────────────────── */}
+          {/* â”€â”€ Section: Location â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="bg-white border rounded-2xl p-4 space-y-3">
 
             {/* City */}
@@ -331,7 +331,7 @@ const ListProperty: React.FC = () => {
                   onChange={set("region")}
                   className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none bg-white"
                 >
-                  <option value="">—</option>
+                  <option value="">â€”</option>
                   {REGIONS.map((r) => (
                     <option key={r}>{r}</option>
                   ))}
@@ -340,7 +340,7 @@ const ListProperty: React.FC = () => {
             </div>
           </section>
 
-          {/* ── Section: Property details ──────────────────────────── */}
+          {/* â”€â”€ Section: Property details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="bg-white border rounded-2xl p-4 space-y-3">
 
             {/* Bedrooms + Bathrooms + Area */}
@@ -402,7 +402,7 @@ const ListProperty: React.FC = () => {
             </label>
           </section>
 
-          {/* ── Section: Description & amenities ──────────────────── */}
+          {/* â”€â”€ Section: Description & amenities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="bg-white border rounded-2xl p-4 space-y-3">
 
             <div>
@@ -431,7 +431,7 @@ const ListProperty: React.FC = () => {
             </div>
           </section>
 
-          {/* ── Section: Photos ─────────────────────────────────────── */}
+          {/* â”€â”€ Section: Photos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="bg-white border rounded-2xl p-4 space-y-3">
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-0.5">{t("rentals.formPhotos")}</p>
@@ -497,7 +497,7 @@ const ListProperty: React.FC = () => {
             </div>
           </section>
 
-          {/* ── Section: Contact ─────────────────────────────────────── */}
+          {/* â”€â”€ Section: Contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="bg-white border rounded-2xl p-4 space-y-3">
 
             <div>
@@ -527,7 +527,7 @@ const ListProperty: React.FC = () => {
             </div>
           </section>
 
-          {/* ── Submit button ─────────────────────────────────────────── */}
+          {/* â”€â”€ Submit button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <button
             type="submit"
             disabled={submitting}

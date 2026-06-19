@@ -2,7 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "@/types/auth";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 interface SubscriptionBannerProps {
   user: AuthUser | null;

@@ -1,11 +1,11 @@
-/**
+﻿/**
  * src/components/voice/MovableVoiceControl.tsx
  * FIXES: Removes duplicate isFinal/length/transcript/confidence declarations (TS2687)
  * Rebuilt clean with proper interface merging
  */
 import React, { useState, useRef, useCallback, useEffect } from "react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface SpeechResultItem {
   transcript: string;   // single declaration
   confidence: number;   // single declaration
@@ -58,7 +58,7 @@ interface MovableVoiceControlProps {
   className?: string;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
   onTranscript,
   onCommand,
@@ -171,7 +171,7 @@ const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
               ? "bg-red-500 hover:bg-red-600 animate-pulse"
               : "bg-teal-600 hover:bg-teal-700"
           }`}
-          title={isListening ? "Arrêter" : "Parler"}
+          title={isListening ? "ArrÃªter" : "Parler"}
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             {isListening ? (
@@ -184,7 +184,7 @@ const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
 
         {transcript && (
           <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded max-w-[200px] text-center whitespace-nowrap overflow-hidden text-ellipsis">
-            {transcript.slice(0, 60)}{transcript.length > 60 ? "…" : ""}
+            {transcript.slice(0, 60)}{transcript.length > 60 ? "â€¦" : ""}
           </div>
         )}
 

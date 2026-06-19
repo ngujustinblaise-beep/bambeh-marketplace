@@ -1,4 +1,4 @@
-export type { PaymentIntent, PaymentResult, PaymentProvider } from "../payment-gateway/PaymentService";
+﻿export type { PaymentIntent, PaymentResult, PaymentProvider } from "../payment-gateway/PaymentService";
 
 export interface Order {
   id: string;

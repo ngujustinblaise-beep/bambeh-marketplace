@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GAMIFICATION PANEL - VENDOR REWARDS & PROGRESS
  * FILE LOCATION: src/components/vendor/GamificationPanel.tsx
  */
