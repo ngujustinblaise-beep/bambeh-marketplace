@@ -1,4 +1,7 @@
-﻿import "@/lib/net-interceptor";
+﻿import VideoTutorials from './pages/help/VideoTutorials';
+import { tutorials } from './tutorials';
+import "@/lib/net-interceptor";
+
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
@@ -70,7 +73,6 @@ import {
 import AppProviders from "@/providers/AppProviders";
 
 // ─── 5b. LANGUAGE CONTEXT (inline — no external file dependency) ──────────────
-// Self-contained so the app never crashes due to a missing context file.
 type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
 type LangCtx = { language: LangCode; setLanguage: (l: string) => void; t: (k: string) => string; isRtl: boolean };
 
@@ -86,7 +88,6 @@ function _resolveCode(raw: string | null): LangCode {
 // ─── Flat translation table (all pages, all 5 languages) ─────────────────────
 const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
   en: {
-    // Nav
     home:"Home", jobs:"Jobs", marketplace:"Marketplace", services:"Services",
     rentals:"Rentals", vehicles:"Vehicles", exchange:"Exchange", community:"Community",
     sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
@@ -94,7 +95,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     back:"Back", cancel:"Cancel", save:"Save", loading:"Loading…",
     error:"Something went wrong. Please try again.", retry:"Retry", seeAll:"See all",
     tryAgain:"Try Again", share:"Share", copyLink:"Link copied!",
-    // Jobs list
     jobsTitle:"Find Jobs 💼", postJob:"+ Post Job",
     jobSearchPlaceholder:"Search jobs or companies…",
     opportunities:"opportunities across Cameroon",
@@ -106,13 +106,11 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     applyNow:"🚀 Apply Now", views:"views", negotiable:"Negotiable",
     salaryNotSpec:"Salary not specified", deadline:"Deadline", remote:"Remote",
     jobError:"Could not load jobs. Check your connection.", salary:"Monthly Salary",
-    // Jobs category
     allJobs:"All Jobs", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No jobs posted yet", checkBack:"Check back soon or post one yourself!",
     viewApply:"View & Apply →", loadMore:"Load More Jobs",
     closed:"⛔ Closed — Deadline passed", closingSoon:"⏰ Closing soon",
     today:"Today!", dLeft:"d left",
-    // Job detail
     jobNotFound:"Job not found", jobLoading:"Loading job details…",
     jobDescription:"Job Description", requirements:"Requirements & Skills",
     benefits:"Benefits & Perks", jobApplyNow:"Apply Now",
@@ -122,7 +120,6 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     expired:"This job has expired", deadline2:"Application deadline",
     candidates:"applicants", views2:"views", published:"Published",
     saved:"Saved", unsaved:"Bookmark", loginToApply:"Log in to apply",
-    // Post job
     postJobTitle:"Post a Job", postJobSubtitle:"Find the right talent across Cameroon",
     jobTitle:"Job Title *", jobTitlePh:"e.g. Senior Software Engineer",
     company:"Company / Organisation", companyPh:"Name of your company",
@@ -146,10 +143,8 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     publishJob:"Publish Job", fillRequired:"Please fill all required fields (*)",
     loginRequired:"You must be logged in to post a job",
     companyLogoLabel:"Company Logo", chooseImage:"Choose image",
-    // FarmFresh categories
     catAll:"All", catVegetables:"Vegetables", catFruits:"Fruits", catTubers:"Tubers",
     catGrains:"Grains", catLegumes:"Legumes", catHerbs:"Herbs", catDairy:"Dairy",
-    // Cart/payment
     cartEmpty:"Your cart is empty", continueShopping:"Continue Shopping",
     checkout:"Checkout", subtotal:"Subtotal", fee1pct:"Bambeh Fee (1%)", total:"Total",
     payWithMoMo:"Pay with MTN MoMo", payWithOrange:"Pay with Orange Money",
@@ -179,7 +174,7 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     applyNow:"🚀 Postuler maintenant", views:"vues", negotiable:"Négociable",
     salaryNotSpec:"Salaire non précisé", deadline:"Date limite", remote:"Télétravail",
     jobError:"Impossible de charger les offres.", salary:"Salaire mensuel",
-    allJobs:"Tous les emplois", opportunity:"opportunité",
+    allJobs:"Tous les emplois", opportunity:"opportunity",
     opportunitiesPlural:"opportunités", noJobsCategory:"Aucune offre publiée",
     checkBack:"Revenez bientôt ou publiez une offre !",
     viewApply:"Voir & Postuler →", loadMore:"Charger plus d'offres",
@@ -464,7 +459,6 @@ const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children })
     setLangState(next);
     localStorage.setItem(LANG_KEY, next);
     applyDom(next);
-    // Notify useLang() hook instances on all pages instantly
     window.dispatchEvent(new CustomEvent("bambeh:langchange", { detail: next }));
   }, [applyDom]);
 
@@ -628,7 +622,6 @@ const AdminUserAccountManagement  = lazy(() => import("@/pages/admin/AdminUserAc
 // HELP CENTER
 const Help                    = lazy(() => import("@/pages/help/Help"));
 const HelpGuides              = lazy(() => import("@/pages/help/HelpGuides"));
-const VideoTutorials          = lazy(() => import("@/pages/help/VideoTutorials"));
 const GettingStarted          = lazy(() => import("@/pages/help/GettingStarted"));
 const CreatingAccount         = lazy(() => import("@/pages/help/CreatingAccount"));
 const ProfileSetup            = lazy(() => import("@/pages/help/ProfileSetup"));
@@ -722,8 +715,6 @@ const BackToTopButton = React.memo(function BackToTopButton() {
 
 // ── RouteAwareWidgets ────────────────────────────────────────────────────────
 const WIDGET_HIDDEN_PATHS = ["/language", "/terms-acceptance"];
-
-// Share banner shows ONLY on home page to avoid covering content on other pages
 const HOME_PATHS = ["/", "/home"];
 
 const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
@@ -736,7 +727,6 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
       <MovableVoiceControl />
       <MonthlyFeedbackBanner />
       <BackToTopButton />
-      {/* CartDrawer is always available throughout the app */}
       <CartDrawer />
     </>
   );
@@ -746,15 +736,11 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
 const LoadingFallback = React.memo(function LoadingFallback() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Top brand bar */}
       <div className="bg-teal-600 h-14 w-full flex items-center px-4">
         <div className="h-6 w-28 bg-teal-500 rounded animate-pulse" />
       </div>
-
-      {/* Content skeleton */}
       <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
@@ -772,7 +758,6 @@ const LoadingFallback = React.memo(function LoadingFallback() {
           ))}
         </div>
       </div>
-
       <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-2 flex items-center justify-center gap-2">
         <div className="h-4 w-4 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />
         <span className="text-xs text-teal-600 font-medium animate-pulse">
@@ -784,19 +769,11 @@ const LoadingFallback = React.memo(function LoadingFallback() {
 });
 
 // ── OnboardingFlowGuard ──────────────────────────────────────────────────────
-// FIX: guardPassed initialised to `true` directly — eliminates the one-tick
-// LoadingFallback flash that occurred when it was initialised to `false`.
-// The useEffect was only setting it to true immediately anyway; removing it
-// is correct and has no behavioural side-effects.
 const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   children
 }: { children: React.ReactNode }) {
   const location = useLocation();
 
-  // FIX: Expanded publicPrefixes to include all legitimately public pages.
-  // Previously, routes like /about, /search, /seller/*, /spotlight, etc. were
-  // missing — causing first-time users to be bounced to /language when
-  // browsing public content before completing onboarding.
   const publicPrefixes = [
     "/login",
     "/register",
@@ -816,7 +793,6 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/terms-of-service",
     "/welcome",
     "/spotlight",
-    // Additional public routes:
     "/search",
     "/seller",
     "/offline-mode",
@@ -838,7 +814,6 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   if (!isPublic) {
     const hasLang    = localStorage.getItem("Bambeh_language");
     const hasTerms   = localStorage.getItem("Bambeh_terms_accepted");
-    // FIX: Read from localStorage (not sessionStorage) to match WelcomeWrapper.
     const hasWelcome = localStorage.getItem("Bambeh_welcome_shown");
 
     if (!hasLang && location.pathname !== "/language") {
@@ -856,7 +831,6 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
 });
 
 // ── AppInner ─────────────────────────────────────────────────────────────────
-// Thin wrapper rendered INSIDE AppProviders so hooks that need context are safe.
 function AppInner() {
   useMonthlyFeedback();
   return null;
@@ -882,8 +856,6 @@ const initializeCapacitor = async (): Promise<void> => {
   }
 
   try {
-    // Routes where the Android back button must be suppressed to prevent
-    // double-payment or broken payment state.
     const BACK_LOCKED_ROUTES = [
       "/payment/checkout",
       "/payment/pending",
@@ -891,11 +863,10 @@ const initializeCapacitor = async (): Promise<void> => {
     ];
 
     CapacitorApp.addListener("backButton", ({ canGoBack }: { canGoBack: boolean }) => {
-      const currentHash = window.location.hash.slice(1); // strip leading #
+      const currentHash = window.location.hash.slice(1);
       const isPaymentRoute = BACK_LOCKED_ROUTES.some(r => currentHash.startsWith(r));
 
       if (isPaymentRoute) {
-        // Silently suppress back during active payment to prevent double-submission
         logger.log("Back button suppressed during payment flow");
         return;
       }
@@ -910,20 +881,16 @@ const initializeCapacitor = async (): Promise<void> => {
     logger.warn("BackButton listener failed:", e);
   }
 
-  // FIX: NotchPay deep link handler — HashRouter stores routes in url.hash,
-  // NOT url.pathname. Reading pathname always returns "/" with HashRouter.
   try {
     CapacitorApp.addListener("appUrlOpen", (event: { url: string }) => {
       logger.log("Deep link received:", event.url);
       try {
         const url = new URL(event.url);
-
         let path   = "/";
         let search = "";
 
         if (url.hash && url.hash.startsWith("#/")) {
-          // Standard HashRouter deep link: bambeh.app/#/payment/callback?ref=abc
-          const hashContent = url.hash.slice(1); // strip leading #
+          const hashContent = url.hash.slice(1);
           const qIndex = hashContent.indexOf("?");
           if (qIndex !== -1) {
             path   = hashContent.slice(0, qIndex);
@@ -932,7 +899,6 @@ const initializeCapacitor = async (): Promise<void> => {
             path = hashContent;
           }
         } else if (url.pathname && url.pathname !== "/") {
-          // Custom scheme fallback: bambeh://payment/callback
           path   = url.pathname;
           search = url.search;
         }
@@ -959,8 +925,6 @@ const initializeCapacitor = async (): Promise<void> => {
 // ── WelcomeWrapper ───────────────────────────────────────────────────────────
 const WelcomeWrapper = React.memo(function WelcomeWrapper() {
   useEffect(() => {
-    // FIX: Use localStorage (not sessionStorage) so the welcome screen is not
-    // re-shown when Android kills and restores the WebView background session.
     localStorage.setItem("Bambeh_welcome_shown", "true");
   }, []);
   return <BambehWelcomeScreen />;
@@ -982,14 +946,7 @@ function NavigationBridge() {
   const navigate = useNavigate();
   useEffect(() => {
     NavigationService.register(navigate);
-    // FIX: Do NOT pass null on cleanup. If NavigationBridge ever remounts
-    // (HMR, React StrictMode double-invoke) the cleanup would null-out the
-    // service just as the new mount re-registers — creating a window where
-    // a Capacitor deep link fires null() and crashes.
-    // The new mount's register() call is sufficient to keep the ref fresh.
-    return () => {
-      // intentionally empty — re-mount handles re-registration
-    };
+    return () => {};
   }, [navigate]);
   return null;
 }
@@ -1000,8 +957,6 @@ function NavigationBridge() {
 export default function App() {
 
   useEffect(() => {
-    // One-time migration: remove the old chat widget position key only if it
-    // still exists. After all users have been migrated this is a no-op.
     if (localStorage.getItem('Bambeh_chat_position')) {
       localStorage.removeItem('Bambeh_chat_position');
     }
@@ -1015,9 +970,7 @@ export default function App() {
       <AppErrorBoundary>
         <PerformanceMonitor>
           <QueryClientProvider client={queryClient}>
-            {/* CartProvider wraps entire app so cart is accessible from any page */}
             <CartProvider>
-            {/* LanguageProvider: instant translation across ALL pages */}
             <LanguageProvider>
             <AppProviders>
               <AppInner />
@@ -1102,7 +1055,7 @@ export default function App() {
                           element={<MainLayout><JobsCategory /></MainLayout>}
                         />
 
-                        {/* ── 5. STATIC SUB-ROUTES — must come BEFORE dynamic :id routes ── */}
+                        {/* ── 5. STATIC SUB-ROUTES ── */}
                         <Route
                           path="/jobs/post"
                           element={
@@ -1360,14 +1313,6 @@ export default function App() {
                           path="/subscription"
                           element={<MainLayout><SubscriptionPlans /></MainLayout>}
                         />
-
-                        {/* ── ZERM COINS WALLET ──────────────────────────────────
-                         *  AuthGate: "user" (not "subscription") — any logged-in
-                         *  user can access their wallet and buy coins.
-                         *  /coins/buy   ← primary route (was /zerm/purchase → 404)
-                         *  /coins/purchase + /zerm/purchase kept as redirects so
-                         *  old links / push notifications still work.
-                         * ──────────────────────────────────────────────────────── */}
                         <Route
                           path="/coins"
                           element={
@@ -1400,7 +1345,6 @@ export default function App() {
                             </MainLayout>
                           }
                         />
-                        {/* Legacy redirects — keeps old links alive */}
                         <Route path="/coins/purchase"  element={<Navigate to="/coins/buy" replace />} />
                         <Route path="/zerm/purchase"   element={<Navigate to="/coins/buy" replace />} />
 
@@ -1729,5 +1673,3 @@ export default function App() {
     </React.StrictMode>
   );
 }
-
-
