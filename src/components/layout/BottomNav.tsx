@@ -7,6 +7,7 @@
  */
 
 import React from "react";
+import { useLanguage } from "@/App";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Briefcase, ShoppingBag, Wrench, User, Building2 } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";

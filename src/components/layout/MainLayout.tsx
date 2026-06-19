@@ -20,6 +20,7 @@
  */
 
 import React, { useState } from "react";
+import { useLanguage } from "@/App";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";

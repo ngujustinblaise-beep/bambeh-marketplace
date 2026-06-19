@@ -14,6 +14,7 @@
  */
 
 import { useState } from 'react';
+import { useLanguage } from "@/App";
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Menu, X, User, LogOut, LogIn, Search,

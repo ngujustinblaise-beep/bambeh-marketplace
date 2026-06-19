@@ -19,6 +19,7 @@
  */
 
 import React, { useState } from "react";
+import { useLanguage } from "@/App";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Check, AlertCircle, Loader2 } from "lucide-react";
