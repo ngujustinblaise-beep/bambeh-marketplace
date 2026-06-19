@@ -1,4 +1,4 @@
-﻿import React, {
+﻿import React, { useEffect, 
   createContext,
   useContext,
   useState,
@@ -280,3 +280,5 @@ export const useChat = () => {
   }
   return context; // FIX: missing closing } for the if block
 };
+
+

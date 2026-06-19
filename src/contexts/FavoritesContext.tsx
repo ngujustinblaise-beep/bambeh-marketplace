@@ -3,7 +3,7 @@
  * Manages user's favorite items (jobs, products, services, rentals)
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useContext,
   useState,
@@ -155,3 +155,5 @@ export function useFavorites() {
 }
 
 export default FavoritesContext;
+
+

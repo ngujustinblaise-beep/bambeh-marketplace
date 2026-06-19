@@ -1,18 +1,13 @@
-﻿/**
+﻿import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, CheckCircle, Loader2, Star } from "lucide-react";
+import { useLang, t } from "@/hooks/useAppLang";
+import { supabase } from "@/context/supabase";
+
+/**
  * src/pages/SellerRatingPage.tsx — Bambeh Marketplace
  * FIXED: Was a stub. Now a real star rating form that saves reviews.
  */
-
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, CheckCircle, Loader2 } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-import { useLang, t } from "@/hooks/useAppLang";
-
-const supabase = createClient(
-  (import.meta as any).env?.VITE_SUPABASE_URL || '',
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || ''
-);
 
 export default function SellerRatingPage() {
   const lang = useLang();
@@ -168,3 +163,11 @@ export default function SellerRatingPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+

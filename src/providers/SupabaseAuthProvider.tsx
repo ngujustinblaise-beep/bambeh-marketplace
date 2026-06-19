@@ -19,7 +19,7 @@
  *   const { user, loading } = useSupabaseAuth();
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useCallback,
   useContext,
@@ -143,3 +143,5 @@ export function useSupabaseAuth(): SupabaseAuthContextType {
 }
 
 export default SupabaseAuthProvider;
+
+

@@ -15,7 +15,7 @@
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useContext,
   useState,
@@ -249,3 +249,5 @@ export const useTheme = (): ThemeContextType => {
 };
 
 export default ThemeContext;
+
+

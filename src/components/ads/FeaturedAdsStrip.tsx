@@ -21,7 +21,7 @@
  * Â© 2026 BAMBEH SARL. All rights reserved.
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useEffect,  useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -465,3 +465,5 @@ useEffect(() => {
   }, 15000);
   return () => clearInterval(interval);
 }, []);
+
+

@@ -4,7 +4,7 @@
  * Â© 2025 Bambeh. All rights reserved.
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useContext,
   useState,
@@ -534,3 +534,5 @@ export const useAccountStatus = (): AccountStatusContextType => {
 };
 
 export default AccountStatusContext;
+
+

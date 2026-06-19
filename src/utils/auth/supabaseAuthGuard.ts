@@ -12,12 +12,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL as string,
-  import.meta.env.VITE_SUPABASE_ANON_KEY as string
-);
-
+import { supabase } from "@/context/supabase";
 export { supabase };
 
 // â”€â”€â”€ TYPE DEFINITIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -185,3 +180,6 @@ export async function signOut(): Promise<void> {
   ];
   legacyKeys.forEach((k) => localStorage.removeItem(k));
 }
+
+
+

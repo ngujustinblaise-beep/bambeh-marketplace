@@ -4,7 +4,7 @@
  * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useContext,
   useState,
@@ -196,3 +196,5 @@ export function useSearchBar(): SearchBarContextValue {
 }
 
 export default SearchBarContext;
+
+

@@ -9,7 +9,7 @@
  * Use useFirebase() hook instead â€” resolves the Vite bundle split warning.
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useContext,
   useEffect,
@@ -132,3 +132,5 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export function useFirebase(): FirebaseContextValue {
   return useContext(FirebaseContext);
 }
+
+

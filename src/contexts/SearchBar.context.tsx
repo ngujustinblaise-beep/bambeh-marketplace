@@ -12,7 +12,7 @@
  * â€” SearchBarState and SearchBarActions export the scope API.
  */
 
-import React, {
+import React, { useEffect, 
   createContext,
   useContext,
   useState,
@@ -180,3 +180,5 @@ export function useSearchBar(): SearchBarContextValue {
 }
 
 export default SearchBarContext;
+
+

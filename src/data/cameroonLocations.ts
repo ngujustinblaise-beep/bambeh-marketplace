@@ -56,7 +56,7 @@ export const QUARTIERS_BY_CITY: Record<string, string[]> = {
   // Bamenda
   Bamenda: ["Up Station", "Bafutchu", "Menthe", "Behind Magestrate Court Big Bz street", "Behind Magestrate Court Zerms street", "Old Town", "Nkwen", "Mile 2", "Mankon", "Mulang", "Azire", "Mile 8 Mankon", "Ntamulung", "Big Mankon", "Small Mankon", "Nacho", "Banjah",  "New Road", "Santa", "Akum", "Bambili", "Bafut", "Nso", "Kom", "Wum", "Bambui", "Ntarikon", "Abangoh", "Alakuma", "Rendez-vous", "Babanki", "Bali", "Ngie", "Mbengwi", "Ngeyen-mbou", "Widikum", "Mendankwe"],
   // Limbe
-  Limbe: ["Bota", "Down Beach", "Mile 4", "Bousoumbu" "New Town", "Clerks Quarter", "GRA", "Half Mile", "Mile 16"],
+  Limbe: ["Bota", "Down Beach", "Mile 4", "Bousoumbu", "New Town", "Clerks Quarter", "GRA", "Half Mile", "Mile 16"],
   // Kumba
   Kumba: ["Fiango", "Konye", "Titi", "Mile 6", "Mbonge Road"],
   // Ngaoundéré
