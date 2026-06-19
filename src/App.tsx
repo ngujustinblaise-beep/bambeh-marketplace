@@ -66,7 +66,6 @@ import {
   MonthlyFeedbackBanner
 } from "@/hooks/useMonthlyFeedback";
 
-import VideoTutorials from './pages/help/VideoTutorials';
 import "@/lib/net-interceptor";
 import './index.css';
 
@@ -503,6 +502,7 @@ const Exchange        = lazy(() => import("@/pages/Exchange"));
 const FlashDeals      = lazy(() => import("@/pages/FlashDeals"));
 const GroupBuying     = lazy(() => import("@/pages/GroupBuying"));
 const BambehAIChatbot = lazy(() => import("@/pages/BambehAIChatbot"));
+const VideoTutorials  = lazy(() => import("@/pages/help/VideoTutorials"));
 
 // DETAIL PAGES
 const JobDetails              = lazy(() => import("@/pages/JobDetails"));
