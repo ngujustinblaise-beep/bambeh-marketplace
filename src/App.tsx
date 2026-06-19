@@ -1,7 +1,4 @@
-﻿import VideoTutorials from './pages/help/VideoTutorials';
-import { tutorials } from './tutorials';
-import "@/lib/net-interceptor";
-
+﻿
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
@@ -68,6 +65,22 @@ import {
   useMonthlyFeedback,
   MonthlyFeedbackBanner
 } from "@/hooks/useMonthlyFeedback";
+
+import VideoTutorials from './pages/help/VideoTutorials';
+import { tutorials } from './tutorials';
+import "@/lib/net-interceptor";
+import { useState, useEffect } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
+import './index.css';
+
+// Layouts & Providers
+import MainLayout from './layouts/MainLayout';
+import VendorLayout from './layouts/VendorLayout';
+import AdminLayout from './layouts/AdminLayout';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // ─── 5. Internal Providers ────────────────────────────────────────────────────
 import AppProviders from "@/providers/AppProviders";
