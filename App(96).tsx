@@ -1,12 +1,12 @@
-/**
- * App.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+﻿/**
+ * App.tsx â€” Bambeh Marketplace
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// ─── 1. React Core ────────────────────────────────────────────────────────────
+// â”€â”€â”€ 1. React Core â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import React, { Suspense, lazy, useEffect, useRef, useCallback } from "react";
 
-// ─── 2. Third-Party Libraries ─────────────────────────────────────────────────
+// â”€â”€â”€ 2. Third-Party Libraries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import {
   BrowserRouter,
   Routes,
@@ -19,11 +19,11 @@ import { App as CapacitorApp } from "@capacitor/app";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { SplashScreen } from "@capacitor/splash-screen";
 
-// ─── 3. Internal Utils / Services ─────────────────────────────────────────────
+// â”€â”€â”€ 3. Internal Utils / Services â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import { initializeAnalytics } from "@/utils/analytics/AnalyticsInit";
 import sessionManager, { SESSION_KEYS } from "@/utils/auth/sessionManager";
 
-// ─── 4. Internal Components ───────────────────────────────────────────────────
+// â”€â”€â”€ 4. Internal Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import {
   AppErrorBoundary,
   RouteTracker,
@@ -43,28 +43,28 @@ import {
   MonthlyFeedbackBanner
 } from "@/hooks/useMonthlyFeedback";
 
-// ─── 5. Internal Providers ────────────────────────────────────────────────────
+// â”€â”€â”€ 5. Internal Providers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import AppProviders from "@/providers/AppProviders";
 
-// ─── 6. Layouts (Eager — used on nearly every route) ─────────────────────────
+// â”€â”€â”€ 6. Layouts (Eager â€” used on nearly every route) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import MainLayout from "@/components/layout/MainLayout";
 import AuthLayout from "@/components/layout/AuthLayout";
 import VendorLayout from "@/components/layout/VendorLayout";
 
-// ─── 7. Eager Page Imports (first-screen only) ────────────────────────────────
-// EXCEPTION: LanguageSelection, TermsAcceptance, Login, Register stay eager —
+// â”€â”€â”€ 7. Eager Page Imports (first-screen only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// EXCEPTION: LanguageSelection, TermsAcceptance, Login, Register stay eager â€”
 // they are the very first screens users hit; lazy-loading them would add latency.
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 
-// ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
+// â”€â”€â”€ 8. Lazy Page Imports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // AUTH
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
 
-// CORE MARKETPLACE (all lazified — fixes BUG #2, critical bundle size)
+// CORE MARKETPLACE (all lazified â€” fixes BUG #2, critical bundle size)
 const Home = lazy(() => import("@/pages/Home"));
 const Jobs = lazy(() => import("@/pages/Jobs"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
@@ -97,7 +97,7 @@ const AlertsPage = lazy(() => import("@/pages/AlertsPage"));
 const Orders = lazy(() => import("@/pages/Orders"));
 const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
 
-// SETTINGS (new full user settings page — separate from Profile, fixes Issue #32)
+// SETTINGS (new full user settings page â€” separate from Profile, fixes Issue #32)
 const UserSettings = lazy(() => import("@/pages/settings/UserSettings"));
 
 // POSTING FORMS
@@ -110,7 +110,7 @@ const ListProperty = lazy(() => import("@/pages/ListProperty"));
 const SellVehicle = lazy(() => import("@/pages/SellVehicle"));
 const PostAd = lazy(() => import("@/pages/PostAd"));
 
-// LISTING EDIT FORMS (new — fixes Issue #33)
+// LISTING EDIT FORMS (new â€” fixes Issue #33)
 const EditMarketplaceListing = lazy(
   () => import("@/pages/EditMarketplaceListing"),
 );
@@ -118,7 +118,7 @@ const EditJobListing = lazy(() => import("@/pages/EditJobListing"));
 const EditServiceListing = lazy(() => import("@/pages/EditServiceListing"));
 const MarketplaceDrafts = lazy(() => import("@/pages/MarketplaceDrafts"));
 
-// CATEGORY PAGES (new — fixes Issue #23)
+// CATEGORY PAGES (new â€” fixes Issue #23)
 const MarketplaceCategory = lazy(() => import("@/pages/MarketplaceCategory"));
 const JobsCategory = lazy(() => import("@/pages/JobsCategory"));
 
@@ -140,7 +140,7 @@ const SearchResults = lazy(() => import("@/pages/SearchResults"));
 const SavedSearches = lazy(() => import("@/pages/SavedSearches"));
 const ReportIssuePage = lazy(() => import("@/pages/ReportIssuePage"));
 
-// 404 (extracted from inline JSX — fixes BUG #7)
+// 404 (extracted from inline JSX â€” fixes BUG #7)
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 // VENDOR PAGES
@@ -237,7 +237,7 @@ const AutoMessaging = lazy(
   () => import("@/pages/vendor/premium/AutoMessaging"),
 );
 
-// VENDOR PUBLIC STOREFRONT (new — fixes Issue #23)
+// VENDOR PUBLIC STOREFRONT (new â€” fixes Issue #23)
 const VendorPublicProfile = lazy(
   () => import("@/pages/vendor/VendorPublicProfile"),
 );
@@ -310,9 +310,9 @@ const PaymentPending = lazy(() => import("@/pages/payment/PaymentPending"));
 const PaymentSuccess = lazy(() => import("@/pages/payment/PaymentSuccess"));
 const PaymentFailed = lazy(() => import("@/pages/payment/PaymentFailed"));
 
-// ─── 9. Inline Components ─────────────────────────────────────────────────────
+// â”€â”€â”€ 9. Inline Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// FIX #1: BackToTopButton — was missing its closing `}` which caused every
+// FIX #1: BackToTopButton â€” was missing its closing `}` which caused every
 // component below it to be parsed as part of its function body.
 const BackToTopButton = React.memo(function BackToTopButton() {
   const [visible, setVisible] = React.useState(false);
@@ -365,11 +365,11 @@ const BackToTopButton = React.memo(function BackToTopButton() {
       Back to Top
     </button>
   );
-}); // FIX #1 — closing brace restored
+}); // FIX #1 â€” closing brace restored
 
-// ROUTE-AWARE WIDGETS — hidden on language selection and terms acceptance pages (Fix #2)
+// ROUTE-AWARE WIDGETS â€” hidden on language selection and terms acceptance pages (Fix #2)
 const WIDGET_HIDDEN_PATHS = ["/language", "/terms-acceptance"];
-// FIX #2: RouteAwareWidgets was missing its closing `}` — restored below
+// FIX #2: RouteAwareWidgets was missing its closing `}` â€” restored below
 const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
   const location = useLocation();
   const hidden = WIDGET_HIDDEN_PATHS.some((p) => location.pathname === p);
@@ -382,10 +382,10 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
       <BackToTopButton />
     </>
   );
-}); // FIX #2 — closing brace restored
+}); // FIX #2 â€” closing brace restored
 
-// LOADING FALLBACK — Skeleton-style (minimal spinner, can be upgraded per-route)
-// FIX #3: LoadingFallback was missing its closing `}` — restored below
+// LOADING FALLBACK â€” Skeleton-style (minimal spinner, can be upgraded per-route)
+// FIX #3: LoadingFallback was missing its closing `}` â€” restored below
 const LoadingFallback = React.memo(function LoadingFallback() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50">
@@ -403,10 +403,10 @@ const LoadingFallback = React.memo(function LoadingFallback() {
       </div>
     </div>
   );
-}); // FIX #3 — closing brace restored
+}); // FIX #3 â€” closing brace restored
 
-// ONBOARDING FLOW GUARD — synchronous, no useRef flicker (fixes BUG #5)
-// Flow: /language → /terms-acceptance → /welcome (once) → app
+// ONBOARDING FLOW GUARD â€” synchronous, no useRef flicker (fixes BUG #5)
+// Flow: /language â†’ /terms-acceptance â†’ /welcome (once) â†’ app
 const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   children
 }: { children: React.ReactNode }) {
@@ -447,7 +447,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     if (hasLang && !hasTerms && location.pathname !== "/terms-acceptance") {
       return <Navigate to="/terms-acceptance" replace />;
     }
-    // FIX #1 — Show the welcome animation exactly once after terms accepted
+    // FIX #1 â€” Show the welcome animation exactly once after terms accepted
     if (
       hasLang &&
       hasTerms &&
@@ -462,7 +462,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   return <>{children}</>;
 });
 
-// ─── VENDOR AUTH CHECK — strict (fixes SECURITY #3) ──────────────────────────
+// â”€â”€â”€ VENDOR AUTH CHECK â€” strict (fixes SECURITY #3) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FIX #4: Removed rogue async Firebase getDoc code that was injected inside
 // this synchronous function, breaking all try/catch structure.
 function isVendorAuthenticated(): boolean {
@@ -496,7 +496,7 @@ function isVendorAuthenticated(): boolean {
   }
 }
 
-// ─── USER AUTH CHECK — login status (used by SubscriptionRoute) ──────────────
+// â”€â”€â”€ USER AUTH CHECK â€” login status (used by SubscriptionRoute) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FIX #5: Added missing final `return false` after the for-loop
 function isUserLoggedIn(): boolean {
   try {
@@ -517,7 +517,7 @@ function isUserLoggedIn(): boolean {
   }
 }
 
-// ─── USER SUBSCRIPTION CHECK — subscription status (used by SubscriptionRoute)
+// â”€â”€â”€ USER SUBSCRIPTION CHECK â€” subscription status (used by SubscriptionRoute)
 // FIX #6: Removed `await getDoc(...)` Firebase call inside a sync function.
 // Replaced with pure localStorage check consistent with the rest of the file.
 function isUserSubscribed(): boolean {
@@ -556,7 +556,7 @@ function isUserSubscribed(): boolean {
   }
 }
 
-// ─── ADMIN AUTH CHECK — strict (fixes SECURITY #4) ───────────────────────────
+// â”€â”€â”€ ADMIN AUTH CHECK â€” strict (fixes SECURITY #4) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function isAdminAuthenticated(): boolean {
   try {
     const key = "Bambeh_admin";
@@ -575,7 +575,7 @@ function isAdminAuthenticated(): boolean {
   }
 }
 
-// ─── VENDOR PROTECTED ROUTE ───────────────────────────────────────────────────
+// â”€â”€â”€ VENDOR PROTECTED ROUTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FIX #7: Removed references to undefined `guardPassed` variable (was only
 // defined inside OnboardingFlowGuard, leaked here via corruption).
 const VendorProtectedRoute = React.memo(function VendorProtectedRoute({
@@ -593,7 +593,7 @@ const VendorProtectedRoute = React.memo(function VendorProtectedRoute({
   return <>{children}</>;
 });
 
-// ─── ADMIN PROTECTED ROUTE ────────────────────────────────────────────────────
+// â”€â”€â”€ ADMIN PROTECTED ROUTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FIX #8: Same `guardPassed` removal applied here
 const AdminProtectedRoute = React.memo(function AdminProtectedRoute({
   children
@@ -610,10 +610,10 @@ const AdminProtectedRoute = React.memo(function AdminProtectedRoute({
   return <>{children}</>;
 });
 
-// ─── SUBSCRIPTION PROTECTED ROUTE ────────────────────────────────────────────
+// â”€â”€â”€ SUBSCRIPTION PROTECTED ROUTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Requires user to be BOTH logged-in AND subscribed.
-// • Not logged in  → /login  (stores intended path for post-login redirect)
-// • Logged in, no subscription → /subscription
+// â€¢ Not logged in  â†’ /login  (stores intended path for post-login redirect)
+// â€¢ Logged in, no subscription â†’ /subscription
 // FIX #9: Same `guardPassed` removal applied here
 const SubscriptionRoute = React.memo(function SubscriptionRoute({
   children
@@ -630,10 +630,10 @@ const SubscriptionRoute = React.memo(function SubscriptionRoute({
   return <>{children}</>;
 });
 
-// ─── LOCAL AUTH ROUTE ─────────────────────────────────────────────────────────
+// â”€â”€â”€ LOCAL AUTH ROUTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Requires login via localStorage only (no Firebase / subscription needed).
 // Used for posting routes so logged-in users can post regardless of subscription.
-// • Not logged in → /login  (saves intended path for post-login redirect)
+// â€¢ Not logged in â†’ /login  (saves intended path for post-login redirect)
 // FIX #10: Same `guardPassed` removal applied here
 const LocalAuthRoute = React.memo(function LocalAuthRoute({
   children
@@ -646,7 +646,7 @@ const LocalAuthRoute = React.memo(function LocalAuthRoute({
   return <>{children}</>;
 });
 
-// ─── RATE LIMITER — typed interface, no `any` (fixes TypeScript #20) ──────────
+// â”€â”€â”€ RATE LIMITER â€” typed interface, no `any` (fixes TypeScript #20) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface RateLimitResult {
   blocked: boolean;
   requiresCaptcha: boolean;
@@ -713,10 +713,10 @@ const initLoginRateLimiter = (): void => {
   };
 };
 
-// ─── CAPACITOR INIT ───────────────────────────────────────────────────────────
+// â”€â”€â”€ CAPACITOR INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FIX #12: `await StatusBar.setBackgroundColor({ return { color:` had a rogue
 // `return` keyword inside the object literal. All three try/catch blocks were
-// also improperly collapsed — restructured with proper braces.
+// also improperly collapsed â€” restructured with proper braces.
 const initializeCapacitor = async (): Promise<void> => {
   if (!Capacitor.isNativePlatform()) return;
   try {
@@ -749,7 +749,7 @@ const initializeCapacitor = async (): Promise<void> => {
   }
 };
 
-// WELCOME WRAPPER — marks Bambeh_welcome_shown on mount so OnboardingFlowGuard
+// WELCOME WRAPPER â€” marks Bambeh_welcome_shown on mount so OnboardingFlowGuard
 // never loops, then renders the animated welcome screen.
 // FIX #13: `localStorage.setItem(...);, [])` had a stray comma breaking useEffect
 const WelcomeWrapper = React.memo(function WelcomeWrapper() {
@@ -759,7 +759,7 @@ const WelcomeWrapper = React.memo(function WelcomeWrapper() {
   return <BambehWelcomeScreen />;
 });
 
-// ─── ADMIN LAYOUT WRAPPER ─────────────────────────────────────────────────────
+// â”€â”€â”€ ADMIN LAYOUT WRAPPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Admin layout is lazy-loaded but used as a wrapper; we need a synchronous wrapper
 // that passes through children while the real AdminLayout suspense-loads.
 const AdminRouteWrapper: React.FC<{ children: React.ReactNode }> = ({
@@ -772,9 +772,9 @@ const AdminRouteWrapper: React.FC<{ children: React.ReactNode }> = ({
   </AdminProtectedRoute>
 );
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN APP
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export default function App() {
   useMonthlyFeedback();
 
@@ -785,7 +785,7 @@ export default function App() {
     initLoginRateLimiter();
     if (import.meta.env.DEV) {
       console.log(
-        "%c🚀 Bambeh Marketplace",
+        "%cðŸš€ Bambeh Marketplace",
         "color:#0d9488;font-size:18px;font-weight:bold",
       );
     }
@@ -805,7 +805,7 @@ export default function App() {
                   <OnboardingFlowGuard>
                     <Suspense fallback={<LoadingFallback />}>
                       <Routes>
-                        {/* ── 1. ONBOARDING ──────────────────────────────────────── */}
+                        {/* â”€â”€ 1. ONBOARDING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         {/* FIX #1: WelcomeWrapper sets Bambeh_welcome_shown flag then renders animation */}
                         <Route path="/welcome" element={<WelcomeWrapper />} />
                         <Route
@@ -817,7 +817,7 @@ export default function App() {
                           element={<TermsAcceptance />}
                         />
 
-                        {/* ── 2. AUTH ─────────────────────────────────────────────── */}
+                        {/* â”€â”€ 2. AUTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/login"
                           element={
@@ -852,7 +852,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
+                        {/* â”€â”€ 3. PUBLIC MARKETPLACE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/"
                           element={
@@ -861,7 +861,7 @@ export default function App() {
                             </MainLayout>
                           }
                         />
-                        {/* FIX: /home alias → / (welcome screen lands here after animation) */}
+                        {/* FIX: /home alias â†’ / (welcome screen lands here after animation) */}
                         <Route
                           path="/home"
                           element={<Navigate to="/" replace />}
@@ -949,7 +949,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 4. CATEGORY PAGES (new — fixes Issue #23) ─────────── */}
+                        {/* â”€â”€ 4. CATEGORY PAGES (new â€” fixes Issue #23) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/marketplace/category/:category"
                           element={
@@ -967,7 +967,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 5. STATIC SUB-ROUTES — must come BEFORE dynamic :id routes ── */}
+                        {/* â”€â”€ 5. STATIC SUB-ROUTES â€” must come BEFORE dynamic :id routes â”€â”€ */}
                         {/* FIX BUG: Static posting/action routes declared first so they are never
                             swallowed by the dynamic :id param routes below (same pattern already
                             applied to /exchange in BUG #1). */}
@@ -992,7 +992,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── SERVICE POSTING — canonical + aliases ──────────────── */}
+                        {/* â”€â”€ SERVICE POSTING â€” canonical + aliases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/services/offer"
                           element={
@@ -1012,7 +1012,7 @@ export default function App() {
                           element={<Navigate to="/services/offer" replace />}
                         />
 
-                        {/* ── RENTAL POSTING — canonical + aliases ───────────────── */}
+                        {/* â”€â”€ RENTAL POSTING â€” canonical + aliases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/rentals/list"
                           element={
@@ -1075,9 +1075,9 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 6. DETAIL PAGES — dynamic :id AFTER all static sub-routes ── */}
+                        {/* â”€â”€ 6. DETAIL PAGES â€” dynamic :id AFTER all static sub-routes â”€â”€ */}
                         {/* FIX: Detail pages require login + active subscription.
-                            SubscriptionRoute: not logged in → /login | logged in no sub → /subscription */}
+                            SubscriptionRoute: not logged in â†’ /login | logged in no sub â†’ /subscription */}
                         <Route
                           path="/jobs/:id"
                           element={
@@ -1139,7 +1139,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 7. USER PAGES ──────────────────────────────────────── */}
+                        {/* â”€â”€ 7. USER PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/profile"
                           element={
@@ -1346,7 +1346,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 9. VENDOR PUBLIC ───────────────────────────────────── */}
+                        {/* â”€â”€ 9. VENDOR PUBLIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/vendor"
                           element={<Navigate to="/vendor/home" replace />}
@@ -1456,13 +1456,13 @@ export default function App() {
                           path="/vendor-signin"
                           element={<Navigate to="/vendor/signin" replace />}
                         />
-                        {/* FIX: /vendor/manage-listings → /vendor/listings (was causing 404) */}
+                        {/* FIX: /vendor/manage-listings â†’ /vendor/listings (was causing 404) */}
                         <Route
                           path="/vendor/manage-listings"
                           element={<Navigate to="/vendor/listings" replace />}
                         />
 
-                        {/* ── 10. VENDOR PROTECTED ───────────────────────────────── */}
+                        {/* â”€â”€ 10. VENDOR PROTECTED â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/vendor/dashboard"
                           element={
@@ -1794,7 +1794,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 11. ADMIN — 1h TTL, with AdminLayout (fixes BUG #4) ── */}
+                        {/* â”€â”€ 11. ADMIN â€” 1h TTL, with AdminLayout (fixes BUG #4) â”€â”€ */}
                         <Route
                           path="/admin"
                           element={<Navigate to="/admin/login" replace />}
@@ -1874,7 +1874,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 12. HELP CENTER ────────────────────────────────────── */}
+                        {/* â”€â”€ 12. HELP CENTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/help"
                           element={
@@ -2004,7 +2004,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 13. OTHER / GENERAL PAGES ──────────────────────────── */}
+                        {/* â”€â”€ 13. OTHER / GENERAL PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/about"
                           element={
@@ -2058,7 +2058,7 @@ export default function App() {
                             </MainLayout>
                           }
                         />
-                        {/* FIX BUG #6: Duplicate tracking routes — canonical is /tracking */}
+                        {/* FIX BUG #6: Duplicate tracking routes â€” canonical is /tracking */}
                         <Route
                           path="/tracking"
                           element={
@@ -2107,7 +2107,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 14. PAYMENT (NotchPay) ─────────────────────────────── */}
+                        {/* â”€â”€ 14. PAYMENT (NotchPay) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/payment/checkout"
                           element={
@@ -2118,7 +2118,7 @@ export default function App() {
                             </MainLayout>
                           }
                         />
-                        {/* FIX ROUTE #22: Callback now protected — server validates signature */}
+                        {/* FIX ROUTE #22: Callback now protected â€” server validates signature */}
                         <Route
                           path="/payment/callback"
                           element={
@@ -2157,7 +2157,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 15. REDIRECTS ──────────────────────────────────────── */}
+                        {/* â”€â”€ 15. REDIRECTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="/sell-item"
                           element={<Navigate to="/marketplace/sell" replace />}
@@ -2167,7 +2167,7 @@ export default function App() {
                           element={<Navigate to="/jobs/post" replace />}
                         />
 
-                        {/* ── 16.  FEATURES ──────────────────────────────── */}
+                        {/* â”€â”€ 16.  FEATURES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route path="/splash" element={<SplashScreenPage />} />
                         <Route
                           path="/spotlight"
@@ -2334,7 +2334,7 @@ export default function App() {
                           }
                         />
 
-                        {/* ── 17. 404 (extracted component — fixes BUG #7) ───────── */}
+                        {/* â”€â”€ 17. 404 (extracted component â€” fixes BUG #7) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                         <Route
                           path="*"
                           element={
@@ -2356,5 +2356,7 @@ export default function App() {
       </AppErrorBoundary>
     </React.StrictMode>
   );
-} // FIX #15 — closing brace for App() function restored
+} // FIX #15 â€” closing brace for App() function restored
+
+
 

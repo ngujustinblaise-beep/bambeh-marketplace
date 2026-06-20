@@ -610,10 +610,10 @@ export default function OfferService() {
       const ext  = imgFiles[i].name.split('.').pop() ?? 'jpg';
       const path = `service-images/${userId}/${Date.now()}-${i}.${ext}`;
       const { error } = await supabase.storage
-        .from('listings')
+        .from('farm-images')
         .upload(path, imgFiles[i], { upsert: false });
       if (!error) {
-        const { data: pub } = supabase.storage.from('listings').getPublicUrl(path);
+        const { data: pub } = supabase.storage.from('farm-images').getPublicUrl(path);
         if (pub?.publicUrl) urls.push(pub.publicUrl);
       }
     }
@@ -649,7 +649,7 @@ export default function OfferService() {
       });
 
       // Canonical write to listings table (main feed)
-      const { data, error: lstErr } = await supabase.from('listings').insert({
+      const { data, error: lstErr } = await supabase.from('farm-images').insert({
         user_id:     user.id,
         seller_id:   user.id,
         type:        'service',
@@ -944,3 +944,5 @@ export default function OfferService() {
     </div>
   );
 }
+
+

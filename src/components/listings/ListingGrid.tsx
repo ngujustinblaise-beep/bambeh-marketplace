@@ -42,3 +42,5 @@ export function ListingGrid({ listings }: ListingGridProps) {
     </div>
   );
 }
+
+

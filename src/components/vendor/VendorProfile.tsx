@@ -132,3 +132,5 @@ const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 };
 
 export default VendorProfileCard;
+
+

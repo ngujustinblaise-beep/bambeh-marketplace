@@ -77,3 +77,5 @@ const VendorBadge: React.FC<VendorBadgeProps> = ({ status, verificationLevel, sh
 export default VendorBadge;
 export { VendorIcon, VendorCardBadge, BecomeVendorButton };
 export type { VendorIconProps, VendorCardBadgeProps, BecomeVendorButtonProps };
+
+

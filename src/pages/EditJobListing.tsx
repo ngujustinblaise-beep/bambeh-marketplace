@@ -67,7 +67,7 @@ export default function EditJobListing() {
 
       // Fallback: try listings table with type='job'
       const { data: listing } = await supabase
-        .from('listings')
+        .from('farm-images')
         .select('title, description, location, category, phone, extra')
         .eq('id', jobId)
         .single();
@@ -120,7 +120,7 @@ export default function EditJobListing() {
 
       if (jobErr) {
         // Fallback: update listings table
-        await supabase.from('listings').update({
+        await supabase.from('farm-images').update({
           title:       form.title.trim(),
           description: form.description.trim(),
           location:    form.location.trim(),
@@ -250,3 +250,5 @@ export default function EditJobListing() {
     </div>
   );
 }
+
+

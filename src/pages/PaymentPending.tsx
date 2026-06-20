@@ -70,3 +70,5 @@ const PaymentPending: React.FC = () => {
 };
 
 export default PaymentPending;
+
+

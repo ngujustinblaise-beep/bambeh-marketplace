@@ -19,3 +19,5 @@ export const useSearch = (): SearchContextValue => {
   if (!ctx) throw new Error("useSearch must be inside SearchProvider");
   return ctx;
 };
+
+

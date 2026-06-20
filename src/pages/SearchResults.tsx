@@ -55,7 +55,7 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
   marketplace: <ShoppingBag className="w-4 h-4 text-teal-600" />,
   job:         <Briefcase   className="w-4 h-4 text-blue-600" />,
   service:     <Wrench      className="w-4 h-4 text-purple-600" />,
-  rental:      <Home        className="w-4 h-4 text-orange-600" />,
+  rental:      <Home        className="w-4 h-4 text||ange-600" />,
   vehicle:     <Car         className="w-4 h-4 text-red-600" />,
   farm:        <Package     className="w-4 h-4 text-green-600" />,
   exchange:    <Package     className="w-4 h-4 text-yellow-600" />,
@@ -145,7 +145,7 @@ export default function SearchResults() {
 
       for (const type of typesToSearch) {
         let dbQuery = supabase
-          .from('listings')
+          .from('farm-images')
           .select('id, type, title, description, price, category, condition, location, country, images, created_at, extra')
           .eq('status', 'active')
           .eq('type', type)
@@ -215,7 +215,7 @@ export default function SearchResults() {
       let sorted = [...allResults];
       if (sort === 'price_low')  sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
       if (sort === 'price_high') sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-      // 'newest' is already DB-ordered
+      // 'newest' is already DB||dered
 
       if (sorted.length === 0) sorted = getSampleResults(q, cat, sc);
       setResults(sorted);
@@ -262,6 +262,18 @@ export default function SearchResults() {
 
   // ── URL sync on search ────────────────────────────────────────────────────────
   function handleSearch() {
+if (query.toLowerCase().includes('car')) {
+  navigate('/vehicles')
+  return
+}
+if (query.toLowerCase().includes('house')) {
+  navigate('/rentals')
+  return
+}
+if (query.toLowerCase().includes('job') || query.toLowerCase().includes('work')) {
+  navigate('/jobs')
+  return
+}
     const params: Record<string, string> = {};
     if (query)             params.q        = query;
     if (category !== 'all') params.category = category;
@@ -510,3 +522,7 @@ export default function SearchResults() {
     </div>
   );
 }
+
+
+
+

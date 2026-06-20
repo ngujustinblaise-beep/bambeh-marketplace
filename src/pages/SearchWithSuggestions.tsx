@@ -40,3 +40,5 @@ export default function SearchWithSuggestions() {
     </div>
   );
 }
+
+

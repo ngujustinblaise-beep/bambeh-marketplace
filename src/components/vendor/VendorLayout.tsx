@@ -341,3 +341,5 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
 };
 
 export default VendorLayout;
+
+

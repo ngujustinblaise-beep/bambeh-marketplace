@@ -141,7 +141,7 @@ Time: ${new Date().toISOString()}
             </div>
             {/* Error Message */}
             <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">
-              Oops! Something went wrong
+              Please refresh or contact support.
             </h1>
             <p className="text-gray-600 text-center mb-8">
               We're sorry for the inconvenience. Our team has been notified and
@@ -215,3 +215,5 @@ Time: ${new Date().toISOString()}
 }
 
 export default AppErrorBoundary;
+
+

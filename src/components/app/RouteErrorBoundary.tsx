@@ -91,7 +91,7 @@ export class RouteErrorBoundary extends React.Component<Props, State> {
           </div>
 
           <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Oops! Something went wrong
+            Please refresh or contact support.
           </h2>
           <p className="text-sm text-gray-500 mb-1">
             We had trouble loading <strong>{routeName}</strong>.
@@ -136,3 +136,5 @@ export class RouteErrorBoundary extends React.Component<Props, State> {
 }
 
 export default RouteErrorBoundary;
+
+

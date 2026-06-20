@@ -1255,3 +1255,5 @@ async function getUserZermCoinsBalance(userId: string): Promise<number> {
 async function deductZermCoins(userId: string, amount: number): Promise<void> {
   console.log(`Deducted ${amount} Zerm Coins from user ${userId}`);
 }
+
+

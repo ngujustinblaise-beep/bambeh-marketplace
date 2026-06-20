@@ -68,3 +68,5 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, currentUser, onSend
 };
 
 export default ChatInterface;
+
+

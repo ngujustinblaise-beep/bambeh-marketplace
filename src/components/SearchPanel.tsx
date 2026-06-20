@@ -336,3 +336,5 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
 };
 
 export default SearchPanel;
+
+

@@ -294,3 +294,5 @@ const SellerProfilePage: React.FC = () => {
 
 export default SellerProfilePage;
 
+
+

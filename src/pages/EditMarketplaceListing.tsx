@@ -43,7 +43,7 @@ export default function EditMarketplaceListing() {
   async function loadListing(listingId: string) {
     try {
       const { data, error: err } = await supabase
-        .from('listings')
+        .from('farm-images')
         .select('title, description, price, category, condition, location, phone, negotiable')
         .eq('id', listingId)
         .single();
@@ -75,7 +75,7 @@ export default function EditMarketplaceListing() {
     setError(null);
     try {
       const { error: err } = await supabase
-        .from('listings')
+        .from('farm-images')
         .update({
           title:       form.title.trim(),
           description: form.description.trim(),
@@ -215,3 +215,5 @@ export default function EditMarketplaceListing() {
     </div>
   );
 }
+
+

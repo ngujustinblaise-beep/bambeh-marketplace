@@ -74,3 +74,5 @@ const AddRentalForm: React.FC<AddRentalFormProps> = ({ onSuccess, onCancel }) =>
 };
 
 export default AddRentalForm;
+
+

@@ -141,3 +141,5 @@ export function getChatCount(userId1: string, userId2: string): number {
   const chat = JSON.parse(chatHistoryStr).find((c: ChatHistory) => (c.userId1 === userId1 && c.userId2 === userId2) || (c.userId2 === userId1 && c.userId1 === userId2));
   return chat ? chat.messageCount : 0;
 }
+
+

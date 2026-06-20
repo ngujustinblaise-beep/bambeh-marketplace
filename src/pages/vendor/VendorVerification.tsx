@@ -16,3 +16,5 @@ const VendorVerification: React.FC = () => (
 );
 
 export default VendorVerification;
+
+

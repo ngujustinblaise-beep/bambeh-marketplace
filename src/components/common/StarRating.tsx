@@ -129,3 +129,5 @@ export const CategoryRatings: React.FC<CategoryRatingsProps> = ({ categories, ra
     ))}
   </div>
 );
+
+

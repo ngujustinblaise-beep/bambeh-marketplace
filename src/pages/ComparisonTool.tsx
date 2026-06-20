@@ -631,3 +631,5 @@ export default function ComparisonTool() {
     </div>
   );
 }
+
+

@@ -1,23 +1,23 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * APP.TSX — BAMBEH MARKETPLACE — SECURITY FORTRESS EDITION
- * ═══════════════════════════════════════════════════════════════════════════
- * ✅ WIDGETS: Chat Widget + Voice Widget ONLY — Cart widget permanently removed
- * ⬆️ BackToTopButton — smart: bottom-20 mobile / bottom-6 desktop
- *    (fixes double-button — VendorLayout no longer renders its own)
- * 🔐 SecurityInitializer, sessionManager, AdminProtectedRoute (1h TTL)
- * 🔐 VendorProtectedRoute synchronous · initLoginRateLimiter (10 → 30min lockout)
- * 🔐 Hardened auth: no localStorage-only fallback for vendor/admin
- * 🔐 ScrollToTop on every route change
- * 🌿 TontinePage + FarmFreshPage FULLY DISPLAYED
- * 🌍 All  features: Escrow, Community, SellerRating, MeetSafely etc.
- * 📦 Vendor: Orders, Reviews, Payments, Products, Onboarding, Withdraw
- * 💳 NotchPay: /payment/checkout · /payment/callback · /success · /failed
- * 🔒 ESCROW: All marketplace/service/rental/exchange → Escrow → NotchPay
- *    Subscriptions + Donations → Direct NotchPay (no escrow)
- * 🗄️  Supabase + FCM (see src/lib/supabase.ts + firebase.ts)
- * © 2026 Bambeh Marketplace. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * APP.TSX â€” BAMBEH MARKETPLACE â€” SECURITY FORTRESS EDITION
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * âœ… WIDGETS: Chat Widget + Voice Widget ONLY â€” Cart widget permanently removed
+ * â¬†ï¸ BackToTopButton â€” smart: bottom-20 mobile / bottom-6 desktop
+ *    (fixes double-button â€” VendorLayout no longer renders its own)
+ * ðŸ” SecurityInitializer, sessionManager, AdminProtectedRoute (1h TTL)
+ * ðŸ” VendorProtectedRoute synchronous Â· initLoginRateLimiter (10 â†’ 30min lockout)
+ * ðŸ” Hardened auth: no localStorage-only fallback for vendor/admin
+ * ðŸ” ScrollToTop on every route change
+ * ðŸŒ¿ TontinePage + FarmFreshPage FULLY DISPLAYED
+ * ðŸŒ All  features: Escrow, Community, SellerRating, MeetSafely etc.
+ * ðŸ“¦ Vendor: Orders, Reviews, Payments, Products, Onboarding, Withdraw
+ * ðŸ’³ NotchPay: /payment/checkout Â· /payment/callback Â· /success Â· /failed
+ * ðŸ”’ ESCROW: All marketplace/service/rental/exchange â†’ Escrow â†’ NotchPay
+ *    Subscriptions + Donations â†’ Direct NotchPay (no escrow)
+ * ðŸ—„ï¸  Supabase + FCM (see src/lib/supabase.ts + firebase.ts)
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import React, { Suspense, lazy, useEffect, useState, useRef } from 'react';
@@ -87,7 +87,7 @@ import FlashDeals from '@/pages/FlashDeals';
 import GroupBuying from '@/pages/GroupBuying';
 import BambehAIChatbot from '@/pages/BambehAIChatbot';
 
-// ✅ ONLY these two widgets kept per user request
+// âœ… ONLY these two widgets kept per user request
 import MovableChatWidget from '@/components/chat/MovableChatWidget';
 import MovableVoiceControl from '@/components/voice/MovableVoiceControl';
 
@@ -174,13 +174,13 @@ const TontinePage      = lazy(() => import('@/pages/TontinePage'));
 const FarmFreshPage    = lazy(() => import('@/pages/FarmFreshPage'));
 const MakeOfferPage    = lazy(() => import('@/pages/MakeOfferPage'));
 
-// 💳 NotchPay payment lazy imports
+// ðŸ’³ NotchPay payment lazy imports
 const PaymentCheckout = lazy(() => import('@/pages/payment/PaymentCheckout'));
 const PaymentCallback = lazy(() => import('@/pages/payment/PaymentCallback'));
 const PaymentSuccess  = lazy(() => import('@/pages/payment/PaymentSuccess'));
 const PaymentFailed   = lazy(() => import('@/pages/payment/PaymentFailed'));
 
-// ⬆️ BACK TO TOP BUTTON — centered, smart positioning
+// â¬†ï¸ BACK TO TOP BUTTON â€” centered, smart positioning
 // bottom-20 on mobile (above 80px bottom nav) | bottom-6 on desktop
 const BackToTopButton: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -215,7 +215,7 @@ const LoadingFallback: React.FC = () => (
           <div className="animate-ping rounded-full h-20 w-20 border-4 border-teal-400 opacity-75" />
         </div>
       </div>
-      <h2 className="text-2xl font-bold text-teal-600 mb-2">Bambé Marketplace</h2>
+      <h2 className="text-2xl font-bold text-teal-600 mb-2">BambÃ© Marketplace</h2>
       <p className="text-teal-500 font-medium animate-pulse">Loading your world-class experience...</p>
     </div>
   </div>
@@ -250,8 +250,8 @@ const OnboardingFlowGuard: React.FC<{ children: React.ReactNode }> = ({ children
   return <>{children}</>;
 };
 
-// VENDOR AUTH CHECK — synchronous, 24h TTL
-// 🔐 No localStorage-only fallback — sessionManager is the single source of truth
+// VENDOR AUTH CHECK â€” synchronous, 24h TTL
+// ðŸ” No localStorage-only fallback â€” sessionManager is the single source of truth
 const isVendorAuthenticated = (): boolean => {
   try {
     for (const key of SESSION_KEYS.vendor) {
@@ -286,8 +286,8 @@ const VendorProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childre
   return <>{children}</>;
 };
 
-// ADMIN AUTH CHECK — 1h TTL
-// 🔐 No localStorage-only fallback — sessionManager is the single source of truth
+// ADMIN AUTH CHECK â€” 1h TTL
+// ðŸ” No localStorage-only fallback â€” sessionManager is the single source of truth
 const isAdminAuthenticated = (): boolean => {
   try {
     const key = 'Bambeh_admin';
@@ -351,21 +351,21 @@ const initializeCapacitor = async (): Promise<void> => {
   try { CapacitorApp.addListener('backButton', ({ canGoBack }) => { canGoBack ? window.history.back() : CapacitorApp.exitApp(); }); } catch { /**/ }
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 🚀 MAIN APP
-// ═══════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ðŸš€ MAIN APP
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export default function App() {
   useEffect(() => {
     initializeCapacitor();
     initializeAnalytics();
     initLoginRateLimiter();
     if (import.meta.env.DEV) {
-      console.log('%c🚀 Bambeh Marketplace — Security Fortress Edition', 'color:#0d9488;font-size:18px;font-weight:bold');
-      console.log('%c✅ Widgets: Chat + Voice ONLY | Cart widget permanently removed', 'color:#10b981;font-weight:bold');
-      console.log('%c✅ BackToTop (smart) | SecurityInitializer | AdminProtectedRoute (1h) | VendorProtectedRoute (sync)', 'color:#10b981;font-weight:bold');
-      console.log('%c🔒 Escrow: Marketplace/Service/Rental/Exchange → Escrow → NotchPay', 'color:#0891b2;font-weight:bold');
-      console.log('%c⚡ Direct: Subscription/Donation/Zerm → NotchPay (no escrow)', 'color:#7c3aed;font-weight:bold');
-      console.log('%c✅ Tontine + Farm Fresh ACTIVE | All  features ACTIVE', 'color:#10b981;font-weight:bold');
+      console.log('%cðŸš€ Bambeh Marketplace â€” Security Fortress Edition', 'color:#0d9488;font-size:18px;font-weight:bold');
+      console.log('%câœ… Widgets: Chat + Voice ONLY | Cart widget permanently removed', 'color:#10b981;font-weight:bold');
+      console.log('%câœ… BackToTop (smart) | SecurityInitializer | AdminProtectedRoute (1h) | VendorProtectedRoute (sync)', 'color:#10b981;font-weight:bold');
+      console.log('%cðŸ”’ Escrow: Marketplace/Service/Rental/Exchange â†’ Escrow â†’ NotchPay', 'color:#0891b2;font-weight:bold');
+      console.log('%câš¡ Direct: Subscription/Donation/Zerm â†’ NotchPay (no escrow)', 'color:#7c3aed;font-weight:bold');
+      console.log('%câœ… Tontine + Farm Fresh ACTIVE | All  features ACTIVE', 'color:#10b981;font-weight:bold');
     }
   }, []);
 
@@ -378,7 +378,7 @@ export default function App() {
               <BrowserRouter>
                 <ScrollToTop />
                 <NetworkStatusBar />
-                {/* 🔐 SecurityInitializer — session watchdog + Firebase App Check
+                {/* ðŸ” SecurityInitializer â€” session watchdog + Firebase App Check
                     Firebase duplicate-app fix: in firebase.ts use
                     getApps().length > 0 ? getApp() : initializeApp(config) */}
                 <SecurityInitializer />
@@ -493,7 +493,7 @@ export default function App() {
                         <Route path="/vendor/premium/verified-seller"   element={<VendorProtectedRoute><VendorLayout><VerifiedSeller /></VendorLayout></VendorProtectedRoute>} />
                         <Route path="/vendor/premium/auto-messaging"    element={<VendorProtectedRoute><VendorLayout><AutoMessaging /></VendorLayout></VendorProtectedRoute>} />
 
-                        {/* 10. ADMIN — 1h TTL */}
+                        {/* 10. ADMIN â€” 1h TTL */}
                         <Route path="/admin"                 element={<Navigate to="/admin/login" replace />} />
                         <Route path="/admin/login"           element={<AdminLogin />} />
                         <Route path="/admin/dashboard"       element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
@@ -537,7 +537,7 @@ export default function App() {
                         <Route path="/search"         element={<MainLayout><SearchResults /></MainLayout>} />
                         <Route path="/saved-searches" element={<MainLayout><ProtectedRoute><SavedSearches /></ProtectedRoute></MainLayout>} />
 
-                        {/* 12b. 💳 PAYMENT ROUTES (NotchPay) */}
+                        {/* 12b. ðŸ’³ PAYMENT ROUTES (NotchPay) */}
                         <Route path="/payment/checkout" element={<MainLayout><ProtectedRoute><PaymentCheckout /></ProtectedRoute></MainLayout>} />
                         <Route path="/payment/callback" element={<MainLayout><PaymentCallback /></MainLayout>} />
                         <Route path="/payment/success"  element={<MainLayout><PaymentSuccess /></MainLayout>} />
@@ -577,7 +577,7 @@ export default function App() {
                         } />
                       </Routes>
 
-                      {/* ✅ Chat Widget + Voice Widget ONLY | ⬆️ BackToTop centered on every page */}
+                      {/* âœ… Chat Widget + Voice Widget ONLY | â¬†ï¸ BackToTop centered on every page */}
                       <MovableChatWidget />
                       <MovableVoiceControl />
                       <BackToTopButton />
@@ -592,4 +592,6 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
+
 

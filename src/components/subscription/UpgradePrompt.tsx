@@ -174,3 +174,5 @@ export const UpgradeBanner: React.FC<{ onUpgrade?: () => void }> = ({ onUpgrade 
 };
 
 export default UpgradePrompt;
+
+

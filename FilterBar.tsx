@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { IonSegment, IonSegmentButton, IonLabel, IonSearchbar, IonChip } from '@ionic/react';
 import './FilterBar.css';
 
@@ -70,3 +70,5 @@ const FilterBar: React.FC<FilterBarProps> = ({
 };
 
 export default FilterBar;
+
+

@@ -146,7 +146,7 @@ const PostRentalProperty: React.FC = () => {
         postedAt: new Date().toISOString(), status: 'active', views: 0, saves: 0,
       };
       const existing = JSON.parse(localStorage.getItem('bambe-rentals') || '[]');
-      localStorage.setItem('bambe-rentals', JSON.stringify([rentalListing, ...existing]));
+      await supabase.from('rentals').insert, JSON.stringify([rentalListing, ...existing]));
       toast({ title: 'Property posted successfully!', description: 'Your rental property is now listed on Bambeh' });
       navigate('/rentals');
     } catch (error) {
@@ -356,3 +356,6 @@ const PostRentalProperty: React.FC = () => {
 };
 
 export default PostRentalProperty;
+
+
+

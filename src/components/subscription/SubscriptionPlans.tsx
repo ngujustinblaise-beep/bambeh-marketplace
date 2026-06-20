@@ -52,3 +52,5 @@ const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({ currentTier = "fr
 );
 
 export default SubscriptionPlans;
+
+

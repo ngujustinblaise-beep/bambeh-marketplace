@@ -354,3 +354,5 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
 
 export default VendorRegistration;
 
+
+

@@ -67,7 +67,7 @@ export class AppErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
           <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-8">
             <div className="flex justify-center mb-6"><div className="bg-red-100 rounded-full p-6"><AlertTriangle className="w-16 h-16 text-red-600" /></div></div>
-            <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">Oops! Something went wrong</h1>
+            <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">Please refresh or contact support.</h1>
             <p className="text-gray-600 text-center mb-8">We're sorry for the inconvenience. Our team has been notified and is working on a fix.</p>
             {import.meta.env.MODE === 'development' && this.state.error && (
               <div className="bg-gray-100 rounded-lg p-4 mb-6 overflow-auto max-h-64">
@@ -103,3 +103,5 @@ export class AppErrorBoundary extends Component<Props, State> {
 }
 
 export default AppErrorBoundary;
+
+

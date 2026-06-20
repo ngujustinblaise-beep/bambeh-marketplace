@@ -41,3 +41,5 @@ export function ListingCard({ listing }: ListingCardProps) {
     </div>
   );
 }
+
+

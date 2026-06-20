@@ -71,7 +71,7 @@ export default function EditServiceListing() {
 
       // Fallback: listings table with type='service'
       const { data: listing } = await supabase
-        .from('listings')
+        .from('farm-images')
         .select('title, description, category, price, location, phone, extra')
         .eq('id', serviceId)
         .maybeSingle();
@@ -135,7 +135,7 @@ export default function EditServiceListing() {
       // OfferService inserts to both, so both must stay in sync on edit.
       const [svcResult, lstResult] = await Promise.allSettled([
         supabase.from('services').update(serviceUpdates).eq('id', id),
-        supabase.from('listings').update(listingUpdates).eq('id', id),
+        supabase.from('farm-images').update(listingUpdates).eq('id', id),
       ]);
 
       // Log any errors (non-fatal — at least one table likely succeeded)
@@ -290,3 +290,5 @@ export default function EditServiceListing() {
     </div>
   );
 }
+
+

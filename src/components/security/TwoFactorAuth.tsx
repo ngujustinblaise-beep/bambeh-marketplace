@@ -113,3 +113,5 @@ const TwoFactorAuth: React.FC = () => {
 
 export default TwoFactorAuth;
 export type { OTPModalProps };
+
+

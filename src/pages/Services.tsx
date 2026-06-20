@@ -631,7 +631,7 @@ export default function Services() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('listings')
+        .from('farm-images')
         .select(`
           id, title, category, price, location, description,
           phone, created_at, view_count,
@@ -910,3 +910,5 @@ export default function Services() {
     </div>
   );
 }
+
+

@@ -44,3 +44,5 @@ const PremiumGate: React.FC<PremiumGateProps> = ({
 };
 
 export default PremiumGate;
+
+

@@ -377,3 +377,5 @@ export default function EnhancedBookingModal({ isOpen, onClose, itemDetails }: B
 function navigate(path: string) {
   window.location.href = path;
 }
+
+

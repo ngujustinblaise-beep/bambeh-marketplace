@@ -52,3 +52,5 @@ const SwipeableCard = ({ id, image, title, price, onLike, onSkip, onAddToCart }:
 };
 
 export default SwipeableCard;
+
+

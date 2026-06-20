@@ -166,3 +166,5 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
 
 export default TermsAndConditions;
 
+
+

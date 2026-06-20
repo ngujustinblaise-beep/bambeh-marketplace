@@ -54,3 +54,5 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
 );
 
 export default TranscriptDisplay;
+
+

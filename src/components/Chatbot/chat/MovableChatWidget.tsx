@@ -231,3 +231,5 @@ const MovableChatWidget: React.FC<MovableChatWidgetProps> = ({
 };
 
 export default MovableChatWidget;
+
+

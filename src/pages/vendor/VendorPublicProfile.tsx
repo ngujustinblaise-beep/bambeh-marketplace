@@ -89,7 +89,7 @@ const VendorPublicProfile: React.FC = () => {
 
       // ── Load vendor's listings ───────────────────────────────────────────
       const { data: listingData } = await supabase
-        .from('listings')
+        .from('farm-images')
         .select('id, title, price, images, category, condition')
         .eq('seller_id', vendorData.user_id)
         .eq('status', 'active')
@@ -288,3 +288,5 @@ const VendorPublicProfile: React.FC = () => {
 };
 
 export default VendorPublicProfile;
+
+

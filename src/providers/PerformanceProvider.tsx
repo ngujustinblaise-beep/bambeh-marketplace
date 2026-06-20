@@ -41,3 +41,5 @@ export const usePerformance = () => {
   if (!ctx) throw new Error("usePerformance must be inside PerformanceProvider");
   return ctx;
 };
+
+

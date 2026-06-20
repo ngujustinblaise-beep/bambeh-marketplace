@@ -455,3 +455,5 @@ const FlashDealDetail: React.FC = () => {
 };
 
 export default FlashDealDetail;
+
+

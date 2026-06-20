@@ -39,3 +39,5 @@ export function HeaderCartButton({ onClick }: HeaderCartButtonProps) {
     </button>
   );
 }
+
+

@@ -257,3 +257,5 @@ const TontineGroupDetail: React.FC = () => {
 };
 
 export default TontineGroupDetail;
+
+

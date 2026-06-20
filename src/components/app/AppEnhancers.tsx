@@ -38,7 +38,7 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
             <div className="flex justify-center mb-6"><div className="bg-red-100 rounded-full p-6"><AlertTriangle className="w-16 h-16 text-red-600" /></div></div>
-            <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">Oops! Something went wrong</h1>
+            <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">Please refresh or contact support.</h1>
             <p className="text-gray-600 text-center mb-8">We're sorry for the inconvenience. Please try refreshing the page.</p>
             <div className="grid grid-cols-2 gap-4">
               <button onClick={() => window.location.reload()} className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-semibold"><RefreshCw className="w-5 h-5" />Reload</button>
@@ -98,4 +98,6 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
 };
 
 export default { AppErrorBoundary, RouteTracker, PerformanceMonitor };
+
+
 

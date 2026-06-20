@@ -60,3 +60,5 @@ export default function VideoTutorials({ tutorials = [], onVideoError, onVideoLo
   const handleLoad = useCallback((id: string) => { onVideoLoad?.(id); }, [onVideoLoad]);
   return (<SafeAreaView style={styles.container}><View style={styles.headerBanner}><Text style={styles.icon}>📹</Text><View style={styles.headerTitleWrapper}><Text style={styles.headerTitle}>Video Tutorials</Text><Text style={styles.headerSubtitle}>Watch and learn</Text></View></View>{finalTutorials.length === 0 ? (<View style={styles.emptyState}><Text>No tutorials available</Text></View>) : (<ScrollView style={styles.grid} contentContainerStyle={styles.grid}>{finalTutorials.map((t) => (<VideoCard key={t.id} tutorial={t} onError={handleError} onLoad={handleLoad} />))}</ScrollView>)}</SafeAreaView>);
 }
+
+

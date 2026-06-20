@@ -130,3 +130,5 @@ const CoinsHistory: React.FC = () => {
 };
 
 export default CoinsHistory;
+
+

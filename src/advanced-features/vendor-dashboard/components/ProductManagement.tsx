@@ -387,3 +387,5 @@ const ProductModal: React.FC<ProductModalProps> = ({ vendorId, product, onClose,
 };
 
 export default ProductManagement;
+
+

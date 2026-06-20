@@ -32,3 +32,5 @@ const RentalDetails: React.FC = () => {
 };
 
 export default RentalDetails;
+
+

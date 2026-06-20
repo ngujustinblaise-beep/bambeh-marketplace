@@ -30,3 +30,5 @@ export function DemoBadge({ label = "DEMO" }: DemoBadgeProps) {
 }
 
 export default DemoBadge;
+
+

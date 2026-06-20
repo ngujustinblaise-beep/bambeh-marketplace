@@ -32,3 +32,5 @@ const VehicleDetails: React.FC = () => {
 };
 
 export default VehicleDetails;
+
+

@@ -218,3 +218,9 @@ export function createTransaction(
 }
 
 export default CartContext;
+
+const fee = subtotal * 0.01
+const total = subtotal + fee
+
+
+

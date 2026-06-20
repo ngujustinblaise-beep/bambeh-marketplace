@@ -257,3 +257,5 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
 };
 
 export default SellerResponseBadge;
+
+

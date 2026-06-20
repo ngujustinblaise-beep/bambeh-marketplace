@@ -137,3 +137,5 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({
 };
 
 export default TermsAndConditions;
+
+

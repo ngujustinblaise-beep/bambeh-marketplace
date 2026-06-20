@@ -34,3 +34,5 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
 };
 
 export default VerificationBadge;
+
+

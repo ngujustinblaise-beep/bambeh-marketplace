@@ -72,3 +72,5 @@ const TrustedBadge: React.FC<TrustedBadgeProps> = ({ level = "basic", showRequir
 export default TrustedBadge;
 export { BadgeWithTooltip, BadgeRequirements };
 export type { BadgeWithTooltipProps, BadgeRequirementsProps };
+
+

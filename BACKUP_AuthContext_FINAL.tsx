@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AUTHCONTEXT.TSX - AUTHENTICATION CONTEXT
  * 
  * Provides authentication functionality with master test accounts
@@ -152,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('bambe_current_user', JSON.stringify(user));
 
       // Log successful login
-      console.log(`✅ User ${user.username} logged in successfully`);
+      console.log(`âœ… User ${user.username} logged in successfully`);
       console.log(`Tier: ${user.tier}`);
       console.log(`Available tiers: ${user.canChangeTiers.join(', ')}`);
 
@@ -172,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    */
   const logout = async (): Promise<void> => {
     try {
-      console.log(`👋 User ${currentUser?.username} logged out`);
+      console.log(`ðŸ‘‹ User ${currentUser?.username} logged out`);
       setCurrentUser(null);
       localStorage.removeItem('bambe_current_user');
     } catch (error) {
@@ -207,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCurrentUser(updatedUser);
       localStorage.setItem('bambe_current_user', JSON.stringify(updatedUser));
 
-      console.log(`✅ Tier changed to ${newTier} for user ${currentUser.username}`);
+      console.log(`âœ… Tier changed to ${newTier} for user ${currentUser.username}`);
 
       return { success: true };
     } catch (error) {
@@ -234,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCurrentUser(updatedUser);
       localStorage.setItem('bambe_current_user', JSON.stringify(updatedUser));
 
-      console.log(`✅ Profile updated for user ${currentUser.username}`);
+      console.log(`âœ… Profile updated for user ${currentUser.username}`);
     } catch (error) {
       console.error('Update profile error:', error);
       throw error;
@@ -256,5 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: !!currentUser,
   </AuthContext.Provider>;
 }
+
+
 
 

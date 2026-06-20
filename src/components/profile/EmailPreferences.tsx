@@ -75,3 +75,5 @@ const EmailPreferences: React.FC = () => {
 };
 
 export default EmailPreferences;
+
+

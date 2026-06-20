@@ -296,3 +296,5 @@ export default function GamificationPanel({ vendorId, compact = false }: Gamific
     </div>
   );
 }
+
+

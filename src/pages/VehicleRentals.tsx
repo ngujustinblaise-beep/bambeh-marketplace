@@ -476,3 +476,5 @@ export default function VehicleRentals() {
     </div>
   );
 }
+
+

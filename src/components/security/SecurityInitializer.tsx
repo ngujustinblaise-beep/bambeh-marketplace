@@ -69,3 +69,5 @@ const SecurityInitializer: React.FC = () => {
 };
 
 export default SecurityInitializer;
+
+

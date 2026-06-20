@@ -26,3 +26,5 @@ const SubscriptionBadge: React.FC<SubscriptionBadgeProps> = ({ tier, compact }) 
 };
 
 export default SubscriptionBadge;
+
+
