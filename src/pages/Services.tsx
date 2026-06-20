@@ -289,6 +289,14 @@ const SAMPLE_SERVICES: Service[] = [
   { id: 's6', title: 'Private Tutoring (Math/Sciences)', category: 'Tutoring',    price: 10000,  location: 'Buea',     description: 'Tutoring for secondary and university students. Results guaranteed.', created_at: new Date().toISOString(), view_count: 0, isDemo: true },
 ];
 
+const SVC_CAT_T: Record<string, Record<string, string>> = {
+  en:{'All':'All','IT & Tech':'IT & Tech','Cleaning':'Cleaning','Plumbing':'Plumbing','Electrical':'Electrical','Photography':'Photography','Tutoring':'Tutoring','Catering':'Catering','Transport':'Transport','Beauty':'Beauty','Other':'Other'},
+  fr:{'All':'Tous','IT & Tech':'Informatique','Cleaning':'Nettoyage','Plumbing':'Plomberie','Electrical':'\u00C9lectricit\u00E9','Photography':'Photographie','Tutoring':'Soutien scolaire','Catering':'Restauration','Transport':'Transport','Beauty':'Beaut\u00E9','Other':'Autres'},
+  ar:{'All':'\u0627\u0644\u0643\u0644','IT & Tech':'\u062A\u0642\u0646\u064A\u0629 \u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A','Cleaning':'\u062A\u0646\u0638\u064A\u0641','Plumbing':'\u0633\u0628\u0627\u0643\u0629','Electrical':'\u0643\u0647\u0631\u0628\u0627\u0621','Photography':'\u062A\u0635\u0648\u064A\u0631 \u0641\u0648\u062A\u0648\u063A\u0631\u0627\u0641\u064A','Tutoring':'\u062A\u062F\u0631\u064A\u0633 \u062E\u0635\u0648\u0635\u064A','Catering':'\u062A\u0632\u0648\u064A\u062F \u0627\u0644\u0637\u0639\u0627\u0645','Transport':'\u0646\u0642\u0644','Beauty':'\u062A\u062C\u0645\u064A\u0644','Other':'\u0623\u062E\u0631\u0649'},
+  ff:{'All':'Fof','IT & Tech':'IT & Tech','Cleaning':'Lootuki','Plumbing':'Sannuri','Electrical':'Lastriki','Photography':'Kofgol','Tutoring':'Janngingo','Catering':'Ndofru','Transport':'Addugo','Beauty':'Baw\u0257e boo\u0257\u0257um','Other':'Ko luti'},
+  pidgin:{'All':'All','IT & Tech':'IT & Tech','Cleaning':'Cleaning','Plumbing':'Plumber work','Electrical':'Electric work','Photography':'Photo work','Tutoring':'Lesson','Catering':'Catering','Transport':'Transport','Beauty':'Fine-face','Other':'Other things'},
+};
+const svcNormLang = (l: string): string => { l = String(l||'en').toLowerCase(); if (l.indexOf('fr')===0) return 'fr'; if (l.indexOf('ar')===0) return 'ar'; if (l==='ff'||l.indexOf('ful')===0) return 'ff'; if (l==='pcm'||l==='pidgin') return 'pidgin'; return 'en'; };
 const CATEGORIES = [
   'All', 'Cleaning', 'Plumbing', 'Electrical', 'IT & Tech',
   'Photography', 'Tutoring', 'Catering', 'Transport', 'Beauty', 'Other',
@@ -785,7 +793,7 @@ export default function Services() {
           {CATEGORIES.map(c => {
             const count  = categoryCounts[c] ?? 0;
             const active = category === c;
-            const label  = c === 'All' ? allLabel : c;
+            const label  = (SVC_CAT_T[svcNormLang(rawLang)] || SVC_CAT_T.en)[c] ?? (c === 'All' ? allLabel : c);
             return (
               <button key={c} onClick={() => setCategory(c)} aria-pressed={active}
                 className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all

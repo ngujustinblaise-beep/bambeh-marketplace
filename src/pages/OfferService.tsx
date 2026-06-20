@@ -649,7 +649,7 @@ export default function OfferService() {
       });
 
       // Canonical write to listings table (main feed)
-      const { data, error: lstErr } = await supabase.from('farm-images').insert({
+      const { data, error: lstErr } = await supabase.from('listings').insert({
         user_id:     user.id,
         seller_id:   user.id,
         type:        'service',

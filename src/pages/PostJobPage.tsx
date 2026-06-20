@@ -410,7 +410,7 @@ export default function PostJobPage() {
       </div>
 
       {/* Sticky submit button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-3">
         <button
           type="button"
           onClick={handleSubmit}

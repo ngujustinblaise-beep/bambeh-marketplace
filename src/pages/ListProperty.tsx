@@ -227,7 +227,7 @@ const ListProperty: React.FC = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-4 pt-5 space-y-5">
+        <form onSubmit={handleSubmit} className="px-4 pt-5 pb-28 space-y-5">
 
           {/* Error banner */}
           {error && (
