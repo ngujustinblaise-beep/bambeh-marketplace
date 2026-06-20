@@ -16,11 +16,11 @@ const T: Record<string, Record<string, string>> = {
   },
   "fr": {
     "title": "Acheter et vendre",
-    "subtitle": "MaÃ®trisez la place de marchÃ©",
+    "subtitle": "Maîtrisez la place de marché",
     "postTitle": "Comment publier une annonce",
-    "postDesc": "CrÃ©ez des annonces qui donnent des rÃ©sultats",
+    "postDesc": "Créez des annonces qui donnent des résultats",
     "priceTitle": "Fixer le bon prix",
-    "priceDesc": "Fixez des prix compÃ©titifs",
+    "priceDesc": "Fixez des prix compétitifs",
     "payTitle": "Moyens de paiement",
     "payDesc": "Comprenez vos options de paiement",
     "back": "Retour au centre d'aide"
@@ -37,25 +37,25 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "Ø§Ù„Ø¨ÙŠØ¹ ÙˆØ§Ù„Ø´Ø±Ø§Ø¡",
-    "subtitle": "Ø£ØªÙ‚Ù† Ø§Ù„Ø³ÙˆÙ‚",
-    "postTitle": "ÙƒÙŠÙÙŠØ© Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†",
-    "postDesc": "Ø£Ù†Ø´Ø¦ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª ØªØ­Ù‚Ù‚ Ù†ØªØ§Ø¦Ø¬",
-    "priceTitle": "ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ù…Ù†Ø§Ø³Ø¨",
-    "priceDesc": "Ø³Ø¹Ù‘Ø± Ø³Ù„Ø¹Ùƒ Ø¨Ø´ÙƒÙ„ ØªÙ†Ø§ÙØ³ÙŠ",
-    "payTitle": "Ø·Ø±Ù‚ Ø§Ù„Ø¯ÙØ¹",
-    "payDesc": "Ø§ÙÙ‡Ù… Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¯ÙØ¹ Ø§Ù„Ù…ØªØ§Ø­Ø© Ù„Ùƒ",
-    "back": "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©"
+    "title": "البيع والشراء",
+    "subtitle": "أتقن السوق",
+    "postTitle": "كيÙية نشر إعلان",
+    "postDesc": "أنشئ إعلانات تحقق نتائج",
+    "priceTitle": "تحديد السعر المناسب",
+    "priceDesc": "سعّر سلعك بشكل تناÙسي",
+    "payTitle": "طرق الدÙع",
+    "payDesc": "اÙهم خيارات الدÙع المتاحة لك",
+    "back": "العودة إلى مركز المساعدة"
   },
   "ff": {
     "title": "Soodgol e yeeygol",
     "subtitle": "Anndu luumo",
     "postTitle": "No neldirtee jeeyngal",
-    "postDesc": "Sos jeeyle É—e njogii njeeygu",
-    "priceTitle": "Teelgol coggu moÆ´Æ´u",
-    "priceDesc": "Teel coggu kaake maa no haaÉ—tirta",
-    "payTitle": "Mbaydiiji yoÉ“gol",
-    "payDesc": "Faamu mbaydiiji yoÉ“gol maa",
+    "postDesc": "Sos jeeyle ɗe njogii njeeygu",
+    "priceTitle": "Teelgol coggu moƴƴu",
+    "priceDesc": "Teel coggu kaake maa no haaɗtirta",
+    "payTitle": "Mbaydiiji yoɓgol",
+    "payDesc": "Faamu mbaydiiji yoɓgol maa",
     "back": "Rutto to galle ballal"
   }
 };

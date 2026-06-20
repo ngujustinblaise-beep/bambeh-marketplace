@@ -1,5 +1,5 @@
 ﻿// @ts-nocheck
-// Firestore removed â€” using Supabase REST. Exports kept for compatibility.
+// Firestore removed — using Supabase REST. Exports kept for compatibility.
 const SUPA_URL = import.meta.env.VITE_SUPABASE_URL    ?? "";
 const SUPA_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
 

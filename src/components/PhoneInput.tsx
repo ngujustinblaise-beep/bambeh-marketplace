@@ -1,13 +1,13 @@
 ﻿/**
  * src/components/PhoneInput.tsx
- * Bambeh Marketplace â€” Phone Number Input
+ * Bambeh Marketplace — Phone Number Input
  *
  * UPGRADED:
- *  âœ… Complete West & Central Africa country codes + major global codes
- *  âœ… Dropdown shows prominently on first render (auto-open prop)
- *  âœ… "Choose your country" placeholder text in closed state
- *  âœ… Search filter in dropdown for fast country selection
- *  âœ… Cameroonian (+237) selected by default
+ *  ✅ Complete West & Central Africa country codes + major global codes
+ *  ✅ Dropdown shows prominently on first render (auto-open prop)
+ *  ✅ "Choose your country" placeholder text in closed state
+ *  ✅ Search filter in dropdown for fast country selection
+ *  ✅ Cameroonian (+237) selected by default
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -29,46 +29,46 @@ export interface PhoneInputProps {
 }
 
 export const DIAL_CODES = [
-  // â”€â”€ West & Central Africa (priority) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  { code: '+237', country: 'CM', flag: 'ðŸ‡¨ðŸ‡²', name: 'Cameroun',         format: '6XX XXX XXX' },
-  { code: '+234', country: 'NG', flag: 'ðŸ‡³ðŸ‡¬', name: 'Nigeria',           format: '7XX XXX XXXX' },
-  { code: '+233', country: 'GH', flag: 'ðŸ‡¬ðŸ‡­', name: 'Ghana',             format: '24X XXX XXXX' },
-  { code: '+221', country: 'SN', flag: 'ðŸ‡¸ðŸ‡³', name: 'SÃ©nÃ©gal',           format: '7X XXX XX XX' },
-  { code: '+225', country: 'CI', flag: 'ðŸ‡¨ðŸ‡®', name: "CÃ´te d'Ivoire",     format: '07 XXX XX XX' },
-  { code: '+224', country: 'GN', flag: 'ðŸ‡¬ðŸ‡³', name: 'GuinÃ©e',            format: '6X XXX XX XX' },
-  { code: '+241', country: 'GA', flag: 'ðŸ‡¬ðŸ‡¦', name: 'Gabon',             format: '06 XX XX XX' },
-  { code: '+242', country: 'CG', flag: 'ðŸ‡¨ðŸ‡¬', name: 'Congo',             format: '06 XXX XXXX' },
-  { code: '+243', country: 'CD', flag: 'ðŸ‡¨ðŸ‡©', name: 'RD Congo',          format: '8X XXX XXXX' },
-  { code: '+240', country: 'GQ', flag: 'ðŸ‡¬ðŸ‡¶', name: 'GuinÃ©e Ã‰quatoriale', format: '222 XXX XXX' },
-  { code: '+236', country: 'CF', flag: 'ðŸ‡¨ðŸ‡«', name: 'Centrafrique',      format: '70 XX XX XX' },
-  { code: '+235', country: 'TD', flag: 'ðŸ‡¹ðŸ‡©', name: 'Tchad',             format: '63 XX XX XX' },
-  { code: '+240', country: 'ST', flag: 'ðŸ‡¸ðŸ‡¹', name: 'SÃ£o TomÃ©',          format: '990 XXXX' },
-  { code: '+244', country: 'AO', flag: 'ðŸ‡¦ðŸ‡´', name: 'Angola',            format: '9XX XXX XXX' },
-  { code: '+227', country: 'NE', flag: 'ðŸ‡³ðŸ‡ª', name: 'Niger',             format: '90 XX XX XX' },
-  { code: '+228', country: 'TG', flag: 'ðŸ‡¹ðŸ‡¬', name: 'Togo',              format: '90 XX XX XX' },
-  { code: '+229', country: 'BJ', flag: 'ðŸ‡§ðŸ‡¯', name: 'BÃ©nin',             format: '97 XX XX XX' },
-  { code: '+226', country: 'BF', flag: 'ðŸ‡§ðŸ‡«', name: 'Burkina Faso',      format: '70 XX XX XX' },
-  { code: '+223', country: 'ML', flag: 'ðŸ‡²ðŸ‡±', name: 'Mali',              format: '7X XX XX XX' },
-  { code: '+222', country: 'MR', flag: 'ðŸ‡²ðŸ‡·', name: 'Mauritanie',        format: '22 XX XX XX' },
-  { code: '+220', country: 'GM', flag: 'ðŸ‡¬ðŸ‡²', name: 'Gambie',            format: '7XX XXXX' },
-  { code: '+245', country: 'GW', flag: 'ðŸ‡¬ðŸ‡¼', name: 'GuinÃ©e-Bissau',     format: '96 XXX XXXX' },
-  { code: '+238', country: 'CV', flag: 'ðŸ‡¨ðŸ‡»', name: 'Cap-Vert',          format: '991 XXXX' },
-  { code: '+232', country: 'SL', flag: 'ðŸ‡¸ðŸ‡±', name: 'Sierra Leone',      format: '76 XX XXXX' },
-  { code: '+231', country: 'LR', flag: 'ðŸ‡±ðŸ‡·', name: 'Liberia',           format: '770 XXXXX' },
-  { code: '+255', country: 'TZ', flag: 'ðŸ‡¹ðŸ‡¿', name: 'Tanzanie',          format: '7XX XXX XXX' },
-  { code: '+256', country: 'UG', flag: 'ðŸ‡ºðŸ‡¬', name: 'Ouganda',           format: '7XX XXX XXX' },
-  { code: '+254', country: 'KE', flag: 'ðŸ‡°ðŸ‡ª', name: 'Kenya',             format: '7XX XXX XXX' },
-  { code: '+27',  country: 'ZA', flag: 'ðŸ‡¿ðŸ‡¦', name: 'Afrique du Sud',    format: '6X XXX XXXX' },
-  { code: '+212', country: 'MA', flag: 'ðŸ‡²ðŸ‡¦', name: 'Maroc',             format: '6X XX XX XX' },
-  { code: '+213', country: 'DZ', flag: 'ðŸ‡©ðŸ‡¿', name: 'AlgÃ©rie',           format: '6X XX XX XX' },
-  // â”€â”€ International â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  { code: '+33',  country: 'FR', flag: 'ðŸ‡«ðŸ‡·', name: 'France',            format: '6 XX XX XX XX' },
-  { code: '+44',  country: 'GB', flag: 'ðŸ‡¬ðŸ‡§', name: 'United Kingdom',    format: '7XXX XXX XXX' },
-  { code: '+1',   country: 'US', flag: 'ðŸ‡ºðŸ‡¸', name: 'USA / Canada',      format: '(XXX) XXX-XXXX' },
-  { code: '+49',  country: 'DE', flag: 'ðŸ‡©ðŸ‡ª', name: 'Germany',           format: '1XX XXX XXXX' },
-  { code: '+32',  country: 'BE', flag: 'ðŸ‡§ðŸ‡ª', name: 'Belgique',          format: '4XX XX XX XX' },
-  { code: '+41',  country: 'CH', flag: 'ðŸ‡¨ðŸ‡­', name: 'Suisse',            format: '7X XXX XX XX' },
-  { code: '+86',  country: 'CN', flag: 'ðŸ‡¨ðŸ‡³', name: 'Chine',             format: '1XX XXXX XXXX' },
+  // ── West & Central Africa (priority) ──────────────────────────────────────
+  { code: '+237', country: 'CM', flag: '🇨🇲', name: 'Cameroun',         format: '6XX XXX XXX' },
+  { code: '+234', country: 'NG', flag: '🇳🇬', name: 'Nigeria',           format: '7XX XXX XXXX' },
+  { code: '+233', country: 'GH', flag: '🇬🇭', name: 'Ghana',             format: '24X XXX XXXX' },
+  { code: '+221', country: 'SN', flag: '🇸🇳', name: 'Sénégal',           format: '7X XXX XX XX' },
+  { code: '+225', country: 'CI', flag: '🇨🇮', name: "Côte d'Ivoire",     format: '07 XXX XX XX' },
+  { code: '+224', country: 'GN', flag: '🇬🇳', name: 'Guinée',            format: '6X XXX XX XX' },
+  { code: '+241', country: 'GA', flag: '🇬🇦', name: 'Gabon',             format: '06 XX XX XX' },
+  { code: '+242', country: 'CG', flag: '🇨🇬', name: 'Congo',             format: '06 XXX XXXX' },
+  { code: '+243', country: 'CD', flag: '🇨🇩', name: 'RD Congo',          format: '8X XXX XXXX' },
+  { code: '+240', country: 'GQ', flag: '🇬🇶', name: 'Guinée Équatoriale', format: '222 XXX XXX' },
+  { code: '+236', country: 'CF', flag: '🇨🇫', name: 'Centrafrique',      format: '70 XX XX XX' },
+  { code: '+235', country: 'TD', flag: '🇹🇩', name: 'Tchad',             format: '63 XX XX XX' },
+  { code: '+240', country: 'ST', flag: '🇸🇹', name: 'São Tomé',          format: '990 XXXX' },
+  { code: '+244', country: 'AO', flag: '🇦🇴', name: 'Angola',            format: '9XX XXX XXX' },
+  { code: '+227', country: 'NE', flag: '🇳🇪', name: 'Niger',             format: '90 XX XX XX' },
+  { code: '+228', country: 'TG', flag: '🇹🇬', name: 'Togo',              format: '90 XX XX XX' },
+  { code: '+229', country: 'BJ', flag: '🇧🇯', name: 'Bénin',             format: '97 XX XX XX' },
+  { code: '+226', country: 'BF', flag: '🇧🇫', name: 'Burkina Faso',      format: '70 XX XX XX' },
+  { code: '+223', country: 'ML', flag: '🇲🇱', name: 'Mali',              format: '7X XX XX XX' },
+  { code: '+222', country: 'MR', flag: '🇲🇷', name: 'Mauritanie',        format: '22 XX XX XX' },
+  { code: '+220', country: 'GM', flag: '🇬🇲', name: 'Gambie',            format: '7XX XXXX' },
+  { code: '+245', country: 'GW', flag: '🇬🇼', name: 'Guinée-Bissau',     format: '96 XXX XXXX' },
+  { code: '+238', country: 'CV', flag: '🇨🇻', name: 'Cap-Vert',          format: '991 XXXX' },
+  { code: '+232', country: 'SL', flag: '🇸🇱', name: 'Sierra Leone',      format: '76 XX XXXX' },
+  { code: '+231', country: 'LR', flag: '🇱🇷', name: 'Liberia',           format: '770 XXXXX' },
+  { code: '+255', country: 'TZ', flag: '🇹🇿', name: 'Tanzanie',          format: '7XX XXX XXX' },
+  { code: '+256', country: 'UG', flag: '🇺🇬', name: 'Ouganda',           format: '7XX XXX XXX' },
+  { code: '+254', country: 'KE', flag: '🇰🇪', name: 'Kenya',             format: '7XX XXX XXX' },
+  { code: '+27',  country: 'ZA', flag: '🇿🇦', name: 'Afrique du Sud',    format: '6X XXX XXXX' },
+  { code: '+212', country: 'MA', flag: '🇲🇦', name: 'Maroc',             format: '6X XX XX XX' },
+  { code: '+213', country: 'DZ', flag: '🇩🇿', name: 'Algérie',           format: '6X XX XX XX' },
+  // ── International ─────────────────────────────────────────────────────────
+  { code: '+33',  country: 'FR', flag: '🇫🇷', name: 'France',            format: '6 XX XX XX XX' },
+  { code: '+44',  country: 'GB', flag: '🇬🇧', name: 'United Kingdom',    format: '7XXX XXX XXX' },
+  { code: '+1',   country: 'US', flag: '🇺🇸', name: 'USA / Canada',      format: '(XXX) XXX-XXXX' },
+  { code: '+49',  country: 'DE', flag: '🇩🇪', name: 'Germany',           format: '1XX XXX XXXX' },
+  { code: '+32',  country: 'BE', flag: '🇧🇪', name: 'Belgique',          format: '4XX XX XX XX' },
+  { code: '+41',  country: 'CH', flag: '🇨🇭', name: 'Suisse',            format: '7X XXX XX XX' },
+  { code: '+86',  country: 'CN', flag: '🇨🇳', name: 'Chine',             format: '1XX XXXX XXXX' },
 ];
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
@@ -228,7 +228,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                     </span>
                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400 flex-shrink-0">{d.code}</span>
                     {d.code === dialCode && (
-                      <span className="text-teal-500 text-xs">âœ“</span>
+                      <span className="text-teal-500 text-xs">✓</span>
                     )}
                   </button>
                 ))
@@ -267,12 +267,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         />
       </div>
 
-      {error && <p className="text-xs text-red-600 mt-1 flex items-center gap-1">âš ï¸ {error}</p>}
+      {error && <p className="text-xs text-red-600 mt-1 flex items-center gap-1">⚠ï¸ {error}</p>}
 
       {/* Helper: shows chosen country */}
       {!error && localNumber && (
         <p className="text-xs text-gray-400 mt-1">
-          {selected.flag} {selected.name} Â· Full number: {dialCode} {localNumber}
+          {selected.flag} {selected.name} · Full number: {dialCode} {localNumber}
         </p>
       )}
     </div>

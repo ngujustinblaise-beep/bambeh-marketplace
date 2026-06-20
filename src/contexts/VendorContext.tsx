@@ -1,14 +1,14 @@
 ﻿/**
  * src/contexts/VendorContext.tsx
- * Bambeh Marketplace â€” Vendor Context (duplicate vendorStatus fixed)
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Context (duplicate vendorStatus fixed)
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "./AuthContext";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 export type VendorStatus =
   | "none" | "pending" | "active" | "suspended" | "rejected";
 
@@ -37,7 +37,7 @@ export interface VendorProfile {
 
 export interface VendorContextValue {
   vendorProfile: VendorProfile | null;
-  vendorStatus: VendorStatus;       // single declaration â€” fixes TS2300 / TS2687
+  vendorStatus: VendorStatus;       // single declaration — fixes TS2300 / TS2687
   isVendor: boolean;
   isLoadingVendor: boolean;
   vendorError: string | null;
@@ -46,10 +46,10 @@ export interface VendorContextValue {
   updateVendorProfile: (data: Partial<VendorProfile>) => Promise<{ success: boolean; error: string | null }>;
 }
 
-// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Context ──────────────────────────────────────────────────────────────────
 const VendorContext = createContext<VendorContextValue | null>(null);
 
-// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Provider ─────────────────────────────────────────────────────────────────
 export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [vendorProfile, setVendorProfile] = useState<VendorProfile | null>(null);
@@ -177,7 +177,7 @@ export const VendorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return <VendorContext.Provider value={value}>{children}</VendorContext.Provider>;
 };
 
-// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 export function useVendor(): VendorContextValue {
   const ctx = useContext(VendorContext);
   if (!ctx) throw new Error("useVendor must be used inside <VendorProvider>");

@@ -153,7 +153,7 @@ const PropertyDetails = () => {
               onClick={nextImage}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-3 rounded-full hover:bg-white active:scale-95 transition-all text-xl font-bold"
             >
-              â†’
+              →
             </button>
 
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
@@ -213,7 +213,7 @@ const PropertyDetails = () => {
           <div className="text-center">
             <Square size={24} className="mx-auto mb-1 text-gray-600" />
             <p className="text-sm text-gray-500">Area</p>
-            <p className="font-bold text-gray-800">{property.area}mÂ²</p>
+            <p className="font-bold text-gray-800">{property.area}m²</p>
           </div>
         </div>
 
@@ -275,7 +275,7 @@ const PropertyDetails = () => {
                 onClick={() => setShowContactForm(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
               >
-                âœ•
+                ✕
               </button>
             </div>
 

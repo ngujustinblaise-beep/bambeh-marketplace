@@ -1,15 +1,15 @@
 ﻿/**
- * src/components/services/BookServiceModal.tsx â€” Bambeh Marketplace
+ * src/components/services/BookServiceModal.tsx — Bambeh Marketplace
  *
  * CHANGES IN THIS VERSION:
- * âœ… AfricanPhoneInput added for visitor callback number (Cameroon default,
+ * ✅ AfricanPhoneInput added for visitor callback number (Cameroon default,
  *    full Central + West Africa country picker)
- * âœ… sendBookingMessage called after Supabase insert â€” sends a non-repliable
+ * ✅ sendBookingMessage called after Supabase insert — sends a non-repliable
  *    in-app message to the service provider so they see a booking card in Chat.
  *    The client never needs to see or dial the provider's number directly.
  *
  * SQL to create table (run once in Supabase SQL editor):
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ─────────────────────────────────────────────────────
  * create table if not exists service_bookings (
  *   id           uuid primary key default gen_random_uuid(),
  *   service_id   text not null,
@@ -104,7 +104,7 @@ export default function BookServiceModal({
         return;
       }
 
-      // 1ï¸âƒ£ Write to service_bookings table
+      // 1ï¸⃣ Write to service_bookings table
       const { error: dbErr } = await supabase.from('service_bookings').insert({
         service_id:   serviceId,
         client_id:    session.user.id,
@@ -118,8 +118,8 @@ export default function BookServiceModal({
 
       if (dbErr) throw dbErr;
 
-      // 2ï¸âƒ£ Send non-repliable in-app booking message to the service provider
-      //    Provider sees a formatted booking card in Chat â€” no contact exposure needed.
+      // 2ï¸⃣ Send non-repliable in-app booking message to the service provider
+      //    Provider sees a formatted booking card in Chat — no contact exposure needed.
       if (providerId) {
         await sendBookingMessage({
           adCreatorId:  providerId,
@@ -256,7 +256,7 @@ export default function BookServiceModal({
               </div>
             </div>
 
-            {/* â”€â”€ AfricanPhoneInput â€” client's callback number â”€â”€ */}
+            {/* ── AfricanPhoneInput — client's callback number ── */}
             <div>
               <AfricanPhoneInput
                 label="Your contact number"
@@ -289,10 +289,10 @@ export default function BookServiceModal({
             {(date || time) && (
               <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-600 space-y-1">
                 <p className="font-semibold text-gray-800 text-xs uppercase tracking-wide mb-2">Booking Summary</p>
-                {date && <p>ðŸ“… {dateOptions.find(d => d.value === date)?.label}</p>}
+                {date && <p>📅 {dateOptions.find(d => d.value === date)?.label}</p>}
                 {time && <p>ðŸ• {fmt12(time)}</p>}
-                <p>ðŸ‘¤ Provider: {providerName}</p>
-                {clientPhone && <p>ðŸ“ž Your number: {clientPhone}</p>}
+                <p>👤 Provider: {providerName}</p>
+                {clientPhone && <p>📞 Your number: {clientPhone}</p>}
               </div>
             )}
 
@@ -306,7 +306,7 @@ export default function BookServiceModal({
             >
               {loading
                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Booking...</>
-                : 'ðŸ“… Confirm Booking Request'
+                : '📅 Confirm Booking Request'
               }
             </button>
 

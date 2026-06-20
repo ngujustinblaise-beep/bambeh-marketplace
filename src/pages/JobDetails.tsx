@@ -1,17 +1,17 @@
 ﻿/**
  * src/pages/JobDetails.tsx
- * Bambeh Marketplace â€” Job Listing Detail Page
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Job Listing Detail Page
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXED:
- *  âœ… Uses listings table (correct Bambeh schema) via jobs.service
- *  âœ… Company logo displayed if uploaded
- *  âœ… Full multilingual: EN / FR / HA / AR / PCM / FUL
- *  âœ… All apply methods: in_app, whatsapp, call, email
- *  âœ… Duplicate-application detection
- *  âœ… Share + Bookmark working
- *  âœ… Deadline expiry banner
- *  âœ… Voice control / search: page exports its own voice keywords
+ *  ✅ Uses listings table (correct Bambeh schema) via jobs.service
+ *  ✅ Company logo displayed if uploaded
+ *  ✅ Full multilingual: EN / FR / HA / AR / PCM / FUL
+ *  ✅ All apply methods: in_app, whatsapp, call, email
+ *  ✅ Duplicate-application detection
+ *  ✅ Share + Bookmark working
+ *  ✅ Deadline expiry banner
+ *  ✅ Voice control / search: page exports its own voice keywords
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -26,60 +26,60 @@ import { getJobById, incrementJobView, applyForJob } from "@/services/jobs.servi
 import type { JobListing } from "@/types/src_types_items";
 import { useLang } from "@/hooks/useAppLang";
 
-// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n ──────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
-  back:             { en:"Back", fr:"Retour", ha:"Koma", ar:"Ø±Ø¬ÙˆØ¹", pcm:"Go back", ful:"Yahru" },
-  notFound:         { en:"Job not found", fr:"Offre introuvable", ha:"Ba a sami aiki ba", ar:"Ø§Ù„ÙˆØ¸ÙŠÙØ© ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯Ø©", pcm:"Work no dey", ful:"Golle heÉ“aani" },
-  loading:          { en:"Loading job detailsâ€¦", fr:"Chargementâ€¦", ha:"Ana lodiâ€¦", ar:"Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦", pcm:"Dey loadâ€¦", ful:"Nannginiiâ€¦" },
-  description:      { en:"Job Description", fr:"Description du poste", ha:"Bayanin Aiki", ar:"ÙˆØµÙ Ø§Ù„ÙˆØ¸ÙŠÙØ©", pcm:"Work description", ful:"JaÅ‹tugol Golle" },
-  requirements:     { en:"Requirements & Skills", fr:"Exigences & CompÃ©tences", ha:"BuÆ™atun & Æ˜warewa", ar:"Ø§Ù„Ù…ØªØ·Ù„Ø¨Ø§Øª ÙˆØ§Ù„Ù…Ù‡Ø§Ø±Ø§Øª", pcm:"Wetin dem need", ful:"Ko heÉ“etee" },
-  benefits:         { en:"Benefits & Perks", fr:"Avantages", ha:"Fa'idoji", ar:"Ø§Ù„Ù…Ø²Ø§ÙŠØ§", pcm:"Bonus things", ful:"Nafaaji" },
-  applyNow:         { en:"Apply Now", fr:"Postuler maintenant", ha:"Nema yanzu", ar:"ØªÙ‚Ø¯Ù… Ø§Ù„Ø¢Ù†", pcm:"Apply Now", ful:"DaÃ± Golle" },
-  applyWhatsApp:    { en:"Apply via WhatsApp", fr:"Postuler via WhatsApp", ha:"Nema ta WhatsApp", ar:"Ø§Ù„ØªÙ‚Ø¯ÙŠÙ… Ø¹Ø¨Ø± ÙˆØ§ØªØ³Ø§Ø¨", pcm:"Apply for WhatsApp", ful:"Jokkude e WhatsApp" },
-  applyCall:        { en:"Call to Apply", fr:"Appeler pour postuler", ha:"Kira don nema", ar:"Ø§ØªØµÙ„ Ù„Ù„ØªÙ‚Ø¯ÙŠÙ…", pcm:"Call make apply", ful:"Noddu ngam DaÃ±de" },
-  applyEmail:       { en:"Apply via Email", fr:"Postuler par email", ha:"Nema ta email", ar:"Ø§Ù„ØªÙ‚Ø¯ÙŠÙ… Ø¨Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ", pcm:"Send email apply", ful:"Imeel ngam DaÃ±de" },
-  applied:          { en:"Application Sent âœ“", fr:"Candidature envoyÃ©e âœ“", ha:"An aika nema âœ“", ar:"ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø·Ù„Ø¨ âœ“", pcm:"You don apply âœ“", ful:"Jokkunde nootii âœ“" },
-  applying:         { en:"Sending applicationâ€¦", fr:"Envoi en coursâ€¦", ha:"Ana aikaâ€¦", ar:"Ø¬Ø§Ø±Ù Ø§Ù„Ø¥Ø±Ø³Ø§Ù„â€¦", pcm:"Dey send amâ€¦", ful:"Nannginiiâ€¦" },
-  alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez dÃ©jÃ  postulÃ©", ha:"Kun riga kun nema", ar:"Ù„Ù‚Ø¯ ØªÙ‚Ø¯Ù…Øª Ø¨Ø§Ù„ÙØ¹Ù„", pcm:"You don apply before", ful:"Ko njimonaa yoodi" },
-  expired:          { en:"This job has expired", fr:"Cette offre a expirÃ©", ha:"Aiki ya Æ™are", ar:"Ø§Ù†ØªÙ‡Øª ØµÙ„Ø§Ø­ÙŠØ© Ø§Ù„ÙˆØ¸ÙŠÙØ©", pcm:"Work don finish", ful:"Golle É“enni" },
-  closingSoon:      { en:"Closing soon", fr:"Ferme bientÃ´t", ha:"Zai Æ™are da wuri", ar:"ÙŠÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ù‹Ø§", pcm:"E go close soon", ful:"Æennoo seeÉ—a" },
-  today:            { en:"Today", fr:"Aujourd'hui", ha:"Yau", ar:"Ø§Ù„ÙŠÙˆÙ…", pcm:"Today", ful:"Hannde" },
-  dLeft:            { en:"d left", fr:"j restants", ha:"kwanaki", ar:"Ø£ÙŠØ§Ù… Ù…ØªØ¨Ù‚ÙŠØ©", pcm:"days left", ful:"balÉ—e" },
-  deadline:         { en:"Application deadline", fr:"Date limite", ha:"Æ˜arshen lokaci", ar:"Ø¢Ø®Ø± Ù…ÙˆØ¹Ø¯", pcm:"Last date", ful:"BalÉ—e É“ennoo" },
-  salary:           { en:"Monthly Salary", fr:"Salaire mensuel", ha:"Albashin wata", ar:"Ø§Ù„Ø±Ø§ØªØ¨ Ø§Ù„Ø´Ù‡Ø±ÙŠ", pcm:"Month salary", ful:"Njobdi koorka" },
-  negotiable:       { en:"Negotiable", fr:"NÃ©gociable", ha:"Ana tattaunawa", ar:"Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙØ§ÙˆØ¶", pcm:"E fit negotiate", ful:"Naggi" },
-  salaryNotSpec:    { en:"Salary not specified", fr:"Salaire non prÃ©cisÃ©", ha:"Ba a ambaci albashi", ar:"Ø§Ù„Ø±Ø§ØªØ¨ ØºÙŠØ± Ù…Ø­Ø¯Ø¯", pcm:"No salary talk", ful:"Njobdi alaa" },
-  remote:           { en:"Remote work", fr:"TÃ©lÃ©travail", ha:"Aiki daga nesa", ar:"Ø¹Ù…Ù„ Ø¹Ù† Ø¨ÙØ¹Ø¯", pcm:"Online work", ful:"E Æanndu" },
-  candidates:       { en:"applicants", fr:"candidats", ha:"masu nema", ar:"Ù…ØªÙ‚Ø¯Ù…", pcm:"people apply", ful:"jokkooÉ“e" },
-  views:            { en:"views", fr:"vues", ha:"ra'ayoyi", ar:"Ù…Ø´Ø§Ù‡Ø¯Ø©", pcm:"people see am", ful:"yiylaama" },
-  published:        { en:"Published", fr:"PubliÃ© le", ha:"An buga", ar:"Ù†ÙØ´Ø± ÙÙŠ", pcm:"Dem post am", ful:"Fewtiima" },
-  tryAgain:         { en:"Try Again", fr:"RÃ©essayer", ha:"Sake gwadawa", ar:"Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰", pcm:"Try again", ful:"EÉ—É—oo yeeso" },
-  copyLink:         { en:"Link copied!", fr:"Lien copiÃ©!", ha:"An kwafi hanyar!", ar:"ØªÙ… Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·!", pcm:"Link don copy!", ful:"Ã‘olndi jaÉ“É“aama!" },
-  saved:            { en:"Saved", fr:"SauvegardÃ©", ha:"An adana", ar:"Ù…Ø­ÙÙˆØ¸", pcm:"You don save am", ful:"Adanaama" },
-  unsaved:          { en:"Bookmark", fr:"Sauvegarder", ha:"Adana", ar:"Ø­ÙØ¸", pcm:"Save am", ful:"Adana" },
-  loginToApply:     { en:"Log in to apply", fr:"Connectez-vous pour postuler", ha:"Shiga don nema", ar:"Ø³Ø¬Ù‘Ù„ Ø¯Ø®ÙˆÙ„Ùƒ Ù„Ù„ØªÙ‚Ø¯ÙŠÙ…", pcm:"Login first apply", ful:"Naatir ngam daÃ±de" },
+  back:             { en:"Back", fr:"Retour", ha:"Koma", ar:"رجوع", pcm:"Go back", ful:"Yahru" },
+  notFound:         { en:"Job not found", fr:"Offre introuvable", ha:"Ba a sami aiki ba", ar:"الوظيÙة غير موجودة", pcm:"Work no dey", ful:"Golle heɓaani" },
+  loading:          { en:"Loading job details…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
+  description:      { en:"Job Description", fr:"Description du poste", ha:"Bayanin Aiki", ar:"وصÙ الوظيÙة", pcm:"Work description", ful:"Jaŋtugol Golle" },
+  requirements:     { en:"Requirements & Skills", fr:"Exigences & Compétences", ha:"Buƙatun & Ƙwarewa", ar:"المتطلبات والمهارات", pcm:"Wetin dem need", ful:"Ko heɓetee" },
+  benefits:         { en:"Benefits & Perks", fr:"Avantages", ha:"Fa'idoji", ar:"المزايا", pcm:"Bonus things", ful:"Nafaaji" },
+  applyNow:         { en:"Apply Now", fr:"Postuler maintenant", ha:"Nema yanzu", ar:"تقدم الآن", pcm:"Apply Now", ful:"Dañ Golle" },
+  applyWhatsApp:    { en:"Apply via WhatsApp", fr:"Postuler via WhatsApp", ha:"Nema ta WhatsApp", ar:"التقديم عبر واتساب", pcm:"Apply for WhatsApp", ful:"Jokkude e WhatsApp" },
+  applyCall:        { en:"Call to Apply", fr:"Appeler pour postuler", ha:"Kira don nema", ar:"اتصل للتقديم", pcm:"Call make apply", ful:"Noddu ngam Dañde" },
+  applyEmail:       { en:"Apply via Email", fr:"Postuler par email", ha:"Nema ta email", ar:"التقديم بالبريد الإلكتروني", pcm:"Send email apply", ful:"Imeel ngam Dañde" },
+  applied:          { en:"Application Sent ✓", fr:"Candidature envoyée ✓", ha:"An aika nema ✓", ar:"تم إرسال الطلب ✓", pcm:"You don apply ✓", ful:"Jokkunde nootii ✓" },
+  applying:         { en:"Sending application…", fr:"Envoi en cours…", ha:"Ana aika…", ar:"جارÙ الإرسال…", pcm:"Dey send am…", ful:"Nannginii…" },
+  alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez déjà postulé", ha:"Kun riga kun nema", ar:"لقد تقدمت بالÙعل", pcm:"You don apply before", ful:"Ko njimonaa yoodi" },
+  expired:          { en:"This job has expired", fr:"Cette offre a expiré", ha:"Aiki ya ƙare", ar:"انتهت صلاحية الوظيÙة", pcm:"Work don finish", ful:"Golle ɓenni" },
+  closingSoon:      { en:"Closing soon", fr:"Ferme bientôt", ha:"Zai ƙare da wuri", ar:"ينتهي قريبًا", pcm:"E go close soon", ful:"Æennoo seeɗa" },
+  today:            { en:"Today", fr:"Aujourd'hui", ha:"Yau", ar:"اليوم", pcm:"Today", ful:"Hannde" },
+  dLeft:            { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام متبقية", pcm:"days left", ful:"balɗe" },
+  deadline:         { en:"Application deadline", fr:"Date limite", ha:"Ƙarshen lokaci", ar:"آخر موعد", pcm:"Last date", ful:"Balɗe ɓennoo" },
+  salary:           { en:"Monthly Salary", fr:"Salaire mensuel", ha:"Albashin wata", ar:"الراتب الشهري", pcm:"Month salary", ful:"Njobdi koorka" },
+  negotiable:       { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pcm:"E fit negotiate", ful:"Naggi" },
+  salaryNotSpec:    { en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
+  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بÙعد", pcm:"Online work", ful:"E Æanndu" },
+  candidates:       { en:"applicants", fr:"candidats", ha:"masu nema", ar:"متقدم", pcm:"people apply", ful:"jokkooɓe" },
+  views:            { en:"views", fr:"vues", ha:"ra'ayoyi", ar:"مشاهدة", pcm:"people see am", ful:"yiylaama" },
+  published:        { en:"Published", fr:"Publié le", ha:"An buga", ar:"نÙشر Ùي", pcm:"Dem post am", ful:"Fewtiima" },
+  tryAgain:         { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pcm:"Try again", ful:"Eɗɗoo yeeso" },
+  copyLink:         { en:"Link copied!", fr:"Lien copié!", ha:"An kwafi hanyar!", ar:"تم نسخ الرابط!", pcm:"Link don copy!", ful:"Ñolndi jaɓɓaama!" },
+  saved:            { en:"Saved", fr:"Sauvegardé", ha:"An adana", ar:"محÙوظ", pcm:"You don save am", ful:"Adanaama" },
+  unsaved:          { en:"Bookmark", fr:"Sauvegarder", ha:"Adana", ar:"حÙظ", pcm:"Save am", ful:"Adana" },
+  loginToApply:     { en:"Log in to apply", fr:"Connectez-vous pour postuler", ha:"Shiga don nema", ar:"سجّل دخولك للتقديم", pcm:"Login first apply", ful:"Naatir ngam dañde" },
 };
 
 function s(key: string, lang: string): string {
   return STR[key]?.[lang] ?? STR[key]?.["en"] ?? key;
 }
 
-// â”€â”€â”€ Label maps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Label maps ────────────────────────────────────────────────────────────────
 const JOB_TYPE_LABELS: Record<string, Record<string, string>> = {
-  full_time:  { en:"Full-time",  fr:"Temps plein",   ha:"Cikakken lokaci", ar:"Ø¯ÙˆØ§Ù… ÙƒØ§Ù…Ù„",  pcm:"Full time",  ful:"Waktu fof" },
-  part_time:  { en:"Part-time",  fr:"Temps partiel", ha:"Rabin lokaci",    ar:"Ø¯ÙˆØ§Ù… Ø¬Ø²Ø¦ÙŠ",  pcm:"Half time",  ful:"Waktu didi" },
-  contract:   { en:"Contract",   fr:"Contrat",       ha:"Kwantiragi",      ar:"Ø¹Ù‚Ø¯",         pcm:"Contract",   ful:"Kontoraaji" },
-  internship: { en:"Internship", fr:"Stage",         ha:"Horarwa",         ar:"ØªØ¯Ø±ÙŠØ¨",       pcm:"Training",   ful:"Jannginagol" },
-  freelance:  { en:"Freelance",  fr:"Freelance",     ha:"Yanci",           ar:"Ø­Ø±",          pcm:"Freelance",  ful:"Freelance" },
-  temporary:  { en:"Temporary",  fr:"Temporaire",    ha:"Wucin gadi",      ar:"Ù…Ø¤Ù‚Øª",        pcm:"Small time", ful:"SeeÉ—a" },
+  full_time:  { en:"Full-time",  fr:"Temps plein",   ha:"Cikakken lokaci", ar:"دوام كامل",  pcm:"Full time",  ful:"Waktu fof" },
+  part_time:  { en:"Part-time",  fr:"Temps partiel", ha:"Rabin lokaci",    ar:"دوام جزئي",  pcm:"Half time",  ful:"Waktu didi" },
+  contract:   { en:"Contract",   fr:"Contrat",       ha:"Kwantiragi",      ar:"عقد",         pcm:"Contract",   ful:"Kontoraaji" },
+  internship: { en:"Internship", fr:"Stage",         ha:"Horarwa",         ar:"تدريب",       pcm:"Training",   ful:"Jannginagol" },
+  freelance:  { en:"Freelance",  fr:"Freelance",     ha:"Yanci",           ar:"حر",          pcm:"Freelance",  ful:"Freelance" },
+  temporary:  { en:"Temporary",  fr:"Temporaire",    ha:"Wucin gadi",      ar:"مؤقت",        pcm:"Small time", ful:"Seeɗa" },
 };
 
 const EXP_LABELS: Record<string, Record<string, string>> = {
-  no_experience: { en:"No experience",       fr:"Sans expÃ©rience",     ha:"Ba kwarewa",    ar:"Ø¨Ø¯ÙˆÙ† Ø®Ø¨Ø±Ø©",    pcm:"No experience", ful:"Alaa karallaagal" },
-  entry:         { en:"Entry (0â€“2 yrs)",      fr:"DÃ©butant (0â€“2 ans)",  ha:"Farawa (0â€“2)",  ar:"Ù…Ø¨ØªØ¯Ø¦ (0â€“2)",  pcm:"Starter (0-2)", ful:"Sappoowo (0-2)" },
-  mid:           { en:"Mid-level (2â€“5 yrs)",  fr:"IntermÃ©diaire (2â€“5)", ha:"Tsaka-tsaki",   ar:"Ù…ØªÙˆØ³Ø· (2â€“5)",  pcm:"Middle (2-5)",  ful:"SeeÉ—um (2-5)" },
-  senior:        { en:"Senior (5+ yrs)",      fr:"Senior (5+ ans)",     ha:"Babba (5+)",    ar:"Ø®Ø¨ÙŠØ± (5+)",    pcm:"Big man (5+)",  ful:"MawÉ—o (5+)" },
-  executive:     { en:"Executive",            fr:"Cadre dirigeant",     ha:"Manajan",       ar:"Ù…Ø³Ø¤ÙˆÙ„ ØªÙ†ÙÙŠØ°ÙŠ", pcm:"Big boss",      ful:"Jom Laamu" },
+  no_experience: { en:"No experience",       fr:"Sans expérience",     ha:"Ba kwarewa",    ar:"بدون خبرة",    pcm:"No experience", ful:"Alaa karallaagal" },
+  entry:         { en:"Entry (0–2 yrs)",      fr:"Débutant (0–2 ans)",  ha:"Farawa (0–2)",  ar:"مبتدئ (0–2)",  pcm:"Starter (0-2)", ful:"Sappoowo (0-2)" },
+  mid:           { en:"Mid-level (2–5 yrs)",  fr:"Intermédiaire (2–5)", ha:"Tsaka-tsaki",   ar:"متوسط (2–5)",  pcm:"Middle (2-5)",  ful:"Seeɗum (2-5)" },
+  senior:        { en:"Senior (5+ yrs)",      fr:"Senior (5+ ans)",     ha:"Babba (5+)",    ar:"خبير (5+)",    pcm:"Big man (5+)",  ful:"Mawɗo (5+)" },
+  executive:     { en:"Executive",            fr:"Cadre dirigeant",     ha:"Manajan",       ar:"مسؤول تنÙيذي", pcm:"Big boss",      ful:"Jom Laamu" },
 };
 
 function jobTypeLabel(type: string, lang: string): string {
@@ -94,7 +94,7 @@ function formatXAF(n: number, lang: string): string {
   return new Intl.NumberFormat(lang === "fr" ? "fr-CM" : "en-CM", { maximumFractionDigits: 0 }).format(n) + " FCFA";
 }
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ─────────────────────────────────────────────────────────────────
 const JobDetails: React.FC = () => {
   const { id }     = useParams<{ id: string }>();
   const navigate   = useNavigate();
@@ -110,7 +110,7 @@ const JobDetails: React.FC = () => {
   const [applyError, setApplyError] = useState<string | null>(null);
   const [toast,      setToast]      = useState<string | null>(null);
 
-  // â”€â”€ Load job â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Load job ─────────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
@@ -134,7 +134,7 @@ const JobDetails: React.FC = () => {
 
   useEffect(() => { void load(); }, [load]);
 
-  // â”€â”€ Apply handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Apply handler ─────────────────────────────────────────────────────────────
   const handleApply = useCallback(async () => {
     if (!job) return;
     setApplyError(null);
@@ -146,7 +146,7 @@ const JobDetails: React.FC = () => {
 
     const userId = sessionData.session.user.id;
 
-    // WhatsApp / call / email â€” open external link
+    // WhatsApp / call / email — open external link
     if (job.applyMethod === "whatsapp" && job.applyContact) {
       const msg = encodeURIComponent(`Hello, I'm applying for the ${job.title} position at ${job.company ?? "your company"} posted on Bambeh.`);
       const phone = job.applyContact.replace(/\D/g, "");
@@ -185,7 +185,7 @@ const JobDetails: React.FC = () => {
     }
   }, [job, navigate, lang]);
 
-  // â”€â”€ Bookmark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Bookmark ──────────────────────────────────────────────────────────────────
   const handleBookmark = useCallback(() => {
     if (!job) return;
     setBookmarked((prev) => {
@@ -200,12 +200,12 @@ const JobDetails: React.FC = () => {
     });
   }, [job, lang]);
 
-  // â”€â”€ Share â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Share ─────────────────────────────────────────────────────────────────────
   const handleShare = useCallback(async () => {
     if (!job) return;
     const url = `${window.location.origin}/#/jobs/${job.id}`;
     if (navigator.share) {
-      try { await navigator.share({ title: job.title, text: `${job.title} â€” Bambeh`, url }); }
+      try { await navigator.share({ title: job.title, text: `${job.title} — Bambeh`, url }); }
       catch { /* dismissed */ }
     } else {
       try {
@@ -220,7 +220,7 @@ const JobDetails: React.FC = () => {
     setTimeout(() => setToast(null), 2500);
   }
 
-  // â”€â”€ States â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── States ────────────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" dir={dir}>
@@ -309,8 +309,8 @@ const JobDetails: React.FC = () => {
               : "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-600 dark:text-orange-400"}`}>
             <Calendar className="w-4 h-4 flex-shrink-0" />
             {isExpired
-              ? `â›” ${s("expired", lang)}`
-              : `â° ${s("closingSoon", lang)} â€” ${daysLeft === 0 ? s("today", lang) : `${daysLeft} ${s("dLeft", lang)}`}`}
+              ? `⛔ ${s("expired", lang)}`
+              : `â° ${s("closingSoon", lang)} — ${daysLeft === 0 ? s("today", lang) : `${daysLeft} ${s("dLeft", lang)}`}`}
           </div>
         )}
 
@@ -342,7 +342,7 @@ const JobDetails: React.FC = () => {
             )}
             <div className="flex items-center gap-1 mt-1 flex-wrap text-xs text-gray-500 dark:text-gray-400">
               <MapPin className="w-3.5 h-3.5" />
-              <span>{job.location.city}{job.location.region ? ` Â· ${job.location.region}` : ""}</span>
+              <span>{job.location.city}{job.location.region ? ` · ${job.location.region}` : ""}</span>
               {job.isRemote && (
                 <>
                   <Globe className="w-3.5 h-3.5 text-blue-500 ml-1" />
@@ -382,7 +382,7 @@ const JobDetails: React.FC = () => {
                 <p className="text-xs text-green-600 dark:text-green-400 font-medium">{s("salary", lang)}</p>
                 <p className="text-lg font-bold text-green-800 dark:text-green-300">
                   {job.salaryMinXAF ? formatXAF(job.salaryMinXAF, lang) : ""}
-                  {job.salaryMinXAF && job.salaryMaxXAF ? " â€“ " : ""}
+                  {job.salaryMinXAF && job.salaryMaxXAF ? " – " : ""}
                   {job.salaryMaxXAF ? formatXAF(job.salaryMaxXAF, lang) : ""}
                 </p>
                 {job.isSalaryNegotiable && (
@@ -483,7 +483,7 @@ const JobDetails: React.FC = () => {
           </div>
         ) : isExpired ? (
           <div className="py-3.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-center text-gray-500 dark:text-gray-400 font-medium text-sm">
-            â›” {s("expired", lang)}
+            ⛔ {s("expired", lang)}
           </div>
         ) : (
           <button

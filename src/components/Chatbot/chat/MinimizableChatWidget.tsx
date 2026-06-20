@@ -7,7 +7,7 @@ const MinimizableChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
-    { id: '1', text: 'Hello! Welcome to Bambe Marketplace ðŸ‘‹', isUser: false }
+    { id: '1', text: 'Hello! Welcome to Bambe Marketplace 👋', isUser: false }
   ]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef(null);

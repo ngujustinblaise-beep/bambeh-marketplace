@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/vendor/VendorProfile.tsx
- * Bambeh Marketplace â€” Vendor Profile Card
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Profile Card
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
@@ -51,7 +51,7 @@ const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
               <ShieldCheck className="w-3.5 h-3.5 text-teal-600 flex-shrink-0" />
             )}
           </div>
-          <p className="text-xs text-gray-500 truncate">{vendor.city} Â· {vendor.category}</p>
+          <p className="text-xs text-gray-500 truncate">{vendor.city} · {vendor.category}</p>
           <div className="flex items-center gap-1 mt-0.5">
             <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
             <span className="text-xs text-gray-600 font-medium">{vendor.rating.toFixed(1)}</span>

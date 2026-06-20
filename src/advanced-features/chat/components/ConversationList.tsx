@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - CONVERSATION LIST COMPONENT
+ * BAMBÉ MARKETPLACE - CONVERSATION LIST COMPONENT
  * Version: 1.0.0
  */
 
@@ -76,7 +76,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       <div className="conversation-list">
         {sortedConversations.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-icon">ðŸ’¬</span>
+            <span className="empty-icon">💬</span>
             <p>{t('chat.noConversations')}</p>
           </div>
         ) : (
@@ -128,8 +128,8 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
                   <span className={`role-badge ${otherParticipant.role}`}>
                     {otherParticipant.role === 'vendor' && 'ðŸª'}
-                    {otherParticipant.role === 'customer' && 'ðŸ‘¤'}
-                    {otherParticipant.role === 'admin' && 'âš™ï¸'}
+                    {otherParticipant.role === 'customer' && '👤'}
+                    {otherParticipant.role === 'admin' && '⚙ï¸'}
                   </span>
                 </div>
 
@@ -139,7 +139,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                     onClick={(e) => handleDelete(e, conversation.id)}
                     aria-label="Delete conversation"
                   >
-                    ðŸ—‘ï¸
+                    🗑ï¸
                   </button>
                 )}
               </div>

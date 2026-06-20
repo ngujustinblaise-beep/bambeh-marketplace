@@ -3,7 +3,7 @@
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * ADMIN INBOX - MESSAGING SYSTEM FOR ADMIN PORTAL
  * FILE LOCATION: src/pages/admin/AdminInbox.tsx
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
 
-// â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TYPES ────────────────────────────────────────────────────────────────────
 type MessageStatus   = 'unread' | 'read' | 'replied' | 'resolved' | 'archived';
 type MessagePriority = 'low' | 'normal' | 'high' | 'urgent';
 type MessageCategory = 'report' | 'inquiry' | 'complaint' | 'feedback' | 'support' | 'other';
@@ -51,14 +51,14 @@ interface InboxMessage {
   replies?: InboxMessage[];
 }
 
-// â”€â”€ SAMPLE DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── SAMPLE DATA ───────────────────────────────────────────────────────────────
 const generateSampleMessages = (): InboxMessage[] => [
   {
     id: 'msg-001',
     fromUserId: 'user-003',
     fromUserName: 'Bob Johnson',
     fromUserEmail: 'bob@example.com',
-    subject: 'ðŸš¨ URGENT: Scam Report - Seller not delivering',
+    subject: '🚨 URGENT: Scam Report - Seller not delivering',
     body: `Dear Admin,\n\nI paid 450,000 XAF for an iPhone 13 Pro Max on December 20th, 2024. The seller "TechZone " confirmed my order and promised delivery within 7 days.\n\nIt has now been 2 weeks and the item has not been delivered and the seller stopped responding.\n\nOrder Number: BMB-2024-008765\nPayment Method: MTN Mobile Money\n\nPlease help me urgently.\n\nBob Johnson`,
     category: 'report', priority: 'urgent', status: 'unread', isStarred: true,
     attachments: [
@@ -121,7 +121,7 @@ const generateSampleMessages = (): InboxMessage[] => [
   },
 ];
 
-// â”€â”€ CATEGORY & PRIORITY CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── CATEGORY & PRIORITY CONFIG ────────────────────────────────────────────────
 const categoryConfig: Record<MessageCategory, { label: string; color: string; icon: React.ElementType }> = {
   report:    { label: 'Report',    color: 'bg-red-100 text-red-700',    icon: Flag         },
   inquiry:   { label: 'Inquiry',   color: 'bg-blue-100 text-blue-700',  icon: MessageSquare},
@@ -138,7 +138,7 @@ const priorityConfig: Record<MessagePriority, { label: string; color: string }> 
   urgent: { label: 'URGENT', color: 'bg-red-100 text-red-600 animate-pulse'      },
 };
 
-// â”€â”€ MESSAGE ITEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MESSAGE ITEM ──────────────────────────────────────────────────────────────
 interface MessageItemProps {
   message: InboxMessage;
   isSelected: boolean;
@@ -219,7 +219,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isSelected, onSelect
   );
 };
 
-// â”€â”€ COMPOSE MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── COMPOSE MODAL ─────────────────────────────────────────────────────────────
 interface ComposeModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -316,7 +316,7 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ isOpen, onClose, replyTo })
   );
 };
 
-// â”€â”€ MAIN COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function AdminInbox() {
   const { currentAdmin } = useAdmin();
   const [messages, setMessages]               = useState<InboxMessage[]>([]);
@@ -380,7 +380,7 @@ export default function AdminInbox() {
                   <Inbox className="w-6 h-6 text-purple-600" />
                   Admin Inbox
                 </h1>
-                <p className="text-sm text-gray-600">{unreadCount} unread â€¢ {urgentCount} urgent</p>
+                <p className="text-sm text-gray-600">{unreadCount} unread • {urgentCount} urgent</p>
               </div>
             </div>
             <button

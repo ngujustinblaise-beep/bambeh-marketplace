@@ -3,12 +3,12 @@
  * FAVORITES UTILITIES - WITH REAL-TIME EVENT SYNC
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * âœ… Saves to localStorage
- * âœ… Dispatches events for real-time updates
- * âœ… Used by all detail pages
- * âœ… Syncs with Favorites page instantly
+ * ✅ Saves to localStorage
+ * ✅ Dispatches events for real-time updates
+ * ✅ Used by all detail pages
+ * ✅ Syncs with Favorites page instantly
  *
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -63,7 +63,7 @@ export const saveFavorite = (item: FavoriteItem): boolean => {
     favorites.push(item);
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
 
-    // ðŸš€ Dispatch event for real-time sync with Favorites page!
+    // 🚀 Dispatch event for real-time sync with Favorites page!
     window.dispatchEvent(new Event("favoritesChanged"));
 
     return true;
@@ -85,7 +85,7 @@ export const removeFavorite = (id: string, type: string): boolean => {
 
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered));
 
-    // ðŸš€ Dispatch event for real-time sync!
+    // 🚀 Dispatch event for real-time sync!
     window.dispatchEvent(new Event("favoritesChanged"));
 
     return true;
@@ -115,7 +115,7 @@ export const clearFavorites = (): boolean => {
   try {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify([]));
 
-    // ðŸš€ Dispatch event for real-time sync!
+    // 🚀 Dispatch event for real-time sync!
     window.dispatchEvent(new Event("favoritesChanged"));
 
     return true;

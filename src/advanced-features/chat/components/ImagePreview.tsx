@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - IMAGE PREVIEW COMPONENT
+ * BAMBÉ MARKETPLACE - IMAGE PREVIEW COMPONENT
  * Version: 1.0.0
  */
 
@@ -46,7 +46,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ file, onSend, onCancel }) =
       <div className="image-preview-modal">
         <div className="image-preview-header">
           <h3>{t('chat.sendImage')}</h3>
-          <button className="close-button" onClick={onCancel}>âœ•</button>
+          <button className="close-button" onClick={onCancel}>✕</button>
         </div>
 
         <div className="image-preview-content">

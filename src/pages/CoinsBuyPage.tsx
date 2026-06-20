@@ -49,7 +49,7 @@ export default function CoinsBuyPage() {
     try {
       const newBalance = balance + selected.coins;
 
-      // 1ï¸âƒ£ record purchase
+      // 1ï¸⃣ record purchase
       await supabase.from("zerm_purchases").insert({
         user_id: userId,
         package_id: selected.id,
@@ -61,7 +61,7 @@ export default function CoinsBuyPage() {
         status: "completed",
       });
 
-      // 2ï¸âƒ£ update wallet
+      // 2ï¸⃣ update wallet
       await supabase.from("zerm_coins").upsert(
         {
           user_id: userId,
@@ -71,7 +71,7 @@ export default function CoinsBuyPage() {
         { onConflict: "user_id" }
       );
 
-      // 3ï¸âƒ£ log transaction
+      // 3ï¸⃣ log transaction
       await supabase.from("zerm_transactions").insert({
         user_id: userId,
         type: "credit",

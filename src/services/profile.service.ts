@@ -1,12 +1,12 @@
 ﻿/**
  * src/services/profile.service.ts
- * Bambeh Marketplace â€” User Profile Service
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — User Profile Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface UserProfile {
   id: string;
   email: string;
@@ -41,7 +41,7 @@ export interface ProfileUpdateResponse {
   error: string | null;
 }
 
-// â”€â”€â”€ Map Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Map Row ──────────────────────────────────────────────────────────────────
 function mapProfileRow(row: Record<string, unknown>): UserProfile {
   return {
     id: row.id as string,
@@ -68,7 +68,7 @@ function mapProfileRow(row: Record<string, unknown>): UserProfile {
   };
 }
 
-// â”€â”€â”€ Get Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Profile ──────────────────────────────────────────────────────────────
 export async function getProfile(userId: string): Promise<ProfileResponse> {
   try {
     const { data, error } = await supabase
@@ -88,7 +88,7 @@ export async function getProfile(userId: string): Promise<ProfileResponse> {
   }
 }
 
-// â”€â”€â”€ Update Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Update Profile ───────────────────────────────────────────────────────────
 export async function updateProfile(
   userId: string,
   updates: Partial<Omit<UserProfile, "id" | "email" | "createdAt" | "updatedAt">>
@@ -123,7 +123,7 @@ export async function updateProfile(
   }
 }
 
-// â”€â”€â”€ Upload Avatar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Upload Avatar ────────────────────────────────────────────────────────────
 export async function uploadAvatar(
   userId: string,
   file: File
@@ -152,7 +152,7 @@ export async function uploadAvatar(
   }
 }
 
-// â”€â”€â”€ Get Public Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Public Profile ───────────────────────────────────────────────────────
 export async function getPublicProfile(userId: string): Promise<ProfileResponse> {
   try {
     const { data, error } = await supabase

@@ -24,7 +24,7 @@ const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({ currentTier = "fr
           <ul className="space-y-1 mb-4">
             {plan.features.map((f, i) => (
               <li key={i} className="text-sm text-gray-600 flex gap-1">
-                <span className="text-teal-500">âœ“</span>{f}
+                <span className="text-teal-500">✓</span>{f}
               </li>
             ))}
           </ul>
@@ -42,7 +42,7 @@ const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({ currentTier = "fr
           )}
           {currentTier === plan.tier && (
             <div className="text-center text-teal-600 font-medium text-sm py-2">
-              âœ… Current Plan
+              ✅ Current Plan
             </div>
           )}
         </div>

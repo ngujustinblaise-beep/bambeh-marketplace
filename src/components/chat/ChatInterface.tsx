@@ -26,7 +26,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, currentUser, onSend
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-3 p-4 border-b bg-white">
         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg">
-          {other?.image ? <img src={other.image} alt={other.name} className="w-full h-full rounded-full object-cover" /> : "ðŸ‘¤"}
+          {other?.image ? <img src={other.image} alt={other.name} className="w-full h-full rounded-full object-cover" /> : "👤"}
         </div>
         <div>
           <p className="font-semibold text-sm">{other?.name ?? "User"}</p>
@@ -60,7 +60,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, currentUser, onSend
         />
         <button onClick={send} disabled={!input.trim()}
           className="bg-teal-600 text-white rounded-full w-10 h-10 flex items-center justify-center disabled:opacity-40">
-          âž¤
+          ➤
         </button>
       </div>
     </div>

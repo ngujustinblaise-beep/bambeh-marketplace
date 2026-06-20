@@ -1,25 +1,25 @@
 ﻿/**
  * src/components/listings/ActionButtons.tsx
- * Bambeh Marketplace â€” Shared Contact / Report / Share Action Buttons
+ * Bambeh Marketplace — Shared Contact / Report / Share Action Buttons
  *
  * Features:
- *  âœ… Contact Vendor via phone (tel: link, safe, no XSS)
- *  âœ… Report Ad â€” navigates to /report route OR calls onReport callback
- *  âœ… Share â€” Web Share API with clipboard fallback
- *  âœ… Visual feedback (CheckCircle animation on click)
- *  âœ… Input sanitisation: phone numbers stripped of non-safe characters
- *  âœ… Accessible: aria-labels on every button, role & focus styles
- *  âœ… No alert() calls â€” uses toast for non-blocking feedback
- *  âœ… Optional onReport / onShare callbacks for custom override
+ *  ✅ Contact Vendor via phone (tel: link, safe, no XSS)
+ *  ✅ Report Ad — navigates to /report route OR calls onReport callback
+ *  ✅ Share — Web Share API with clipboard fallback
+ *  ✅ Visual feedback (CheckCircle animation on click)
+ *  ✅ Input sanitisation: phone numbers stripped of non-safe characters
+ *  ✅ Accessible: aria-labels on every button, role & focus styles
+ *  ✅ No alert() calls — uses toast for non-blocking feedback
+ *  ✅ Optional onReport / onShare callbacks for custom override
  *
  * FILE LOCATION: src/components/listings/ActionButtons.tsx
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from 'react';
 import { Phone, Flag, Share2, CheckCircle } from 'lucide-react';
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export type AdType =
   | 'jobs'
@@ -52,7 +52,7 @@ export interface ActionButtonsProps {
   className?: string;
 }
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
  * Sanitise a phone number: keep only digits, +, spaces, hyphens, parentheses.
@@ -76,7 +76,7 @@ async function showToast(title: string, description?: string): Promise<void> {
   }
 }
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function ActionButtons({
   vendorPhone,
@@ -97,7 +97,7 @@ export function ActionButtons({
     return () => window.clearTimeout(timer);
   }, []);
 
-  // â”€â”€ Share â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Share ──────────────────────────────────────────────────────────────────
   const shareUrl = `https://bambeh.com/#/${adType}/${encodeURIComponent(adId)}`;
 
   const handleShare = useCallback(async () => {
@@ -125,14 +125,14 @@ export function ActionButtons({
         await showToast('Link copied!', 'Share link copied to clipboard.');
       }
     } catch (err) {
-      // User cancelled share â€” not an error worth surfacing
+      // User cancelled share — not an error worth surfacing
       if (err instanceof Error && err.name !== 'AbortError') {
         console.warn('[ActionButtons] share failed:', err.message);
       }
     }
   }, [adTitle, adType, adId, flash, onShare, shareUrl]);
 
-  // â”€â”€ Report â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Report ─────────────────────────────────────────────────────────────────
   const handleReport = useCallback(async () => {
     flash('report');
 
@@ -156,14 +156,14 @@ export function ActionButtons({
 
     await showToast(
       'Report submitted',
-      'Thank you â€” our moderation team will review this listing.',
+      'Thank you — our moderation team will review this listing.',
     );
   }, [flash, onReport]);
 
-  // â”€â”€ Contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Contact ────────────────────────────────────────────────────────────────
   const safePhone = vendorPhone ? sanitisePhone(vendorPhone) : '';
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div
       className={`flex flex-wrap gap-3 my-4 ${className}`}

@@ -8,10 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import { Crown, X, Phone, Zap, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const SUBSCRIPTION_MESSAGES = [
-  { headline: 'ðŸž At the price of a loaf of bread, everything can change.', sub: "Subscribe now â€” you wouldn't regret it.", color: 'from-amber-500 to-orange-500' },
-  { headline: 'âš¡ Subscribe quick with that wonderful CFA 100 and secure your place all over .', sub: 'Your competitors are already moving. Will you?', color: 'from-teal-500 to-blue-600' },
+  { headline: 'ðŸž At the price of a loaf of bread, everything can change.', sub: "Subscribe now — you wouldn't regret it.", color: 'from-amber-500 to-orange-500' },
+  { headline: '⚡ Subscribe quick with that wonderful CFA 100 and secure your place all over .', sub: 'Your competitors are already moving. Will you?', color: 'from-teal-500 to-blue-600' },
   { headline: 'ðŸ›ï¸ At CFA 100, you can secure anything from the comfort of your bed.', sub: 'No need to go out. Everything comes to you.', color: 'from-purple-500 to-pink-600' },
-  { headline: 'ðŸ‘‘ No need to rush â€” with that CFA 100... yes that one, you are king.', sub: 'One subscription. Unlimited Bambeh power.', color: 'from-rose-500 to-red-600' },
+  { headline: '👑 No need to rush — with that CFA 100... yes that one, you are king.', sub: 'One subscription. Unlimited Bambeh power.', color: 'from-rose-500 to-red-600' },
 ];
 
 const BENEFITS = [
@@ -114,11 +114,11 @@ const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({ isOpen, o
             </div>
             <button onClick={handleSubscribe}
               className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-base shadow-lg transition-all active:scale-[0.98] bg-gradient-to-r ${msg.color} hover:opacity-90`}>
-              <Crown className="w-5 h-5" />Subscribe Now â€” CFA 100<ArrowRight className="w-4 h-4" />
+              <Crown className="w-5 h-5" />Subscribe Now — CFA 100<ArrowRight className="w-4 h-4" />
             </button>
           </div>
           <button onClick={handleFullPlans} className="w-full text-sm text-gray-500 hover:text-teal-600 transition-colors py-2 underline underline-offset-2">
-            View all subscription plans â†’
+            View all subscription plans →
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - CHAT UTILITY FUNCTIONS
+ * BAMBÉ MARKETPLACE - CHAT UTILITY FUNCTIONS
  * Helper functions for chat functionality
  * Version: 1.0.0
  */

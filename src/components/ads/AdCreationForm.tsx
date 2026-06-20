@@ -1,6 +1,6 @@
 ﻿// @ts-nocheck
 /**
- * AD CREATION FORM COMPONENT â€” Form for creating advertisements to promote items.
+ * AD CREATION FORM COMPONENT — Form for creating advertisements to promote items.
  */
 
 import { useState } from 'react';
@@ -89,7 +89,7 @@ export default function AdCreationForm({ items, isSubscriber, onSubmit, onCancel
       {isSubscriber && (
         <Alert className="bg-teal-50 border-teal-200">
           <TrendingUp className="h-4 w-4 text-teal-600" />
-          <AlertDescription className="text-teal-800">{t('ads.subscriberBenefit')} â€” {t('ads.save')} {t('ads.upTo')} 80%!</AlertDescription>
+          <AlertDescription className="text-teal-800">{t('ads.subscriberBenefit')} — {t('ads.save')} {t('ads.upTo')} 80%!</AlertDescription>
         </Alert>
       )}
 
@@ -225,7 +225,7 @@ export default function AdCreationForm({ items, isSubscriber, onSubmit, onCancel
           {isSubmitting ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('ads.creating')}</>
           ) : (
-            <><Calendar className="w-4 h-4 mr-2" />{t('ads.createAd')} â€” {cost} ZC</>
+            <><Calendar className="w-4 h-4 mr-2" />{t('ads.createAd')} — {cost} ZC</>
           )}
         </Button>
       </div>

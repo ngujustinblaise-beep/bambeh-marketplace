@@ -15,7 +15,7 @@ export const useAnalytics = () => {
   const captureError     = trackError;
   const setUserProperties = useCallback((props: Record<string, unknown>): void => trackEvent("user_properties", props), [trackEvent]);
 
-  // Stubbed sub-trackers â€” components may destructure these
+  // Stubbed sub-trackers — components may destructure these
   const ga       = { trackEvent };
   const mixpanel = { trackEvent };
   const sentry   = { captureException: trackError };

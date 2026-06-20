@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - VENDOR SERVICE
+ * BAMBÉ MARKETPLACE - VENDOR SERVICE
  * Complete backend integration for vendor operations
  * Version: 1.0.0
  */

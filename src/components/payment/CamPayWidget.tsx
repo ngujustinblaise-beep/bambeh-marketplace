@@ -1,21 +1,21 @@
 ﻿/**
- * CamPayWidget.tsx  â€”  Bambeh Marketplace
+ * CamPayWidget.tsx  —  Bambeh Marketplace
  * FILE LOCATION: src/components/payment/CamPayWidget.tsx
  *
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *  REUSABLE CAMPAY PAYMENT UI COMPONENT
  *  Drop this into any page that needs to collect mobile money.
  *  It handles:
- *    â€¢ Phone number input + operator auto-detection
- *    â€¢ Initiating payment via useCamPay hook
- *    â€¢ Waiting / countdown screen
- *    â€¢ Success / failure screens
+ *    • Phone number input + operator auto-detection
+ *    • Initiating payment via useCamPay hook
+ *    • Waiting / countdown screen
+ *    • Success / failure screens
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
  * USAGE:
  *  <CamPayWidget
  *    amount={500}
- *    description="Daily Plan â€” Bambeh Subscription"
+ *    description="Daily Plan — Bambeh Subscription"
  *    onSuccess={(ref) => activatePlan(ref)}
  *  />
  */
@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from '@/hooks/useCamPay';
 
-// â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Props ────────────────────────────────────────────────────────────────────
 interface CamPayWidgetProps {
   amount: number;                   // XAF amount to collect
   description: string;              // shown on USSD prompt and in receipts
@@ -35,7 +35,7 @@ interface CamPayWidgetProps {
   metadata?: Record<string, unknown>;
   onSuccess?: (reference: string) => void | Promise<void>;
   onFailure?: (message: string) => void;
-  /** Override the success screen â€” show your own UI after payment */
+  /** Override the success screen — show your own UI after payment */
   successNode?: React.ReactNode;
   /** Show "Secured by CamPay" badge at the bottom? Default true */
   showBadge?: boolean;
@@ -45,7 +45,7 @@ interface CamPayWidgetProps {
   buttonClass?: string;
 }
 
-// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Component ────────────────────────────────────────────────────────────────
 export default function CamPayWidget({
   amount,
   description,
@@ -92,7 +92,7 @@ export default function CamPayWidget({
     });
   }
 
-  // â”€â”€ SUCCESS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── SUCCESS ───────────────────────────────────────────────────────────────
   if (isSuccess) {
     if (successNode) return <>{successNode}</>;
     return (
@@ -107,7 +107,7 @@ export default function CamPayWidget({
     );
   }
 
-  // â”€â”€ WAITING FOR USSD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── WAITING FOR USSD ──────────────────────────────────────────────────────
   if (isWaiting) {
     return (
       <div className="flex flex-col items-center py-8 text-center px-4">
@@ -115,7 +115,7 @@ export default function CamPayWidget({
           <Loader2 className="w-9 h-9 text-amber-500 animate-spin" />
         </div>
         <h3 className="text-lg font-bold text-gray-900 mb-2">
-          {operator === 'mtn' ? 'ðŸ“± Check your MTN phone' : 'ðŸ“± Check your Orange phone'}
+          {operator === 'mtn' ? '📱 Check your MTN phone' : '📱 Check your Orange phone'}
         </h3>
         <p className="text-sm text-gray-600 mb-4 max-w-xs">
           A payment request of <strong>{amount.toLocaleString()} XAF</strong> has been sent to <strong>+237 {phone}</strong>. Approve it with your PIN.
@@ -129,14 +129,14 @@ export default function CamPayWidget({
           <p className="text-xs text-gray-500">1. A USSD prompt appears on your screen</p>
           <p className="text-xs text-gray-500">2. Enter your {operator === 'mtn' ? 'MoMo' : 'Orange Money'} PIN</p>
           <p className="text-xs text-gray-500">3. You'll get an SMS confirmation</p>
-          <p className="text-xs text-gray-500">4. This page updates automatically âœ“</p>
+          <p className="text-xs text-gray-500">4. This page updates automatically ✓</p>
         </div>
 
         <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-4 py-2.5 mb-5 text-sm font-semibold">
           <Clock className="w-4 h-4 flex-shrink-0" />
           {countdown > 0
-            ? `Waitingâ€¦ ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')} remaining`
-            : 'Processingâ€¦'}
+            ? `Waiting… ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')} remaining`
+            : 'Processing…'}
         </div>
 
         <button
@@ -149,7 +149,7 @@ export default function CamPayWidget({
     );
   }
 
-  // â”€â”€ IDLE / FAILED â€” MAIN FORM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── IDLE / FAILED — MAIN FORM ─────────────────────────────────────────────
   return (
     <div className="space-y-4">
       {/* Error banner */}
@@ -211,7 +211,7 @@ export default function CamPayWidget({
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-orange-100 text-orange-800'
             }`}>
-              {operator === 'mtn' ? 'ðŸ“¶ MTN' : 'ðŸŸ  Orange'}
+              {operator === 'mtn' ? '📶 MTN' : '🟠 Orange'}
             </span>
           )}
         </div>
@@ -228,7 +228,7 @@ export default function CamPayWidget({
         className={`w-full text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${buttonClass}`}
       >
         {isSubmitting ? (
-          <><Loader2 className="w-4 h-4 animate-spin" /> Sending requestâ€¦</>
+          <><Loader2 className="w-4 h-4 animate-spin" /> Sending request…</>
         ) : (
           buttonLabel ?? `Pay ${amount.toLocaleString()} XAF`
         )}
@@ -238,7 +238,7 @@ export default function CamPayWidget({
       {showBadge && (
         <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
           <Shield className="w-3.5 h-3.5" />
-          Secured by CamPay Â· BAMBEH SARL Â· support@bambeh.com
+          Secured by CamPay · BAMBEH SARL · support@bambeh.com
         </div>
       )}
     </div>

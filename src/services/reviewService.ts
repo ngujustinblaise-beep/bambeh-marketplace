@@ -1,5 +1,5 @@
 ﻿/**
- * reviewService.ts â€” Bambeh Marketplace
+ * reviewService.ts — Bambeh Marketplace
  * FILE LOCATION: src/services/reviewService.ts
  */
 

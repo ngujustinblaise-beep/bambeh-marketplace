@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - VENDOR TYPES
+ * BAMBÉ MARKETPLACE - VENDOR TYPES
  * TypeScript interfaces for vendor dashboard
  * Version: 1.0.0
  */

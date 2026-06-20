@@ -47,7 +47,7 @@ export default function EmailPreferencesModal({ onClose }: EmailPreferencesModal
     setIsSaving(true);
     try {
       localStorage.setItem('Bambeh_email_preferences', JSON.stringify(preferences));
-      alert('âœ… Email preferences saved successfully!');
+      alert('✅ Email preferences saved successfully!');
       onClose();
     } catch (error) {
       console.error('Error saving preferences:', error);

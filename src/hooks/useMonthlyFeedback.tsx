@@ -27,7 +27,7 @@ function markFeedbackSent(): void {
   try {
     localStorage.setItem(STORAGE_KEY, currentMonthKey());
   } catch {
-    // localStorage unavailable â€” fail silently
+    // localStorage unavailable — fail silently
   }
 }
 
@@ -197,7 +197,7 @@ export function MonthlyFeedbackBanner() {
           }}
         >
           Your voice is our fuel. This month, tell us what the Bambeh can do
-          better â€” your feedback shapes what we build next.
+          better — your feedback shapes what we build next.
         </div>
 
         <a
@@ -218,7 +218,7 @@ export function MonthlyFeedbackBanner() {
             transition: "transform 0.2s",
           }}
         >
-          Share my voice â†’
+          Share my voice →
         </a>
 
         <button

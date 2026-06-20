@@ -11,9 +11,9 @@ interface PaymentModalProps {
 }
 
 const METHODS: { id: PaymentMethod; label: string; icon: string }[] = [
-  { id: PAYMENT_METHODS.MTN_MOMO,     label: "MTN MoMo",     icon: "ðŸŸ¡" },
-  { id: PAYMENT_METHODS.ORANGE_MONEY, label: "Orange Money", icon: "ðŸŸ " },
-  { id: PAYMENT_METHODS.ZERM_COINS,   label: "ZermCoins",    icon: "ðŸª™" },
+  { id: PAYMENT_METHODS.MTN_MOMO,     label: "MTN MoMo",     icon: "🟡" },
+  { id: PAYMENT_METHODS.ORANGE_MONEY, label: "Orange Money", icon: "🟠" },
+  { id: PAYMENT_METHODS.ZERM_COINS,   label: "ZermCoins",    icon: "🪙" },
 ];
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -40,7 +40,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Pay {amount.toLocaleString()} {currency}</h2>
           {onClose && (
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">Ã—</button>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
           )}
         </div>
 
@@ -62,7 +62,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <button onClick={handlePay} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl">
-          {loading ? "Processingâ€¦" : "Confirm Payment"}
+          {loading ? "Processing…" : "Confirm Payment"}
         </button>
       </div>
     </div>

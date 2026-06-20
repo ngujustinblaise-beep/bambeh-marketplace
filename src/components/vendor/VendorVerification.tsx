@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/vendor/VendorVerification.tsx
- * Bambeh Marketplace â€” Vendor Verification Workflow
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Verification Workflow
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -40,21 +40,21 @@ interface StepConfig {
 const STEPS: StepConfig[] = [
   {
     id: "phone",
-    label: "VÃ©rification tÃ©lÃ©phone",
-    description: "Confirmer votre numÃ©ro de tÃ©lÃ©phone via OTP SMS",
+    label: "Vérification téléphone",
+    description: "Confirmer votre numéro de téléphone via OTP SMS",
     icon: Phone,
     required: true,
   },
   {
     id: "id",
-    label: "VÃ©rification identitÃ©",
-    description: "TÃ©lÃ©charger une piÃ¨ce d'identitÃ© nationale valide (CNI ou passeport)",
+    label: "Vérification identité",
+    description: "Télécharger une pièce d'identité nationale valide (CNI ou passeport)",
     icon: CreditCard,
     required: true,
   },
   {
     id: "business",
-    label: "VÃ©rification entreprise",
+    label: "Vérification entreprise",
     description: "Fournir le registre de commerce ou la patente de votre entreprise",
     icon: Building2,
     required: false,
@@ -77,7 +77,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
 
   const handlePhoneVerification = useCallback(async () => {
     if (!phone.trim() || !otp.trim()) {
-      setError("Veuillez entrer votre numÃ©ro et le code OTP");
+      setError("Veuillez entrer votre numéro et le code OTP");
       return;
     }
 
@@ -105,7 +105,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
       setActiveStep(null);
       onVerificationSubmitted?.();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur de vÃ©rification");
+      setError(e instanceof Error ? e.message : "Erreur de vérification");
     } finally {
       setSubmitting(false);
     }
@@ -157,7 +157,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
         <ShieldCheck className="w-5 h-5 text-teal-600" />
-        <h2 className="text-base font-bold text-gray-900">VÃ©rification du compte vendeur</h2>
+        <h2 className="text-base font-bold text-gray-900">Vérification du compte vendeur</h2>
       </div>
 
       {STEPS.map((stepConfig) => {
@@ -232,7 +232,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
                   <div className="space-y-3 pt-3">
                     <div>
                       <label className="text-xs font-medium text-gray-700 mb-1 block">
-                        NumÃ©ro de tÃ©lÃ©phone
+                        Numéro de téléphone
                       </label>
                       <input
                         type="tel"
@@ -244,7 +244,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
                     </div>
                     <div>
                       <label className="text-xs font-medium text-gray-700 mb-1 block">
-                        Code OTP reÃ§u par SMS
+                        Code OTP reçu par SMS
                       </label>
                       <input
                         type="text"
@@ -262,7 +262,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
                       className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                     >
                       {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                      {submitting ? "VÃ©rification..." : "VÃ©rifier"}
+                      {submitting ? "Vérification..." : "Vérifier"}
                     </button>
                   </div>
                 )}
@@ -279,10 +279,10 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
                         {submitting
                           ? "Envoi en cours..."
                           : stepConfig.id === "id"
-                          ? "Cliquer pour tÃ©lÃ©charger votre CNI ou passeport"
-                          : "Cliquer pour tÃ©lÃ©charger votre registre de commerce"}
+                          ? "Cliquer pour télécharger votre CNI ou passeport"
+                          : "Cliquer pour télécharger votre registre de commerce"}
                       </span>
-                      <span className="text-xs text-gray-400">JPG, PNG, PDF â€” max 5 MB</span>
+                      <span className="text-xs text-gray-400">JPG, PNG, PDF — max 5 MB</span>
                       <input
                         type="file"
                         accept="image/jpeg,image/png,application/pdf"
@@ -306,7 +306,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
       <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
         <Mail className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-blue-700">
-          La vÃ©rification d'identitÃ© est gÃ©nÃ©ralement traitÃ©e sous 24â€“48 heures ouvrables.
+          La vérification d'identité est généralement traitée sous 24–48 heures ouvrables.
           Vous recevrez une confirmation par email.
         </p>
       </div>

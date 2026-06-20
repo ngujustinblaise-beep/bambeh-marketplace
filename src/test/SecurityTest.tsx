@@ -11,16 +11,16 @@ const SecurityTest: React.FC = () => {
     const out: string[] = [];
 
     securityManager.applyHeaders();
-    out.push("âœ… SecurityManager.applyHeaders()");
+    out.push("✅ SecurityManager.applyHeaders()");
 
     const ok = rateLimiter.check("test", 5, 60_000);
-    out.push(`âœ… RateLimiter: ${ok ? "allowed" : "blocked"}`);
+    out.push(`✅ RateLimiter: ${ok ? "allowed" : "blocked"}`);
 
     try {
       await apiClient.get("/health");
-      out.push("âœ… SecureAPIClient GET /health");
+      out.push("✅ SecureAPIClient GET /health");
     } catch (e) {
-      out.push(`âš ï¸  SecureAPIClient: ${e instanceof Error ? e.message : String(e)}`);
+      out.push(`⚠ï¸  SecureAPIClient: ${e instanceof Error ? e.message : String(e)}`);
     }
 
     setResults(out);

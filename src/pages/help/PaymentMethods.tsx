@@ -27,24 +27,24 @@ const T: Record<string, Record<string, string>> = {
   },
   "fr": {
     "title": "Moyens de paiement",
-    "subtitle": "Options de paiement sÃ»res et pratiques",
+    "subtitle": "Options de paiement sûres et pratiques",
     "coinsTitle": "Zerm Coins",
-    "coinsDesc": "Utilisez vos Zerm Coins gagnÃ©s pour des fonctionnalitÃ©s premium et des boosts",
-    "c1a": "Transactions instantanÃ©es",
+    "coinsDesc": "Utilisez vos Zerm Coins gagnés pour des fonctionnalités premium et des boosts",
+    "c1a": "Transactions instantanées",
     "c1b": "Sans frais",
-    "c1c": "SÃ©curisÃ© sur la plateforme",
+    "c1c": "Sécurisé sur la plateforme",
     "momoTitle": "Mobile Money",
     "momoDesc": "MTN Mobile Money et Orange Money",
-    "m1": "Largement acceptÃ©",
+    "m1": "Largement accepté",
     "m2": "Traitement rapide",
     "m3": "Pratique",
-    "cashTitle": "EspÃ¨ces",
+    "cashTitle": "Espèces",
     "cashDesc": "Payez en personne lors de la rencontre",
     "ca1": "Aucun frais de transaction",
-    "ca2": "Paiement instantanÃ©",
+    "ca2": "Paiement instantané",
     "ca3": "Simple et direct",
-    "safetyTitle": "Rappel de sÃ©curitÃ©",
-    "safetyMsg": "Ne partagez jamais vos informations de paiement avant de vous rencontrer en personne. VÃ©rifiez toujours les articles avant de payer.",
+    "safetyTitle": "Rappel de sécurité",
+    "safetyMsg": "Ne partagez jamais vos informations de paiement avant de vous rencontrer en personne. Vérifiez toujours les articles avant de payer.",
     "back": "Retour au centre d'aide"
   },
   "pidgin": {
@@ -70,47 +70,47 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "Ø·Ø±Ù‚ Ø§Ù„Ø¯ÙØ¹",
-    "subtitle": "Ø®ÙŠØ§Ø±Ø§Øª Ø¯ÙØ¹ Ø¢Ù…Ù†Ø© ÙˆÙ…Ø±ÙŠØ­Ø©",
+    "title": "طرق الدÙع",
+    "subtitle": "خيارات دÙع آمنة ومريحة",
     "coinsTitle": "Zerm Coins",
-    "coinsDesc": "Ø§Ø³ØªØ®Ø¯Ù… Zerm Coins Ø§Ù„ØªÙŠ ÙƒØ³Ø¨ØªÙ‡Ø§ Ù„Ù„Ù…ÙŠØ²Ø§Øª Ø§Ù„Ù…Ù…ÙŠØ²Ø© ÙˆØ§Ù„ØªØ¹Ø²ÙŠØ²Ø§Øª",
-    "c1a": "Ù…Ø¹Ø§Ù…Ù„Ø§Øª ÙÙˆØ±ÙŠØ©",
-    "c1b": "Ø¨Ø¯ÙˆÙ† Ø±Ø³ÙˆÙ…",
-    "c1c": "Ø¢Ù…Ù† Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ù†ØµØ©",
+    "coinsDesc": "استخدم Zerm Coins التي كسبتها للميزات المميزة والتعزيزات",
+    "c1a": "معاملات Ùورية",
+    "c1b": "بدون رسوم",
+    "c1c": "آمن داخل المنصة",
     "momoTitle": "Mobile Money",
-    "momoDesc": "MTN Mobile Money Ùˆ Orange Money",
-    "m1": "Ù…Ù‚Ø¨ÙˆÙ„ Ø¹Ù„Ù‰ Ù†Ø·Ø§Ù‚ ÙˆØ§Ø³Ø¹",
-    "m2": "Ù…Ø¹Ø§Ù„Ø¬Ø© Ø³Ø±ÙŠØ¹Ø©",
-    "m3": "Ù…Ø±ÙŠØ­",
-    "cashTitle": "Ù†Ù‚Ø¯Ù‹Ø§",
-    "cashDesc": "Ø§Ø¯ÙØ¹ Ø´Ø®ØµÙŠÙ‹Ø§ Ø¹Ù†Ø¯ Ø§Ù„Ù„Ù‚Ø§Ø¡",
-    "ca1": "Ø¨Ø¯ÙˆÙ† Ø±Ø³ÙˆÙ… Ù…Ø¹Ø§Ù…Ù„Ø§Øª",
-    "ca2": "Ø¯ÙØ¹ ÙÙˆØ±ÙŠ",
-    "ca3": "Ø¨Ø³ÙŠØ· ÙˆÙ…Ø¨Ø§Ø´Ø±",
-    "safetyTitle": "ØªØ°ÙƒÙŠØ± Ø¨Ø§Ù„Ø£Ù…Ø§Ù†",
-    "safetyMsg": "Ù„Ø§ ØªØ´Ø§Ø±Ùƒ ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ø¯ÙØ¹ Ø§Ù„Ø®Ø§ØµØ© Ø¨Ùƒ Ù‚Ø¨Ù„ Ø§Ù„Ù„Ù‚Ø§Ø¡ Ø´Ø®ØµÙŠÙ‹Ø§. ØªØ­Ù‚Ù‚ Ø¯Ø§Ø¦Ù…Ù‹Ø§ Ù…Ù† Ø§Ù„Ø³Ù„Ø¹ Ù‚Ø¨Ù„ Ø§Ù„Ø¯ÙØ¹.",
-    "back": "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©"
+    "momoDesc": "MTN Mobile Money و Orange Money",
+    "m1": "مقبول على نطاق واسع",
+    "m2": "معالجة سريعة",
+    "m3": "مريح",
+    "cashTitle": "نقدًا",
+    "cashDesc": "ادÙع شخصيًا عند اللقاء",
+    "ca1": "بدون رسوم معاملات",
+    "ca2": "دÙع Ùوري",
+    "ca3": "بسيط ومباشر",
+    "safetyTitle": "تذكير بالأمان",
+    "safetyMsg": "لا تشارك تÙاصيل الدÙع الخاصة بك قبل اللقاء شخصيًا. تحقق دائمًا من السلع قبل الدÙع.",
+    "back": "العودة إلى مركز المساعدة"
   },
   "ff": {
-    "title": "Mbaydiiji yoÉ“gol",
-    "subtitle": "Mbaydiiji yoÉ“gol hisÉ—i e newiiÉ—i",
+    "title": "Mbaydiiji yoɓgol",
+    "subtitle": "Mbaydiiji yoɓgol hisɗi e newiiɗi",
     "coinsTitle": "Zerm Coins",
-    "coinsDesc": "Huutoro Zerm Coins É—e keÉ“uÉ—aa ngam keÉ“e premium e É“amtinirÉ—e",
-    "c1a": "Njulaaku jaawÉ—i",
-    "c1b": "Alaa njoÉ“di",
+    "coinsDesc": "Huutoro Zerm Coins ɗe keɓuɗaa ngam keɓe premium e ɓamtinirɗe",
+    "c1a": "Njulaaku jaawɗi",
+    "c1b": "Alaa njoɓdi",
     "c1c": "Hisii nder platform",
     "momoTitle": "Mobile Money",
     "momoDesc": "MTN Mobile Money e Orange Money",
-    "m1": "JaÉ“aa no woory",
+    "m1": "Jaɓaa no woory",
     "m2": "Golletee law",
-    "m3": "NewiiÉ—o",
+    "m3": "Newiiɗo",
     "cashTitle": "Kaalis",
-    "cashDesc": "YoÉ“ É—o yeeso so on hawri",
-    "ca1": "Alaa njoÉ“di njulaaku",
-    "ca2": "YoÉ“gol jaawngol",
-    "ca3": "NewiiÉ—o e focciiÉ—o",
+    "cashDesc": "Yoɓ ɗo yeeso so on hawri",
+    "ca1": "Alaa njoɓdi njulaaku",
+    "ca2": "Yoɓgol jaawngol",
+    "ca3": "Newiiɗo e focciiɗo",
     "safetyTitle": "Siiftorgol kisal",
-    "safetyMsg": "Wata a yeenu kabaruuji yoÉ“gol maa ado on hawrude É—o yeeso. Æ³eewndo kaake ado yoÉ“gol.",
+    "safetyMsg": "Wata a yeenu kabaruuji yoɓgol maa ado on hawrude ɗo yeeso. Ƴeewndo kaake ado yoɓgol.",
     "back": "Rutto to galle ballal"
   }
 };
@@ -152,7 +152,7 @@ export default function PaymentMethods() {
                 <p className="text-gray-600 mb-3">{tr(c.descKey)}</p>
                 <ul className="space-y-2 text-gray-600 text-sm">
                   {c.bullets.map((b) => (
-                    <li key={b}>âœ“ {tr(b)}</li>
+                    <li key={b}>✓ {tr(b)}</li>
                   ))}
                 </ul>
               </div>
@@ -161,7 +161,7 @@ export default function PaymentMethods() {
         </div>
 
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-bold text-gray-900 mb-3">ðŸ›¡ï¸ {tr("safetyTitle")}</h3>
+          <h3 className="font-bold text-gray-900 mb-3">🛡ï¸ {tr("safetyTitle")}</h3>
           <p className="text-gray-700">{tr("safetyMsg")}</p>
         </div>
 

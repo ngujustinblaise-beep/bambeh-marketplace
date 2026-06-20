@@ -2,17 +2,17 @@
  * MOVABLE CHAT WIDGET - Android Optimized Version
  * FILE LOCATION: src/components/chat/MovableChatWidget.tsx
  *
- * âœ… FIXED: Always starts anchored to BOTTOM-RIGHT corner
- * âœ… Fully draggable â€” drag handle appears when chat is open
- * âœ… Remembers dragged position via localStorage (new key _v2)
- * âœ… Unread badge, minimizable, touch + mouse optimized
- * âœ… Android-optimized smaller dimensions
+ * ✅ FIXED: Always starts anchored to BOTTOM-RIGHT corner
+ * ✅ Fully draggable — drag handle appears when chat is open
+ * ✅ Remembers dragged position via localStorage (new key _v2)
+ * ✅ Unread badge, minimizable, touch + mouse optimized
+ * ✅ Android-optimized smaller dimensions
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, Move, X, Send, Minimize2, Maximize2 } from 'lucide-react';
 
-// â”€â”€ Position is stored as pixel offset from the LEFT and TOP of the viewport.
+// ── Position is stored as pixel offset from the LEFT and TOP of the viewport.
 // On first load we convert "bottom-right 24px" into left/top coordinates.
 function getDefaultPosition() {
   return {
@@ -22,7 +22,7 @@ function getDefaultPosition() {
 }
 
 export default function MovableChatWidget() {
-  // â”€â”€ v2 key so stale left-biased positions from the old key are ignored â”€â”€
+  // ── v2 key so stale left-biased positions from the old key are ignored ──
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
     try {
       const saved = localStorage.getItem('Bambeh_chat_position_v2');
@@ -49,12 +49,12 @@ export default function MovableChatWidget() {
   // dragRef stores the offset between pointer and the widget's top-left corner
   const dragRef = useRef({ startX: 0, startY: 0 });
 
-  // â”€â”€ Persist position whenever it changes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Persist position whenever it changes ───────────────────────────────────
   useEffect(() => {
     localStorage.setItem('Bambeh_chat_position_v2', JSON.stringify(position));
   }, [position]);
 
-  // â”€â”€ Re-clamp position on window resize so widget never goes off-screen â”€â”€â”€â”€â”€
+  // ── Re-clamp position on window resize so widget never goes off-screen ─────
   useEffect(() => {
     const onResize = () => {
       setPosition(prev => ({
@@ -66,7 +66,7 @@ export default function MovableChatWidget() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // â”€â”€ Mouse drag handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Mouse drag handlers ────────────────────────────────────────────────────
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -96,7 +96,7 @@ export default function MovableChatWidget() {
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // â”€â”€ Touch drag handlers (Android) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Touch drag handlers (Android) ─────────────────────────────────────────
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     dragRef.current = {
@@ -120,7 +120,7 @@ export default function MovableChatWidget() {
     setMessage('');
   };
 
-  // â”€â”€ Determine if chat panel opens upward or downward based on position â”€â”€â”€â”€â”€
+  // ── Determine if chat panel opens upward or downward based on position ─────
   // If widget is in the bottom half of screen, panel opens upward (normal).
   // If widget is in top half, panel opens downward.
   const panelOpensUpward = position.y > window.innerHeight / 2;
@@ -135,7 +135,7 @@ export default function MovableChatWidget() {
       }}
       className="select-none"
     >
-      {/* â”€â”€ Drag handle â€” only visible when chat is open â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Drag handle — only visible when chat is open ────────────────────── */}
       {isOpen && (
         <div
           onMouseDown={handleMouseDown}
@@ -149,7 +149,7 @@ export default function MovableChatWidget() {
         </div>
       )}
 
-      {/* â”€â”€ Floating button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Floating button ──────────────────────────────────────────────────── */}
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -172,7 +172,7 @@ export default function MovableChatWidget() {
         )}
       </button>
 
-      {/* â”€â”€ Chat panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Chat panel ───────────────────────────────────────────────────────── */}
       {isOpen && (
         <div
           className={`
@@ -209,7 +209,7 @@ export default function MovableChatWidget() {
             </div>
           </div>
 
-          {/* Body â€” hidden when minimized */}
+          {/* Body — hidden when minimized */}
           {!isMinimized && (
             <>
               <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">

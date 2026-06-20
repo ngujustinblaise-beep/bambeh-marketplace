@@ -1,11 +1,11 @@
 ﻿/**
- * src/hooks/useViewTracker.ts â€” Bambeh Marketplace
+ * src/hooks/useViewTracker.ts — Bambeh Marketplace
  *
  * Call this hook inside ANY detail page to increment the view_count
  * for that listing in Supabase. It runs once when the page loads.
  *
  * FILE LOCATION: C:\Dev\bambe-android\src\hooks\useViewTracker.ts
- * (Create this file â€” or replace the one you made earlier with this version,
+ * (Create this file — or replace the one you made earlier with this version,
  *  which supports all your different listing tables)
  *
  * USAGE EXAMPLES (what you'll add to each detail page):
@@ -17,7 +17,7 @@
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
-// Map of table â†’ the SQL function that increments it
+// Map of table → the SQL function that increments it
 const RPC_MAP: Record<string, string> = {
   listings:       'increment_listing_view',
   farm_products:  'increment_farm_view',
@@ -44,7 +44,7 @@ export function useViewTracker(
     const paramKey = PARAM_MAP[table];
     if (!rpcName || !paramKey) return;
 
-    // Fire and forget â€” doesn't block page load, doesn't show errors to user
+    // Fire and forget — doesn't block page load, doesn't show errors to user
     supabase.rpc(rpcName, { [paramKey]: id }).then(({ error }) => {
       if (error) {
         // Only log in dev, never show to user

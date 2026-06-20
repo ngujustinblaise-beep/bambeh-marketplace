@@ -1,16 +1,16 @@
 ﻿/**
- * src/pages/Exchange.tsx â€” Bambeh Marketplace
+ * src/pages/Exchange.tsx — Bambeh Marketplace
  *
- * âœ… Full i18n: en, fr, ha, ar, pcm, ff
- * âœ… Realtime listings via Supabase postgres_changes
- * âœ… Location filter (region / city / quarter / landmark)
- * âœ… Expiry countdown badge (â‰¤ 3 days)
- * âœ… Auth-guarded Post Item button
- * âœ… Offer + view count display
- * âœ… Safe-area Android/iOS padding
- * âœ… Pull-to-refresh aware refresh button
- * âœ… Featured ads strip
- * âœ… Empty / error / loading states
+ * ✅ Full i18n: en, fr, ha, ar, pcm, ff
+ * ✅ Realtime listings via Supabase postgres_changes
+ * ✅ Location filter (region / city / quarter / landmark)
+ * ✅ Expiry countdown badge (≤ 3 days)
+ * ✅ Auth-guarded Post Item button
+ * ✅ Offer + view count display
+ * ✅ Safe-area Android/iOS padding
+ * ✅ Pull-to-refresh aware refresh button
+ * ✅ Featured ads strip
+ * ✅ Empty / error / loading states
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -25,13 +25,13 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/fi
 import { useLang, t } from '@/hooks/useAppLang';
 import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
 
-// â”€â”€â”€ i18n strings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n strings ──────────────────────────────────────────────────────────────
 const STRINGS = {
   en: {
     title: 'Exchange',
     postItem: 'Post Item',
     refresh: 'Refresh',
-    loading: 'Loading exchange listingsâ€¦',
+    loading: 'Loading exchange listings…',
     noListings: 'No exchange listings found',
     noListingsFilter: 'Try adjusting your location filter.',
     noListingsFirst: 'Be the first to post an item for exchange!',
@@ -41,85 +41,85 @@ const STRINGS = {
     loadErr: 'Could not load listings. Check your connection.',
     expiresIn: (d: number) => d === 0 ? 'Expires in less than 24h' : `Expires in ${d} day${d !== 1 ? 's' : ''}`,
     offer: (n: number) => `${n} offer${n !== 1 ? 's' : ''}`,
-    search: 'Search itemsâ€¦',
+    search: 'Search items…',
     allCategories: 'All',
     sortNewest: 'Newest',
     sortOffers: 'Most Offers',
     sortViews: 'Most Viewed',
-    freeLabel: 'Free Â· 30 days',
+    freeLabel: 'Free · 30 days',
     open: 'Open to offers',
   },
   fr: {
-    title: 'Ã‰change',
+    title: 'Échange',
     postItem: 'Publier',
     refresh: 'Actualiser',
-    loading: 'Chargement des annoncesâ€¦',
-    noListings: 'Aucune annonce trouvÃ©e',
+    loading: 'Chargement des annonces…',
+    noListings: 'Aucune annonce trouvée',
     noListingsFilter: 'Essayez de modifier votre filtre de localisation.',
-    noListingsFirst: 'Soyez le premier Ã  publier un article Ã  Ã©changer !',
+    noListingsFirst: 'Soyez le premier à publier un article à échanger !',
     postFirst: 'Publier le premier article',
-    found: (n: number) => `${n} article${n !== 1 ? 's' : ''} trouvÃ©${n !== 1 ? 's' : ''}`,
-    tryAgain: 'RÃ©essayer',
-    loadErr: 'Impossible de charger les annonces. VÃ©rifiez votre connexion.',
+    found: (n: number) => `${n} article${n !== 1 ? 's' : ''} trouvé${n !== 1 ? 's' : ''}`,
+    tryAgain: 'Réessayer',
+    loadErr: 'Impossible de charger les annonces. Vérifiez votre connexion.',
     expiresIn: (d: number) => d === 0 ? 'Expire dans moins de 24h' : `Expire dans ${d} jour${d !== 1 ? 's' : ''}`,
     offer: (n: number) => `${n} offre${n !== 1 ? 's' : ''}`,
-    search: 'Rechercherâ€¦',
+    search: 'Rechercher…',
     allCategories: 'Tout',
-    sortNewest: 'Plus rÃ©cent',
+    sortNewest: 'Plus récent',
     sortOffers: 'Plus d\'offres',
     sortViews: 'Plus vu',
-    freeLabel: 'Gratuit Â· 30 jours',
+    freeLabel: 'Gratuit · 30 jours',
     open: 'Ouvert aux offres',
   },
   ha: {
     title: 'Musanya',
     postItem: 'Wallafa',
     refresh: 'Sabunta',
-    loading: 'Ana loda jerin musanyaâ€¦',
+    loading: 'Ana loda jerin musanya…',
     noListings: 'Ba a sami jerin musanya ba',
     noListingsFilter: 'Gwada canza tacewar wuri.',
     noListingsFirst: 'Ka zama na farko da buga abu don musanya!',
     postFirst: 'Buga Farkon Abu',
     found: (n: number) => `An sami abubuwa ${n}`,
     tryAgain: 'Sake gwadawa',
-    loadErr: 'Ba a iya loda jeri. Duba haÉ—in ku.',
-    expiresIn: (d: number) => d === 0 ? 'Ya Æ™are a cikin Æ™asa da 24h' : `Ya Æ™are a cikin kwanaki ${d}`,
+    loadErr: 'Ba a iya loda jeri. Duba haɗin ku.',
+    expiresIn: (d: number) => d === 0 ? 'Ya ƙare a cikin ƙasa da 24h' : `Ya ƙare a cikin kwanaki ${d}`,
     offer: (n: number) => `tayin ${n}`,
-    search: 'Nemi abubuwaâ€¦',
+    search: 'Nemi abubuwa…',
     allCategories: 'Duka',
     sortNewest: 'Sababbi',
     sortOffers: 'Mafi yawan Tayin',
     sortViews: 'Mafi Kallo',
-    freeLabel: 'Kyauta Â· Kwanaki 30',
-    open: 'BuÉ—e ga tayin',
+    freeLabel: 'Kyauta · Kwanaki 30',
+    open: 'Buɗe ga tayin',
   },
   ar: {
-    title: 'ØªØ¨Ø§Ø¯Ù„',
-    postItem: 'Ù†Ø´Ø± Ø¹Ù†ØµØ±',
-    refresh: 'ØªØ­Ø¯ÙŠØ«',
-    loading: 'Ø¬Ø§Ø±Ù ØªØ­Ù…ÙŠÙ„ Ù‚ÙˆØ§Ø¦Ù… Ø§Ù„ØªØ¨Ø§Ø¯Ù„â€¦',
-    noListings: 'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ù‚ÙˆØ§Ø¦Ù…',
-    noListingsFilter: 'Ø­Ø§ÙˆÙ„ ØªØ¹Ø¯ÙŠÙ„ Ù…Ø±Ø´Ø­ Ø§Ù„Ù…ÙˆÙ‚Ø¹.',
-    noListingsFirst: 'ÙƒÙ† Ø£ÙˆÙ„ Ù…Ù† ÙŠÙ†Ø´Ø± Ø¹Ù†ØµØ±Ù‹Ø§ Ù„Ù„ØªØ¨Ø§Ø¯Ù„!',
-    postFirst: 'Ø§Ù†Ø´Ø± Ø£ÙˆÙ„ Ø¹Ù†ØµØ±',
-    found: (n: number) => `ØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ ${n} Ø¹Ù†ØµØ±`,
-    tryAgain: 'Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹',
-    loadErr: 'ØªØ¹Ø°Ù‘Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù‚ÙˆØ§Ø¦Ù…. ØªØ­Ù‚Ù‚ Ù…Ù† Ø§ØªØµØ§Ù„Ùƒ.',
-    expiresIn: (d: number) => d === 0 ? 'ØªÙ†ØªÙ‡ÙŠ ÙÙŠ Ø£Ù‚Ù„ Ù…Ù† 24 Ø³Ø§Ø¹Ø©' : `ØªÙ†ØªÙ‡ÙŠ ÙÙŠ ${d} ÙŠÙˆÙ…`,
-    offer: (n: number) => `${n} Ø¹Ø±Ø¶`,
-    search: 'Ø§Ù„Ø¨Ø­Ø« Ø¹Ù† Ø¹Ù†Ø§ØµØ±â€¦',
-    allCategories: 'Ø§Ù„ÙƒÙ„',
-    sortNewest: 'Ø§Ù„Ø£Ø­Ø¯Ø«',
-    sortOffers: 'Ø§Ù„Ø£ÙƒØ«Ø± Ø¹Ø±ÙˆØ¶Ø§Ù‹',
-    sortViews: 'Ø§Ù„Ø£ÙƒØ«Ø± Ù…Ø´Ø§Ù‡Ø¯Ø©',
-    freeLabel: 'Ù…Ø¬Ø§Ù†Ù‹Ø§ Â· 30 ÙŠÙˆÙ…Ù‹Ø§',
-    open: 'Ù…ÙØªÙˆØ­ Ù„Ù„Ø¹Ø±ÙˆØ¶',
+    title: 'تبادل',
+    postItem: 'نشر عنصر',
+    refresh: 'تحديث',
+    loading: 'جارÙ تحميل قوائم التبادل…',
+    noListings: 'لم يتم العثور على قوائم',
+    noListingsFilter: 'حاول تعديل مرشح الموقع.',
+    noListingsFirst: 'كن أول من ينشر عنصرًا للتبادل!',
+    postFirst: 'انشر أول عنصر',
+    found: (n: number) => `تم العثور على ${n} عنصر`,
+    tryAgain: 'حاول مجدداً',
+    loadErr: 'تعذّر تحميل القوائم. تحقق من اتصالك.',
+    expiresIn: (d: number) => d === 0 ? 'تنتهي Ùي أقل من 24 ساعة' : `تنتهي Ùي ${d} يوم`,
+    offer: (n: number) => `${n} عرض`,
+    search: 'البحث عن عناصر…',
+    allCategories: 'الكل',
+    sortNewest: 'الأحدث',
+    sortOffers: 'الأكثر عروضاً',
+    sortViews: 'الأكثر مشاهدة',
+    freeLabel: 'مجانًا · 30 يومًا',
+    open: 'مÙتوح للعروض',
   },
   pcm: {
     title: 'Exchange',
     postItem: 'Post Am',
     refresh: 'Refresh',
-    loading: 'E dey load exchange listingsâ€¦',
+    loading: 'E dey load exchange listings…',
     noListings: 'No exchange listings',
     noListingsFilter: 'Try adjust your location filter.',
     noListingsFirst: 'Be first person wey go post item for exchange!',
@@ -129,35 +129,35 @@ const STRINGS = {
     loadErr: 'E no fit load listings. Check your network.',
     expiresIn: (d: number) => d === 0 ? 'E go expire in less than 24h' : `E go expire in ${d} day${d !== 1 ? 's' : ''}`,
     offer: (n: number) => `${n} offer${n !== 1 ? 's' : ''}`,
-    search: 'Search itemsâ€¦',
+    search: 'Search items…',
     allCategories: 'All',
     sortNewest: 'Latest',
     sortOffers: 'Most Offers',
     sortViews: 'Most Views',
-    freeLabel: 'Free Â· 30 days',
+    freeLabel: 'Free · 30 days',
     open: 'Open to offers',
   },
   ff: {
     title: 'Fewtere',
     postItem: 'Hollir',
-    refresh: 'HesÉ—it',
-    loading: 'Æetete fewtereâ€¦',
+    refresh: 'Hesɗit',
+    loading: 'Æetete fewtere…',
     noListings: 'Alaa fewtere',
     noListingsFilter: 'Rewto suturo wuro maa.',
-    noListingsFirst: 'Ngu njimi tafon É“e njajaa!',
+    noListingsFirst: 'Ngu njimi tafon ɓe njajaa!',
     postFirst: 'Hollu Adinii',
     found: (n: number) => `Ko ${n} coftal`,
-    tryAgain: 'HeÉ“to katin',
-    loadErr: 'Waawaa yaltude. LeÉ“to samorde.',
-    expiresIn: (d: number) => d === 0 ? 'Timmii hannde' : `Timmii ${d} Ã±alawma`,
-    offer: (n: number) => `${n} jaÉ“de`,
-    search: 'Æeto coftalâ€¦',
+    tryAgain: 'Heɓto katin',
+    loadErr: 'Waawaa yaltude. Leɓto samorde.',
+    expiresIn: (d: number) => d === 0 ? 'Timmii hannde' : `Timmii ${d} ñalawma`,
+    offer: (n: number) => `${n} jaɓde`,
+    search: 'Æeto coftal…',
     allCategories: 'Fof',
     sortNewest: 'Sainii',
-    sortOffers: 'Heewi jaÉ“de',
+    sortOffers: 'Heewi jaɓde',
     sortViews: 'Heewi yiyeede',
-    freeLabel: 'Ã‘aawÉ—e Â· Ã‘alawma 30',
-    open: 'Udditii jaÉ“de',
+    freeLabel: 'Ñaawɗe · Ñalawma 30',
+    open: 'Udditii jaɓde',
   },
 } as const;
 
@@ -241,7 +241,7 @@ export default function Exchange() {
     navigate('/exchange/post');
   }
 
-  // â”€â”€â”€ Client-side filtering + search + sort â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Client-side filtering + search + sort ────────────────────────────────
   let filtered = items.filter(item => {
     const loc = item.location.toLowerCase();
     if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
@@ -272,7 +272,7 @@ export default function Exchange() {
     <div className={`min-h-screen bg-gray-50 p-4 pb-24 ${isRtl ? 'rtl' : 'ltr'}`}>
       <div className="max-w-2xl mx-auto">
 
-        {/* â”€â”€â”€ Header â”€â”€â”€ */}
+        {/* ─── Header ─── */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ArrowLeftRight className="w-6 h-6 text-teal-600" />
@@ -296,7 +296,7 @@ export default function Exchange() {
           </div>
         </div>
 
-        {/* â”€â”€â”€ Search bar â”€â”€â”€ */}
+        {/* ─── Search bar ─── */}
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -313,7 +313,7 @@ export default function Exchange() {
           </button>
         </div>
 
-        {/* â”€â”€â”€ Category chips â”€â”€â”€ */}
+        {/* ─── Category chips ─── */}
         <div className="flex gap-2 overflow-x-auto pb-1 mb-3 scrollbar-hide">
           <button
             onClick={() => setCategory('')}
@@ -332,7 +332,7 @@ export default function Exchange() {
           ))}
         </div>
 
-        {/* â”€â”€â”€ Sort + Location filter (collapsible) â”€â”€â”€ */}
+        {/* ─── Sort + Location filter (collapsible) ─── */}
         {showFilters && (
           <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-3 shadow-sm space-y-3">
             {/* Sort */}
@@ -358,12 +358,12 @@ export default function Exchange() {
           </div>
         )}
 
-        {/* â”€â”€â”€ Featured ads â”€â”€â”€ */}
+        {/* ─── Featured ads ─── */}
         <div className="mt-1 mb-2">
           <FeaturedAdsStrip category="exchange" showHeader={false} maxVisible={20} />
         </div>
 
-        {/* â”€â”€â”€ Loading â”€â”€â”€ */}
+        {/* ─── Loading ─── */}
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
@@ -371,7 +371,7 @@ export default function Exchange() {
           </div>
         )}
 
-        {/* â”€â”€â”€ Error â”€â”€â”€ */}
+        {/* ─── Error ─── */}
         {error && !loading && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-center">
             <p className="text-red-600 text-sm mb-2">{error}</p>
@@ -379,7 +379,7 @@ export default function Exchange() {
           </div>
         )}
 
-        {/* â”€â”€â”€ Empty â”€â”€â”€ */}
+        {/* ─── Empty ─── */}
         {!loading && !error && filtered.length === 0 && (
           <div className="text-center py-16 text-gray-500">
             <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -396,7 +396,7 @@ export default function Exchange() {
           </div>
         )}
 
-        {/* â”€â”€â”€ Listings â”€â”€â”€ */}
+        {/* ─── Listings ─── */}
         {!loading && filtered.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">

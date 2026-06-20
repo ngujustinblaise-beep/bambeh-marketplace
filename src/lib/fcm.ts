@@ -1,5 +1,5 @@
 ﻿/**
- * src/lib/fcm.ts â€” Bambeh Marketplace
+ * src/lib/fcm.ts — Bambeh Marketplace
  *
  * FILE LOCATION: C:\Dev\bambe-android\src\lib\fcm.ts
  *
@@ -12,12 +12,12 @@
 
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
-import { supabase } from '@/lib/supabase';  // âœ… FIXED â€” matches your project
+import { supabase } from '@/lib/supabase';  // ✅ FIXED — matches your project
 
 export async function registerFCM(userId: string): Promise<void> {
-  // Only run on a real Android/iOS device â€” skip entirely on web/browser
+  // Only run on a real Android/iOS device — skip entirely on web/browser
   if (!Capacitor.isNativePlatform()) {
-    console.log('[FCM] Skipping registration â€” not a native platform');
+    console.log('[FCM] Skipping registration — not a native platform');
     return;
   }
 
@@ -48,7 +48,7 @@ export async function registerFCM(userId: string): Promise<void> {
     }
   });
 
-  // Log registration errors (don't show to user â€” non-critical)
+  // Log registration errors (don't show to user — non-critical)
   PushNotifications.addListener('registrationError', (err) => {
     console.warn('[FCM] Registration error:', err.error);
   });

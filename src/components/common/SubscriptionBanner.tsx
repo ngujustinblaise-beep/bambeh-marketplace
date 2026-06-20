@@ -30,7 +30,7 @@ const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ user, onDismiss
           {t("subBanner.upgrade")}
         </button>
         {onDismiss && (
-          <button onClick={onDismiss} className="text-teal-200 hover:text-white text-xl">Ã—</button>
+          <button onClick={onDismiss} className="text-teal-200 hover:text-white text-xl">×</button>
         )}
       </div>
     </div>

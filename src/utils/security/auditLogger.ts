@@ -80,7 +80,7 @@ class AuditLoggerClass {
   }
 }
 
-// â”€â”€â”€ Singleton â€” fixes TS2304 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Singleton — fixes TS2304 ─────────────────────────────────────────────────
 export const auditLogger = new AuditLoggerClass();
 
 export default auditLogger;

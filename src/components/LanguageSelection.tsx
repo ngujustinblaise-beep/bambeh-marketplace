@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/LanguageSelection.tsx
- * Bambeh Marketplace â€” Language Selection Screen
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Language Selection Screen
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 import { useBambehStore } from "@/utils/BambehStore";
@@ -11,13 +11,13 @@ interface LanguageSelectionProps {
 }
 
 const LANGUAGES = [
-  { code: "fr", name: "FranÃ§ais", flag: "ðŸ‡«ðŸ‡·", native: "FranÃ§ais" },
-  { code: "en", name: "English", flag: "ðŸ‡¬ðŸ‡§", native: "English" },
-  { code: "de", name: "Deutsch", flag: "ðŸ‡©ðŸ‡ª", native: "Deutsch" },
-  { code: "ar", name: "Arabic", flag: "ðŸ‡¸ðŸ‡¦", native: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©" },
-  { code: "zh", name: "Chinese", flag: "ðŸ‡¨ðŸ‡³", native: "ä¸­æ–‡" },
-  { code: "es", name: "EspaÃ±ol", flag: "ðŸ‡ªðŸ‡¸", native: "EspaÃ±ol" },
-  { code: "pt", name: "PortuguÃªs", flag: "ðŸ‡§ðŸ‡·", native: "PortuguÃªs" },
+  { code: "fr", name: "Français", flag: "🇫🇷", native: "Français" },
+  { code: "en", name: "English", flag: "🇬🇧", native: "English" },
+  { code: "de", name: "Deutsch", flag: "🇩🇪", native: "Deutsch" },
+  { code: "ar", name: "Arabic", flag: "🇸🇦", native: "العربية" },
+  { code: "zh", name: "Chinese", flag: "🇨🇳", native: "中文" },
+  { code: "es", name: "Español", flag: "🇪🇸", native: "Español" },
+  { code: "pt", name: "Português", flag: "🇧🇷", native: "Português" },
   { code: "ha", name: "Hausa", flag: "ðŸŒ", native: "Hausa" },
 ];
 
@@ -78,11 +78,11 @@ const LanguageSelection: React.FC<LanguageSelectionProps> = ({ onLanguageSelecte
           onClick={() => handleSelect(selected)}
           className="w-full mt-6 py-3.5 bg-teal-600 text-white rounded-2xl font-bold text-base hover:bg-teal-700 active:bg-teal-800 transition-colors shadow-md"
         >
-          Continuer â†’
+          Continuer →
         </button>
 
         <p className="text-center text-xs text-gray-400 mt-4">
-          Vous pourrez changer la langue plus tard dans les paramÃ¨tres.
+          Vous pourrez changer la langue plus tard dans les paramètres.
         </p>
       </div>
     </div>

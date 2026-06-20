@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - RESPONSE DISPLAY COMPONENT
+ * BAMBÉ MARKETPLACE - RESPONSE DISPLAY COMPONENT
  * Shows Mama's response with suggestions
  * Version: 1.0.0
  */
@@ -27,7 +27,7 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
       <div className="response-card">
         <div className="response-header">
           <div className="mama-avatar">
-            <span className="avatar-icon">ðŸŽ¤</span>
+            <span className="avatar-icon">🎤</span>
             {isSpeaking && (
               <div className="speaking-indicator">
                 <span className="wave-bar" />
@@ -54,7 +54,7 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
       {/* Suggestions */}
       {response.suggestions && response.suggestions.length > 0 && (
         <div className="suggestions-section">
-          <h5>ðŸ’¡ Try saying:</h5>
+          <h5>💡 Try saying:</h5>
           <div className="suggestions-list">
             {response.suggestions.map((suggestion, index) => (
               <button

@@ -58,17 +58,17 @@ export default function ActionGuard({ action, onProceed, children, className = '
               </div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
-              {action === 'apply'   && 'ðŸ”’ Apply Locked'}
-              {action === 'buy'     && 'ðŸ”’ Purchase Locked'}
-              {action === 'contact' && 'ðŸ”’ Contact Locked'}
-              {action === 'post'    && 'ðŸ”’ Posting Locked'}
+              {action === 'apply'   && '🔒 Apply Locked'}
+              {action === 'buy'     && '🔒 Purchase Locked'}
+              {action === 'contact' && '🔒 Contact Locked'}
+              {action === 'post'    && '🔒 Posting Locked'}
             </h2>
             <p className="text-gray-600 text-center mb-6">{getUpgradeMessage(action)}</p>
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 mb-6">
               <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2"><Crown className="w-5 h-5 text-purple-600" />Premium Benefits:</h3>
               <ul className="text-sm text-gray-700 space-y-2">
                 {['Apply for unlimited jobs','Buy items instantly','Contact sellers directly','See exact locations','Post unlimited ads'].map(b => (
-                  <li key={b} className="flex items-start gap-2"><span className="text-green-500 mt-0.5">âœ“</span><span>{b}</span></li>
+                  <li key={b} className="flex items-start gap-2"><span className="text-green-500 mt-0.5">✓</span><span>{b}</span></li>
                 ))}
               </ul>
             </div>

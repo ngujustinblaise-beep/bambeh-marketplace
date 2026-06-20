@@ -1,5 +1,5 @@
 ﻿/**
- * PostFeaturedAdForm.tsx Ã¢â‚¬â€ Bambeh Marketplace
+ * PostFeaturedAdForm.tsx â€â€ Bambeh Marketplace
  * FILE LOCATION: src/components/ads/PostFeaturedAdForm.tsx
  *
  * Vendor-facing form to post a new featured ad to the `featured_ads` table.
@@ -15,7 +15,7 @@
  * USAGE:
  *   <PostFeaturedAdForm onSuccess={() => setModalOpen(false)} />
  *
- * Ã‚Â© 2026 BAMBEH SARL. All rights reserved.
+ * Â© 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useState } from "react";
@@ -25,7 +25,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Check, AlertCircle, Loader2 } from "lucide-react";
 import type { AdCategory } from "@/hooks/useFeaturedAds";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Constants Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ââ€€ââ€€ââ€€ Constants ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€
 
 const CATEGORIES: { value: AdCategory; label: string }[] = [
   { value: "marketplace",   label: "Marketplace"   },
@@ -42,14 +42,14 @@ const CATEGORIES: { value: AdCategory; label: string }[] = [
 
 const LANGUAGES = [
   { code: "en",  label: "English"   },
-  { code: "fr",  label: "FranÃƒÂ§ais"  },
+  { code: "fr",  label: "FranÃ§ais"  },
   { code: "ha",  label: "Hausa"     },
-  { code: "ar",  label: "Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¨Ã™Å Ã˜Â©"  },
+  { code: "ar",  label: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"  },
   { code: "pcm", label: "Pidgin"    },
   { code: "ful", label: "Fulfulde"  },
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Form state type Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ââ€€ââ€€ââ€€ Form state type ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€
 
 interface FormState {
   category:     AdCategory;
@@ -69,7 +69,7 @@ const EMPTY_FORM: FormState = {
   listing_path: "",
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ââ€€ââ€€ââ€€ Component ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€ââ€€
 
 interface PostFeaturedAdFormProps {
   onSuccess?: () => void;
@@ -184,7 +184,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
           type="text"
           value={form.title[activeLang] ?? ""}
           onChange={(e) => setTitle(activeLang, e.target.value)}
-          placeholder={`Ad title in ${LANGUAGES.find((l) => l.code === activeLang)?.label}Ã¢â‚¬Â¦`}
+          placeholder={`Ad title in ${LANGUAGES.find((l) => l.code === activeLang)?.label}â€¦`}
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400"
         />
       </div>
@@ -198,7 +198,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
           rows={3}
           value={form.description[activeLang] ?? ""}
           onChange={(e) => setDesc(activeLang, e.target.value)}
-          placeholder="Short description of the adÃ¢â‚¬Â¦"
+          placeholder="Short description of the adâ€¦"
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 resize-none"
         />
       </div>
@@ -223,7 +223,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
           type="url"
           value={form.image_url}
           onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-          placeholder="https://Ã¢â‚¬Â¦"
+          placeholder="https://â€¦"
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400"
         />
       </div>
@@ -267,7 +267,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
               : "bg-teal-600 hover:bg-teal-700 active:scale-95 disabled:opacity-60"
           }`}
         >
-          {loading  ? <><Loader2 className="w-4 h-4 animate-spin" /> PostingÃ¢â‚¬Â¦</>
+          {loading  ? <><Loader2 className="w-4 h-4 animate-spin" /> Postingâ€¦</>
            : success ? <><Check className="w-4 h-4" /> Posted!</>
            : "Post Featured Ad"}
         </button>

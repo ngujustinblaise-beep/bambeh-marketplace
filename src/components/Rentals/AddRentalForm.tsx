@@ -95,7 +95,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
     'car', 'truck', 'equipment',
   ];
 
-  // â”€â”€ Keywords â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Keywords ──────────────────────────────────────────────────────────────
   const addKeyword = () => {
     if (keywordInput.trim() && keywords.length < 10) {
       setKeywords([...keywords, keywordInput.trim()]);
@@ -107,7 +107,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
     setKeywords(keywords.filter((_, i) => i !== index));
   };
 
-  // â”€â”€ Images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Images ────────────────────────────────────────────────────────────────
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (images.length + files.length > 10) { alert('Maximum 10 images allowed'); return; }
@@ -132,7 +132,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
     setImagePreviews(imagePreviews.filter((_, i) => i !== index));
   };
 
-  // â”€â”€ Upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Upload ────────────────────────────────────────────────────────────────
   const uploadImages = async (): Promise<string[]> => {
     const imageUrls: string[] = [];
     for (const image of images) {
@@ -146,7 +146,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
     return imageUrls;
   };
 
-  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Submit ────────────────────────────────────────────────────────────────
   const onSubmit = async (data: RentalFormData) => {
     if (!location)          { alert('Please select a location');           return; }
     if (keywords.length === 0) { alert('Please add at least one keyword'); return; }
@@ -201,7 +201,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
     }
   };
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl mx-auto p-6">
       <div>
@@ -289,7 +289,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
             <Input id="bathrooms" type="number" {...register('bathrooms', { valueAsNumber: true })} placeholder="0" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="squareMeters"><Maximize className="w-4 h-4 inline mr-2" />Size (mÂ²)</Label>
+            <Label htmlFor="squareMeters"><Maximize className="w-4 h-4 inline mr-2" />Size (m²)</Label>
             <Input id="squareMeters" type="number" {...register('squareMeters', { valueAsNumber: true })} placeholder="0" />
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
           {keywords.map((keyword, index) => (
             <span key={index} className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm flex items-center gap-2">
               {keyword}
-              <button type="button" onClick={() => removeKeyword(index)} className="hover:text-teal-600">Ã—</button>
+              <button type="button" onClick={() => removeKeyword(index)} className="hover:text-teal-600">×</button>
             </span>
           ))}
         </div>

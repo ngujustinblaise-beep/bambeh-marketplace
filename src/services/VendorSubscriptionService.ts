@@ -1,12 +1,12 @@
 ﻿/**
  * src/services/VendorSubscriptionService.ts
- * Bambeh Marketplace â€” Vendor Subscription Service
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Subscription Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES APPLIED:
  * - endDate / startDate / listingsUsed / lastPaymentAmount are now optional on VendorSubscription
- * - 'canceled' â†’ 'canceled' (SubscriptionStatus)
- * - 'expired' â†’ handled via status field
+ * - 'canceled' → 'canceled' (SubscriptionStatus)
+ * - 'expired' → handled via status field
  */
 
 import { supabase } from "@/lib/supabase";
@@ -72,7 +72,7 @@ function mapSubscriptionRow(row: Record<string, unknown>): VendorSubscription {
 }
 
 export class VendorSubscriptionService {
-  // â”€â”€ Get active subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Get active subscription ────────────────────────────────────────────────
   async getActiveSubscription(vendorId: string): Promise<VendorSubscription | null> {
     try {
       const { data, error } = await supabase
@@ -89,7 +89,7 @@ export class VendorSubscriptionService {
     } catch { return null; }
   }
 
-  // â”€â”€ Get subscription history â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Get subscription history ───────────────────────────────────────────────
   async getSubscriptionHistory(vendorId: string): Promise<VendorSubscription[]> {
     try {
       const { data, error } = await supabase
@@ -103,7 +103,7 @@ export class VendorSubscriptionService {
     } catch { return []; }
   }
 
-  // â”€â”€ Create subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Create subscription ────────────────────────────────────────────────────
   async createSubscription(
     vendorId: string,
     planId: string,
@@ -148,7 +148,7 @@ export class VendorSubscriptionService {
     }
   }
 
-  // â”€â”€ Cancel subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Cancel subscription ────────────────────────────────────────────────────
   async cancelSubscription(
     subscriptionId: string,
     reason?: string
@@ -178,7 +178,7 @@ export class VendorSubscriptionService {
     }
   }
 
-  // â”€â”€ Expire subscription (uses 'active'â†’'past_due' since 'expired' not in type) â”€â”€
+  // ── Expire subscription (uses 'active'→'past_due' since 'expired' not in type) ──
   async expireSubscription(subscriptionId: string): Promise<SubscriptionActionResult> {
     try {
       const { data, error } = await supabase
@@ -203,7 +203,7 @@ export class VendorSubscriptionService {
     }
   }
 
-  // â”€â”€ Upgrade / downgrade â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Upgrade / downgrade ────────────────────────────────────────────────────
   async changePlan(
     vendorId: string,
     fromTier: SubscriptionTier,
@@ -222,7 +222,7 @@ export class VendorSubscriptionService {
     }
   }
 
-  // â”€â”€ Increment listings used â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Increment listings used ────────────────────────────────────────────────
   async incrementListingsUsed(vendorId: string): Promise<void> {
     try {
       const sub = await this.getActiveSubscription(vendorId);
@@ -237,16 +237,16 @@ export class VendorSubscriptionService {
     } catch { /* non-critical */ }
   }
 
-  // â”€â”€ Check listing limit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Check listing limit ────────────────────────────────────────────────────
   async checkListingLimit(vendorId: string, maxAllowed: number): Promise<boolean> {
     try {
       const sub = await this.getActiveSubscription(vendorId);
-      if (!sub) return true; // free tier â€” allow default
+      if (!sub) return true; // free tier — allow default
       return (sub.listingsUsed ?? 0) < maxAllowed;            // FIX: uses optional field
     } catch { return true; }
   }
 
-  // â”€â”€ Check subscription end â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Check subscription end ────────────────────────────────────────────────
   isExpired(subscription: VendorSubscription): boolean {
     const end = subscription.endDate ?? subscription.currentPeriodEnd;  // FIX: optional endDate
     return new Date(end) < new Date();
@@ -258,7 +258,7 @@ export class VendorSubscriptionService {
     return Math.max(0, Math.ceil(diff / 86400000));
   }
 
-  // â”€â”€ Record payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Record payment ────────────────────────────────────────────────────────
   async recordPayment(
     subscriptionId: string,
     amountXAF: number,

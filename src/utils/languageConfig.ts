@@ -1,11 +1,11 @@
 ﻿/**
  * languageConfig.ts
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ────────────────────────────────────────────────────────────────────────────
  * Central language configuration for Bambeh Marketplace.
  * Adds Fulfulde and Pidgin English (Creole) support.
  *
  * FILE LOCATION: src/utils/languageConfig.ts
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ────────────────────────────────────────────────────────────────────────────
  */
 
 export interface Language {
@@ -17,15 +17,15 @@ export interface Language {
 }
 
 export const BAMBEH_LANGUAGES: Language[] = [
-  { code: 'en',     name: 'English',          nameEn: 'English',           flag: 'ðŸ‡¬ðŸ‡§' },
-  { code: 'fr',     name: 'FranÃ§ais',         nameEn: 'French',            flag: 'ðŸ‡«ðŸ‡·' },
-  { code: 'ff',     name: 'Fulfulde',         nameEn: 'Fulfulde',          flag: 'ðŸ‡¨ðŸ‡²' },
-  { code: 'pidgin', name: 'Pidgin English',   nameEn: 'Pidgin English (Creole)', flag: 'ðŸ‡¨ðŸ‡²' },
-  { code: 'ha',     name: 'Hausa',            nameEn: 'Hausa',             flag: 'ðŸ‡³ðŸ‡¬' },
-  { code: 'ar',     name: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',          nameEn: 'Arabic',            flag: 'ðŸ‡¸ðŸ‡¦', rtl: true },
+  { code: 'en',     name: 'English',          nameEn: 'English',           flag: '🇬🇧' },
+  { code: 'fr',     name: 'Français',         nameEn: 'French',            flag: '🇫🇷' },
+  { code: 'ff',     name: 'Fulfulde',         nameEn: 'Fulfulde',          flag: '🇨🇲' },
+  { code: 'pidgin', name: 'Pidgin English',   nameEn: 'Pidgin English (Creole)', flag: '🇨🇲' },
+  { code: 'ha',     name: 'Hausa',            nameEn: 'Hausa',             flag: '🇳🇬' },
+  { code: 'ar',     name: 'العربية',          nameEn: 'Arabic',            flag: '🇸🇦', rtl: true },
 ];
 
-// â”€â”€ Welcome messages per language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Welcome messages per language ─────────────────────────────────────────────
 export const WELCOME_MESSAGES: Record<string, {
   greeting: string;
   tagline: string;
@@ -35,42 +35,42 @@ export const WELCOME_MESSAGES: Record<string, {
   en: {
     greeting:   'Welcome to Bambeh',
     tagline:    'The Unstoppable Grind',
-    subTagline: "'s #1 Online Marketplace â€” Buy, Sell, Connect.",
+    subTagline: "'s #1 Online Marketplace — Buy, Sell, Connect.",
     cta:        'Get Started',
   },
   fr: {
     greeting:   'Bienvenue sur Bambeh',
-    tagline:    'L\'Effort InarrÃªtable',
-    subTagline: 'La 1Ã¨re Marketplace en ligne du Cameroun â€” Achetez, Vendez, Connectez.',
+    tagline:    'L\'Effort Inarrêtable',
+    subTagline: 'La 1ère Marketplace en ligne du Cameroun — Achetez, Vendez, Connectez.',
     cta:        'Commencer',
   },
   ff: {
-    greeting:   'TawaaÉ“e Bambeh',
+    greeting:   'Tawaaɓe Bambeh',
     tagline:    'Liggaade Æurnde Dartaade',
-    subTagline: 'Maare Dow Æure #1 e Kameruun â€” Soodee, Fiyee, Naatnitee.',
-    cta:        'FuÉ—É—o',
+    subTagline: 'Maare Dow Æure #1 e Kameruun — Soodee, Fiyee, Naatnitee.',
+    cta:        'Fuɗɗo',
   },
   pidgin: {
     greeting:   'Welcome for Bambeh',
     tagline:    'Di Grind No Go Stop',
-    subTagline: ' Number One Online Market â€” Buy, Sell, Connect.',
+    subTagline: ' Number One Online Market — Buy, Sell, Connect.',
     cta:        'Make We Start',
   },
   ha: {
     greeting:   'Barka da zuwa Bambeh',
-    tagline:    'Æ˜oÆ™arin Da Ba Zai Tsaya Ba',
-    subTagline: 'Kasuwar kan layi ta #1 a Kamaru â€” Saya, Sayarwa, HaÉ—in kai.',
+    tagline:    'Ƙoƙarin Da Ba Zai Tsaya Ba',
+    subTagline: 'Kasuwar kan layi ta #1 a Kamaru — Saya, Sayarwa, Haɗin kai.',
     cta:        'Fara',
   },
   ar: {
-    greeting:   'Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ÙÙŠ Bambeh',
-    tagline:    'Ø§Ù„ÙƒØ¯Ø­ Ø§Ù„Ø°ÙŠ Ù„Ø§ ÙŠØªÙˆÙ‚Ù',
-    subTagline: 'Ø£ÙØ¶Ù„ Ø³ÙˆÙ‚ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ÙÙŠ Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ† â€” Ø§Ø´ØªØ±Ù ÙˆØ¨ÙŠØ¹ ÙˆØªÙˆØ§ØµÙ„.',
-    cta:        'Ø§Ø¨Ø¯Ø£ Ø§Ù„Ø¢Ù†',
+    greeting:   'مرحباً بك Ùي Bambeh',
+    tagline:    'الكدح الذي لا يتوقÙ',
+    subTagline: 'أÙضل سوق إلكتروني Ùي الكاميرون — اشترÙ وبيع وتواصل.',
+    cta:        'ابدأ الآن',
   },
 };
 
-// â”€â”€ Helper: get current language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helper: get current language ─────────────────────────────────────────────
 export function getCurrentLanguage(): Language {
   try {
     const code = localStorage.getItem('Bambeh_language') || 'en';

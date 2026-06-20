@@ -5,7 +5,7 @@
  *
  * Base API service with interceptors for authentication and error handling
  *
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -32,7 +32,7 @@ class ApiService {
           config.headers.Authorization = `Bearer ${token}`;
         }
         console.log(
-          `ðŸš€ API Request: ${config.method?.toUpperCase()} ${config.url}`,
+          `🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`,
         );
         return config;
       },
@@ -45,7 +45,7 @@ class ApiService {
     // Response interceptor - Handle errors
     this.api.interceptors.response.use(
       (response) => {
-        console.log(`âœ… API Response: ${response.config.url}`, response.data);
+        console.log(`✅ API Response: ${response.config.url}`, response.data);
         return response;
       },
       (error) => {

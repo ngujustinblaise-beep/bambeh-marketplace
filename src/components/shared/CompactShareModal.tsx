@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/shared/CompactShareModal.tsx
- * Bambeh Marketplace â€” Compact Share Bottom Sheet
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Compact Share Bottom Sheet
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useCallback } from "react";
@@ -155,7 +155,7 @@ const CompactShareModal: React.FC<CompactShareModalProps> = ({
               <Copy className="w-6 h-6 text-gray-600" />
             )}
             <span className={`text-xs font-medium ${copied ? "text-green-700" : "text-gray-700"}`}>
-              {copied ? "CopiÃ©!" : "Copier"}
+              {copied ? "Copié!" : "Copier"}
             </span>
           </button>
         </div>

@@ -2,7 +2,7 @@
  * LOCATION SELECTOR COMPONENT
  * 
  * Cascading dropdowns for selecting location in Cameroon:
- * Region â†’ Division â†’ Subdivision â†’ Village â†’ Neighborhood
+ * Region → Division → Subdivision → Village → Neighborhood
  * 
  * Used throughout the app for:
  * - Adding new items
@@ -303,7 +303,7 @@ export default function LocationSelector({
           <p className="text-sm text-teal-600 dark:text-teal-300 mt-1">
             {[region, division, subdivision, village, neighborhood]
               .filter(Boolean)
-              .join(' â†’ ')}
+              .join(' → ')}
           </p>
         </div>
       )}

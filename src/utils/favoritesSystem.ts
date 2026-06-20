@@ -3,14 +3,14 @@
  * FAVORITES SYSTEM - Utility Functions
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * âœ… Add/remove favorites
- * âœ… Persist across sessions (localStorage)
- * âœ… Check if item is favorited
- * âœ… Get all favorites or by type
+ * ✅ Add/remove favorites
+ * ✅ Persist across sessions (localStorage)
+ * ✅ Check if item is favorited
+ * ✅ Get all favorites or by type
  *
  * FILE LOCATION: src/utils/favoritesSystem.ts
  *
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 

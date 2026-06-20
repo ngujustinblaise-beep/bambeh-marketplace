@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/ui/ReferralButton.tsx
- * Bambeh Marketplace â€” Referral Share Button
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Referral Share Button
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -166,7 +166,7 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
           }`}
         >
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          {copied ? "CopiÃ©!" : "Copier le lien"}
+          {copied ? "Copié!" : "Copier le lien"}
         </button>
       </div>
     </div>

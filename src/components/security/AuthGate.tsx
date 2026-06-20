@@ -1,13 +1,13 @@
 ﻿/**
- * src/components/security/AuthGate.tsx â€” Bambeh Marketplace
+ * src/components/security/AuthGate.tsx — Bambeh Marketplace
  *
- * SPEED: Subscription check is INSTANT â€” reads localStorage synchronously.
+ * SPEED: Subscription check is INSTANT — reads localStorage synchronously.
  * No spinner. No delay. No network wait. Decision in microseconds.
  *
  * Flow:
- *   - Has valid localStorage entry?  â†’ show the page immediately âœ…
- *   - No localStorage entry?         â†’ redirect to /subscription instantly âœ…
- *   - Not logged in?                 â†’ redirect to /login instantly âœ…
+ *   - Has valid localStorage entry?  → show the page immediately ✅
+ *   - No localStorage entry?         → redirect to /subscription instantly ✅
+ *   - Not logged in?                 → redirect to /login instantly ✅
  */
 
 import React from "react";
@@ -31,11 +31,11 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
     ? ((user as any)?.uid || (user as any)?.id || null)
     : null;
 
-  // isLoading is ALWAYS false from our new hook â€” no spinner for subscription
+  // isLoading is ALWAYS false from our new hook — no spinner for subscription
   const { isActive } = useSubscription(userId);
 
-  // â”€â”€ Auth is still initialising (Firebase/Supabase cold start) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // This only happens once on first app load â€” typically < 500ms
+  // ── Auth is still initialising (Firebase/Supabase cold start) ────────────
+  // This only happens once on first app load — typically < 500ms
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -44,33 +44,33 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
     );
   }
 
-  // â”€â”€ Not logged in â†’ login page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Not logged in → login page ────────────────────────────────────────────
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // â”€â”€ Admin â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Admin ──────────────────────────────────────────────────────────────────
   if (level === "admin") {
     if (!isAdmin) return <Navigate to="/" replace />;
     return <>{children}</>;
   }
 
-  // â”€â”€ Vendor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Vendor ─────────────────────────────────────────────────────────────────
   if (level === "vendor") {
     const ok = isVendor ?? (user as any)?.role === "vendor" ?? (user as any)?.isVendor;
     if (!ok) return <Navigate to="/vendor/register" state={{ from: location }} replace />;
     return <>{children}</>;
   }
 
-  // â”€â”€ User (just logged in) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── User (just logged in) ──────────────────────────────────────────────────
   if (level === "user") {
     return <>{children}</>;
   }
 
-  // â”€â”€ Subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // isActive is decided synchronously from localStorage â€” zero network wait
-  // Active   â†’ show the page RIGHT NOW
-  // Inactive â†’ redirect to /subscription RIGHT NOW
+  // ── Subscription ───────────────────────────────────────────────────────────
+  // isActive is decided synchronously from localStorage — zero network wait
+  // Active   → show the page RIGHT NOW
+  // Inactive → redirect to /subscription RIGHT NOW
   if (level === "subscription") {
     if (!isActive) {
       return (

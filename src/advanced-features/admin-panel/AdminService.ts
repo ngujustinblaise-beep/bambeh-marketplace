@@ -1,6 +1,6 @@
 ﻿// @ts-nocheck
 /**
- * BAMBÃ‰ MARKETPLACE - ADMIN SERVICE
+ * BAMBÉ MARKETPLACE - ADMIN SERVICE
  * Complete backend integration for admin operations
  * Order, User, Dispute, and Analytics Management
  * Version: 1.0.0
@@ -34,7 +34,7 @@ class AdminService {
     });
   }
 
-  // â”€â”€ DASHBOARD STATISTICS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── DASHBOARD STATISTICS ─────────────────────────────────────────────────
 
   async getDashboardStats(): Promise<AdminDashboardStats> {
     try {
@@ -67,7 +67,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ ORDER MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── ORDER MANAGEMENT ─────────────────────────────────────────────────────
 
   async getOrders(filters?: {
     status?: OrderStatus;
@@ -160,7 +160,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ DISPUTE MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── DISPUTE MANAGEMENT ───────────────────────────────────────────────────
 
   async getDisputes(filters?: {
     status?: 'open' | 'investigating' | 'resolved' | 'closed';
@@ -226,7 +226,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ USER MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── USER MANAGEMENT ──────────────────────────────────────────────────────
 
   async getUsers(filters?: {
     role?: 'customer' | 'driver' | 'vendor' | 'admin';
@@ -294,7 +294,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ REPORTS & ANALYTICS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── REPORTS & ANALYTICS ──────────────────────────────────────────────────
 
   async generateSalesReport(startDate: string, endDate: string, format: 'pdf' | 'csv' = 'pdf'): Promise<string> {
     try {
@@ -347,7 +347,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ NOTIFICATIONS & BROADCASTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── NOTIFICATIONS & BROADCASTS ───────────────────────────────────────────
 
   async sendBroadcast(title: string, message: string, targetAudience: 'all' | 'customers' | 'drivers' | 'vendors', channels: string[]): Promise<boolean> {
     try {
@@ -359,7 +359,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ SYSTEM SETTINGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── SYSTEM SETTINGS ──────────────────────────────────────────────────────
 
   async getSystemSettings(): Promise<any> {
     try {
@@ -381,7 +381,7 @@ class AdminService {
     }
   }
 
-  // â”€â”€ UTILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── UTILITY ──────────────────────────────────────────────────────────────
 
   async globalSearch(query: string): Promise<any> {
     try {

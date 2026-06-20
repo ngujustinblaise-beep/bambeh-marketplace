@@ -1,8 +1,8 @@
 ﻿/**
  * PaymentService.ts
- * Military Grade Payment Processing for BambÃ© Marketplace
+ * Military Grade Payment Processing for Bambé Marketplace
  * Handles MTN Mobile Money, Orange Money, and Zerm Coins
- * Copyright Â© 2026 BAMBEH SARL. All rights reserved.
+ * Copyright © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { firestore } from "@/utils/firebase/firebaseConfig";
@@ -10,7 +10,7 @@ import {
   collection, addDoc, updateDoc, doc, getDoc, getDocs, query, where,
 } from "firebase/firestore";
 
-// â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 export interface PaymentIntent {
   amount: number;
@@ -50,7 +50,7 @@ export interface TransactionRecord {
   metadata?: Record<string, any>;
 }
 
-// â”€â”€â”€ SERVICE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SERVICE ──────────────────────────────────────────────────────────────────
 
 class PaymentService {
   private readonly MTN_API_BASE = "https://sandbox.momodeveloper.mtn.com";
@@ -63,7 +63,7 @@ class PaymentService {
     this.ORANGE_MERCHANT_KEY = import.meta.env.VITE_ORANGE_MERCHANT_KEY || "";
   }
 
-  // â”€â”€ Overloads â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Overloads ──────────────────────────────────────────────────────────────
 
   async processPayment(intent: PaymentIntent): Promise<PaymentResult>;
   async processPayment(
@@ -118,7 +118,7 @@ class PaymentService {
     }
   }
 
-  // â”€â”€ MTN Mobile Money â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── MTN Mobile Money ───────────────────────────────────────────────────────
 
   private async processMTNPayment(intent: ExtendedPaymentIntent): Promise<PaymentResult> {
     try {
@@ -153,7 +153,7 @@ class PaymentService {
           externalId: transactionRef.id,
           payer: { partyIdType: "MSISDN", partyId: formattedPhone },
           payerMessage: intent.description,
-          payeeNote: `BambÃ© Marketplace - ${intent.description}`,
+          payeeNote: `Bambé Marketplace - ${intent.description}`,
         }),
       });
 
@@ -179,7 +179,7 @@ class PaymentService {
     }
   }
 
-  // â”€â”€ Orange Money â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Orange Money ───────────────────────────────────────────────────────────
 
   private async processOrangePayment(intent: ExtendedPaymentIntent): Promise<PaymentResult> {
     try {
@@ -238,7 +238,7 @@ class PaymentService {
     }
   }
 
-  // â”€â”€ Zerm Coins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Zerm Coins ─────────────────────────────────────────────────────────────
 
   private async processZermPayment(intent: ExtendedPaymentIntent): Promise<PaymentResult> {
     try {
@@ -274,7 +274,7 @@ class PaymentService {
     }
   }
 
-  // â”€â”€ Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Utilities ──────────────────────────────────────────────────────────────
 
   private formatPhoneNumber(phone: string, countryCode: string): string {
     let cleaned = phone.replace(/\D/g, "");
@@ -338,7 +338,7 @@ class PaymentService {
 
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #2563eb;">BambÃ© Marketplace Receipt</h2>
+        <h2 style="color: #2563eb;">Bambé Marketplace Receipt</h2>
         <p><strong>Transaction ID:</strong> ${transactionId}</p>
         <p><strong>Reference:</strong> ${transaction.reference}</p>
         <p><strong>Amount:</strong> ${transaction.amount.toLocaleString()} ${transaction.currency}</p>
@@ -349,7 +349,7 @@ class PaymentService {
     `;
   }
 
-  // â”€â”€ Public Query Methods â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Public Query Methods ───────────────────────────────────────────────────
 
   async getTransactionById(transactionId: string): Promise<TransactionRecord | null> {
     try {

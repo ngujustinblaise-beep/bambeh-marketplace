@@ -3,7 +3,7 @@
  * DARK MODE TOGGLE - THEME SWITCHER COMPONENT
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * FILE LOCATION: src/components/theme/DarkModeToggle.tsx
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -87,7 +87,7 @@ const DarkModeToggle: React.FC<DarkModeToggleProps> = ({
             <h3 className="font-semibold text-gray-900 dark:text-white">Display Settings</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {theme === 'system' ? 'System' : isDarkMode ? 'Dark Mode' : 'Light Mode'},
-              {brightness < 100 && ` â€¢ ${brightness}% brightness`}
+              {brightness < 100 && ` • ${brightness}% brightness`}
             </p>
           </div>
         </div>
@@ -230,10 +230,10 @@ export const BrightnessControl: React.FC = () => {
   const { brightness, setBrightness } = useTheme();
 
   const presets = [
-    { value: 100, label: '100%', icon: 'â˜€ï¸' },
-    { value: 80, label: '80%', icon: 'ðŸŒ¤ï¸' },
-    { value: 60, label: '60%', icon: 'â›…' },
-    { value: 40, label: '40%', icon: 'ðŸŒ™' }
+    { value: 100, label: '100%', icon: '☀ï¸' },
+    { value: 80, label: '80%', icon: '🌤ï¸' },
+    { value: 60, label: '60%', icon: '⛅' },
+    { value: 40, label: '40%', icon: '🌙' }
   ];
 
   return (

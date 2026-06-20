@@ -1,15 +1,15 @@
 ﻿/**
  * src/components/SearchBar.tsx
- * Bambeh Marketplace â€” Simple Search Bar Component
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Simple Search Bar Component
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES:
- * â€” handleSearch was missing its closing brace â€” caused a TypeScript compile error
+ * — handleSearch was missing its closing brace — caused a TypeScript compile error
  *   because the function body leaked into the JSX return statement.
- * â€” handleClear was missing its closing brace â€” same issue.
+ * — handleClear was missing its closing brace — same issue.
  *
  * NEW:
- * â€” Compact scope selector (Cameroon / Central / West Africa) shown below the input.
+ * — Compact scope selector (Cameroon / Central / West Africa) shown below the input.
  *   The selected scope is appended to the /search URL as ?scope=...
  */
 
@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import type { SearchScope } from "@/services/searchService";
 import { SCOPE_CONFIG } from "@/services/searchService";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SearchBarProps {
   placeholder?:    string;
@@ -28,12 +28,12 @@ interface SearchBarProps {
 }
 
 const SCOPES: { value: SearchScope; label: string; emoji: string }[] = [
-  { value: "cameroon",       label: "Cameroon",       emoji: "ðŸ‡¨ðŸ‡²" },
+  { value: "cameroon",       label: "Cameroon",       emoji: "🇨🇲" },
   { value: "central_africa", label: "Central Africa", emoji: "ðŸŒ" },
   { value: "west_africa",    label: "West Africa",    emoji: "ðŸŒ" },
 ];
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SearchBar({
   placeholder    = "Search for jobs, items, services...",
@@ -44,7 +44,7 @@ export default function SearchBar({
   const [scope,       setScope]       = useState<SearchScope>("cameroon");
   const navigate = useNavigate();
 
-  // FIX: was missing closing brace â€” leaked into the return statement
+  // FIX: was missing closing brace — leaked into the return statement
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -53,7 +53,7 @@ export default function SearchBar({
     navigate(`/search?${params.toString()}`);
   };
 
-  // FIX: was missing closing brace â€” leaked into the return statement
+  // FIX: was missing closing brace — leaked into the return statement
   const handleClear = () => {
     setSearchQuery("");
   };

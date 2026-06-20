@@ -17,7 +17,7 @@ export default function SocialShareButton({ title, description, itemType, url, c
   const [copied, setCopied]       = useState(false);
 
   const shareUrl     = url || (typeof window !== 'undefined' ? window.location.href : '');
-  const shareMessage = `${title}\n\n${description}\n\nðŸ”— ${shareUrl}\n\nðŸ“± Bambeh - Online Marketplace!\nðŸ’š Only 1% Transaction Fee!`;
+  const shareMessage = `${title}\n\n${description}\n\n🔗 ${shareUrl}\n\n📱 Bambeh - Online Marketplace!\n💚 Only 1% Transaction Fee!`;
   const encodedMessage = encodeURIComponent(shareMessage);
   const encodedTitle   = encodeURIComponent(title);
   const encodedUrl     = encodeURIComponent(shareUrl);
@@ -102,12 +102,12 @@ export default function SocialShareButton({ title, description, itemType, url, c
                     </button>
                   ))}
 
-                  {/* Instagram â€” copies link */}
+                  {/* Instagram — copies link */}
                   <button onClick={copyToClipboard} style={{ ...buttonStyle('#fce7f3'), background: 'linear-gradient(135deg, #fae8ff, #fce7f3)' }}>
                     <div style={{ ...iconCircleStyle('#ec4899'), background: 'linear-gradient(135deg, #9333ea, #ec4899, #f97316)' }}>
-                      <span style={{ fontSize: '18px' }}>ðŸ“·</span>
+                      <span style={{ fontSize: '18px' }}>📷</span>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#9d174d' }}>{copied ? 'âœ“ Copied!' : 'Instagram'}</span>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#9d174d' }}>{copied ? '✓ Copied!' : 'Instagram'}</span>
                   </button>
 
                   {/* Copy link */}

@@ -47,7 +47,7 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
               style={{ animationDelay: `${i * 150}ms` }} />
           ))}
         </div>
-        Listeningâ€¦
+        Listening…
       </div>
     )}
   </div>

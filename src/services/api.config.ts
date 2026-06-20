@@ -2,7 +2,7 @@
 
 /**
  * ============================================
- * BAMBÃ‰ MARKETPLACE - API CONFIGURATION
+ * BAMBÉ MARKETPLACE - API CONFIGURATION
  * ============================================
  * Central configuration for all Firebase Cloud Functions
  * Deployed on: January 29, 2026

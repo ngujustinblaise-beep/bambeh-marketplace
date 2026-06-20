@@ -1,8 +1,8 @@
 ﻿/**
- * src/pages/VehicleRentals.tsx â€” Bambeh Marketplace
+ * src/pages/VehicleRentals.tsx — Bambeh Marketplace
  * Full vehicle listings page with multilingual support, Supabase realtime,
  * rich filters, and zero-error UX.
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -18,24 +18,24 @@ import { DemoBadge } from "@/components/listings/DemoBadge";
 import { useLang } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // i18n dictionary
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 const I18N: Record<string, Record<string, string>> = {
   en: {
     title: "Cars & Vehicles",
     subtitle: "Buy and sell vehicles across Cameroon",
-    searchPlaceholder: "Search by make, model, or titleâ€¦",
+    searchPlaceholder: "Search by make, model, or title…",
     allCities: "All Cities",
     refresh: "Refresh",
     sell: "Sell",
     vehiclesFound: "vehicle found",
     vehiclesFoundPlural: "vehicles found",
-    loading: "Loading vehiclesâ€¦",
+    loading: "Loading vehicles…",
     noVehicles: "No vehicles found",
     noVehiclesHint: "Try clearing your filters or be the first to list!",
     listYourVehicle: "List Your Vehicle",
-    sample: "Sample â€” not a real listing",
+    sample: "Sample — not a real listing",
     expiringLabel: "Expiring soon",
     errorBanner: "Could not load listings. Showing demo data.",
     allTypes: "All",
@@ -44,21 +44,21 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Back to top",
   },
   fr: {
-    title: "Voitures & VÃ©hicules",
-    subtitle: "Achetez et vendez des vÃ©hicules au Cameroun",
-    searchPlaceholder: "Rechercher par marque, modÃ¨le ou titreâ€¦",
+    title: "Voitures & Véhicules",
+    subtitle: "Achetez et vendez des véhicules au Cameroun",
+    searchPlaceholder: "Rechercher par marque, modèle ou titre…",
     allCities: "Toutes les villes",
     refresh: "Actualiser",
     sell: "Vendre",
-    vehiclesFound: "vÃ©hicule trouvÃ©",
-    vehiclesFoundPlural: "vÃ©hicules trouvÃ©s",
-    loading: "Chargement des vÃ©hiculesâ€¦",
-    noVehicles: "Aucun vÃ©hicule trouvÃ©",
-    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier Ã  lister!",
-    listYourVehicle: "Listez votre vÃ©hicule",
-    sample: "Exemple â€” pas une vraie annonce",
-    expiringLabel: "Expire bientÃ´t",
-    errorBanner: "Impossible de charger les annonces. DonnÃ©es de dÃ©monstration affichÃ©es.",
+    vehiclesFound: "véhicule trouvé",
+    vehiclesFoundPlural: "véhicules trouvés",
+    loading: "Chargement des véhicules…",
+    noVehicles: "Aucun véhicule trouvé",
+    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier à lister!",
+    listYourVehicle: "Listez votre véhicule",
+    sample: "Exemple — pas une vraie annonce",
+    expiringLabel: "Expire bientôt",
+    errorBanner: "Impossible de charger les annonces. Données de démonstration affichées.",
     allTypes: "Tous",
     views: "vue",
     viewsPlural: "vues",
@@ -67,17 +67,17 @@ const I18N: Record<string, Record<string, string>> = {
   ha: {
     title: "Motoci & Ababen Hawa",
     subtitle: "Saya da sayar da ababen hawa a Kamaru",
-    searchPlaceholder: "Nemo ta marka, model ko takeâ€¦",
+    searchPlaceholder: "Nemo ta marka, model ko take…",
     allCities: "Dukkan Biranen",
     refresh: "Sabunta",
     sell: "Sayar",
     vehiclesFound: "abin hawa an samu",
     vehiclesFoundPlural: "ababen hawa an samu",
-    loading: "Ana loda ababen hawaâ€¦",
+    loading: "Ana loda ababen hawa…",
     noVehicles: "Ba a sami ababen hawa ba",
     noVehiclesHint: "Gwada share tace ko kasance na farko don lissafi!",
     listYourVehicle: "Lissafa Abin Hawanku",
-    sample: "Samfuri â€” ba lissafi na gaske ba",
+    sample: "Samfuri — ba lissafi na gaske ba",
     expiringLabel: "Kusa ya kare",
     errorBanner: "Ba a iya loda lissafin. Ana nuna bayanin demo.",
     allTypes: "Duka",
@@ -86,40 +86,40 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Koma sama",
   },
   ar: {
-    title: "Ø§Ù„Ø³ÙŠØ§Ø±Ø§Øª ÙˆØ§Ù„Ù…Ø±ÙƒØ¨Ø§Øª",
-    subtitle: "Ø¨ÙŠØ¹ ÙˆØ´Ø±Ø§Ø¡ Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª ÙÙŠ Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ†",
-    searchPlaceholder: "Ø§Ø¨Ø­Ø« Ø¨Ø§Ù„Ù…Ø§Ø±ÙƒØ© Ø£Ùˆ Ø§Ù„Ø·Ø±Ø§Ø² Ø£Ùˆ Ø§Ù„Ø¹Ù†ÙˆØ§Ù†â€¦",
-    allCities: "Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ø¯Ù†",
-    refresh: "ØªØ­Ø¯ÙŠØ«",
-    sell: "Ø¨ÙŠØ¹",
-    vehiclesFound: "Ù…Ø±ÙƒØ¨Ø© ÙˆØ¬Ø¯Øª",
-    vehiclesFoundPlural: "Ù…Ø±ÙƒØ¨Ø§Øª ÙˆØ¬Ø¯Øª",
-    loading: "Ø¬Ø§Ø±Ù ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øªâ€¦",
-    noVehicles: "Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø±ÙƒØ¨Ø§Øª",
-    noVehiclesHint: "Ø­Ø§ÙˆÙ„ Ù…Ø³Ø­ Ø§Ù„ÙÙ„Ø§ØªØ± Ø£Ùˆ ÙƒÙ† Ø£ÙˆÙ„ Ù…Ù† ÙŠØ¶ÙŠÙ Ø¥Ø¹Ù„Ø§Ù†Ø§Ù‹!",
-    listYourVehicle: "Ø£Ø¶Ù Ù…Ø±ÙƒØ¨ØªÙƒ",
-    sample: "Ù†Ù…ÙˆØ°Ø¬ â€” Ù„ÙŠØ³ Ø¥Ø¹Ù„Ø§Ù†Ø§Ù‹ Ø­Ù‚ÙŠÙ‚ÙŠØ§Ù‹",
-    expiringLabel: "ØªÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ø§Ù‹",
-    errorBanner: "ØªØ¹Ø°Ù‘Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª. ÙŠØªÙ… Ø¹Ø±Ø¶ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØªØ¬Ø±ÙŠØ¨ÙŠØ©.",
-    allTypes: "Ø§Ù„ÙƒÙ„",
-    views: "Ù…Ø´Ø§Ù‡Ø¯Ø©",
-    viewsPlural: "Ù…Ø´Ø§Ù‡Ø¯Ø§Øª",
-    backToTop: "Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ø£Ø¹Ù„Ù‰",
+    title: "السيارات والمركبات",
+    subtitle: "بيع وشراء المركبات Ùي الكاميرون",
+    searchPlaceholder: "ابحث بالماركة أو الطراز أو العنوان…",
+    allCities: "جميع المدن",
+    refresh: "تحديث",
+    sell: "بيع",
+    vehiclesFound: "مركبة وجدت",
+    vehiclesFoundPlural: "مركبات وجدت",
+    loading: "جارÙ تحميل المركبات…",
+    noVehicles: "لا توجد مركبات",
+    noVehiclesHint: "حاول مسح الÙلاتر أو كن أول من يضيÙ إعلاناً!",
+    listYourVehicle: "أضÙ مركبتك",
+    sample: "نموذج — ليس إعلاناً حقيقياً",
+    expiringLabel: "تنتهي قريباً",
+    errorBanner: "تعذّر تحميل الإعلانات. يتم عرض البيانات التجريبية.",
+    allTypes: "الكل",
+    views: "مشاهدة",
+    viewsPlural: "مشاهدات",
+    backToTop: "العودة للأعلى",
   },
   pcm: {
     title: "Cars & Motor",
     subtitle: "Buy and sell motor for all Cameroon",
-    searchPlaceholder: "Search by make, model or nameâ€¦",
+    searchPlaceholder: "Search by make, model or name…",
     allCities: "All Towns",
     refresh: "Refresh",
     sell: "Sell",
     vehiclesFound: "motor find",
     vehiclesFoundPlural: "motors find",
-    loading: "Motor dey loadâ€¦",
+    loading: "Motor dey load…",
     noVehicles: "No motor find",
     noVehiclesHint: "Try remove filter or be first person post!",
     listYourVehicle: "Post Your Motor",
-    sample: "Sample â€” no be real post",
+    sample: "Sample — no be real post",
     expiringLabel: "Go expire soon",
     errorBanner: "We no fit load posts. We dey show demo data.",
     allTypes: "All",
@@ -128,46 +128,46 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Go top",
   },
   ff: {
-    title: "Jawdi & LaaÉ“al",
-    subtitle: "Soodde e yillitde laaÉ“al e Kameruun",
-    searchPlaceholder: "Yiyto e innde, model walla tiitoondeâ€¦",
+    title: "Jawdi & Laaɓal",
+    subtitle: "Soodde e yillitde laaɓal e Kameruun",
+    searchPlaceholder: "Yiyto e innde, model walla tiitoonde…",
     allCities: "Telli Wuro",
-    refresh: "HaaÉ“tu",
+    refresh: "Haaɓtu",
     sell: "Yillitu",
-    vehiclesFound: "laaÉ“al heÉ“aa",
-    vehiclesFoundPlural: "laaÉ“e heÉ“aa",
-    loading: "LaaÉ“e njilloyineeâ€¦",
-    noVehicles: "LaaÉ“e heÉ“aaki",
-    noVehiclesHint: "WiÉ“ siftooje maa ar tawa fowo!",
-    listYourVehicle: "HaaÉ—tu LaaÉ“al Maa",
-    sample: "Misaali â€” woÉ—É—aaki jaÅ‹tere goonga",
+    vehiclesFound: "laaɓal heɓaa",
+    vehiclesFoundPlural: "laaɓe heɓaa",
+    loading: "Laaɓe njilloyinee…",
+    noVehicles: "Laaɓe heɓaaki",
+    noVehiclesHint: "Wiɓ siftooje maa ar tawa fowo!",
+    listYourVehicle: "Haaɗtu Laaɓal Maa",
+    sample: "Misaali — woɗɗaaki jaŋtere goonga",
     expiringLabel: "Timmata jooni",
-    errorBanner: "JaÅ‹tere nde nahataa. Yeeso misaali hannde.",
+    errorBanner: "Jaŋtere nde nahataa. Yeeso misaali hannde.",
     allTypes: "Fof",
     views: "yiyaade",
-    viewsPlural: "yiyaaÉ—e",
-    backToTop: "HaaÉ—tu dow",
+    viewsPlural: "yiyaaɗe",
+    backToTop: "Haaɗtu dow",
   },
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Category labels (multilingual)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   en: { All:"All", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motorcycle", Van:"Van", Minibus:"Minibus", Truck:"Truck" },
   fr: { All:"Tous", Sedan:"Berline", SUV:"SUV", Pickup:"Pick-up", Motorcycle:"Moto", Van:"Fourgon", Minibus:"Minibus", Truck:"Camion" },
   ha: { All:"Duka", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Babur", Van:"Van", Minibus:"Minibus", Truck:"Lori" },
-  ar: { All:"Ø§Ù„ÙƒÙ„", Sedan:"Ø³ÙŠØ¯Ø§Ù†", SUV:"Ø³ÙŠØ§Ø±Ø© Ø¯ÙØ¹ Ø±Ø¨Ø§Ø¹ÙŠ", Pickup:"Ø¨ÙŠÙƒ Ø£Ø¨", Motorcycle:"Ø¯Ø±Ø§Ø¬Ø© Ù†Ø§Ø±ÙŠØ©", Van:"ÙØ§Ù†", Minibus:"Ø­Ø§ÙÙ„Ø© ØµØºÙŠØ±Ø©", Truck:"Ø´Ø§Ø­Ù†Ø©" },
+  ar: { All:"الكل", Sedan:"سيدان", SUV:"سيارة دÙع رباعي", Pickup:"بيك أب", Motorcycle:"دراجة نارية", Van:"Ùان", Minibus:"حاÙلة صغيرة", Truck:"شاحنة" },
   pcm: { All:"All", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motor", Van:"Van", Minibus:"Minibus", Truck:"Truck" },
   ff: { All:"Fof", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motor", Van:"Van", Minibus:"Minibus", Truck:"Lorri" },
 };
 
 const VEHICLE_TYPES = ["All", "Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck"];
-const CITIES        = ["All", "YaoundÃ©", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
+const CITIES        = ["All", "Yaoundé", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Types
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 interface Vehicle {
   id:          string;
   title:       string;
@@ -182,13 +182,13 @@ interface Vehicle {
   view_count?: number;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Demo data (ids start with demo- for VehicleDetails detection)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 const DEMO_VEHICLES: Vehicle[] = [
-  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"YaoundÃ©", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
+  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"Yaoundé", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
   { id:"demo-v2", title:"Honda Activa Motorcycle",   price:850_000,    location:"Douala",  category:"Motorcycle", images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Manual",    mileage:"12,000 km", year:2021}, isDemo:true },
-  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"YaoundÃ©", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
+  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"Yaoundé", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
   { id:"demo-v4", title:"Nissan Pickup 4x4",         price:12_000_000, location:"Bamenda", category:"Pickup",     images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Manual",    mileage:"95,000 km", year:2018}, isDemo:true },
 ];
 
@@ -198,9 +198,9 @@ function expiringWithin(expiresAt?: string, days = 3): boolean {
   return diff > 0 && diff <= days * 86_400_000;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Component
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export default function VehicleRentals() {
   const navigate = useNavigate();
   const lang = (useLang() || "en") as string;
@@ -251,7 +251,7 @@ export default function VehicleRentals() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchVehicles]);
 
-  // â”€â”€ Filtered list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Filtered list ──────────────────────────────────────────
   const filtered = [...vehicles]
     .filter((v) => {
       if (search) {
@@ -281,11 +281,11 @@ export default function VehicleRentals() {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ─────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? "rtl" : "ltr"}>
 
-      {/* â”€â”€ Hero â”€â”€ */}
+      {/* ── Hero ── */}
       <div className="bg-gradient-to-r from-green-700 to-green-800 text-white pt-10 pb-14 px-4">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold mb-1 flex items-center gap-2">
@@ -308,7 +308,7 @@ export default function VehicleRentals() {
 
       <div className="max-w-2xl mx-auto px-4 -mt-4">
 
-        {/* â”€â”€ Filters card â”€â”€ */}
+        {/* ── Filters card ── */}
         <div className="bg-white rounded-2xl shadow-sm p-4 mb-4 space-y-3">
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
             {VEHICLE_TYPES.map((type) => (
@@ -356,7 +356,7 @@ export default function VehicleRentals() {
           </div>
         </div>
 
-        {/* â”€â”€ Error banner â”€â”€ */}
+        {/* ── Error banner ── */}
         {error && (
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-4 py-3 mb-4 text-sm">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -364,18 +364,18 @@ export default function VehicleRentals() {
           </div>
         )}
 
-        {/* â”€â”€ Location filter â”€â”€ */}
+        {/* ── Location filter ── */}
         <LocationFilter onFilterChange={setLocationFilters} />
 
-        {/* â”€â”€ Featured strip â”€â”€ */}
+        {/* ── Featured strip ── */}
         <FeaturedAdsStrip category="vehicles" showHeader={false} maxVisible={20} />
 
-        {/* â”€â”€ Count â”€â”€ */}
+        {/* ── Count ── */}
         <div className="mb-3 text-sm text-gray-400">
           {filtered.length} {filtered.length === 1 ? tr("vehiclesFound") : tr("vehiclesFoundPlural")}
         </div>
 
-        {/* â”€â”€ Loading â”€â”€ */}
+        {/* ── Loading ── */}
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-green-600" />
@@ -383,7 +383,7 @@ export default function VehicleRentals() {
           </div>
         )}
 
-        {/* â”€â”€ Empty â”€â”€ */}
+        {/* ── Empty ── */}
         {!loading && filtered.length === 0 && (
           <div className="text-center py-16">
             <Car className="w-14 h-14 text-gray-200 mx-auto mb-3" />
@@ -398,7 +398,7 @@ export default function VehicleRentals() {
           </div>
         )}
 
-        {/* â”€â”€ Cards â”€â”€ */}
+        {/* ── Cards ── */}
         {!loading && filtered.length > 0 && (
           <div className="space-y-4">
             {filtered.map((v) => (
@@ -418,7 +418,7 @@ export default function VehicleRentals() {
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
                   ) : (
-                    <span className="text-5xl">ðŸš—</span>
+                    <span className="text-5xl">🚗</span>
                   )}
                   {v.isDemo && <DemoBadge />}
                   {expiringWithin(v.expires_at, 3) && (

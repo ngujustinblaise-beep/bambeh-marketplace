@@ -1,13 +1,13 @@
 ﻿/**
- * src/pages/ExchangeItemPost.tsx â€” Bambeh Marketplace
+ * src/pages/ExchangeItemPost.tsx — Bambeh Marketplace
  *
- * âœ… Full i18n: en, fr, ha, ar, pcm, ff
- * âœ… Image upload to Supabase Storage (exchange-images bucket)
- * âœ… 30-day expiry set automatically
- * âœ… Full validation with localised error messages
- * âœ… Cash supplement toggle
- * âœ… Progress indicator for photo upload
- * âœ… Safe area + keyboard-aware layout
+ * ✅ Full i18n: en, fr, ha, ar, pcm, ff
+ * ✅ Image upload to Supabase Storage (exchange-images bucket)
+ * ✅ 30-day expiry set automatically
+ * ✅ Full validation with localised error messages
+ * ✅ Cash supplement toggle
+ * ✅ Progress indicator for photo upload
+ * ✅ Safe area + keyboard-aware layout
  */
 
 import { useState, useRef } from 'react';
@@ -19,37 +19,37 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 
-// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n ──────────────────────────────────────────────────────────────────────
 const STRINGS = {
   en: {
     pageTitle: 'Post for Exchange',
-    freeLabel: 'Free Â· 30 days',
+    freeLabel: 'Free · 30 days',
     errorTitle: 'Please fix:',
     photos: 'Photos',
     photosHint: (max: number) => `(up to ${max})`,
     photosPrompt: 'Photos boost your chance of getting offers',
     addPhoto: 'Add',
     title: 'Title *',
-    titlePlaceholder: 'e.g. iPhone 11 â€” looking for Samsung Galaxy',
+    titlePlaceholder: 'e.g. iPhone 11 — looking for Samsung Galaxy',
     description: 'Description',
-    descPlaceholder: 'Describe your item â€” age, features, defects, accessoriesâ€¦',
+    descPlaceholder: 'Describe your item — age, features, defects, accessories…',
     category: 'Category *',
-    selectCategory: 'Selectâ€¦',
+    selectCategory: 'Select…',
     condition: 'Condition *',
-    selectCondition: 'Selectâ€¦',
+    selectCondition: 'Select…',
     location: 'Your Location *',
-    locationPlaceholder: 'e.g. YaoundÃ©, Bastos',
+    locationPlaceholder: 'e.g. Yaoundé, Bastos',
     wantedLabel: 'What do you want in return?',
-    wantedPlaceholder: 'e.g. Samsung Galaxy S21, MacBook Airâ€¦',
+    wantedPlaceholder: 'e.g. Samsung Galaxy S21, MacBook Air…',
     estValue: 'Estimated value (FCFA)',
     estValuePlaceholder: 'e.g. 150000',
     cashSupplement: 'Accept cash supplement?',
     maxCash: 'Max cash top-up (FCFA)',
     maxCashPlaceholder: 'e.g. 30000',
-    infoText: (days: number) => `Your listing will be visible to all Bambeh users. It expires after ${days} days â€” you\'ll get a reminder 3 days before.`,
+    infoText: (days: number) => `Your listing will be visible to all Bambeh users. It expires after ${days} days — you\'ll get a reminder 3 days before.`,
     submit: 'Post Exchange Item',
-    posting: 'Postingâ€¦',
-    uploading: (pct: number) => `Uploading photos ${pct}%â€¦`,
+    posting: 'Posting…',
+    uploading: (pct: number) => `Uploading photos ${pct}%…`,
     errTitle: 'Please enter a title.',
     errTitleShort: 'Title must be at least 3 characters.',
     errCategory: 'Please select a category.',
@@ -59,136 +59,136 @@ const STRINGS = {
     errGeneric: 'Failed to post. Please try again.',
   },
   fr: {
-    pageTitle: 'Publier pour Ã©change',
-    freeLabel: 'Gratuit Â· 30 jours',
-    errorTitle: 'Ã€ corriger :',
+    pageTitle: 'Publier pour échange',
+    freeLabel: 'Gratuit · 30 jours',
+    errorTitle: 'À corriger :',
     photos: 'Photos',
-    photosHint: (max: number) => `(jusqu'Ã  ${max})`,
+    photosHint: (max: number) => `(jusqu'à ${max})`,
     photosPrompt: 'Les photos augmentent vos chances de recevoir des offres',
     addPhoto: 'Ajouter',
     title: 'Titre *',
-    titlePlaceholder: 'ex. iPhone 11 â€” cherche Samsung Galaxy',
+    titlePlaceholder: 'ex. iPhone 11 — cherche Samsung Galaxy',
     description: 'Description',
-    descPlaceholder: 'DÃ©crivez l\'article â€” Ã¢ge, fonctionnalitÃ©s, dÃ©fauts, accessoiresâ€¦',
-    category: 'CatÃ©gorie *',
-    selectCategory: 'Choisirâ€¦',
-    condition: 'Ã‰tat *',
-    selectCondition: 'Choisirâ€¦',
+    descPlaceholder: 'Décrivez l\'article — âge, fonctionnalités, défauts, accessoires…',
+    category: 'Catégorie *',
+    selectCategory: 'Choisir…',
+    condition: 'État *',
+    selectCondition: 'Choisir…',
     location: 'Votre localisation *',
-    locationPlaceholder: 'ex. YaoundÃ©, Bastos',
-    wantedLabel: 'Que voulez-vous en Ã©change ?',
-    wantedPlaceholder: 'ex. Samsung Galaxy S21, MacBook Airâ€¦',
-    estValue: 'Valeur estimÃ©e (FCFA)',
+    locationPlaceholder: 'ex. Yaoundé, Bastos',
+    wantedLabel: 'Que voulez-vous en échange ?',
+    wantedPlaceholder: 'ex. Samsung Galaxy S21, MacBook Air…',
+    estValue: 'Valeur estimée (FCFA)',
     estValuePlaceholder: 'ex. 150000',
-    cashSupplement: 'Accepter un complÃ©ment en espÃ¨ces ?',
-    maxCash: 'ComplÃ©ment max (FCFA)',
+    cashSupplement: 'Accepter un complément en espèces ?',
+    maxCash: 'Complément max (FCFA)',
     maxCashPlaceholder: 'ex. 30000',
     infoText: (days: number) => `Votre annonce sera visible par tous les utilisateurs pendant ${days} jours. Vous recevrez un rappel 3 jours avant l'expiration.`,
     submit: 'Publier l\'article',
-    posting: 'Publicationâ€¦',
-    uploading: (pct: number) => `Envoi photos ${pct}%â€¦`,
+    posting: 'Publication…',
+    uploading: (pct: number) => `Envoi photos ${pct}%…`,
     errTitle: 'Veuillez entrer un titre.',
-    errTitleShort: 'Le titre doit comporter au moins 3 caractÃ¨res.',
-    errCategory: 'Veuillez sÃ©lectionner une catÃ©gorie.',
-    errCondition: 'Veuillez sÃ©lectionner l\'Ã©tat.',
+    errTitleShort: 'Le titre doit comporter au moins 3 caractères.',
+    errCategory: 'Veuillez sélectionner une catégorie.',
+    errCondition: 'Veuillez sélectionner l\'état.',
     errLocation: 'Veuillez entrer votre localisation.',
     errAuth: 'Veuillez vous connecter pour publier.',
-    errGeneric: 'Ã‰chec de la publication. RÃ©essayez.',
+    errGeneric: 'Échec de la publication. Réessayez.',
   },
   ha: {
     pageTitle: 'Buga Don Musanya',
-    freeLabel: 'Kyauta Â· Kwanaki 30',
+    freeLabel: 'Kyauta · Kwanaki 30',
     errorTitle: 'Gyara:',
     photos: 'Hotuna',
     photosHint: (max: number) => `(har ${max})`,
-    photosPrompt: 'Hotuna suna Æ™ara damar samun tayin',
-    addPhoto: 'Æ˜ara',
+    photosPrompt: 'Hotuna suna ƙara damar samun tayin',
+    addPhoto: 'Ƙara',
     title: 'Taken *',
-    titlePlaceholder: 'misali: iPhone 11 â€” ina neman Samsung Galaxy',
+    titlePlaceholder: 'misali: iPhone 11 — ina neman Samsung Galaxy',
     description: 'Bayani',
-    descPlaceholder: 'Bayyana abin â€” tsawon lokaci, halaye, lahani, kayan haÉ—iâ€¦',
+    descPlaceholder: 'Bayyana abin — tsawon lokaci, halaye, lahani, kayan haɗi…',
     category: 'Nau\'i *',
-    selectCategory: 'ZaÉ“aâ€¦',
+    selectCategory: 'Zaɓa…',
     condition: 'Yanayi *',
-    selectCondition: 'ZaÉ“aâ€¦',
+    selectCondition: 'Zaɓa…',
     location: 'Wurin ka *',
-    locationPlaceholder: 'misali: YaoundÃ©, Bastos',
+    locationPlaceholder: 'misali: Yaoundé, Bastos',
     wantedLabel: 'Me kake so a madadin?',
-    wantedPlaceholder: 'misali: Samsung Galaxy S21, MacBook Airâ€¦',
-    estValue: 'Æ˜imar kuÉ—i (FCFA)',
+    wantedPlaceholder: 'misali: Samsung Galaxy S21, MacBook Air…',
+    estValue: 'Ƙimar kuɗi (FCFA)',
     estValuePlaceholder: 'misali: 150000',
-    cashSupplement: 'Yarda da Æ™arin kuÉ—i?',
-    maxCash: 'Mafi girman kuÉ—in Æ™ari (FCFA)',
+    cashSupplement: 'Yarda da ƙarin kuɗi?',
+    maxCash: 'Mafi girman kuɗin ƙari (FCFA)',
     maxCashPlaceholder: 'misali: 30000',
-    infoText: (days: number) => `Za a nuna jerin ku ga duk masu amfani na kwanaki ${days}. Za ku sami tunatarwa kwanaki 3 kafin Æ™arewa.`,
+    infoText: (days: number) => `Za a nuna jerin ku ga duk masu amfani na kwanaki ${days}. Za ku sami tunatarwa kwanaki 3 kafin ƙarewa.`,
     submit: 'Buga Abu Don Musanya',
-    posting: 'Ana wallafawaâ€¦',
-    uploading: (pct: number) => `Ana aika hotuna ${pct}%â€¦`,
+    posting: 'Ana wallafawa…',
+    uploading: (pct: number) => `Ana aika hotuna ${pct}%…`,
     errTitle: 'Shigar da taken.',
     errTitleShort: 'Taken dole ya kasance akalla haruffa 3.',
-    errCategory: 'ZaÉ“i nau\'in.',
-    errCondition: 'ZaÉ“i yanayin.',
+    errCategory: 'Zaɓi nau\'in.',
+    errCondition: 'Zaɓi yanayin.',
     errLocation: 'Shigar da wurin ka.',
     errAuth: 'Yi rajista don wallafawa.',
     errGeneric: 'Wallafawa ta kasa. Sake gwadawa.',
   },
   ar: {
-    pageTitle: 'Ù†Ø´Ø± Ù„Ù„ØªØ¨Ø§Ø¯Ù„',
-    freeLabel: 'Ù…Ø¬Ø§Ù†Ù‹Ø§ Â· 30 ÙŠÙˆÙ…Ù‹Ø§',
-    errorTitle: 'ÙŠØ±Ø¬Ù‰ Ø§Ù„ØªØµØ­ÙŠØ­:',
-    photos: 'Ø§Ù„ØµÙˆØ±',
-    photosHint: (max: number) => `(Ø­ØªÙ‰ ${max})`,
-    photosPrompt: 'Ø§Ù„ØµÙˆØ± ØªØ²ÙŠØ¯ ÙØ±ØµÙƒ ÙÙŠ Ø§Ù„Ø­ØµÙˆÙ„ Ø¹Ù„Ù‰ Ø¹Ø±ÙˆØ¶',
-    addPhoto: 'Ø£Ø¶Ù',
-    title: 'Ø§Ù„Ø¹Ù†ÙˆØ§Ù† *',
-    titlePlaceholder: 'Ù…Ø«Ø§Ù„: Ø¢ÙŠÙÙˆÙ† 11 â€” Ø£Ø¨Ø­Ø« Ø¹Ù† Ø³Ø§Ù…Ø³ÙˆÙ†Ø¬ ØºØ§Ù„Ø§ÙƒØ³ÙŠ',
-    description: 'Ø§Ù„ÙˆØµÙ',
-    descPlaceholder: 'ØµÙ Ø§Ù„Ø¹Ù†ØµØ± â€” Ø§Ù„Ø¹Ù…Ø±ØŒ Ø§Ù„Ù…Ù…ÙŠØ²Ø§ØªØŒ Ø§Ù„Ø¹ÙŠÙˆØ¨ØŒ Ø§Ù„Ù…Ù„Ø­Ù‚Ø§Øªâ€¦',
-    category: 'Ø§Ù„ÙØ¦Ø© *',
-    selectCategory: 'Ø§Ø®ØªØ±â€¦',
-    condition: 'Ø§Ù„Ø­Ø§Ù„Ø© *',
-    selectCondition: 'Ø§Ø®ØªØ±â€¦',
-    location: 'Ù…ÙˆÙ‚Ø¹Ùƒ *',
-    locationPlaceholder: 'Ù…Ø«Ø§Ù„: ÙŠØ§ÙˆÙ†Ø¯ÙŠØŒ Ø¨Ø§Ø³ØªÙˆØ³',
-    wantedLabel: 'Ù…Ø§Ø°Ø§ ØªØ±ÙŠØ¯ ÙÙŠ Ø§Ù„Ù…Ù‚Ø§Ø¨Ù„ØŸ',
-    wantedPlaceholder: 'Ù…Ø«Ø§Ù„: Ø³Ø§Ù…Ø³ÙˆÙ†Ø¬ ØºØ§Ù„Ø§ÙƒØ³ÙŠ S21ØŒ Ù…Ø§Ùƒ Ø¨ÙˆÙƒ Ø£ÙŠØ±â€¦',
-    estValue: 'Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„ØªÙ‚Ø¯ÙŠØ±ÙŠØ© (ÙØ±Ù†Ùƒ Ø£ÙØ±ÙŠÙ‚ÙŠ)',
-    estValuePlaceholder: 'Ù…Ø«Ø§Ù„: 150000',
-    cashSupplement: 'Ù‚Ø¨ÙˆÙ„ Ù…ÙƒÙ…Ù„ Ù†Ù‚Ø¯ÙŠØŸ',
-    maxCash: 'Ø£Ù‚ØµÙ‰ Ù…Ø¨Ù„Øº Ù†Ù‚Ø¯ÙŠ Ø¥Ø¶Ø§ÙÙŠ (ÙØ±Ù†Ùƒ Ø£ÙØ±ÙŠÙ‚ÙŠ)',
-    maxCashPlaceholder: 'Ù…Ø«Ø§Ù„: 30000',
-    infoText: (days: number) => `Ø³ÙŠØ¸Ù‡Ø± Ø¥Ø¹Ù„Ø§Ù†Ùƒ Ù„Ø¬Ù…ÙŠØ¹ Ù…Ø³ØªØ®Ø¯Ù…ÙŠ Bambeh Ù„Ù…Ø¯Ø© ${days} ÙŠÙˆÙ…Ù‹Ø§. Ø³ØªØªÙ„Ù‚Ù‰ ØªØ°ÙƒÙŠØ±Ù‹Ø§ Ù‚Ø¨Ù„ 3 Ø£ÙŠØ§Ù… Ù…Ù† Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©.`,
-    submit: 'Ù†Ø´Ø± Ø¹Ù†ØµØ± Ø§Ù„ØªØ¨Ø§Ø¯Ù„',
-    posting: 'Ø¬Ø§Ø±Ù Ø§Ù„Ù†Ø´Ø±â€¦',
-    uploading: (pct: number) => `Ø±ÙØ¹ Ø§Ù„ØµÙˆØ± ${pct}%â€¦`,
-    errTitle: 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø¹Ù†ÙˆØ§Ù†.',
-    errTitleShort: 'ÙŠØ¬Ø¨ Ø£Ù† ÙŠØ­ØªÙˆÙŠ Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ø¹Ù„Ù‰ 3 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„.',
-    errCategory: 'ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± ÙØ¦Ø©.',
-    errCondition: 'ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø­Ø§Ù„Ø©.',
-    errLocation: 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ù…ÙˆÙ‚Ø¹Ùƒ.',
-    errAuth: 'ÙŠØ±Ø¬Ù‰ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù„Ù†Ø´Ø±.',
-    errGeneric: 'ÙØ´Ù„ Ø§Ù„Ù†Ø´Ø±. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ù‹Ø§.',
+    pageTitle: 'نشر للتبادل',
+    freeLabel: 'مجانًا · 30 يومًا',
+    errorTitle: 'يرجى التصحيح:',
+    photos: 'الصور',
+    photosHint: (max: number) => `(حتى ${max})`,
+    photosPrompt: 'الصور تزيد Ùرصك Ùي الحصول على عروض',
+    addPhoto: 'أضÙ',
+    title: 'العنوان *',
+    titlePlaceholder: 'مثال: آيÙون 11 — أبحث عن سامسونج غالاكسي',
+    description: 'الوصÙ',
+    descPlaceholder: 'صÙ العنصر — العمر، المميزات، العيوب، الملحقات…',
+    category: 'الÙئة *',
+    selectCategory: 'اختر…',
+    condition: 'الحالة *',
+    selectCondition: 'اختر…',
+    location: 'موقعك *',
+    locationPlaceholder: 'مثال: ياوندي، باستوس',
+    wantedLabel: 'ماذا تريد Ùي المقابل؟',
+    wantedPlaceholder: 'مثال: سامسونج غالاكسي S21، ماك بوك أير…',
+    estValue: 'القيمة التقديرية (Ùرنك أÙريقي)',
+    estValuePlaceholder: 'مثال: 150000',
+    cashSupplement: 'قبول مكمل نقدي؟',
+    maxCash: 'أقصى مبلغ نقدي إضاÙي (Ùرنك أÙريقي)',
+    maxCashPlaceholder: 'مثال: 30000',
+    infoText: (days: number) => `سيظهر إعلانك لجميع مستخدمي Bambeh لمدة ${days} يومًا. ستتلقى تذكيرًا قبل 3 أيام من انتهاء الصلاحية.`,
+    submit: 'نشر عنصر التبادل',
+    posting: 'جارÙ النشر…',
+    uploading: (pct: number) => `رÙع الصور ${pct}%…`,
+    errTitle: 'يرجى إدخال عنوان.',
+    errTitleShort: 'يجب أن يحتوي العنوان على 3 أحرÙ على الأقل.',
+    errCategory: 'يرجى اختيار Ùئة.',
+    errCondition: 'يرجى اختيار الحالة.',
+    errLocation: 'يرجى إدخال موقعك.',
+    errAuth: 'يرجى تسجيل الدخول للنشر.',
+    errGeneric: 'Ùشل النشر. حاول مجددًا.',
   },
   pcm: {
     pageTitle: 'Post For Exchange',
-    freeLabel: 'Free Â· 30 days',
+    freeLabel: 'Free · 30 days',
     errorTitle: 'Fix this:',
     photos: 'Photos',
     photosHint: (max: number) => `(up to ${max})`,
     photosPrompt: 'Photos go help you get more offers',
     addPhoto: 'Add',
     title: 'Title *',
-    titlePlaceholder: 'e.g. iPhone 11 â€” I wan Samsung Galaxy',
+    titlePlaceholder: 'e.g. iPhone 11 — I wan Samsung Galaxy',
     description: 'Description',
-    descPlaceholder: 'Tell am â€” how old, wetin dey work, wetin no dey workâ€¦',
+    descPlaceholder: 'Tell am — how old, wetin dey work, wetin no dey work…',
     category: 'Category *',
-    selectCategory: 'Chooseâ€¦',
+    selectCategory: 'Choose…',
     condition: 'Condition *',
-    selectCondition: 'Chooseâ€¦',
+    selectCondition: 'Choose…',
     location: 'Your Location *',
-    locationPlaceholder: 'e.g. YaoundÃ©, Bastos',
+    locationPlaceholder: 'e.g. Yaoundé, Bastos',
     wantedLabel: 'Wetin you wan exchange for?',
-    wantedPlaceholder: 'e.g. Samsung Galaxy S21, MacBook Airâ€¦',
+    wantedPlaceholder: 'e.g. Samsung Galaxy S21, MacBook Air…',
     estValue: 'How much e worth (FCFA)',
     estValuePlaceholder: 'e.g. 150000',
     cashSupplement: 'You fit accept cash on top?',
@@ -196,8 +196,8 @@ const STRINGS = {
     maxCashPlaceholder: 'e.g. 30000',
     infoText: (days: number) => `Your listing go show for all Bambeh users for ${days} days. We go remind you 3 days before e expire.`,
     submit: 'Post Exchange Item',
-    posting: 'E dey postâ€¦',
-    uploading: (pct: number) => `E dey send photos ${pct}%â€¦`,
+    posting: 'E dey post…',
+    uploading: (pct: number) => `E dey send photos ${pct}%…`,
     errTitle: 'Put title.',
     errTitleShort: 'Title must be at least 3 characters.',
     errCategory: 'Choose category.',
@@ -208,40 +208,40 @@ const STRINGS = {
   },
   ff: {
     pageTitle: 'Hollit Don Fewtere',
-    freeLabel: 'Ã‘aawÉ—e Â· Ã‘alawma 30',
+    freeLabel: 'Ñaawɗe · Ñalawma 30',
     errorTitle: 'Waylit:',
     photos: 'Natale',
     photosHint: (max: number) => `(haa ${max})`,
-    photosPrompt: 'Natale mbaawi siftinde jaÉ“de',
-    addPhoto: 'JaÉ“É“it',
+    photosPrompt: 'Natale mbaawi siftinde jaɓde',
+    addPhoto: 'Jaɓɓit',
     title: 'Innde *',
-    titlePlaceholder: 'mis: iPhone 11 â€” njiÉ—i Samsung Galaxy',
+    titlePlaceholder: 'mis: iPhone 11 — njiɗi Samsung Galaxy',
     description: 'Haalannde',
-    descPlaceholder: 'Haalan coftal â€” É—oon, maa, baaÉ—e, yoornaaniâ€¦',
+    descPlaceholder: 'Haalan coftal — ɗoon, maa, baaɗe, yoornaani…',
     category: 'Ngolu *',
-    selectCategory: 'SuÉ“oâ€¦',
+    selectCategory: 'Suɓo…',
     condition: 'Ngol *',
-    selectCondition: 'SuÉ“oâ€¦',
+    selectCondition: 'Suɓo…',
     location: 'Wuro maa *',
-    locationPlaceholder: 'mis: YaoundÃ©, Bastos',
+    locationPlaceholder: 'mis: Yaoundé, Bastos',
     wantedLabel: 'Ko njijiri na fewtere?',
-    wantedPlaceholder: 'mis: Samsung Galaxy S21, MacBook Airâ€¦',
+    wantedPlaceholder: 'mis: Samsung Galaxy S21, MacBook Air…',
     estValue: 'Njaru (FCFA)',
     estValuePlaceholder: 'mis: 150000',
-    cashSupplement: 'JaÉ“de kaalis?',
+    cashSupplement: 'Jaɓde kaalis?',
     maxCash: 'Kaalis timmudi (FCFA)',
     maxCashPlaceholder: 'mis: 30000',
-    infoText: (days: number) => `Coftaldi maa yiyotoo ko É“ee fof Bambeh Ã±alawma ${days}. Himo siftina ma Ã±alawma 3 yesdata.`,
+    infoText: (days: number) => `Coftaldi maa yiyotoo ko ɓee fof Bambeh ñalawma ${days}. Himo siftina ma ñalawma 3 yesdata.`,
     submit: 'Hollit Coftal Fewtere',
-    posting: 'E hollindeâ€¦',
-    uploading: (pct: number) => `E neldinde natale ${pct}%â€¦`,
+    posting: 'E hollinde…',
+    uploading: (pct: number) => `E neldinde natale ${pct}%…`,
     errTitle: 'Haala innde.',
     errTitleShort: 'Innde ngol ko 3 batu.',
-    errCategory: 'SuÉ“o ngolu.',
-    errCondition: 'SuÉ“o ngol.',
+    errCategory: 'Suɓo ngolu.',
+    errCondition: 'Suɓo ngol.',
     errLocation: 'Haala wuro maa.',
     errAuth: 'Naaw yeeso hollirde.',
-    errGeneric: 'Hollinde hiÉ“i. HeÉ“to katin.',
+    errGeneric: 'Hollinde hiɓi. Heɓto katin.',
   },
 } as const;
 
@@ -369,8 +369,8 @@ export default function ExchangeItemPost() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
         <CheckCircle className="w-14 h-14 text-teal-500 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Posted! ðŸŽ‰</h2>
-        <p className="text-gray-500 text-sm">Taking you back to exchange listingsâ€¦</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Posted! 🎉</h2>
+        <p className="text-gray-500 text-sm">Taking you back to exchange listings…</p>
       </div>
     </div>
   );
@@ -395,12 +395,12 @@ export default function ExchangeItemPost() {
         {/* Error */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm flex items-start gap-2">
-            <span className="flex-shrink-0 mt-0.5">âš ï¸</span>
+            <span className="flex-shrink-0 mt-0.5">⚠ï¸</span>
             <span>{error}</span>
           </div>
         )}
 
-        {/* â”€â”€â”€ Photos â”€â”€â”€ */}
+        {/* ─── Photos ─── */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
           <label className="block text-sm font-semibold text-gray-700 mb-3">
             {s.photos} <span className="text-gray-400 font-normal">{s.photosHint(MAX_IMAGES)}</span>
@@ -440,7 +440,7 @@ export default function ExchangeItemPost() {
           )}
         </div>
 
-        {/* â”€â”€â”€ Core Details â”€â”€â”€ */}
+        {/* ─── Core Details ─── */}
         <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">{s.title}</label>
@@ -506,7 +506,7 @@ export default function ExchangeItemPost() {
           </div>
         </div>
 
-        {/* â”€â”€â”€ Exchange terms â”€â”€â”€ */}
+        {/* ─── Exchange terms ─── */}
         <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">{s.wantedLabel}</label>

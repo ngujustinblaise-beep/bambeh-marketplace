@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - VOICE RECORDER COMPONENT
+ * BAMBÉ MARKETPLACE - VOICE RECORDER COMPONENT
  * Version: 1.0.0
  */
 
@@ -88,7 +88,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
       <div className="voice-recorder-modal">
         <div className="voice-recorder-header">
           <h3>{t('chat.recordVoiceMessage')}</h3>
-          <button className="close-button" onClick={handleCancel}>âœ•</button>
+          <button className="close-button" onClick={handleCancel}>✕</button>
         </div>
 
         <div className="voice-recorder-visualizer">
@@ -110,11 +110,11 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
 
         <div className="voice-recorder-controls">
           <button className="recorder-button delete" onClick={handleCancel} disabled={isSending}>
-            ðŸ—‘ï¸
+            🗑ï¸
           </button>
 
           <button className="recorder-button pause" onClick={togglePause} disabled={isSending || !isRecording}>
-            {isPaused ? 'â–¶ï¸' : 'â¸ï¸'}
+            {isPaused ? '▶ï¸' : 'â¸ï¸'}
           </button>
 
           <button
@@ -125,7 +125,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
             }}
             disabled={isSending || duration < 1}
           >
-            {isSending ? 'â³' : 'ðŸ“¤'}
+            {isSending ? 'â³' : '📤'}
           </button>
         </div>
 

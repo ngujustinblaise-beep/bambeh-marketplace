@@ -144,7 +144,7 @@ export interface Product {
   type?: string;
 }
 
-// FIX: was `extends Product  | string;` â€” restored opening brace
+// FIX: was `extends Product  | string;` — restored opening brace
 export interface MarketplaceItem extends Product {
   quantity?: number;
   condition?: ItemCondition;

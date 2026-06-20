@@ -1,13 +1,13 @@
 ﻿/**
  * src/types/src_types_ads.ts
- * Bambeh Marketplace â€” Advertisement & Promotion Types
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Advertisement & Promotion Types
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// â”€â”€â”€ Ad Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Status ────────────────────────────────────────────────────────────────
 export type AdStatus = "active" | "paused" | "expired" | "pending" | "rejected";
 
-// â”€â”€â”€ Ad Placement â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Placement ────────────────────────────────────────────────────────────
 export type AdPlacement =
   | "banner_top"
   | "banner_bottom"
@@ -16,29 +16,29 @@ export type AdPlacement =
   | "splash"
   | "category_header";
 
-// â”€â”€â”€ Ad Type â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Type ─────────────────────────────────────────────────────────────────
 export type AdType = "image" | "video" | "text" | "sponsored_listing";
 
-// â”€â”€â”€ Ad Target Audience â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Target Audience ──────────────────────────────────────────────────────
 export interface AdTargetAudience {
-  regions?: string[];          // e.g. ["YaoundÃ©", "Douala"]
+  regions?: string[];          // e.g. ["Yaoundé", "Douala"]
   languages?: string[];        // e.g. ["fr", "en"]
   categories?: string[];
   minAge?: number;
   maxAge?: number;
 }
 
-// â”€â”€â”€ Ad Metrics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Metrics ──────────────────────────────────────────────────────────────
 export interface AdMetrics {
   impressions: number;
   clicks: number;
-  ctr: number;                 // click-through rate (0â€“1)
+  ctr: number;                 // click-through rate (0–1)
   conversions: number;
   spend: number;               // XAF
   reach: number;
 }
 
-// â”€â”€â”€ Ad Creative â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Creative ─────────────────────────────────────────────────────────────
 export interface AdCreative {
   imageUrl?: string;
   videoUrl?: string;
@@ -48,7 +48,7 @@ export interface AdCreative {
   destinationUrl: string;
 }
 
-// â”€â”€â”€ Ad Campaign â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Campaign ─────────────────────────────────────────────────────────────
 export interface AdCampaign {
   id: string;
   vendorId: string;
@@ -67,7 +67,7 @@ export interface AdCampaign {
   updatedAt: string;
 }
 
-// â”€â”€â”€ Sponsored Listing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sponsored Listing ────────────────────────────────────────────────────────
 export interface SponsoredListing {
   id: string;
   listingId: string;
@@ -83,7 +83,7 @@ export interface SponsoredListing {
   createdAt: string;
 }
 
-// â”€â”€â”€ Flash Deal Ad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Flash Deal Ad ────────────────────────────────────────────────────────────
 export interface FlashDealAd {
   id: string;
   listingId: string;
@@ -98,7 +98,7 @@ export interface FlashDealAd {
   createdAt: string;
 }
 
-// â”€â”€â”€ Banner Ad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Banner Ad ────────────────────────────────────────────────────────────────
 export interface BannerAd {
   id: string;
   imageUrl: string;
@@ -111,7 +111,7 @@ export interface BannerAd {
   endDate?: string;
 }
 
-// â”€â”€â”€ Ad Request â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Request ──────────────────────────────────────────────────────────────
 export interface CreateAdCampaignRequest {
   name: string;
   type: AdType;
@@ -124,7 +124,7 @@ export interface CreateAdCampaignRequest {
   endDate?: string;
 }
 
-// â”€â”€â”€ Ad Response â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Response ─────────────────────────────────────────────────────────────
 export interface AdCampaignResponse {
   data: AdCampaign | null;
   error: string | null;
@@ -136,7 +136,7 @@ export interface AdCampaignListResponse {
   error: string | null;
 }
 
-// â”€â”€â”€ Notification Ad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Notification Ad ─────────────────────────────────────────────────────────
 export interface PromotionNotification {
   id: string;
   title: string;
@@ -148,7 +148,7 @@ export interface PromotionNotification {
   isRead: boolean;
 }
 
-// â”€â”€â”€ Ad Slot Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ad Slot Config ──────────────────────────────────────────────────────────
 export interface AdSlotConfig {
   placement: AdPlacement;
   maxAdsPerPage: number;

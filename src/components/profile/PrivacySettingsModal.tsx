@@ -41,7 +41,7 @@ export default function PrivacySettingsModal({ onClose }: PrivacySettingsModalPr
     setIsSaving(true);
     try {
       localStorage.setItem('Bambeh_privacy_settings', JSON.stringify(settings));
-      alert('âœ… Privacy settings saved successfully!');
+      alert('✅ Privacy settings saved successfully!');
       onClose();
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -52,7 +52,7 @@ export default function PrivacySettingsModal({ onClose }: PrivacySettingsModalPr
   };
 
   const handleDeleteAccount = () => {
-    if (window.confirm('âš ï¸ WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
+    if (window.confirm('⚠ï¸ WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
       localStorage.clear();
       alert('Your account has been scheduled for deletion. You will be logged out.');
       window.location.href = '/';

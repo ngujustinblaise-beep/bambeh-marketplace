@@ -1,10 +1,10 @@
 ﻿/**
- * src/pages/CoinsHistory.tsx â€” Bambeh Marketplace
+ * src/pages/CoinsHistory.tsx — Bambeh Marketplace
  *
  * FIXED (this version):
- *  âœ… Full i18n â€” EN, FR, Pidgin, Arabic, Fulfulde
- *  âœ… RTL support for Arabic
- *  âœ… Shows all 50 most recent transactions with signed amounts
+ *  ✅ Full i18n — EN, FR, Pidgin, Arabic, Fulfulde
+ *  ✅ RTL support for Arabic
+ *  ✅ Shows all 50 most recent transactions with signed amounts
  */
 
 import React, { useEffect, useState } from 'react';
@@ -30,14 +30,14 @@ const strings = {
     noTx:    'No transaction yet',
   },
   ar: {
-    back:    'Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ù…Ø­ÙØ¸Ø© â†’',
-    title:   'Ø³Ø¬Ù„ Ø§Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª',
-    noTx:    'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¹Ø§Ù…Ù„Ø§Øª Ø¨Ø¹Ø¯',
+    back:    'العودة للمحÙظة →',
+    title:   'سجل المعاملات',
+    noTx:    'لا توجد معاملات بعد',
   },
   fulfulde: {
     back:    'â† Rutto Jaaborgal',
-    title:   'Laamu LiÉ“É“itol',
-    noTx:    'Alaa liÉ“É“itol fewndo jooni',
+    title:   'Laamu Liɓɓitol',
+    noTx:    'Alaa liɓɓitol fewndo jooni',
   },
 } as const;
 

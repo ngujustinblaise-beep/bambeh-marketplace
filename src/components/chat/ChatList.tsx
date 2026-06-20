@@ -12,7 +12,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats, activeId, onSelect }) => {
   if (chats.length === 0) {
     return (
       <div className="p-6 text-center text-gray-400">
-        <p className="text-3xl mb-2">ðŸ’¬</p>
+        <p className="text-3xl mb-2">💬</p>
         <p className="text-sm">No conversations yet.</p>
       </div>
     );
@@ -32,7 +32,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats, activeId, onSelect }) => {
               {other?.image ? (
                 <img src={other.image} alt={other.name} className="w-full h-full rounded-full object-cover" />
               ) : (
-                <span className="text-xl">ðŸ‘¤</span>
+                <span className="text-xl">👤</span>
               )}
             </div>
             <div className="flex-1 min-w-0">

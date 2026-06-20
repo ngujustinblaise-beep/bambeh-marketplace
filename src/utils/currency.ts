@@ -22,7 +22,7 @@ export function xafToUSD(xaf: number): number {
   return Math.round((xaf / 600) * 100) / 100;
 }
 
-// FIX: body was completely garbled â€” reconstructed from intent
+// FIX: body was completely garbled — reconstructed from intent
 export function formatCurrency(amount: number, currency: string = 'XAF'): string {
   if (currency === 'Zerms') return `${amount} Zerms`;
   return formatXAF(amount);

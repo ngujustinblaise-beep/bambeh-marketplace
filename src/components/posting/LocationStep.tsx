@@ -3,7 +3,7 @@
  * src/components/posting/LocationStep.tsx
  *
  * DROP-IN replacement for the location step in:
- *   - PostMarketplaceItemPage (Issue 4 â€” crashes past location)
+ *   - PostMarketplaceItemPage (Issue 4 — crashes past location)
  *   - PostJobPage (Issue 5)
  *   - SellVehicle  (Issue 8)
  *   - ListProperty (Issue 7)
@@ -18,16 +18,16 @@
  *   Wrap navigate() in setTimeout(0) so React finishes the current
  *   render cycle before routing. Works 100% on Android APK + web.
  *
- * HOW TO USE â€” find the location step in each posting page and
+ * HOW TO USE — find the location step in each posting page and
  * replace the "Next" / "Continue" button handler like this:
  *
- *   // BROKEN â€” navigates before state is committed:
+ *   // BROKEN — navigates before state is committed:
  *   const handleNext = () => {
  *     setFormData({ ...formData, location });
  *     navigate('/next-step');   â† crashes
  *   };
  *
- *   // FIXED â€” wait one tick:
+ *   // FIXED — wait one tick:
  *   const handleNext = () => {
  *     setFormData({ ...formData, location });
  *     setTimeout(() => navigate('/next-step'), 0);   â† works
@@ -35,31 +35,31 @@
  *
  * OR use the onNext prop pattern below.
  *
- * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Plus, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 
-// â”€â”€  Location Hierarchy (all 10 regions) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// This is the LIVE version â€” pulls from localStorage for user-added locations
+// ──  Location Hierarchy (all 10 regions) ─────────────────────────────
+// This is the LIVE version — pulls from localStorage for user-added locations
 // so new locations appear for everyone immediately (Issue 3 + 11).
 
 export const _REGIONS: Record<string, string[]> = {
-  'Centre':          ['YaoundÃ©', 'Mbalmayo', 'Obala', 'Bafia', 'Nanga Eboko', 'Akonolinga', 'Mfou'],
-  'Littoral':        ['Douala', 'Nkongsamba', 'EdÃ©a', 'Loum', 'Mbanga', 'Kumba'],
-  'West':            ['Bafoussam', 'Dschang', 'Mbouda', 'Foumban', 'BangangtÃ©', 'Bandjoun'],
+  'Centre':          ['Yaoundé', 'Mbalmayo', 'Obala', 'Bafia', 'Nanga Eboko', 'Akonolinga', 'Mfou'],
+  'Littoral':        ['Douala', 'Nkongsamba', 'Edéa', 'Loum', 'Mbanga', 'Kumba'],
+  'West':            ['Bafoussam', 'Dschang', 'Mbouda', 'Foumban', 'Bangangté', 'Bandjoun'],
   'North West':      ['Bamenda', 'Kumbo', 'Wum', 'Ndop', 'Fundong', 'Nkambe'],
   'South West':      ['Buea', 'Limbe', 'Kumba', 'Mamfe', 'Muyuka', 'Tiko'],
-  'Adamawa':         ['NgaoundÃ©rÃ©', 'Meiganga', 'Tibati', 'Banyo', 'TignÃ¨re'],
+  'Adamawa':         ['Ngaoundéré', 'Meiganga', 'Tibati', 'Banyo', 'Tignère'],
   'North':           ['Garoua', 'Guider', 'Pitoa', 'Rey Bouba', 'Poli'],
-  'Far North':       ['Maroua', 'Mokolo', 'KoussÃ©ri', 'Yagoua', 'Mora', 'Kousseri'],
+  'Far North':       ['Maroua', 'Mokolo', 'Kousséri', 'Yagoua', 'Mora', 'Kousseri'],
   'East':            ['Bertoua', 'Batouri', 'Abong-Mbang', 'Yokadouma', 'Mbang'],
-  'South':           ['Ebolowa', 'Kribi', 'Ambam', 'SangmÃ©lima', 'Djoum'],
+  'South':           ['Ebolowa', 'Kribi', 'Ambam', 'Sangmélima', 'Djoum'],
 };
 
-// â”€â”€ Storage key for user-added custom locations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Storage key for user-added custom locations ───────────────────────────────
 const CUSTOM_LOCATIONS_KEY = 'Bambeh_custom_locations';
 
 interface CustomLocation { region: string; city: string; addedAt: string; }
@@ -80,7 +80,7 @@ function saveCustomLocation(region: string, city: string) {
   window.dispatchEvent(new StorageEvent('storage', { key: CUSTOM_LOCATIONS_KEY }));
 }
 
-// â”€â”€ Build full regions map merging base + custom â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Build full regions map merging base + custom ──────────────────────────────
 function buildRegionsMap(): Record<string, string[]> {
   const base   = { ..._REGIONS };
   const custom = getCustomLocations();
@@ -91,7 +91,7 @@ function buildRegionsMap(): Record<string, string[]> {
   return base;
 }
 
-// â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Props ─────────────────────────────────────────────────────────────────────
 interface LocationStepProps {
   /** Initial values if editing */
   initialRegion?: string;
@@ -103,7 +103,7 @@ interface LocationStepProps {
   label?:         string; // e.g. "Item Location" | "Job Location"
 }
 
-// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Component ─────────────────────────────────────────────────────────────────
 const LocationStep: React.FC<LocationStepProps> = ({
   initialRegion = '',
   initialCity   = '',
@@ -157,7 +157,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
       return;
     }
     setError('');
-    // âœ… THE FIX: wrap in setTimeout(0) so React finishes current render first
+    // ✅ THE FIX: wrap in setTimeout(0) so React finishes current render first
     setTimeout(() => onNext(selectedRegion, selectedCity), 0);
   };
 
@@ -245,7 +245,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
         className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-800 font-medium transition-colors"
       >
         <Plus className="w-4 h-4" />
-        My city is not listed â€” add it
+        My city is not listed — add it
       </button>
       {showAddForm && (
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 space-y-3">
@@ -290,7 +290,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
           onClick={handleContinue}
           className="flex-1 py-3 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-xl font-bold shadow-lg hover:from-teal-400 hover:to-teal-600 transition-all active:scale-[0.98]"
         >
-          Continue â†’
+          Continue →
         </button>
       </div>
     </div>

@@ -4,12 +4,12 @@
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * 
  * v2 FIXES:
- * âœ… Profile dropdown z-index 9999 â€” appears ABOVE all banners
- * âœ… Colorful header with gradient accent line
- * âœ… Two-row header preserved
- * âœ… All routes preserved â€” zero routing changes
+ * ✅ Profile dropdown z-index 9999 — appears ABOVE all banners
+ * ✅ Colorful header with gradient accent line
+ * ✅ Two-row header preserved
+ * ✅ All routes preserved — zero routing changes
  * 
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -132,7 +132,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
                 <Link to="/vendor/settings" className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"><Settings className="w-5 h-5" /></Link>
                 <Link to="/vendor/notifications" className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all relative"><Bell className="w-5 h-5" /></Link>
 
-                {/* PROFILE DROPDOWN â€” z-[9999] to always be on top */}
+                {/* PROFILE DROPDOWN — z-[9999] to always be on top */}
                 <div className="relative">
                   <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-gray-100 transition-all">
                     <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-full flex items-center justify-center shadow-sm">

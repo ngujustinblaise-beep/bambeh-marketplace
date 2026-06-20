@@ -1,18 +1,18 @@
 ﻿/**
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * src/hooks/useSupabaseAuth.ts
- * Server-Side JWT Validation Hook â€” Bambeh Marketplace
+ * Server-Side JWT Validation Hook — Bambeh Marketplace
  *
  * SECURITY FIX: Replaces localStorage-only auth checks with
  * cryptographically verified Supabase JWT validation.
  *
  * Architecture:
- *   âœ… supabase.auth.getUser()  â†’ validates JWT with Supabase server
- *   âœ… onAuthStateChange()       â†’ reacts to session expiry / sign-out
- *   âœ… roles fetched from DB     â†’ isVendor / isAdmin cannot be spoofed
- *   âœ… loading state             â†’ protected routes wait for verification
+ *   ✅ supabase.auth.getUser()  → validates JWT with Supabase server
+ *   ✅ onAuthStateChange()       → reacts to session expiry / sign-out
+ *   ✅ roles fetched from DB     → isVendor / isAdmin cannot be spoofed
+ *   ✅ loading state             → protected routes wait for verification
  *
- * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -20,7 +20,7 @@ import { useState, useEffect, useCallback, useContext, createContext } from 'rea
 import type { Session, User }                                           from '@supabase/supabase-js';
 import { supabase }                                                     from '@/lib/supabase';
 
-// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface SupabaseAuthState {
   /** The verified Supabase user (null = not signed in) */
@@ -31,13 +31,13 @@ export interface SupabaseAuthState {
   isVendor:   boolean;
   /** True only when DB profile confirms role === 'admin' */
   isAdmin:    boolean;
-  /** True while the initial JWT verification is in flight â€” gate UI on this */
+  /** True while the initial JWT verification is in flight — gate UI on this */
   loading:    boolean;
   /** Exposed so components can manually refresh (e.g. after sign-in) */
   refresh:    () => Promise<void>;
 }
 
-// â”€â”€ Profile cache (avoids hammering DB on every re-render) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Profile cache (avoids hammering DB on every re-render) ────────────────────
 
 interface ProfileCache {
   userId:   string;
@@ -49,7 +49,7 @@ interface ProfileCache {
 let profileCache: ProfileCache | null = null;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-// â”€â”€ Core hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Core hook ─────────────────────────────────────────────────────────────────
 
 export function useSupabaseAuth(): SupabaseAuthState {
   const [state, setState] = useState<Omit<SupabaseAuthState, 'refresh'>>({
@@ -65,26 +65,26 @@ export function useSupabaseAuth(): SupabaseAuthState {
    * Called after every session change.
    */
   const resolveSession = useCallback(async (session: Session | null) => {
-    // â”€â”€ No session â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── No session ──────────────────────────────────────────────────────────
     if (!session) {
       profileCache = null;
       setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false });
       return;
     }
 
-    // â”€â”€ Verify JWT server-side â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    // getUser() makes a network call to Supabase Auth â€” the JWT is validated
+    // ── Verify JWT server-side ───────────────────────────────────────────────
+    // getUser() makes a network call to Supabase Auth — the JWT is validated
     // cryptographically on the server, NOT just decoded locally.
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      // Token is invalid / expired â€” force sign out
+      // Token is invalid / expired — force sign out
       await supabase.auth.signOut();
       profileCache = null;
       setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false });
       return;
     }
 
-    // â”€â”€ Use profile cache if still fresh â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Use profile cache if still fresh ────────────────────────────────────
     const now = Date.now();
     if (
       profileCache &&
@@ -101,8 +101,8 @@ export function useSupabaseAuth(): SupabaseAuthState {
       return;
     }
 
-    // â”€â”€ Fetch role from database â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    // This is the AUTHORITATIVE source â€” cannot be spoofed via localStorage.
+    // ── Fetch role from database ─────────────────────────────────────────────
+    // This is the AUTHORITATIVE source — cannot be spoofed via localStorage.
     const { data: profile } = await supabase
       .from('users')
       .select('role, is_vendor')
@@ -117,14 +117,14 @@ export function useSupabaseAuth(): SupabaseAuthState {
     setState({ user, session, isVendor, isAdmin, loading: false });
   }, []);
 
-  // â”€â”€ Expose a manual refresh â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Expose a manual refresh ────────────────────────────────────────────────
   const refresh = useCallback(async () => {
     profileCache = null; // invalidate cache
     const { data: { session } } = await supabase.auth.getSession();
     await resolveSession(session);
   }, [resolveSession]);
 
-  // â”€â”€ Bootstrap on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Bootstrap on mount ────────────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
 
@@ -147,7 +147,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
   return { ...state, refresh };
 }
 
-// â”€â”€ Context (for use in AuthProvider) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Context (for use in AuthProvider) ────────────────────────────────────────
 
 export const SupabaseAuthContext = createContext<SupabaseAuthState>({
   user:     null,
@@ -158,7 +158,7 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
   refresh:  async () => {},
 });
 
-/** Convenience hook â€” use this in components instead of prop drilling */
+/** Convenience hook — use this in components instead of prop drilling */
 export function useAuth(): SupabaseAuthState {
   return useContext(SupabaseAuthContext);
 }

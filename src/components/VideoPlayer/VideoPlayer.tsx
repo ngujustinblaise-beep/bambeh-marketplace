@@ -358,7 +358,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         className={playbackRate === rate ? 'bg-blue-50' : ''}
                       >
                         {rate === 1 ? 'Normal' : `${rate}x`}
-                        {playbackRate === rate && ' âœ“'}
+                        {playbackRate === rate && ' ✓'}
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
@@ -369,7 +369,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         onClick={() => setQuality(q)}
                         className={quality === q ? 'bg-blue-50' : ''}
                       >
-                        {q} {quality === q && 'âœ“'}
+                        {q} {quality === q && '✓'}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -399,7 +399,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   );
 };
 
-// â”€â”€â”€ Video Thumbnail Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Video Thumbnail Component ────────────────────────────────────────────────
 interface VideoThumbnailProps {
   src: string;
   poster?: string;

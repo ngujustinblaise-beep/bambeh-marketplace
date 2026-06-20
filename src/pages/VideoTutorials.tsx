@@ -10,7 +10,7 @@ const T: Record<string, Record<string, string>> = {
     "duration": "5 minutes"
   },
   "fr": {
-    "title": "Tutoriels vidÃ©o",
+    "title": "Tutoriels vidéo",
     "subtitle": "Regardez et apprenez",
     "gettingStarted": "Pour commencer",
     "duration": "5 minutes"
@@ -22,15 +22,15 @@ const T: Record<string, Record<string, string>> = {
     "duration": "5 minutes"
   },
   "ar": {
-    "title": "Ø¯Ø±ÙˆØ³ ÙÙŠØ¯ÙŠÙˆ",
-    "subtitle": "Ø´Ø§Ù‡Ø¯ ÙˆØªØ¹Ù„Ù‘Ù…",
-    "gettingStarted": "Ø§Ù„Ø¨Ø¯Ø¡",
-    "duration": "5 Ø¯Ù‚Ø§Ø¦Ù‚"
+    "title": "دروس Ùيديو",
+    "subtitle": "شاهد وتعلّم",
+    "gettingStarted": "البدء",
+    "duration": "5 دقائق"
   },
   "ff": {
     "title": "Jannde wideyo",
     "subtitle": "Ndaaru njanngaa",
-    "gettingStarted": "FuÉ—É—orde",
+    "gettingStarted": "Fuɗɗorde",
     "duration": "Hojomaaji 5"
   }
 };

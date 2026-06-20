@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - VOICE ASSISTANT TYPES
+ * BAMBÉ MARKETPLACE - VOICE ASSISTANT TYPES
  * TypeScript interfaces for Mama voice assistant
  * Version: 1.0.0
  */

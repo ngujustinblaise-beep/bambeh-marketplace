@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - CHAT WINDOW COMPONENT
+ * BAMBÉ MARKETPLACE - CHAT WINDOW COMPONENT
  * Version: 1.0.0
  */
 
@@ -195,7 +195,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
 
         <div className="chat-header-actions">
           <button className="header-action-button" title={t('chat.search')}>ðŸ”</button>
-          <button className="header-action-button" title={t('chat.info')}>â„¹ï¸</button>
+          <button className="header-action-button" title={t('chat.info')}>ℹï¸</button>
         </div>
       </div>
 
@@ -264,8 +264,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
         )}
 
         <div className="chat-input-actions">
-          <button className="input-action-button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} title={t('chat.addEmoji')}>ðŸ˜Š</button>
-          <button className="input-action-button" onClick={() => fileInputRef.current?.click()} title={t('chat.attachImage')}>ðŸ“Ž</button>
+          <button className="input-action-button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} title={t('chat.addEmoji')}>😊</button>
+          <button className="input-action-button" onClick={() => fileInputRef.current?.click()} title={t('chat.attachImage')}>📎</button>
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />
         </div>
 
@@ -282,11 +282,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
 
           {messageText.trim() ? (
             <button type="submit" className="send-button" disabled={isSending}>
-              {isSending ? 'â³' : 'ðŸ“¤'}
+              {isSending ? 'â³' : '📤'}
             </button>
           ) : (
             <button type="button" className="voice-button" onClick={() => setShowVoiceRecorder(true)} title={t('chat.voiceMessage')}>
-              ðŸŽ¤
+              🎤
             </button>
           )}
         </form>

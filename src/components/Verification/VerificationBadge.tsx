@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/Verification/VerificationBadge.tsx
- * Bambeh Marketplace â€” Seller / Vendor Verification Badge
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Seller / Vendor Verification Badge
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -17,7 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 export type VerificationLevel =
   | "unverified"
   | "email_verified"
@@ -47,56 +47,56 @@ interface BadgeConfig {
 
 const BADGE_CONFIGS: Record<VerificationLevel, BadgeConfig> = {
   unverified: {
-    label: "Non vÃ©rifiÃ©",
+    label: "Non vérifié",
     color: "text-gray-500",
     bgColor: "bg-gray-100",
     borderColor: "border-gray-200",
     icon: Shield,
-    description: "Ce compte n'a pas encore Ã©tÃ© vÃ©rifiÃ©.",
+    description: "Ce compte n'a pas encore été vérifié.",
   },
   email_verified: {
-    label: "Email vÃ©rifiÃ©",
+    label: "Email vérifié",
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     icon: Check,
-    description: "L'adresse e-mail de ce compte a Ã©tÃ© vÃ©rifiÃ©e.",
+    description: "L'adresse e-mail de ce compte a été vérifiée.",
   },
   phone_verified: {
-    label: "TÃ©lÃ©phone vÃ©rifiÃ©",
+    label: "Téléphone vérifié",
     color: "text-teal-600",
     bgColor: "bg-teal-50",
     borderColor: "border-teal-200",
     icon: BadgeCheck,
-    description: "Le numÃ©ro de tÃ©lÃ©phone de ce compte a Ã©tÃ© vÃ©rifiÃ©.",
+    description: "Le numéro de téléphone de ce compte a été vérifié.",
   },
   id_verified: {
-    label: "IdentitÃ© vÃ©rifiÃ©e",
+    label: "Identité vérifiée",
     color: "text-green-700",
     bgColor: "bg-green-50",
     borderColor: "border-green-300",
     icon: ShieldCheck,
-    description: "L'identitÃ© de ce membre a Ã©tÃ© vÃ©rifiÃ©e par Bambeh.",
+    description: "L'identité de ce membre a été vérifiée par Bambeh.",
   },
   business_verified: {
-    label: "Entreprise vÃ©rifiÃ©e",
+    label: "Entreprise vérifiée",
     color: "text-purple-700",
     bgColor: "bg-purple-50",
     borderColor: "border-purple-300",
     icon: Award,
-    description: "Cette entreprise a Ã©tÃ© vÃ©rifiÃ©e et enregistrÃ©e par Bambeh.",
+    description: "Cette entreprise a été vérifiée et enregistrée par Bambeh.",
   },
   premium_verified: {
-    label: "Vendeur Premium âœ¦",
+    label: "Vendeur Premium ✦",
     color: "text-yellow-700",
     bgColor: "bg-yellow-50",
     borderColor: "border-yellow-400",
     icon: Star,
-    description: "Vendeur Premium Bambeh â€” identitÃ©, entreprise et excellence de service vÃ©rifiÃ©es.",
+    description: "Vendeur Premium Bambeh — identité, entreprise et excellence de service vérifiées.",
   },
 };
 
-// â”€â”€â”€ Badge Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Badge Component ──────────────────────────────────────────────────────────
 interface VerificationBadgeProps {
   level?: VerificationLevel;
   status?: Partial<VerificationStatus>;
@@ -139,7 +139,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
         type="button"
         onClick={() => showTooltip && setTooltipOpen((v) => !v)}
         className={`inline-flex items-center border rounded-full font-medium transition-colors ${sizes.padding} ${sizes.gap} ${config.bgColor} ${config.borderColor} ${config.color} ${showTooltip ? "cursor-pointer hover:opacity-80" : "cursor-default"}`}
-        aria-label={`VÃ©rification: ${config.label}`}
+        aria-label={`Vérification: ${config.label}`}
       >
         <Icon className={sizes.icon} />
         {showLabel && <span className={sizes.text}>{config.label}</span>}
@@ -173,19 +173,19 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
             {status && (
               <div className="mt-3 space-y-1.5">
                 <VerificationCheck
-                  label="Email vÃ©rifiÃ©"
+                  label="Email vérifié"
                   done={status.emailVerified ?? false}
                 />
                 <VerificationCheck
-                  label="TÃ©lÃ©phone vÃ©rifiÃ©"
+                  label="Téléphone vérifié"
                   done={status.phoneVerified ?? false}
                 />
                 <VerificationCheck
-                  label="IdentitÃ© vÃ©rifiÃ©e"
+                  label="Identité vérifiée"
                   done={status.idVerified ?? false}
                 />
                 <VerificationCheck
-                  label="Entreprise vÃ©rifiÃ©e"
+                  label="Entreprise vérifiée"
                   done={status.businessVerified ?? false}
                 />
               </div>
@@ -193,7 +193,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
 
             {status?.verifiedAt && (
               <p className="mt-2 text-xs text-gray-400">
-                VÃ©rifiÃ© le {new Date(status.verifiedAt).toLocaleDateString("fr-CM")}
+                Vérifié le {new Date(status.verifiedAt).toLocaleDateString("fr-CM")}
               </p>
             )}
           </div>
@@ -203,7 +203,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
   );
 };
 
-// â”€â”€â”€ Sub-component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component ────────────────────────────────────────────────────────────
 const VerificationCheck: React.FC<{ label: string; done: boolean }> = ({
   label,
   done,
@@ -218,7 +218,7 @@ const VerificationCheck: React.FC<{ label: string; done: boolean }> = ({
   </div>
 );
 
-// â”€â”€â”€ Verification Steps Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Verification Steps Panel ─────────────────────────────────────────────────
 interface VerificationStepsPanelProps {
   status: Partial<VerificationStatus>;
   onStartVerification?: (step: string) => void;
@@ -233,25 +233,25 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
   const steps = [
     {
       id: "email",
-      label: "VÃ©rification email",
+      label: "Vérification email",
       done: status.emailVerified ?? false,
       required: true,
     },
     {
       id: "phone",
-      label: "VÃ©rification tÃ©lÃ©phone",
+      label: "Vérification téléphone",
       done: status.phoneVerified ?? false,
       required: true,
     },
     {
       id: "id",
-      label: "VÃ©rification identitÃ©",
+      label: "Vérification identité",
       done: status.idVerified ?? false,
       required: false,
     },
     {
       id: "business",
-      label: "VÃ©rification entreprise",
+      label: "Vérification entreprise",
       done: status.businessVerified ?? false,
       required: false,
     },
@@ -264,9 +264,9 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
   return (
     <div className={`bg-white border border-gray-200 rounded-2xl p-4 space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Niveau de vÃ©rification</h3>
+        <h3 className="font-semibold text-gray-900">Niveau de vérification</h3>
         <span className="text-sm text-gray-500">
-          {completedCount}/{totalCount} Ã©tapes
+          {completedCount}/{totalCount} étapes
         </span>
       </div>
 

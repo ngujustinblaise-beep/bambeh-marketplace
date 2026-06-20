@@ -1,15 +1,15 @@
 ﻿/**
- * src/services/exchange-referral.service.ts â€” Bambeh Marketplace
+ * src/services/exchange-referral.service.ts — Bambeh Marketplace
  *
- * âœ… Pure Supabase â€” no axios, no localStorage, no Firebase URL calls
- * âœ… Exchange requests stored in "listings" table (type='exchange')
- * âœ… Referrals stored in "referrals" table (graceful fallback if absent)
- * âœ… All function signatures preserved â€” no caller changes needed
+ * ✅ Pure Supabase — no axios, no localStorage, no Firebase URL calls
+ * ✅ Exchange requests stored in "listings" table (type='exchange')
+ * ✅ Referrals stored in "referrals" table (graceful fallback if absent)
+ * ✅ All function signatures preserved — no caller changes needed
  */
 
 import { supabase } from '@/lib/supabase';
 
-// â”€â”€â”€ Exchange Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Exchange Types ────────────────────────────────────────────────────────────
 export interface ExchangeRequest {
   id:            string;
   type:          'currency' | 'item-swap';
@@ -43,7 +43,7 @@ function rowToExchange(row: Record<string, any>): ExchangeRequest {
   };
 }
 
-// â”€â”€â”€ Exchange Service â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Exchange Service ──────────────────────────────────────────────────────────
 class ExchangeService {
 
   async getAllExchangeRequests(filters?: { type?: string }): Promise<ExchangeRequest[]> {
@@ -151,7 +151,7 @@ class ExchangeService {
   }
 }
 
-// â”€â”€â”€ Referral Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Referral Types ────────────────────────────────────────────────────────────
 export interface Referral {
   id:                string;
   referrerId:        string;
@@ -172,7 +172,7 @@ export interface ReferralStats {
   totalRewardsClaimed: number;
 }
 
-// â”€â”€â”€ Referral Service â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Referral Service ──────────────────────────────────────────────────────────
 class ReferralService {
 
   async getReferralCode(): Promise<string> {
@@ -243,7 +243,7 @@ class ReferralService {
       });
 
     if (error) console.warn('[ReferralService] sendReferralInvite:', error.message);
-    // Don't throw â€” referrals table may not exist yet
+    // Don't throw — referrals table may not exist yet
   }
 
   async claimReferralReward(referralId: string): Promise<void> {

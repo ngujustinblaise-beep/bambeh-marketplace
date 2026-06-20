@@ -1,4 +1,4 @@
-﻿// Adapted from shadcn/ui â€” https://ui.shadcn.com/docs/components/toast
+﻿// Adapted from shadcn/ui — https://ui.shadcn.com/docs/components/toast
 import * as React from "react";
 
 const TOAST_LIMIT = 5;
@@ -36,7 +36,7 @@ interface State {
   toasts: ToasterToast[];
 }
 
-// â”€â”€â”€ Remove queue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Remove queue ─────────────────────────────────────────────────────────────
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
@@ -51,7 +51,7 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout);
 };
 
-// â”€â”€â”€ Reducer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Reducer ──────────────────────────────────────────────────────────────────
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -98,7 +98,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-// â”€â”€â”€ Listeners & dispatch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Listeners & dispatch ─────────────────────────────────────────────────────
 
 const listeners: Array<(state: State) => void> = [];
 let memoryState: State = { toasts: [] };
@@ -108,7 +108,7 @@ function dispatch(action: Action) {
   listeners.forEach(listener => listener(memoryState));
 }
 
-// â”€â”€â”€ ID generator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── ID generator ─────────────────────────────────────────────────────────────
 
 let count = 0;
 function genId() {
@@ -116,7 +116,7 @@ function genId() {
   return count.toString();
 }
 
-// â”€â”€â”€ Public API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 type Toast = Omit<ToasterToast, "id">;
 
@@ -154,7 +154,7 @@ toast.error = (title: string, description?: string) =>
 toast.warning = (title: string, description?: string) =>
   toast({ title, description, variant: "warning" });
 
-// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);

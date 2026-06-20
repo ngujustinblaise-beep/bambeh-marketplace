@@ -40,7 +40,7 @@ const DarkModeToggle: React.FC<DarkModeToggleProps> = ({ showBrightness = false,
             <h3 className="font-semibold text-gray-900 dark:text-white">Display Settings</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {theme === 'system' ? 'System' : isDarkMode ? 'Dark Mode' : 'Light Mode'}
-              {brightness < 100 && ` â€¢ ${brightness}% brightness`}
+              {brightness < 100 && ` • ${brightness}% brightness`}
             </p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export const DarkModeButton: React.FC<{ className?: string }> = ({ className = '
 
 export const BrightnessControl: React.FC = () => {
   const { brightness, setBrightness } = useTheme();
-  const presets = [{ value: 100, label: '100%', icon: 'â˜€ï¸' }, { value: 80, label: '80%', icon: 'ðŸŒ¤ï¸' }, { value: 60, label: '60%', icon: 'â›…' }, { value: 40, label: '40%', icon: 'ðŸŒ™' }];
+  const presets = [{ value: 100, label: '100%', icon: '☀ï¸' }, { value: 80, label: '80%', icon: '🌤ï¸' }, { value: 60, label: '60%', icon: '⛅' }, { value: 40, label: '40%', icon: '🌙' }];
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">

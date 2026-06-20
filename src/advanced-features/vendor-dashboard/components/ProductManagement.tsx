@@ -1,5 +1,5 @@
 ﻿/**
- * BAMBÃ‰ MARKETPLACE - PRODUCT MANAGEMENT COMPONENT
+ * BAMBÉ MARKETPLACE - PRODUCT MANAGEMENT COMPONENT
  * Version: 1.0.0
  */
 
@@ -123,7 +123,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
         </div>
         <div className="pm-header-right">
           <button className="add-product-button" onClick={() => setShowAddModal(true)}>
-            âž• {t('vendor.addProduct')}
+            ➕ {t('vendor.addProduct')}
           </button>
         </div>
       </div>
@@ -146,16 +146,16 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
           <option value="active">{t('vendor.active')}</option>
           <option value="inactive">{t('vendor.inactive')}</option>
         </select>
-        <button className="export-button" onClick={handleExportProducts}>ðŸ“¥ {t('vendor.export')}</button>
+        <button className="export-button" onClick={handleExportProducts}>📥 {t('vendor.export')}</button>
       </div>
 
       {selectedProducts.size > 0 && (
         <div className="bulk-actions-bar">
           <span className="selected-count">{selectedProducts.size} {t('vendor.selected')}</span>
           <div className="bulk-action-buttons">
-            <button className="bulk-button activate" onClick={() => handleBulkAction('activate')}>âœ“ {t('vendor.activate')}</button>
-            <button className="bulk-button deactivate" onClick={() => handleBulkAction('deactivate')}>âœ• {t('vendor.deactivate')}</button>
-            <button className="bulk-button delete" onClick={() => handleBulkAction('delete')}>ðŸ—‘ï¸ {t('vendor.delete')}</button>
+            <button className="bulk-button activate" onClick={() => handleBulkAction('activate')}>✓ {t('vendor.activate')}</button>
+            <button className="bulk-button deactivate" onClick={() => handleBulkAction('deactivate')}>✕ {t('vendor.deactivate')}</button>
+            <button className="bulk-button delete" onClick={() => handleBulkAction('delete')}>🗑ï¸ {t('vendor.delete')}</button>
           </div>
         </div>
       )}
@@ -164,10 +164,10 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
         <div className="loading-state"><div className="spinner-large"></div><p>{t('common.loading')}</p></div>
       ) : products.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">ðŸ“¦</div>
+          <div className="empty-icon">📦</div>
           <h3>{t('vendor.noProducts')}</h3>
           <p>{t('vendor.noProductsDescription')}</p>
-          <button className="add-product-button" onClick={() => setShowAddModal(true)}>âž• {t('vendor.addFirstProduct')}</button>
+          <button className="add-product-button" onClick={() => setShowAddModal(true)}>➕ {t('vendor.addFirstProduct')}</button>
         </div>
       ) : (
         <div className="products-table-container">
@@ -193,7 +193,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
                       {product.images?.[0] ? (
                         <img src={product.images[0]} alt={product.name} className="product-thumbnail" />
                       ) : (
-                        <div className="product-thumbnail-placeholder">ðŸ“¦</div>
+                        <div className="product-thumbnail-placeholder">📦</div>
                       )}
                       <div className="product-info">
                         <div className="product-name">{product.name}</div>
@@ -216,7 +216,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
                       title={t('vendor.clickToUpdate')}
                     >
                       {product.stockQuantity}
-                      {product.stockQuantity <= product.lowStockThreshold && <span className="stock-warning">âš ï¸</span>}
+                      {product.stockQuantity <= product.lowStockThreshold && <span className="stock-warning">⚠ï¸</span>}
                     </div>
                   </td>
                   <td>
@@ -233,7 +233,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
                   <td>
                     <div className="action-buttons">
                       <button className="action-btn edit" onClick={() => handleEditProduct(product)} title={t('vendor.edit')}>âœï¸</button>
-                      <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)} title={t('vendor.delete')}>ðŸ—‘ï¸</button>
+                      <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)} title={t('vendor.delete')}>🗑ï¸</button>
                     </div>
                   </td>
                 </tr>
@@ -309,7 +309,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ vendorId, product, onClose,
       <div className="modal-container product-modal">
         <div className="modal-header">
           <h2>{product ? t('vendor.editProduct') : t('vendor.addProduct')}</h2>
-          <button className="close-button" onClick={onClose}>âœ•</button>
+          <button className="close-button" onClick={onClose}>✕</button>
         </div>
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">

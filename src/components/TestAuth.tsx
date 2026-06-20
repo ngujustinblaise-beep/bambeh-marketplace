@@ -5,7 +5,7 @@ const TestAuth: React.FC = () => {
   const [result, setResult] = useState("");
 
   const test = async () => {
-    setResult("Testingâ€¦");
+    setResult("Testing…");
     try {
       const res  = await fetch("/api/products?pageSize=3");
       const data = await res.json() as unknown;

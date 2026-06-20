@@ -1683,20 +1683,3 @@ export default function App() {
     </React.StrictMode>
   );
 }
-
-
-
-useEffect(() => {
-  document.documentElement.lang = language;
-}, [language]);
-
-
-useEffect(() => {
-  const firstVisit = localStorage.getItem('welcome_shown')
-  if (!firstVisit) {
-    alert('Welcome to Bambeh!')
-    localStorage.setItem('welcome_shown','true')
-  }
-}, [])
-
-

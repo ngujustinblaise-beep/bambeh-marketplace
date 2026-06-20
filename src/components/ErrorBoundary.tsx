@@ -1,5 +1,5 @@
 ﻿/**
- * src/components/ErrorBoundary.tsx â€” Bambeh Marketplace
+ * src/components/ErrorBoundary.tsx — Bambeh Marketplace
  *
  * Wraps the entire app. When anything crashes at startup you get a
  * readable error screen instead of a blank white page.
@@ -88,7 +88,7 @@ export class ErrorBoundary extends React.Component<
             gap: 12,
           }}
         >
-          <span style={{ fontSize: 28 }}>ðŸ’¥</span>
+          <span style={{ fontSize: 28 }}>💥</span>
           <div>
             <div style={{ fontWeight: "bold", fontSize: 18 }}>Bambeh Crashed</div>
             <div style={{ fontSize: 12, color: "#fecaca", marginTop: 2 }}>
@@ -176,7 +176,7 @@ export class ErrorBoundary extends React.Component<
               minWidth: 140,
             }}
           >
-            ðŸ”„ Reload App
+            🔄 Reload App
           </button>
           <button
             onClick={this.handleClearStorage}
@@ -193,7 +193,7 @@ export class ErrorBoundary extends React.Component<
               minWidth: 140,
             }}
           >
-            ðŸ—‘ï¸ Clear Data & Reload
+            🗑ï¸ Clear Data & Reload
           </button>
         </div>
 
@@ -206,7 +206,7 @@ export class ErrorBoundary extends React.Component<
           }}
         >
           Copy the error message above and send to your developer.
-          {"\n"}Â© 2025â€“2026 BAMBEH SARL
+          {"\n"}© 2025–2026 BAMBEH SARL
         </div>
       </div>
     );

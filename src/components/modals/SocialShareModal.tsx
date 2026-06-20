@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { X, Share2, Copy, CheckCircle, MessageCircle, Send } from 'lucide-react';
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SocialShareModalProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ interface ShareOption {
   action: (url: string, title: string, description: string) => void;
 }
 
-// â”€â”€â”€ Share options â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Share options ────────────────────────────────────────────────────────────
 
 const buildShareOptions = (): ShareOption[] => [
   {
@@ -88,7 +88,7 @@ const buildShareOptions = (): ShareOption[] => [
   },
 ];
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SocialShareModal({
   isOpen,
@@ -130,7 +130,7 @@ export default function SocialShareModal({
           url: shareUrl,
         });
       } catch (e) {
-        // User cancelled or share failed â€” ignore
+        // User cancelled or share failed — ignore
       }
     }
   };

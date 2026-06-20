@@ -3,14 +3,14 @@
  * FAVORITE BUTTON - Toggle Favorites
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * 
- * âœ… Heart icon that fills when favorited
- * âœ… Click to add/remove from favorites
- * âœ… Persists across sessions
- * âœ… Shows in favorites page
+ * ✅ Heart icon that fills when favorited
+ * ✅ Click to add/remove from favorites
+ * ✅ Persists across sessions
+ * ✅ Shows in favorites page
  * 
  * FILE LOCATION: src/components/ui/FavoriteButton.tsx
  * 
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 

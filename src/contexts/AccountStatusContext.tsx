@@ -1,7 +1,7 @@
 ﻿/**
  * ACCOUNT STATUS CONTEXT - USER ACCOUNT STATE MANAGEMENT
  * FILE LOCATION: src/contexts/AccountStatusContext.tsx
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  */
 
 import React, { useEffect, 
@@ -111,7 +111,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: false,
   },
   frozen: {
-    title: "âš ï¸ Account Frozen",
+    title: "⚠ï¸ Account Frozen",
     message:
       "Your account has been temporarily frozen due to suspicious activity or policy violation.",
     contactInfo:
@@ -119,7 +119,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: true,
   },
   suspended: {
-    title: "ðŸš« Account Suspended",
+    title: "🚫 Account Suspended",
     message:
       "Your account has been suspended due to violation of our Terms of Service.",
     contactInfo:
@@ -319,7 +319,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
           newRestriction,
         ]);
 
-        console.log(`âœ… Account ${accountId} frozen by ${adminName}`);
+        console.log(`✅ Account ${accountId} frozen by ${adminName}`);
         return true;
       } catch (err) {
         setError("Failed to freeze account");
@@ -367,7 +367,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
           newRestriction,
         ]);
 
-        console.log(`âœ… Account ${accountId} suspended by ${adminName}`);
+        console.log(`✅ Account ${accountId} suspended by ${adminName}`);
         return true;
       } catch (err) {
         setError("Failed to suspend account");
@@ -408,7 +408,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
           newRestriction,
         ]);
 
-        console.log(`âœ… Account ${accountId} banned by ${adminName}`);
+        console.log(`✅ Account ${accountId} banned by ${adminName}`);
         return true;
       } catch (err) {
         setError("Failed to ban account");
@@ -443,7 +443,7 @@ export const AccountStatusProvider: React.FC<AccountStatusProviderProps> = ({
         );
 
         console.log(
-          `âœ… Restriction lifted for account ${accountId} by ${adminName}`,
+          `✅ Restriction lifted for account ${accountId} by ${adminName}`,
         );
         return true;
       } catch (err) {

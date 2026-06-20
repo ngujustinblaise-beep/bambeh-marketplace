@@ -1,13 +1,13 @@
 ﻿/**
  * src/utils/BambehStore.ts
- * Bambeh Marketplace â€” Global Zustand Store + Missing Exports
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Global Zustand Store + Missing Exports
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface CartItemSummary {
   id: string;
   listingId: string;
@@ -28,7 +28,7 @@ export interface NotificationItem {
 
 export type AppTheme = "light" | "dark" | "system";
 
-// â”€â”€â”€ UnifiedListing â€” used by useAllListings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── UnifiedListing — used by useAllListings ──────────────────────────────────
 export interface UnifiedListing {
   id: string;
   type: "marketplace" | "job" | "service" | "rental" | "vehicle" | "exchange";
@@ -43,7 +43,7 @@ export interface UnifiedListing {
   status: string;
 }
 
-// â”€â”€â”€ SearchResult â€” used by GlobalSearchBar / useAllListings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SearchResult — used by GlobalSearchBar / useAllListings ─────────────────
 export interface SearchResult {
   id: string;
   type: string;
@@ -56,7 +56,7 @@ export interface SearchResult {
   relevanceScore?: number;
 }
 
-// â”€â”€â”€ Store State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Store State ──────────────────────────────────────────────────────────────
 export interface BambehStoreState {
   userId: string | null;
   isVendor: boolean;
@@ -123,7 +123,7 @@ const initialState: BambehStoreState = {
   lastListingsLoad: null,
 };
 
-// â”€â”€â”€ Store â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Store ────────────────────────────────────────────────────────────────────
 export const useBambehStore = create<BambehStore>()(
   persist(
     (set, get) => ({
@@ -218,7 +218,7 @@ export const useBambehStore = create<BambehStore>()(
   )
 );
 
-// â”€â”€â”€ Selector Hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Selector Hooks ───────────────────────────────────────────────────────────
 export const useCartCount = () => useBambehStore((s) => s.cartCount);
 export const useUnreadCount = () => useBambehStore((s) => s.unreadNotificationCount);
 export const useIsOnline = () => useBambehStore((s) => s.isOnline);
@@ -227,9 +227,9 @@ export const useLanguage = () => useBambehStore((s) => s.language);
 export const useIsVendor = () => useBambehStore((s) => s.isVendor);
 export const useIsAdmin = () => useBambehStore((s) => s.isAdmin);
 
-// â”€â”€â”€ Standalone utility functions expected by consumer files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Standalone utility functions expected by consumer files ─────────────────
 
-/** Load all listings into store â€” used by useAllListings.ts */
+/** Load all listings into store — used by useAllListings.ts */
 export async function loadAllListings(): Promise<UnifiedListing[]> {
   try {
     const { supabase } = await import("@/lib/supabase");
@@ -258,7 +258,7 @@ export async function loadAllListings(): Promise<UnifiedListing[]> {
   }
 }
 
-/** Search listings â€” used by useAllListings.ts */
+/** Search listings — used by useAllListings.ts */
 export function searchListings(query: string, listings?: UnifiedListing[]): SearchResult[] {
   const source = listings ?? useBambehStore.getState().allListings;
   if (!query.trim()) return source.map((l) => ({ ...l, relevanceScore: 1 }));
@@ -272,7 +272,7 @@ export function searchListings(query: string, listings?: UnifiedListing[]): Sear
     .sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
 }
 
-/** Record ad view â€” used by GlobalSearchBar */
+/** Record ad view — used by GlobalSearchBar */
 export async function recordAdView(adId: string, userId?: string): Promise<void> {
   try {
     const { supabase } = await import("@/lib/supabase");
@@ -286,7 +286,7 @@ export async function recordAdView(adId: string, userId?: string): Promise<void>
   }
 }
 
-/** Check if current user is subscribed â€” used by SubscriptionGate */
+/** Check if current user is subscribed — used by SubscriptionGate */
 export function isCurrentUserSubscribed(): boolean {
   const tier = useBambehStore.getState().subscriptionTier;
   return tier !== "free" && tier !== "";

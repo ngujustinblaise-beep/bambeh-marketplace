@@ -21,7 +21,7 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ðŸš¨ App Error:', error, errorInfo);
+    console.error('🚨 App Error:', error, errorInfo);
     try {
       import('@sentry/react').then(({ captureException }) => { captureException(error, { extra: { errorInfo } }); }).catch(() => {});
     } catch {}
@@ -75,8 +75,8 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
       try {
         const observer = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            if (entry.entryType === 'largest-contentful-paint') console.log('ðŸ“Š LCP:', Math.round(entry.startTime), 'ms');
-            if (entry.entryType === 'first-input') console.log('ðŸ“Š FID:', Math.round((entry as any).processingStart - entry.startTime), 'ms');
+            if (entry.entryType === 'largest-contentful-paint') console.log('📊 LCP:', Math.round(entry.startTime), 'ms');
+            if (entry.entryType === 'first-input') console.log('📊 FID:', Math.round((entry as any).processingStart - entry.startTime), 'ms');
           }
         });
         observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
@@ -86,8 +86,8 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
       try {
         const [navEntry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
         if (navEntry) {
-          if (navEntry.loadEventEnd > 0) console.log('ðŸ“Š Page Load Time:', Math.round(navEntry.loadEventEnd - navEntry.startTime), 'ms');
-          else console.log('ðŸ“Š Page Load Time (approx):', Math.round(performance.now()), 'ms');
+          if (navEntry.loadEventEnd > 0) console.log('📊 Page Load Time:', Math.round(navEntry.loadEventEnd - navEntry.startTime), 'ms');
+          else console.log('📊 Page Load Time (approx):', Math.round(performance.now()), 'ms');
         }
       } catch {}
     };

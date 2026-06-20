@@ -1,7 +1,7 @@
 ﻿/**
  * src/contexts/AuthContext.tsx
- * Bambeh Marketplace â€” Auth Context with complete AuthContextValue interface
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Auth Context with complete AuthContextValue interface
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * This file patches the AuthContextValue to include all properties
  * that legacy components expect: currentUser, loading, login, register, logout
@@ -11,7 +11,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { supabase } from "@/lib/supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
-// â”€â”€â”€ AuthUser â€” superset of Supabase User with Bambeh extras â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── AuthUser — superset of Supabase User with Bambeh extras ─────────────────
 export interface AuthUser {
   id: string;
   email?: string;
@@ -28,13 +28,13 @@ export interface AuthUser {
   user_metadata?: Record<string, unknown>;
 }
 
-// â”€â”€â”€ AuthContextValue â€” COMPLETE interface including legacy props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── AuthContextValue — COMPLETE interface including legacy props ─────────────
 export interface AuthContextValue {
   // Current session state
   user: AuthUser | null;
   session: Session | null;
 
-  // Legacy alias â€” many components use currentUser
+  // Legacy alias — many components use currentUser
   currentUser: AuthUser | null;
 
   // Loading state
@@ -56,10 +56,10 @@ export interface AuthContextValue {
   isAdmin: boolean;
 }
 
-// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Provider ─────────────────────────────────────────────────────────────────
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -166,7 +166,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

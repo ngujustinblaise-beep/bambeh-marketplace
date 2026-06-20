@@ -39,8 +39,8 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Join BambÃ© Marketplace',
-          text: `Use my referral code ${referralCode} to join BambÃ© and get bonus Zerm Coins!`,
+          title: 'Join Bambé Marketplace',
+          text: `Use my referral code ${referralCode} to join Bambé and get bonus Zerm Coins!`,
           url: referralLink,
         });
       } catch (err) {
@@ -202,7 +202,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
-            âœ•
+            ✕
           </button>
         </div>
 

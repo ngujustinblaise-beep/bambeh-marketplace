@@ -1,18 +1,18 @@
 ﻿/**
- * src/pages/Marketplace.tsx â€” Bambeh Marketplace
+ * src/pages/Marketplace.tsx — Bambeh Marketplace
  *
- * FIXES â€” June 2026
- *  âœ… FIX 1: readFavIds() / readCartCount() are pure functions â€” NO hook calls
- *  âœ… FIX 2: Language switches INSTANTLY via useLangState() + "langChange" event
- *  âœ… FIX 3: Supabase query wrapped in try/catch with user-friendly error message
- *  âœ… FIX 4: All UI strings go through tx() with reactive lang
- *  âœ… FIX 5: Realtime subscription safe-guards
- *  âœ… FIX 6: Pull-to-refresh gesture
- *  âœ… FIX 7: Featured items float to top; sort preserved
- *  âœ… FIX 8: Expiry alert banner for logged-in sellers
- *  âœ… FIX 9: Voice control aria-labels on all interactive elements
+ * FIXES — June 2026
+ *  ✅ FIX 1: readFavIds() / readCartCount() are pure functions — NO hook calls
+ *  ✅ FIX 2: Language switches INSTANTLY via useLangState() + "langChange" event
+ *  ✅ FIX 3: Supabase query wrapped in try/catch with user-friendly error message
+ *  ✅ FIX 4: All UI strings go through tx() with reactive lang
+ *  ✅ FIX 5: Realtime subscription safe-guards
+ *  ✅ FIX 6: Pull-to-refresh gesture
+ *  ✅ FIX 7: Featured items float to top; sort preserved
+ *  ✅ FIX 8: Expiry alert banner for logged-in sellers
+ *  ✅ FIX 9: Voice control aria-labels on all interactive elements
  *
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -25,38 +25,38 @@ import {
 import { supabase } from "@/lib/supabase";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
-// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n ─────────────────────────────────────────────────────────────────────
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 
 const TR: Record<string, Record<Lang, string>> = {
-  marketplace:       { en: "Marketplace",                fr: "MarchÃ©",                     ha: "Kasuwanci",              ar: "Ø§Ù„Ø³ÙˆÙ‚",                        pcm: "Market",                  ff: "Suudu" },
-  search_placeholder:{ en: "Search items, locationâ€¦",    fr: "Chercher articles, lieuâ€¦",   ha: "Bincikaâ€¦",               ar: "Ø§Ø¨Ø­Ø«â€¦",                        pcm: "Search item, placeâ€¦",     ff: "YiÉ—É—oâ€¦" },
-  sell:              { en: "Sell",                        fr: "Vendre",                     ha: "Sayar",                  ar: "Ø¨ÙŠØ¹",                          pcm: "Sell",                    ff: "YoÉ“" },
-  loading:           { en: "Loading listingsâ€¦",           fr: "Chargementâ€¦",                ha: "Ana lodawaâ€¦",            ar: "Ø¬Ø§Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦",                 pcm: "Loadingâ€¦",                ff: "Naatirdeâ€¦" },
-  try_again:         { en: "Try again",                   fr: "RÃ©essayer",                  ha: "Sake",                   ar: "Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹",                  pcm: "Try again",               ff: "Artu jeer" },
-  no_listings:       { en: "No listings yet",             fr: "Aucune annonce",             ha: "Babu jeri",              ar: "Ù„Ø§ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª",                   pcm: "No listing yet",          ff: "Alaa" },
-  first_to_sell:     { en: "Be the first to sell on Bambeh!", fr: "Soyez le premier Ã  vendre!", ha: "Kasance na farko!",  ar: "ÙƒÙ† Ø£ÙˆÙ„ Ù…Ù† ÙŠØ¨ÙŠØ¹!",             pcm: "Be first person sell!",   ff: "Wartoraa arande!" },
-  post_first:        { en: "Post your first item",        fr: "Publiez votre article",      ha: "Buga farko",             ar: "Ø§Ù†Ø´Ø± Ø£ÙˆÙ„ Ø¹Ù†ØµØ±",                pcm: "Post your first item",    ff: "Yeeso aawal maa" },
-  no_match:          { en: "No items match your search",  fr: "Aucun rÃ©sultat",             ha: "Babu sakamakon",         ar: "Ù„Ø§ Ù†ØªØ§Ø¦Ø¬",                     pcm: "Notin match",             ff: "Alaa goonga" },
-  clear_filters:     { en: "Clear filters",               fr: "Effacer les filtres",        ha: "Share tace",             ar: "Ù…Ø³Ø­ Ø§Ù„ÙÙ„Ø§ØªØ±",                  pcm: "Clear filter",            ff: "Æol filters" },
-  listings_expire:   { en: "Your listings expire soon",   fr: "Vos annonces expirent bientÃ´t", ha: "Jerin ku na Æ™arewa", ar: "Ø¥Ø¹Ù„Ø§Ù†Ø§ØªÙƒ ØªÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ø§Ù‹",        pcm: "Your listing go expire soon", ff: "Ndes maa É—owroo" },
-  renew:             { en: "Renew listings â†’",            fr: "Renouveler â†’",               ha: "Sabunta â†’",              ar: "ØªØ¬Ø¯ÙŠØ¯ â†’",                      pcm: "Renew am â†’",              ff: "Wullit â†’" },
-  expires_today:     { en: "expires today!",              fr: "expire aujourd'hui!",        ha: "na Æ™arewa yau!",         ar: "ØªÙ†ØªÙ‡ÙŠ Ø§Ù„ÙŠÙˆÙ…!",                 pcm: "expire today!",           ff: "É—owroo hande!" },
-  days_left:         { en: "d left",                      fr: "j restants",                 ha: "kwana",                  ar: "Ø£ÙŠØ§Ù…",                         pcm: "day remain",              ff: "Ã±alnde" },
-  sort_newest:       { en: "Newest",                      fr: "RÃ©cent",                     ha: "Sabon",                  ar: "Ø§Ù„Ø£Ø­Ø¯Ø«",                       pcm: "New one",                 ff: "Tammbii" },
-  sort_popular:      { en: "Most viewed",                 fr: "Plus vus",                   ha: "Mafi gani",              ar: "Ø§Ù„Ø£ÙƒØ«Ø± Ù…Ø´Ø§Ù‡Ø¯Ø©",                pcm: "Most view",               ff: "YiytataaÉ—o" },
-  sort_price_asc:    { en: "Price: Lowâ†’High",             fr: "Prix: Basâ†’Haut",             ha: "Farashi â†‘",              ar: "Ø§Ù„Ø³Ø¹Ø±: Ù…Ù†Ø®ÙØ¶â†’Ù…Ø±ØªÙØ¹",           pcm: "Price low-high",          ff: "Njaru â†‘" },
-  sort_price_desc:   { en: "Price: Highâ†’Low",             fr: "Prix: Hautâ†’Bas",             ha: "Farashi â†“",              ar: "Ø§Ù„Ø³Ø¹Ø±: Ù…Ø±ØªÙØ¹â†’Ù…Ù†Ø®ÙØ¶",           pcm: "Price high-low",          ff: "Njaru â†“" },
-  listings_count:    { en: "listings",                    fr: "annonces",                   ha: "jeri",                   ar: "Ø¥Ø¹Ù„Ø§Ù†Ø§Øª",                      pcm: "listing",                 ff: "ndes" },
-  in_category:       { en: "in",                          fr: "dans",                       ha: "a cikin",                ar: "ÙÙŠ",                           pcm: "for",                     ff: "e nder" },
-  views:             { en: "views",                       fr: "vues",                       ha: "kallon",                 ar: "Ù…Ø´Ø§Ù‡Ø¯Ø§Øª",                      pcm: "view",                    ff: "yiytatii" },
-  negoc:             { en: "Nego.",                       fr: "NÃ©goc.",                     ha: "Ana tattaunawa",         ar: "Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙØ§ÙˆØ¶",                 pcm: "Nego.",                   ff: "Hewtii" },
-  refresh:           { en: "Refresh",                     fr: "Actualiser",                 ha: "Sabunta",                ar: "ØªØ­Ø¯ÙŠØ«",                        pcm: "Refresh",                 ff: "Artu" },
-  cart:              { en: "Cart",                        fr: "Panier",                     ha: "Kati",                   ar: "Ø¹Ø±Ø¨Ø©",                         pcm: "Cart",                    ff: "Cart" },
-  connection_issue:  { en: "Connection issue",            fr: "ProblÃ¨me de connexion",      ha: "Matsalar hanyar sadarwa",ar: "Ù…Ø´ÙƒÙ„Ø© ÙÙŠ Ø§Ù„Ø§ØªØµØ§Ù„",             pcm: "Connection problem",      ff: "Juumre naatirde" },
+  marketplace:       { en: "Marketplace",                fr: "Marché",                     ha: "Kasuwanci",              ar: "السوق",                        pcm: "Market",                  ff: "Suudu" },
+  search_placeholder:{ en: "Search items, location…",    fr: "Chercher articles, lieu…",   ha: "Bincika…",               ar: "ابحث…",                        pcm: "Search item, place…",     ff: "Yiɗɗo…" },
+  sell:              { en: "Sell",                        fr: "Vendre",                     ha: "Sayar",                  ar: "بيع",                          pcm: "Sell",                    ff: "Yoɓ" },
+  loading:           { en: "Loading listings…",           fr: "Chargement…",                ha: "Ana lodawa…",            ar: "جار التحميل…",                 pcm: "Loading…",                ff: "Naatirde…" },
+  try_again:         { en: "Try again",                   fr: "Réessayer",                  ha: "Sake",                   ar: "حاول مجدداً",                  pcm: "Try again",               ff: "Artu jeer" },
+  no_listings:       { en: "No listings yet",             fr: "Aucune annonce",             ha: "Babu jeri",              ar: "لا إعلانات",                   pcm: "No listing yet",          ff: "Alaa" },
+  first_to_sell:     { en: "Be the first to sell on Bambeh!", fr: "Soyez le premier à vendre!", ha: "Kasance na farko!",  ar: "كن أول من يبيع!",             pcm: "Be first person sell!",   ff: "Wartoraa arande!" },
+  post_first:        { en: "Post your first item",        fr: "Publiez votre article",      ha: "Buga farko",             ar: "انشر أول عنصر",                pcm: "Post your first item",    ff: "Yeeso aawal maa" },
+  no_match:          { en: "No items match your search",  fr: "Aucun résultat",             ha: "Babu sakamakon",         ar: "لا نتائج",                     pcm: "Notin match",             ff: "Alaa goonga" },
+  clear_filters:     { en: "Clear filters",               fr: "Effacer les filtres",        ha: "Share tace",             ar: "مسح الÙلاتر",                  pcm: "Clear filter",            ff: "Æol filters" },
+  listings_expire:   { en: "Your listings expire soon",   fr: "Vos annonces expirent bientôt", ha: "Jerin ku na ƙarewa", ar: "إعلاناتك تنتهي قريباً",        pcm: "Your listing go expire soon", ff: "Ndes maa ɗowroo" },
+  renew:             { en: "Renew listings →",            fr: "Renouveler →",               ha: "Sabunta →",              ar: "تجديد →",                      pcm: "Renew am →",              ff: "Wullit →" },
+  expires_today:     { en: "expires today!",              fr: "expire aujourd'hui!",        ha: "na ƙarewa yau!",         ar: "تنتهي اليوم!",                 pcm: "expire today!",           ff: "ɗowroo hande!" },
+  days_left:         { en: "d left",                      fr: "j restants",                 ha: "kwana",                  ar: "أيام",                         pcm: "day remain",              ff: "ñalnde" },
+  sort_newest:       { en: "Newest",                      fr: "Récent",                     ha: "Sabon",                  ar: "الأحدث",                       pcm: "New one",                 ff: "Tammbii" },
+  sort_popular:      { en: "Most viewed",                 fr: "Plus vus",                   ha: "Mafi gani",              ar: "الأكثر مشاهدة",                pcm: "Most view",               ff: "Yiytataaɗo" },
+  sort_price_asc:    { en: "Price: Low→High",             fr: "Prix: Bas→Haut",             ha: "Farashi ↑",              ar: "السعر: منخÙض→مرتÙع",           pcm: "Price low-high",          ff: "Njaru ↑" },
+  sort_price_desc:   { en: "Price: High→Low",             fr: "Prix: Haut→Bas",             ha: "Farashi ↓",              ar: "السعر: مرتÙع→منخÙض",           pcm: "Price high-low",          ff: "Njaru ↓" },
+  listings_count:    { en: "listings",                    fr: "annonces",                   ha: "jeri",                   ar: "إعلانات",                      pcm: "listing",                 ff: "ndes" },
+  in_category:       { en: "in",                          fr: "dans",                       ha: "a cikin",                ar: "Ùي",                           pcm: "for",                     ff: "e nder" },
+  views:             { en: "views",                       fr: "vues",                       ha: "kallon",                 ar: "مشاهدات",                      pcm: "view",                    ff: "yiytatii" },
+  negoc:             { en: "Nego.",                       fr: "Négoc.",                     ha: "Ana tattaunawa",         ar: "قابل للتÙاوض",                 pcm: "Nego.",                   ff: "Hewtii" },
+  refresh:           { en: "Refresh",                     fr: "Actualiser",                 ha: "Sabunta",                ar: "تحديث",                        pcm: "Refresh",                 ff: "Artu" },
+  cart:              { en: "Cart",                        fr: "Panier",                     ha: "Kati",                   ar: "عربة",                         pcm: "Cart",                    ff: "Cart" },
+  connection_issue:  { en: "Connection issue",            fr: "Problème de connexion",      ha: "Matsalar hanyar sadarwa",ar: "مشكلة Ùي الاتصال",             pcm: "Connection problem",      ff: "Juumre naatirde" },
 };
 
-// â”€â”€â”€ Language helpers â€” PURE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Language helpers — PURE ───────────────────────────────────────────────────
 function getLang(): Lang {
   try {
     const s = localStorage.getItem("bambeh_lang") as Lang;
@@ -66,7 +66,7 @@ function getLang(): Lang {
   return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
 }
 
-// â”€â”€â”€ Hook: reactive language (fires instantly when user changes language) â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook: reactive language (fires instantly when user changes language) ───────
 function useLangState(): Lang {
   const [lang, setLang] = useState<Lang>(getLang);
   useEffect(() => {
@@ -81,7 +81,7 @@ function useLangState(): Lang {
   return lang;
 }
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface Item {
   id: string;
   title: string;
@@ -106,24 +106,24 @@ interface ExpiryAlert {
   daysLeft: number;
 }
 
-// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = [
   { label: "All",         emoji: "ðŸª" },
-  { label: "Electronics", emoji: "ðŸ“±" },
-  { label: "Fashion",     emoji: "ðŸ‘—" },
-  { label: "Appliances",  emoji: "ðŸ”Œ" },
-  { label: "Books",       emoji: "ðŸ“š" },
-  { label: "Furniture",   emoji: "ðŸ›‹ï¸" },
-  { label: "Vehicles",    emoji: "ðŸš—" },
+  { label: "Electronics", emoji: "📱" },
+  { label: "Fashion",     emoji: "👗" },
+  { label: "Appliances",  emoji: "🔌" },
+  { label: "Books",       emoji: "📚" },
+  { label: "Furniture",   emoji: "🛋ï¸" },
+  { label: "Vehicles",    emoji: "🚗" },
   { label: "Rentals",     emoji: "ðŸ " },
-  { label: "Other",       emoji: "ðŸ“¦" },
+  { label: "Other",       emoji: "📦" },
 ];
 
 const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
 const EXPIRY_WARN_DAYS = 3;
 
-// â”€â”€â”€ Helpers â€” PURE FUNCTIONS, NO HOOKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers — PURE FUNCTIONS, NO HOOKS ────────────────────────────────────────
 function readFavIds(): Set<string> {
   try {
     return new Set(
@@ -194,7 +194,7 @@ function relativeTime(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("fr-CM", { day: "numeric", month: "short" });
 }
 
-// â”€â”€â”€ Expiry Reminder Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Expiry Reminder Banner ────────────────────────────────────────────────────
 function ExpiryReminderBanner({
   alerts,
   onDismiss,
@@ -212,7 +212,7 @@ function ExpiryReminderBanner({
         <p className="text-xs font-bold text-amber-800 mb-1">{tx("listings_expire")}</p>
         {alerts.map((a) => (
           <p key={a.id} className="text-xs text-amber-700 truncate">
-            "{a.title}" â€” {a.daysLeft <= 0 ? tx("expires_today") : `${a.daysLeft} ${tx("days_left")}`}
+            "{a.title}" — {a.daysLeft <= 0 ? tx("expires_today") : `${a.daysLeft} ${tx("days_left")}`}
           </p>
         ))}
         <button
@@ -230,7 +230,7 @@ function ExpiryReminderBanner({
   );
 }
 
-// â”€â”€â”€ Item Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Item Card ────────────────────────────────────────────────────────────────
 function ItemCard({
   item, isFav, onFav, onClick, tx,
 }: {
@@ -314,10 +314,10 @@ function ItemCard({
   );
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function Marketplace() {
   const navigate = useNavigate();
-  const lang     = useLangState();   // âœ… hook at top level
+  const lang     = useLangState();   // ✅ hook at top level
   const tx       = (key: string) => TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
   const isRtl    = lang === "ar";
 
@@ -640,7 +640,7 @@ export default function Marketplace() {
             </div>
 
             <p className="text-center text-xs text-gray-300 mt-6">
-              â€” {filtered.length} {tx("listings_count")} â€”
+              — {filtered.length} {tx("listings_count")} —
             </p>
           </>
         )}

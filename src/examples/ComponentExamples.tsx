@@ -13,7 +13,7 @@ const ComponentExamples: React.FC = () => (
 
     <section>
       <h2 className="text-lg font-semibold mb-3">Chat Widget</h2>
-      <Suspense fallback={<span className="text-sm text-gray-400">Loadingâ€¦</span>}>
+      <Suspense fallback={<span className="text-sm text-gray-400">Loading…</span>}>
         <ChatWidget />
       </Suspense>
     </section>

@@ -1,6 +1,6 @@
 ﻿/**
  * src/components/profile/ChangePasswordModal.tsx
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -21,7 +21,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClose }) =>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (newPass.length < 8) { setError("Le mot de passe doit contenir au moins 8 caractÃ¨res."); return; }
+    if (newPass.length < 8) { setError("Le mot de passe doit contenir au moins 8 caractères."); return; }
     if (newPass !== confirm) { setError("Les mots de passe ne correspondent pas."); return; }
     setLoading(true);
     try {
@@ -56,7 +56,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClose }) =>
           type={showPass ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder ?? "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"}
+          placeholder={placeholder ?? "••••••••"}
           className="w-full border border-gray-300 rounded-xl px-3 py-2.5 pr-10 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
         />
         <button type="button" onClick={onToggle} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -85,13 +85,13 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onClose }) =>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="font-bold text-gray-900">Mot de passe modifiÃ© !</p>
+              <p className="font-bold text-gray-900">Mot de passe modifié !</p>
               <p className="text-sm text-gray-500 mt-1">Redirection en cours...</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <PasswordField label="Mot de passe actuel" value={current} onChange={setCurrent} showPass={show.current} onToggle={() => setShow((s) => ({ ...s, current: !s.current }))} />
-              <PasswordField label="Nouveau mot de passe" value={newPass} onChange={setNewPass} showPass={show.new} onToggle={() => setShow((s) => ({ ...s, new: !s.new }))} placeholder="8+ caractÃ¨res" />
+              <PasswordField label="Nouveau mot de passe" value={newPass} onChange={setNewPass} showPass={show.new} onToggle={() => setShow((s) => ({ ...s, new: !s.new }))} placeholder="8+ caractères" />
               <PasswordField label="Confirmer le nouveau mot de passe" value={confirm} onChange={setConfirm} showPass={show.confirm} onToggle={() => setShow((s) => ({ ...s, confirm: !s.confirm }))} />
 
               {newPass && (

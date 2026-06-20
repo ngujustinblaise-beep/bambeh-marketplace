@@ -1,19 +1,19 @@
 ﻿/**
- * src/pages/PostMarketplaceItemPage.tsx â€” Bambeh Marketplace
+ * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
  *
- * FIXES â€” June 2026
- *  âœ… FIX 1: loadDraft() was calling useLang() inside a plain function â€”
- *            illegal React hook call â†’ crash on every visit to the sell page.
+ * FIXES — June 2026
+ *  ✅ FIX 1: loadDraft() was calling useLang() inside a plain function —
+ *            illegal React hook call → crash on every visit to the sell page.
  *            loadDraft() is now a pure function (no hooks).
- *  âœ… FIX 2: Full i18n â€” English / French / Hausa / Arabic / Pidgin / Fulfulde
- *  âœ… FIX 3: Language switches INSTANTLY â€” useLangState() hook + "langChange" event
- *  âœ… FIX 4: Real Supabase Storage upload (bucket: "listings")
- *  âœ… FIX 5: Insert uses seller_id (correct column); expires_at set to +30 days
- *  âœ… FIX 6: Draft save / restore / clear (pure functions, no hooks)
- *  âœ… FIX 7: Voice-control landmark aria-labels added
- *  âœ… FIX 8: "Save as Draft" option on Step 3
+ *  ✅ FIX 2: Full i18n — English / French / Hausa / Arabic / Pidgin / Fulfulde
+ *  ✅ FIX 3: Language switches INSTANTLY — useLangState() hook + "langChange" event
+ *  ✅ FIX 4: Real Supabase Storage upload (bucket: "listings")
+ *  ✅ FIX 5: Insert uses seller_id (correct column); expires_at set to +30 days
+ *  ✅ FIX 6: Draft save / restore / clear (pure functions, no hooks)
+ *  ✅ FIX 7: Voice-control landmark aria-labels added
+ *  ✅ FIX 8: "Save as Draft" option on Step 3
  *
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
@@ -24,46 +24,46 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n ─────────────────────────────────────────────────────────────────────
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 
 const TR: Record<string, Record<Lang, string>> = {
-  sell_item:      { en: "Sell an Item",             fr: "Vendre un article",          ha: "Sayar da kaya",          ar: "Ø¨ÙŠØ¹ Ù…Ù†ØªØ¬",                   pcm: "Sell Item",              ff: "YoÉ“ Kala" },
-  step_of:        { en: "Step",                     fr: "Ã‰tape",                      ha: "Matakai",                ar: "Ø®Ø·ÙˆØ©",                         pcm: "Step",                   ff: "Lahal" },
-  of:             { en: "of",                       fr: "sur",                        ha: "na",                     ar: "Ù…Ù†",                           pcm: "of",                     ff: "e" },
-  item_details:   { en: "Item Details",             fr: "DÃ©tails de l'article",       ha: "Bayanan kaya",           ar: "ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ù…Ù†ØªØ¬",                pcm: "Item Details",           ff: "PijirÉ—e Kala" },
-  title:          { en: "Title *",                  fr: "Titre *",                    ha: "Take *",                 ar: "Ø§Ù„Ø¹Ù†ÙˆØ§Ù† *",                    pcm: "Name *",                 ff: "Tiitoonde *" },
-  title_ph:       { en: "e.g. iPhone 15 Pro 256GB", fr: "ex. iPhone 15 Pro 256 Go",   ha: "misali: iPhone 15 Pro",  ar: "Ù…Ø«Ø§Ù„: Ø¢ÙŠÙÙˆÙ† 15 Ø¨Ø±Ùˆ",           pcm: "e.g. iPhone 15 Pro",     ff: "ex. iPhone 15 Pro" },
-  description:    { en: "Description *",            fr: "Description *",              ha: "Bayani *",               ar: "Ø§Ù„ÙˆØµÙ *",                      pcm: "Description *",          ff: "Pijirde *" },
-  desc_ph:        { en: "Describe your item: condition, why you're selling, extras includedâ€¦", fr: "DÃ©crivez votre article : Ã©tat, raison de vente, accessoires inclusâ€¦", ha: "Bayyana kaya: yanayi, dalilin siyarwaâ€¦", ar: "ØµÙ Ù…Ù†ØªØ¬Ùƒ: Ø§Ù„Ø­Ø§Ù„Ø©ØŒ Ø³Ø¨Ø¨ Ø§Ù„Ø¨ÙŠØ¹â€¦", pcm: "Tell people about the item: condition, reasonâ€¦", ff: "Pijir kala: ko waÉ—i, ko holliÉ—oâ€¦" },
-  category:       { en: "Category *",              fr: "CatÃ©gorie *",                ha: "Rukuni *",               ar: "Ø§Ù„ÙØ¦Ø© *",                      pcm: "Category *",             ff: "Jikkuure *" },
-  condition:      { en: "Condition *",              fr: "Ã‰tat *",                     ha: "Yanayi *",               ar: "Ø§Ù„Ø­Ø§Ù„Ø© *",                     pcm: "Condition *",            ff: "Damal *" },
-  price:          { en: "Price (XAF) *",            fr: "Prix (XAF) *",               ha: "Farashi (XAF) *",        ar: "Ø§Ù„Ø³Ø¹Ø± (ÙØ±Ù†Ùƒ Ø£ÙØ±ÙŠÙ‚ÙŠ) *",        pcm: "Price (XAF) *",          ff: "Njaru (XAF) *" },
-  price_ph:       { en: "e.g. 50,000",              fr: "ex. 50 000",                 ha: "misali: 50,000",         ar: "Ù…Ø«Ø§Ù„: 50,000",                 pcm: "e.g. 50,000",            ff: "ex. 50,000" },
-  location:       { en: "Location *",              fr: "Lieu *",                     ha: "Wuri *",                 ar: "Ø§Ù„Ù…ÙˆÙ‚Ø¹ *",                     pcm: "Location *",             ff: "Dow *" },
-  location_ph:    { en: "e.g. Bastos, YaoundÃ©",    fr: "ex. Bastos, YaoundÃ©",        ha: "misali: Bamenda",        ar: "Ù…Ø«Ø§Ù„: Ø¨Ø§Ø³ØªÙˆØ³ØŒ ÙŠØ§ÙˆÙ†Ø¯ÙŠ",         pcm: "e.g. Bastos, YaoundÃ©",   ff: "ex. Bastos, YaoundÃ©" },
-  phone:          { en: "WhatsApp / Phone",         fr: "WhatsApp / TÃ©lÃ©phone",       ha: "WhatsApp / Waya",        ar: "ÙˆØ§ØªØ³Ø§Ø¨ / Ù‡Ø§ØªÙ",                pcm: "WhatsApp / Phone",       ff: "WhatsApp / Weyol" },
+  sell_item:      { en: "Sell an Item",             fr: "Vendre un article",          ha: "Sayar da kaya",          ar: "بيع منتج",                   pcm: "Sell Item",              ff: "Yoɓ Kala" },
+  step_of:        { en: "Step",                     fr: "Étape",                      ha: "Matakai",                ar: "خطوة",                         pcm: "Step",                   ff: "Lahal" },
+  of:             { en: "of",                       fr: "sur",                        ha: "na",                     ar: "من",                           pcm: "of",                     ff: "e" },
+  item_details:   { en: "Item Details",             fr: "Détails de l'article",       ha: "Bayanan kaya",           ar: "تÙاصيل المنتج",                pcm: "Item Details",           ff: "Pijirɗe Kala" },
+  title:          { en: "Title *",                  fr: "Titre *",                    ha: "Take *",                 ar: "العنوان *",                    pcm: "Name *",                 ff: "Tiitoonde *" },
+  title_ph:       { en: "e.g. iPhone 15 Pro 256GB", fr: "ex. iPhone 15 Pro 256 Go",   ha: "misali: iPhone 15 Pro",  ar: "مثال: آيÙون 15 برو",           pcm: "e.g. iPhone 15 Pro",     ff: "ex. iPhone 15 Pro" },
+  description:    { en: "Description *",            fr: "Description *",              ha: "Bayani *",               ar: "الوصÙ *",                      pcm: "Description *",          ff: "Pijirde *" },
+  desc_ph:        { en: "Describe your item: condition, why you're selling, extras included…", fr: "Décrivez votre article : état, raison de vente, accessoires inclus…", ha: "Bayyana kaya: yanayi, dalilin siyarwa…", ar: "صÙ منتجك: الحالة، سبب البيع…", pcm: "Tell people about the item: condition, reason…", ff: "Pijir kala: ko waɗi, ko holliɗo…" },
+  category:       { en: "Category *",              fr: "Catégorie *",                ha: "Rukuni *",               ar: "الÙئة *",                      pcm: "Category *",             ff: "Jikkuure *" },
+  condition:      { en: "Condition *",              fr: "État *",                     ha: "Yanayi *",               ar: "الحالة *",                     pcm: "Condition *",            ff: "Damal *" },
+  price:          { en: "Price (XAF) *",            fr: "Prix (XAF) *",               ha: "Farashi (XAF) *",        ar: "السعر (Ùرنك أÙريقي) *",        pcm: "Price (XAF) *",          ff: "Njaru (XAF) *" },
+  price_ph:       { en: "e.g. 50,000",              fr: "ex. 50 000",                 ha: "misali: 50,000",         ar: "مثال: 50,000",                 pcm: "e.g. 50,000",            ff: "ex. 50,000" },
+  location:       { en: "Location *",              fr: "Lieu *",                     ha: "Wuri *",                 ar: "الموقع *",                     pcm: "Location *",             ff: "Dow *" },
+  location_ph:    { en: "e.g. Bastos, Yaoundé",    fr: "ex. Bastos, Yaoundé",        ha: "misali: Bamenda",        ar: "مثال: باستوس، ياوندي",         pcm: "e.g. Bastos, Yaoundé",   ff: "ex. Bastos, Yaoundé" },
+  phone:          { en: "WhatsApp / Phone",         fr: "WhatsApp / Téléphone",       ha: "WhatsApp / Waya",        ar: "واتساب / هاتÙ",                pcm: "WhatsApp / Phone",       ff: "WhatsApp / Weyol" },
   phone_ph:       { en: "+237 6XX XXX XXX",         fr: "+237 6XX XXX XXX",           ha: "+237 6XX XXX XXX",       ar: "+237 6XX XXX XXX",             pcm: "+237 6XX XXX XXX",       ff: "+237 6XX XXX XXX" },
-  negotiable:     { en: "Price is negotiable",      fr: "Prix nÃ©gociable",            ha: "Ana tattaunawa",         ar: "Ø§Ù„Ø³Ø¹Ø± Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙØ§ÙˆØ¶",           pcm: "Price nego",             ff: "Njaru hewtii" },
-  next_photos:    { en: "Next â€” Add Photos",        fr: "Suivant â€” Ajouter des photos", ha: "Gaba â€” Æ˜ara hotuna",  ar: "Ø§Ù„ØªØ§Ù„ÙŠ â€” Ø£Ø¶Ù ØµÙˆØ±Ø§Ù‹",           pcm: "Next â€” Add Photos",      ff: "Yeeso â€” Æeydu Foto" },
-  add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Æ˜ara hotuna",           ar: "Ø£Ø¶Ù ØµÙˆØ±Ø§Ù‹",                    pcm: "Add Photos",             ff: "Æeydu Foto" },
-  photos_hint:    { en: "Up to 6 photos. First photo is the cover.", fr: "Jusqu'Ã  6 photos. La premiÃ¨re est la couverture.", ha: "Har hoto 6. Na farko shine cover.", ar: "Ø­ØªÙ‰ 6 ØµÙˆØ±. Ø§Ù„Ø£ÙˆÙ„Ù‰ Ù‡ÙŠ Ø§Ù„ØºÙ„Ø§Ù.", pcm: "Max 6 pictures. First one na cover.", ff: "Haa 6 foto. Araniwol na cover." },
-  cover:          { en: "COVER",                    fr: "COUVERTURE",                 ha: "COVER",                  ar: "ØºÙ„Ø§Ù",                         pcm: "COVER",                  ff: "COVER" },
-  tap_upload:     { en: "Tap to upload photos",     fr: "Appuyez pour ajouter des photos", ha: "Danna don É—ora hotuna", ar: "Ø§Ø¶ØºØ· Ù„Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±",           pcm: "Tap to add pictures",    ff: "Jokku ngam É“eydu foto" },
-  photo_formats:  { en: "JPG, PNG, WebP â€” max 6",  fr: "JPG, PNG, WebP â€” max 6",     ha: "JPG, PNG, WebP â€” max 6", ar: "JPG, PNG, WebP â€” Ø§Ù„Ø­Ø¯ 6",      pcm: "JPG, PNG â€” max 6",       ff: "JPG, PNG â€” max 6" },
-  photos_optional:{ en: "Photos are optional but greatly increase your chances of selling!", fr: "Les photos sont facultatives mais augmentent vos chances!", ha: "Hotuna ba tilas ba amma suna taimakawa!", ar: "Ø§Ù„ØµÙˆØ± Ø§Ø®ØªÙŠØ§Ø±ÙŠØ© Ù„ÙƒÙ†Ù‡Ø§ ØªØ²ÙŠØ¯ ÙØ±Øµ Ø§Ù„Ø¨ÙŠØ¹!", pcm: "Picture no must but e help plenty!", ff: "Foto alaa tilas kono e waÉ—tu!" },
-  next_review:    { en: "Next â€” Review",            fr: "Suivant â€” VÃ©rifier",         ha: "Gaba â€” Duba",            ar: "Ø§Ù„ØªØ§Ù„ÙŠ â€” Ù…Ø±Ø§Ø¬Ø¹Ø©",              pcm: "Next â€” Check",           ff: "Yeeso â€” Yiy" },
-  review_post:    { en: "Review & Post",            fr: "VÃ©rifier & Publier",         ha: "Duba & Buga",            ar: "Ù…Ø±Ø§Ø¬Ø¹Ø© ÙˆÙ†Ø´Ø±",                  pcm: "Check & Post",           ff: "Yiy & Yeeso" },
-  posting:        { en: "Postingâ€¦",                 fr: "Publicationâ€¦",               ha: "Ana bugaâ€¦",              ar: "Ø¬Ø§Ø± Ø§Ù„Ù†Ø´Ø±â€¦",                   pcm: "Dey postâ€¦",              ff: "Naatirdeâ€¦" },
-  post_listing:   { en: "Post Listing",             fr: "Publier l'annonce",          ha: "Buga jeri",              ar: "Ù†Ø´Ø± Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†",                  pcm: "Post Listing",           ff: "Yeeso Nde" },
-  save_draft:     { en: "Save as Draft",            fr: "Sauvegarder comme brouillon", ha: "Adana a matsayin daftar", ar: "Ø­ÙØ¸ ÙƒÙ…Ø³ÙˆØ¯Ø©",                  pcm: "Save as Draft",          ff: "Danndu haa Draft" },
-  visible_to_all: { en: "Your listing will be visible to all Bambeh users immediately.", fr: "Votre annonce sera visible par tous les utilisateurs de Bambeh immÃ©diatement.", ha: "Jerin ku zai iya ganin duk masu amfani da Bambeh nan take.", ar: "Ø³ØªÙƒÙˆÙ† Ù‚Ø§Ø¦Ù…ØªÙƒ Ù…Ø±Ø¦ÙŠØ© Ù„Ø¬Ù…ÙŠØ¹ Ù…Ø³ØªØ®Ø¯Ù…ÙŠ Bambeh ÙÙˆØ±Ø§Ù‹.", pcm: "Your listing go show for all Bambeh users right now.", ff: "Nde maa yiyete e Bambeh É—immo hannde." },
-  login_required: { en: "You must be logged in to post a listing.", fr: "Vous devez Ãªtre connectÃ© pour publier une annonce.", ha: "Dole ne ku shiga don buga jeri.", ar: "ÙŠØ¬Ø¨ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†.", pcm: "You must login before you post.", ff: "Tiggee naatude ngam yeesude." },
-  unexpected:     { en: "Unexpected error. Please try again.", fr: "Erreur inattendue. RÃ©essayez.", ha: "Kuskure da ba a tsammani. Sake.", ar: "Ø®Ø·Ø£ ØºÙŠØ± Ù…ØªÙˆÙ‚Ø¹. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹.", pcm: "Unexpected error. Try again.", ff: "Juumre anndaande. Artu jeer." },
-  draft_saved:    { en: "Draft saved!", fr: "Brouillon sauvegardÃ©!", ha: "Daftar ya adana!", ar: "ØªÙ… Ø­ÙØ¸ Ø§Ù„Ù…Ø³ÙˆØ¯Ø©!", pcm: "Draft saved!", ff: "Draft nanngi!" },
+  negotiable:     { en: "Price is negotiable",      fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتÙاوض",           pcm: "Price nego",             ff: "Njaru hewtii" },
+  next_photos:    { en: "Next — Add Photos",        fr: "Suivant — Ajouter des photos", ha: "Gaba — Ƙara hotuna",  ar: "التالي — أضÙ صوراً",           pcm: "Next — Add Photos",      ff: "Yeeso — Æeydu Foto" },
+  add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Ƙara hotuna",           ar: "أضÙ صوراً",                    pcm: "Add Photos",             ff: "Æeydu Foto" },
+  photos_hint:    { en: "Up to 6 photos. First photo is the cover.", fr: "Jusqu'à 6 photos. La première est la couverture.", ha: "Har hoto 6. Na farko shine cover.", ar: "حتى 6 صور. الأولى هي الغلاÙ.", pcm: "Max 6 pictures. First one na cover.", ff: "Haa 6 foto. Araniwol na cover." },
+  cover:          { en: "COVER",                    fr: "COUVERTURE",                 ha: "COVER",                  ar: "غلاÙ",                         pcm: "COVER",                  ff: "COVER" },
+  tap_upload:     { en: "Tap to upload photos",     fr: "Appuyez pour ajouter des photos", ha: "Danna don ɗora hotuna", ar: "اضغط لرÙع الصور",           pcm: "Tap to add pictures",    ff: "Jokku ngam ɓeydu foto" },
+  photo_formats:  { en: "JPG, PNG, WebP — max 6",  fr: "JPG, PNG, WebP — max 6",     ha: "JPG, PNG, WebP — max 6", ar: "JPG, PNG, WebP — الحد 6",      pcm: "JPG, PNG — max 6",       ff: "JPG, PNG — max 6" },
+  photos_optional:{ en: "Photos are optional but greatly increase your chances of selling!", fr: "Les photos sont facultatives mais augmentent vos chances!", ha: "Hotuna ba tilas ba amma suna taimakawa!", ar: "الصور اختيارية لكنها تزيد Ùرص البيع!", pcm: "Picture no must but e help plenty!", ff: "Foto alaa tilas kono e waɗtu!" },
+  next_review:    { en: "Next — Review",            fr: "Suivant — Vérifier",         ha: "Gaba — Duba",            ar: "التالي — مراجعة",              pcm: "Next — Check",           ff: "Yeeso — Yiy" },
+  review_post:    { en: "Review & Post",            fr: "Vérifier & Publier",         ha: "Duba & Buga",            ar: "مراجعة ونشر",                  pcm: "Check & Post",           ff: "Yiy & Yeeso" },
+  posting:        { en: "Posting…",                 fr: "Publication…",               ha: "Ana buga…",              ar: "جار النشر…",                   pcm: "Dey post…",              ff: "Naatirde…" },
+  post_listing:   { en: "Post Listing",             fr: "Publier l'annonce",          ha: "Buga jeri",              ar: "نشر الإعلان",                  pcm: "Post Listing",           ff: "Yeeso Nde" },
+  save_draft:     { en: "Save as Draft",            fr: "Sauvegarder comme brouillon", ha: "Adana a matsayin daftar", ar: "حÙظ كمسودة",                  pcm: "Save as Draft",          ff: "Danndu haa Draft" },
+  visible_to_all: { en: "Your listing will be visible to all Bambeh users immediately.", fr: "Votre annonce sera visible par tous les utilisateurs de Bambeh immédiatement.", ha: "Jerin ku zai iya ganin duk masu amfani da Bambeh nan take.", ar: "ستكون قائمتك مرئية لجميع مستخدمي Bambeh Ùوراً.", pcm: "Your listing go show for all Bambeh users right now.", ff: "Nde maa yiyete e Bambeh ɗimmo hannde." },
+  login_required: { en: "You must be logged in to post a listing.", fr: "Vous devez être connecté pour publier une annonce.", ha: "Dole ne ku shiga don buga jeri.", ar: "يجب تسجيل الدخول لنشر إعلان.", pcm: "You must login before you post.", ff: "Tiggee naatude ngam yeesude." },
+  unexpected:     { en: "Unexpected error. Please try again.", fr: "Erreur inattendue. Réessayez.", ha: "Kuskure da ba a tsammani. Sake.", ar: "خطأ غير متوقع. حاول مجدداً.", pcm: "Unexpected error. Try again.", ff: "Juumre anndaande. Artu jeer." },
+  draft_saved:    { en: "Draft saved!", fr: "Brouillon sauvegardé!", ha: "Daftar ya adana!", ar: "تم حÙظ المسودة!", pcm: "Draft saved!", ff: "Draft nanngi!" },
 };
 
-// â”€â”€â”€ Language helpers â€” ALL PURE (no hooks) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Language helpers — ALL PURE (no hooks) ────────────────────────────────────
 function getLang(): Lang {
   try {
     const s = localStorage.getItem("bambeh_lang") as Lang;
@@ -77,7 +77,7 @@ function tx(key: string, lang: Lang): string {
   return TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
 }
 
-// â”€â”€â”€ Hook: reactive language (fires when user switches language) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook: reactive language (fires when user switches language) ───────────────
 function useLangState(): Lang {
   const [lang, setLang] = useState<Lang>(getLang);
   useEffect(() => {
@@ -92,7 +92,7 @@ function useLangState(): Lang {
   return lang;
 }
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface DraftData {
   title: string;
   description: string;
@@ -104,7 +104,7 @@ interface DraftData {
   negotiable: boolean;
 }
 
-// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Constants ────────────────────────────────────────────────────────────────
 const DRAFT_KEY = "bambeh_marketplace_draft";
 
 const CATEGORIES = [
@@ -120,9 +120,9 @@ const EMPTY: DraftData = {
   location: "", phone: "", negotiable: false,
 };
 
-// â”€â”€â”€ Draft helpers â€” PURE FUNCTIONS, NO HOOKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// âš ï¸  loadDraft() MUST NOT call useLang() or any React hook.
-//     It is used as the useState initialiser â€” React calls it before any hooks run.
+// ─── Draft helpers — PURE FUNCTIONS, NO HOOKS ──────────────────────────────────
+// ⚠ï¸  loadDraft() MUST NOT call useLang() or any React hook.
+//     It is used as the useState initialiser — React calls it before any hooks run.
 function loadDraft(): DraftData {
   try {
     return { ...EMPTY, ...JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}") };
@@ -137,15 +137,15 @@ function clearDraft() {
   try { localStorage.removeItem(DRAFT_KEY); } catch { }
 }
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function PostMarketplaceItemPage() {
   const navigate     = useNavigate();
   const fileRef      = useRef<HTMLInputElement>(null);
-  const lang         = useLangState();           // âœ… hook called at top level
+  const lang         = useLangState();           // ✅ hook called at top level
   const t            = (key: string) => tx(key, lang);
 
   const [step,       setStep]       = useState(1);
-  const [form,       setForm]       = useState<DraftData>(loadDraft);  // âœ… pure fn
+  const [form,       setForm]       = useState<DraftData>(loadDraft);  // ✅ pure fn
   const [photos,     setPhotos]     = useState<File[]>([]);
   const [previews,   setPreviews]   = useState<string[]>([]);
   const [posting,    setPosting]    = useState(false);
@@ -155,7 +155,7 @@ export default function PostMarketplaceItemPage() {
 
   const isRtl = lang === "ar";
 
-  // â”€â”€ Form helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Form helpers ──────────────────────────────────────────────────────────
   function set(field: keyof DraftData, value: string | boolean) {
     setForm((prev) => {
       const next = { ...prev, [field]: value };
@@ -169,7 +169,7 @@ export default function PostMarketplaceItemPage() {
     return isNaN(num) ? "" : num.toLocaleString("fr-CM");
   }
 
-  // â”€â”€ Photo handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Photo handling ────────────────────────────────────────────────────────
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []).slice(0, 6 - photos.length);
     setPhotos((prev) => [...prev, ...files]);
@@ -187,7 +187,7 @@ export default function PostMarketplaceItemPage() {
     setPreviews((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  // â”€â”€ Step validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Step validation ───────────────────────────────────────────────────────
   function step1Valid(): boolean {
     return (
       form.title.trim().length >= 3 &&
@@ -197,7 +197,7 @@ export default function PostMarketplaceItemPage() {
     );
   }
 
-  // â”€â”€ Upload photos to Supabase Storage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Upload photos to Supabase Storage ────────────────────────────────────
   async function uploadPhotos(sellerId: string): Promise<string[]> {
     if (photos.length === 0) return [];
     const urls: string[] = [];
@@ -214,7 +214,7 @@ export default function PostMarketplaceItemPage() {
     return urls;
   }
 
-  // â”€â”€ Save draft to Supabase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Save draft to Supabase ────────────────────────────────────────────────
   const handleSaveDraft = useCallback(async () => {
     setSaving(true);
     setError(null);
@@ -257,7 +257,7 @@ export default function PostMarketplaceItemPage() {
     }
   }, [form, photos, lang]);
 
-  // â”€â”€ Submit (publish) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Submit (publish) ──────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
     setPosting(true);
     setError(null);
@@ -299,9 +299,9 @@ export default function PostMarketplaceItemPage() {
     }
   }, [form, photos, navigate, lang]);
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // RENDER
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div
       className="min-h-screen bg-gray-50 pb-20"
@@ -341,7 +341,7 @@ export default function PostMarketplaceItemPage() {
       )}
 
       <div className="max-w-lg mx-auto p-4">
-        {/* â”€â”€ STEP 1: Details â”€â”€ */}
+        {/* ── STEP 1: Details ── */}
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="font-bold text-gray-900 text-lg">{t("item_details")}</h2>
@@ -454,7 +454,7 @@ export default function PostMarketplaceItemPage() {
           </div>
         )}
 
-        {/* â”€â”€ STEP 2: Photos â”€â”€ */}
+        {/* ── STEP 2: Photos ── */}
         {step === 2 && (
           <div className="space-y-4">
             <div>
@@ -527,7 +527,7 @@ export default function PostMarketplaceItemPage() {
           </div>
         )}
 
-        {/* â”€â”€ STEP 3: Review & Post â”€â”€ */}
+        {/* ── STEP 3: Review & Post ── */}
         {step === 3 && (
           <div className="space-y-4">
             <h2 className="font-bold text-gray-900 text-lg">{t("review_post")}</h2>
@@ -542,7 +542,7 @@ export default function PostMarketplaceItemPage() {
                 )}
               </div>
               <div className="p-4 space-y-1">
-                <p className="text-xs text-gray-400">{form.category} Â· {form.condition}</p>
+                <p className="text-xs text-gray-400">{form.category} · {form.condition}</p>
                 <h3 className="font-bold text-gray-900">{form.title}</h3>
                 <p className="text-teal-600 font-bold text-lg">
                   {(parseInt(form.price || "0", 10)).toLocaleString("fr-CM")} XAF
@@ -599,7 +599,7 @@ export default function PostMarketplaceItemPage() {
   );
 }
 
-// â”€â”€â”€ Tiny helper components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Tiny helper components ───────────────────────────────────────────────────
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>

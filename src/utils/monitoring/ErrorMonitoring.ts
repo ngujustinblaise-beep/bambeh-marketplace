@@ -1,7 +1,7 @@
 ﻿/**
  * src/utils/monitoring/ErrorMonitoring.ts
- * Bambeh Marketplace â€” Error Monitoring
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Error Monitoring
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES: exports both errorMonitor (canonical) and errorMonitoring (alias)
  */
@@ -85,10 +85,10 @@ class ErrorMonitor {
   }
 }
 
-// â”€â”€â”€ Singleton â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Singleton ─────────────────────────────────────────────────────────────────
 export const errorMonitor = new ErrorMonitor();
 
-/** @alias â€” useAnalytics.ts imports as 'errorMonitoring' */
+/** @alias — useAnalytics.ts imports as 'errorMonitoring' */
 export const errorMonitoring = errorMonitor;
 
 // Install global error handler

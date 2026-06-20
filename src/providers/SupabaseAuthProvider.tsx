@@ -1,16 +1,16 @@
 ﻿/**
- * SupabaseAuthProvider.tsx â€” Bambeh Marketplace
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * SupabaseAuthProvider.tsx — Bambeh Marketplace
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * Caches the Supabase auth session in React Context so that
  * AuthGate can read user state instantly (zero network latency)
  * instead of calling supabase.auth.getUser() on every navigation.
  *
- * On a 3G connection in YaoundÃ© (200â€“500 ms round-trip), removing
- * that per-navigation network call eliminates the "Verifying accessâ€¦"
+ * On a 3G connection in Yaoundé (200–500 ms round-trip), removing
+ * that per-navigation network call eliminates the "Verifying access…"
  * spinner that appeared before every protected page.
  *
- * Usage â€” wrap in AppProviders.tsx:
+ * Usage — wrap in AppProviders.tsx:
  *   <SupabaseAuthProvider>
  *     {children}
  *   </SupabaseAuthProvider>
@@ -29,7 +29,7 @@ import React, { useEffect,
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/utils/auth/supabaseAuthGuard";
 
-// â”€â”€â”€ CONTEXT TYPE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CONTEXT TYPE ─────────────────────────────────────────────────────────────
 
 interface SupabaseAuthContextType {
   /** The currently authenticated user, or null when signed out. */
@@ -38,7 +38,7 @@ interface SupabaseAuthContextType {
   session: Session | null;
   /**
    * True only during the very first session resolution on app start.
-   * After that it stays false â€” auth state changes update user/session
+   * After that it stays false — auth state changes update user/session
    * synchronously via onAuthStateChange without toggling this flag.
    */
   loading: boolean;
@@ -49,7 +49,7 @@ interface SupabaseAuthContextType {
   refreshSession: () => Promise<void>;
 }
 
-// â”€â”€â”€ CONTEXT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CONTEXT ─────────────────────────────────────────────────────────────────
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
   user: null,
@@ -58,7 +58,7 @@ const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
   refreshSession: async () => {},
 });
 
-// â”€â”€â”€ PROVIDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PROVIDER ────────────────────────────────────────────────────────────────
 
 export function SupabaseAuthProvider({
   children,
@@ -77,7 +77,7 @@ export function SupabaseAuthProvider({
         setUser(data.session?.user ?? null);
       }
     } catch {
-      // Network failure â€” keep existing cached state, do not clear
+      // Network failure — keep existing cached state, do not clear
     }
   }, []);
 
@@ -120,7 +120,7 @@ export function SupabaseAuthProvider({
   );
 }
 
-// â”€â”€â”€ HOOK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── HOOK ────────────────────────────────────────────────────────────────────
 
 /**
  * Returns the cached Supabase auth state.

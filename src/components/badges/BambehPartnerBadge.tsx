@@ -1,5 +1,5 @@
 ﻿/**
- * BambehPartnerBadge.tsx â€” Reusable partner badge display component.
+ * BambehPartnerBadge.tsx — Reusable partner badge display component.
  * Determines tier from transaction count + rating, renders the badge.
  */
 
@@ -141,13 +141,13 @@ export default function BambehPartnerBadge({
         </div>
         {rating > 0 && (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: meta.color, fontFamily: 'Arial' }}>â˜… {rating.toFixed(1)}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: meta.color, fontFamily: 'Arial' }}>★ {rating.toFixed(1)}</div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'Arial' }}>Rating</div>
           </div>
         )}
         {isVerified && (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#22C55E', fontFamily: 'Arial' }}>âœ“</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#22C55E', fontFamily: 'Arial' }}>✓</div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'Arial' }}>Verified</div>
           </div>
         )}

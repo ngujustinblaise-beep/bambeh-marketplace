@@ -1,13 +1,13 @@
 ﻿/**
- * src/pages/CoinsPage.tsx â€” Bambeh Marketplace
+ * src/pages/CoinsPage.tsx — Bambeh Marketplace
  *
  * FIXED (this version):
- *  âœ… Full i18n via useLang / t() â€” EN, FR, Pidgin, Arabic, Fulfulde
- *  âœ… Buy Coins navigates to /coins/buy (aligned with router fix below)
- *  âœ… maybeSingle() so no crash when row doesn't exist yet
- *  âœ… Manual refresh button + auto-refresh on ?purchased=1
- *  âœ… Zero-balance row upserted on first visit
- *  âœ… RTL support for Arabic
+ *  ✅ Full i18n via useLang / t() — EN, FR, Pidgin, Arabic, Fulfulde
+ *  ✅ Buy Coins navigates to /coins/buy (aligned with router fix below)
+ *  ✅ maybeSingle() so no crash when row doesn't exist yet
+ *  ✅ Manual refresh button + auto-refresh on ?purchased=1
+ *  ✅ Zero-balance row upserted on first visit
+ *  ✅ RTL support for Arabic
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -19,7 +19,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang, t } from '@/hooks/useAppLang';
 
-// â”€â”€ i18n strings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── i18n strings ──────────────────────────────────────────────────────────────
 const strings = {
   en: {
     title:         'Zerm Coins',
@@ -39,27 +39,27 @@ const strings = {
     purchased:     'Purchase received!',
     purchasedSub:  'Your coins may take a moment to appear. Tap Refresh if needed.',
     refresh:       'Refresh',
-    refreshing:    'Refreshingâ€¦',
+    refreshing:    'Refreshing…',
   },
   fr: {
-    title:         'PiÃ¨ces Zerm',
+    title:         'Pièces Zerm',
     balance:       'Votre Solde',
     available:     'Disponible',
-    earned:        'GagnÃ©',
-    spent:         'DÃ©pensÃ©',
+    earned:        'Gagné',
+    spent:         'Dépensé',
     buyCoins:      'Acheter',
-    transfer:      'TransfÃ©rer',
-    tipTitle:      'Gagnez plus de piÃ¨ces Zerm',
-    tipBody:       'Parrainez des amis, complÃ©tez votre profil et restez actif pour gagner des bonus.',
+    transfer:      'Transférer',
+    tipTitle:      'Gagnez plus de pièces Zerm',
+    tipBody:       'Parrainez des amis, complétez votre profil et restez actif pour gagner des bonus.',
     historyTitle:  'Historique des transactions',
     all:           'Tout',
-    earnedTab:     'GagnÃ©',
-    spentTab:      'DÃ©pensÃ©',
+    earnedTab:     'Gagné',
+    spentTab:      'Dépensé',
     noTx:          'Aucune transaction',
-    purchased:     'Achat reÃ§u !',
-    purchasedSub:  "Vos piÃ¨ces peuvent prendre un moment. Appuyez sur Actualiser si nÃ©cessaire.",
+    purchased:     'Achat reçu !',
+    purchasedSub:  "Vos pièces peuvent prendre un moment. Appuyez sur Actualiser si nécessaire.",
     refresh:       'Actualiser',
-    refreshing:    'Actualisationâ€¦',
+    refreshing:    'Actualisation…',
   },
   pidgin: {
     title:         'Zerm Coins',
@@ -70,7 +70,7 @@ const strings = {
     buyCoins:      'Buy Coins',
     transfer:      'Send',
     tipTitle:      'Get more Zerm Coins',
-    tipBody:       'Bring your padis, complete your profile, stay active â€” na so bonus dey come.',
+    tipBody:       'Bring your padis, complete your profile, stay active — na so bonus dey come.',
     historyTitle:  'Transaction History',
     all:           'All',
     earnedTab:     'You Get',
@@ -79,47 +79,47 @@ const strings = {
     purchased:     'Purchase done!',
     purchasedSub:  'Your coins fit take small time appear. Press Refresh if e no show.',
     refresh:       'Refresh',
-    refreshing:    'Refreshingâ€¦',
+    refreshing:    'Refreshing…',
   },
   ar: {
-    title:         'Ø¹Ù…Ù„Ø§Øª Ø²Ø±Ù…',
-    balance:       'Ø±ØµÙŠØ¯Ùƒ',
-    available:     'Ù…ØªØ§Ø­',
-    earned:        'Ù…ÙƒØªØ³Ø¨',
-    spent:         'Ù…ÙÙ†ÙÙŽÙ‚',
-    buyCoins:      'Ø´Ø±Ø§Ø¡',
-    transfer:      'ØªØ­ÙˆÙŠÙ„',
-    tipTitle:      'Ø§ÙƒØ³Ø¨ Ø§Ù„Ù…Ø²ÙŠØ¯ Ù…Ù† Ø¹Ù…Ù„Ø§Øª Ø²Ø±Ù…',
-    tipBody:       'Ø§Ø¯Ø¹Ù Ø£ØµØ¯Ù‚Ø§Ø¡ÙƒØŒ Ø£ÙƒÙ…Ù„ Ù…Ù„ÙÙƒ Ø§Ù„Ø´Ø®ØµÙŠØŒ ÙˆØ§Ø¨Ù‚ÙŽ Ù†Ø´Ø·Ø§Ù‹ Ù„Ù„Ø­ØµÙˆÙ„ Ø¹Ù„Ù‰ Ù…ÙƒØ§ÙØ¢Øª.',
-    historyTitle:  'Ø³Ø¬Ù„ Ø§Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª',
-    all:           'Ø§Ù„ÙƒÙ„',
-    earnedTab:     'Ù…ÙƒØªØ³Ø¨',
-    spentTab:      'Ù…ÙÙ†ÙÙŽÙ‚',
-    noTx:          'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¹Ø§Ù…Ù„Ø§Øª Ø¨Ø¹Ø¯',
-    purchased:     'ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨ Ø§Ù„Ø´Ø±Ø§Ø¡!',
-    purchasedSub:  'Ù‚Ø¯ ØªØ³ØªØºØ±Ù‚ Ø¹Ù…Ù„Ø§ØªÙƒ Ù„Ø­Ø¸Ø© Ù„Ù„Ø¸Ù‡ÙˆØ±. Ø§Ø¶ØºØ· ØªØ­Ø¯ÙŠØ« Ø¹Ù†Ø¯ Ø§Ù„Ø­Ø§Ø¬Ø©.',
-    refresh:       'ØªØ­Ø¯ÙŠØ«',
-    refreshing:    'Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ø¯ÙŠØ«â€¦',
+    title:         'عملات زرم',
+    balance:       'رصيدك',
+    available:     'متاح',
+    earned:        'مكتسب',
+    spent:         'مÙنÙَق',
+    buyCoins:      'شراء',
+    transfer:      'تحويل',
+    tipTitle:      'اكسب المزيد من عملات زرم',
+    tipBody:       'ادعÙ أصدقاءك، أكمل ملÙك الشخصي، وابقَ نشطاً للحصول على مكاÙآت.',
+    historyTitle:  'سجل المعاملات',
+    all:           'الكل',
+    earnedTab:     'مكتسب',
+    spentTab:      'مÙنÙَق',
+    noTx:          'لا توجد معاملات بعد',
+    purchased:     'تم استلام طلب الشراء!',
+    purchasedSub:  'قد تستغرق عملاتك لحظة للظهور. اضغط تحديث عند الحاجة.',
+    refresh:       'تحديث',
+    refreshing:    'جارÙ التحديث…',
   },
   fulfulde: {
-    title:         'Zerm CoinÉ—e',
+    title:         'Zerm Coinɗe',
     balance:       'Soodaande maa',
     available:     'Woni',
-    earned:        'HeÉ“iino',
+    earned:        'Heɓiino',
     spent:         'Faalanaa',
     buyCoins:      'Sood',
     transfer:      'Neldu',
-    tipTitle:      'HeÉ“ coinÉ—e Zerm keewÉ—e',
-    tipBody:       'Naatnu yimÉ“e, heÉ“ profil maa, yahugol aktif â€” so hono nii mbaÉ—aten bonus.',
-    historyTitle:  'Laamu LiÉ“É“itol',
+    tipTitle:      'Heɓ coinɗe Zerm keewɗe',
+    tipBody:       'Naatnu yimɓe, heɓ profil maa, yahugol aktif — so hono nii mbaɗaten bonus.',
+    historyTitle:  'Laamu Liɓɓitol',
     all:           'Fof',
-    earnedTab:     'HeÉ“iino',
+    earnedTab:     'Heɓiino',
     spentTab:      'Faalanaa',
-    noTx:          'Alaa liÉ“É“itol',
+    noTx:          'Alaa liɓɓitol',
     purchased:     'Soodaande accii!',
-    purchasedSub:  'CoinÉ—e maa mbaawa waaÉ“ude. TaaÉ“ Refresh so wonaa haa.',
+    purchasedSub:  'Coinɗe maa mbaawa waaɓude. Taaɓ Refresh so wonaa haa.',
     refresh:       'Refresh',
-    refreshing:    'Dawnugolâ€¦',
+    refreshing:    'Dawnugol…',
   },
 } as const;
 
@@ -162,7 +162,7 @@ export default function CoinsPage() {
       if (!session?.user) { navigate('/login'); return; }
       const userId = session.user.id;
 
-      // Fetch balance â€” maybeSingle() never throws on missing row
+      // Fetch balance — maybeSingle() never throws on missing row
       const { data: coinData } = await supabase
         .from('zerm_coins')
         .select('balance')
@@ -172,7 +172,7 @@ export default function CoinsPage() {
       if (coinData) {
         setBalance(coinData.balance ?? 0);
       } else {
-        // First-time user â€” create wallet row
+        // First-time user — create wallet row
         const { data: newRow } = await supabase
           .from('zerm_coins')
           .upsert({ user_id: userId, balance: 0 }, { onConflict: 'user_id' })
@@ -248,7 +248,7 @@ export default function CoinsPage() {
         <div className="text-center">
           <p className="text-teal-100 text-sm mb-1">{s.balance}</p>
           <div className="text-white text-6xl font-black mb-1">
-            {loading ? 'â€¦' : (balance ?? 0).toLocaleString()}
+            {loading ? '…' : (balance ?? 0).toLocaleString()}
           </div>
           <p className="text-teal-100 text-sm flex items-center justify-center gap-1">
             <Zap className="w-4 h-4 text-yellow-300" /> Zerm Coins
@@ -256,7 +256,7 @@ export default function CoinsPage() {
         </div>
       </div>
 
-      {/* Stats card â€” overlaps hero */}
+      {/* Stats card — overlaps hero */}
       <div className="px-4 -mt-14 mb-4 relative z-10">
         <div className="bg-white rounded-2xl shadow-md border p-4 grid grid-cols-3 gap-3">
           <div className="text-center">

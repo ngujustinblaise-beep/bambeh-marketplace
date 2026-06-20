@@ -10,7 +10,7 @@
  * - Search bar navigates to /search?q=...
  * - NotificationBell added to desktop header (right icons + utility bar)
  *
- * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import { useState } from 'react';
@@ -59,7 +59,7 @@ export default function Header() {
     }
   };
 
-  // â”€â”€ Voice control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Voice control ────────────────────────────────────────────────────────
   const toggleVoiceControl = () => {
     setIsVoiceActive(prev => !prev);
     if (!isVoiceActive) startVoiceRecognition();
@@ -92,12 +92,12 @@ export default function Header() {
   const handleVoiceCommand = (command: string) => {
     if (command.includes('house') || command.includes('rent') || command.includes('maison'))  navigate('/rentals');
     else if (command.includes('job') || command.includes('emploi'))                           navigate('/jobs');
-    else if (command.includes('market') || command.includes('buy') || command.includes('marchÃ©')) navigate('/marketplace');
+    else if (command.includes('market') || command.includes('buy') || command.includes('marché')) navigate('/marketplace');
     else if (command.includes('car') || command.includes('vehicle') || command.includes('voiture')) navigate('/vehicles');
     else if (command.includes('service'))                                                     navigate('/services');
     else if (command.includes('community') || command.includes('group'))                      navigate('/community');
     else if (command.includes('home') || command.includes('accueil'))                         navigate('/');
-    else if (command.includes('exchange') || command.includes('Ã©change'))                     navigate('/exchange');
+    else if (command.includes('exchange') || command.includes('échange'))                     navigate('/exchange');
     else navigate(`/search?q=${encodeURIComponent(command)}`);
   };
 
@@ -120,7 +120,7 @@ export default function Header() {
     if (navigator.share) {
       await navigator.share({
         title: 'Bambeh Marketplace',
-        text: "Check out Bambeh â€” Africa's #1 Marketplace!",
+        text: "Check out Bambeh — Africa's #1 Marketplace!",
         url: window.location.href,
       });
     } else {
@@ -133,7 +133,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-gradient-to-r from-teal-600 to-blue-600 text-white shadow-lg">
       <div className="container mx-auto">
 
-        {/* â”€â”€ LEVEL 1 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── LEVEL 1 ─────────────────────────────────────────────── */}
         <div className="flex items-center justify-between h-20 px-4 border-b border-teal-700">
 
           {/* Mobile hamburger */}
@@ -186,7 +186,7 @@ export default function Header() {
             </div>
           </form>
 
-          {/* â”€â”€ Right icons (desktop) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Right icons (desktop) ──────────────────────────────── */}
           <div className="flex items-center gap-2">
 
             {/* Share button */}
@@ -210,10 +210,10 @@ export default function Header() {
               {isVoiceActive ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </button>
 
-            {/* â”€â”€ NOTIFICATION BELL â€” desktop header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            {/* ── NOTIFICATION BELL — desktop header ─────────────────
                 Shows on desktop only (md:flex). On mobile the bottom
                 nav already has a bell icon that navigates to /notifications.
-            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            ───────────────────────────────────────────────────────── */}
             {currentUser && (
               <div className="hidden md:flex items-center">
                 <NotificationBell />
@@ -243,14 +243,14 @@ export default function Header() {
           </div>
         </div>
 
-        {/* â”€â”€ LEVEL 2 â€” Desktop nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── LEVEL 2 — Desktop nav ────────────────────────────────── */}
         <nav className="hidden md:flex items-center justify-center gap-1 h-14 px-4 border-b border-teal-700">
           {[
-            { to: '/marketplace', label: `ðŸ“¦ ${t('nav.marketplace')}` },
-            { to: '/jobs',        label: `ðŸ’¼ ${t('nav.jobs')}`        },
-            { to: '/services',    label: `ðŸ”§ ${t('nav.services')}`    },
+            { to: '/marketplace', label: `📦 ${t('nav.marketplace')}` },
+            { to: '/jobs',        label: `💼 ${t('nav.jobs')}`        },
+            { to: '/services',    label: `🔧 ${t('nav.services')}`    },
             { to: '/rentals',     label: `ðŸ  ${t('nav.rentals')}`     },
-            { to: '/vehicles',    label: `ðŸš— ${t('nav.vehicles')}`    },
+            { to: '/vehicles',    label: `🚗 ${t('nav.vehicles')}`    },
           ].map(item => (
             <Link
               key={item.to}
@@ -269,22 +269,22 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* â”€â”€ LEVEL 3 â€” Desktop utility bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── LEVEL 3 — Desktop utility bar ───────────────────────── */}
         <div className="hidden md:flex items-center justify-between h-10 px-4 text-sm bg-teal-700/30">
           <div className="flex items-center gap-4">
             <Link to="/community" className="hover:text-teal-200 transition-colors">
-              ðŸ‘¥ {t('nav.community')}
+              👥 {t('nav.community')}
             </Link>
             <Link to="/farm-fresh" className="hover:text-teal-200 transition-colors">
-              ðŸŒ¿ Farm Fresh
+              🌿 Farm Fresh
             </Link>
             <Link to="/tontine" className="hover:text-teal-200 transition-colors">
-              ðŸ’° Njangi
+              💰 Njangi
             </Link>
           </div>
 
           <div className="flex items-center gap-3 relative">
-            {/* Language picker â€” DESKTOP */}
+            {/* Language picker — DESKTOP */}
             <div className="relative">
               <button
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
@@ -308,7 +308,7 @@ export default function Header() {
                     >
                       <span className="text-lg">{lang.flag}</span>
                       <span className="flex-1">{lang.nativeName}</span>
-                      {language === lang.code && <span className="text-teal-500">âœ“</span>}
+                      {language === lang.code && <span className="text-teal-500">✓</span>}
                     </button>
                   ))}
                 </div>
@@ -333,7 +333,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* â”€â”€ MOBILE MENU â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── MOBILE MENU ──────────────────────────────────────────── */}
         {isMenuOpen && (
           <div
             className="md:hidden bg-gradient-to-b from-teal-600 to-blue-700 border-t border-teal-700"
@@ -358,7 +358,7 @@ export default function Header() {
             <nav className="flex flex-col space-y-1 pb-6">
               {/* Account */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
-                ðŸ‘¤ {t('common.profile')}
+                👤 {t('common.profile')}
               </div>
               <Link
                 to="/profile"
@@ -397,7 +397,7 @@ export default function Header() {
 
               <div className="border-t border-teal-700 my-2"/>
 
-              {/* Language picker â€” MOBILE */}
+              {/* Language picker — MOBILE */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
                 ðŸŒ {t('settings.language')}
               </div>
@@ -427,7 +427,7 @@ export default function Header() {
                     >
                       <span className="text-lg">{lang.flag}</span>
                       <span className="flex-1">{lang.nativeName}</span>
-                      {language === lang.code && <span className="text-teal-300 font-bold">âœ“</span>}
+                      {language === lang.code && <span className="text-teal-300 font-bold">✓</span>}
                     </button>
                   ))}
                 </div>
@@ -437,14 +437,14 @@ export default function Header() {
 
               {/* Categories */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
-                ðŸ“‚ Categories
+                📂 Categories
               </div>
               {[
-                { to: '/marketplace', label: `ðŸ“¦ ${t('nav.marketplace')}` },
-                { to: '/jobs',        label: `ðŸ’¼ ${t('nav.jobs')}`        },
-                { to: '/services',    label: `ðŸ”§ ${t('nav.services')}`    },
+                { to: '/marketplace', label: `📦 ${t('nav.marketplace')}` },
+                { to: '/jobs',        label: `💼 ${t('nav.jobs')}`        },
+                { to: '/services',    label: `🔧 ${t('nav.services')}`    },
                 { to: '/rentals',     label: `ðŸ  ${t('nav.rentals')}`     },
-                { to: '/vehicles',    label: `ðŸš— ${t('nav.vehicles')}`    },
+                { to: '/vehicles',    label: `🚗 ${t('nav.vehicles')}`    },
               ].map(item => (
                 <Link
                   key={item.to}
@@ -470,14 +470,14 @@ export default function Header() {
 
               {/* Quick actions */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
-                âš¡ Quick Actions
+                ⚡ Quick Actions
               </div>
               <button
                 onClick={() => { toggleVoiceControl(); setIsMenuOpen(false); }}
                 className={`text-left hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium ${isVoiceActive ? 'bg-red-500' : ''}`}
                 style={{ touchAction: 'auto', minHeight: '48px' }}
               >
-                {isVoiceActive ? 'ðŸŽ¤ ' + t('voice.listening') : 'ðŸŽ™ï¸ ' + t('voice.tapToSpeak')}
+                {isVoiceActive ? '🎤 ' + t('voice.listening') : '🎙ï¸ ' + t('voice.tapToSpeak')}
               </button>
               <button
                 onClick={() => { handleShare(); setIsMenuOpen(false); }}
@@ -488,8 +488,8 @@ export default function Header() {
                 {t('common.share')}
               </button>
               {[
-                { to: '/coins',     label: `âš¡ Zerm Coins Wallet`          },
-                { to: '/cart',      label: `ðŸ›’ ${t('nav.cart')}`      },
+                { to: '/coins',     label: `⚡ Zerm Coins Wallet`          },
+                { to: '/cart',      label: `🛒 ${t('nav.cart')}`      },
                 { to: '/favorites', label: `â¤ï¸ ${t('nav.favorites')}` },
                 { to: '/referral',  label: 'ðŸŽ Referral Program'       },
               ].map(item => (
@@ -510,7 +510,7 @@ export default function Header() {
                 style={{ touchAction: 'auto', minHeight: '48px' }}
               >
                 <Crown className="w-5 h-5" />
-                <span className="flex-1">Subscribe â€” CFA 100 only!</span>
+                <span className="flex-1">Subscribe — CFA 100 only!</span>
               </Link>
 
               <div className="border-t border-teal-700 my-2"/>

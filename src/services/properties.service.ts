@@ -1,41 +1,41 @@
 ﻿/**
  * src/services/properties.service.ts
- * Bambeh Marketplace â€” Properties / Rentals Service
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Properties / Rentals Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * â”€â”€â”€ FIX (June 2026) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * Previous version queried a "properties" table â€” does NOT exist in Supabase.
+ * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
+ * Previous version queried a "properties" table — does NOT exist in Supabase.
  * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
  * All functions now query: supabase.from("listings").eq("type", "rental")
  *
- * Column mapping (listings table â†’ Property type):
- *   listings.id               â†’ id
- *   listings.user_id          â†’ landlordId       (NOT landlord_id â€” doesn't exist)
- *   listings.title            â†’ title
- *   listings.description      â†’ description
- *   listings.price            â†’ priceXAF
- *   listings.location         â†’ city
- *   listings.images           â†’ images[]
- *   listings.extra.prop_type  â†’ propertyType
- *   listings.extra.period     â†’ rentalPeriod
- *   listings.extra.negotiable â†’ isNegotiable
- *   listings.extra.bedrooms   â†’ bedrooms
- *   listings.extra.bathrooms  â†’ bathrooms
- *   listings.extra.surface    â†’ surfaceM2
- *   listings.extra.region     â†’ region
- *   listings.extra.address    â†’ address
- *   listings.extra.amenities  â†’ amenities[]
- *   listings.extra.available  â†’ isAvailable
- *   listings.extra.avail_from â†’ availableFrom
- *   listings.phone            â†’ contactPhone
- *   listings.view_count       â†’ viewCount
- *   listings.status           â†’ status
+ * Column mapping (listings table → Property type):
+ *   listings.id               → id
+ *   listings.user_id          → landlordId       (NOT landlord_id — doesn't exist)
+ *   listings.title            → title
+ *   listings.description      → description
+ *   listings.price            → priceXAF
+ *   listings.location         → city
+ *   listings.images           → images[]
+ *   listings.extra.prop_type  → propertyType
+ *   listings.extra.period     → rentalPeriod
+ *   listings.extra.negotiable → isNegotiable
+ *   listings.extra.bedrooms   → bedrooms
+ *   listings.extra.bathrooms  → bathrooms
+ *   listings.extra.surface    → surfaceM2
+ *   listings.extra.region     → region
+ *   listings.extra.address    → address
+ *   listings.extra.amenities  → amenities[]
+ *   listings.extra.available  → isAvailable
+ *   listings.extra.avail_from → availableFrom
+ *   listings.phone            → contactPhone
+ *   listings.view_count       → viewCount
+ *   listings.status           → status
  */
 
 import { supabase } from "@/lib/supabase";
 import type { ItemFilters, PaginatedItemsResponse } from "@/types/src_types_items";
 
-// â”€â”€â”€ Types (unchanged â€” callers don't need to update) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types (unchanged — callers don't need to update) ─────────────────────────
 export type PropertyType =
   | "apartment" | "house" | "studio" | "villa"
   | "office" | "land" | "commercial" | "warehouse" | "room";
@@ -89,7 +89,7 @@ export interface PropertyActionResponse {
   error: string | null;
 }
 
-// â”€â”€â”€ Row mapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Row mapper ────────────────────────────────────────────────────────────────
 function mapRow(row: Record<string, any>): Property {
   const extra  = row.extra ?? {};
   const images = Array.isArray(row.images) ? row.images : [];
@@ -129,7 +129,7 @@ function mapRow(row: Record<string, any>): Property {
   };
 }
 
-// â”€â”€â”€ Get Properties (paginated + filtered) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Properties (paginated + filtered) ────────────────────────────────────
 export async function getProperties(
   filters: Partial<ItemFilters> = {}
 ): Promise<PaginatedItemsResponse<Property>> {
@@ -178,7 +178,7 @@ export async function getProperties(
   }
 }
 
-// â”€â”€â”€ Get Property by ID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Property by ID ───────────────────────────────────────────────────────
 export async function getPropertyById(id: string): Promise<PropertyResponse> {
   try {
     const { data, error } = await supabase
@@ -197,7 +197,7 @@ export async function getPropertyById(id: string): Promise<PropertyResponse> {
   }
 }
 
-// â”€â”€â”€ Create Property â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Create Property ──────────────────────────────────────────────────────────
 export async function createProperty(
   landlordId: string,
   payload: Omit<Property, "id" | "landlordId" | "viewCount" | "createdAt" | "updatedAt">
@@ -249,7 +249,7 @@ export async function createProperty(
   }
 }
 
-// â”€â”€â”€ Update Property â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Update Property ──────────────────────────────────────────────────────────
 export async function updateProperty(
   id: string,
   landlordId: string,
@@ -293,7 +293,7 @@ export async function updateProperty(
   }
 }
 
-// â”€â”€â”€ Delete Property â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Delete Property ──────────────────────────────────────────────────────────
 export async function deleteProperty(
   id: string,
   landlordId: string
@@ -312,7 +312,7 @@ export async function deleteProperty(
   }
 }
 
-// â”€â”€â”€ Get My Properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get My Properties ────────────────────────────────────────────────────────
 export async function getMyProperties(
   landlordId: string
 ): Promise<PaginatedItemsResponse<Property>> {
@@ -338,7 +338,7 @@ export async function getMyProperties(
   }
 }
 
-// â”€â”€â”€ Increment View Count â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Increment View Count ─────────────────────────────────────────────────────
 export async function incrementPropertyView(id: string): Promise<void> {
   try {
     await supabase.rpc("increment_view_count", {

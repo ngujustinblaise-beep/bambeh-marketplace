@@ -1,6 +1,6 @@
 ﻿// @ts-nocheck
 /**
- * BAMBÃ‰ MARKETPLACE - ADMIN PANEL COMPONENT
+ * BAMBÉ MARKETPLACE - ADMIN PANEL COMPONENT
  * Complete administrative dashboard with all management features
  * Version: 1.0.0
  */
@@ -75,7 +75,7 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
     }
   };
 
-  // â”€â”€ ORDER MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── ORDER MANAGEMENT ─────────────────────────────────────────────────────
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
@@ -138,7 +138,7 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
     }
   };
 
-  // â”€â”€ USER MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── USER MANAGEMENT ──────────────────────────────────────────────────────
 
   const handleUpdateUserStatus = async (userId: string, newStatus: 'active' | 'suspended' | 'banned') => {
     const reason = newStatus !== 'active' ? prompt('Enter reason:') : undefined;
@@ -162,7 +162,7 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
     if (success) alert('Balance adjusted successfully!');
   };
 
-  // â”€â”€ DISPUTE MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── DISPUTE MANAGEMENT ───────────────────────────────────────────────────
 
   const handleUpdateDisputeStatus = async (
     disputeId: string,
@@ -191,7 +191,7 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
     alert('Comment added!');
   };
 
-  // â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── HELPERS ──────────────────────────────────────────────────────────────
 
   const formatCurrency = (amount: number) => `${amount.toLocaleString()} XAF`;
 
@@ -229,15 +229,15 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
       {/* Header */}
       <div className="admin-header">
         <div className="admin-header-content">
-          <h1>ðŸ›¡ï¸ Bambeh Admin Panel</h1>
+          <h1>🛡ï¸ Bambeh Admin Panel</h1>
           <p className="admin-subtitle">Welcome, {adminName} | Full Control Dashboard</p>
         </div>
         <div className="admin-header-actions">
           <button className="header-action-button" onClick={loadDashboardData}>
-            ðŸ”„ Refresh
+            🔄 Refresh
           </button>
           <button className="header-action-button" onClick={() => AdminService.sendBroadcast('', '', 'all', [])}>
-            ðŸ“¢ Broadcast
+            📢 Broadcast
           </button>
         </div>
       </div>
@@ -250,11 +250,11 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
             className={`admin-tab ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'dashboard' && 'ðŸ“Š Dashboard'}
-            {tab === 'orders' && 'ðŸ“¦ Orders'}
-            {tab === 'users' && 'ðŸ‘¥ Users'}
-            {tab === 'disputes' && 'âš–ï¸ Disputes'}
-            {tab === 'analytics' && 'ðŸ“ˆ Analytics'}
+            {tab === 'dashboard' && '📊 Dashboard'}
+            {tab === 'orders' && '📦 Orders'}
+            {tab === 'users' && '👥 Users'}
+            {tab === 'disputes' && '⚖ï¸ Disputes'}
+            {tab === 'analytics' && '📈 Analytics'}
           </button>
         ))}
       </div>
@@ -264,34 +264,34 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
         <div className="admin-content">
           <div className="stats-grid">
             <div className="stat-card">
-              <div className="stat-icon">ðŸ“¦</div>
+              <div className="stat-icon">📦</div>
               <div className="stat-content">
                 <div className="stat-label">Total Orders</div>
                 <div className="stat-value">{stats.totalOrders.toLocaleString()}</div>
                 <div className={`stat-growth ${stats.orderGrowth >= 0 ? 'positive' : 'negative'}`}>
-                  {stats.orderGrowth >= 0 ? 'â†‘' : 'â†“'} {Math.abs(stats.orderGrowth)}%
+                  {stats.orderGrowth >= 0 ? '↑' : '↓'} {Math.abs(stats.orderGrowth)}%
                 </div>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">ðŸ’°</div>
+              <div className="stat-icon">💰</div>
               <div className="stat-content">
                 <div className="stat-label">Total Revenue</div>
                 <div className="stat-value">{formatCurrency(stats.totalRevenue)}</div>
                 <div className={`stat-growth ${stats.revenueGrowth >= 0 ? 'positive' : 'negative'}`}>
-                  {stats.revenueGrowth >= 0 ? 'â†‘' : 'â†“'} {Math.abs(stats.revenueGrowth)}%
+                  {stats.revenueGrowth >= 0 ? '↑' : '↓'} {Math.abs(stats.revenueGrowth)}%
                 </div>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">ðŸ‘¥</div>
+              <div className="stat-icon">👥</div>
               <div className="stat-content">
                 <div className="stat-label">Total Users</div>
                 <div className="stat-value">{stats.totalUsers.toLocaleString()}</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">âš–ï¸</div>
+              <div className="stat-icon">⚖ï¸</div>
               <div className="stat-content">
                 <div className="stat-label">Pending Disputes</div>
                 <div className="stat-value">{stats.pendingDisputes}</div>
@@ -327,13 +327,13 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
             </div>
             <div className="action-buttons">
               <button className="bulk-action-button" onClick={() => handleBulkUpdate('confirm')}>
-                âœ“ Bulk Confirm
+                ✓ Bulk Confirm
               </button>
               <button className="bulk-action-button danger" onClick={() => handleBulkUpdate('cancel')}>
-                âœ• Bulk Cancel
+                ✕ Bulk Cancel
               </button>
               <button className="export-button" onClick={handleExportOrders}>
-                ðŸ“¥ Export CSV
+                📥 Export CSV
               </button>
             </div>
           </div>
@@ -406,8 +406,8 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
                     <td>{new Date((order as any).createdAt).toLocaleDateString()}</td>
                     <td>
                       <div className="action-buttons-inline">
-                        <button className="action-icon-button" onClick={() => handleAssignDriver(order.id)} title="Assign Driver">ðŸš—</button>
-                        <button className="action-icon-button" onClick={() => handleCancelOrder(order.id)} title="Cancel Order">âœ•</button>
+                        <button className="action-icon-button" onClick={() => handleAssignDriver(order.id)} title="Assign Driver">🚗</button>
+                        <button className="action-icon-button" onClick={() => handleCancelOrder(order.id)} title="Cancel Order">✕</button>
                       </div>
                     </td>
                   </tr>
@@ -460,7 +460,7 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
                         onClick={() => handleAdjustZermBalance(user.id)}
                         title="Adjust Balance"
                       >
-                        ðŸ’°
+                        💰
                       </button>
                     </td>
                   </tr>
@@ -515,7 +515,7 @@ const AdminPanelADVANCED: React.FC<AdminPanelProps> = ({ adminId, adminName }) =
                     </td>
                     <td>{new Date((dispute as any).createdAt).toLocaleDateString()}</td>
                     <td>
-                      <button className="action-icon-button" onClick={() => handleAddDisputeComment(dispute.id)} title="Add Comment">ðŸ’¬</button>
+                      <button className="action-icon-button" onClick={() => handleAddDisputeComment(dispute.id)} title="Add Comment">💬</button>
                     </td>
                   </tr>
                 ))}

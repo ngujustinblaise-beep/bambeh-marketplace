@@ -19,7 +19,7 @@ const CompactLockedContent: React.FC<CompactLockedContentProps> = ({
   onUpgrade,
 }) => (
   <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg text-sm text-gray-600">
-    <span>ðŸ”’</span>
+    <span>🔒</span>
     <span>{message}</span>
     {onUpgrade && (
       <button onClick={onUpgrade} className="text-teal-600 font-medium hover:underline ml-auto">
@@ -62,7 +62,7 @@ const TeaserContent: React.FC<TeaserContentProps> = ({ children, blurAmount = 4,
     </div>
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="bg-white/90 rounded-xl p-4 text-center shadow-lg">
-        <p className="font-semibold text-sm">ðŸ”’ Premium Content</p>
+        <p className="font-semibold text-sm">🔒 Premium Content</p>
         {onUpgrade && (
           <button onClick={onUpgrade}
             className="mt-2 bg-teal-600 text-white px-4 py-1 rounded-full text-xs">

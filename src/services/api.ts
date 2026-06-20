@@ -102,7 +102,7 @@ class ApiService {
           config.headers["X-App-Version"] = "1.0.0";
 
           console.log(
-            `ðŸ“¤ API Request: ${config.method?.toUpperCase()} ${config.url}`,
+            `📤 API Request: ${config.method?.toUpperCase()} ${config.url}`,
           );
 
           return config;
@@ -125,7 +125,7 @@ class ApiService {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         console.log(
-          `âœ… API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`,
+          `✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`,
         );
 
         // Cache successful responses
@@ -182,7 +182,7 @@ class ApiService {
 
       window.addEventListener("offline", () => {
         this.isOnline = false;
-        console.log("ðŸ“´ Network offline - Requests will be queued");
+        console.log("📴 Network offline - Requests will be queued");
       });
 
       // Set initial online state
@@ -200,14 +200,14 @@ class ApiService {
     if (!this.isOnline) {
       return new Promise((resolve, reject) => {
         this.requestQueue.push({ config, resolve, reject });
-        console.log(`ðŸ“¥ Request queued: ${config.url}`);
+        console.log(`📥 Request queued: ${config.url}`);
       });
     }
 
     // Try to get cached response
     const cachedResponse = await this.getCachedResponse(config);
     if (cachedResponse) {
-      console.log(`ðŸ’¾ Serving cached response: ${config.url}`);
+      console.log(`💾 Serving cached response: ${config.url}`);
       return cachedResponse;
     }
 
@@ -270,7 +270,7 @@ class ApiService {
     await this.delay(RETRY_DELAY * (currentRetries + 1));
 
     console.log(
-      `ðŸ”„ Retrying request (${currentRetries + 1}/${MAX_RETRIES}): ${config.url}`,
+      `🔄 Retrying request (${currentRetries + 1}/${MAX_RETRIES}): ${config.url}`,
     );
 
     return this.axiosInstance.request(config);
@@ -282,7 +282,7 @@ class ApiService {
   private async processRequestQueue(): Promise<void> {
     if (this.requestQueue.length === 0) return;
 
-    console.log(`ðŸ”„ Processing ${this.requestQueue.length} queued requests`);
+    console.log(`🔄 Processing ${this.requestQueue.length} queued requests`);
 
     const queue = [...this.requestQueue];
     this.requestQueue = [];

@@ -14,7 +14,7 @@ interface BadgeRequirementsProps {
 }
 
 const BadgeWithTooltip: React.FC<BadgeWithTooltipProps> = ({
-  label, tooltip, icon = "âœ…", color = "teal",
+  label, tooltip, icon = "✅", color = "teal",
 }) => (
   <div className="relative group inline-flex items-center gap-1 cursor-default">
     <span className={`text-${color}-600 text-lg`}>{icon}</span>
@@ -35,7 +35,7 @@ const BadgeRequirements: React.FC<BadgeRequirementsProps> = ({
     <ul className="space-y-1">
       {requirements.map((r, i) => (
         <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-          <span className="text-teal-500 mt-0.5">â€¢</span>{r}
+          <span className="text-teal-500 mt-0.5">•</span>{r}
         </li>
       ))}
     </ul>
@@ -49,8 +49,8 @@ interface TrustedBadgeProps {
 
 const TrustedBadge: React.FC<TrustedBadgeProps> = ({ level = "basic", showRequirements }) => {
   const config = {
-    basic:    { label: "Trusted",  icon: "ðŸ›¡ï¸",  tooltip: "This seller has a verified phone number.",    color: "gray"  },
-    verified: { label: "Verified", icon: "âœ…",  tooltip: "Identity and business verified by Bambeh.",    color: "teal"  },
+    basic:    { label: "Trusted",  icon: "🛡ï¸",  tooltip: "This seller has a verified phone number.",    color: "gray"  },
+    verified: { label: "Verified", icon: "✅",  tooltip: "Identity and business verified by Bambeh.",    color: "teal"  },
     premium:  { label: "Premium",  icon: "â­",  tooltip: "Top-rated seller with premium subscription.", color: "yellow"},
   }[level];
 

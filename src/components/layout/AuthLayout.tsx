@@ -3,12 +3,12 @@
  * FILE LOCATION: src/components/layout/AuthLayout.tsx
  *
  * CHANGES IN THIS VERSION:
- *  âœ… Fixed broken branding string "â€” 's #1 App" â†’ proper translated text via t()
- *  âœ… Full i18n â€” branding strip and footer line now use LanguageContext t()
- *  âœ… "Only 1% Transaction Fee" â†’ "Lowest in any marketplace"
- *  âœ… RTL direction applied when language is Arabic
+ *  ✅ Fixed broken branding string "— 's #1 App" → proper translated text via t()
+ *  ✅ Full i18n — branding strip and footer line now use LanguageContext t()
+ *  ✅ "Only 1% Transaction Fee" → "Lowest in any marketplace"
+ *  ✅ RTL direction applied when language is Arabic
  *
- * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import React from "react";

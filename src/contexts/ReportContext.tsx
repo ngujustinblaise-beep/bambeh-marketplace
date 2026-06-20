@@ -1,7 +1,7 @@
 ﻿/**
  * REPORT CONTEXT - CENTRALIZED REPORT MANAGEMENT
  * FILE LOCATION: src/contexts/ReportContext.tsx
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  */
 
 import React, { useEffect, 
@@ -250,7 +250,7 @@ export const ReportProvider: React.FC<ReportProviderProps> = ({ children }) => {
           updatedAt: now,
         };
         setReports((prev) => [newReport, ...prev]);
-        console.log("âœ… Report submitted successfully:", newReport.id);
+        console.log("✅ Report submitted successfully:", newReport.id);
         return true;
       } catch (err) {
         setError("Failed to submit report");

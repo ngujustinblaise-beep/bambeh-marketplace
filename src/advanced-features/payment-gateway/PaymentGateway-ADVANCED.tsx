@@ -62,14 +62,14 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
       {errorMsg && <p className="text-red-500 text-sm mb-3">{errorMsg}</p>}
       {receipt ? (
         <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-sm">
-          <p className="font-semibold text-green-700">âœ… Payment Successful</p>
+          <p className="font-semibold text-green-700">✅ Payment Successful</p>
           <p className="text-gray-600 mt-1">Receipt: {String(receipt.receiptNumber)}</p>
         </div>
       ) : (
         <button onClick={handlePay} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl transition-colors">
-          {loading ? "Processingâ€¦" : "Pay Now"}
+          {loading ? "Processing…" : "Pay Now"}
         </button>
       )}
     </div>

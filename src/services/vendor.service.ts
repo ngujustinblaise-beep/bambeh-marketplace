@@ -1,13 +1,13 @@
 ﻿/**
  * src/services/vendor.service.ts
- * Bambeh Marketplace â€” Vendor Service
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 import type { VendorSubscription, VendorEarnings, VendorAnalyticsSnapshot } from "@/types/vendor.monetization.types";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface VendorProfile {
   id: string;
   userId: string;
@@ -65,7 +65,7 @@ export interface VendorOrder {
   updatedAt: string;
 }
 
-// â”€â”€â”€ Map Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Map Row ──────────────────────────────────────────────────────────────────
 function mapVendorRow(row: Record<string, unknown>): VendorProfile {
   return {
     id: row.id as string,
@@ -93,7 +93,7 @@ function mapVendorRow(row: Record<string, unknown>): VendorProfile {
   };
 }
 
-// â”€â”€â”€ Get Vendor Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Vendor Profile ───────────────────────────────────────────────────────
 export async function getVendorProfile(vendorId: string): Promise<VendorResponse> {
   try {
     const { data, error } = await supabase
@@ -110,7 +110,7 @@ export async function getVendorProfile(vendorId: string): Promise<VendorResponse
   }
 }
 
-// â”€â”€â”€ Get Vendor by User ID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Vendor by User ID ────────────────────────────────────────────────────
 export async function getVendorByUserId(userId: string): Promise<VendorResponse> {
   try {
     const { data, error } = await supabase
@@ -127,7 +127,7 @@ export async function getVendorByUserId(userId: string): Promise<VendorResponse>
   }
 }
 
-// â”€â”€â”€ Create Vendor Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Create Vendor Profile ────────────────────────────────────────────────────
 export async function createVendorProfile(
   userId: string,
   payload: Omit<VendorProfile, "id" | "userId" | "isVerified" | "isFeatured" | "rating" | "reviewCount" | "totalProducts" | "totalSales" | "subscriptionTier" | "createdAt" | "updatedAt">
@@ -167,7 +167,7 @@ export async function createVendorProfile(
   }
 }
 
-// â”€â”€â”€ Update Vendor Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Update Vendor Profile ────────────────────────────────────────────────────
 export async function updateVendorProfile(
   vendorId: string,
   updates: Partial<VendorProfile>
@@ -198,7 +198,7 @@ export async function updateVendorProfile(
   }
 }
 
-// â”€â”€â”€ Get Vendor Orders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Vendor Orders ────────────────────────────────────────────────────────
 export async function getVendorOrders(
   vendorId: string,
   status?: VendorOrder["status"]
@@ -241,7 +241,7 @@ export async function getVendorOrders(
   }
 }
 
-// â”€â”€â”€ Update Order Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Update Order Status ──────────────────────────────────────────────────────
 export async function updateOrderStatus(
   orderId: string,
   vendorId: string,
@@ -262,7 +262,7 @@ export async function updateOrderStatus(
   }
 }
 
-// â”€â”€â”€ Get Vendor Earnings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Vendor Earnings ──────────────────────────────────────────────────────
 export async function getVendorEarnings(
   vendorId: string
 ): Promise<{ data: VendorEarnings | null; error: string | null }> {
@@ -291,7 +291,7 @@ export async function getVendorEarnings(
   }
 }
 
-// â”€â”€â”€ Get Analytics Snapshot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Analytics Snapshot ───────────────────────────────────────────────────
 export async function getVendorAnalytics(
   vendorId: string,
   period: VendorAnalyticsSnapshot["period"] = "month"
@@ -335,7 +335,7 @@ export async function getVendorAnalytics(
   }
 }
 
-// â”€â”€â”€ Get Subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Subscription ─────────────────────────────────────────────────────────
 export async function getVendorSubscription(
   vendorId: string
 ): Promise<{ data: VendorSubscription | null; error: string | null }> {

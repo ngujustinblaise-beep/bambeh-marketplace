@@ -15,9 +15,9 @@ const VoiceAssistant: React.FC = () => {
   const toggleListen = useCallback(() => {
     setIsListening(prev => {
       if (!prev) {
-        setTranscript("Listeningâ€¦");
+        setTranscript("Listening…");
       } else {
-        if (transcript && transcript !== "Listeningâ€¦") {
+        if (transcript && transcript !== "Listening…") {
           const userTurn: ConversationEntry = {
             role: "user", text: transcript, timestamp: new Date().toISOString(),
           };
@@ -53,7 +53,7 @@ const VoiceAssistant: React.FC = () => {
             ${isListening
               ? "bg-red-500 hover:bg-red-600 animate-pulse"
               : "bg-teal-600 hover:bg-teal-700"}`}>
-          {isListening ? "â¹" : "ðŸŽ¤"}
+          {isListening ? "â¹" : "🎤"}
         </button>
       </div>
     </div>

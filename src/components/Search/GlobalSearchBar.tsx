@@ -1,6 +1,6 @@
 ﻿// @ts-nocheck
 /**
- * GlobalSearchBar.tsx â€” UNIVERSAL SEARCH
+ * GlobalSearchBar.tsx — UNIVERSAL SEARCH
  * FILE LOCATION: src/components/search/GlobalSearchBar.tsx
  */
 
@@ -129,7 +129,7 @@ const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${color}`}>
                           <Icon className="w-3 h-3" />{result.type}
                         </span>
-                        {result.location && result.location !== 'â€”' && (
+                        {result.location && result.location !== '—' && (
                           <span className="flex items-center gap-1 text-xs text-gray-400"><MapPin className="w-3 h-3" />{result.location}</span>
                         )}
                       </div>
@@ -142,7 +142,7 @@ const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
               })}
               <button onClick={() => { navigate(`/search?q=${encodeURIComponent(query.trim())}`); setIsOpen(false); }}
                 className="w-full px-4 py-3 text-center text-sm text-teal-600 font-semibold hover:bg-teal-50 transition-colors border-t border-gray-100">
-                See all results for "{query}" â†’
+                See all results for "{query}" →
               </button>
             </>
           )}

@@ -1,7 +1,7 @@
 ﻿/**
  * src/components/vendor/VendorAnalytics.tsx
- * Bambeh Marketplace â€” Vendor Analytics Summary Card
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Analytics Summary Card
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -19,7 +19,7 @@ import {
 import type { VendorAnalyticsSnapshot } from "@/types/vendor.monetization.types";
 import { getVendorAnalytics } from "@/services/vendor.service";
 
-// â”€â”€â”€ Metric Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Metric Card ─────────────────────────────────────────────────────────────
 interface MetricCardProps {
   label: string;
   value: string | number;
@@ -67,7 +67,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   );
 };
 
-// â”€â”€â”€ VendorAnalytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── VendorAnalytics ─────────────────────────────────────────────────────────
 interface VendorAnalyticsProps {
   vendorId: string;
   period?: VendorAnalyticsSnapshot["period"];
@@ -126,14 +126,14 @@ const VendorAnalytics: React.FC<VendorAnalyticsProps> = ({
   if (error || !snapshot) {
     return (
       <div className={`bg-red-50 border border-red-200 rounded-xl p-4 flex items-center justify-between ${className}`}>
-        <p className="text-sm text-red-600">{error ?? "DonnÃ©es non disponibles"}</p>
+        <p className="text-sm text-red-600">{error ?? "Données non disponibles"}</p>
         <button
           type="button"
           onClick={load}
           className="flex items-center gap-1 text-sm text-red-600 hover:text-red-800"
         >
           <RefreshCw className="w-4 h-4" />
-          RÃ©essayer
+          Réessayer
         </button>
       </div>
     );

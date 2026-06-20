@@ -1,12 +1,12 @@
 ﻿/**
  * src/utils/performance/RoutePreloader.ts
- * Bambeh Marketplace â€” Route Preloading for Low-Latency Navigation
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Route Preloading for Low-Latency Navigation
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface RouteModule {
   path: string;
   loader: () => Promise<unknown>;
@@ -20,12 +20,12 @@ export interface PreloadResult {
   error?: string;
 }
 
-// â”€â”€â”€ Internal State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Internal State ───────────────────────────────────────────────────────────
 const preloaded = new Set<string>();
 const preloadQueue: RouteModule[] = [];
 let isRunning = false;
 
-// â”€â”€â”€ Preload a Single Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Preload a Single Route ───────────────────────────────────────────────────
 export async function preloadRoute(route: RouteModule): Promise<PreloadResult> {
   if (preloaded.has(route.path)) {
     return { path: route.path, success: true, durationMs: 0 };
@@ -45,13 +45,13 @@ export async function preloadRoute(route: RouteModule): Promise<PreloadResult> {
     const durationMs = performance.now() - start;
     const error = err instanceof Error ? err.message : String(err);
 
-    logger.warn(`[RoutePreloader] Failed: ${route.path} â€” ${error}`);
+    logger.warn(`[RoutePreloader] Failed: ${route.path} — ${error}`);
 
     return { path: route.path, success: false, durationMs, error };
   }
 }
 
-// â”€â”€â”€ Queue-Based Preloading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Queue-Based Preloading ───────────────────────────────────────────────────
 export function queueRoutePreload(route: RouteModule): void {
   if (preloaded.has(route.path)) return;
 
@@ -61,7 +61,7 @@ export function queueRoutePreload(route: RouteModule): void {
   }
 }
 
-// â”€â”€â”€ Process Queue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Process Queue ────────────────────────────────────────────────────────────
 async function processQueue(): Promise<void> {
   if (isRunning || preloadQueue.length === 0) return;
   isRunning = true;
@@ -84,7 +84,7 @@ async function processQueue(): Promise<void> {
   isRunning = false;
 }
 
-// â”€â”€â”€ Start Idle Preloading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Start Idle Preloading ────────────────────────────────────────────────────
 export function startIdlePreloading(routes: RouteModule[]): void {
   for (const route of routes) {
     queueRoutePreload(route);
@@ -107,7 +107,7 @@ export function startIdlePreloading(routes: RouteModule[]): void {
   }
 }
 
-// â”€â”€â”€ Preload on Hover â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Preload on Hover ─────────────────────────────────────────────────────────
 export function preloadOnHover(
   element: HTMLElement,
   loader: () => Promise<unknown>,
@@ -128,18 +128,18 @@ export function preloadOnHover(
   };
 }
 
-// â”€â”€â”€ Check if Preloaded â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Check if Preloaded ───────────────────────────────────────────────────────
 export function isRoutePreloaded(path: string): boolean {
   return preloaded.has(path);
 }
 
-// â”€â”€â”€ Clear Preload Cache â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Clear Preload Cache ──────────────────────────────────────────────────────
 export function clearPreloadCache(): void {
   preloaded.clear();
   preloadQueue.length = 0;
 }
 
-// â”€â”€â”€ Bambeh Core Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Bambeh Core Routes ───────────────────────────────────────────────────────
 export const BAMBEH_CORE_ROUTES: RouteModule[] = [
   {
     path: "/",

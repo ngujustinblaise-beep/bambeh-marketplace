@@ -141,7 +141,7 @@ export default function CompactShareModal({
 
         {/* Footer */}
         <div className="px-6 pb-6 space-y-3">
-          <p className="text-xs text-gray-400 text-center">Swipe down to close â†“</p>
+          <p className="text-xs text-gray-400 text-center">Swipe down to close ↓</p>
           <button onClick={onClose}
             className="w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors"
             style={{ touchAction: 'auto', WebkitTapHighlightColor: 'transparent', minHeight: '48px' }}>

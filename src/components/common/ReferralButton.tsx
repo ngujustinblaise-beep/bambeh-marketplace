@@ -12,7 +12,7 @@ export default function ReferralButton() {
 
   const referralCode    = 'BAMBE-' + Math.random().toString(36).substring(7).toUpperCase();
   const referralLink    = `https://bambeh.cm/register?ref=${referralCode}`;
-  const referralMessage = `ðŸŽ‰ Join me on Bambeh - Online Marketplace!\n\nðŸ’š Only 1% Transaction Fee - Lowest in !\nðŸ›ï¸ Buy, Sell, Trade, Find Jobs & More\nðŸŽ Use my referral code: ${referralCode}\n\nðŸ“± Sign up here: ${referralLink}\n\nWe both get 1 Zerm Coin when you register! ðŸª™`;
+  const referralMessage = `🎉 Join me on Bambeh - Online Marketplace!\n\n💚 Only 1% Transaction Fee - Lowest in !\nðŸ›ï¸ Buy, Sell, Trade, Find Jobs & More\nðŸŽ Use my referral code: ${referralCode}\n\n📱 Sign up here: ${referralLink}\n\nWe both get 1 Zerm Coin when you register! 🪙`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -58,7 +58,7 @@ export default function ReferralButton() {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative max-h-[90vh] overflow-y-auto">
             <button onClick={() => setShowDetails(false)} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <span className="text-2xl">Ã—</span>
+              <span className="text-2xl">×</span>
             </button>
 
             <div className="text-center mb-6">
@@ -72,7 +72,7 @@ export default function ReferralButton() {
             {/* Rewards */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-6 border border-purple-200">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><span className="text-2xl">ðŸª™</span><span className="font-bold text-purple-900">You Get</span></div>
+                <div className="flex items-center gap-2"><span className="text-2xl">🪙</span><span className="font-bold text-purple-900">You Get</span></div>
                 <span className="text-2xl font-bold text-purple-600">1 Zerm Coin</span>
               </div>
               <div className="flex items-center justify-between">
@@ -111,10 +111,10 @@ export default function ReferralButton() {
               <label className="block text-sm font-semibold text-gray-700 mb-3">Quick Share</label>
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={shareToWhatsApp} className="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
-                  <span className="text-xl">ðŸ’¬</span><span className="font-semibold">WhatsApp</span>
+                  <span className="text-xl">💬</span><span className="font-semibold">WhatsApp</span>
                 </button>
                 <button onClick={shareToFacebook} className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
-                  <span className="text-xl">ðŸ“˜</span><span className="font-semibold">Facebook</span>
+                  <span className="text-xl">📘</span><span className="font-semibold">Facebook</span>
                 </button>
                 <button onClick={shareToTwitter} className="p-3 bg-black hover:bg-gray-900 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
                   <span className="text-xl">ðŸ¦</span><span className="font-semibold">Twitter</span>
@@ -141,7 +141,7 @@ export default function ReferralButton() {
                 <p className="text-xs text-blue-700">Friends Referred</p>
               </div>
               <div className="p-4 bg-green-50 rounded-lg border border-green-200 text-center">
-                <span className="text-3xl">ðŸª™</span>
+                <span className="text-3xl">🪙</span>
                 <p className="text-2xl font-bold text-green-600">0</p>
                 <p className="text-xs text-green-700">Zerm Coins Earned</p>
               </div>

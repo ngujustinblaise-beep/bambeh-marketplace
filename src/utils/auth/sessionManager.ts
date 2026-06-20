@@ -1,18 +1,18 @@
 ﻿/**
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- * SESSION MANAGER â€” BAMBEH MARKETPLACE
+ * SESSION MANAGER — BAMBEH MARKETPLACE
  * FILE: src/utils/auth/sessionManager.ts
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
  * PURPOSE: Centralized session expiry management for all user types.
  *          Replaces raw localStorage reads with expiry-aware checks.
  *          Integrates directly with existing VendorProtectedRoute and
- *          AdminProtectedRoute in App.tsx â€” NO route changes needed.
+ *          AdminProtectedRoute in App.tsx — NO route changes needed.
  *
  * SESSION TTL:
- *   - user   â†’ 7 days  (with remember-me toggle)
- *   - vendor â†’ 24 hours
- *   - admin  â†’ 1 hour  (strict â€” admin access is high risk)
+ *   - user   → 7 days  (with remember-me toggle)
+ *   - vendor → 24 hours
+ *   - admin  → 1 hour  (strict — admin access is high risk)
  *
  * HOW TO USE IN EXISTING CODE:
  *   Replace: localStorage.getItem('Bambeh_vendor')
@@ -24,7 +24,7 @@
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
-// â”€â”€â”€ SESSION DURATION CONSTANTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SESSION DURATION CONSTANTS ─────────────────────────────────────────────
 export const SESSION_DURATION_MS = {
   user:        7 * 24 * 60 * 60 * 1000,  // 7 days
   user_short:  24 * 60 * 60 * 1000,       // 1 day (without remember-me)
@@ -34,7 +34,7 @@ export const SESSION_DURATION_MS = {
 
 export type SessionType = 'user' | 'vendor' | 'admin';
 
-// â”€â”€â”€ SESSION KEYS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SESSION KEYS ────────────────────────────────────────────────────────────
 // Must match the keys used in VendorSignIn.tsx, AdminLogin.tsx, Login.tsx
 export const SESSION_KEYS: Record<SessionType, string[]> = {
   user:   ['Bambeh_current_user', 'Bambeh_user', 'bambe_current_user'],
@@ -42,7 +42,7 @@ export const SESSION_KEYS: Record<SessionType, string[]> = {
   admin:  ['Bambeh_admin'],
 };
 
-// â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TYPES ───────────────────────────────────────────────────────────────────
 export interface SessionData {
   session_expiry: number;
   session_type: SessionType;
@@ -56,7 +56,7 @@ export interface SessionCheckResult {
   minutesRemaining?: number;
 }
 
-// â”€â”€â”€ CORE SESSION MANAGER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CORE SESSION MANAGER ────────────────────────────────────────────────────
 export const sessionManager = {
 
   /**
@@ -87,7 +87,7 @@ export const sessionManager = {
       localStorage.setItem(primaryKey, JSON.stringify(session));
       if (process.env.NODE_ENV === 'development') {
         const expiresIn = Math.round(duration / 60000);
-        console.log(`âœ… Session set: ${primaryKey} | Expires in ${expiresIn} minutes`);
+        console.log(`✅ Session set: ${primaryKey} | Expires in ${expiresIn} minutes`);
       }
     } catch (e) {
       console.error('SessionManager: Failed to write session', e);
@@ -144,7 +144,7 @@ export const sessionManager = {
   },
 
   /**
-   * isSessionValid â€” convenience alias for a single key check.
+   * isSessionValid — convenience alias for a single key check.
    * Compatible with the pattern from the original sessionManager spec.
    */
   isSessionValid(key: string): boolean {
@@ -164,12 +164,12 @@ export const sessionManager = {
     if (type === 'vendor') localStorage.removeItem('Bambeh_vendor_authenticated');
     if (type === 'admin')  localStorage.removeItem('Bambeh_admin_authenticated');
     if (process.env.NODE_ENV === 'development') {
-      console.log(`ðŸšª Session cleared: ${type}`);
+      console.log(`🚪 Session cleared: ${type}`);
     }
   },
 
   /**
-   * clearAllSessions â€” nuclear option. Clears all Bambeh auth data.
+   * clearAllSessions — nuclear option. Clears all Bambeh auth data.
    * Use on: account deletion, security breach detected, "sign out everywhere".
    */
   clearAllSessions(): void {
@@ -188,7 +188,7 @@ export const sessionManager = {
   },
 
   /**
-   * getSessionInfo â€” Returns metadata about an active session.
+   * getSessionInfo — Returns metadata about an active session.
    * Use in profile pages to show "Session expires in X hours".
    */
   getSessionInfo(key: string): { expiresAt?: Date; minutesRemaining?: number; type?: SessionType } | null {
@@ -210,9 +210,9 @@ export const sessionManager = {
   },
 
   /**
-   * migrateOldSessions â€” Run once on app startup to add expiry to any
+   * migrateOldSessions — Run once on app startup to add expiry to any
    * existing sessions written before this system was installed.
-   * Safe to call multiple times â€” skips sessions that already have expiry.
+   * Safe to call multiple times — skips sessions that already have expiry.
    */
   migrateOldSessions(): void {
     const allSessionKeys = [
@@ -239,14 +239,14 @@ export const sessionManager = {
         session.session_type    = type;
         localStorage.setItem(key, JSON.stringify(session));
         if (process.env.NODE_ENV === 'development') {
-          console.log(`ðŸ”„ Migrated old session: ${key}`);
+          console.log(`🔄 Migrated old session: ${key}`);
         }
       } catch { /* skip invalid data */ }
     });
   },
 };
 
-// â”€â”€â”€ EXPORT CONVENIENCE FUNCTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── EXPORT CONVENIENCE FUNCTIONS ────────────────────────────────────────────
 // These match the exact API shape described in the security spec
 
 export const setSession = (

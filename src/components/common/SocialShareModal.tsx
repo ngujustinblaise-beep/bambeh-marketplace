@@ -102,7 +102,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
               </button>
               <button onClick={() => { handleCopyLink(); alert('Link copied! Paste in Instagram.'); }} style={sbBtn('#fae8ff')}>
                 <div style={{ ...icon('#ec4899'), background: 'linear-gradient(135deg,#9333ea,#ec4899,#f97316)' }}>
-                  <span style={{ fontSize: '18px' }}>ðŸ“·</span>
+                  <span style={{ fontSize: '18px' }}>📷</span>
                 </div>
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>Instagram</span>
               </button>
@@ -117,7 +117,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
             <div style={{ backgroundColor: '#f9fafb', borderRadius: '10px', padding: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <input type="text" value={fullUrl} readOnly style={{ flex: 1, border: '1px solid #e5e7eb', borderRadius: '6px', padding: '8px 10px', fontSize: '11px', color: '#4b5563', backgroundColor: 'white', minWidth: 0 }} />
               <button onClick={handleCopyLink} style={{ backgroundColor: copied ? '#22c55e' : '#0d9488', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 12px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                {copied ? 'âœ“' : 'Copy'}
+                {copied ? '✓' : 'Copy'}
               </button>
             </div>
           </div>

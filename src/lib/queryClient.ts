@@ -1,6 +1,6 @@
 ﻿/**
- * queryClient.ts â€” Bambeh Marketplace
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * queryClient.ts — Bambeh Marketplace
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * TanStack Query (React Query v5) global client configuration.
  *
@@ -27,47 +27,47 @@
 
 import { QueryClient } from "@tanstack/react-query";
 
-// â”€â”€â”€ QUERY CLIENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── QUERY CLIENT ─────────────────────────────────────────────────────────────
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // â”€â”€ Cache & Stale Times â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Cache & Stale Times ────────────────────────────────────────────────
       // staleTime: how long data is considered fresh (no background refetch)
       // gcTime: how long unused data stays in memory cache
       //
       // These defaults are tuned for  3G:
       // - 5min stale time prevents constant re-fetching on every tab switch
       // - 10min cache keeps listings available offline briefly
-      staleTime: 5 * 60 * 1000,   // 5 minutes â€” critical for  3G
+      staleTime: 5 * 60 * 1000,   // 5 minutes — critical for  3G
       gcTime: 10 * 60_000,        // 10 minutes
 
-      // â”€â”€ Refetch Policy â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-      // Prevent refetch on app resume â€” staleTime handles freshness instead
+      // ── Refetch Policy ────────────────────────────────────────────────────
+      // Prevent refetch on app resume — staleTime handles freshness instead
       refetchOnWindowFocus: false,
       // DO refetch when internet returns after an offline period
       refetchOnReconnect: true,
       // Don't refetch on mount if data is still fresh
       refetchOnMount: true,
 
-      // â”€â”€ Retry Policy â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-      // Retry up to 2 times with exponential backoff â€” handles 3G packet loss
+      // ── Retry Policy ──────────────────────────────────────────────────────
+      // Retry up to 2 times with exponential backoff — handles 3G packet loss
       retry: 2,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
 
-      // â”€â”€ Network Mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Network Mode ─────────────────────────────────────────────────────
       // 'offlineFirst': serve cache when offline, attempt network when online
       networkMode: "offlineFirst",
     },
     mutations: {
-      // Retry once â€” handles transient 3G drops without risking duplicate writes
+      // Retry once — handles transient 3G drops without risking duplicate writes
       retry: 1,
       networkMode: "offlineFirst",
     },
   },
 });
 
-// â”€â”€â”€ QUERY KEY FACTORIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── QUERY KEY FACTORIES ──────────────────────────────────────────────────────
 // Centralised query key definitions prevent key collisions and make
 // cache invalidation surgical and predictable.
 
@@ -138,28 +138,28 @@ export const queryKeys = {
   },
 } as const;
 
-// â”€â”€â”€ INVALIDATION HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── INVALIDATION HELPERS ─────────────────────────────────────────────────────
 
 /**
- * Call after posting a new listing â€” refreshes all listing lists
+ * Call after posting a new listing — refreshes all listing lists
  */
 export const invalidateListings = () =>
   queryClient.invalidateQueries({ queryKey: queryKeys.listings.all });
 
 /**
- * Call after accepting/declining an offer â€” refreshes offer state
+ * Call after accepting/declining an offer — refreshes offer state
  */
 export const invalidateOffers = (listingId: string) =>
   queryClient.invalidateQueries({ queryKey: queryKeys.offers.forListing(listingId) });
 
 /**
- * Call after subscription purchase â€” refreshes profile + subscription status
+ * Call after subscription purchase — refreshes profile + subscription status
  */
 export const invalidateProfile = () =>
   queryClient.invalidateQueries({ queryKey: queryKeys.profile.current });
 
 /**
- * Call after vendor action â€” refreshes dashboard and analytics
+ * Call after vendor action — refreshes dashboard and analytics
  */
 export const invalidateVendorDashboard = (vendorId: string) =>
   queryClient.invalidateQueries({ queryKey: queryKeys.vendor.dashboard(vendorId) });

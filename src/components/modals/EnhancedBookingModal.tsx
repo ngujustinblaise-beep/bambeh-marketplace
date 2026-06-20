@@ -2,7 +2,7 @@
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * ENHANCED BOOKING MODAL - WITH APPROVAL SYSTEM
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
@@ -345,9 +345,9 @@ export default function EnhancedBookingModal({ isOpen, onClose, itemDetails }: B
                 <div className="text-sm text-blue-900">
                   <p className="font-semibold mb-1">Next Steps:</p>
                   <ul className="space-y-1 text-blue-800">
-                    <li>â€¢ Check your messages for the provider's response</li>
-                    <li>â€¢ You'll be notified when they approve/deny</li>
-                    <li>â€¢ After approval, you can exchange contact details</li>
+                    <li>• Check your messages for the provider's response</li>
+                    <li>• You'll be notified when they approve/deny</li>
+                    <li>• After approval, you can exchange contact details</li>
                   </ul>
                 </div>
               </div>

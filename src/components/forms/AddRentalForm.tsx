@@ -1,6 +1,6 @@
 ﻿/**
  * src/components/forms/AddRentalForm.tsx
- * Bambeh Marketplace â€” Add Rental Listing Form
+ * Bambeh Marketplace — Add Rental Listing Form
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ import LocationSelector from "@/components/location/LocationSelector";
 
 interface AddRentalFormProps { onSuccess?: () => void; onCancel?: () => void; }
 
-const RENTAL_TYPES = ["Appartement","Maison","Studio","Chambre","Bureau","EntrepÃ´t","Terrain","Autre"] as const;
+const RENTAL_TYPES = ["Appartement","Maison","Studio","Chambre","Bureau","Entrepôt","Terrain","Autre"] as const;
 
 const AddRentalForm: React.FC<AddRentalFormProps> = ({ onSuccess, onCancel }) => {
   const { user } = useAuth();
@@ -44,7 +44,7 @@ const AddRentalForm: React.FC<AddRentalFormProps> = ({ onSuccess, onCancel }) =>
       <div className="mb-6"><h2 className="text-xl font-bold text-gray-900">Mettre en location</h2></div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Titre <span className="text-red-500">*</span></label>
-          <input type="text" value={form.title} onChange={e=>set("title",e.target.value)} placeholder="Ex: Appartement 3 piÃ¨ces Bastos" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+          <input type="text" value={form.title} onChange={e=>set("title",e.target.value)} placeholder="Ex: Appartement 3 pièces Bastos" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
         <div className="grid grid-cols-2 gap-4">
           <div><label className="block text-sm font-medium text-gray-700 mb-1">Type <span className="text-red-500">*</span></label>
             <select value={form.rentalType} onChange={e=>set("rentalType",e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
@@ -58,10 +58,10 @@ const AddRentalForm: React.FC<AddRentalFormProps> = ({ onSuccess, onCancel }) =>
         <div className="grid grid-cols-3 gap-3">
           <div><label className="block text-xs text-gray-500 mb-1">Chambres</label><input type="number" value={form.bedrooms} onChange={e=>set("bedrooms",e.target.value)} min="0" placeholder="0" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm outline-none" /></div>
           <div><label className="block text-xs text-gray-500 mb-1">SDB</label><input type="number" value={form.bathrooms} onChange={e=>set("bathrooms",e.target.value)} min="0" placeholder="0" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm outline-none" /></div>
-          <div><label className="block text-xs text-gray-500 mb-1">Surface (mÂ²)</label><input type="number" value={form.area} onChange={e=>set("area",e.target.value)} min="0" placeholder="0" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm outline-none" /></div>
+          <div><label className="block text-xs text-gray-500 mb-1">Surface (m²)</label><input type="number" value={form.area} onChange={e=>set("area",e.target.value)} min="0" placeholder="0" className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm outline-none" /></div>
         </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="DÃ©crivez votre bien..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" /></div>
+          <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="Décrivez votre bien..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" /></div>
         <LocationSelector value={location} onChange={setLocation} label="Adresse du bien" required />
         {error && <p className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</p>}
         <div className="flex gap-3 pt-2">

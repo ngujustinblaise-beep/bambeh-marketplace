@@ -1,6 +1,6 @@
 ﻿/**
  * LOGIN PAGE
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -226,14 +226,14 @@ export default function Login() {
     }
 
     const inputLowerCase = usernameOrPhone.toLowerCase().trim();
-    console.log("ðŸ”‘ Attempting authentication for:", inputLowerCase);
+    console.log("🔑 Attempting authentication for:", inputLowerCase);
 
     const account = Object.values(MASTER_ACCOUNTS).find(
       (acc) => acc.username === inputLowerCase && acc.password === password,
     );
 
     if (account) {
-      console.log("âœ… Master account authenticated:", account.username);
+      console.log("✅ Master account authenticated:", account.username);
       return { success: true, user: account.user };
     }
 
@@ -251,7 +251,7 @@ export default function Login() {
           if (matchesPhone || matchesUsername || matchesEmail) {
             if (user.password === password) {
               console.log(
-                "âœ… Local user authenticated:",
+                "✅ Local user authenticated:",
                 user.username || user.phone,
               );
               return {
@@ -293,7 +293,7 @@ export default function Login() {
     console.log("ðŸ” Login form submitted");
 
     if (isLocked) {
-      console.warn("âš ï¸ Login blocked: Account locked");
+      console.warn("⚠ï¸ Login blocked: Account locked");
       return;
     }
 
@@ -327,13 +327,13 @@ export default function Login() {
         localStorage.removeItem("Bambeh_login_lockout");
         setFailedAttempts(0);
 
-        console.log("âœ… Login successful:", authResult.user.username);
+        console.log("✅ Login successful:", authResult.user.username);
 
         if (login) {
           await login(authResult.user.username, formData.password);
         }
 
-        console.log("ðŸ‘¤ User authenticated, redirecting to:", from);
+        console.log("👤 User authenticated, redirecting to:", from);
 
         setTimeout(() => {
           navigate(from === "/login" ? "/" : from, { replace: true });

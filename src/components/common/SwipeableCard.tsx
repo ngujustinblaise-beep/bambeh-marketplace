@@ -45,7 +45,7 @@ const SwipeableCard = ({ id, image, title, price, onLike, onSkip, onAddToCart }:
         </div>
       </div>
       <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-center">
-        <p className="text-sm text-gray-500">â† Swipe to skip | Swipe to like â†’</p>
+        <p className="text-sm text-gray-500">â† Swipe to skip | Swipe to like →</p>
       </div>
     </motion.div>
   );

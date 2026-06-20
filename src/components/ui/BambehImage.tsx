@@ -1,26 +1,26 @@
 ﻿/**
- * BambehImage.tsx â€” Bambeh Marketplace
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * BambehImage.tsx — Bambeh Marketplace
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * â”€â”€â”€ STEP 24: IMAGE OPTIMISATION FOR  3G / 2G â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ─── STEP 24: IMAGE OPTIMISATION FOR  3G / 2G ────────────────────────
  *
  * Problems this component solves:
  *
  *  1. LAYOUT SHIFT (CLS)
  *     Every image that loads without explicit width+height causes the page to
- *     reflow â€” on a 2G connection where images take 3â€“8 seconds to load, users
+ *     reflow — on a 2G connection where images take 3–8 seconds to load, users
  *     experience constant jumping content. We fix this with the aspect-ratio
  *     padding trick: a placeholder div holds the exact space before the image
  *     arrives, so the layout never shifts.
  *
  *  2. BANDWIDTH WASTE
- *     PNG/JPEG images sent to browsers that support WebP waste 25â€“40% bandwidth.
+ *     PNG/JPEG images sent to browsers that support WebP waste 25–40% bandwidth.
  *     We use <picture> + <source type="image/webp"> so modern browsers (Chrome,
- *     Firefox, Edge â€” i.e. every Android phone in ) get WebP
+ *     Firefox, Edge — i.e. every Android phone in ) get WebP
  *     automatically, while older browsers fall back to the original format.
  *
  *  3. EAGER LOADING OFF-SCREEN IMAGES
- *     Without lazy loading, a marketplace listing page downloads ALL 20â€“50
+ *     Without lazy loading, a marketplace listing page downloads ALL 20–50
  *     product images immediately, saturating the 3G pipe and delaying the
  *     images actually visible on screen. We use loading="lazy" + IntersectionObserver
  *     so only images within ~200px of the viewport are fetched.
@@ -28,13 +28,13 @@
  *  4. NO SKELETON DURING LOAD
  *     A blank white box during image load looks broken. We show a shimmer
  *     skeleton (matching the image's aspect ratio) so users know content is
- *     coming. This is especially important on 2G where images can take 5â€“10s.
+ *     coming. This is especially important on 2G where images can take 5–10s.
  *
  *  5. BROKEN IMAGE HANDLING
  *     Supabase storage URLs can return 404 if a seller deletes an image.
  *     We catch onError and show a branded placeholder instead of a broken icon.
  *
- * â”€â”€â”€ USAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ─── USAGE ────────────────────────────────────────────────────────────────────
  *
  *  // Basic product image (lazy, WebP-aware, shimmer skeleton):
  *  <BambehImage
@@ -45,7 +45,7 @@
  *    className="rounded-lg"
  *  />
  *
- *  // Hero / above-the-fold image â€” disable lazy loading:
+ *  // Hero / above-the-fold image — disable lazy loading:
  *  <BambehImage
  *    src={heroImageUrl}
  *    alt="Bambeh Marketplace Hero"
@@ -74,7 +74,7 @@
  *    sizes="(max-width: 640px) 160px, 320px"   // tells browser which size to fetch
  *  />
  *
- * â”€â”€â”€ PLACEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ─── PLACEMENT ────────────────────────────────────────────────────────────────
  *  Save to: src/components/ui/BambehImage.tsx
  *  Then replace every <img> tag in your listing cards, profile pages, and
  *  marketplace pages with <BambehImage>.
@@ -82,23 +82,23 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 
-// â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 export interface BambehImageProps {
-  /** The image URL â€” typically a Supabase storage URL */
+  /** The image URL — typically a Supabase storage URL */
   src: string;
 
-  /** Alt text â€” required for accessibility */
+  /** Alt text — required for accessibility */
   alt: string;
 
   /**
-   * Explicit pixel width â€” REQUIRED to prevent layout shift (CLS).
+   * Explicit pixel width — REQUIRED to prevent layout shift (CLS).
    * Use the display size, not the original image size.
    */
   width: number;
 
   /**
-   * Explicit pixel height â€” REQUIRED to prevent layout shift (CLS).
+   * Explicit pixel height — REQUIRED to prevent layout shift (CLS).
    * Use the display size, not the original image size.
    */
   height: number;
@@ -123,7 +123,7 @@ export interface BambehImageProps {
   fallbackSrc?: string;
 
   /**
-   * sizes attribute for responsive images â€” tells the browser which
+   * sizes attribute for responsive images — tells the browser which
    * image size to fetch based on viewport width.
    * Example: "(max-width: 640px) 160px, 320px"
    */
@@ -134,13 +134,13 @@ export interface BambehImageProps {
 
   /**
    * Object-fit strategy.
-   * "cover" (default) â€” fills the box, crops if needed (product images)
-   * "contain"         â€” fits inside the box, no crop (logos, icons)
+   * "cover" (default) — fills the box, crops if needed (product images)
+   * "contain"         — fits inside the box, no crop (logos, icons)
    */
   objectFit?: "cover" | "contain" | "fill" | "none";
 }
 
-// â”€â”€â”€ WEBP URL HELPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── WEBP URL HELPER ──────────────────────────────────────────────────────────
 /**
  * Converts a Supabase storage URL to request a WebP-transformed version
  * using Supabase's built-in image transformation API.
@@ -160,18 +160,18 @@ function toWebpUrl(src: string, width: number): string {
     // Supabase image transform params
     url.searchParams.set("format", "webp");
     url.searchParams.set("width", String(Math.round(width * 1.5))); // 1.5x for retina
-    url.searchParams.set("quality", "80"); // 80% quality â€” good balance for 3G
+    url.searchParams.set("quality", "80"); // 80% quality — good balance for 3G
     return url.toString();
   } catch {
     return src;
   }
 }
 
-// â”€â”€â”€ DEFAULT FALLBACK SVG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DEFAULT FALLBACK SVG ─────────────────────────────────────────────────────
 // Inline SVG so it works even when the network is completely down.
 const DEFAULT_FALLBACK_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f0fdf4'/%3E%3Ccircle cx='200' cy='120' r='40' fill='%23d1fae5'/%3E%3Cpath d='M180 120 Q200 100 220 120 Q200 140 180 120Z' fill='%2310b981'/%3E%3Ctext x='200' y='185' text-anchor='middle' font-family='sans-serif' font-size='14' fill='%23065f46'%3EBambeh%3C/text%3E%3Ctext x='200' y='205' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23047857'%3EImage unavailable%3C/text%3E%3C/svg%3E`;
 
-// â”€â”€â”€ SHIMMER SKELETON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SHIMMER SKELETON ─────────────────────────────────────────────────────────
 // Matches the image's aspect ratio exactly so there is zero layout shift
 // when the image finishes loading and the skeleton is removed.
 const ShimmerSkeleton: React.FC<{ aspectRatio: number }> = ({ aspectRatio }) => (
@@ -191,7 +191,7 @@ const ShimmerSkeleton: React.FC<{ aspectRatio: number }> = ({ aspectRatio }) => 
   </div>
 );
 
-// â”€â”€â”€ MAIN COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 
 export const BambehImage: React.FC<BambehImageProps> = ({
   src,
@@ -217,9 +217,9 @@ export const BambehImage: React.FC<BambehImageProps> = ({
   const effectiveSrc = hasError ? fallbackSrc : src;
   const effectiveWebpSrc = hasError ? fallbackSrc : webpSrc;
 
-  // â”€â”€ IntersectionObserver for lazy loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── IntersectionObserver for lazy loading ──────────────────────────────────
   // We use a 200px rootMargin so images start loading slightly BEFORE they
-  // scroll into view â€” this hides the loading time on fast scrolls.
+  // scroll into view — this hides the loading time on fast scrolls.
   // On 2G connections this gives the image a ~1s head start.
   useEffect(() => {
     if (priority) return; // priority images don't need observer
@@ -237,7 +237,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
       (entries) => {
         if (entries[0].isIntersecting) {
           setIsInView(true);
-          observer.disconnect(); // stop observing once in view â€” saves memory
+          observer.disconnect(); // stop observing once in view — saves memory
         }
       },
       {
@@ -250,7 +250,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
     return () => observer.disconnect();
   }, [priority]);
 
-  // â”€â”€ Handle already-cached images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Handle already-cached images ──────────────────────────────────────────
   // If the image is already in the browser cache (common on repeat visits),
   // the onLoad event fires before React mounts. We check complete on mount.
   useEffect(() => {
@@ -274,7 +274,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
       {/*
         Inject the shimmer animation once.
         We use a style tag here rather than a CSS file to keep this component
-        fully self-contained â€” no extra import needed.
+        fully self-contained — no extra import needed.
       */}
       <style>{`
         @keyframes bambeh-shimmer {
@@ -296,13 +296,13 @@ export const BambehImage: React.FC<BambehImageProps> = ({
         }}
         onClick={onClick}
       >
-        {/* Shimmer skeleton â€” visible until image loads */}
+        {/* Shimmer skeleton — visible until image loads */}
         {!isLoaded && <ShimmerSkeleton aspectRatio={aspectRatio} />}
 
         {/* Only render the actual <picture> element when in viewport */}
         {isInView && (
           <picture>
-            {/* WebP source â€” served to Chrome, Firefox, Edge (all Android) */}
+            {/* WebP source — served to Chrome, Firefox, Edge (all Android) */}
             {!hasError && (
               <source
                 srcSet={effectiveWebpSrc}
@@ -311,7 +311,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
               />
             )}
 
-            {/* Original format fallback â€” served to Safari < 14, old browsers */}
+            {/* Original format fallback — served to Safari < 14, old browsers */}
             <img
               ref={imgRef}
               src={effectiveSrc}
@@ -320,7 +320,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
               height={height}
               sizes={sizes}
               loading={priority ? "eager" : "lazy"}
-              // fetchpriority is a newer attribute â€” helps browser prioritise
+              // fetchpriority is a newer attribute — helps browser prioritise
               // above-the-fold images over lazy ones during initial page load
               {...(priority ? { fetchPriority: "high" } : { fetchPriority: "low" })}
               decoding={priority ? "sync" : "async"}
@@ -340,13 +340,13 @@ export const BambehImage: React.FC<BambehImageProps> = ({
   );
 };
 
-// â”€â”€â”€ SPECIALISED VARIANTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SPECIALISED VARIANTS ─────────────────────────────────────────────────────
 // Pre-configured for the most common Bambeh use cases.
 // Import these directly instead of configuring BambehImage each time.
 
 /**
- * ListingCard image â€” standard 4:3 product image for marketplace grid.
- * 320Ã—240 is optimal for 3G: small enough to load fast, large enough for detail.
+ * ListingCard image — standard 4:3 product image for marketplace grid.
+ * 320×240 is optimal for 3G: small enough to load fast, large enough for detail.
  */
 export const ListingImage: React.FC<Omit<BambehImageProps, "width" | "height"> & {
   width?: number;
@@ -362,7 +362,7 @@ export const ListingImage: React.FC<Omit<BambehImageProps, "width" | "height"> &
 );
 
 /**
- * Avatar image â€” square, used in Profile, VendorCard, ChatMessage.
+ * Avatar image — square, used in Profile, VendorCard, ChatMessage.
  */
 export const AvatarImage: React.FC<Omit<BambehImageProps, "width" | "height"> & {
   size?: number;
@@ -377,14 +377,14 @@ export const AvatarImage: React.FC<Omit<BambehImageProps, "width" | "height"> & 
 );
 
 /**
- * HeroImage â€” above-the-fold banner. Priority loaded, no lazy loading.
+ * HeroImage — above-the-fold banner. Priority loaded, no lazy loading.
  */
 export const HeroImage: React.FC<Omit<BambehImageProps, "priority">> = (props) => (
   <BambehImage priority {...props} />
 );
 
 /**
- * VendorBanner â€” wide 16:9 banner for vendor profile pages.
+ * VendorBanner — wide 16:9 banner for vendor profile pages.
  */
 export const VendorBannerImage: React.FC<Omit<BambehImageProps, "width" | "height">> = (props) => (
   <BambehImage

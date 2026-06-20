@@ -183,7 +183,7 @@ export const _REGIONS_FR = [
   "Adamaoua",
   "Centre",
   "Est",
-  "ExtrÃªme-Nord",
+  "Extrême-Nord",
   "Littoral",
   "Nord",
   "Nord-Ouest",

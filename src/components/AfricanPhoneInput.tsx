@@ -1,23 +1,23 @@
 ﻿/**
- * src/components/AfricanPhoneInput.tsx â€” Bambeh Marketplace
+ * src/components/AfricanPhoneInput.tsx — Bambeh Marketplace
  *
  * Reusable phone input with African country code picker.
  * Covers Central Africa + West Africa + defaults to Cameroon.
  *
- * â”€â”€ SECURITY HARDENING (v2) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- *  âœ… Input sanitisation  â€” strips all non-digit characters before validation
- *  âœ… Length capping      â€” enforces hard max per country, no overflow possible
- *  âœ… Pattern enforcement â€” country-specific regex, no bypasses
- *  âœ… XSS prevention      â€” all values sanitised before bubbling to parent
- *  âœ… Prototype pollution â€” Object.freeze on country records at module level
- *  âœ… No eval / innerHTML â€” zero DOM injection surface
- *  âœ… ARIA hardened       â€” listbox role, aria-selected, aria-expanded, aria-label
- *  âœ… Keyboard nav        â€” Escape closes dropdown, Enter/Space selects
- *  âœ… Focus trap          â€” dropdown closes on outside mousedown AND focusout
- *  âœ… WhatsApp URL sanitised â€” phone stripped to digits, message encoded
- *  âœ… Rate limit guard    â€” onChange fires only when value actually changed
- *  âœ… Immutable country list â€” freeze prevents runtime mutation of dial/pattern
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ── SECURITY HARDENING (v2) ──────────────────────────────────────────────────
+ *  ✅ Input sanitisation  — strips all non-digit characters before validation
+ *  ✅ Length capping      — enforces hard max per country, no overflow possible
+ *  ✅ Pattern enforcement — country-specific regex, no bypasses
+ *  ✅ XSS prevention      — all values sanitised before bubbling to parent
+ *  ✅ Prototype pollution — Object.freeze on country records at module level
+ *  ✅ No eval / innerHTML — zero DOM injection surface
+ *  ✅ ARIA hardened       — listbox role, aria-selected, aria-expanded, aria-label
+ *  ✅ Keyboard nav        — Escape closes dropdown, Enter/Space selects
+ *  ✅ Focus trap          — dropdown closes on outside mousedown AND focusout
+ *  ✅ WhatsApp URL sanitised — phone stripped to digits, message encoded
+ *  ✅ Rate limit guard    — onChange fires only when value actually changed
+ *  ✅ Immutable country list — freeze prevents runtime mutation of dial/pattern
+ * ────────────────────────────────────────────────────────────────────────────
  *
  * Usage:
  *   import AfricanPhoneInput from "@/components/AfricanPhoneInput";
@@ -31,19 +31,19 @@
  *   />
  *
  * Props:
- *   value      â€” controlled string (full international number or just local digits)
- *   onChange   â€” (fullNumber: string, isValid: boolean) => void
- *   label      â€” optional label text (default: "Phone number")
- *   required   â€” show asterisk
- *   error      â€” external error string to show below the input
- *   className  â€” optional extra class on the wrapper div
- *   disabled   â€” disable all interaction
+ *   value      — controlled string (full international number or just local digits)
+ *   onChange   — (fullNumber: string, isValid: boolean) => void
+ *   label      — optional label text (default: "Phone number")
+ *   required   — show asterisk
+ *   error      — external error string to show below the input
+ *   className  — optional extra class on the wrapper div
+ *   disabled   — disable all interaction
  */
 
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
 
-// â”€â”€ Security constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Security constants ────────────────────────────────────────────────────────
 
 /** Strip every character that is not a digit. Used on ALL input before storage. */
 const DIGITS_ONLY = (s: string): string => s.replace(/\D/g, "");
@@ -55,7 +55,7 @@ const HARD_MAX_LEN = 15;
 const sanitiseText = (s: unknown): string =>
   typeof s === "string" ? s.replace(/[<>"'`]/g, "") : "";
 
-// â”€â”€ Country data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Country data ──────────────────────────────────────────────────────────────
 
 export interface Country {
   readonly flag:    string;
@@ -71,39 +71,39 @@ const c = (flag: string, name: string, dial: string, code: string, len: number, 
   Object.freeze({ flag, name, dial, code, len, pattern });
 
 export const CENTRAL_AFRICA: readonly Country[] = Object.freeze([
-  c("ðŸ‡¨ðŸ‡²", "Cameroon",     "+237", "CM",  9, /^6\d{8}$/),
-  c("ðŸ‡¨ðŸ‡©", "DR Congo",     "+243", "CD",  9, /^8\d{8}$/),
-  c("ðŸ‡¨ðŸ‡¬", "Congo (Rep.)", "+242", "CG",  9, /^[056]\d{8}$/),
-  c("ðŸ‡¬ðŸ‡¦", "Gabon",        "+241", "GA",  8, /^[067]\d{7}$/),
-  c("ðŸ‡¹ðŸ‡©", "Chad",         "+235", "TD",  8, /^6\d{7}$/),
-  c("ðŸ‡¨ðŸ‡«", "CAR",          "+236", "CF",  8, /^7\d{7}$/),
-  c("ðŸ‡¬ðŸ‡¶", "Eq. Guinea",   "+240", "GQ",  9, /^[23]\d{8}$/),
-  c("ðŸ‡¸ðŸ‡¹", "SÃ£o TomÃ©",     "+239", "ST",  7, /^\d{7}$/),
-  c("ðŸ‡§ðŸ‡®", "Burundi",      "+257", "BI",  8, /^[67]\d{7}$/),
-  c("ðŸ‡·ðŸ‡¼", "Rwanda",       "+250", "RW",  9, /^7\d{8}$/),
+  c("🇨🇲", "Cameroon",     "+237", "CM",  9, /^6\d{8}$/),
+  c("🇨🇩", "DR Congo",     "+243", "CD",  9, /^8\d{8}$/),
+  c("🇨🇬", "Congo (Rep.)", "+242", "CG",  9, /^[056]\d{8}$/),
+  c("🇬🇦", "Gabon",        "+241", "GA",  8, /^[067]\d{7}$/),
+  c("🇹🇩", "Chad",         "+235", "TD",  8, /^6\d{7}$/),
+  c("🇨🇫", "CAR",          "+236", "CF",  8, /^7\d{7}$/),
+  c("🇬🇶", "Eq. Guinea",   "+240", "GQ",  9, /^[23]\d{8}$/),
+  c("🇸🇹", "São Tomé",     "+239", "ST",  7, /^\d{7}$/),
+  c("🇧🇮", "Burundi",      "+257", "BI",  8, /^[67]\d{7}$/),
+  c("🇷🇼", "Rwanda",       "+250", "RW",  9, /^7\d{8}$/),
 ]);
 
 export const WEST_AFRICA: readonly Country[] = Object.freeze([
-  c("ðŸ‡³ðŸ‡¬", "Nigeria",       "+234", "NG", 10, /^[789]\d{9}$/),
-  c("ðŸ‡¬ðŸ‡­", "Ghana",         "+233", "GH",  9, /^[235]\d{8}$/),
-  c("ðŸ‡¸ðŸ‡³", "Senegal",       "+221", "SN",  9, /^[37]\d{8}$/),
-  c("ðŸ‡¨ðŸ‡®", "CÃ´te d'Ivoire", "+225", "CI", 10, /^0[57]\d{8}$/),
-  c("ðŸ‡§ðŸ‡«", "Burkina Faso",  "+226", "BF",  8, /^[67]\d{7}$/),
-  c("ðŸ‡²ðŸ‡±", "Mali",          "+223", "ML",  8, /^[567]\d{7}$/),
-  c("ðŸ‡¬ðŸ‡³", "Guinea",        "+224", "GN",  9, /^[67]\d{8}$/),
-  c("ðŸ‡§ðŸ‡¯", "Benin",         "+229", "BJ",  8, /^[679]\d{7}$/),
-  c("ðŸ‡¹ðŸ‡¬", "Togo",          "+228", "TG",  8, /^[79]\d{7}$/),
-  c("ðŸ‡¸ðŸ‡±", "Sierra Leone",  "+232", "SL",  8, /^[37]\d{7}$/),
-  c("ðŸ‡±ðŸ‡·", "Liberia",       "+231", "LR",  8, /^\d{8}$/),
-  c("ðŸ‡¬ðŸ‡²", "Gambia",        "+220", "GM",  7, /^[23679]\d{6}$/),
-  c("ðŸ‡¬ðŸ‡¼", "Guinea-Bissau", "+245", "GW",  7, /^[56]\d{6}$/),
-  c("ðŸ‡¨ðŸ‡»", "Cape Verde",    "+238", "CV",  7, /^9\d{6}$/),
-  c("ðŸ‡³ðŸ‡ª", "Niger",         "+227", "NE",  8, /^[89]\d{7}$/),
-  c("ðŸ‡²ðŸ‡·", "Mauritania",    "+222", "MR",  8, /^[23]\d{7}$/),
+  c("🇳🇬", "Nigeria",       "+234", "NG", 10, /^[789]\d{9}$/),
+  c("🇬🇭", "Ghana",         "+233", "GH",  9, /^[235]\d{8}$/),
+  c("🇸🇳", "Senegal",       "+221", "SN",  9, /^[37]\d{8}$/),
+  c("🇨🇮", "Côte d'Ivoire", "+225", "CI", 10, /^0[57]\d{8}$/),
+  c("🇧🇫", "Burkina Faso",  "+226", "BF",  8, /^[67]\d{7}$/),
+  c("🇲🇱", "Mali",          "+223", "ML",  8, /^[567]\d{7}$/),
+  c("🇬🇳", "Guinea",        "+224", "GN",  9, /^[67]\d{8}$/),
+  c("🇧🇯", "Benin",         "+229", "BJ",  8, /^[679]\d{7}$/),
+  c("🇹🇬", "Togo",          "+228", "TG",  8, /^[79]\d{7}$/),
+  c("🇸🇱", "Sierra Leone",  "+232", "SL",  8, /^[37]\d{7}$/),
+  c("🇱🇷", "Liberia",       "+231", "LR",  8, /^\d{8}$/),
+  c("🇬🇲", "Gambia",        "+220", "GM",  7, /^[23679]\d{6}$/),
+  c("🇬🇼", "Guinea-Bissau", "+245", "GW",  7, /^[56]\d{6}$/),
+  c("🇨🇻", "Cape Verde",    "+238", "CV",  7, /^9\d{6}$/),
+  c("🇳🇪", "Niger",         "+227", "NE",  8, /^[89]\d{7}$/),
+  c("🇲🇷", "Mauritania",    "+222", "MR",  8, /^[23]\d{7}$/),
 ]);
 
 const SUGGESTED: readonly Country[] = Object.freeze([
-  CENTRAL_AFRICA[0], // Cameroon â€” always first
+  CENTRAL_AFRICA[0], // Cameroon — always first
   WEST_AFRICA[0],    // Nigeria
   WEST_AFRICA[1],    // Ghana
   WEST_AFRICA[2],    // Senegal
@@ -120,7 +120,7 @@ const ALL_COUNTRIES: readonly Country[] = Object.freeze(
 
 type Region = "suggested" | "central" | "west" | "all";
 
-// â”€â”€ Validation helper (exported so parent can re-validate if needed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Validation helper (exported so parent can re-validate if needed) ──────────
 
 export function validatePhone(digits: string, country: Country): boolean {
   // Guard: length must match exactly and pattern must pass
@@ -131,7 +131,7 @@ export function validatePhone(digits: string, country: Country): boolean {
   );
 }
 
-// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Component ─────────────────────────────────────────────────────────────────
 
 interface Props {
   value?:     string;
@@ -166,7 +166,7 @@ export default function AfricanPhoneInput({
   const searchRef  = useRef<HTMLInputElement>(null);
   const listRef    = useRef<HTMLDivElement>(null);
 
-  // â”€â”€ Sync incoming controlled value (mount only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Sync incoming controlled value (mount only) ──────────────────────────
   useEffect(() => {
     if (!value) return;
     const matched = ALL_COUNTRIES.find((ct) => value.startsWith(ct.dial));
@@ -179,9 +179,9 @@ export default function AfricanPhoneInput({
     } else {
       setLocal(DIGITS_ONLY(value).slice(0, HARD_MAX_LEN));
     }
-  }, []); // mount only â€” value prop is seed, not live binding
+  }, []); // mount only — value prop is seed, not live binding
 
-  // â”€â”€ Close dropdown on outside click OR focus leaving wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Close dropdown on outside click OR focus leaving wrapper ────────────
   useEffect(() => {
     function onPointer(e: MouseEvent) {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
@@ -201,14 +201,14 @@ export default function AfricanPhoneInput({
     };
   }, []);
 
-  // â”€â”€ Focus search box when dropdown opens on "all" tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Focus search box when dropdown opens on "all" tab ───────────────────
   useEffect(() => {
     if (open && region === "all") {
       setTimeout(() => searchRef.current?.focus(), 50);
     }
   }, [open, region]);
 
-  // â”€â”€ Validate and emit (deduplicated) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Validate and emit (deduplicated) ─────────────────────────────────────
   const fireChange = useCallback(
     (localVal: string, ct: Country = country) => {
       const digits = DIGITS_ONLY(localVal);
@@ -222,7 +222,7 @@ export default function AfricanPhoneInput({
     [country, onChange]
   );
 
-  // â”€â”€ Input handler â€” sanitise on every keystroke â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Input handler — sanitise on every keystroke ─────────────────────────
   function handleLocalChange(e: React.ChangeEvent<HTMLInputElement>) {
     // Only allow digits and spaces; hard-cap at country.len + 2 display chars
     const raw     = e.target.value.replace(/[^\d\s]/g, "");
@@ -233,19 +233,19 @@ export default function AfricanPhoneInput({
     fireChange(capped);
   }
 
-  // â”€â”€ Keyboard navigation on the trigger button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Keyboard navigation on the trigger button ────────────────────────────
   function handleTriggerKey(e: KeyboardEvent<HTMLButtonElement>) {
     if (e.key === "Escape")                  { setOpen(false); inputRef.current?.focus(); }
     if (e.key === "Enter" || e.key === " ")  { e.preventDefault(); setOpen((v) => !v); }
     if (e.key === "ArrowDown" && !open)      { e.preventDefault(); setOpen(true); }
   }
 
-  // â”€â”€ Keyboard navigation inside the list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Keyboard navigation inside the list ─────────────────────────────────
   function handleListKey(e: KeyboardEvent<HTMLDivElement>) {
     if (e.key === "Escape") { setOpen(false); }
   }
 
-  // â”€â”€ Country selection (sanitise display name just in case) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Country selection (sanitise display name just in case) ───────────────
   function selectCountry(ct: Country) {
     // Verify the country is actually in our known list (prevents spoofed objects)
     const trusted = ALL_COUNTRIES.find((k) => k.code === ct.code);
@@ -260,7 +260,7 @@ export default function AfricanPhoneInput({
     fireChange(capped, trusted);
   }
 
-  // â”€â”€ Filtered list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Filtered list ────────────────────────────────────────────────────────
   const listSource: readonly Country[] =
     region === "suggested" ? SUGGESTED :
     region === "central"   ? CENTRAL_AFRICA :
@@ -278,7 +278,7 @@ export default function AfricanPhoneInput({
       )
     : listSource;
 
-  // â”€â”€ Derived validation state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Derived validation state ─────────────────────────────────────────────
   const digits     = DIGITS_ONLY(local);
   const isValid    = validatePhone(digits, country);
   const isTooShort = digits.length > 0 && digits.length < country.len;
@@ -291,7 +291,7 @@ export default function AfricanPhoneInput({
     { id: "all",       label: "All" },
   ];
 
-  // Safe WhatsApp URL â€” digits only, message encoded
+  // Safe WhatsApp URL — digits only, message encoded
   const waDigits = DIGITS_ONLY(country.dial + digits);
   const waMsg    = encodeURIComponent(
     `Hello, I am interested in a position listed on Bambeh.`
@@ -374,11 +374,11 @@ export default function AfricanPhoneInput({
         }`}
       >
         {error
-          ? `âš  ${sanitiseText(error)}`
+          ? `⚠ ${sanitiseText(error)}`
           : isValid
-          ? `âœ“ Valid â€” ${country.dial} ${digits}`
+          ? `✓ Valid — ${country.dial} ${digits}`
           : isWrong
-          ? `âœ• Not a valid ${country.name} number`
+          ? `✕ Not a valid ${country.name} number`
           : isTooShort
           ? `Need ${country.len} digits (${digits.length} so far)`
           : `Enter ${country.len}-digit ${country.name} number`}
@@ -423,11 +423,11 @@ export default function AfricanPhoneInput({
                   type="text"
                   value={search}
                   onChange={(e) => {
-                    // Sanitise search input â€” letters, digits, spaces, + only
+                    // Sanitise search input — letters, digits, spaces, + only
                     const safe = e.target.value.replace(/[^a-zA-Z0-9\s+]/g, "").slice(0, 40);
                     setSearch(safe);
                   }}
-                  placeholder="Search countryâ€¦"
+                  placeholder="Search country…"
                   aria-label="Search countries"
                   autoComplete="off"
                   spellCheck={false}
@@ -475,7 +475,7 @@ export default function AfricanPhoneInput({
                   <span className="flex-1 text-gray-900 dark:text-white font-medium">{ct.name}</span>
                   <span className="font-mono text-xs text-gray-400">{ct.dial}</span>
                   {ct.code === country.code && (
-                    <span className="text-teal-600 text-xs font-bold" aria-label="selected">âœ“</span>
+                    <span className="text-teal-600 text-xs font-bold" aria-label="selected">✓</span>
                   )}
                 </button>
               ))
@@ -484,15 +484,15 @@ export default function AfricanPhoneInput({
         </div>
       )}
 
-      {/* â”€â”€ Exported helper for parent forms that need a safe WhatsApp link â”€â”€ */}
-      {/* Use `waUrl` from the component's internal scope â€” exposed via data attribute
+      {/* ── Exported helper for parent forms that need a safe WhatsApp link ── */}
+      {/* Use `waUrl` from the component's internal scope — exposed via data attribute
           for test environments only. Not rendered in production UI. */}
       <span data-wa-url={waUrl} className="sr-only" aria-hidden="true" />
     </div>
   );
 }
 
-// â”€â”€ Re-export helpers for parent use â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Re-export helpers for parent use ─────────────────────────────────────────
 export { DIGITS_ONLY, sanitiseText, ALL_COUNTRIES };
 
 

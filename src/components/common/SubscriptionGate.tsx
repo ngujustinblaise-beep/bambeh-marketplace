@@ -1,5 +1,5 @@
 ﻿/**
- * SubscriptionGate.tsx â€” Subscription enforcement component.
+ * SubscriptionGate.tsx — Subscription enforcement component.
  * FILE LOCATION: src/components/common/SubscriptionGate.tsx
  */
 
@@ -45,9 +45,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
         <div className="-mt-6 mx-6">
           <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 shadow-lg text-center">
-            <p className="text-white text-xs font-semibold uppercase tracking-wider mb-1">ðŸ”¥ Best Value â€” Most Popular</p>
+            <p className="text-white text-xs font-semibold uppercase tracking-wider mb-1">🔥 Best Value — Most Popular</p>
             <p className="text-white font-black text-3xl">100 XAF</p>
-            <p className="text-yellow-100 text-sm font-medium">per month Â· Full Access</p>
+            <p className="text-yellow-100 text-sm font-medium">per month · Full Access</p>
           </div>
         </div>
 
@@ -93,7 +93,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
           <button onClick={() => handleSubscribe('bronze')}
             className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-teal-700 text-white font-bold rounded-2xl hover:from-teal-600 hover:to-teal-800 transition-all shadow-lg flex items-center justify-center gap-2">
             <Zap className="w-5 h-5" />
-            Get Full Access â€” From 100 XAF
+            Get Full Access — From 100 XAF
           </button>
           <p className="text-center text-gray-400 text-xs mt-2">Cancel anytime. No hidden fees.</p>
         </div>

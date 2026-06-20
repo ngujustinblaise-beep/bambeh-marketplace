@@ -1,16 +1,16 @@
 ﻿/**
- * src/components/services/ServiceLikeButton.tsx â€” Bambeh Marketplace
+ * src/components/services/ServiceLikeButton.tsx — Bambeh Marketplace
  *
  * SECURITY & BUG FIXES:
- * âœ… SEC: Uses getUser() not getSession() â€” getSession() can be spoofed via localStorage;
+ * ✅ SEC: Uses getUser() not getSession() — getSession() can be spoofed via localStorage;
  *         getUser() validates the JWT against Supabase Auth server.
- * âœ… FIX: Race condition on rapid clicks â€” disabled button while any request in flight.
- * âœ… FIX: Optimistic update was permanent on error â€” now rolls back on failure.
- * âœ… FIX: Count fetched from service_like_counts view on mount (was missing â†’ always 0).
- * âœ… FIX: Duplicate like possible if user clicked before first getUser() resolved â€”
+ * ✅ FIX: Race condition on rapid clicks — disabled button while any request in flight.
+ * ✅ FIX: Optimistic update was permanent on error — now rolls back on failure.
+ * ✅ FIX: Count fetched from service_like_counts view on mount (was missing → always 0).
+ * ✅ FIX: Duplicate like possible if user clicked before first getUser() resolved —
  *         now guarded by `loading` flag and early-return if unauthenticated.
- * âœ… UX: Accessible â€” aria-pressed, aria-label, role=button.
- * âœ… UX: Animated heart fill on like/unlike.
+ * ✅ UX: Accessible — aria-pressed, aria-label, role=button.
+ * ✅ UX: Animated heart fill on like/unlike.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -39,7 +39,7 @@ export default function ServiceLikeButton({
   const [loading,  setLoading]  = useState(false);
   const [initDone, setInitDone] = useState(false);
 
-  // â”€â”€ On mount: fetch real count + current user's like status â”€â”€
+  // ── On mount: fetch real count + current user's like status ──
   useEffect(() => {
     let cancelled = false;
 
@@ -56,7 +56,7 @@ export default function ServiceLikeButton({
       }
 
       // 2. Check if the authenticated user already liked this
-      //    âœ… SEC: getUser() validates JWT server-side; getSession() only reads localStorage
+      //    ✅ SEC: getUser() validates JWT server-side; getSession() only reads localStorage
       const { data: { user } } = await supabase.auth.getUser();
       if (!cancelled && user) {
         const { data: existing } = await supabase
@@ -75,12 +75,12 @@ export default function ServiceLikeButton({
     return () => { cancelled = true; };
   }, [serviceId]);
 
-  // â”€â”€ Toggle like â”€â”€
+  // ── Toggle like ──
   const toggle = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (loading) return;
 
-    // âœ… SEC: Re-validate user on every action (not cached from mount)
+    // ✅ SEC: Re-validate user on every action (not cached from mount)
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       onLoginRequired?.();
@@ -110,7 +110,7 @@ export default function ServiceLikeButton({
         if (error && !error.message.includes('duplicate')) throw error;
       }
     } catch {
-      // âœ… FIX: Roll back optimistic update on failure
+      // ✅ FIX: Roll back optimistic update on failure
       setLiked(prevLiked);
       setCount(prevCount);
     } finally {

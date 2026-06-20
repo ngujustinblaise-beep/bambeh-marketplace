@@ -1,15 +1,15 @@
 ﻿/**
  * src/contexts/SearchBar.tsx
- * Bambeh Marketplace â€” Search Bar Context & Provider
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Search Bar Context & Provider
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES:
- * â€” All localStorage accesses now wrapped in try/catch.
+ * — All localStorage accesses now wrapped in try/catch.
  *
  * NEW:
- * â€” scope state added so the SearchBar knows which region to search in.
- * â€” submitSearch now appends &scope=... to the /search URL.
- * â€” SearchBarState and SearchBarActions export the scope API.
+ * — scope state added so the SearchBar knows which region to search in.
+ * — submitSearch now appends &scope=... to the /search URL.
+ * — SearchBarState and SearchBarActions export the scope API.
  */
 
 import React, { useEffect, 
@@ -23,7 +23,7 @@ import React, { useEffect,
 import { useNavigate } from "react-router-dom";
 import type { SearchScope } from "@/services/searchService";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface SearchBarState {
   query:          string;
@@ -48,7 +48,7 @@ export interface SearchBarActions {
 
 type SearchBarContextValue = SearchBarState & SearchBarActions;
 
-// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Context ──────────────────────────────────────────────────────────────────
 
 const SearchBarContext = createContext<SearchBarContextValue | null>(null);
 
@@ -72,7 +72,7 @@ function saveRecent(searches: string[]): void {
   }
 }
 
-// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Provider ─────────────────────────────────────────────────────────────────
 
 export const SearchBarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [query,          setQueryState]    = useState("");
@@ -171,7 +171,7 @@ export const SearchBarProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 };
 
-// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useSearchBar(): SearchBarContextValue {
   const ctx = useContext(SearchBarContext);

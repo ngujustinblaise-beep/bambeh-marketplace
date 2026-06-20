@@ -1,6 +1,6 @@
 ﻿/**
  * src/components/profile/EmailPreferences.tsx
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -14,12 +14,12 @@ const EmailPreferences: React.FC = () => {
   const [saved, setSaved] = useState(false);
   const [prefs, setPrefs] = useState<PrefItem[]>([
     { id: "new_message",     label: "Nouveaux messages",        description: "Recevez un email quand vous avez un nouveau message", enabled: true },
-    { id: "order_update",    label: "Mises Ã  jour des commandes", description: "Statut de vos commandes et livraisons",            enabled: true },
-    { id: "promotions",      label: "Promotions & offres",       description: "Offres spÃ©ciales et rÃ©ductions Bambeh",             enabled: false },
-    { id: "new_listing",     label: "Nouvelles annonces",        description: "Annonces qui correspondent Ã  vos recherches",       enabled: false },
-    { id: "vendor_update",   label: "ActualitÃ©s vendeurs",       description: "NouveautÃ©s de vos vendeurs favoris",                enabled: true },
-    { id: "security",        label: "Alertes de sÃ©curitÃ©",       description: "Connexions et activitÃ©s suspectes",                 enabled: true },
-    { id: "weekly_digest",   label: "RÃ©sumÃ© hebdomadaire",       description: "Les meilleures offres de la semaine",               enabled: false },
+    { id: "order_update",    label: "Mises à jour des commandes", description: "Statut de vos commandes et livraisons",            enabled: true },
+    { id: "promotions",      label: "Promotions & offres",       description: "Offres spéciales et réductions Bambeh",             enabled: false },
+    { id: "new_listing",     label: "Nouvelles annonces",        description: "Annonces qui correspondent à vos recherches",       enabled: false },
+    { id: "vendor_update",   label: "Actualités vendeurs",       description: "Nouveautés de vos vendeurs favoris",                enabled: true },
+    { id: "security",        label: "Alertes de sécurité",       description: "Connexions et activités suspectes",                 enabled: true },
+    { id: "weekly_digest",   label: "Résumé hebdomadaire",       description: "Les meilleures offres de la semaine",               enabled: false },
   ]);
 
   const toggle = (id: string) => setPrefs((prev) => prev.map((p) => p.id === id ? { ...p, enabled: !p.enabled } : p));
@@ -40,8 +40,8 @@ const EmailPreferences: React.FC = () => {
   return (
     <div className="max-w-lg mx-auto p-4">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900">PrÃ©fÃ©rences email</h2>
-        <p className="text-sm text-gray-500 mt-1">GÃ©rez les emails que vous recevez de Bambeh</p>
+        <h2 className="text-xl font-bold text-gray-900">Préférences email</h2>
+        <p className="text-sm text-gray-500 mt-1">Gérez les emails que vous recevez de Bambeh</p>
       </div>
 
       <div className="space-y-3">
@@ -67,7 +67,7 @@ const EmailPreferences: React.FC = () => {
           disabled={saving}
           className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-all ${saved ? "bg-green-500 text-white" : "bg-teal-600 text-white hover:bg-teal-700"} disabled:opacity-60`}
         >
-          {saving ? "Sauvegarde..." : saved ? "âœ“ SauvegardÃ©" : "Sauvegarder"}
+          {saving ? "Sauvegarde..." : saved ? "✓ Sauvegardé" : "Sauvegarder"}
         </button>
       </div>
     </div>

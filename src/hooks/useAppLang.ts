@@ -1,7 +1,7 @@
 ﻿/**
- * src/hooks/useAppLang.ts â€” Bambeh Marketplace
+ * src/hooks/useAppLang.ts — Bambeh Marketplace
  *
- * SAFE VERSION â€” zero external file dependencies.
+ * SAFE VERSION — zero external file dependencies.
  * Never crashes regardless of which other files exist.
  *
  * Returns the current language code by reading localStorage directly.
@@ -28,7 +28,7 @@ export function resolveCode(raw: string | null): LangCode {
 }
 
 /**
- * useLang â€” returns current language code, reactive to language changes.
+ * useLang — returns current language code, reactive to language changes.
  * Works without LanguageProvider. Safe to use on any page.
  */
 export function useLang(): LangCode {
@@ -57,7 +57,7 @@ export function useLang(): LangCode {
 }
 
 /**
- * t â€” standalone translation lookup (non-hook).
+ * t — standalone translation lookup (non-hook).
  * Pages pass their own STR table; this is just an API-compatibility export.
  */
 export function t(key: string, _lang: string): string {

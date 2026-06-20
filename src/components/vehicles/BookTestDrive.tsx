@@ -1,23 +1,23 @@
 ﻿/**
- * src/components/vehicles/BookTestDrive.tsx â€” Bambeh Marketplace
+ * src/components/vehicles/BookTestDrive.tsx — Bambeh Marketplace
  *
  * CHANGES IN THIS VERSION:
- * âœ… AfricanPhoneInput added â€” buyer enters their own callback number
+ * ✅ AfricanPhoneInput added — buyer enters their own callback number
  *    (Cameroon default, full Central + West Africa country picker).
  *    Previously this file had no buyer phone input.
- * âœ… sendBookingMessage called after Supabase insert â€” sends a non-repliable
+ * ✅ sendBookingMessage called after Supabase insert — sends a non-repliable
  *    in-app message to the vehicle seller so they see a test ride booking card
  *    in Chat. The buyer never needs to see or dial the seller's number directly.
  *
  * ALL PREVIOUS FIXES PRESERVED:
- * âœ… date picker, 11 time slots, optional message
- * âœ… writes to test_drive_requests in Supabase
- * âœ… gracefully handles missing table (shows success, logs warning)
- * âœ… success confirmation screen with booking summary
- * âœ… outside-click closes modal
- * âœ… "Prefer to call directly?" tel: anchor using sellerPhone prop
+ * ✅ date picker, 11 time slots, optional message
+ * ✅ writes to test_drive_requests in Supabase
+ * ✅ gracefully handles missing table (shows success, logs warning)
+ * ✅ success confirmation screen with booking summary
+ * ✅ outside-click closes modal
+ * ✅ "Prefer to call directly?" tel: anchor using sellerPhone prop
  *
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState } from "react";
@@ -76,7 +76,7 @@ export function BookTestDrive({
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // 1ï¸âƒ£ Write to test_drive_requests table
+      // 1ï¸⃣ Write to test_drive_requests table
       const row: Record<string, any> = {
         vehicle_id:     vehicleId,
         vehicle_title:  vehicleTitle,
@@ -97,8 +97,8 @@ export function BookTestDrive({
 
       if (dbErr && !dbErr.message.includes("does not exist")) throw dbErr;
 
-      // 2ï¸âƒ£ Send non-repliable in-app booking message to the seller
-      //    Seller sees a formatted test ride card in Chat â€” buyer's contact
+      // 2ï¸⃣ Send non-repliable in-app booking message to the seller
+      //    Seller sees a formatted test ride card in Chat — buyer's contact
       //    is included in the card; no need for the seller's number to be exposed.
       if (sellerId) {
         await sendBookingMessage({
@@ -150,7 +150,7 @@ export function BookTestDrive({
         <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
 
           {submitted ? (
-            /* â”€â”€ Success â”€â”€ */
+            /* ── Success ── */
             <div className="text-center py-8">
               <CheckCircle2 className="w-16 h-16 text-teal-500 mx-auto mb-3" />
               <h3 className="text-xl font-bold text-gray-900 mb-1">Request Sent!</h3>
@@ -176,7 +176,7 @@ export function BookTestDrive({
               </button>
             </div>
           ) : (
-            /* â”€â”€ Form â”€â”€ */
+            /* ── Form ── */
             <>
               <p className="text-sm text-gray-600">
                 Choose a date and time to test{" "}
@@ -216,7 +216,7 @@ export function BookTestDrive({
                 </div>
               </div>
 
-              {/* â”€â”€ AfricanPhoneInput â€” buyer's callback number â”€â”€ */}
+              {/* ── AfricanPhoneInput — buyer's callback number ── */}
               <div>
                 <AfricanPhoneInput
                   label="Your contact number"
@@ -237,7 +237,7 @@ export function BookTestDrive({
                   <span className="text-gray-400 font-normal">(optional)</span>
                 </label>
                 <textarea rows={3}
-                  placeholder="e.g. I'm coming from Douala, please confirm the meeting pointâ€¦"
+                  placeholder="e.g. I'm coming from Douala, please confirm the meeting point…"
                   value={message} onChange={e => setMessage(e.target.value)} maxLength={300}
                   className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-4 py-3 text-sm outline-none resize-none" />
                 <p className="text-xs text-gray-400 text-right mt-1">{message.length}/300</p>
@@ -246,7 +246,7 @@ export function BookTestDrive({
               {/* Error */}
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
-                  âš  {error}
+                  ⚠ {error}
                 </div>
               )}
 
@@ -259,11 +259,11 @@ export function BookTestDrive({
                 <button type="button" onClick={handleSubmit}
                   disabled={loading || (!!buyerPhone && !phoneValid)}
                   className="flex-1 py-3 bg-teal-600 text-white rounded-xl text-sm font-bold disabled:opacity-60">
-                  {loading ? "Sendingâ€¦" : "ðŸ“… Send Request"}
+                  {loading ? "Sending…" : "📅 Send Request"}
                 </button>
               </div>
 
-              {/* Direct call fallback â€” seller's number, for buyer who prefers to call */}
+              {/* Direct call fallback — seller's number, for buyer who prefers to call */}
               {sellerPhone && (
                 <a
                   href={`tel:${sellerPhone.replace(/\s/g, "")}`}
