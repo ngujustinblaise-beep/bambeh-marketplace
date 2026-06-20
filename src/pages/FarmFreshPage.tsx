@@ -478,7 +478,8 @@ export default function FarmFreshPage() {
 }
 
 // ─── Floating cart button ─────────────────────────────────────────────────────
-function CartFloater({ lang }: { lang: ReturnType<typeof useLang> }) {
+function CartFloater({ lang }: { lang: string }) {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { items } = useCart();
   const count = items.reduce((s, i) => s + i.quantity, 0);

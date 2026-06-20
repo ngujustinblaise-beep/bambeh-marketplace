@@ -25,6 +25,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { NotificationBell } from '@/components/NotificationBell';
 import { useLang, t } from "@/hooks/useAppLang";
 
+type LanguageCode = "en" | "fr" | "pcm" | "ff" | "ar";
+const AVAILABLE_LANGUAGES: { code: LanguageCode; name: string; flag: string }[] = [
+  { code: "en",  name: "English",       flag: "\uD83C\uDDEC\uD83C\uDDE7" },
+  { code: "fr",  name: "Fran\u00e7ais", flag: "\uD83C\uDDEB\uD83C\uDDF7" },
+  { code: "pcm", name: "Pidgin",        flag: "\uD83C\uDDE8\uD83C\uDDF2" },
+  { code: "ff",  name: "Fulfulde",      flag: "\uD83C\uDDE8\uD83C\uDDF2" },
+  { code: "ar",  name: "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", flag: "\uD83C\uDDF8\uD83C\uDDE6" },
+];
 export default function Header() {
   const lang = useLang();
   const isRtl = lang === "ar";

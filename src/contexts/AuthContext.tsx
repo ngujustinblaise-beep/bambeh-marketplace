@@ -104,11 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = useCallback(async (
     email: string, password: string
   ): Promise<{ error: string | null }> => {
-    if(loginAttempts >= 5){
-  throw new Error("Account temporarily locked.");
-}
-loginAttempts++;
-try {
+    try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       return { error: error?.message ?? null };
     } catch (e) {
@@ -119,11 +115,7 @@ try {
   const register = useCallback(async (
     email: string, password: string, name?: string
   ): Promise<{ error: string | null }> => {
-    if(loginAttempts >= 5){
-  throw new Error("Account temporarily locked.");
-}
-loginAttempts++;
-try {
+    try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -142,11 +134,7 @@ try {
   const updateProfile = useCallback(async (
     updates: Partial<AuthUser>
   ): Promise<{ error: string | null }> => {
-    if(loginAttempts >= 5){
-  throw new Error("Account temporarily locked.");
-}
-loginAttempts++;
-try {
+    try {
       const { error } = await supabase.auth.updateUser({
         data: updates,
       });
