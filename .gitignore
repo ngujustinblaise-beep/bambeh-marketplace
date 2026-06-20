@@ -133,3 +133,12 @@ server/
 # Local backup files - not for the repo
 *.bak
 *.bak[0-9]
+
+# Bambeh hygiene
+*.bak
+*.bak[0-9]
+*.bak_*
+*.corrupt
+*backup*
+* bk up*
+.mojibake-bak/
