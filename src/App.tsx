@@ -465,8 +465,12 @@ const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children })
   }, [applyDom]);
 
   const t = useCallback(
-    (key: string): string =>
-      LANG_STRINGS[language]?.[key] ?? LANG_STRINGS.en?.[key] ?? key,
+    (key: string): string => {
+      const tbl = LANG_STRINGS[language] ?? LANG_STRINGS.en;
+      const en = LANG_STRINGS.en;
+      const bare = key.includes(".") ? key.slice(key.lastIndexOf(".") + 1) : key;
+      return tbl?.[key] ?? en?.[key] ?? tbl?.[bare] ?? en?.[bare] ?? key;
+    },
     [language]
   );
 
@@ -491,6 +495,7 @@ import AuthPage from "@/pages/auth/AuthPage";
 // AUTH
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
+const SecurityRecovery  = lazy(() => import("@/pages/SecurityRecovery"));
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
@@ -996,6 +1001,7 @@ export default function App() {
                         {/* -- 2. AUTH ----------------------------------------------- */}
                         <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
                         <Route path="/register" element={<Navigate to="/login" replace />} />
+                        <Route path="/security-recovery" element={<SecurityRecovery />} />
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}
