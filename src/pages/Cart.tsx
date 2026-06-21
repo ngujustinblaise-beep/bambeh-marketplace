@@ -521,7 +521,7 @@ export default function Cart() {
             <h2 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Order Summary</h2>
             <FeeRow label="Subtotal" amount={`${fmt(subtotal)} XAF`} />
             <FeeRow label="Bambeh Fee (1%)" amount={`${fmt(appFee)} XAF`} muted
-              tooltip="A 3% platform fee that keeps Bambeh running and supports local sellers." />
+              tooltip="A 1% platform fee that keeps Bambeh running and supports local sellers." />
             <FeeRow label="Government Tax (0.002%)" amount={`${fmt(govTax)} XAF`} muted
               tooltip="Statutory 0.002% digital tax levied by the Government of Cameroon." />
             <div className="border-t border-gray-100 my-3"/>

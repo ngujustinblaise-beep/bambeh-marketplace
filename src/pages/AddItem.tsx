@@ -100,9 +100,7 @@ export default function AddItem() {
     },
   ];
 
-  const handleCategoryClick = (route: string) => {
-    setMainOrigin();
-    navigate(route);
+  const handleCategoryClick = (route: string) => { setMainOrigin(); navigate(route); }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -232,5 +230,6 @@ export default function AddItem() {
   );
 }
 }
+
 
 

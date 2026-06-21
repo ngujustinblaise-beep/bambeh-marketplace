@@ -21,9 +21,7 @@
  * ✅ Both fetchMessages and the Realtime INSERT handler map is_booking_message.
  */
 
-import React, { useEffect, 
-  useState,
-  useEffect,
+import React, { useState, useEffect,
   useRef,
   useCallback,
 } from 'react';
@@ -940,6 +938,7 @@ export async function startChat(
 
   return data.id;
 }
+
 
 
 

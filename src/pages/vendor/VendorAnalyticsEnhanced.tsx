@@ -32,7 +32,7 @@ export default function VendorAnalyticsEnhanced(){
           ))}
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {[[totalRev.toLocaleString()+' XAF','Revenue',DollarSign,'text-green-600','+12.5%'],[totalOrd,'Orders',ShoppingCart,'text-blue-600','+8.3%'],['3,840','Views',Eye,'text-purple-600','-2.1%'],['127','Customers',Users,'text-orange-600','+15.7%']].map(([v,l,Icon,col,ch])=>(
+          {[[totalRev.toLocaleString()+' XAF','Revenue',DollarSign,'text-green-600','+12.5%'],[totalOrd,'Orders',ShoppingCart,'text-blue-600','+8.1%'],['3,840','Views',Eye,'text-purple-600','-2.1%'],['127','Customers',Users,'text-orange-600','+15.7%']].map(([v,l,Icon,col,ch])=>(
             <div key={String(l)} className="bg-white rounded-2xl p-4 shadow-sm border">
               <div className="flex items-center justify-between mb-2">
                 {/* @ts-ignore */}

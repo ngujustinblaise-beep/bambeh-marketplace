@@ -1,15 +1,14 @@
-﻿/**
+/**
  * src/pages/Profile.tsx — Bambeh Marketplace
  *
- * FIXED in this version:
- *  ✅ Avatar upload WORKS — Camera button now opens file picker
- *  ✅ Photo stored as base64 in localStorage (no Supabase storage needed)
- *  ✅ Image validation: JPG/PNG/WebP, max 3MB
- *  ✅ Reads real user data from Supabase auth session first,
- *     then falls back to localStorage keys for legacy data
- *  ✅ Profile save updates localStorage
- *  ✅ Logout clears auth session + all localStorage keys
- *  ✅ Quick Links section with correct routes
+ * i18n: all visible strings live in the local S table below, keyed by the live
+ * language (EN / FR / Pidgin / Arabic / Fulfulde). The language code comes from
+ * useLang() (@/hooks/useAppLang), which reacts to the same "bambeh:langchange"
+ * event the real LanguageProvider (in @/App) fires — so this page re-renders
+ * and re-translates the instant the user switches language anywhere.
+ *
+ * Behaviour unchanged: avatar upload (base64, max 3MB), Supabase + localStorage
+ * load/save, logout clears session + local keys, Quick Links routes.
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -19,7 +18,9 @@ import {
   X, LogOut, Camera, AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLang } from "@/hooks/useAppLang";
+
+type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 
 interface UserProfile {
   id:       string;
@@ -32,12 +33,187 @@ interface UserProfile {
   joinedAt: string;
 }
 
+// ── i18n strings (local; keyed by live language) ──────────────────────────
+const S: Record<Lang, {
+  imgTypeErr: string; imgTooLarge: (mb: string) => string;
+  myProfile: string; logout: string; memberSince: string;
+  tapCamera: string; changePhotoAria: string; personalInfo: string;
+  saving: string; save: string; edit: string;
+  fullName: string; email: string; phone: string; location: string; bio: string;
+  notSet: string; locationPh: string; bioPh: string;
+  quickLinks: string; qlCoins: string; qlListings: string; qlOrders: string;
+  qlSaved: string; qlSettings: string; qlFarmFresh: string; qlPostAd: string;
+  account: string; signOut: string;
+}> = {
+  en: {
+    imgTypeErr: "Only JPG, PNG or WebP images allowed.",
+    imgTooLarge: (mb) => "Image too large (max 3 MB). Got " + mb + " MB.",
+    myProfile: "My Profile",
+    logout: "Logout",
+    memberSince: "Member since",
+    tapCamera: "Tap the camera icon to change your photo",
+    changePhotoAria: "Change profile photo",
+    personalInfo: "Personal Information",
+    saving: "Saving...",
+    save: "Save",
+    edit: "Edit",
+    fullName: "Full Name",
+    email: "Email",
+    phone: "Phone",
+    location: "Location",
+    bio: "Bio",
+    notSet: "Not set",
+    locationPh: "e.g. Yaoundé, Centre",
+    bioPh: "Tell buyers and sellers a little about yourself...",
+    quickLinks: "Quick Links",
+    qlCoins: "Zerm Coins",
+    qlListings: "My Listings",
+    qlOrders: "My Orders",
+    qlSaved: "Saved Items",
+    qlSettings: "Settings",
+    qlFarmFresh: "Farm Fresh",
+    qlPostAd: "Post an Ad",
+    account: "Account",
+    signOut: "Sign Out",
+  },
+  fr: {
+    imgTypeErr: "Seules les images JPG, PNG ou WebP sont autorisées.",
+    imgTooLarge: (mb) => "Image trop volumineuse (max 3 Mo). Reçu " + mb + " Mo.",
+    myProfile: "Mon profil",
+    logout: "Déconnexion",
+    memberSince: "Membre depuis",
+    tapCamera: "Touchez l'icône de l'appareil photo pour changer votre photo",
+    changePhotoAria: "Changer la photo de profil",
+    personalInfo: "Informations personnelles",
+    saving: "Enregistrement...",
+    save: "Enregistrer",
+    edit: "Modifier",
+    fullName: "Nom complet",
+    email: "E-mail",
+    phone: "Téléphone",
+    location: "Localisation",
+    bio: "Bio",
+    notSet: "Non défini",
+    locationPh: "ex. Yaoundé, Centre",
+    bioPh: "Présentez-vous brièvement aux acheteurs et vendeurs...",
+    quickLinks: "Liens rapides",
+    qlCoins: "Pièces Zerm",
+    qlListings: "Mes annonces",
+    qlOrders: "Mes commandes",
+    qlSaved: "Articles enregistrés",
+    qlSettings: "Paramètres",
+    qlFarmFresh: "Ferme Fraîche",
+    qlPostAd: "Publier une annonce",
+    account: "Compte",
+    signOut: "Se déconnecter",
+  },
+  pidgin: {
+    imgTypeErr: "Na only JPG, PNG or WebP image dem dey allow.",
+    imgTooLarge: (mb) => "Image too big (max 3 MB). Na " + mb + " MB you bring.",
+    myProfile: "My Profile",
+    logout: "Comot",
+    memberSince: "Member since",
+    tapCamera: "Press di camera icon to change your photo",
+    changePhotoAria: "Change profile photo",
+    personalInfo: "Your Personal Info",
+    saving: "E dey save...",
+    save: "Save",
+    edit: "Edit",
+    fullName: "Full Name",
+    email: "Email",
+    phone: "Phone",
+    location: "Wia You Dey",
+    bio: "Bio",
+    notSet: "You never set am",
+    locationPh: "e.g. Yaoundé, Centre",
+    bioPh: "Talk small about yourself make buyers and sellers know you...",
+    quickLinks: "Quick Links",
+    qlCoins: "Zerm Coins",
+    qlListings: "My Listings",
+    qlOrders: "My Orders",
+    qlSaved: "Things Wey I Save",
+    qlSettings: "Settings",
+    qlFarmFresh: "Farm Fresh",
+    qlPostAd: "Post Ad",
+    account: "Account",
+    signOut: "Comot",
+  },
+  ar: {
+    imgTypeErr: "يُسمح فقط بصور JPG أو PNG أو WebP.",
+    imgTooLarge: (mb) => "الصورة كبيرة جدًا (الحد الأقصى 3 ميغابايت). الحجم " + mb + " ميغابايت.",
+    myProfile: "ملفي الشخصي",
+    logout: "تسجيل الخروج",
+    memberSince: "عضو منذ",
+    tapCamera: "اضغط على أيقونة الكاميرا لتغيير صورتك",
+    changePhotoAria: "تغيير صورة الملف الشخصي",
+    personalInfo: "المعلومات الشخصية",
+    saving: "جارٍ الحفظ...",
+    save: "حفظ",
+    edit: "تعديل",
+    fullName: "الاسم الكامل",
+    email: "البريد الإلكتروني",
+    phone: "الهاتف",
+    location: "الموقع",
+    bio: "نبذة",
+    notSet: "غير محدد",
+    locationPh: "مثال: ياوندي، الوسطى",
+    bioPh: "عرّف بنفسك قليلًا للمشترين والبائعين...",
+    quickLinks: "روابط سريعة",
+    qlCoins: "عملات زيرم",
+    qlListings: "إعلاناتي",
+    qlOrders: "طلباتي",
+    qlSaved: "العناصر المحفوظة",
+    qlSettings: "الإعدادات",
+    qlFarmFresh: "طازج من المزرعة",
+    qlPostAd: "نشر إعلان",
+    account: "الحساب",
+    signOut: "تسجيل الخروج",
+  },
+  ff: {
+    imgTypeErr: "Ko natal JPG, PNG walla WebP tan yamiraa.",
+    imgTooLarge: (mb) => "Natal mawni no feewi (haa 3 MB). Hewtii " + mb + " MB.",
+    myProfile: "Profil am",
+    logout: "Yaltude",
+    memberSince: "Tuugnoode gila",
+    tapCamera: "Meem ikon kamera ndee ngam waylude natal maa",
+    changePhotoAria: "Waylu natal profil",
+    personalInfo: "Kabaruuji maa",
+    saving: "Ɗon danee...",
+    save: "Dannu",
+    edit: "Taƴto",
+    fullName: "Innde timmunde",
+    email: "Iimeel",
+    phone: "Telefoŋ",
+    location: "Nokku",
+    bio: "Faltaade",
+    notSet: "Teelaaka",
+    locationPh: "misal: Yaoundé, Centre",
+    bioPh: "Falto hoore maa seeɗa fayde soodooɓe e njeeyooɓe...",
+    quickLinks: "Jokkorɗe yaawɗe",
+    qlCoins: "Ceede Zerm",
+    qlListings: "Ko njeeyetee am",
+    qlOrders: "Sarwiiji am",
+    qlSaved: "Kuuje danaaɗe",
+    qlSettings: "Teelte",
+    qlFarmFresh: "Ko hecci diga ngesa",
+    qlPostAd: "Fewtu njeeyannde",
+    account: "Konto",
+    signOut: "Yaltude",
+  },
+};
+
+const LOCALE_MAP: Record<Lang, string> = {
+  en: "en-GB", fr: "fr-FR", pidgin: "en-GB", ar: "ar", ff: "en-GB",
+};
+
 const ALLOWED_IMG  = ["image/jpeg", "image/png", "image/webp"];
 const MAX_AVATAR   = 3 * 1024 * 1024; // 3MB — keeps localStorage manageable
 
 export default function Profile() {
   const lang = useLang();
-  const isRtl = lang === "ar";
+  const l: Lang = (lang in S ? lang : "en") as Lang;
+  const s = S[l];
+  const isRtl = l === "ar";
   const navigate  = useNavigate();
   const fileRef   = useRef<HTMLInputElement>(null);
 
@@ -137,11 +313,12 @@ export default function Profile() {
     if (!file) return;
 
     if (!ALLOWED_IMG.includes(file.type)) {
-      setAvatarError("Only JPG, PNG or WebP images allowed.");
+      setAvatarError(s.imgTypeErr);
       return;
     }
     if (file.size > MAX_AVATAR) {
-      setAvatarError(`Image too large (max 3 MB). Got ${(file.size / 1024 / 1024).toFixed(1)} MB.`);
+      const mb = (file.size / 1024 / 1024).toFixed(1);
+      setAvatarError(s.imgTooLarge(mb));
       return;
     }
 
@@ -233,22 +410,32 @@ export default function Profile() {
 
   const memberSince = (() => {
     try {
-      return new Date(profile.joinedAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+      return new Date(profile.joinedAt).toLocaleDateString(LOCALE_MAP[l] ?? "en-GB", { month: "long", year: "numeric" });
     } catch { return ""; }
   })();
 
+  const quickLinks: [string, string][] = [
+    ["⚡  " + s.qlCoins,     "/coins"],
+    ["🛍️  " + s.qlListings,  "/marketplace"],
+    ["📦  " + s.qlOrders,    "/orders"],
+    ["❤️   " + s.qlSaved,     "/favorites"],
+    ["⚙️   " + s.qlSettings,  "/settings"],
+    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],
+    ["📢  " + s.qlPostAd,    "/post-ad"],
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-20">
 
       {/* Header */}
       <div className="bg-gradient-to-br from-teal-600 to-teal-700 pt-8 pb-16 px-4">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-white font-bold text-xl">My Profile</h1>
+          <h1 className="text-white font-bold text-xl">{s.myProfile}</h1>
           <button
             onClick={logout}
             className="flex items-center gap-1.5 text-teal-100 text-sm hover:text-white transition-colors">
             <LogOut className="w-4 h-4" />
-            Logout
+            {s.logout}
           </button>
         </div>
 
@@ -262,11 +449,11 @@ export default function Profile() {
               }
             </div>
 
-            {/* Camera button — now WIRED to file input */}
+            {/* Camera button — wired to file input */}
             <button
               type="button"
               onClick={handleAvatarClick}
-              aria-label="Change profile photo"
+              aria-label={s.changePhotoAria}
               className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 active:scale-95 transition-all border-2 border-teal-600">
               <Camera className="w-4 h-4 text-teal-600" />
             </button>
@@ -295,12 +482,12 @@ export default function Profile() {
             </p>
           )}
           {memberSince && (
-            <p className="text-teal-200 text-xs mt-1">Member since {memberSince}</p>
+            <p className="text-teal-200 text-xs mt-1">{s.memberSince} {memberSince}</p>
           )}
 
           {/* Tap hint */}
           <p className="text-teal-200 text-xs mt-2 opacity-70">
-            Tap the camera icon to change your photo
+            {s.tapCamera}
           </p>
         </div>
       </div>
@@ -311,7 +498,7 @@ export default function Profile() {
         {/* Personal info card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Personal Information</h3>
+            <h3 className="font-semibold text-gray-900">{s.personalInfo}</h3>
             {editing ? (
               <div className="flex gap-3">
                 <button
@@ -319,7 +506,7 @@ export default function Profile() {
                   disabled={saving}
                   className="flex items-center gap-1 text-teal-600 text-sm font-semibold disabled:opacity-50">
                   <Save className="w-4 h-4" />
-                  {saving ? "Saving..." : "Save"}
+                  {saving ? s.saving : s.save}
                 </button>
                 <button
                   onClick={() => { setEditing(false); setForm(profile); }}
@@ -331,7 +518,7 @@ export default function Profile() {
               <button
                 onClick={() => setEditing(true)}
                 className="flex items-center gap-1 text-teal-600 text-sm font-semibold">
-                <Edit2 className="w-4 h-4" />Edit
+                <Edit2 className="w-4 h-4" />{s.edit}
               </button>
             )}
           </div>
@@ -340,7 +527,7 @@ export default function Profile() {
             {/* Name */}
             <div>
               <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
-                <User className="w-3 h-3" />Full Name
+                <User className="w-3 h-3" />{s.fullName}
               </label>
               {editing
                 ? <input
@@ -354,7 +541,7 @@ export default function Profile() {
             {/* Email */}
             <div>
               <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
-                <Mail className="w-3 h-3" />Email
+                <Mail className="w-3 h-3" />{s.email}
               </label>
               {editing
                 ? <input
@@ -362,14 +549,14 @@ export default function Profile() {
                     value={form.email ?? ""}
                     onChange={e => setForm({ ...form, email: e.target.value })}
                     className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors" />
-                : <p className="text-gray-900 font-medium text-sm">{profile.email || "Not set"}</p>
+                : <p className="text-gray-900 font-medium text-sm">{profile.email || s.notSet}</p>
               }
             </div>
 
             {/* Phone */}
             <div>
               <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
-                <Phone className="w-3 h-3" />Phone
+                <Phone className="w-3 h-3" />{s.phone}
               </label>
               {editing
                 ? <div className="flex">
@@ -383,34 +570,34 @@ export default function Profile() {
                       placeholder="6XX XXX XXX"
                       className="flex-1 border-2 border-gray-200 focus:border-teal-500 rounded-r-xl px-3 py-2.5 text-sm outline-none transition-colors" />
                   </div>
-                : <p className="text-gray-900 font-medium text-sm">{profile.phone || "Not set"}</p>
+                : <p className="text-gray-900 font-medium text-sm">{profile.phone || s.notSet}</p>
               }
             </div>
 
             {/* Location */}
             <div>
               <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
-                <MapPin className="w-3 h-3" />Location
+                <MapPin className="w-3 h-3" />{s.location}
               </label>
               {editing
                 ? <input
                     value={form.location ?? ""}
                     onChange={e => setForm({ ...form, location: e.target.value })}
-                    placeholder="e.g. Yaoundé, Centre"
+                    placeholder={s.locationPh}
                     className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors" />
-                : <p className="text-gray-900 font-medium text-sm">{profile.location || "Not set"}</p>
+                : <p className="text-gray-900 font-medium text-sm">{profile.location || s.notSet}</p>
               }
             </div>
 
             {/* Bio */}
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Bio</label>
+              <label className="block text-xs text-gray-500 mb-1">{s.bio}</label>
               {editing
                 ? <textarea
                     value={form.bio ?? ""}
                     onChange={e => setForm({ ...form, bio: e.target.value })}
                     rows={2}
-                    placeholder="Tell buyers and sellers a little about yourself..."
+                    placeholder={s.bioPh}
                     className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none resize-none transition-colors" />
                 : <p className="text-gray-900 font-medium text-sm">{profile.bio}</p>
               }
@@ -420,17 +607,9 @@ export default function Profile() {
 
         {/* Quick Links */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Quick Links</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">{s.quickLinks}</h3>
           <div className="space-y-1">
-            {[
-              ["⚡  Zerm Coins",      "/coins"],
-              ["🛍️  My Listings",    "/marketplace"],
-              ["📦  My Orders",      "/orders"],
-              ["❤️   Saved Items",    "/favorites"],
-              ["⚙️   Settings",       "/settings"],
-              ["🌿  Farm Fresh",     "/farm-fresh"],
-              ["📢  Post an Ad",     "/post-ad"],
-            ].map(([label, route]) => (
+            {quickLinks.map(([label, route]) => (
               <button
                 key={route}
                 onClick={() => navigate(route)}
@@ -442,14 +621,14 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Danger zone */}
+        {/* Account */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-          <h3 className="font-semibold text-gray-900 mb-3 text-sm">Account</h3>
+          <h3 className="font-semibold text-gray-900 mb-3 text-sm">{s.account}</h3>
           <button
             onClick={logout}
             className="w-full flex items-center gap-2 px-3 py-3 text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors">
             <LogOut className="w-4 h-4" />
-            Sign Out
+            {s.signOut}
           </button>
         </div>
 
@@ -457,6 +636,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
-

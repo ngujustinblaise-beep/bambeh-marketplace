@@ -1,25 +1,33 @@
-﻿/**
+/**
  * src/hooks/useAppLang.ts — Bambeh Marketplace
  *
- * SAFE VERSION — zero external file dependencies.
- * Never crashes regardless of which other files exist.
+ * SAFE VERSION — zero external file dependencies. Never crashes regardless of
+ * which other files exist. All existing pages that call useLang() or t()
+ * continue to work unchanged.
  *
- * Returns the current language code by reading localStorage directly.
- * This means it correctly reads the saved language on every render.
+ * WHAT THIS VERSION ADDS (app-wide instant language switching):
+ *  • A single global listener (installed once on import) flips the document
+ *    <html lang> and dir (RTL for Arabic) the INSTANT the language changes,
+ *    no matter which screen triggered it. This makes the whole app re-orient
+ *    immediately — Arabic switches the entire layout to right-to-left.
+ *  • setLang(code): one canonical entry point any component can call to switch
+ *    the whole app — it persists to localStorage, applies dir/lang, and
+ *    broadcasts "bambeh:langchange" so every reactive screen updates at once.
+ *  • applyDocumentLang(code): exported helper if you ever need to re-apply.
  *
- * For fully reactive switching (component re-renders when language changes),
- * use useLanguage() which is exported directly from App.tsx inline context.
- *
- * All existing pages that call useLang() continue to work unchanged.
+ * The active LanguageProvider (in @/App) already dispatches "bambeh:langchange"
+ * on setLanguage, so existing language selectors keep working AND now also
+ * drive the global dir/lang flip through the listener below.
  */
 
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
 
 const LANG_KEY = "Bambeh_language";
+const RTL_LANGS: LangCode[] = ["ar"];
 
-export function resolveCode(raw: string | null): LangCode {
+export function resolveCode(raw: string | null | undefined): LangCode {
   const valid: LangCode[] = ["en", "fr", "pidgin", "ar", "ff"];
   if (!raw) return "en";
   if (raw === "pcm" || raw === "pidgin_english") return "pidgin";
@@ -28,22 +36,52 @@ export function resolveCode(raw: string | null): LangCode {
 }
 
 /**
+ * applyDocumentLang — set <html lang> and text direction for the whole app.
+ * RTL for Arabic, LTR otherwise. Safe to call anywhere; never throws.
+ */
+export function applyDocumentLang(code: LangCode): void {
+  try {
+    const el = document.documentElement;
+    el.lang = code;
+    el.dir = RTL_LANGS.includes(code) ? "rtl" : "ltr";
+  } catch { /* SSR or no document — ignore */ }
+}
+
+/**
+ * setLang — single global entry point to switch the entire app instantly.
+ * Persists the choice, flips document dir/lang, and broadcasts the change so
+ * every reactive screen (anything using useLang / useLanguage) re-renders now.
+ */
+export function setLang(code: string): void {
+  const c = resolveCode(code);
+  try { localStorage.setItem(LANG_KEY, c); } catch {}
+  applyDocumentLang(c);
+  try {
+    window.dispatchEvent(new CustomEvent("bambeh:langchange", { detail: c }));
+  } catch {}
+}
+
+/**
  * useLang — returns current language code, reactive to language changes.
  * Works without LanguageProvider. Safe to use on any page.
  */
 export function useLang(): LangCode {
-  const [lang, setLang] = useState<LangCode>(() =>
-    resolveCode(localStorage.getItem(LANG_KEY))
+  const [lang, setLangState] = useState<LangCode>(() =>
+    resolveCode(typeof localStorage !== "undefined" ? localStorage.getItem(LANG_KEY) : "en")
   );
 
   useEffect(() => {
-    // Re-sync when another part of the app changes localStorage
     const onStorage = (e: StorageEvent) => {
-      if (e.key === LANG_KEY) setLang(resolveCode(e.newValue));
+      if (e.key === LANG_KEY) {
+        const c = resolveCode(e.newValue);
+        setLangState(c);
+        applyDocumentLang(c);
+      }
     };
-    // Also listen for a custom event fired by LanguageProvider on setLanguage
-    const onLangChange = (e: CustomEvent) => {
-      setLang(resolveCode(e.detail as string));
+    const onLangChange = (e: Event) => {
+      const c = resolveCode((e as CustomEvent).detail as string);
+      setLangState(c);
+      applyDocumentLang(c);
     };
     window.addEventListener("storage", onStorage);
     window.addEventListener("bambeh:langchange", onLangChange as EventListener);
@@ -57,9 +95,29 @@ export function useLang(): LangCode {
 }
 
 /**
- * t — standalone translation lookup (non-hook).
- * Pages pass their own STR table; this is just an API-compatibility export.
+ * t — standalone translation lookup (non-hook). Pages pass their own STR table;
+ * this is just an API-compatibility export so existing imports keep working.
  */
-export function t(key: string, _lang: string): string {
+export function t(key: string, _lang?: string): string {
   return key;
 }
+
+// ── Install ONE global listener at import time ─────────────────────────────
+// Flips <html> dir/lang app-wide the instant the language changes, from any
+// source (the LanguageProvider's event, setLang(), or a cross-tab storage
+// change). Guarded so it only ever wires up once.
+let __bambehLangWired = false;
+function wireGlobalLang(): void {
+  if (__bambehLangWired) return;
+  __bambehLangWired = true;
+  try {
+    applyDocumentLang(resolveCode(localStorage.getItem(LANG_KEY)));
+    window.addEventListener("bambeh:langchange", (e: Event) =>
+      applyDocumentLang(resolveCode((e as CustomEvent).detail as string))
+    );
+    window.addEventListener("storage", (e: StorageEvent) => {
+      if (e.key === LANG_KEY) applyDocumentLang(resolveCode(e.newValue));
+    });
+  } catch { /* ignore */ }
+}
+if (typeof window !== "undefined") wireGlobalLang();
