@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Square,
@@ -147,7 +147,7 @@ const PropertyDetails = () => {
               onClick={prevImage}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-3 rounded-full hover:bg-white active:scale-95 transition-all text-xl font-bold"
             >
-              â†
+              ←
             </button>
             <button
               onClick={nextImage}

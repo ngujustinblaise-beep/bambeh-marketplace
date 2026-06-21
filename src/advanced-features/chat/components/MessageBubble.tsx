@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - MESSAGE BUBBLE COMPONENT
  * Version: 1.0.0
  */
@@ -101,7 +101,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           <div className="message-voice">
             <audio ref={audioRef} src={message.voiceUrl} preload="metadata" />
             <button className="voice-play-button" onClick={handlePlayVoice} aria-label={isPlaying ? 'Pause' : 'Play'}>
-              {isPlaying ? 'â¸ï¸' : '▶ï¸'}
+              {isPlaying ? '⏸️' : '▶ï¸'}
             </button>
             <div className="voice-progress">
               <div className="voice-waveform">
@@ -172,7 +172,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           </span>
           {isOwn && (
             <span className="message-status">
-              {message.read ? '✓✓' : message.delivered ? '✓' : 'â±ï¸'}
+              {message.read ? '✓✓' : message.delivered ? '✓' : '⏱️'}
             </span>
           )}
         </div>

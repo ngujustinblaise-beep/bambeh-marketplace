@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/ExchangeOfferPage.tsx — Bambeh Marketplace
  *
  * ✅ Full i18n: en, fr, ha, ar, pcm, ff
@@ -201,11 +201,11 @@ const STRINGS = {
     pageTitle:  'Hollit Jaɓde Fewtere',
     for:        'E:',
     cantSend:   'Jaɓde neldaaka',
-    goBack:     'Æeto Baawo',
+    goBack:     'Ɓeto Baawo',
     offerSent:  'Jaɓde Neldaama! 🎉',
     ownerReview:'Jom coftal ngol ɓetotoo jaɓde maa e jokkondirde.',
-    browseMore: 'Yiy Coftal Æuri',
-    backToItem: 'Æeto Coftal',
+    browseMore: 'Yiy Coftal Ɓuri',
+    backToItem: 'Ɓeto Coftal',
     back:       'Baawo',
     whatOffering:'Ko njollata? *',
     offerPlaceholder:'mis: Samsung Galaxy S21',

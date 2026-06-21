@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/PhoneInput.tsx
  * Bambeh Marketplace — Phone Number Input
  *
@@ -202,7 +202,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             {!search && (
               <div className="px-3 py-1.5 bg-teal-50 dark:bg-teal-900/20">
                 <p className="text-xs font-semibold text-teal-700 dark:text-teal-300">
-                  ðŸŒ West & Central Africa
+                  🌍 West & Central Africa
                 </p>
               </div>
             )}

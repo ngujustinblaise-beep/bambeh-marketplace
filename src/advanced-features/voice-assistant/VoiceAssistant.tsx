@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import TranscriptDisplay from "./components/TranscriptDisplay";
 
 interface ConversationEntry {
@@ -53,7 +53,7 @@ const VoiceAssistant: React.FC = () => {
             ${isListening
               ? "bg-red-500 hover:bg-red-600 animate-pulse"
               : "bg-teal-600 hover:bg-teal-700"}`}>
-          {isListening ? "â¹" : "🎤"}
+          {isListening ? "⏹" : "🎤"}
         </button>
       </div>
     </div>

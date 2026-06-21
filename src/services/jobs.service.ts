@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/services/jobs.service.ts
  * Bambeh Marketplace — Jobs Service
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -21,7 +21,7 @@
  *   listings.view_count        → viewCount
  *   listings.status            → status
  *   listings.extra.company          → company
- *   listings.extra.logo_url         → companyLogoUrl  â† NEW: company logo
+ *   listings.extra.logo_url         → companyLogoUrl  ← NEW: company logo
  *   listings.extra.job_type         → jobType
  *   listings.extra.exp_level        → experienceLevel
  *   listings.extra.salary_max       → salaryMaxXAF
@@ -65,7 +65,7 @@ function mapRow(row: Record<string, any>): JobListing {
     employerId:         row.user_id ?? row.seller_id ?? "",
     title:              row.title ?? "",
     company:            extra.company ?? row.company ?? undefined,
-    companyLogoUrl:     extra.logo_url ?? undefined,          // â† company logo
+    companyLogoUrl:     extra.logo_url ?? undefined,          // ← company logo
     description:        row.description ?? "",
     requirements:       extra.requirements ?? undefined,
     benefits:           extra.benefits ?? undefined,

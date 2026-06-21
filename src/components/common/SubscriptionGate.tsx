@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SubscriptionGate.tsx — Subscription enforcement component.
  * FILE LOCATION: src/components/common/SubscriptionGate.tsx
  */
@@ -78,7 +78,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
                 className={`relative flex flex-col items-center p-3 rounded-2xl border-2 transition-all hover:scale-105 ${plan.color} ${isHighlighted ? 'ring-2 ring-orange-400 ring-offset-1' : ''}`}
               >
                 {isHighlighted && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">â­ START HERE</span>
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">⭐ START HERE</span>
                 )}
                 <Icon className={`w-5 h-5 ${plan.accent} mb-1`} />
                 <p className={`font-black text-sm ${plan.accent}`}>{plan.price} XAF</p>

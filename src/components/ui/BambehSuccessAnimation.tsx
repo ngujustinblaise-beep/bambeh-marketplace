@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BambehSuccessAnimation.tsx
  * The Bambeh figure sets down his load, wipes his brow, and gives a thumbs up.
  * FILE LOCATION: src/components/ui/BambehSuccessAnimation.tsx
@@ -320,7 +320,7 @@ export default function BambehSuccessAnimation({
               }, 500);
             }}
           >
-            Let's go! ðŸ‹ï¸
+            Let's go! 🏋️
           </button>
         )}
       </div>

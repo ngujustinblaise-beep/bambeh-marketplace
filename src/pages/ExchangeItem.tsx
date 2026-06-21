@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/ExchangeItem.tsx — Bambeh Marketplace
  *
  * ✅ Full i18n: en, fr, ha, ar, pcm, ff
@@ -188,7 +188,7 @@ const STRINGS = {
     openToOffers: 'Open to offers',
   },
   ff: {
-    backToExchange: 'Æeto Fewtere',
+    backToExchange: 'Ɓeto Fewtere',
     itemUnavailable: 'Coftal alaa',
     noLongerExists: 'Coftal ngol yahii.',
     browseListing: 'Yiy Coftali Fewtere',
@@ -198,7 +198,7 @@ const STRINGS = {
     noPhotos: 'Alaa natal',
     estimatedValue: 'Njaru keɓnaaɗo:',
     cashTopUp: 'Kaalis njuɓɓudi heɓtaa haa',
-    lookingToSwap: 'Æeytata fewteraade e',
+    lookingToSwap: 'Ɓeytata fewteraade e',
     description: 'Haalannde',
     listed: 'Hollinaama',
     yourListing: 'Coftaldi maa',

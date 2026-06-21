@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - CONVERSATION LIST COMPONENT
  * Version: 1.0.0
  */
@@ -70,7 +70,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
           onChange={(e) => setSearchQuery(e.target.value)}
           className="search-input"
         />
-        <span className="search-icon">ðŸ”</span>
+        <span className="search-icon">🔍</span>
       </div>
 
       <div className="conversation-list">
@@ -127,7 +127,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                   </div>
 
                   <span className={`role-badge ${otherParticipant.role}`}>
-                    {otherParticipant.role === 'vendor' && 'ðŸª'}
+                    {otherParticipant.role === 'vendor' && '🏪'}
                     {otherParticipant.role === 'customer' && '👤'}
                     {otherParticipant.role === 'admin' && '⚙ï¸'}
                   </span>

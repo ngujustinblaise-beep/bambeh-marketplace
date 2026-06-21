@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
  * WORLD-CLASS REWRITE — Production Grade, Military Security, Full i18n
@@ -188,14 +188,14 @@ const STRINGS = {
     report_error:    'E no fit send.',
   },
   ful: {
-    back:          'Æeyngal',
+    back:          'Ɓeyngal',
     share:         'Hollu',
     edit:          'Rewo',
     starting_price:'Ngiɗgu waɗii',
     negotiable:    'Ngiɗgu waasaango',
     about:         'Fii ɓeyngal ngel',
     provider:      'Neɗɗo ɓeyngal',
-    more_services: (cat: string) => `Æeyngal ${cat} goɗɗe`,
+    more_services: (cat: string) => `Ɓeyngal ${cat} goɗɗe`,
     safety:        '🛡ï¸ Tiiɗnu neɗɗo hade hade.',
     call:          'Noddu',
     book:          'Jaɓɓu ɓeyngal',
@@ -203,7 +203,7 @@ const STRINGS = {
     verified:      'Goongaandi',
     report:        'Habru',
     copy_success:  'Cokkel copiaama!',
-    service_unavailable: 'Æeyngal alaa',
+    service_unavailable: 'Ɓeyngal alaa',
     service_not_found:   'Alaa ɓeyngal ngel.',
     back_to_services:    'Rutto ɓeyngal',
     error_generic:       'Musiiba waɗii.',

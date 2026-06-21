@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 
 interface TrackingCardProps {
@@ -28,7 +28,7 @@ const DeliveryStatus: React.FC<DeliveryStatusProps> = ({ status, updatedAt }) =>
     picked_up:  "🚚",
     in_transit: "🛣ï¸",
     delivered:  "✅",
-    failed:     "âŒ",
+    failed:     "❌",
   };
   return (
     <div className="flex items-center gap-2">

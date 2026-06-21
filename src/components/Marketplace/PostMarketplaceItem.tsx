@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * POST MARKETPLACE ITEM
  */
@@ -61,7 +61,7 @@ const PostMarketplaceItem = () => {
   const categories = {
     'Electronics & Gadgets': { icon: '📱', subcategories: ['Phones & Tablets', 'Laptops & Computers', 'Cameras', 'Audio', 'Gaming'] },
     'Fashion & Clothing': { icon: '👗', subcategories: ['Men', 'Women', 'Kids', 'Shoes', 'Accessories'] },
-    'Home & Furniture': { icon: 'ðŸ ', subcategories: ['Living Room', 'Bedroom', 'Kitchen', 'Office', 'Decor'] },
+    'Home & Furniture': { icon: '🏠', subcategories: ['Living Room', 'Bedroom', 'Kitchen', 'Office', 'Decor'] },
     'Vehicles & Parts': { icon: '🚗', subcategories: ['Cars', 'Motorcycles', 'Bicycles', 'Parts'] },
     'Other': { icon: '📦', subcategories: ['General', 'Miscellaneous'] }
   };

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/SearchPanel.tsx
  * Bambeh Marketplace — Full-Screen Search Panel
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -10,7 +10,7 @@
  * — All localStorage accesses now wrapped in try/catch.
  *
  * NEW:
- * — Scope selector row: Cameroon 🇨🇲 | Central Africa ðŸŒ | West Africa ðŸŒ
+ * — Scope selector row: Cameroon 🇨🇲 | Central Africa 🌍 | West Africa 🌍
  *   User picks the region before searching; it's passed as a URL param.
  */
 
@@ -31,20 +31,20 @@ interface SearchPanelProps {
 // ─── Static config ────────────────────────────────────────────────────────────
 
 const CATEGORIES: { id: SearchCategory; label: string; emoji: string }[] = [
-  { id: "all",         label: "All",        emoji: "ðŸ”" },
-  { id: "marketplace", label: "Items",      emoji: "ðŸ›ï¸" },
+  { id: "all",         label: "All",        emoji: "🔍" },
+  { id: "marketplace", label: "Items",      emoji: "🛍️" },
   { id: "jobs",        label: "Jobs",       emoji: "💼" },
   { id: "services",    label: "Services",   emoji: "🔧" },
-  { id: "rentals",     label: "Rentals",    emoji: "ðŸ " },
+  { id: "rentals",     label: "Rentals",    emoji: "🏠" },
   { id: "vehicles",    label: "Vehicles",   emoji: "🚗" },
   { id: "exchange",    label: "Exchange",   emoji: "🔄" },
-  { id: "vendors",     label: "Shops",      emoji: "ðŸª" },
+  { id: "vendors",     label: "Shops",      emoji: "🏪" },
 ];
 
 const SCOPES: { value: SearchScope; label: string; emoji: string }[] = [
   { value: "cameroon",       label: "Cameroon",      emoji: "🇨🇲" },
-  { value: "central_africa", label: "Central Africa", emoji: "ðŸŒ" },
-  { value: "west_africa",    label: "West Africa",   emoji: "ðŸŒ" },
+  { value: "central_africa", label: "Central Africa", emoji: "🌍" },
+  { value: "west_africa",    label: "West Africa",   emoji: "🌍" },
 ];
 
 const TRENDING_BY_SCOPE: Record<SearchScope, string[]> = {

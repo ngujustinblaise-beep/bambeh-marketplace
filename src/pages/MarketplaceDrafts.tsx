@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/MarketplaceDrafts.tsx — Bambeh Marketplace
  *
  * FIXES — June 2026
@@ -154,7 +154,7 @@ export default function MarketplaceDrafts() {
                   {draft.image ? (
                     <img src={draft.image} alt={draft.title} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">ðŸ›ï¸</div>
+                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">🛍️</div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE MODAL
  * FILE LOCATION: src/components/common/SocialShareModal.tsx
  */
@@ -93,7 +93,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>Facebook</span>
               </button>
               <button onClick={shareViaTwitter} style={sbBtn('#f3f4f6')}>
-                <div style={icon('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>ð•</span></div>
+                <div style={icon('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>𝕏</span></div>
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>Twitter</span>
               </button>
               <button onClick={shareViaGmail} style={sbBtn('#fee2e2')}>

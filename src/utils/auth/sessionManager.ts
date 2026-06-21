@@ -1,8 +1,8 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * SESSION MANAGER — BAMBEH MARKETPLACE
  * FILE: src/utils/auth/sessionManager.ts
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  *
  * PURPOSE: Centralized session expiry management for all user types.
  *          Replaces raw localStorage reads with expiry-aware checks.
@@ -21,7 +21,7 @@
  * HOW TO WRITE A SESSION ON LOGIN:
  *   sessionManager.setSession('vendor', vendorData);
  *   (This adds session_expiry automatically)
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 // ─── SESSION DURATION CONSTANTS ─────────────────────────────────────────────
@@ -119,7 +119,7 @@ export const sessionManager = {
         // AUTO-EXPIRE: Remove the stale session
         localStorage.removeItem(key);
         if (process.env.NODE_ENV === 'development') {
-          console.warn(`â° Session expired and removed: ${key}`);
+          console.warn(`⏰ Session expired and removed: ${key}`);
         }
         return { valid: false, expired: true };
       }

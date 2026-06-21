@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
  *
@@ -249,7 +249,7 @@ export default function Header() {
             { to: '/marketplace', label: `📦 ${t('nav.marketplace')}` },
             { to: '/jobs',        label: `💼 ${t('nav.jobs')}`        },
             { to: '/services',    label: `🔧 ${t('nav.services')}`    },
-            { to: '/rentals',     label: `ðŸ  ${t('nav.rentals')}`     },
+            { to: '/rentals',     label: `🏠 ${t('nav.rentals')}`     },
             { to: '/vehicles',    label: `🚗 ${t('nav.vehicles')}`    },
           ].map(item => (
             <Link
@@ -350,7 +350,7 @@ export default function Header() {
                   className="w-full pl-10 pr-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
                 />
                 <button type="submit" className="bg-teal-800 text-white px-4 rounded-r-lg font-semibold">
-                  ðŸ”
+                  🔍
                 </button>
               </div>
             </form>
@@ -399,7 +399,7 @@ export default function Header() {
 
               {/* Language picker — MOBILE */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
-                ðŸŒ {t('settings.language')}
+                🌍 {t('settings.language')}
               </div>
               <button
                 onClick={() => setShowMobileLanguages(!showMobileLanguages)}
@@ -443,7 +443,7 @@ export default function Header() {
                 { to: '/marketplace', label: `📦 ${t('nav.marketplace')}` },
                 { to: '/jobs',        label: `💼 ${t('nav.jobs')}`        },
                 { to: '/services',    label: `🔧 ${t('nav.services')}`    },
-                { to: '/rentals',     label: `ðŸ  ${t('nav.rentals')}`     },
+                { to: '/rentals',     label: `🏠 ${t('nav.rentals')}`     },
                 { to: '/vehicles',    label: `🚗 ${t('nav.vehicles')}`    },
               ].map(item => (
                 <Link
@@ -490,8 +490,8 @@ export default function Header() {
               {[
                 { to: '/coins',     label: `⚡ Zerm Coins Wallet`          },
                 { to: '/cart',      label: `🛒 ${t('nav.cart')}`      },
-                { to: '/favorites', label: `â¤ï¸ ${t('nav.favorites')}` },
-                { to: '/referral',  label: 'ðŸŽ Referral Program'       },
+                { to: '/favorites', label: `❤️ ${t('nav.favorites')}` },
+                { to: '/referral',  label: '🎁 Referral Program'       },
               ].map(item => (
                 <Link
                   key={item.to}
@@ -517,7 +517,7 @@ export default function Header() {
 
               {/* Session */}
               <div className="px-4 py-3 text-xs font-bold text-teal-200 uppercase tracking-wider bg-teal-800/50">
-                ðŸ” Session
+                🔐 Session
               </div>
               {currentUser ? (
                 <button

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE BUTTON - COMPACT WITH FLOATING X
  * FILE LOCATION: src/components/common/SocialShareButton.tsx
  */
@@ -64,7 +64,7 @@ export default function SocialShareButton({ title, description, itemType, url, c
   const shareButtons = [
     { key: 'whatsapp', label: 'WhatsApp', bg: '#dcfce7', iconBg: '#22c55e', icon: <MessageCircle size={22} color="white" />, textColor: '#166534' },
     { key: 'facebook', label: 'Facebook', bg: '#dbeafe', iconBg: '#2563eb', icon: <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>f</span>, textColor: '#1e40af' },
-    { key: 'twitter',  label: 'Twitter/X', bg: '#f3f4f6', iconBg: '#000',    icon: <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>ð•</span>, textColor: '#1f2937' },
+    { key: 'twitter',  label: 'Twitter/X', bg: '#f3f4f6', iconBg: '#000',    icon: <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>𝕏</span>, textColor: '#1f2937' },
     { key: 'gmail',    label: 'Gmail',    bg: '#fee2e2', iconBg: '#ef4444', icon: <Mail size={22} color="white" />,        textColor: '#991b1b' },
     { key: 'yahoo',    label: 'Yahoo',    bg: '#ede9fe', iconBg: '#7c3aed', icon: <Mail size={22} color="white" />,        textColor: '#5b21b6' },
   ] as const;

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PRIVACY SETTINGS MODAL - Comprehensive Privacy Controls
  * FILE LOCATION: src/components/profile/PrivacySettingsModal.tsx
  */
@@ -45,7 +45,7 @@ export default function PrivacySettingsModal({ onClose }: PrivacySettingsModalPr
       onClose();
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('âŒ Failed to save settings. Please try again.');
+      alert('❌ Failed to save settings. Please try again.');
     } finally {
       setIsSaving(false);
     }

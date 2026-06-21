@@ -1,9 +1,9 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ════════════════════════════════════════════════════════════════
  * src/components/posting/ImageUploadStep.tsx
  * Universal image upload step — drop into any posting form.
  * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ════════════════════════════════════════════════════════════════
  */
 
 import React, { useState, useRef, useCallback } from 'react';
@@ -239,7 +239,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
             onClick={onBack}
             className="flex-1 py-3 border-2 border-gray-200 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition-all"
           >
-            â† Back
+            ← Back
           </button>
         )}
         <button

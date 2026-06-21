@@ -1,9 +1,9 @@
-﻿/**
+/**
  * AppProviders.tsx â€â€ Bambeh Marketplace
  * Wraps the entire app in all required context providers.
  * Order matters: providers that depend on others must be nested inside them.
  *
- * Provider hierarchy (outermost â†’ innermost):
+ * Provider hierarchy (outermost → innermost):
  *   SupabaseAuthProvider  â€â€ Supabase session cache (must be first)
  *   LanguageProvider      â€â€ Language/translation (second, so ALL children can translate)
  *   AuthProvider          â€â€ App-level auth context
@@ -17,7 +17,7 @@
  *   ReportProvider        â€â€ Issue reporting context
  *   AccountStatusProvider â€â€ Account suspension / verification banners
  *
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { ReactNode } from "react";

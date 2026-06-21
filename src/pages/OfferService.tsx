@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/OfferService.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
  * WORLD-CLASS REBUILD — Production Grade, Military Security, Full i18n
@@ -45,7 +45,7 @@ const STRINGS = {
     step_prefix:    'Step',
     step_of:        'of',
     save_draft:     '💾 Save Draft',
-    back:           'â† Back',
+    back:           '← Back',
     next:           'Next Step →',
     review_label:   'Review Listing →',
     post_label:     '🚀 Post Service',
@@ -114,7 +114,7 @@ const STRINGS = {
     step_prefix:    'Étape',
     step_of:        'sur',
     save_draft:     '💾 Brouillon',
-    back:           'â† Retour',
+    back:           '← Retour',
     next:           'Étape suivante →',
     review_label:   'Réviser l\'annonce →',
     post_label:     '🚀 Publier',
@@ -179,8 +179,8 @@ const STRINGS = {
     step_of:        'من',
     save_draft:     '💾 حÙظ مسودة',
     back:           'رجوع →',
-    next:           'â† الخطوة التالية',
-    review_label:   'â† مراجعة الإعلان',
+    next:           '← الخطوة التالية',
+    review_label:   '← مراجعة الإعلان',
     post_label:     '🚀 نشر الخدمة',
     posting:        'جارÙ النشر…',
     s1_title:       'معلومات الخدمة',
@@ -223,7 +223,7 @@ const STRINGS = {
     success_emoji:  '🛠ï¸',
     success_title:  'تم نشر الخدمة!',
     success_sub:    'خدمتك الآن مرئية للعملاء Ùي جميع أنحاء الكاميرون.',
-    success_view:   'عرض خدمتي â†',
+    success_view:   'عرض خدمتي ←',
     success_browse: 'تصÙح الخدمات',
     success_another:'تقديم خدمة أخرى',
     err_title:      'العنوان مطلوب',
@@ -242,7 +242,7 @@ const STRINGS = {
     step_prefix:    'Mataki',
     step_of:        'na',
     save_draft:     '💾 Ajiye Daftari',
-    back:           'â† Koma',
+    back:           '← Koma',
     next:           'Mataki Mai Zuwa →',
     review_label:   'Duba Jeri →',
     post_label:     '🚀 Fitar Sabis',
@@ -296,7 +296,7 @@ const STRINGS = {
     step_prefix:    'Step',
     step_of:        'of',
     save_draft:     '💾 Save Draft',
-    back:           'â† Back',
+    back:           '← Back',
     next:           'Next →',
     review_label:   'Review Listing →',
     post_label:     '🚀 Post Service',
@@ -350,7 +350,7 @@ const STRINGS = {
     step_prefix:    'Laabi',
     step_of:        'e nder',
     save_draft:     '💾 Dabbito',
-    back:           'â† Rutto',
+    back:           '← Rutto',
     next:           'Laabi ɓurngo →',
     review_label:   'Leelu →',
     post_label:     '🚀 Neltu ɓeyngal',
@@ -374,10 +374,10 @@ const STRINGS = {
     price_types:    ['Wakati', 'Ñalawma', 'Liggal', 'Waasaango', 'Laabi'],
     f_description:  'Coftal',
     f_desc_ph:      'Hollu golle maa en fii keɓe…',
-    f_desc_min:     'Æe 30 xarfe',
-    f_desc_good:    '✓ Æuri',
+    f_desc_min:     'Ɓe 30 xarfe',
+    f_desc_good:    '✓ Ɓuri',
     f_images:       'Natal (yaɓɓitaaki)',
-    f_images_sub:   'Æamtu natal 5',
+    f_images_sub:   'Ɓamtu natal 5',
     f_images_cta:   'Haaɗtu natal',
     f_images_max:   '5 MB',
     s3_title:       'Leelu ɓeyngal',
@@ -387,8 +387,8 @@ const STRINGS = {
     preview_label:  'Yeeso — ɗum woni ko haɓɓooɓe mbayi',
     demo_note:      'Aynde DEMO holletee tan e misal.',
     success_emoji:  '🛠ï¸',
-    success_title:  'Æeyngal nelnaaɗo!',
-    success_sub:    'Æeyngal maa yiyetee e Kameruun.',
+    success_title:  'Ɓeyngal nelnaaɗo!',
+    success_sub:    'Ɓeyngal maa yiyetee e Kameruun.',
     success_view:   'Yiy ɓeyngal am →',
     success_browse: 'Yiy ɓeyngal ɗi',
     success_another:'Hollu ɓeyngal ɓurngo',
@@ -478,7 +478,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, disabled = false }: {
       {onBack && (
         <button type="button" onClick={onBack}
           className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-600 bg-white active:scale-95 transition-all">
-          â†
+          ←
         </button>
       )}
       <button type="button" onClick={onNext} disabled={disabled}

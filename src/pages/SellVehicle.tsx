@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/SellVehicle.tsx — Bambeh Marketplace
  * Full vehicle listing form: multilingual, Supabase storage image upload,
  * category, price, location, phone, description — zero errors.
@@ -285,8 +285,8 @@ const I18N: Record<string, Record<string, string>> = {
     pageSubtitle: "Njangu tumaraneeɓe ko'e Kameruun",
     back: "Laaɓe",
     photos: "Sawru",
-    photosHint: "Æeydu sawru haa 6. Adannde wonata koloore.",
-    addPhoto: "Æeydu Sawru",
+    photosHint: "Ɓeydu sawru haa 6. Adannde wonata koloore.",
+    addPhoto: "Ɓeydu Sawru",
     title: "Tiitoonde *",
     titlePlaceholder: "Toyota Camry 2020",
     category: "Sifo *",
@@ -317,7 +317,7 @@ const I18N: Record<string, Record<string, string>> = {
     loginRequired: "Tiimto ko adii jaɓdude.",
     login: "Tiimto",
     errorGeneric: "Ko woɗɗaani hawi. Ngaloo kadi.",
-    required: "Æeydu batu keeriiɗe.",
+    required: "Ɓeydu batu keeriiɗe.",
     selectCategory: "Suɓo sifo",
     selectFuel: "Suɓo susiyel",
     selectTransmission: "Suɓo watse",

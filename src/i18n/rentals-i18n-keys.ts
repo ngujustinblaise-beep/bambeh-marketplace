@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/i18n/rentals.ts — Bambeh Marketplace
  * Rental-module translation keys for all 6 supported languages:
  *   en | fr | ha | ar | pcm (Pidgin) | ff (Fulfulde)
@@ -536,12 +536,12 @@ export const rentalsFF = {
 
   "rentals.propertiesFound":    "Suudu {{count}} heɓɗe",
 
-  "rentals.loading":            "Æeygeede suudu…",
+  "rentals.loading":            "Ɓeygeede suudu…",
   "rentals.errorBanner":        "Alaa e sago heɓde jaɓɗe. Misal woni.",
   "rentals.noPropertiesTitle":  "Suudu alaa",
   "rentals.noPropertiesHint":   "Heppa sifaaɗe maa walla jokkit neɗɗo maa.",
 
-  "rentals.loadingDetail":      "Æeygeede humpito…",
+  "rentals.loadingDetail":      "Ɓeygeede humpito…",
   "rentals.listingUnavailable": "Jaɓɗe alaa",
   "rentals.listingNotFound":    "Jaɓɗen ndee yiytaake.",
   "rentals.aboutProperty":      "E dow suudu nguu",

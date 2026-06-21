@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/ui/ReferralButton.tsx
  * Bambeh Marketplace — Referral Share Button
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -47,7 +47,7 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
   const handleShare = useCallback(async () => {
     const code = await getReferralCode();
     const referralUrl = `${window.location.origin}/#/register?ref=${code}`;
-    const shareText = `ðŸ›ï¸ Rejoignez Bambeh Marketplace avec mon code de parrainage et obtenez des avantages exclusifs!\n\nCode: ${code}\nLien: ${referralUrl}`;
+    const shareText = `🛍️ Rejoignez Bambeh Marketplace avec mon code de parrainage et obtenez des avantages exclusifs!\n\nCode: ${code}\nLien: ${referralUrl}`;
 
     if (navigator.share) {
       try {

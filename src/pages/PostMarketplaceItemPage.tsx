@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
  *
  * FIXES — June 2026
@@ -45,8 +45,8 @@ const TR: Record<string, Record<Lang, string>> = {
   phone:          { en: "WhatsApp / Phone",         fr: "WhatsApp / Téléphone",       ha: "WhatsApp / Waya",        ar: "واتساب / هاتÙ",                pcm: "WhatsApp / Phone",       ff: "WhatsApp / Weyol" },
   phone_ph:       { en: "+237 6XX XXX XXX",         fr: "+237 6XX XXX XXX",           ha: "+237 6XX XXX XXX",       ar: "+237 6XX XXX XXX",             pcm: "+237 6XX XXX XXX",       ff: "+237 6XX XXX XXX" },
   negotiable:     { en: "Price is negotiable",      fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتÙاوض",           pcm: "Price nego",             ff: "Njaru hewtii" },
-  next_photos:    { en: "Next — Add Photos",        fr: "Suivant — Ajouter des photos", ha: "Gaba — Ƙara hotuna",  ar: "التالي — أضÙ صوراً",           pcm: "Next — Add Photos",      ff: "Yeeso — Æeydu Foto" },
-  add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Ƙara hotuna",           ar: "أضÙ صوراً",                    pcm: "Add Photos",             ff: "Æeydu Foto" },
+  next_photos:    { en: "Next — Add Photos",        fr: "Suivant — Ajouter des photos", ha: "Gaba — Ƙara hotuna",  ar: "التالي — أضÙ صوراً",           pcm: "Next — Add Photos",      ff: "Yeeso — Ɓeydu Foto" },
+  add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Ƙara hotuna",           ar: "أضÙ صوراً",                    pcm: "Add Photos",             ff: "Ɓeydu Foto" },
   photos_hint:    { en: "Up to 6 photos. First photo is the cover.", fr: "Jusqu'à 6 photos. La première est la couverture.", ha: "Har hoto 6. Na farko shine cover.", ar: "حتى 6 صور. الأولى هي الغلاÙ.", pcm: "Max 6 pictures. First one na cover.", ff: "Haa 6 foto. Araniwol na cover." },
   cover:          { en: "COVER",                    fr: "COUVERTURE",                 ha: "COVER",                  ar: "غلاÙ",                         pcm: "COVER",                  ff: "COVER" },
   tap_upload:     { en: "Tap to upload photos",     fr: "Appuyez pour ajouter des photos", ha: "Danna don ɗora hotuna", ar: "اضغط لرÙع الصور",           pcm: "Tap to add pictures",    ff: "Jokku ngam ɓeydu foto" },

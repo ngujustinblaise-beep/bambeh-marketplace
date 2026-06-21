@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -101,7 +101,7 @@ export default function CreatingAccount() {
         </div>
         <div className="mt-8 text-center">
           <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">
-            â† {tr("back")}
+            ← {tr("back")}
           </Link>
         </div>
       </div>

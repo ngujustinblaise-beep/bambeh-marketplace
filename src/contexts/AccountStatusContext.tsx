@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ACCOUNT STATUS CONTEXT - USER ACCOUNT STATE MANAGEMENT
  * FILE LOCATION: src/contexts/AccountStatusContext.tsx
  * © 2025 Bambeh. All rights reserved.
@@ -127,7 +127,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: true,
   },
   banned: {
-    title: "âŒ Account Banned",
+    title: "❌ Account Banned",
     message:
       "Your account has been permanently banned due to serious violation of our Terms of Service.",
     contactInfo:
@@ -135,7 +135,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: false,
   },
   pending_verification: {
-    title: "â³ Verification Pending",
+    title: "⏳ Verification Pending",
     message:
       "Your account is pending verification. Some features may be limited until verification is complete.",
     contactInfo:

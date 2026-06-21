@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Marketplace.tsx — Bambeh Marketplace
  *
  * FIXES — June 2026
@@ -38,7 +38,7 @@ const TR: Record<string, Record<Lang, string>> = {
   first_to_sell:     { en: "Be the first to sell on Bambeh!", fr: "Soyez le premier à vendre!", ha: "Kasance na farko!",  ar: "كن أول من يبيع!",             pcm: "Be first person sell!",   ff: "Wartoraa arande!" },
   post_first:        { en: "Post your first item",        fr: "Publiez votre article",      ha: "Buga farko",             ar: "انشر أول عنصر",                pcm: "Post your first item",    ff: "Yeeso aawal maa" },
   no_match:          { en: "No items match your search",  fr: "Aucun résultat",             ha: "Babu sakamakon",         ar: "لا نتائج",                     pcm: "Notin match",             ff: "Alaa goonga" },
-  clear_filters:     { en: "Clear filters",               fr: "Effacer les filtres",        ha: "Share tace",             ar: "مسح الÙلاتر",                  pcm: "Clear filter",            ff: "Æol filters" },
+  clear_filters:     { en: "Clear filters",               fr: "Effacer les filtres",        ha: "Share tace",             ar: "مسح الÙلاتر",                  pcm: "Clear filter",            ff: "Ɓol filters" },
   listings_expire:   { en: "Your listings expire soon",   fr: "Vos annonces expirent bientôt", ha: "Jerin ku na ƙarewa", ar: "إعلاناتك تنتهي قريباً",        pcm: "Your listing go expire soon", ff: "Ndes maa ɗowroo" },
   renew:             { en: "Renew listings →",            fr: "Renouveler →",               ha: "Sabunta →",              ar: "تجديد →",                      pcm: "Renew am →",              ff: "Wullit →" },
   expires_today:     { en: "expires today!",              fr: "expire aujourd'hui!",        ha: "na ƙarewa yau!",         ar: "تنتهي اليوم!",                 pcm: "expire today!",           ff: "ɗowroo hande!" },
@@ -108,14 +108,14 @@ interface ExpiryAlert {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = [
-  { label: "All",         emoji: "ðŸª" },
+  { label: "All",         emoji: "🏪" },
   { label: "Electronics", emoji: "📱" },
   { label: "Fashion",     emoji: "👗" },
   { label: "Appliances",  emoji: "🔌" },
   { label: "Books",       emoji: "📚" },
   { label: "Furniture",   emoji: "🛋ï¸" },
   { label: "Vehicles",    emoji: "🚗" },
-  { label: "Rentals",     emoji: "ðŸ " },
+  { label: "Rentals",     emoji: "🏠" },
   { label: "Other",       emoji: "📦" },
 ];
 

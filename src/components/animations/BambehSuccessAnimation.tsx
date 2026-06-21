@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BambehSuccessAnimation.tsx — Bambeh figure sets down load, thumbs up.
  * USAGE: <BambehSuccessAnimation visible={showSuccess} onComplete={() => setShowSuccess(false)} message="Load delivered!" />
  */
@@ -250,7 +250,7 @@ export default function BambehSuccessAnimation({
             setExiting(true);
             setTimeout(() => { setMounted(false); onComplete?.(); }, 500);
           }}>
-            Let's go! ðŸ‹ï¸
+            Let's go! 🏋️
           </button>
         )}
       </div>

@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PlusCircle, Image, FileText, MapPin } from "lucide-react";
 import { useLanguage } from "@/App";
 
@@ -76,14 +76,14 @@ const T: Record<string, Record<string, string>> = {
     "subtitle": "Sos jeeyle ɗe coottata",
     "s1Title": "Suɓo dental",
     "s1Desc": "Suɓo dental ngal ɓuri haantude kaake maa",
-    "s2Title": "Æeydu natal",
+    "s2Title": "Ɓeydu natal",
     "s2Desc": "Loowu natalji laaɓuɗi, jalbuɗi, immorde e nokkuuje keewɗe",
     "proTipLabel": "Waaju:",
     "proTip": "Jeeyle jogiiɗe natalji 5 walla ɓuri njogii yiyannde laaɓi 3!",
     "s3Title": "Winndu sifa",
     "s3Desc": "Naatnu kuyngal himmungal wano alhaali, sifaaji, e keɓe",
     "s4Title": "Teelgol nokkuure",
-    "s4Desc": "Æeydu nokkuure maa ngam wallude soodooɓe yiytude ma",
+    "s4Desc": "Ɓeydu nokkuure maa ngam wallude soodooɓe yiytude ma",
     "earnTitle": "Heɓ Zerm Coins",
     "earnDesc": "Heɓ Zerm Coins 2 e kala jeeyngal jaɓaangal!",
     "back": "Rutto to galle ballal"
@@ -140,7 +140,7 @@ export default function HowToPostAd() {
 
         <div className="mt-8 text-center">
           <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">
-            â† {tr("back")}
+            ← {tr("back")}
           </Link>
         </div>
       </div>

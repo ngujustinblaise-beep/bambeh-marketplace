@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBEH MARKETPLACE - WORLD-CLASS API SERVICE
  * Centralized API client with interceptors, error handling, offline support
  * Built to standards of: Jumia, Amazon, OLX, eBay
@@ -107,12 +107,12 @@ class ApiService {
 
           return config;
         } catch (error) {
-          console.error("âŒ Request interceptor error:", error);
+          console.error("❌ Request interceptor error:", error);
           return Promise.reject(error);
         }
       },
       (error) => {
-        console.error("âŒ Request configuration error:", error);
+        console.error("❌ Request configuration error:", error);
         return Promise.reject(error);
       },
     );
@@ -159,7 +159,7 @@ class ApiService {
         }
 
         console.error(
-          `âŒ API Error: ${error.response.status} - ${error.message}`,
+          `❌ API Error: ${error.response.status} - ${error.message}`,
         );
         return Promise.reject(this.normalizeError(error));
       },
@@ -175,7 +175,7 @@ class ApiService {
         const wasOffline = !this.isOnline;
         this.isOnline = true;
         if (wasOffline) {
-          console.log("ðŸŒ Network restored - Processing queued requests");
+          console.log("🌐 Network restored - Processing queued requests");
           this.processRequestQueue();
         }
       });
@@ -246,7 +246,7 @@ class ApiService {
     const retryAfter = error.response?.headers["retry-after"];
     const delay = retryAfter ? parseInt(retryAfter) * 1000 : 5000;
 
-    console.log(`â³ Rate limited - Retrying after ${delay}ms`);
+    console.log(`⏳ Rate limited - Retrying after ${delay}ms`);
     await this.delay(delay);
 
     return this.axiosInstance.request(config);

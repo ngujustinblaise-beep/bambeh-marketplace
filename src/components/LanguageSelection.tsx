@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/LanguageSelection.tsx
  * Bambeh Marketplace — Language Selection Screen
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -18,7 +18,7 @@ const LANGUAGES = [
   { code: "zh", name: "Chinese", flag: "🇨🇳", native: "中文" },
   { code: "es", name: "Español", flag: "🇪🇸", native: "Español" },
   { code: "pt", name: "Português", flag: "🇧🇷", native: "Português" },
-  { code: "ha", name: "Hausa", flag: "ðŸŒ", native: "Hausa" },
+  { code: "ha", name: "Hausa", flag: "🌍", native: "Hausa" },
 ];
 
 const LanguageSelection: React.FC<LanguageSelectionProps> = ({ onLanguageSelected }) => {

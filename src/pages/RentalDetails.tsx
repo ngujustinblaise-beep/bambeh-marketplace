@@ -1,9 +1,9 @@
-﻿/**
+/**
  * src/pages/RentalDetails.tsx — Bambeh Marketplace
  *
  * ✅ FULL REWRITE — production-ready:
  *
- *  ðŸŒ i18n: Every string uses useTranslation('rentals'). 6-language support.
+ *  🌐 i18n: Every string uses useTranslation('rentals'). 6-language support.
  *  📞 Contact: Call + WhatsApp deep-links.
  *  📅 Booking: In-page "Request a Viewing" modal — persists to `messages` table.
  *  🖼  Gallery: Multi-image viewer with thumbnail strip.

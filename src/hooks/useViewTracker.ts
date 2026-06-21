@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/hooks/useViewTracker.ts — Bambeh Marketplace
  *
  * Call this hook inside ANY detail page to increment the view_count
@@ -9,9 +9,9 @@
  *  which supports all your different listing tables)
  *
  * USAGE EXAMPLES (what you'll add to each detail page):
- *   useViewTracker(id, 'listings');         â† Marketplace, Job, Service, Vehicle, Rental
- *   useViewTracker(id, 'farm_products');    â† FarmFresh
- *   useViewTracker(id as string, 'exchange_items'); â† Exchange
+ *   useViewTracker(id, 'listings');         ← Marketplace, Job, Service, Vehicle, Rental
+ *   useViewTracker(id, 'farm_products');    ← FarmFresh
+ *   useViewTracker(id as string, 'exchange_items'); ← Exchange
  */
 
 import { useEffect } from 'react';

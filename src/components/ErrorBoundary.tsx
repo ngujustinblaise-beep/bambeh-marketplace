@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/ErrorBoundary.tsx — Bambeh Marketplace
  *
  * Wraps the entire app. When anything crashes at startup you get a
@@ -40,7 +40,7 @@ export class ErrorBoundary extends React.Component<
     this.setState({ componentStack: info.componentStack || "" });
 
     // Also log to console for ADB logcat
-    console.error("â•â•â• BAMBEH CRASH â•â•â•");
+    console.error("═══ BAMBEH CRASH ═══");
     console.error("Error:", error.message);
     console.error("Stack:", error.stack);
     console.error("Component:", info.componentStack);

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - CHAT WINDOW COMPONENT
  * Version: 1.0.0
  */
@@ -163,7 +163,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
       {/* Header */}
       <div className="chat-window-header">
         {onBack && (
-          <button className="back-button" onClick={onBack}>â†</button>
+          <button className="back-button" onClick={onBack}>←</button>
         )}
 
         <div className="participant-info">
@@ -194,7 +194,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
         </div>
 
         <div className="chat-header-actions">
-          <button className="header-action-button" title={t('chat.search')}>ðŸ”</button>
+          <button className="header-action-button" title={t('chat.search')}>🔍</button>
           <button className="header-action-button" title={t('chat.info')}>ℹï¸</button>
         </div>
       </div>
@@ -282,7 +282,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
 
           {messageText.trim() ? (
             <button type="submit" className="send-button" disabled={isSending}>
-              {isSending ? 'â³' : '📤'}
+              {isSending ? '⏳' : '📤'}
             </button>
           ) : (
             <button type="button" className="voice-button" onClick={() => setShowVoiceRecorder(true)} title={t('chat.voiceMessage')}>

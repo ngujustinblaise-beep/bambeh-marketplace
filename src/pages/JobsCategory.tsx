@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/JobsCategory.tsx
  * Bambeh Marketplace — Jobs Category Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -27,9 +27,9 @@ const CATEGORY_MAP: Record<string, { label: string; dbValue: string; emoji: stri
   engineering: { label: "Engineering", dbValue: "Engineering", emoji: "⚙ï¸" },
   education:   { label: "Education",   dbValue: "Education",   emoji: "🎓" },
   agriculture: { label: "Agriculture", dbValue: "Agriculture", emoji: "🌾" },
-  healthcare:  { label: "Healthcare",  dbValue: "Healthcare",  emoji: "ðŸ¥" },
+  healthcare:  { label: "Healthcare",  dbValue: "Healthcare",  emoji: "🏥" },
   logistics:   { label: "Logistics",   dbValue: "Logistics",   emoji: "🚚" },
-  sales:       { label: "Sales",       dbValue: "Sales",       emoji: "ðŸ¤" },
+  sales:       { label: "Sales",       dbValue: "Sales",       emoji: "🤝" },
   legal:       { label: "Legal",       dbValue: "Legal",       emoji: "⚖ï¸" },
   other:       { label: "Other",       dbValue: "Other",       emoji: "📋" },
 };
@@ -50,11 +50,11 @@ const STR: Record<string, Record<string, string>> = {
   viewApply:    { en:"View & Apply →", fr:"Voir & Postuler →", ha:"Duba & Nema →", ar:"عرض وتقديم →", pcm:"See & Apply →", ful:"Yii & Dañ →" },
   loadMore:     { en:"Load More Jobs", fr:"Charger plus d'offres", ha:"Ƙara ayyuka", ar:"تحميل المزيد", pcm:"Load more work", ful:"Nanngin Golleli" },
   loading2:     { en:"Loading…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
-  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بÙعد", pcm:"Online", ful:"E Æanndu" },
+  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بÙعد", pcm:"Online", ful:"E Ɓanndu" },
   negotiable:   { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pcm:"E fit negotiate", ful:"Naggi" },
   salaryNotSpec:{ en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
   closed:       { en:"⛔ Closed — Deadline passed", fr:"⛔ Fermé — Délai dépassé", ha:"⛔ An rufe — lokaci ya ƙare", ar:"⛔ مغلق — انتهى الموعد", pcm:"⛔ E don close", ful:"⛔ Uddii" },
-  closingSoon:  { en:"â° Closing soon", fr:"â° Ferme bientôt", ha:"â° Zai ƙare", ar:"â° ينتهي قريبًا", pcm:"â° E go close", ful:"â° Æennoo seeɗa" },
+  closingSoon:  { en:"⏰ Closing soon", fr:"⏰ Ferme bientôt", ha:"⏰ Zai ƙare", ar:"⏰ ينتهي قريبًا", pcm:"⏰ E go close", ful:"⏰ Ɓennoo seeɗa" },
   today:        { en:"Today!", fr:"Aujourd'hui!", ha:"Yau!", ar:"اليوم!", pcm:"Today!", ful:"Hannde!" },
   dLeft:        { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام", pcm:"days left", ful:"balɗe" },
 };
@@ -98,7 +98,7 @@ const JOB_TYPE_LABELS: Record<string, Record<string, string>> = {
 const JobsCategory: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const navigate     = useNavigate();
-  const lang         = useLang();  // â† hook called correctly at component top-level
+  const lang         = useLang();  // ← hook called correctly at component top-level
   const dir          = lang === "ar" ? "rtl" : "ltr";
 
   const slug       = category ? decodeURIComponent(category).toLowerCase() : "";
@@ -280,9 +280,9 @@ const JobsCategory: React.FC = () => {
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{job.company}</p>
                   )}
                   <p className="text-xs text-gray-400 mt-0.5">
-                    ðŸ“ {job.location.city}
+                    📍 {job.location.city}
                     {job.location.region ? ` · ${job.location.region}` : ""}
-                    {job.isRemote && ` · ðŸŒ ${s("remote", lang)}`}
+                    {job.isRemote && ` · 🌐 ${s("remote", lang)}`}
                     {" · "}
                     <span className="text-teal-600 dark:text-teal-400 font-medium">{displayType}</span>
                   </p>

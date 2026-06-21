@@ -1,4 +1,4 @@
-﻿/**
+/**
  * logger.ts — Bambeh Marketplace
  * ============================================================
  * REPLACES: All console.warn() / console.log() / console.error()
@@ -89,7 +89,7 @@ export const logger = {
   security(eventId: string, _metadata?: Record<string, unknown>): void {
     // NEVER log to console — not in dev, not in prod
     // Optional: send anonymized event ID to analytics (no stack trace, no user data)
-    // analytics.track(eventId); â† add when analytics is wired
+    // analytics.track(eventId); ← add when analytics is wired
     void eventId; // Prevents unused variable warning
   },
 };

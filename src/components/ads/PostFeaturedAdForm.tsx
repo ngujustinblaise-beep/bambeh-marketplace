@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PostFeaturedAdForm.tsx â€â€ Bambeh Marketplace
  * FILE LOCATION: src/components/ads/PostFeaturedAdForm.tsx
  *
@@ -15,7 +15,7 @@
  * USAGE:
  *   <PostFeaturedAdForm onSuccess={() => setModalOpen(false)} />
  *
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useState } from "react";
@@ -42,9 +42,9 @@ const CATEGORIES: { value: AdCategory; label: string }[] = [
 
 const LANGUAGES = [
   { code: "en",  label: "English"   },
-  { code: "fr",  label: "FranÃ§ais"  },
+  { code: "fr",  label: "Français"  },
   { code: "ha",  label: "Hausa"     },
-  { code: "ar",  label: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"  },
+  { code: "ar",  label: "العربية"  },
   { code: "pcm", label: "Pidgin"    },
   { code: "ful", label: "Fulfulde"  },
 ];
@@ -184,7 +184,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
           type="text"
           value={form.title[activeLang] ?? ""}
           onChange={(e) => setTitle(activeLang, e.target.value)}
-          placeholder={`Ad title in ${LANGUAGES.find((l) => l.code === activeLang)?.label}â€¦`}
+          placeholder={`Ad title in ${LANGUAGES.find((l) => l.code === activeLang)?.label}…`}
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400"
         />
       </div>
@@ -198,7 +198,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
           rows={3}
           value={form.description[activeLang] ?? ""}
           onChange={(e) => setDesc(activeLang, e.target.value)}
-          placeholder="Short description of the adâ€¦"
+          placeholder="Short description of the ad…"
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 resize-none"
         />
       </div>
@@ -223,7 +223,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
           type="url"
           value={form.image_url}
           onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-          placeholder="https://â€¦"
+          placeholder="https://…"
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400"
         />
       </div>
@@ -267,7 +267,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
               : "bg-teal-600 hover:bg-teal-700 active:scale-95 disabled:opacity-60"
           }`}
         >
-          {loading  ? <><Loader2 className="w-4 h-4 animate-spin" /> Postingâ€¦</>
+          {loading  ? <><Loader2 className="w-4 h-4 animate-spin" /> Posting…</>
            : success ? <><Check className="w-4 h-4" /> Posted!</>
            : "Post Featured Ad"}
         </button>

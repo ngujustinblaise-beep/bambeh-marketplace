@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - PRODUCT MANAGEMENT COMPONENT
  * Version: 1.0.0
  */
@@ -232,7 +232,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
                   </td>
                   <td>
                     <div className="action-buttons">
-                      <button className="action-btn edit" onClick={() => handleEditProduct(product)} title={t('vendor.edit')}>âœï¸</button>
+                      <button className="action-btn edit" onClick={() => handleEditProduct(product)} title={t('vendor.edit')}>✏️</button>
                       <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)} title={t('vendor.delete')}>🗑ï¸</button>
                     </div>
                   </td>

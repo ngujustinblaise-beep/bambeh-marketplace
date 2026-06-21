@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 🔒 SECURITY PROVIDER - Centralized Security Context
  */
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -22,7 +22,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const checkSecurity = async (): Promise<boolean> => {
-    console.log("ðŸ” Running security check...");
+    console.log("🔍 Running security check...");
 
     // Perform security checks
     const checks = {

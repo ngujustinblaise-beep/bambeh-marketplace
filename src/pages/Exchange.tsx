@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Exchange.tsx — Bambeh Marketplace
  *
  * ✅ Full i18n: en, fr, ha, ar, pcm, ff
@@ -141,7 +141,7 @@ const STRINGS = {
     title: 'Fewtere',
     postItem: 'Hollir',
     refresh: 'Hesɗit',
-    loading: 'Æetete fewtere…',
+    loading: 'Ɓetete fewtere…',
     noListings: 'Alaa fewtere',
     noListingsFilter: 'Rewto suturo wuro maa.',
     noListingsFirst: 'Ngu njimi tafon ɓe njajaa!',
@@ -151,7 +151,7 @@ const STRINGS = {
     loadErr: 'Waawaa yaltude. Leɓto samorde.',
     expiresIn: (d: number) => d === 0 ? 'Timmii hannde' : `Timmii ${d} ñalawma`,
     offer: (n: number) => `${n} jaɓde`,
-    search: 'Æeto coftal…',
+    search: 'Ɓeto coftal…',
     allCategories: 'Fof',
     sortNewest: 'Sainii',
     sortOffers: 'Heewi jaɓde',
@@ -458,7 +458,7 @@ export default function Exchange() {
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">{item.description}</p>
 
                       <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
-                        <span className="flex items-center gap-0.5">ðŸ“ {item.location}</span>
+                        <span className="flex items-center gap-0.5">📍 {item.location}</span>
                         <span
                           className={`px-2 py-0.5 rounded-full font-medium ${
                             item.condition === 'Good' || item.condition === 'Excellent'

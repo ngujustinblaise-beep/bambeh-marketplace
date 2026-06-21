@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - RESPONSE DISPLAY COMPONENT
  * Shows Mama's response with suggestions
  * Version: 1.0.0
@@ -47,7 +47,7 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
 
         {/* Confirmation Required */}
         {response.requiresConfirmation && (
-          <div className="confirmation-badge">â³ Awaiting confirmation</div>
+          <div className="confirmation-badge">⏳ Awaiting confirmation</div>
         )}
       </div>
 

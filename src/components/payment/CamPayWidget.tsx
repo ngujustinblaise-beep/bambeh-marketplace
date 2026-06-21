@@ -1,8 +1,8 @@
-﻿/**
+/**
  * CamPayWidget.tsx  —  Bambeh Marketplace
  * FILE LOCATION: src/components/payment/CamPayWidget.tsx
  *
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ════════════════════════════════════════════════════════════════
  *  REUSABLE CAMPAY PAYMENT UI COMPONENT
  *  Drop this into any page that needs to collect mobile money.
  *  It handles:
@@ -10,7 +10,7 @@
  *    • Initiating payment via useCamPay hook
  *    • Waiting / countdown screen
  *    • Success / failure screens
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ════════════════════════════════════════════════════════════════
  *
  * USAGE:
  *  <CamPayWidget

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LOGIN PAGE
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -221,7 +221,7 @@ export default function Login() {
     password: string,
   ) => {
     if (!usernameOrPhone || !password) {
-      console.error("âŒ Authentication failed: Missing credentials");
+      console.error("❌ Authentication failed: Missing credentials");
       return { success: false, error: "Username and password are required" };
     }
 
@@ -283,14 +283,14 @@ export default function Login() {
       console.error("Error checking local users:", err);
     }
 
-    console.error("âŒ Authentication failed: Invalid credentials");
+    console.error("❌ Authentication failed: Invalid credentials");
     return { success: false, error: "Invalid username or password" };
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("ðŸ” Login form submitted");
+    console.log("🔐 Login form submitted");
 
     if (isLocked) {
       console.warn("⚠ï¸ Login blocked: Account locked");
@@ -309,7 +309,7 @@ export default function Login() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      console.error("âŒ Validation failed:", newErrors);
+      console.error("❌ Validation failed:", newErrors);
       return;
     }
 
@@ -339,11 +339,11 @@ export default function Login() {
           navigate(from === "/login" ? "/" : from, { replace: true });
         }, 100);
       } else {
-        console.error("âŒ Authentication failed");
+        console.error("❌ Authentication failed");
         handleFailedAttempt();
       }
     } catch (err) {
-      console.error("âŒ Login exception:", err);
+      console.error("❌ Login exception:", err);
       handleFailedAttempt();
       setErrors({ login: "Login failed. Please try again." });
     } finally {

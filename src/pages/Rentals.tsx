@@ -1,16 +1,16 @@
-﻿/**
+/**
  * src/pages/Rentals.tsx — Bambeh Marketplace
  *
  * ✅ FULL REWRITE — all features production-ready:
  *
- *  ðŸŒ i18n: Every visible string uses useTranslation('rentals').
+ *  🌐 i18n: Every visible string uses useTranslation('rentals').
  *           Supports EN / FR / HA / AR / Pidgin / Fulfulde — zero hardcoded UI text.
  *  🔄 Realtime: Supabase postgres_changes keeps the list live.
- *  ðŸ” Filters: search, city, type, price range, LocationFilter component.
+ *  🔍 Filters: search, city, type, price range, LocationFilter component.
  *  🎯 Routing: /rentals/:id for details, /rentals/list for posting.
  *  💾 Error recovery: graceful fallback to SAMPLE data on any Supabase error.
  *  📸 Images: shows first image as card cover; falls back to icon.
- *  â±  Expiry: "Expiring soon" badge when listing expires within 3 days.
+ *  ⏱  Expiry: "Expiring soon" badge when listing expires within 3 days.
  *  🚫 Demo-safe: demo cards are non-clickable and clearly labelled.
  *  ♿ Accessible: aria-labels, keyboard-friendly.
  *

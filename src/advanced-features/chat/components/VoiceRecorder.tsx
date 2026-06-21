@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - VOICE RECORDER COMPONENT
  * Version: 1.0.0
  */
@@ -103,7 +103,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
         </div>
 
         <div className="voice-recorder-timer">
-          <span className={`recording-indicator ${isRecording && !isPaused ? 'active' : ''}`}>âº</span>
+          <span className={`recording-indicator ${isRecording && !isPaused ? 'active' : ''}`}>⏺</span>
           <span className="timer-text">{formatVoiceDuration(duration)}</span>
           <span className="max-duration">/ 5:00</span>
         </div>
@@ -114,7 +114,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
           </button>
 
           <button className="recorder-button pause" onClick={togglePause} disabled={isSending || !isRecording}>
-            {isPaused ? '▶ï¸' : 'â¸ï¸'}
+            {isPaused ? '▶ï¸' : '⏸️'}
           </button>
 
           <button
@@ -125,7 +125,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
             }}
             disabled={isSending || duration < 1}
           >
-            {isSending ? 'â³' : '📤'}
+            {isSending ? '⏳' : '📤'}
           </button>
         </div>
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Jobs.tsx
  * Bambeh Marketplace — Find Jobs Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -69,7 +69,7 @@ const JOB_TYPES_I18N: Record<string, Record<string, string>> = {
   "Part-time":  { en:"Part-time",  fr:"Temps partiel", pidgin:"Half time",  ar:"دوام جزئي",    ff:"Waktu didi" },
   "Contract":   { en:"Contract",   fr:"Contrat",       pidgin:"Contract",   ar:"عقد",          ff:"Kontoraaji" },
   "Internship": { en:"Internship", fr:"Stage",         pidgin:"Training",   ar:"تدريب",        ff:"Jannginagol" },
-  "Remote":     { en:"Remote",     fr:"Télétravail",   pidgin:"Online",     ar:"عن بÙعد",      ff:"E Æanndu" },
+  "Remote":     { en:"Remote",     fr:"Télétravail",   pidgin:"Online",     ar:"عن بÙعد",      ff:"E Ɓanndu" },
   "Freelance":  { en:"Freelance",  fr:"Freelance",     pidgin:"Freelance",  ar:"حر",           ff:"Freelance" },
   "Temporary":  { en:"Temporary",  fr:"Temporaire",    pidgin:"Small time", ar:"مؤقت",         ff:"Seeɗa" },
 };
@@ -152,7 +152,7 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
               </span>
               {job.isRemote && (
                 <span className="bg-blue-100 text-blue-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                  ðŸŒ {tFn("remote")}
+                  🌐 {tFn("remote")}
                 </span>
               )}
               <div className="ml-auto flex gap-1">
@@ -160,7 +160,7 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-sm
                               transition-all active:scale-90
                               ${saved ? "bg-red-100 dark:bg-red-900/30 text-red-500" : "bg-gray-100 dark:bg-gray-700 text-gray-400"}`}>
-                  {saved ? "â¤ï¸" : "ðŸ¤"}
+                  {saved ? "❤️" : "🤍"}
                 </button>
                 <button onClick={onShare} aria-label="Share"
                   className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center
@@ -178,7 +178,7 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
         </div>
 
         <div className="mt-3 flex items-center gap-3 flex-wrap text-xs text-gray-500 dark:text-gray-400">
-          <span>ðŸ“ {job.location.city}{job.location.region ? ` · ${job.location.region}` : ""}</span>
+          <span>📍 {job.location.city}{job.location.region ? ` · ${job.location.region}` : ""}</span>
           {job.experienceLevel && (
             <span>🎓 {job.experienceLevel.replace(/_/g, " ")}</span>
           )}
@@ -194,7 +194,7 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
 
         {job.applicationDeadline && (
           <div className="mt-1 text-[11px] text-orange-500 dark:text-orange-400">
-            â° {tFn("deadline")}: {new Date(job.applicationDeadline).toLocaleDateString(
+            ⏰ {tFn("deadline")}: {new Date(job.applicationDeadline).toLocaleDateString(
               lang === "fr" ? "fr-CM" : "en-CM"
             )}
           </div>
@@ -366,7 +366,7 @@ export default function Jobs() {
           {loading ? t("loading") : `${jobs.length} ${t("opportunities")}`}
         </p>
         <div className="relative">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">ðŸ”</span>
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
           <input
             className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white/95 text-gray-900
                        text-sm placeholder-gray-400 outline-none shadow"
@@ -399,7 +399,7 @@ export default function Jobs() {
                       text-xs font-semibold transition-all
                       ${mostRecent ? "border-teal-500 bg-teal-500 text-white"
                                    : "border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400"}`}>
-          ðŸ• {t("mostRecent")}
+          🕐 {t("mostRecent")}
         </button>
 
         {CATEGORIES.map((c) => (
@@ -509,7 +509,7 @@ export default function Jobs() {
 
         {!loading && !error && jobs.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-5xl mb-3">ðŸ”</p>
+            <p className="text-5xl mb-3">🔍</p>
             <p className="font-semibold text-gray-600 dark:text-gray-400">{t("noMatch")}</p>
             <button
               onClick={() => { setSearch(""); setCategory("All"); setJobType("All Types"); setRegion("All Regions"); setLocationFilters(EMPTY_LOCATION); }}

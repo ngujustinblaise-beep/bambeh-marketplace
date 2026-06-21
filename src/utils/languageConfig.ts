@@ -1,4 +1,4 @@
-﻿/**
+/**
  * languageConfig.ts
  * ────────────────────────────────────────────────────────────────────────────
  * Central language configuration for Bambeh Marketplace.
@@ -46,8 +46,8 @@ export const WELCOME_MESSAGES: Record<string, {
   },
   ff: {
     greeting:   'Tawaaɓe Bambeh',
-    tagline:    'Liggaade Æurnde Dartaade',
-    subTagline: 'Maare Dow Æure #1 e Kameruun — Soodee, Fiyee, Naatnitee.',
+    tagline:    'Liggaade Ɓurnde Dartaade',
+    subTagline: 'Maare Dow Ɓure #1 e Kameruun — Soodee, Fiyee, Naatnitee.',
     cta:        'Fuɗɗo',
   },
   pidgin: {

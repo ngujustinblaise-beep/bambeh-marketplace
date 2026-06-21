@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -42,14 +42,14 @@ const STR: Record<string, Record<string, string>> = {
   applying:         { en:"Sending application…", fr:"Envoi en cours…", ha:"Ana aika…", ar:"جارÙ الإرسال…", pcm:"Dey send am…", ful:"Nannginii…" },
   alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez déjà postulé", ha:"Kun riga kun nema", ar:"لقد تقدمت بالÙعل", pcm:"You don apply before", ful:"Ko njimonaa yoodi" },
   expired:          { en:"This job has expired", fr:"Cette offre a expiré", ha:"Aiki ya ƙare", ar:"انتهت صلاحية الوظيÙة", pcm:"Work don finish", ful:"Golle ɓenni" },
-  closingSoon:      { en:"Closing soon", fr:"Ferme bientôt", ha:"Zai ƙare da wuri", ar:"ينتهي قريبًا", pcm:"E go close soon", ful:"Æennoo seeɗa" },
+  closingSoon:      { en:"Closing soon", fr:"Ferme bientôt", ha:"Zai ƙare da wuri", ar:"ينتهي قريبًا", pcm:"E go close soon", ful:"Ɓennoo seeɗa" },
   today:            { en:"Today", fr:"Aujourd'hui", ha:"Yau", ar:"اليوم", pcm:"Today", ful:"Hannde" },
   dLeft:            { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام متبقية", pcm:"days left", ful:"balɗe" },
   deadline:         { en:"Application deadline", fr:"Date limite", ha:"Ƙarshen lokaci", ar:"آخر موعد", pcm:"Last date", ful:"Balɗe ɓennoo" },
   salary:           { en:"Monthly Salary", fr:"Salaire mensuel", ha:"Albashin wata", ar:"الراتب الشهري", pcm:"Month salary", ful:"Njobdi koorka" },
   negotiable:       { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pcm:"E fit negotiate", ful:"Naggi" },
   salaryNotSpec:    { en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
-  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بÙعد", pcm:"Online work", ful:"E Æanndu" },
+  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بÙعد", pcm:"Online work", ful:"E Ɓanndu" },
   candidates:       { en:"applicants", fr:"candidats", ha:"masu nema", ar:"متقدم", pcm:"people apply", ful:"jokkooɓe" },
   views:            { en:"views", fr:"vues", ha:"ra'ayoyi", ar:"مشاهدة", pcm:"people see am", ful:"yiylaama" },
   published:        { en:"Published", fr:"Publié le", ha:"An buga", ar:"نÙشر Ùي", pcm:"Dem post am", ful:"Fewtiima" },
@@ -310,7 +310,7 @@ const JobDetails: React.FC = () => {
             <Calendar className="w-4 h-4 flex-shrink-0" />
             {isExpired
               ? `⛔ ${s("expired", lang)}`
-              : `â° ${s("closingSoon", lang)} — ${daysLeft === 0 ? s("today", lang) : `${daysLeft} ${s("dLeft", lang)}`}`}
+              : `⏰ ${s("closingSoon", lang)} — ${daysLeft === 0 ? s("today", lang) : `${daysLeft} ${s("dLeft", lang)}`}`}
           </div>
         )}
 

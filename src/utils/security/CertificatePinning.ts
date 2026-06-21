@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 📌 CERTIFICATE PINNING - Prevent Man-in-the-Middle Attacks
  * Ensures app only connects to legitimate servers
  */
@@ -18,7 +18,7 @@ export const initializeCertificatePinning = () => {
   // Verify certificates on API calls
   const originalFetch = window.fetch;
   window.fetch = async (...args) => {
-    console.log("ðŸ” Verifying certificate for:", args[0]);
+    console.log("🔍 Verifying certificate for:", args[0]);
     // Certificate verification happens here
     return originalFetch(...args);
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useMonthlyFeedback.tsx
  * Fires the monthly feedback notification once per calendar month.
  */
@@ -45,7 +45,7 @@ async function scheduleNativeNotification(): Promise<void> {
       notifications: [
         {
           id: 8801,
-          title: "ðŸ‹ï¸ Bambeh wants to hear from you",
+          title: "🏋️ Bambeh wants to hear from you",
           body: "How can we carry your load better this month? Your voice shapes us.",
           schedule: { at: fireAt, allowWhileIdle: true },
           smallIcon: "ic_bambeh_notification",
@@ -169,7 +169,7 @@ export function MonthlyFeedbackBanner() {
         />
 
         <div style={{ textAlign: "center", fontSize: 40, marginBottom: 12 }}>
-          ðŸ‹ï¸
+          🏋️
         </div>
 
         <div

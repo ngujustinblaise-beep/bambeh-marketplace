@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Jobs/PostJobListing.tsx
  * Bambeh Marketplace — Post Job Listing Form (Embeddable Component)
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -148,7 +148,7 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         location: {
           city:    form.city,
           region:  form.region || form.city,
-          country: "Cameroon",             // â† FIXED: was "" before
+          country: "Cameroon",             // ← FIXED: was "" before
         },
         isRemote:            form.isRemote,
         applicationDeadline: form.applicationDeadline || undefined,

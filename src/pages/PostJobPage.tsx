@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/PostJobPage.tsx
  * Bambeh Marketplace — Post a Job
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -29,10 +29,10 @@ const STR: Record<string, Record<string, string>> = {
   category:        { en:"Job Category *", fr:"Catégorie *", ha:"Nau'in Aiki *", ar:"الÙئة *", pcm:"Work type *", ful:"Suudu Golle *" },
   jobType:         { en:"Employment Type *", fr:"Type de contrat *", ha:"Nau'in kwantiragi *", ar:"نوع التوظيÙ *", pcm:"Work arrangement *", ful:"Suudu Kontoraaji *" },
   experienceLevel: { en:"Experience Level *", fr:"Niveau d'expérience *", ha:"Matakin ƙwarewa *", ar:"مستوى الخبرة *", pcm:"Experience level *", ful:"Karallaagal *" },
-  location:        { en:"City / Location *", fr:"Ville / Lieu *", ha:"Gari / Wuri *", ar:"المدينة / الموقع *", pcm:"Town / Place *", ful:"Wuro / Æoggol *" },
+  location:        { en:"City / Location *", fr:"Ville / Lieu *", ha:"Gari / Wuri *", ar:"المدينة / الموقع *", pcm:"Town / Place *", ful:"Wuro / Ɓoggol *" },
   locationPh:      { en:"e.g. Douala, Yaoundé…", fr:"ex. Douala, Yaoundé…", ha:"mis. Douala, Yaoundé…", ar:"مثل: دوالا، ياوندي…", pcm:"e.g. Douala, Yaoundé…", ful:"taa. Douala, Yaoundé…" },
   region:          { en:"Region", fr:"Région", ha:"Yanki", ar:"المنطقة", pcm:"Region", ful:"Leydi" },
-  isRemote:        { en:"Remote work available", fr:"Télétravail possible", ha:"Ana iya aiki daga nesa", ar:"يتوÙر عمل عن بÙعد", pcm:"Online work dey", ful:"E Æanndu ɗon" },
+  isRemote:        { en:"Remote work available", fr:"Télétravail possible", ha:"Ana iya aiki daga nesa", ar:"يتوÙر عمل عن بÙعد", pcm:"Online work dey", ful:"E Ɓanndu ɗon" },
   salaryMin:       { en:"Min Salary (FCFA/month)", fr:"Salaire min (FCFA/mois)", ha:"Ƙaramin albashi (FCFA/wata)", ar:"الحد الأدنى للراتب (Ùرنك/شهر)", pcm:"Small salary (FCFA/month)", ful:"Njobdi bilahi (FCFA/koorka)" },
   salaryMax:       { en:"Max Salary (FCFA/month)", fr:"Salaire max (FCFA/mois)", ha:"Babban albashi (FCFA/wata)", ar:"الحد الأقصى للراتب", pcm:"Big salary (FCFA/month)", ful:"Njobdi heeli (FCFA/koorka)" },
   salaryPh:        { en:"e.g. 150000", fr:"ex. 150000", ha:"mis. 150000", ar:"مثل: 150000", pcm:"e.g. 150000", ful:"taa. 150000" },

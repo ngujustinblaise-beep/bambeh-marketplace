@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  *
@@ -212,7 +212,7 @@ const S: Record<Lang, {
     "errImageType": "Tiiɗno suɓo fiijo natal (JPG, PNG, ekn.).",
     "errImageSize": "Natal foti ɓurde famɗude 5MB",
     "photoSuccess": "Natal profil hesɗitinaama!",
-    "photoFail": "Æamtugol natal hawri. Tiiɗno eto kadi.",
+    "photoFail": "Ɓamtugol natal hawri. Tiiɗno eto kadi.",
     "langHint": "Ɗum waylat ɗemngal aplikeysiŋ ndee fof jaka.",
     "account": "Konto",
     "editProfile": "Taƴto profil",

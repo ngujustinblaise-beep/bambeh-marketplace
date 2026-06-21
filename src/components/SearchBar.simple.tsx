@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/SearchBar.tsx
  * Bambeh Marketplace — Simple Search Bar Component
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -29,8 +29,8 @@ interface SearchBarProps {
 
 const SCOPES: { value: SearchScope; label: string; emoji: string }[] = [
   { value: "cameroon",       label: "Cameroon",       emoji: "🇨🇲" },
-  { value: "central_africa", label: "Central Africa", emoji: "ðŸŒ" },
-  { value: "west_africa",    label: "West Africa",    emoji: "ðŸŒ" },
+  { value: "central_africa", label: "Central Africa", emoji: "🌍" },
+  { value: "west_africa",    label: "West Africa",    emoji: "🌍" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────

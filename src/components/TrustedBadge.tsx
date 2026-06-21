@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 
 interface BadgeWithTooltipProps {
@@ -51,7 +51,7 @@ const TrustedBadge: React.FC<TrustedBadgeProps> = ({ level = "basic", showRequir
   const config = {
     basic:    { label: "Trusted",  icon: "🛡ï¸",  tooltip: "This seller has a verified phone number.",    color: "gray"  },
     verified: { label: "Verified", icon: "✅",  tooltip: "Identity and business verified by Bambeh.",    color: "teal"  },
-    premium:  { label: "Premium",  icon: "â­",  tooltip: "Top-rated seller with premium subscription.", color: "yellow"},
+    premium:  { label: "Premium",  icon: "⭐",  tooltip: "Top-rated seller with premium subscription.", color: "yellow"},
   }[level];
 
   const requirements = [

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Services.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
  * WORLD-CLASS REWRITE — Production Grade, Military Security, Full i18n
@@ -219,20 +219,20 @@ const STRINGS = {
     report_error:      'E no fit send report.',
   },
   ful: {
-    hero_title:        'Æeyngal Æurtooji',
+    hero_title:        'Ɓeyngal Ɓurtooji',
     hero_sub:          'Yiɗ neɗɗo feewi Kameruun',
     search_placeholder:'Yiɗ ɓeyngal…',
     offer_service:     'Hollu ɓeyngal',
     loading:           'Jokku…',
-    services_found:    (n: number) => `Æeyngal ${n} yiɗaama`,
+    services_found:    (n: number) => `Ɓeyngal ${n} yiɗaama`,
     no_results_q:      (q: string) => `Alaa "kalamu" "${q}"`,
-    no_results_empty:  'Æe mawɗo ɓeyngal!',
+    no_results_empty:  'Ɓe mawɗo ɓeyngal!',
     clear_search:      'Yiɗ hala',
     first_offer:       'Hollu ɓeyngal',
     no_services_found: 'Alaa ɓeyngal',
     safety_note:       '🛡ï¸ Tiiɗnu ɗemngal neɗɗo nde hade.',
     sample_label:      'Misal — alaa ɓeyngal goɗɗungel',
-    expiry_warning:    (days: number) => `Æeyngal ngel wuura ${days} ñalawma`,
+    expiry_warning:    (days: number) => `Ɓeyngal ngel wuura ${days} ñalawma`,
     book:              'Jaɓɓu',
     report:            'Habru',
     share:             'Hollu',

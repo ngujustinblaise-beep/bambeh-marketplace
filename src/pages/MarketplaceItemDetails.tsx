@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
  *
  * FIXES — June 2026
@@ -53,8 +53,8 @@ const TR: Record<string, Record<Lang, string>> = {
   items_in_cart:   { en: "items",                   fr: "articles",                   ha: "kaya",                   ar: "عناصر",                        pcm: "items",                   ff: "kala" },
   view_cart:       { en: "View Cart",               fr: "Voir le panier",             ha: "Duba kato",              ar: "عرض السلة",                    pcm: "See Cart",                ff: "Yiy Cart" },
   checkout:        { en: "Checkout Now",            fr: "Payer maintenant",           ha: "Biya yanzu",             ar: "الدÙع الآن",                   pcm: "Pay now",                 ff: "Haaɓtu hannde" },
-  add_to_cart:     { en: "Add to Cart",             fr: "Ajouter au panier",          ha: "Ƙara zuwa kato",         ar: "أضÙ إلى السلة",                pcm: "Add to Cart",             ff: "Æeydu e Cart" },
-  added:           { en: "Added!",                  fr: "Ajouté!",                    ha: "An ƙara!",               ar: "تمت الإضاÙة!",                 pcm: "Added!",                  ff: "Æeydaama!" },
+  add_to_cart:     { en: "Add to Cart",             fr: "Ajouter au panier",          ha: "Ƙara zuwa kato",         ar: "أضÙ إلى السلة",                pcm: "Add to Cart",             ff: "Ɓeydu e Cart" },
+  added:           { en: "Added!",                  fr: "Ajouté!",                    ha: "An ƙara!",               ar: "تمت الإضاÙة!",                 pcm: "Added!",                  ff: "Ɓeydaama!" },
   in_cart:         { en: "In Cart",                 fr: "Dans le panier",             ha: "A cikin kato",           ar: "Ùي السلة",                     pcm: "In Cart",                 ff: "E nder Cart" },
   buy_now:         { en: "Buy Now",                 fr: "Acheter",                    ha: "Saya yanzu",             ar: "اشتر الآن",                    pcm: "Buy Now",                 ff: "Soo Hannde" },
   views:           { en: "views",                   fr: "vues",                       ha: "kallon",                 ar: "مشاهدات",                      pcm: "view",                    ff: "yiytatii" },

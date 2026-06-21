@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FarmFreshSellerPage.tsx — Bambeh Marketplace
  *
  * FIXES:
@@ -78,7 +78,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, saveDraftLabel, disabled =
       {onBack && (
         <button type="button" onClick={onBack}
           className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
-          â†
+          ←
         </button>
       )}
       <button type="button" onClick={onNext} disabled={disabled}
@@ -361,7 +361,7 @@ export default function FarmFreshSellerPage() {
       <div className="sticky top-0 z-10 bg-green-600 text-white px-4 py-4 flex items-center gap-3 shadow">
         <button onClick={() => step === 1 ? navigate(-1) : back()}
           className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">
-          â†
+          ←
         </button>
         <h1 className="font-bold text-lg">{t("listYourProducePage", lang)}</h1>
       </div>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/CoinsHistory.tsx — Bambeh Marketplace
  *
  * FIXED (this version):
@@ -15,17 +15,17 @@ import { useLang } from '@/hooks/useAppLang';
 
 const strings = {
   en: {
-    back:    'â† Back to Wallet',
+    back:    '← Back to Wallet',
     title:   'Transaction History',
     noTx:    'No transactions yet',
   },
   fr: {
-    back:    'â† Retour au portefeuille',
+    back:    '← Retour au portefeuille',
     title:   'Historique des transactions',
     noTx:    'Aucune transaction pour le moment',
   },
   pidgin: {
-    back:    'â† Back to Wallet',
+    back:    '← Back to Wallet',
     title:   'Your Transactions',
     noTx:    'No transaction yet',
   },
@@ -35,7 +35,7 @@ const strings = {
     noTx:    'لا توجد معاملات بعد',
   },
   fulfulde: {
-    back:    'â† Rutto Jaaborgal',
+    back:    '← Rutto Jaaborgal',
     title:   'Laamu Liɓɓitol',
     noTx:    'Alaa liɓɓitol fewndo jooni',
   },

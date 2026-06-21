@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EMAIL PREFERENCES MODAL - Notification Management
  * FILE LOCATION: src/components/profile/EmailPreferencesModal.tsx
  */
@@ -51,7 +51,7 @@ export default function EmailPreferencesModal({ onClose }: EmailPreferencesModal
       onClose();
     } catch (error) {
       console.error('Error saving preferences:', error);
-      alert('âŒ Failed to save preferences. Please try again.');
+      alert('❌ Failed to save preferences. Please try again.');
     } finally {
       setIsSaving(false);
     }

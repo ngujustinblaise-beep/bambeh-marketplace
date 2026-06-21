@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE COMPONENT - COMPACT DROPDOWN VERSION
  * FILE LOCATION: src/components/common/SocialShare.tsx
  */
@@ -100,7 +100,7 @@ export default function SocialShare({ url, title, description = '', className = 
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#1e40af' }}>Facebook</span>
             </a>
             <a href={shareUrls.twitter} target="_blank" rel="noopener noreferrer" onClick={() => setShowMenu(false)} style={shareItemStyle('#f3f4f6')}>
-              <div style={iconStyle('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>ð•</span></div>
+              <div style={iconStyle('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>𝕏</span></div>
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>X (Twitter)</span>
             </a>
             <a href={BAMBEH_SOCIAL.instagram} target="_blank" rel="noopener noreferrer" onClick={() => { handleCopyLink(); setShowMenu(false); }}

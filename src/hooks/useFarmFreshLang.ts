@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/hooks/useFarmFreshLang.ts — Bambeh Marketplace
  *
  * Shared translation hook for all FarmFresh pages.
@@ -277,7 +277,7 @@ export const T = {
   photosTip:   { en:"📸 Photos = more buyers", fr:"📸 Photos = plus d'acheteurs", pidgin:"📸 Photos = More People Go Buy", ar:"📸 الصور = مزيد من المشترين", fulfulde:"📸 Natal = Soodinooɓe Keewɗi" },
   photosTipBody: { en:"Listings with at least one clear photo get 3× more views than listings without. Buyers trust what they can see.", fr:"Les annonces avec au moins une photo claire obtiennent 3× plus de vues. Les acheteurs font confiance à ce qu'ils voient.", pidgin:"Things wey get photo get 3× more views. Buyers dey trust wetin dem see.", ar:"الإعلانات التي تحتوي على صورة واضحة تحصل على 3 أضعاÙ المشاهدات. المشترون يثقون بما يرونه.", fulfulde:"Hollirgol wona natal heɓa yii'de 3×. Soodinooɓe miimaago ko mbii'a." },
   photosTipSub: { en:"You can still post without a photo — your item will appear with a placeholder and a \"No photo\" badge until you add one.", fr:"Vous pouvez toujours publier sans photo — votre article apparaîtra avec un badge \"Sans photo\" jusqu'à ce que vous en ajoutiez une.", pidgin:"You fit still post am without photo — e go show with \"No photo\" badge till you add one.", ar:"يمكنك النشر بدون صورة — سيظهر منتجك ببادج \"لا توجد صورة\" حتى تضيÙ صورة.", fulfulde:"A waawi hollude hono natal — ko'am maa yii'ata e \"Alaa natal\" hanga a roŋkii." },
-  worldwideVis: { en:"ðŸŒ Your listing will be visible worldwide — any Bambeh user on any device can find and buy your produce.", fr:"ðŸŒ Votre annonce sera visible dans le monde entier — tout utilisateur Bambeh peut trouver et acheter votre produit.", pidgin:"ðŸŒ Your thing go show worldwide — any Bambeh person fit see am and buy.", ar:"ðŸŒ سيكون إعلانك مرئيًا Ùي جميع أنحاء العالم — أي مستخدم Bambeh يمكنه العثور عليه وشراءه.", fulfulde:"ðŸŒ Hollirgol maa yii'ataa e aduna fof — Bambeh jom fof waawi yiyde e soodude." },
+  worldwideVis: { en:"🌍 Your listing will be visible worldwide — any Bambeh user on any device can find and buy your produce.", fr:"🌍 Votre annonce sera visible dans le monde entier — tout utilisateur Bambeh peut trouver et acheter votre produit.", pidgin:"🌍 Your thing go show worldwide — any Bambeh person fit see am and buy.", ar:"🌍 سيكون إعلانك مرئيًا Ùي جميع أنحاء العالم — أي مستخدم Bambeh يمكنه العثور عليه وشراءه.", fulfulde:"🌍 Hollirgol maa yii'ataa e aduna fof — Bambeh jom fof waawi yiyde e soodude." },
   listWorldwide:{ en:"🚀 List Produce Worldwide", fr:"🚀 Publier dans le monde entier", pidgin:"🚀 Post Am Worldwide", ar:"🚀 نشر المنتج عالميًا", fulfulde:"🚀 Hollir Ko'o e Aduna Fof" },
   posting:     { en:"Posting…", fr:"Publication…", pidgin:"E dey post…", ar:"جارÙ النشر…", fulfulde:"E nani hollude…" },
   produceListed: { en:"Produce Listed!", fr:"Produit mis en ligne !", pidgin:"Your Thing Don List!", ar:"تم إدراج المنتج!", fulfulde:"Ko'oo Hollinaa!" },

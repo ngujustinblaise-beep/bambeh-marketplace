@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SECURITY INITIALIZER
  * FILE LOCATION: src/components/security/SecurityInitializer.tsx
  */
@@ -55,7 +55,7 @@ const SecurityInitializer: React.FC = () => {
       if (shouldRedirect) {
         const message    = SESSION_EXPIRED_MESSAGES[expiredType];
         const redirectTo = REDIRECT_PATHS[expiredType];
-        if (import.meta.env.MODE === 'development') { console.warn(`â° Session expired: ${expiredType}`); }
+        if (import.meta.env.MODE === 'development') { console.warn(`⏰ Session expired: ${expiredType}`); }
         window.dispatchEvent(new CustomEvent('bambeh:session-expired', { detail: { type: expiredType, message, redirectTo } }));
         navigate(redirectTo, { replace: true, state: { sessionExpired: true, expiredType } });
       }

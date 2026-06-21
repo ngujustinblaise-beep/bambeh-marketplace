@@ -1,9 +1,9 @@
-﻿/**
+/**
  * src/pages/ListProperty.tsx — Bambeh Marketplace
  *
  * ✅ FULL REWRITE — production-ready rental posting form:
  *
- *  ðŸŒ i18n: Every label/placeholder/CTA uses useTranslation('rentals').
+ *  🌐 i18n: Every label/placeholder/CTA uses useTranslation('rentals').
  *           6-language support: EN / FR / HA / AR / Pidgin / Fulfulde.
  *  📸 Images: upload up to 8 photos → Supabase Storage bucket "rentals".
  *             Image re-ordering by drag or remove-and-re-add.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/services/BookServiceModal.tsx — Bambeh Marketplace
  *
  * CHANGES IN THIS VERSION:
@@ -290,7 +290,7 @@ export default function BookServiceModal({
               <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-600 space-y-1">
                 <p className="font-semibold text-gray-800 text-xs uppercase tracking-wide mb-2">Booking Summary</p>
                 {date && <p>📅 {dateOptions.find(d => d.value === date)?.label}</p>}
-                {time && <p>ðŸ• {fmt12(time)}</p>}
+                {time && <p>🕐 {fmt12(time)}</p>}
                 <p>👤 Provider: {providerName}</p>
                 {clientPhone && <p>📞 Your number: {clientPhone}</p>}
               </div>

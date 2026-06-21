@@ -1,7 +1,7 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * BAMBEH ROUTER — Singleton Navigation Module
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  *
  * Why this file exists:
  * React Router's useNavigate() hook only works inside React components.
@@ -16,7 +16,7 @@
  * NavigationService.register(nav) AND setNavigator(nav) on mount.
  *
  * Usage — inside a React component:
- *   import { useNavigate } from 'react-router-dom';   â† always prefer this
+ *   import { useNavigate } from 'react-router-dom';   ← always prefer this
  *
  * Usage — outside a React component (services, utils, dynamic imports):
  *   import navigate from '@/router';
@@ -27,7 +27,7 @@
  *
  * FILE: src/router.ts
  * © 2026 BAMBEH SARL
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';

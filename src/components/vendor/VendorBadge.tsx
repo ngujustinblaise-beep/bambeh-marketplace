@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import type { VendorStatus, VendorVerificationLevel } from "@/types/vendor";
 
@@ -23,9 +23,9 @@ interface BecomeVendorButtonProps {
 const STATUS_CONFIG: Partial<Record<VendorStatus, {
   label: string; color: string; bgColor: string; icon: string;
 }>> = {
-  pending:   { label: "Pending",   color: "text-yellow-700", bgColor: "bg-yellow-100", icon: "â³" },
+  pending:   { label: "Pending",   color: "text-yellow-700", bgColor: "bg-yellow-100", icon: "⏳" },
   approved:  { label: "Approved",  color: "text-green-700",  bgColor: "bg-green-100",  icon: "✅" },
-  rejected:  { label: "Rejected",  color: "text-red-700",    bgColor: "bg-red-100",    icon: "âŒ" },
+  rejected:  { label: "Rejected",  color: "text-red-700",    bgColor: "bg-red-100",    icon: "❌" },
   suspended: { label: "Suspended", color: "text-gray-700",   bgColor: "bg-gray-100",   icon: "🔒" },
   none:      { label: "Not Vendor",color: "text-gray-500",   bgColor: "bg-gray-50",    icon: "—"  },
 };

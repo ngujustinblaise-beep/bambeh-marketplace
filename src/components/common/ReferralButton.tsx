@@ -1,4 +1,4 @@
-﻿/**
+/**
  * REFERRAL BUTTON COMPONENT
  * FILE LOCATION: src/components/common/ReferralButton.tsx
  */
@@ -12,7 +12,7 @@ export default function ReferralButton() {
 
   const referralCode    = 'BAMBE-' + Math.random().toString(36).substring(7).toUpperCase();
   const referralLink    = `https://bambeh.cm/register?ref=${referralCode}`;
-  const referralMessage = `🎉 Join me on Bambeh - Online Marketplace!\n\n💚 Only 1% Transaction Fee - Lowest in !\nðŸ›ï¸ Buy, Sell, Trade, Find Jobs & More\nðŸŽ Use my referral code: ${referralCode}\n\n📱 Sign up here: ${referralLink}\n\nWe both get 1 Zerm Coin when you register! 🪙`;
+  const referralMessage = `🎉 Join me on Bambeh - Online Marketplace!\n\n💚 Only 1% Transaction Fee - Lowest in !\n🛍️ Buy, Sell, Trade, Find Jobs & More\n🎁 Use my referral code: ${referralCode}\n\n📱 Sign up here: ${referralLink}\n\nWe both get 1 Zerm Coin when you register! 🪙`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -76,7 +76,7 @@ export default function ReferralButton() {
                 <span className="text-2xl font-bold text-purple-600">1 Zerm Coin</span>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2"><span className="text-2xl">ðŸŽ</span><span className="font-bold text-pink-900">Friend Gets</span></div>
+                <div className="flex items-center gap-2"><span className="text-2xl">🎁</span><span className="font-bold text-pink-900">Friend Gets</span></div>
                 <span className="text-2xl font-bold text-pink-600">1 Zerm Coin</span>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function ReferralButton() {
                   <span className="text-xl">📘</span><span className="font-semibold">Facebook</span>
                 </button>
                 <button onClick={shareToTwitter} className="p-3 bg-black hover:bg-gray-900 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
-                  <span className="text-xl">ðŸ¦</span><span className="font-semibold">Twitter</span>
+                  <span className="text-xl">🐦</span><span className="font-semibold">Twitter</span>
                 </button>
                 <button onClick={copyMessage} className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center justify-center gap-2 transition-colors">
                   <Copy className="w-5 h-5" /><span className="font-semibold">Copy Text</span>

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * Register.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/auth/Register.tsx
@@ -25,7 +25,7 @@ const BAMBEH_CONFIG = {
   // The UUID of the Bambeh system/admin account that sends the welcome message.
   // Get it from: Supabase → Authentication → Users → find "Bambeh Team" or admin user
   // Then paste the UUID here:
-  SYSTEM_USER_ID: "00000000-0000-0000-0000-000000000001", // â† REPLACE with real admin UUID
+  SYSTEM_USER_ID: "00000000-0000-0000-0000-000000000001", // ← REPLACE with real admin UUID
 
   // Your messages table name (check Supabase → Table Editor)
   MESSAGES_TABLE: "messages",         // common options: "messages", "chats", "direct_messages"
@@ -66,12 +66,12 @@ async function sendWelcomeMessageAndNotification(
     `Bambeh is the pulse of African commerce — you can buy and sell anything, ` +
     `discover Farm Fresh produce, join Group Buying deals, and much more.\n\n` +
     `Here's how to get started:\n` +
-    `• ðŸ›ï¸ Browse listings on the home page\n` +
+    `• 🛍️ Browse listings on the home page\n` +
     `• 📦 Post your first listing — it takes 2 minutes\n` +
     `• 🌿 Check out Farm Fresh for fresh produce\n` +
-    `• ðŸ¤ Join a Group Buy and save more\n\n` +
+    `• 🤝 Join a Group Buy and save more\n\n` +
     `If you ever need help, tap the chat bubble or visit our Help Centre.\n\n` +
-    `Happy trading! ðŸŒ\n— The Bambeh Team`;
+    `Happy trading! 🌍\n— The Bambeh Team`;
 
   const now = new Date().toISOString();
 

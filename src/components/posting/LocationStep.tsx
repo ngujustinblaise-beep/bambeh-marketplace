@@ -1,5 +1,5 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ════════════════════════════════════════════════════════════════
  * src/components/posting/LocationStep.tsx
  *
  * DROP-IN replacement for the location step in:
@@ -24,19 +24,19 @@
  *   // BROKEN — navigates before state is committed:
  *   const handleNext = () => {
  *     setFormData({ ...formData, location });
- *     navigate('/next-step');   â† crashes
+ *     navigate('/next-step');   ← crashes
  *   };
  *
  *   // FIXED — wait one tick:
  *   const handleNext = () => {
  *     setFormData({ ...formData, location });
- *     setTimeout(() => navigate('/next-step'), 0);   â† works
+ *     setTimeout(() => navigate('/next-step'), 0);   ← works
  *   };
  *
  * OR use the onNext prop pattern below.
  *
  * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ════════════════════════════════════════════════════════════════
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -282,7 +282,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
             onClick={onBack}
             className="flex-1 py-3 border-2 border-gray-200 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition-all"
           >
-            â† Back
+            ← Back
           </button>
         )}
         <button

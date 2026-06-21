@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * BAMBÉ MARKETPLACE - GPS TRACKING COMPONENT
  * Version: 1.0.0
@@ -138,12 +138,12 @@ const GPSTrackingADVANCED: React.FC<GPSTrackingProps> = ({
 
   const getStatusInfo = () => {
     const statusMap: Record<string, { text: string; color: string; icon: string }> = {
-      pending:    { text: 'Order Pending',    color: '#FFA500', icon: 'â³' },
+      pending:    { text: 'Order Pending',    color: '#FFA500', icon: '⏳' },
       confirmed:  { text: 'Order Confirmed',  color: '#4CAF50', icon: '✓'  },
       assigned:   { text: 'Driver Assigned',  color: '#2196F3', icon: '👤' },
       picked_up:  { text: 'Order Picked Up',  color: '#9C27B0', icon: '📦' },
       in_transit: { text: 'In Transit',       color: '#FF9800', icon: '🚗' },
-      nearby:     { text: 'Driver Nearby',    color: '#4CAF50', icon: 'ðŸ“' },
+      nearby:     { text: 'Driver Nearby',    color: '#4CAF50', icon: '📍' },
       delivered:  { text: 'Delivered',        color: '#4CAF50', icon: '🎉' },
     };
     return statusMap[status] || statusMap.pending;

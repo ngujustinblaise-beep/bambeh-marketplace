@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/services/searchService.ts
  * Bambeh Marketplace — Universal Search Service
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -30,7 +30,7 @@ export const SCOPE_CONFIG: Record<
   central_africa: {
     label:   "Central Africa",
     labelFr: "Afrique Centrale",
-    emoji:   "ðŸŒ",
+    emoji:   "🌍",
     countries: [
       "Cameroon", "Cameroun", "Gabon",
       "Congo", "Republic of Congo", "Congo-Brazzaville",
@@ -44,7 +44,7 @@ export const SCOPE_CONFIG: Record<
   west_africa: {
     label:   "West Africa",
     labelFr: "Afrique de l'Ouest",
-    emoji:   "ðŸŒ",
+    emoji:   "🌍",
     countries: [
       "Nigeria", "Ghana", "Senegal", "Sénégal",
       "Côte d'Ivoire", "Ivory Coast", "Cameroon", "Cameroun",
