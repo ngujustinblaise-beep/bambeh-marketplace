@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -319,6 +319,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 };
 
 export default MainLayout;
+
+
 
 
 

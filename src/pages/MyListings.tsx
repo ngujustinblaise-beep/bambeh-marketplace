@@ -19,7 +19,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -295,5 +295,7 @@ export default function MyListings() {
     </div>
   );
 }
+
+
 
 

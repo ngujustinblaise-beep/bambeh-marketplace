@@ -34,3 +34,5 @@ const MarketplaceDetails: React.FC = () => {
 export default MarketplaceDetails;
 
 
+
+

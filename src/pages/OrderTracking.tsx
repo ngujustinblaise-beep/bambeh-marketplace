@@ -23,7 +23,7 @@ import {
   AlertCircle, RefreshCw, Home, Store,
   Calendar, User, CreditCard, ChevronRight,
 } from 'lucide-react';
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 // Order status types
 type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
@@ -573,5 +573,7 @@ export default function OrderTracking() {
     </div>
   );
 }
+
+
 
 

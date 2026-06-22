@@ -47,7 +47,7 @@ import {
   type AdCategory,
   type FeaturedAd,
 } from "@/hooks/useFeaturedAds";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 // ─── Category icon + colour map ───────────────────────────────────────────────4
 const CATEGORY_META: Record<
@@ -250,8 +250,8 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
   className   = "",
 }) => {
   const navigate = useNavigate();
-  const { language } = useLanguage();
-  const lang = language ?? "en";
+  const lang = useLang();
+    const isRtl = lang === 'ar';
   const ui   = useUiStrings(lang);
 
   // Local search state (only used when parent hasn't passed searchQuery)
@@ -457,5 +457,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
 };
 
 export default FeaturedAdsStrip;
+
+
 
 

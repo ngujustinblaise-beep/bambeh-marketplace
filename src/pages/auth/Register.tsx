@@ -1,11 +1,11 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
- * Register.tsx — Bambeh Marketplace
+ * Register.tsx â€” Bambeh Marketplace
  * FILE LOCATION: src/pages/auth/Register.tsx
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
- * ✅ ADDED: Welcome message + notification sent on every new account creation
+ * âœ… ADDED: Welcome message + notification sent on every new account creation
  */
 
 import { useState } from "react";
@@ -17,17 +17,17 @@ import {
 } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ BAMBEH WELCOME MESSAGE CONFIG
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// âœ… BAMBEH WELCOME MESSAGE CONFIG
 // Fill in the correct values for your Supabase tables below.
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const BAMBEH_CONFIG = {
   // The UUID of the Bambeh system/admin account that sends the welcome message.
-  // Get it from: Supabase → Authentication → Users → find "Bambeh Team" or admin user
+  // Get it from: Supabase â†’ Authentication â†’ Users â†’ find "Bambeh Team" or admin user
   // Then paste the UUID here:
-  SYSTEM_USER_ID: "00000000-0000-0000-0000-000000000001", // ← REPLACE with real admin UUID
+  SYSTEM_USER_ID: "00000000-0000-0000-0000-000000000001", // â† REPLACE with real admin UUID
 
-  // Your messages table name (check Supabase → Table Editor)
+  // Your messages table name (check Supabase â†’ Table Editor)
   MESSAGES_TABLE: "messages",         // common options: "messages", "chats", "direct_messages"
 
   // Your notifications table name
@@ -37,7 +37,7 @@ const BAMBEH_CONFIG = {
   MSG_COLUMNS: {
     sender_id:   "sender_id",         // who sent it
     receiver_id: "receiver_id",       // who receives it (new user)
-    content:     "content",           // message body column name — may be "body", "text", "message"
+    content:     "content",           // message body column name â€” may be "body", "text", "message"
     created_at:  "created_at",
   },
 
@@ -51,7 +51,7 @@ const BAMBEH_CONFIG = {
     created_at:  "created_at",
   },
 };
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /** Send a welcome message + notification to the newly registered user. Non-fatal. */
 async function sendWelcomeMessageAndNotification(
@@ -61,21 +61,21 @@ async function sendWelcomeMessageAndNotification(
   const firstName = fullName.trim().split(" ")[0] || "there";
 
   const welcomeText =
-    `🎉 Welcome to Bambeh, ${firstName}! ` +
+    `ðŸŽ‰ Welcome to Bambeh, ${firstName}! ` +
     `We're so glad you're here.\n\n` +
-    `Bambeh is the pulse of African commerce — you can buy and sell anything, ` +
+    `Bambeh is the pulse of African commerce â€” you can buy and sell anything, ` +
     `discover Farm Fresh produce, join Group Buying deals, and much more.\n\n` +
     `Here's how to get started:\n` +
-    `• 🛍️ Browse listings on the home page\n` +
-    `• 📦 Post your first listing — it takes 2 minutes\n` +
-    `• 🌿 Check out Farm Fresh for fresh produce\n` +
-    `• 🤝 Join a Group Buy and save more\n\n` +
+    `â€¢ ðŸ›ï¸ Browse listings on the home page\n` +
+    `â€¢ ðŸ“¦ Post your first listing â€” it takes 2 minutes\n` +
+    `â€¢ ðŸŒ¿ Check out Farm Fresh for fresh produce\n` +
+    `â€¢ ðŸ¤ Join a Group Buy and save more\n\n` +
     `If you ever need help, tap the chat bubble or visit our Help Centre.\n\n` +
-    `Happy trading! 🌍\n— The Bambeh Team`;
+    `Happy trading! ðŸŒ\nâ€” The Bambeh Team`;
 
   const now = new Date().toISOString();
 
-  // ── 1. Insert welcome message into the chat/messages table ─────────────────
+  // â”€â”€ 1. Insert welcome message into the chat/messages table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   try {
     const { MESSAGES_TABLE, SYSTEM_USER_ID, MSG_COLUMNS: c } = BAMBEH_CONFIG;
 
@@ -84,36 +84,36 @@ async function sendWelcomeMessageAndNotification(
       [c.receiver_id]: userId,
       [c.content]:     welcomeText,
       [c.created_at]:  now,
-      // Extra columns your table may have — safe to leave if they have defaults:
+      // Extra columns your table may have â€” safe to leave if they have defaults:
       is_read:         false,
       message_type:    "welcome",
     });
   } catch (msgErr) {
-    // Non-fatal — log and continue
+    // Non-fatal â€” log and continue
     console.warn("[Register] Welcome message insert failed:", msgErr);
   }
 
-  // ── 2. Insert welcome notification ─────────────────────────────────────────
+  // â”€â”€ 2. Insert welcome notification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   try {
     const { NOTIFICATIONS_TABLE, NOTIF_COLUMNS: c } = BAMBEH_CONFIG;
 
     await supabase.from(NOTIFICATIONS_TABLE).insert({
       [c.user_id]:    userId,
-      [c.title]:      "Welcome to Bambeh! 🎉",
+      [c.title]:      "Welcome to Bambeh! ðŸŽ‰",
       [c.body]:       `Hi ${firstName}! Your account is ready. Tap to see your welcome message.`,
       [c.type]:       "welcome",
       [c.is_read]:    false,
       [c.created_at]: now,
       // Extra fields your table may have:
       link:           "/chat",        // where tapping the notification goes
-      icon:           "🎉",
+      icon:           "ðŸŽ‰",
     });
   } catch (notifErr) {
     console.warn("[Register] Welcome notification insert failed:", notifErr);
   }
 }
 
-// ── Friendly error messages for common Supabase errors ───────────────────────
+// â”€â”€ Friendly error messages for common Supabase errors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function friendlyError(msg: string): string {
   const m = msg.toLowerCase();
   if (m.includes("user already registered") || m.includes("already been registered"))
@@ -129,7 +129,7 @@ function friendlyError(msg: string): string {
   if (m.includes("email rate limit") || m.includes("too many requests"))
     return "Too many attempts. Please wait a few minutes and try again.";
   if (m.includes("database error") || m.includes("saving new user"))
-    return "We had trouble saving your account. Please try again — if this keeps happening, contact support.";
+    return "We had trouble saving your account. Please try again â€” if this keeps happening, contact support.";
   return msg;
 }
 
@@ -172,13 +172,13 @@ export default function Register() {
     setError("");
   };
 
-  // ── Validation ──────────────────────────────────────────────────────────────
+  // â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const validate = () => {
     if (!formData.fullName.trim())          return "Full name is required.";
     if (!formData.username.trim())          return "Username is required.";
     if (formData.username.length < 3)       return "Username must be at least 3 characters.";
     if (!/^[a-zA-Z0-9_]+$/.test(formData.username))
-      return "Username can only contain letters, numbers, and underscores — no spaces.";
+      return "Username can only contain letters, numbers, and underscores â€” no spaces.";
     if (!formData.phone.trim())             return "Phone number is required.";
     if (!/^\+?[0-9]{8,15}$/.test(formData.phone.replace(/\s/g, "")))
       return "Enter a valid phone number (e.g. +237612345678).";
@@ -188,7 +188,7 @@ export default function Register() {
     return null;
   };
 
-  // ── Submit ───────────────────────────────────────────────────────────────────
+  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSubmit = async () => {
     setError("");
     const validationError = validate();
@@ -229,8 +229,8 @@ export default function Register() {
         console.warn("[Register] Profile upsert skipped:", profileErr);
       }
 
-      // ✅ Step 3: Send welcome message + notification (non-fatal)
-      // Fire-and-forget — we don't await or block on this
+      // âœ… Step 3: Send welcome message + notification (non-fatal)
+      // Fire-and-forget â€” we don't await or block on this
       sendWelcomeMessageAndNotification(user.id, formData.fullName.trim())
         .catch(e => console.warn("[Register] Welcome send failed silently:", e));
 
@@ -248,7 +248,7 @@ export default function Register() {
     }
   };
 
-  // ── Success screen ────────────────────────────────────────────────────────────
+  // â”€â”€ Success screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-blue-800 flex items-center justify-center p-4">
@@ -278,9 +278,9 @@ export default function Register() {
             <>
               <p className="text-gray-500 mb-2">Account created successfully.</p>
               <p className="text-gray-400 text-sm">
-                Check your <strong>Messages</strong> for a welcome note from the Bambeh Team! 🎉
+                Check your <strong>Messages</strong> for a welcome note from the Bambeh Team! ðŸŽ‰
               </p>
-              <p className="text-gray-400 text-sm mt-1">Taking you to the marketplace…</p>
+              <p className="text-gray-400 text-sm mt-1">Taking you to the marketplaceâ€¦</p>
             </>
           )}
         </div>
@@ -288,7 +288,7 @@ export default function Register() {
     );
   }
 
-  // ── Password strength indicator ───────────────────────────────────────────────
+  // â”€â”€ Password strength indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const pwStrength = (() => {
     const p = formData.password;
     if (!p) return null;
@@ -304,7 +304,7 @@ export default function Register() {
     return              { label: "Strong", color: "bg-green-500",  width: "w-full" };
   })();
 
-  // ── Form ─────────────────────────────────────────────────────────────────────
+  // â”€â”€ Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-blue-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
@@ -317,7 +317,7 @@ export default function Register() {
               <span className="text-white text-2xl font-black">B</span>
             </div>
             <h1 className="text-2xl font-black text-gray-900">Join Bambeh</h1>
-            <p className="text-gray-500 text-sm mt-1">Bambeh Marketplace — The Pulse of African Commerce</p>
+            <p className="text-gray-500 text-sm mt-1">Bambeh Marketplace â€” The Pulse of African Commerce</p>
           </div>
 
           {/* Error banner */}
@@ -493,7 +493,7 @@ export default function Register() {
               {isLoading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"/>
-                  Creating Account…
+                  Creating Accountâ€¦
                 </>
               ) : (
                 <>
@@ -518,5 +518,7 @@ export default function Register() {
     </div>
   );
 }
+
+
 
 

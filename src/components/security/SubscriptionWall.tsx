@@ -67,7 +67,7 @@ export default function SubscriptionWall({ action, message, compact = false }: S
             <p className="text-xs text-purple-700">{content.description}</p>
           </div>
           <Link
-            to="/subscription-plans"
+            to="/subscription"
       className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 text-sm font-bold transition-all whitespace-nowrap"
           >
             Upgrade
@@ -121,7 +121,7 @@ export default function SubscriptionWall({ action, message, compact = false }: S
       </div>
 
       <Link
-        to="/subscription-plans"
+        to="/subscription"
       className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-bold text-lg shadow-lg transition-all"
       >
         <Crown className="w-5 h-5" />
@@ -135,5 +135,7 @@ export default function SubscriptionWall({ action, message, compact = false }: S
   );
 }
 }
+
+
 
 

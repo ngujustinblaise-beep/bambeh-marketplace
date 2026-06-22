@@ -1,6 +1,6 @@
 ﻿/**
  * SubscriptionPlans.tsx  —  Bambeh Marketplace
- * FILE LOCATION: src/pages/SubscriptionPlans.tsx
+ * FILE LOCATION: src/pages/subscription.tsx
  *
  * FIXED (this version):
  *  ✅ Uses unified useCamPay hook (no more Render payment server)
@@ -270,5 +270,7 @@ const SubscriptionPlans: React.FC = () => {
 };
 
 export default SubscriptionPlans;
+
+
 
 

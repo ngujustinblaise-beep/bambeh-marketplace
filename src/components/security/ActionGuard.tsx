@@ -73,7 +73,7 @@ export default function ActionGuard({ action, onProceed, children, className = '
               </ul>
             </div>
             <div className="flex flex-col gap-3">
-              <Link to="/subscription-plans" className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-bold text-center transition-all shadow-lg">
+              <Link to="/subscription" className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-bold text-center transition-all shadow-lg">
                 View Subscription Plans
               </Link>
               <button onClick={() => setShowModal(false)} className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-semibold transition-all">Maybe Later</button>
@@ -90,5 +90,7 @@ export default function ActionGuard({ action, onProceed, children, className = '
     </>
   );
 }
+
+
 
 

@@ -1,3 +1,13 @@
+﻿useEffect(() => {
+  async function requestMic() {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      console.error('Microphone permission denied:', err);
+    }
+  }
+  requestMic();
+}, []);
 import React, { useState, useCallback } from "react";
 import TranscriptDisplay from "./components/TranscriptDisplay";
 
@@ -15,9 +25,9 @@ const VoiceAssistant: React.FC = () => {
   const toggleListen = useCallback(() => {
     setIsListening(prev => {
       if (!prev) {
-        setTranscript("Listening…");
+        setTranscript("Listeningâ€¦");
       } else {
-        if (transcript && transcript !== "Listening…") {
+        if (transcript && transcript !== "Listeningâ€¦") {
           const userTurn: ConversationEntry = {
             role: "user", text: transcript, timestamp: new Date().toISOString(),
           };
@@ -53,7 +63,7 @@ const VoiceAssistant: React.FC = () => {
             ${isListening
               ? "bg-red-500 hover:bg-red-600 animate-pulse"
               : "bg-teal-600 hover:bg-teal-700"}`}>
-          {isListening ? "⏹" : "🎤"}
+          {isListening ? "â¹" : "ðŸŽ¤"}
         </button>
       </div>
     </div>
@@ -61,5 +71,8 @@ const VoiceAssistant: React.FC = () => {
 };
 
 export default VoiceAssistant;
+
+
+
 
 

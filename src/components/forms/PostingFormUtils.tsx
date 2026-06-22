@@ -1,5 +1,5 @@
-/**
- * PostingFormUtils.tsx — Bambeh Marketplace
+﻿/**
+ * PostingFormUtils.tsx â€” Bambeh Marketplace
  * Path: src/components/forms/PostingFormUtils.tsx
  * ---------------------------------------------------------------------------
  * Shared utilities for ALL posting forms:
@@ -7,16 +7,16 @@
  *     ListProperty, SellVehicle, ExchangeItemPost
  *
  * Exports:
- *   1. StickyFormFooter      — Next / Back / Save draft / Post buttons
- *   2. useDraftSave          — Auto-save to localStorage + offline queue
- *   3. validateImageFile     — Client-side image type & size check
- *   4. ImageUploadField      — Drop-zone + validation UI
- *   5. PriceInput            — type="number" + FCFA formatter display
- *   6. PhoneInput            — Country code selector (Central/West Africa) + validation
- *   7. RequiredLabel         — Label with red asterisk
- *   8. formatFCFA            — Currency formatter
- *   9. useSubmitGuard        — isSubmitting state + duplicate-click prevention
- *  10. SuccessRedirect       — Post-success modal / redirect
+ *   1. StickyFormFooter      â€” Next / Back / Save draft / Post buttons
+ *   2. useDraftSave          â€” Auto-save to localStorage + offline queue
+ *   3. validateImageFile     â€” Client-side image type & size check
+ *   4. ImageUploadField      â€” Drop-zone + validation UI
+ *   5. PriceInput            â€” type="number" + FCFA formatter display
+ *   6. PhoneInput            â€” Country code selector (Central/West Africa) + validation
+ *   7. RequiredLabel         â€” Label with red asterisk
+ *   8. formatFCFA            â€” Currency formatter
+ *   9. useSubmitGuard        â€” isSubmitting state + duplicate-click prevention
+ *  10. SuccessRedirect       â€” Post-success modal / redirect
  * ---------------------------------------------------------------------------
  */
 
@@ -29,9 +29,9 @@ import React, { useEffect,
 } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 1. StickyFormFooter
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 interface StickyFormFooterProps {
   step: number;
   totalSteps: number;
@@ -51,10 +51,10 @@ export function StickyFormFooter({
   onSaveDraft,
   isSubmitting = false,
   nextLabel,
-  backLabel = "← Back",
+  backLabel = "â† Back",
 }: StickyFormFooterProps) {
   const isLastStep = step >= totalSteps;
-  const defaultNextLabel = isLastStep ? "Post Listing" : "Next →";
+  const defaultNextLabel = isLastStep ? "Post Listing" : "Next â†’";
 
   return (
     <div
@@ -143,7 +143,7 @@ export function StickyFormFooter({
                 d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
               />
             </svg>
-            Posting…
+            Postingâ€¦
           </>
         ) : (
           nextLabel ?? defaultNextLabel
@@ -153,9 +153,9 @@ export function StickyFormFooter({
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 2. useDraftSave — auto-save + offline queue
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// 2. useDraftSave â€” auto-save + offline queue
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 /**
  * Auto-saves form data to localStorage on every change.
  * Also queues the save for when the user comes back online (offline support).
@@ -191,7 +191,7 @@ export function useDraftSave<T extends object>(
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(() => setDraftSaved(false), 3000);
     } catch {
-      // localStorage full or unavailable — fail silently
+      // localStorage full or unavailable â€” fail silently
     }
   }, [draftKey, data]);
 
@@ -221,9 +221,9 @@ export function useDraftSave<T extends object>(
   return { saveDraft, clearDraft, loadDraft, draftSaved };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 3. validateImageFile
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -237,9 +237,9 @@ export function validateImageFile(file: File): string | null {
   return null; // valid
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 4. ImageUploadField
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 interface ImageUploadFieldProps {
   label?: string;
   required?: boolean;
@@ -305,7 +305,7 @@ export function ImageUploadField({
     <div className="space-y-2">
       <RequiredLabel required={required}>{label}</RequiredLabel>
       <p className="text-xs text-gray-400">
-        JPG, PNG, or WebP · Max 5 MB each · Up to {maxFiles} photos
+        JPG, PNG, or WebP Â· Max 5 MB each Â· Up to {maxFiles} photos
       </p>
 
       {/* Drop Zone */}
@@ -360,14 +360,14 @@ export function ImageUploadField({
             <div key={`existing-${i}`} className="relative aspect-square">
               <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover rounded-lg" />
               {onRemoveExisting && (
-                <button type="button" onClick={() => onRemoveExisting(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/80" aria-label="Remove photo">×</button>
+                <button type="button" onClick={() => onRemoveExisting(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/80" aria-label="Remove photo">Ã—</button>
               )}
             </div>
           ))}
           {previews.map((src, i) => (
             <div key={`new-${i}`} className="relative aspect-square">
               <img src={src} alt={`New photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover rounded-lg" />
-              <button type="button" onClick={() => removePreview(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/80" aria-label="Remove photo">×</button>
+              <button type="button" onClick={() => removePreview(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/80" aria-label="Remove photo">Ã—</button>
             </div>
           ))}
         </div>
@@ -376,9 +376,9 @@ export function ImageUploadField({
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 5. PriceInput
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 interface PriceInputProps {
   value: string;
   onChange: (value: string) => void;
@@ -425,26 +425,26 @@ export function PriceInput({
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 6. PhoneInput — Central & West African country codes
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// 6. PhoneInput â€” Central & West African country codes
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const AFRICAN_COUNTRY_CODES = [
-  { code: "+237", flag: "🇨🇲", name: "Cameroon",           pattern: /^6[0-9]{8}$/, hint: "6XXXXXXXX (9 digits)" },
-  { code: "+242", flag: "🇨🇬", name: "Congo-Brazzaville",  pattern: /^[0-9]{9}$/,  hint: "9 digits" },
-  { code: "+243", flag: "🇨🇩", name: "DR Congo",           pattern: /^8[0-9]{8}$/, hint: "8XXXXXXXX (9 digits)" },
-  { code: "+241", flag: "🇬🇦", name: "Gabon",              pattern: /^0[0-9]{7}$/, hint: "0XXXXXXX (8 digits)" },
-  { code: "+236", flag: "🇨🇫", name: "Central African Rep.", pattern: /^[0-9]{8}$/, hint: "8 digits" },
-  { code: "+240", flag: "🇬🇶", name: "Equatorial Guinea",  pattern: /^[0-9]{9}$/,  hint: "9 digits" },
-  { code: "+235", flag: "🇹🇩", name: "Chad",               pattern: /^[0-9]{8}$/,  hint: "8 digits" },
-  { code: "+234", flag: "🇳🇬", name: "Nigeria",            pattern: /^[0-9]{10}$/, hint: "10 digits" },
-  { code: "+233", flag: "🇬🇭", name: "Ghana",              pattern: /^[0-9]{9}$/,  hint: "9 digits" },
-  { code: "+225", flag: "🇨🇮", name: "Côte d'Ivoire",      pattern: /^[0-9]{10}$/, hint: "10 digits" },
-  { code: "+221", flag: "🇸🇳", name: "Senegal",            pattern: /^[0-9]{9}$/,  hint: "9 digits" },
-  { code: "+224", flag: "🇬🇳", name: "Guinea",             pattern: /^[0-9]{9}$/,  hint: "9 digits" },
-  { code: "+237", flag: "🇧🇯", name: "Benin",              pattern: /^[0-9]{8}$/,  hint: "8 digits" },
-  { code: "+228", flag: "🇹🇬", name: "Togo",               pattern: /^[0-9]{8}$/,  hint: "8 digits" },
-  { code: "+229", flag: "🇧🇯", name: "Benin (alt)",        pattern: /^[0-9]{8}$/,  hint: "8 digits" },
-  { code: "+237", flag: "🇧🇫", name: "Burkina Faso",       pattern: /^[0-9]{8}$/,  hint: "8 digits" },
+  { code: "+237", flag: "ðŸ‡¨ðŸ‡²", name: "Cameroon",           pattern: /^6[0-9]{8}$/, hint: "6XXXXXXXX (9 digits)" },
+  { code: "+242", flag: "ðŸ‡¨ðŸ‡¬", name: "Congo-Brazzaville",  pattern: /^[0-9]{9}$/,  hint: "9 digits" },
+  { code: "+243", flag: "ðŸ‡¨ðŸ‡©", name: "DR Congo",           pattern: /^8[0-9]{8}$/, hint: "8XXXXXXXX (9 digits)" },
+  { code: "+241", flag: "ðŸ‡¬ðŸ‡¦", name: "Gabon",              pattern: /^0[0-9]{7}$/, hint: "0XXXXXXX (8 digits)" },
+  { code: "+236", flag: "ðŸ‡¨ðŸ‡«", name: "Central African Rep.", pattern: /^[0-9]{8}$/, hint: "8 digits" },
+  { code: "+240", flag: "ðŸ‡¬ðŸ‡¶", name: "Equatorial Guinea",  pattern: /^[0-9]{9}$/,  hint: "9 digits" },
+  { code: "+235", flag: "ðŸ‡¹ðŸ‡©", name: "Chad",               pattern: /^[0-9]{8}$/,  hint: "8 digits" },
+  { code: "+234", flag: "ðŸ‡³ðŸ‡¬", name: "Nigeria",            pattern: /^[0-9]{10}$/, hint: "10 digits" },
+  { code: "+233", flag: "ðŸ‡¬ðŸ‡­", name: "Ghana",              pattern: /^[0-9]{9}$/,  hint: "9 digits" },
+  { code: "+225", flag: "ðŸ‡¨ðŸ‡®", name: "CÃ´te d'Ivoire",      pattern: /^[0-9]{10}$/, hint: "10 digits" },
+  { code: "+221", flag: "ðŸ‡¸ðŸ‡³", name: "Senegal",            pattern: /^[0-9]{9}$/,  hint: "9 digits" },
+  { code: "+224", flag: "ðŸ‡¬ðŸ‡³", name: "Guinea",             pattern: /^[0-9]{9}$/,  hint: "9 digits" },
+  { code: "+237", flag: "ðŸ‡§ðŸ‡¯", name: "Benin",              pattern: /^[0-9]{8}$/,  hint: "8 digits" },
+  { code: "+228", flag: "ðŸ‡¹ðŸ‡¬", name: "Togo",               pattern: /^[0-9]{8}$/,  hint: "8 digits" },
+  { code: "+229", flag: "ðŸ‡§ðŸ‡¯", name: "Benin (alt)",        pattern: /^[0-9]{8}$/,  hint: "8 digits" },
+  { code: "+237", flag: "ðŸ‡§ðŸ‡«", name: "Burkina Faso",       pattern: /^[0-9]{8}$/,  hint: "8 digits" },
 ];
 
 interface PhoneInputProps {
@@ -515,14 +515,14 @@ export function PhoneInput({
   );
 }
 
-// ─── Phone validation helper (standalone, use in submit handler) ──────────────
+// â”€â”€â”€ Phone validation helper (standalone, use in submit handler) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function validateCameroonPhone(phone: string): boolean {
   return /^6[0-9]{8}$/.test(phone.replace(/\s/g, ""));
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 7. RequiredLabel
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 interface RequiredLabelProps {
   required?: boolean;
   children: React.ReactNode;
@@ -545,16 +545,16 @@ export function RequiredLabel({ required = false, children, htmlFor }: RequiredL
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 8. formatFCFA
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export function formatFCFA(amount: number): string {
   return new Intl.NumberFormat("fr-CM").format(Math.round(amount)) + " FCFA";
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 9. useSubmitGuard — prevents double-submit
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// 9. useSubmitGuard â€” prevents double-submit
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export function useSubmitGuard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isMountedRef = useRef(true);
@@ -583,9 +583,9 @@ export function useSubmitGuard() {
   return { isSubmitting, withSubmitGuard };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 10. SuccessModal — shown after a listing is posted
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// 10. SuccessModal â€” shown after a listing is posted
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 interface SuccessModalProps {
   listingUrl?: string;
   listingTitle?: string;
@@ -617,7 +617,7 @@ export function SuccessModal({
         </div>
 
         <h2 className="text-xl font-bold text-gray-900 mb-1">
-          🎉 Listing is live!
+          ðŸŽ‰ Listing is live!
         </h2>
         <p className="text-sm text-gray-500 mb-5">
           <strong>{listingTitle}</strong> has been posted successfully on Bambeh.
@@ -630,7 +630,7 @@ export function SuccessModal({
               onClick={onViewListing}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2"
             >
-              View My Listing →
+              View My Listing â†’
             </button>
           )}
           <button
@@ -658,6 +658,8 @@ export default {
   useSubmitGuard,
   SuccessModal,
 };
+
+
 
 
 

@@ -1,16 +1,16 @@
-/**
+﻿/**
  * src/components/SearchPanel.tsx
- * Bambeh Marketplace — Full-Screen Search Panel
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Full-Screen Search Panel
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES:
- * — "Recherche avancée" button had NO onClick — dead button. Now navigates to
+ * â€” "Recherche avancÃ©e" button had NO onClick â€” dead button. Now navigates to
  *   /search?q=...&category=...&scope=...&filters=open so the user lands on
  *   SearchResults with the filter panel already open.
- * — All localStorage accesses now wrapped in try/catch.
+ * â€” All localStorage accesses now wrapped in try/catch.
  *
  * NEW:
- * — Scope selector row: Cameroon 🇨🇲 | Central Africa 🌍 | West Africa 🌍
+ * â€” Scope selector row: Cameroon ðŸ‡¨ðŸ‡² | Central Africa ðŸŒ | West Africa ðŸŒ
  *   User picks the region before searching; it's passed as a URL param.
  */
 
@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import type { SearchCategory, SearchScope } from "@/services/searchService";
 import { SCOPE_CONFIG } from "@/services/searchService";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface SearchPanelProps {
   isOpen:        boolean;
@@ -28,28 +28,28 @@ interface SearchPanelProps {
   initialQuery?: string;
 }
 
-// ─── Static config ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Static config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const CATEGORIES: { id: SearchCategory; label: string; emoji: string }[] = [
-  { id: "all",         label: "All",        emoji: "🔍" },
-  { id: "marketplace", label: "Items",      emoji: "🛍️" },
-  { id: "jobs",        label: "Jobs",       emoji: "💼" },
-  { id: "services",    label: "Services",   emoji: "🔧" },
-  { id: "rentals",     label: "Rentals",    emoji: "🏠" },
-  { id: "vehicles",    label: "Vehicles",   emoji: "🚗" },
-  { id: "exchange",    label: "Exchange",   emoji: "🔄" },
-  { id: "vendors",     label: "Shops",      emoji: "🏪" },
+  { id: "all",         label: "All",        emoji: "ðŸ”" },
+  { id: "marketplace", label: "Items",      emoji: "ðŸ›ï¸" },
+  { id: "jobs",        label: "Jobs",       emoji: "ðŸ’¼" },
+  { id: "services",    label: "Services",   emoji: "ðŸ”§" },
+  { id: "rentals",     label: "Rentals",    emoji: "ðŸ " },
+  { id: "vehicles",    label: "Vehicles",   emoji: "ðŸš—" },
+  { id: "exchange",    label: "Exchange",   emoji: "ðŸ”„" },
+  { id: "vendors",     label: "Shops",      emoji: "ðŸª" },
 ];
 
 const SCOPES: { value: SearchScope; label: string; emoji: string }[] = [
-  { value: "cameroon",       label: "Cameroon",      emoji: "🇨🇲" },
-  { value: "central_africa", label: "Central Africa", emoji: "🌍" },
-  { value: "west_africa",    label: "West Africa",   emoji: "🌍" },
+  { value: "cameroon",       label: "Cameroon",      emoji: "ðŸ‡¨ðŸ‡²" },
+  { value: "central_africa", label: "Central Africa", emoji: "ðŸŒ" },
+  { value: "west_africa",    label: "West Africa",   emoji: "ðŸŒ" },
 ];
 
 const TRENDING_BY_SCOPE: Record<SearchScope, string[]> = {
-  cameroon:       ["iPhone", "Moto", "Appartement Yaoundé", "Ingénieur", "Coiffure", "Rizière"],
-  central_africa: ["Pétrole", "Pharmacien Libreville", "Import Export", "Visa Congo", "Générateur"],
+  cameroon:       ["iPhone", "Moto", "Appartement YaoundÃ©", "IngÃ©nieur", "Coiffure", "RiziÃ¨re"],
+  central_africa: ["PÃ©trole", "Pharmacien Libreville", "Import Export", "Visa Congo", "GÃ©nÃ©rateur"],
   west_africa:    ["Developer Lagos", "Kente Cloth", "Fintech", "Abidjan Appartement", "Solar Panel"],
 };
 
@@ -72,7 +72,7 @@ function saveRecent(searches: string[]): void {
   }
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery = "" }) => {
   const [query,         setQuery]         = useState(initialQuery);
@@ -112,7 +112,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  // ── Suggestions ─────────────────────────────────────────────────────────────
+  // â”€â”€ Suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fetchSuggestions = useCallback(async (q: string) => {
     if (q.trim().length < 2) { setSuggestions([]); setIsLoading(false); return; }
     setIsLoading(true);
@@ -134,7 +134,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
     debounceTimer.current = setTimeout(() => fetchSuggestions(q), 300);
   }, [fetchSuggestions]);
 
-  // ── Navigation helpers ───────────────────────────────────────────────────────
+  // â”€â”€ Navigation helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const buildSearchUrl = useCallback((searchQuery: string, openFilters = false): string => {
     const params = new URLSearchParams();
     const trimmed = searchQuery.trim();
@@ -157,7 +157,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
     navigate(buildSearchUrl(trimmed));
   }, [navigate, onClose, buildSearchUrl]);
 
-  // FIX: "Recherche avancée" button now actually navigates somewhere — was dead before.
+  // FIX: "Recherche avancÃ©e" button now actually navigates somewhere â€” was dead before.
   const doAdvancedSearch = useCallback(() => {
     onClose();
     navigate(buildSearchUrl(query, true)); // true = open filters panel
@@ -186,7 +186,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
 
-      {/* ── Search input row ────────────────────────────────────────────────── */}
+      {/* â”€â”€ Search input row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
         <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
           {isLoading
@@ -218,7 +218,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
         </button>
       </div>
 
-      {/* ── Scope selector ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ Scope selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
         <div className="flex items-center gap-2">
           <Globe className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
@@ -239,7 +239,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
         </div>
       </div>
 
-      {/* ── Category pills ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ Category pills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="flex gap-2 px-4 py-2.5 border-b border-gray-100 overflow-x-auto scrollbar-hide">
         {CATEGORIES.map(cat => (
           <button key={cat.id} type="button" onClick={() => setCategory(cat.id)}
@@ -254,7 +254,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
         ))}
       </div>
 
-      {/* ── Scrollable content ──────────────────────────────────────────────── */}
+      {/* â”€â”€ Scrollable content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="flex-1 overflow-y-auto">
 
         {/* Live suggestions */}
@@ -293,7 +293,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
           </div>
         )}
 
-        {/* Trending — changes based on scope */}
+        {/* Trending â€” changes based on scope */}
         {!query && (
           <div className="py-4 px-4">
             <div className="flex items-center gap-2 mb-3">
@@ -322,7 +322,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
               Search "{query}" in {scopeLabel}
             </button>
 
-            {/* FIX: was a dead button with no onClick — now navigates to /search with filters=open */}
+            {/* FIX: was a dead button with no onClick â€” now navigates to /search with filters=open */}
             <button type="button" onClick={doAdvancedSearch}
               className="w-full flex items-center justify-center gap-2 py-3 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition">
               <Filter className="w-4 h-4" />
@@ -336,5 +336,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
 };
 
 export default SearchPanel;
+
+
 
 

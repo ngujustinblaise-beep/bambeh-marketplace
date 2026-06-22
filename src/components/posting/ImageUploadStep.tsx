@@ -1,9 +1,9 @@
-/**
- * ════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * src/components/posting/ImageUploadStep.tsx
- * Universal image upload step — drop into any posting form.
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * ════════════════════════════════════════════════════════════════
+ * Universal image upload step â€” drop into any posting form.
+ * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import React, { useState, useRef, useCallback } from 'react';
@@ -209,12 +209,12 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
 
       {/* Photo tips */}
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 space-y-1.5">
-        <p className="text-xs font-semibold text-blue-800">📸 Tips for better photos:</p>
+        <p className="text-xs font-semibold text-blue-800">ðŸ“¸ Tips for better photos:</p>
         {[
-          'Good lighting — natural light is best',
+          'Good lighting â€” natural light is best',
           'Show all angles (front, back, sides)',
           'Clean the item before photographing',
-          'First photo = cover — make it count!',
+          'First photo = cover â€” make it count!',
         ].map(tip => (
           <div key={tip} className="flex items-center gap-2 text-xs text-blue-700">
             <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
@@ -239,7 +239,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
             onClick={onBack}
             className="flex-1 py-3 border-2 border-gray-200 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition-all"
           >
-            ← Back
+            â† Back
           </button>
         )}
         <button
@@ -250,7 +250,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
         >
           {required && images.length === 0 && minImages > 0
             ? 'Add at least 1 photo'
-            : 'Continue →'
+            : 'Continue â†’'
           }
         </button>
       </div>
@@ -259,5 +259,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
 };
 
 export default ImageUploadStep;
+
+
 
 

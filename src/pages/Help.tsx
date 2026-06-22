@@ -1,6 +1,6 @@
 ﻿import { Link } from "react-router-dom";
 import { Search, BookOpen, Video, MessageCircle, FileText, Shield, ShoppingBag } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 const T: Record<string, Record<string, string>> = {
   "en": {
@@ -101,10 +101,10 @@ const T: Record<string, Record<string, string>> = {
 };
 
 export default function Help() {
-  const { language } = useLanguage();
-  const lang = T[language] ? language : "en";
-  const tr = (k: string) => (T[lang] && T[lang][k]) || T.en[k] || k;
-  const isRtl = lang === "ar";
+  const currentLang = useLang();
+    const lang = T[currentLang] ? currentLang : "en";
+    const tr = (k: string) => (T[lang] && T[lang][k]) || T.en[k] || k;
+    const isRtl = lang === "ar";
   const categories = [
     { titleKey: "catGettingStarted", icon: BookOpen, color: "from-blue-500 to-blue-700", links: [
       { nameKey: "linkCreatingAccount", path: "/help/creating-account" },
@@ -179,5 +179,7 @@ export default function Help() {
     </div>
   );
 }
+
+
 
 

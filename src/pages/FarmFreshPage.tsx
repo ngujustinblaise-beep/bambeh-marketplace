@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/components/CartDrawer";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FarmProduct {
@@ -494,6 +494,8 @@ function CartFloater({ lang }: { lang: string }) {
     </button>
   );
 }
+
+
 
 
 

@@ -1,28 +1,28 @@
-/**
+﻿/**
  * src/contexts/CartContext.tsx
- * Bambeh Marketplace — Cart Context
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Cart Context
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXED (this version):
- *  ✅ Single source of truth: cart is now backed by localStorage["bambeh_cart"],
+ *  âœ… Single source of truth: cart is now backed by localStorage["bambeh_cart"],
  *     the SAME key MarketplaceItemDetails / FlashDeals / detail pages write to.
- *  ✅ Hydrates from localStorage on mount, so items added on a product page
+ *  âœ… Hydrates from localStorage on mount, so items added on a product page
  *     immediately appear in the Cart page and the header badge.
- *  ✅ Listens for the "storage" event (which the detail pages already dispatch),
+ *  âœ… Listens for the "storage" event (which the detail pages already dispatch),
  *     so adding an item updates the cart in the same tab instantly + across tabs.
- *  ✅ Persists every change back to localStorage, writing BOTH field shapes
+ *  âœ… Persists every change back to localStorage, writing BOTH field shapes
  *     (price/priceXAF, image/imageUrl) so older readers stay compatible.
- *  ✅ Same public API as before — every consumer keeps compiling unchanged.
+ *  âœ… Same public API as before â€” every consumer keeps compiling unchanged.
  */
 
 import React, {
   createContext, useContext, useState, useCallback, useMemo, useEffect,
 } from "react";
 
-// Shared storage key — MUST match the key product/detail pages use.
+// Shared storage key â€” MUST match the key product/detail pages use.
 const CART_KEY = "bambeh_cart";
 
-// ─── CartItem — full interface matching all consumer files ────────────────────
+// â”€â”€â”€ CartItem â€” full interface matching all consumer files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CartItem {
   id: string;
   itemId: string;
@@ -39,7 +39,7 @@ export interface CartItem {
   listingType?: string;
 }
 
-// ─── FavoriteItem ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ FavoriteItem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface FavoriteItem {
   id: string;
   type: string;
@@ -51,7 +51,7 @@ export interface FavoriteItem {
   addedAt: string;
 }
 
-// ─── CartContextType — complete interface expected by consumers ───────────────
+// â”€â”€â”€ CartContextType â€” complete interface expected by consumers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export interface CartContextType {
   items: CartItem[];
   cartItems: CartItem[];
@@ -81,7 +81,7 @@ export interface CartContextType {
   toggleFavorite: (item: Omit<FavoriteItem, "addedAt">) => void;
 }
 
-// ─── localStorage helpers (normalise the two field shapes) ────────────────────
+// â”€â”€â”€ localStorage helpers (normalise the two field shapes) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function normalizeItem(raw: any): CartItem {
   const price = Number(raw?.priceXAF ?? raw?.price ?? 0) || 0;
   const img = raw?.imageUrl ?? raw?.image;
@@ -127,10 +127,10 @@ function writeStored(items: CartItem[]): void {
   }
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CartContext = createContext<CartContextType | null>(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Provider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Hydrate from localStorage immediately so a reload (and product-page adds) persist.
   const [items, setItems] = useState<CartItem[]>(() => readStored());
@@ -243,14 +243,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function useCart(): CartContextType {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error("useCart must be used inside <CartProvider>");
   return ctx;
 }
 
-// ─── Utility exports used by CheckoutModal ────────────────────────────────────
+// â”€â”€â”€ Utility exports used by CheckoutModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function createOrderFromCart(
   cartItems: CartItem[],
   userId: string,
@@ -289,3 +289,5 @@ export function createTransaction(
 }
 
 export default CartContext;
+
+

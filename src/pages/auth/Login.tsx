@@ -1,6 +1,6 @@
-/**
+﻿/**
  * LOGIN PAGE
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -26,83 +26,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 5 * 60 * 1000;
 
-const MASTER_ACCOUNTS = {
-  zerm: {
-    username: "zerm",
-    password: "1234",
-    user: {
-      id: "master_zerm_001",
-      username: "zerm",
-      email: "zerm@bambeh.com",
-      displayName: "Zerm Master - Gold Tier",
-      name: "Zerm Master",
-      phone: "+237680000000",
-      role: "Gold",
-      tier: "Gold",
-      subscriptionTier: "Gold",
-      isSubscribed: true,
-      canUpload: true,
-      canPostJobs: true,
-      canPostItems: true,
-      canPostServices: true,
-      canPostProperties: true,
-      canChangeTiers: ["Basic", "Premium", "Gold"],
-      photoURL:
-        "https://ui-avatars.com/api/?name=Zerm+Master&background=FFD700&color=000",
-      createdAt: new Date("2024-01-01").toISOString(),
-    },
-  },
-  premium: {
-    username: "premium",
-    password: "2222",
-    user: {
-      id: "master_premium_002",
-      username: "premium",
-      email: "premium@bambeh.com",
-      displayName: "Premium User",
-      name: "Premium User",
-      phone: "+237690000000",
-      role: "Premium",
-      tier: "Premium",
-      subscriptionTier: "Premium",
-      isSubscribed: true,
-      canUpload: true,
-      canPostJobs: true,
-      canPostItems: true,
-      canPostServices: true,
-      canPostProperties: true,
-      canChangeTiers: ["Basic", "Gold"],
-      photoURL:
-        "https://ui-avatars.com/api/?name=Premium+User&background=2196F3&color=fff",
-      createdAt: new Date("2024-03-01").toISOString(),
-    },
-  },
-  ngu: {
-    username: "ngu",
-    password: "0000",
-    user: {
-      id: "master_ngu_003",
-      username: "ngu",
-      email: "ngu@bambeh.com",
-      displayName: "Ngu User - Basic",
-      name: "Ngu User",
-      phone: "+237670000000",
-      role: "Basic",
-      tier: "Basic",
-      subscriptionTier: "Basic",
-      isSubscribed: false,
-      canUpload: true,
-      canPostJobs: true,
-      canPostItems: true,
-      canPostServices: true,
-      canPostProperties: true,
-      canChangeTiers: ["Premium"],
-      photoURL:
-        "https://ui-avatars.com/api/?name=Ngu+User&background=4CAF50&color=fff",
-      createdAt: new Date("2024-06-01").toISOString(),
-    },
-  },
-};
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -221,19 +145,19 @@ export default function Login() {
     password: string,
   ) => {
     if (!usernameOrPhone || !password) {
-      console.error("❌ Authentication failed: Missing credentials");
+      console.error("âŒ Authentication failed: Missing credentials");
       return { success: false, error: "Username and password are required" };
     }
 
     const inputLowerCase = usernameOrPhone.toLowerCase().trim();
-    console.log("🔑 Attempting authentication for:", inputLowerCase);
+    console.log("ðŸ”‘ Attempting authentication for:", inputLowerCase);
 
     const account = Object.values(MASTER_ACCOUNTS).find(
       (acc) => acc.username === inputLowerCase && acc.password === password,
     );
 
     if (account) {
-      console.log("✅ Master account authenticated:", account.username);
+      console.log("âœ… Master account authenticated:", account.username);
       return { success: true, user: account.user };
     }
 
@@ -251,7 +175,7 @@ export default function Login() {
           if (matchesPhone || matchesUsername || matchesEmail) {
             if (user.password === password) {
               console.log(
-                "✅ Local user authenticated:",
+                "âœ… Local user authenticated:",
                 user.username || user.phone,
               );
               return {
@@ -283,17 +207,17 @@ export default function Login() {
       console.error("Error checking local users:", err);
     }
 
-    console.error("❌ Authentication failed: Invalid credentials");
+    console.error("âŒ Authentication failed: Invalid credentials");
     return { success: false, error: "Invalid username or password" };
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("🔐 Login form submitted");
+    console.log("ðŸ” Login form submitted");
 
     if (isLocked) {
-      console.warn("⚠ï¸ Login blocked: Account locked");
+      console.warn("âš Ã¯Â¸Â Login blocked: Account locked");
       return;
     }
 
@@ -309,7 +233,7 @@ export default function Login() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      console.error("❌ Validation failed:", newErrors);
+      console.error("âŒ Validation failed:", newErrors);
       return;
     }
 
@@ -327,23 +251,23 @@ export default function Login() {
         localStorage.removeItem("Bambeh_login_lockout");
         setFailedAttempts(0);
 
-        console.log("✅ Login successful:", authResult.user.username);
+        console.log("âœ… Login successful:", authResult.user.username);
 
         if (login) {
           await login(authResult.user.username, formData.password);
         }
 
-        console.log("👤 User authenticated, redirecting to:", from);
+        console.log("ðŸ‘¤ User authenticated, redirecting to:", from);
 
         setTimeout(() => {
           navigate(from === "/login" ? "/" : from, { replace: true });
         }, 100);
       } else {
-        console.error("❌ Authentication failed");
+        console.error("âŒ Authentication failed");
         handleFailedAttempt();
       }
     } catch (err) {
-      console.error("❌ Login exception:", err);
+      console.error("âŒ Login exception:", err);
       handleFailedAttempt();
       setErrors({ login: "Login failed. Please try again." });
     } finally {
@@ -597,5 +521,8 @@ export default function Login() {
     </div>
   );
 }
+
+
+
 
 

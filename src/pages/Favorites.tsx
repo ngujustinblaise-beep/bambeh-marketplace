@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trash2, ShoppingBag, Loader2, Briefcase, Wrench, Car, Leaf, Zap, Home } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 interface FavItem {
   id: string;
@@ -270,5 +270,7 @@ export default function Favorites() {
     </div>
   );
 }
+
+
 
 

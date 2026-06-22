@@ -73,7 +73,7 @@ import SellVehicle from '@/pages/SellVehicle';
 import PostAd from '@/pages/PostAd';
 import PostJobPage from '@/pages/PostJobPage';
 import PostMarketplaceItemPage from '@/pages/PostMarketplaceItemPage';
-import SubscriptionPlans from '@/pages/SubscriptionPlans';
+import SubscriptionPlans from '@/pages/subscription';
 import ZermPurchase from '@/pages/ZermPurchase';
 import About from '@/pages/About';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
@@ -447,11 +447,11 @@ export default function App() {
                         <Route path="/vendor/signin"                       element={<VendorLayout><VendorSignIn /></VendorLayout>} />
                         <Route path="/vendor/register"                     element={<VendorLayout><VendorRegistration /></VendorLayout>} />
                         <Route path="/vendor/auth"                         element={<VendorLayout><VendorAuthPage /></VendorLayout>} />
-                        <Route path="/vendor/subscription-plans"           element={<VendorLayout><VendorSubscriptionPlans /></VendorLayout>} />
-                        <Route path="/vendor/subscription-plans-exclusive" element={<VendorLayout><VendorSubscriptionPlansExclusive /></VendorLayout>} />
-                        <Route path="/vendor/plans"                element={<Navigate to="/vendor/subscription-plans" replace />} />
-                        <Route path="/vendor/pricing"              element={<Navigate to="/vendor/subscription-plans" replace />} />
-                        <Route path="/vendor/subscribe"            element={<Navigate to="/vendor/subscription-plans" replace />} />
+                        <Route path="/vendor/subscription"           element={<VendorLayout><VendorSubscriptionPlans /></VendorLayout>} />
+                        <Route path="/vendor/subscription-exclusive" element={<VendorLayout><VendorSubscriptionPlansExclusive /></VendorLayout>} />
+                        <Route path="/vendor/subscription"                element={<Navigate to="/vendor/subscription" replace />} />
+                        <Route path="/vendor/pricing"              element={<Navigate to="/vendor/subscription" replace />} />
+                        <Route path="/vendor/subscribe"            element={<Navigate to="/vendor/subscription" replace />} />
                         <Route path="/vendor/secure-dashboard"     element={<Navigate to="/vendor/dashboard" replace />} />
                         <Route path="/vendor/subscription-payment" element={<Navigate to="/vendor/subscription" replace />} />
                         <Route path="/vendor/login"                element={<Navigate to="/vendor/signin" replace />} />
@@ -592,6 +592,8 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
+
 
 
 

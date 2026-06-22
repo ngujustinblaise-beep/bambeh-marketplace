@@ -28,12 +28,14 @@ const PrivilegeGuard: React.FC<PrivilegeGuardProps> = ({
 
   if (!hasAccess) {
     if (fallback) return <>{fallback}</>;
-    return <Navigate to="/subscription-plans" replace />;
+    return <Navigate to="/subscription" replace />;
   }
 
   return <>{children}</>;
 };
 
 export default PrivilegeGuard;
+
+
 
 

@@ -8,7 +8,7 @@
  * ✅ Language changes INSTANTLY app-wide — no page reload required
  */
 import React from "react";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 interface LanguageSwitcherProps {
   compact?: boolean;
@@ -65,5 +65,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 };
 
 export default LanguageSwitcher;
+
+
 
 

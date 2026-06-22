@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useMonthlyFeedback.tsx
  * Fires the monthly feedback notification once per calendar month.
  */
@@ -27,7 +27,7 @@ function markFeedbackSent(): void {
   try {
     localStorage.setItem(STORAGE_KEY, currentMonthKey());
   } catch {
-    // localStorage unavailable — fail silently
+    // localStorage unavailable â€” fail silently
   }
 }
 
@@ -45,7 +45,7 @@ async function scheduleNativeNotification(): Promise<void> {
       notifications: [
         {
           id: 8801,
-          title: "🏋️ Bambeh wants to hear from you",
+          title: "ðŸ‹ï¸ Bambeh wants to hear from you",
           body: "How can we carry your load better this month? Your voice shapes us.",
           schedule: { at: fireAt, allowWhileIdle: true },
           smallIcon: "ic_bambeh_notification",
@@ -169,7 +169,7 @@ export function MonthlyFeedbackBanner() {
         />
 
         <div style={{ textAlign: "center", fontSize: 40, marginBottom: 12 }}>
-          🏋️
+          ðŸ‹ï¸
         </div>
 
         <div
@@ -197,7 +197,7 @@ export function MonthlyFeedbackBanner() {
           }}
         >
           Your voice is our fuel. This month, tell us what the Bambeh can do
-          better — your feedback shapes what we build next.
+          better â€” your feedback shapes what we build next.
         </div>
 
         <a
@@ -218,7 +218,7 @@ export function MonthlyFeedbackBanner() {
             transition: "transform 0.2s",
           }}
         >
-          Share my voice →
+          Share my voice â†’
         </a>
 
         <button
@@ -257,5 +257,7 @@ export function useFeedbackBanner() {
 
   return { triggerFeedbackBanner, resetFeedbackMonth };
 }
+
+
 
 

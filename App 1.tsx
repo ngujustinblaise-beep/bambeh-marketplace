@@ -180,7 +180,7 @@ const ExchangeOfferPage = lazy(() => import('@/pages/ExchangeOfferPage'));
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // ðŸŸ¢ SUBSCRIPTION & MONETIZATION
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-const SubscriptionPlans = lazy(() => import('@/pages/SubscriptionPlans'));
+const SubscriptionPlans = lazy(() => import('@/pages/subscription'));
 const ZermPurchase = lazy(() => import('@/pages/ZermPurchase'));
 const ReferralProgram = lazy(() => import('@/pages/ReferralProgram'));
 const DonatePremium = lazy(() => import('@/pages/DonatePremium'));
@@ -600,8 +600,8 @@ const App = () => {
                                                 <Route path="/vendor/analytics-enhanced" element={<VendorAnalyticsEnhanced />} />
                                                 <Route path="/vendor/premium-tools" element={<VendorPremiumTools />} />
                                                 <Route path="/vendor/premium-tools-enhanced" element={<VendorPremiumToolsEnhanced />} />
-                                                <Route path="/vendor/subscription-plans" element={<VendorSubscriptionPlans />} />
-                                                <Route path="/vendor/subscription-plans-exclusive" element={<VendorSubscriptionPlansExclusive />} />
+                                                <Route path="/vendor/subscription" element={<VendorSubscriptionPlans />} />
+                                                <Route path="/vendor/subscription-exclusive" element={<VendorSubscriptionPlansExclusive />} />
                                                 <Route path="/vendor/subscription-payment" element={<VendorSubscriptionPayment />} />
                                                 <Route path="/vendor/settings" element={<VendorSettings />} />
                                                 <Route path="/vendor/settings-enhanced" element={<VendorSettingsEnhanced />} />
@@ -705,5 +705,7 @@ const App = () => {
 };
 
 export default App;
+
+
 
 

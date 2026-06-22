@@ -18,7 +18,7 @@ export default function About() {
         <div className="bg-gradient-to-r from-teal-600 to-teal-800 text-white rounded-2xl p-12 mb-8 text-center shadow-2xl">
           <h1 className="text-5xl font-bold mb-4">About Bambeh</h1>
           <p className="text-xl text-teal-100 max-w-3xl mx-auto">
-            's online marketplace connecting buyers, sellers, job seekers, and service providers
+            Bambeh's online marketplace connecting buyers, sellers, job seekers, and service providers
           </p>
         </div>
 
@@ -346,6 +346,9 @@ export default function About() {
     </div>
   );
 }
+
+
+
 
 
 

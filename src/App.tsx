@@ -552,7 +552,7 @@ const MarketplaceCategory = lazy(() => import("@/pages/MarketplaceCategory"));
 const JobsCategory        = lazy(() => import("@/pages/JobsCategory"));
 
 // SUBSCRIPTION / ZERM
-const SubscriptionPlans = lazy(() => import("@/pages/SubscriptionPlans"));
+const SubscriptionPlans = lazy(() => import("@/pages/subscription"));
 const CoinsBuyPage      = lazy(() => import("@/pages/CoinsBuyPage"));
 const CoinsPage         = lazy(() => import("@/pages/CoinsPage"));
 const CoinsHistory      = lazy(() => import("@/pages/CoinsHistory"));
@@ -1364,12 +1364,12 @@ export default function App() {
                         <Route path="/vendor/signin" element={<VendorLayout><VendorSignIn /></VendorLayout>} />
                         <Route path="/vendor/register" element={<VendorLayout><VendorRegistration /></VendorLayout>} />
                         <Route path="/vendor/auth" element={<VendorLayout><VendorAuthPage /></VendorLayout>} />
-                        <Route path="/vendor/subscription-plans" element={<VendorLayout><VendorSubscriptionPlans /></VendorLayout>} />
-                        <Route path="/vendor/subscription-plans-exclusive" element={<VendorLayout><VendorSubscriptionPlansExclusive /></VendorLayout>} />
+                        <Route path="/vendor/subscription" element={<VendorLayout><VendorSubscriptionPlans /></VendorLayout>} />
+                        <Route path="/vendor/subscription-exclusive" element={<VendorLayout><VendorSubscriptionPlansExclusive /></VendorLayout>} />
                         <Route path="/vendor/profile/:vendorId" element={<MainLayout><VendorPublicProfile /></MainLayout>} />
-                        <Route path="/vendor/plans" element={<Navigate to="/vendor/subscription-plans" replace />} />
-                        <Route path="/vendor/pricing" element={<Navigate to="/vendor/subscription-plans" replace />} />
-                        <Route path="/vendor/subscribe" element={<Navigate to="/vendor/subscription-plans" replace />} />
+                        <Route path="/vendor/subscription" element={<Navigate to="/vendor/subscription" replace />} />
+                        <Route path="/vendor/pricing" element={<Navigate to="/vendor/subscription" replace />} />
+                        <Route path="/vendor/subscribe" element={<Navigate to="/vendor/subscription" replace />} />
                         <Route path="/vendor/secure-dashboard" element={<Navigate to="/vendor/dashboard" replace />} />
                         <Route path="/vendor/subscription-payment" element={<Navigate to="/vendor/subscription" replace />} />
                         <Route path="/vendor/login" element={<Navigate to="/vendor/signin" replace />} />
@@ -1683,3 +1683,5 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
+

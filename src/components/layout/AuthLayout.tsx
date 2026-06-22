@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -46,6 +46,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     </div>
   );
 }
+
+
 
 
 

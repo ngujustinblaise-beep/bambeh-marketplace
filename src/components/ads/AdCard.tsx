@@ -85,3 +85,5 @@ const AdCard: React.FC<AdCardProps> = ({ item, onView, onContact, className = ""
 export default AdCard;
 
 
+
+

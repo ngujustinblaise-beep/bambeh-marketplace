@@ -470,3 +470,5 @@ const FarmFreshDetail: React.FC = () => {
 export default FarmFreshDetail;
 
 
+
+

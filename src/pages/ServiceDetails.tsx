@@ -1,28 +1,28 @@
-/**
- * src/pages/ServiceDetails.tsx — Bambeh Marketplace
- * ─────────────────────────────────────────────────────────────────────────────
- * WORLD-CLASS REWRITE — Production Grade, Military Security, Full i18n
+﻿/**
+ * src/pages/ServiceDetails.tsx â€” Bambeh Marketplace
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * WORLD-CLASS REWRITE â€” Production Grade, Military Security, Full i18n
  *
  * SECURITY:
- *   ✅ getUser() — no JWT spoofing
- *   ✅ Phone URI sanitised before tel: scheme
- *   ✅ No sensitive fields in SELECT (no email, no hashed data)
- *   ✅ Owner-only edit button (server RLS enforces too)
- *   ✅ Report flow via secure backend; reporter_id server-resolved
- *   ✅ View count increment fire-and-forget (no auth needed for read)
+ *   âœ… getUser() â€” no JWT spoofing
+ *   âœ… Phone URI sanitised before tel: scheme
+ *   âœ… No sensitive fields in SELECT (no email, no hashed data)
+ *   âœ… Owner-only edit button (server RLS enforces too)
+ *   âœ… Report flow via secure backend; reporter_id server-resolved
+ *   âœ… View count increment fire-and-forget (no auth needed for read)
  *
  * FEATURES:
- *   ✅ Full i18n: EN / FR / AR / HA / PCM / FUL + RTL for AR
- *   ✅ Loads from listings table (eq type=service)
- *   ✅ Provider profile card (avatar, name, username)
- *   ✅ Related services (same category)
- *   ✅ View count increment on load
- *   ✅ Like button, Book CTA, Call button
- *   ✅ Share (Web Share API + clipboard fallback)
- *   ✅ Report service modal
- *   ✅ Owner can edit
- *   ✅ Skeleton loader + error state
- *   ✅ Sticky action bar with safe-area-bottom
+ *   âœ… Full i18n: EN / FR / AR / HA / PCM / FUL + RTL for AR
+ *   âœ… Loads from listings table (eq type=service)
+ *   âœ… Provider profile card (avatar, name, username)
+ *   âœ… Related services (same category)
+ *   âœ… View count increment on load
+ *   âœ… Like button, Book CTA, Call button
+ *   âœ… Share (Web Share API + clipboard fallback)
+ *   âœ… Report service modal
+ *   âœ… Owner can edit
+ *   âœ… Skeleton loader + error state
+ *   âœ… Sticky action bar with safe-area-bottom
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -37,9 +37,9 @@ import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
 import { useLang } from '@/hooks/useAppLang';
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // i18n
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STRINGS = {
   en: {
     back:          'Services',
@@ -50,7 +50,7 @@ const STRINGS = {
     about:         'About this Service',
     provider:      'Service Provider',
     more_services: (cat: string) => `More ${cat} Services`,
-    safety:        '🛡ï¸ Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
+    safety:        'ðŸ›¡Ã¯Â¸Â Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
     call:          'Call',
     book:          'Book this Service',
     views:         (n: number) => `${n} view${n !== 1 ? 's' : ''}`,
@@ -75,59 +75,59 @@ const STRINGS = {
     back:          'Services',
     share:         'Partager',
     edit:          'Modifier',
-    starting_price:'Prix de départ',
-    negotiable:    'Prix négociable',
-    about:         'À propos de ce service',
+    starting_price:'Prix de dÃ©part',
+    negotiable:    'Prix nÃ©gociable',
+    about:         'Ã€ propos de ce service',
     provider:      'Prestataire',
     more_services: (cat: string) => `Plus de services ${cat}`,
-    safety:        '🛡ï¸ Vérifiez toujours l\'identité d\'un prestataire avant de payer. Bambeh ne demande jamais de payer en dehors de l\'application.',
+    safety:        'ðŸ›¡Ã¯Â¸Â VÃ©rifiez toujours l\'identitÃ© d\'un prestataire avant de payer. Bambeh ne demande jamais de payer en dehors de l\'application.',
     call:          'Appeler',
-    book:          'Réserver ce service',
+    book:          'RÃ©server ce service',
     views:         (n: number) => `${n} vue${n !== 1 ? 's' : ''}`,
-    verified:      'Vérifié',
+    verified:      'VÃ©rifiÃ©',
     report:        'Signaler',
-    copy_success:  'Lien copié !',
+    copy_success:  'Lien copiÃ© !',
     service_unavailable: 'Service indisponible',
-    service_not_found:   'Ce service est introuvable. Il a peut-être été supprimé.',
+    service_not_found:   'Ce service est introuvable. Il a peut-Ãªtre Ã©tÃ© supprimÃ©.',
     back_to_services:    'Retour aux services',
-    error_generic:       'Quelque chose a mal tourné. Réessayez.',
+    error_generic:       'Quelque chose a mal tournÃ©. RÃ©essayez.',
     report_title:    'Signaler ce service',
     report_reason:   'Raison',
-    report_reasons: ['Arnaque','Fausse annonce','Contenu inapproprié','Mauvaise catégorie','Prix trompeur','Autre'],
-    report_details:  'Détails supplémentaires (optionnel)',
+    report_reasons: ['Arnaque','Fausse annonce','Contenu inappropriÃ©','Mauvaise catÃ©gorie','Prix trompeur','Autre'],
+    report_details:  'DÃ©tails supplÃ©mentaires (optionnel)',
     report_submit:   'Envoyer le signalement',
     report_cancel:   'Annuler',
-    report_success:  'Signalement envoyé. Merci.',
+    report_success:  'Signalement envoyÃ©. Merci.',
     report_error:    'Impossible d\'envoyer le signalement.',
   },
   ar: {
-    back:          'الخدمات',
-    share:         'مشاركة',
-    edit:          'تعديل',
-    starting_price:'السعر الابتدائي',
-    negotiable:    'السعر قابل للتÙاوض',
-    about:         'عن هذه الخدمة',
-    provider:      'مقدم الخدمة',
-    more_services: (cat: string) => `المزيد من خدمات ${cat}`,
-    safety:        '🛡ï¸ تحقق دائمًا من هوية المزود قبل الدÙع.',
-    call:          'اتصل',
-    book:          'احجز هذه الخدمة',
-    views:         (n: number) => `${n} مشاهدة`,
-    verified:      'موثّق',
-    report:        'الإبلاغ',
-    copy_success:  'تم نسخ الرابط!',
-    service_unavailable: 'الخدمة غير متاحة',
-    service_not_found:   'لم يتم العثور على الخدمة.',
-    back_to_services:    'العودة إلى الخدمات',
-    error_generic:       'حدث خطأ. حاول مجدداً.',
-    report_title:    'الإبلاغ عن هذه الخدمة',
-    report_reason:   'السبب',
-    report_reasons: ['احتيال','إعلان مزيÙ','محتوى غير لائق','Ùئة خاطئة','سعر مضلل','أخرى'],
-    report_details:  'تÙاصيل إضاÙية (اختياري)',
-    report_submit:   'إرسال البلاغ',
-    report_cancel:   'إلغاء',
-    report_success:  'تم إرسال البلاغ.',
-    report_error:    'تعذّر الإرسال.',
+    back:          'Ø§Ù„Ø®Ø¯Ù…Ø§Øª',
+    share:         'Ù…Ø´Ø§Ø±ÙƒØ©',
+    edit:          'ØªØ¹Ø¯ÙŠÙ„',
+    starting_price:'Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠ',
+    negotiable:    'Ø§Ù„Ø³Ø¹Ø± Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÃ™ÂØ§ÙˆØ¶',
+    about:         'Ø¹Ù† Ù‡Ø°Ù‡ Ø§Ù„Ø®Ø¯Ù…Ø©',
+    provider:      'Ù…Ù‚Ø¯Ù… Ø§Ù„Ø®Ø¯Ù…Ø©',
+    more_services: (cat: string) => `Ø§Ù„Ù…Ø²ÙŠØ¯ Ù…Ù† Ø®Ø¯Ù…Ø§Øª ${cat}`,
+    safety:        'ðŸ›¡Ã¯Â¸Â ØªØ­Ù‚Ù‚ Ø¯Ø§Ø¦Ù…Ù‹Ø§ Ù…Ù† Ù‡ÙˆÙŠØ© Ø§Ù„Ù…Ø²ÙˆØ¯ Ù‚Ø¨Ù„ Ø§Ù„Ø¯Ã™ÂØ¹.',
+    call:          'Ø§ØªØµÙ„',
+    book:          'Ø§Ø­Ø¬Ø² Ù‡Ø°Ù‡ Ø§Ù„Ø®Ø¯Ù…Ø©',
+    views:         (n: number) => `${n} Ù…Ø´Ø§Ù‡Ø¯Ø©`,
+    verified:      'Ù…ÙˆØ«Ù‘Ù‚',
+    report:        'Ø§Ù„Ø¥Ø¨Ù„Ø§Øº',
+    copy_success:  'ØªÙ… Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·!',
+    service_unavailable: 'Ø§Ù„Ø®Ø¯Ù…Ø© ØºÙŠØ± Ù…ØªØ§Ø­Ø©',
+    service_not_found:   'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ø§Ù„Ø®Ø¯Ù…Ø©.',
+    back_to_services:    'Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ø§Ù„Ø®Ø¯Ù…Ø§Øª',
+    error_generic:       'Ø­Ø¯Ø« Ø®Ø·Ø£. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹.',
+    report_title:    'Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ù‡Ø°Ù‡ Ø§Ù„Ø®Ø¯Ù…Ø©',
+    report_reason:   'Ø§Ù„Ø³Ø¨Ø¨',
+    report_reasons: ['Ø§Ø­ØªÙŠØ§Ù„','Ø¥Ø¹Ù„Ø§Ù† Ù…Ø²ÙŠÃ™Â','Ù…Ø­ØªÙˆÙ‰ ØºÙŠØ± Ù„Ø§Ø¦Ù‚','Ã™ÂØ¦Ø© Ø®Ø§Ø·Ø¦Ø©','Ø³Ø¹Ø± Ù…Ø¶Ù„Ù„','Ø£Ø®Ø±Ù‰'],
+    report_details:  'ØªÃ™ÂØ§ØµÙŠÙ„ Ø¥Ø¶Ø§Ã™ÂÙŠØ© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)',
+    report_submit:   'Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ù„Ø§Øº',
+    report_cancel:   'Ø¥Ù„ØºØ§Ø¡',
+    report_success:  'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ù„Ø§Øº.',
+    report_error:    'ØªØ¹Ø°Ù‘Ø± Ø§Ù„Ø¥Ø±Ø³Ø§Ù„.',
   },
   ha: {
     back:          'Ayyuka',
@@ -137,14 +137,14 @@ const STRINGS = {
     negotiable:    'Farashi ana iya tattaunawa',
     about:         'Game da wannan sabis',
     provider:      'Mai ba da sabis',
-    more_services: (cat: string) => `Ƙarin ayyukan ${cat}`,
-    safety:        '🛡ï¸ Tabbata ainihin mai sabis kafin biyan kuɗi.',
+    more_services: (cat: string) => `Æ˜arin ayyukan ${cat}`,
+    safety:        'ðŸ›¡Ã¯Â¸Â Tabbata ainihin mai sabis kafin biyan kuÉ—i.',
     call:          'Kira',
     book:          'Yi Rijistar Sabis',
     views:         (n: number) => `Duba ${n}`,
     verified:      'An tabbatar',
     report:        'Rahoto',
-    copy_success:  'An kwafa hanyar haɗi!',
+    copy_success:  'An kwafa hanyar haÉ—i!',
     service_unavailable: 'Sabis ba ya nan',
     service_not_found:   'Ba a sami wannan sabis ba.',
     back_to_services:    'Koma ayyuka',
@@ -152,7 +152,7 @@ const STRINGS = {
     report_title:    'Rahoto game da sabis',
     report_reason:   'Dalilin',
     report_reasons: ['Zamba','Karya ne','Abun da bai dace ba','Rukunin kuskure','Farashin yaudara','Wani abu'],
-    report_details:  'Ƙarin bayani (zaɓi)',
+    report_details:  'Æ˜arin bayani (zaÉ“i)',
     report_submit:   'Aika Rahoto',
     report_cancel:   'Soke',
     report_success:  'An aika rahoto.',
@@ -167,7 +167,7 @@ const STRINGS = {
     about:         'About this service',
     provider:      'Service Provider',
     more_services: (cat: string) => `More ${cat} services`,
-    safety:        '🛡ï¸ Always check person before you pay. Bambeh no go ask you pay outside app.',
+    safety:        'ðŸ›¡Ã¯Â¸Â Always check person before you pay. Bambeh no go ask you pay outside app.',
     call:          'Call',
     book:          'Book Service',
     views:         (n: number) => `${n} view${n !== 1 ? 's' : ''}`,
@@ -188,32 +188,32 @@ const STRINGS = {
     report_error:    'E no fit send.',
   },
   ful: {
-    back:          'Ɓeyngal',
+    back:          'Æeyngal',
     share:         'Hollu',
     edit:          'Rewo',
-    starting_price:'Ngiɗgu waɗii',
-    negotiable:    'Ngiɗgu waasaango',
-    about:         'Fii ɓeyngal ngel',
-    provider:      'Neɗɗo ɓeyngal',
-    more_services: (cat: string) => `Ɓeyngal ${cat} goɗɗe`,
-    safety:        '🛡ï¸ Tiiɗnu neɗɗo hade hade.',
+    starting_price:'NgiÉ—gu waÉ—ii',
+    negotiable:    'NgiÉ—gu waasaango',
+    about:         'Fii É“eyngal ngel',
+    provider:      'NeÉ—É—o É“eyngal',
+    more_services: (cat: string) => `Æeyngal ${cat} goÉ—É—e`,
+    safety:        'ðŸ›¡Ã¯Â¸Â TiiÉ—nu neÉ—É—o hade hade.',
     call:          'Noddu',
-    book:          'Jaɓɓu ɓeyngal',
+    book:          'JaÉ“É“u É“eyngal',
     views:         (n: number) => `Yiyaama ${n}`,
     verified:      'Goongaandi',
     report:        'Habru',
     copy_success:  'Cokkel copiaama!',
-    service_unavailable: 'Ɓeyngal alaa',
-    service_not_found:   'Alaa ɓeyngal ngel.',
-    back_to_services:    'Rutto ɓeyngal',
-    error_generic:       'Musiiba waɗii.',
-    report_title:    'Habru ɓeyngal ngel',
+    service_unavailable: 'Æeyngal alaa',
+    service_not_found:   'Alaa É“eyngal ngel.',
+    back_to_services:    'Rutto É“eyngal',
+    error_generic:       'Musiiba waÉ—ii.',
+    report_title:    'Habru É“eyngal ngel',
     report_reason:   'Sabu',
-    report_reasons: ['Kalangal','Misal','Dañal moƴƴaani','Ɗaɗol nafataa','Ngiɗgu','Goɗɗum'],
-    report_details:  'Coftal goɗngal (yaɓɓitaaki)',
+    report_reasons: ['Kalangal','Misal','DaÃ±al moÆ´Æ´aani','ÆŠaÉ—ol nafataa','NgiÉ—gu','GoÉ—É—um'],
+    report_details:  'Coftal goÉ—ngal (yaÉ“É“itaaki)',
     report_submit:   'Neln habru',
-    report_cancel:   'Haɗtu',
-    report_success:  'Habru nelnaaɗo.',
+    report_cancel:   'HaÉ—tu',
+    report_success:  'Habru nelnaaÉ—o.',
     report_error:    'Alaa nelal.',
   },
 } as const;
@@ -221,9 +221,9 @@ const STRINGS = {
 type Lang = keyof typeof STRINGS;
 type S    = typeof STRINGS['en'];
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface ServiceRow {
   id: string; title: string; category: string|null; price: number|null;
   location: string|null; description: string|null; phone: string|null;
@@ -240,9 +240,9 @@ interface RelatedService {
   id: string; title: string; price: number|null; location: string|null;
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Report Modal
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ReportModal({ serviceId, s, onClose }: { serviceId: string; s: S; onClose: () => void }) {
   const [reason,  setReason]  = useState('');
   const [details, setDetails] = useState('');
@@ -320,7 +320,7 @@ function ReportModal({ serviceId, s, onClose }: { serviceId: string; s: S; onClo
               <button onClick={onClose} className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-600">{s.report_cancel}</button>
               <button onClick={submit} disabled={!reason || loading}
                 className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold disabled:opacity-50 hover:bg-red-700 transition-colors">
-                {loading ? '…' : s.report_submit}
+                {loading ? 'â€¦' : s.report_submit}
               </button>
             </div>
           </>
@@ -330,9 +330,9 @@ function ReportModal({ serviceId, s, onClose }: { serviceId: string; s: S; onClo
   );
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Skeleton
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SkeletonLoader() {
   return (
     <div className="min-h-screen bg-gray-50 animate-pulse">
@@ -350,9 +350,9 @@ function SkeletonLoader() {
   );
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Error State
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ErrorState({ message, label, onBack }: { message: string; label: string; onBack: () => void }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
@@ -369,9 +369,9 @@ function ErrorState({ message, label, onBack }: { message: string; label: string
   );
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main Component
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ServiceDetails() {
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -486,7 +486,7 @@ export default function ServiceDetails() {
   return (
     <div className="min-h-screen bg-gray-50 pb-32" dir={isRtl ? 'rtl' : 'ltr'}>
 
-      {/* ── Hero header ── */}
+      {/* â”€â”€ Hero header â”€â”€ */}
       <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 pt-10 pb-16 text-white">
         <div className="max-w-2xl mx-auto flex items-center justify-between mb-4">
           <button onClick={() => navigate('/services')} aria-label={s.back}
@@ -528,7 +528,7 @@ export default function ServiceDetails() {
 
       <div className="max-w-2xl mx-auto px-4 -mt-8 space-y-3">
 
-        {/* ── Images (if any) ── */}
+        {/* â”€â”€ Images (if any) â”€â”€ */}
         {images.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="relative aspect-video bg-gray-100">
@@ -557,7 +557,7 @@ export default function ServiceDetails() {
           </div>
         )}
 
-        {/* ── Price card ── */}
+        {/* â”€â”€ Price card â”€â”€ */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -576,7 +576,7 @@ export default function ServiceDetails() {
           </div>
         </div>
 
-        {/* ── Meta pills ── */}
+        {/* â”€â”€ Meta pills â”€â”€ */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -598,7 +598,7 @@ export default function ServiceDetails() {
           </div>
         </div>
 
-        {/* ── Description ── */}
+        {/* â”€â”€ Description â”€â”€ */}
         {service.description && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">{s.about}</h2>
@@ -606,7 +606,7 @@ export default function ServiceDetails() {
           </div>
         )}
 
-        {/* ── Provider card ── */}
+        {/* â”€â”€ Provider card â”€â”€ */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">{s.provider}</h2>
           <div className="flex items-center gap-3">
@@ -628,7 +628,7 @@ export default function ServiceDetails() {
           </div>
         </div>
 
-        {/* ── Related services ── */}
+        {/* â”€â”€ Related services â”€â”€ */}
         {related.length > 0 && service.category && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">
@@ -653,7 +653,7 @@ export default function ServiceDetails() {
           </div>
         )}
 
-        {/* ── Safety notice ── */}
+        {/* â”€â”€ Safety notice â”€â”€ */}
         <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
           <p className="text-xs text-amber-700 text-center flex items-center justify-center gap-2">
             <Shield className="w-4 h-4 flex-shrink-0" />
@@ -663,7 +663,7 @@ export default function ServiceDetails() {
 
       </div>
 
-      {/* ── Sticky action bar ── */}
+      {/* â”€â”€ Sticky action bar â”€â”€ */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
         <div className="max-w-2xl mx-auto flex gap-3">
           {service.phone && (
@@ -679,7 +679,7 @@ export default function ServiceDetails() {
         </div>
       </div>
 
-      {/* ── Modals ── */}
+      {/* â”€â”€ Modals â”€â”€ */}
       {booking && (
         <BookServiceModal
           serviceId={service.id}
@@ -697,5 +697,7 @@ export default function ServiceDetails() {
     </div>
   );
 }
+
+
 
 

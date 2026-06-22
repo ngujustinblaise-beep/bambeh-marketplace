@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SOCIAL SHARE MODAL
  * FILE LOCATION: src/components/common/SocialShareModal.tsx
  */
@@ -93,7 +93,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>Facebook</span>
               </button>
               <button onClick={shareViaTwitter} style={sbBtn('#f3f4f6')}>
-                <div style={icon('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>𝕏</span></div>
+                <div style={icon('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>ð•</span></div>
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>Twitter</span>
               </button>
               <button onClick={shareViaGmail} style={sbBtn('#fee2e2')}>
@@ -102,7 +102,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
               </button>
               <button onClick={() => { handleCopyLink(); alert('Link copied! Paste in Instagram.'); }} style={sbBtn('#fae8ff')}>
                 <div style={{ ...icon('#ec4899'), background: 'linear-gradient(135deg,#9333ea,#ec4899,#f97316)' }}>
-                  <span style={{ fontSize: '18px' }}>📷</span>
+                  <span style={{ fontSize: '18px' }}>ðŸ“·</span>
                 </div>
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>Instagram</span>
               </button>
@@ -117,7 +117,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
             <div style={{ backgroundColor: '#f9fafb', borderRadius: '10px', padding: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <input type="text" value={fullUrl} readOnly style={{ flex: 1, border: '1px solid #e5e7eb', borderRadius: '6px', padding: '8px 10px', fontSize: '11px', color: '#4b5563', backgroundColor: 'white', minWidth: 0 }} />
               <button onClick={handleCopyLink} style={{ backgroundColor: copied ? '#22c55e' : '#0d9488', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 12px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                {copied ? '✓' : 'Copy'}
+                {copied ? 'âœ“' : 'Copy'}
               </button>
             </div>
           </div>
@@ -132,5 +132,7 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
     </>
   );
 }
+
+
 
 

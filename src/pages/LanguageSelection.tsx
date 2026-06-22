@@ -6,7 +6,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, CheckCircle, ArrowRight } from "lucide-react";
-import { useLanguage } from "@/App";   
+import { useLang } from '@/hooks/useAppLang';   
 
 const LANGUAGES = [
   {
@@ -248,6 +248,8 @@ export default function LanguageSelection({
     </div>
   );
 }
+
+
 
 
 

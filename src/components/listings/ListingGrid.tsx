@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ListingCard, Listing } from './ListingCard';
 
 interface ListingGridProps {
@@ -36,11 +36,13 @@ export function ListingGrid({ listings }: ListingGridProps) {
 
       {demoCount > 0 && (
         <p className="text-xs text-yellow-600 mt-4 px-1 text-center">
-          ⭐ {demoCount} sample listing{demoCount !== 1 ? 's' : ''} shown for demonstration only
+          â­ {demoCount} sample listing{demoCount !== 1 ? 's' : ''} shown for demonstration only
         </p>
       )}
     </div>
   );
 }
+
+
 
 

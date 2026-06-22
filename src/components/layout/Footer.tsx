@@ -1,11 +1,11 @@
-/**
- * src/components/layout/Footer.tsx — Bambeh Marketplace
- * © 2026 BAMBEH SARL. All rights reserved.
+﻿/**
+ * src/components/layout/Footer.tsx â€” Bambeh Marketplace
+ * Â© 2026 BAMBEH SARL. All rights reserved.
  *
- * Self-contained 5-language footer (en · fr · pidgin · ar · ff).
- *  • No dotted i18n keys, no dependency on the broken App.tsx dictionary.
- *  • Icons are literal lucide components — never translated.
- *  • RTL layout applied automatically for Arabic.
+ * Self-contained 5-language footer (en Â· fr Â· pidgin Â· ar Â· ff).
+ *  â€¢ No dotted i18n keys, no dependency on the broken App.tsx dictionary.
+ *  â€¢ Icons are literal lucide components â€” never translated.
+ *  â€¢ RTL layout applied automatically for Arabic.
  */
 
 import { Link } from "react-router-dom";
@@ -15,11 +15,11 @@ import {
 } from "lucide-react";
 import { useLang } from "@/hooks/useAppLang";
 
-// ── Translations ──────────────────────────────────────────────────────────────
+// â”€â”€ Translations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FOOTER_T = {
   en: {
     aboutTitle: "About Bambeh",
-    aboutDesc: "Online marketplace — buy, sell, trade and find jobs, with only a 1% transaction fee.",
+    aboutDesc: "Online marketplace â€” buy, sell, trade and find jobs, with only a 1% transaction fee.",
     categoriesTitle: "Categories",
     jobs: "Jobs", marketplace: "Marketplace", services: "Services",
     rentals: "Rentals", vehicles: "Vehicles", exchange: "Exchange",
@@ -36,26 +36,26 @@ const FOOTER_T = {
     feeBadge: "Only 1% Transaction Fee!",
   },
   fr: {
-    aboutTitle: "À propos de Bambeh",
-    aboutDesc: "Place de marché en ligne — achetez, vendez, échangez et trouvez un emploi, avec seulement 1 % de frais de transaction.",
-    categoriesTitle: "Catégories",
-    jobs: "Emplois", marketplace: "Marché", services: "Services",
-    rentals: "Locations", vehicles: "Véhicules", exchange: "Échange",
+    aboutTitle: "Ã€ propos de Bambeh",
+    aboutDesc: "Place de marchÃ© en ligne â€” achetez, vendez, Ã©changez et trouvez un emploi, avec seulement 1 % de frais de transaction.",
+    categoriesTitle: "CatÃ©gories",
+    jobs: "Emplois", marketplace: "MarchÃ©", services: "Services",
+    rentals: "Locations", vehicles: "VÃ©hicules", exchange: "Ã‰change",
     supportTitle: "Assistance",
     helpCentre: "Centre d'aide", contactSupport: "Contacter le support",
-    safetySecurity: "Sécurité", subscriptionPlans: "Forfaits d'abonnement",
+    safetySecurity: "SÃ©curitÃ©", subscriptionPlans: "Forfaits d'abonnement",
     supportBambeh: "Soutenir Bambeh",
     companyTitle: "Entreprise",
-    aboutUs: "À propos", viewCompanyProfile: "Voir le profil de l'entreprise",
-    terms: "Conditions générales", privacy: "Politique de confidentialité",
-    allRightsReserved: "Tous droits réservés.",
-    operatedBy: "Exploité par BAMBEH SARL",
-    qTerms: "Conditions", qPrivacy: "Confidentialité", qContact: "Contact", qSubs: "Abonnements",
+    aboutUs: "Ã€ propos", viewCompanyProfile: "Voir le profil de l'entreprise",
+    terms: "Conditions gÃ©nÃ©rales", privacy: "Politique de confidentialitÃ©",
+    allRightsReserved: "Tous droits rÃ©servÃ©s.",
+    operatedBy: "ExploitÃ© par BAMBEH SARL",
+    qTerms: "Conditions", qPrivacy: "ConfidentialitÃ©", qContact: "Contact", qSubs: "Abonnements",
     feeBadge: "Seulement 1 % de frais !",
   },
   pidgin: {
     aboutTitle: "About Bambeh",
-    aboutDesc: "Online market — buy, sell, trade and find work, with only 1% transaction fee.",
+    aboutDesc: "Online market â€” buy, sell, trade and find work, with only 1% transaction fee.",
     categoriesTitle: "Categories",
     jobs: "Jobs", marketplace: "Market", services: "Services",
     rentals: "Rentals", vehicles: "Motors", exchange: "Exchange",
@@ -72,40 +72,40 @@ const FOOTER_T = {
     feeBadge: "Only 1% Fee!",
   },
   ar: {
-    aboutTitle: "عن بامبيه",
-    aboutDesc: "سوق إلكتروني — اشترِ وبِع وقايض وابحث عن عمل، برسوم معاملات 1% فقط.",
-    categoriesTitle: "الفئات",
-    jobs: "الوظائف", marketplace: "السوق", services: "الخدمات",
-    rentals: "الإيجارات", vehicles: "المركبات", exchange: "المقايضة",
-    supportTitle: "الدعم",
-    helpCentre: "مركز المساعدة", contactSupport: "تواصل مع الدعم",
-    safetySecurity: "الأمان والسلامة", subscriptionPlans: "باقات الاشتراك",
-    supportBambeh: "ادعم بامبيه",
-    companyTitle: "الشركة",
-    aboutUs: "معلومات عنا", viewCompanyProfile: "عرض ملف الشركة",
-    terms: "الشروط والأحكام", privacy: "سياسة الخصوصية",
-    allRightsReserved: "جميع الحقوق محفوظة.",
-    operatedBy: "تُدار بواسطة BAMBEH SARL",
-    qTerms: "الشروط", qPrivacy: "الخصوصية", qContact: "اتصل بنا", qSubs: "الاشتراكات",
-    feeBadge: "رسوم 1% فقط!",
+    aboutTitle: "Ø¹Ù† Ø¨Ø§Ù…Ø¨ÙŠÙ‡",
+    aboutDesc: "Ø³ÙˆÙ‚ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ â€” Ø§Ø´ØªØ±Ù ÙˆØ¨ÙØ¹ ÙˆÙ‚Ø§ÙŠØ¶ ÙˆØ§Ø¨Ø­Ø« Ø¹Ù† Ø¹Ù…Ù„ØŒ Ø¨Ø±Ø³ÙˆÙ… Ù…Ø¹Ø§Ù…Ù„Ø§Øª 1% ÙÙ‚Ø·.",
+    categoriesTitle: "Ø§Ù„ÙØ¦Ø§Øª",
+    jobs: "Ø§Ù„ÙˆØ¸Ø§Ø¦Ù", marketplace: "Ø§Ù„Ø³ÙˆÙ‚", services: "Ø§Ù„Ø®Ø¯Ù…Ø§Øª",
+    rentals: "Ø§Ù„Ø¥ÙŠØ¬Ø§Ø±Ø§Øª", vehicles: "Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª", exchange: "Ø§Ù„Ù…Ù‚Ø§ÙŠØ¶Ø©",
+    supportTitle: "Ø§Ù„Ø¯Ø¹Ù…",
+    helpCentre: "Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©", contactSupport: "ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù…",
+    safetySecurity: "Ø§Ù„Ø£Ù…Ø§Ù† ÙˆØ§Ù„Ø³Ù„Ø§Ù…Ø©", subscriptionPlans: "Ø¨Ø§Ù‚Ø§Øª Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ",
+    supportBambeh: "Ø§Ø¯Ø¹Ù… Ø¨Ø§Ù…Ø¨ÙŠÙ‡",
+    companyTitle: "Ø§Ù„Ø´Ø±ÙƒØ©",
+    aboutUs: "Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¹Ù†Ø§", viewCompanyProfile: "Ø¹Ø±Ø¶ Ù…Ù„Ù Ø§Ù„Ø´Ø±ÙƒØ©",
+    terms: "Ø§Ù„Ø´Ø±ÙˆØ· ÙˆØ§Ù„Ø£Ø­ÙƒØ§Ù…", privacy: "Ø³ÙŠØ§Ø³Ø© Ø§Ù„Ø®ØµÙˆØµÙŠØ©",
+    allRightsReserved: "Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©.",
+    operatedBy: "ØªÙØ¯Ø§Ø± Ø¨ÙˆØ§Ø³Ø·Ø© BAMBEH SARL",
+    qTerms: "Ø§Ù„Ø´Ø±ÙˆØ·", qPrivacy: "Ø§Ù„Ø®ØµÙˆØµÙŠØ©", qContact: "Ø§ØªØµÙ„ Ø¨Ù†Ø§", qSubs: "Ø§Ù„Ø§Ø´ØªØ±Ø§ÙƒØ§Øª",
+    feeBadge: "Ø±Ø³ÙˆÙ… 1% ÙÙ‚Ø·!",
   },
   ff: {
     aboutTitle: "E dow Bambeh",
-    aboutDesc: "Suudu njiydi internet — soodu, yoɓ, wattindir e yiy golle, ko 1% tan njoɓdi.",
+    aboutDesc: "Suudu njiydi internet â€” soodu, yoÉ“, wattindir e yiy golle, ko 1% tan njoÉ“di.",
     categoriesTitle: "Teelte",
-    jobs: "Golle", marketplace: "Suudu Njiydi", services: "Tiiɗe",
-    rentals: "Njooɗam", vehicles: "Otooji", exchange: "Wattindirde",
+    jobs: "Golle", marketplace: "Suudu Njiydi", services: "TiiÉ—e",
+    rentals: "NjooÉ—am", vehicles: "Otooji", exchange: "Wattindirde",
     supportTitle: "Ballal",
-    helpCentre: "Laaɓal Ballal", contactSupport: "Ɓanndital Ballal",
+    helpCentre: "LaaÉ“al Ballal", contactSupport: "Æanndital Ballal",
     safetySecurity: "Kisinaare", subscriptionPlans: "Sariyaaji Sooddi",
     supportBambeh: "Wallu Bambeh",
     companyTitle: "Sosirde",
     aboutUs: "E dow min", viewCompanyProfile: "Yiy gamgal sosirde",
-    terms: "Sarɗiiji", privacy: "Sarɗi Gaasooji",
-    allRightsReserved: "Hakke fof kuuɗi.",
+    terms: "SarÉ—iiji", privacy: "SarÉ—i Gaasooji",
+    allRightsReserved: "Hakke fof kuuÉ—i.",
     operatedBy: "Ardii e BAMBEH SARL",
-    qTerms: "Sarɗiiji", qPrivacy: "Gaasooji", qContact: "Ɓanndital", qSubs: "Sooddi",
-    feeBadge: "Ko 1% njoɓdi tan!",
+    qTerms: "SarÉ—iiji", qPrivacy: "Gaasooji", qContact: "Æanndital", qSubs: "Sooddi",
+    feeBadge: "Ko 1% njoÉ“di tan!",
   },
 } as const;
 
@@ -163,7 +163,7 @@ export default function Footer() {
               <li><Link to="/help" className="hover:text-teal-400 transition-colors">{s.helpCentre}</Link></li>
               <li><Link to="/help/contact" className="hover:text-teal-400 transition-colors">{s.contactSupport}</Link></li>
               <li><Link to="/help/safety-security" className="hover:text-teal-400 transition-colors">{s.safetySecurity}</Link></li>
-              <li><Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">{s.subscriptionPlans}</Link></li>
+              <li><Link to="/subscription" className="hover:text-teal-400 transition-colors">{s.subscriptionPlans}</Link></li>
               <li>
                 <Link to="/donate" className="hover:text-teal-400 transition-colors flex items-center gap-2">
                   <Heart className="w-4 h-4 text-pink-500" />
@@ -194,7 +194,7 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Yaoundé, Cameroon</span>
+                <span>YaoundÃ©, Cameroon</span>
               </div>
             </div>
           </div>
@@ -204,18 +204,18 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-center md:text-left">
-              <p>© {currentYear} Bambeh. {s.allRightsReserved}</p>
-              <p className="text-xs text-gray-500 mt-1">{s.operatedBy} — Yaoundé, Cameroon</p>
+              <p>Â© {currentYear} Bambeh. {s.allRightsReserved}</p>
+              <p className="text-xs text-gray-500 mt-1">{s.operatedBy} â€” YaoundÃ©, Cameroon</p>
             </div>
 
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <Link to="/terms" className="hover:text-teal-400 transition-colors">{s.qTerms}</Link>
-              <span className="text-gray-600">·</span>
+              <span className="text-gray-600">Â·</span>
               <Link to="/privacy" className="hover:text-teal-400 transition-colors">{s.qPrivacy}</Link>
-              <span className="text-gray-600">·</span>
+              <span className="text-gray-600">Â·</span>
               <Link to="/help/contact" className="hover:text-teal-400 transition-colors">{s.qContact}</Link>
-              <span className="text-gray-600">·</span>
-              <Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">{s.qSubs}</Link>
+              <span className="text-gray-600">Â·</span>
+              <Link to="/subscription" className="hover:text-teal-400 transition-colors">{s.qSubs}</Link>
             </div>
 
             <div className="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold">
@@ -227,3 +227,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+

@@ -1,19 +1,19 @@
-/**
- * src/pages/RentalDetails.tsx — Bambeh Marketplace
+﻿/**
+ * src/pages/RentalDetails.tsx â€” Bambeh Marketplace
  *
- * ✅ FULL REWRITE — production-ready:
+ * âœ… FULL REWRITE â€” production-ready:
  *
- *  🌐 i18n: Every string uses useTranslation('rentals'). 6-language support.
- *  📞 Contact: Call + WhatsApp deep-links.
- *  📅 Booking: In-page "Request a Viewing" modal — persists to `messages` table.
- *  🖼  Gallery: Multi-image viewer with thumbnail strip.
- *  👤 Owner-only expiry warning with Renew Now CTA.
- *  ♿ Accessible share / save / back buttons.
- *  🔒 Auth-aware: guards contact buttons and booking for non-demo listings.
- *  🔄 View count: silently incremented on mount (RPC call).
- *  💡 Demo-safe: demo listings show a post-CTA instead of contact buttons.
+ *  ðŸŒ i18n: Every string uses useTranslation('rentals'). 6-language support.
+ *  ðŸ“ž Contact: Call + WhatsApp deep-links.
+ *  ðŸ“… Booking: In-page "Request a Viewing" modal â€” persists to `messages` table.
+ *  ðŸ–¼  Gallery: Multi-image viewer with thumbnail strip.
+ *  ðŸ‘¤ Owner-only expiry warning with Renew Now CTA.
+ *  â™¿ Accessible share / save / back buttons.
+ *  ðŸ”’ Auth-aware: guards contact buttons and booking for non-demo listings.
+ *  ðŸ”„ View count: silently incremented on mount (RPC call).
+ *  ðŸ’¡ Demo-safe: demo listings show a post-CTA instead of contact buttons.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -28,7 +28,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface RentalListing {
   id: string;
   title: string;
@@ -61,15 +61,15 @@ interface BookingForm {
   note: string;
 }
 
-// ─── Demo data (mirrors Rentals.tsx) ─────────────────────────────────────────
+// â”€â”€â”€ Demo data (mirrors Rentals.tsx) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DEMO_LISTINGS: Record<string, RentalListing> = {
-  "demo-1": { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150_000, location: "Yaoundé", quartier: "Bastos", region: "Centre", bedrooms: "2", bathrooms: "1", area: 85, isFurnished: true, description: "Beautiful furnished apartment with balcony, 24-hour security, water and electricity included. Ideal for professionals or small families. Close to supermarkets and embassies.", images: [], amenities: ["WiFi", "Parking", "Security", "Water included", "Generator"], contactPhone: "", contactName: "Bambeh Demo", postedAt: new Date().toISOString(), view_count: 0, status: "demo" },
+  "demo-1": { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150_000, location: "YaoundÃ©", quartier: "Bastos", region: "Centre", bedrooms: "2", bathrooms: "1", area: 85, isFurnished: true, description: "Beautiful furnished apartment with balcony, 24-hour security, water and electricity included. Ideal for professionals or small families. Close to supermarkets and embassies.", images: [], amenities: ["WiFi", "Parking", "Security", "Water included", "Generator"], contactPhone: "", contactName: "Bambeh Demo", postedAt: new Date().toISOString(), view_count: 0, status: "demo" },
   "demo-2": { id: "demo-2", title: "Spacious villa in Bonamoussadi",   type: "Villa",     price: 350_000, location: "Douala",  quartier: "Bonamoussadi", region: "Littoral", bedrooms: "4", bathrooms: "3", area: 240, isFurnished: false, description: "Magnificent 4-bedroom villa with private garden, 2-car parking, and 24/7 security. Perfect for families.", images: [], amenities: ["Garden", "Parking x2", "Security", "Generator", "Water tank"], contactPhone: "", contactName: "Bambeh Demo", postedAt: new Date().toISOString(), view_count: 0, status: "demo" },
-  "demo-3": { id: "demo-3", title: "Studio near University of Yaoundé", type: "Studio",  price: 60_000,  location: "Yaoundé", quartier: "Ngoa-Ekélé", region: "Centre", bedrooms: "Studio", bathrooms: "1", area: 28, isFurnished: true, description: "Compact, clean studio ideal for students. 5 minutes walk from the University of Yaoundé I campus.", images: [], amenities: ["WiFi", "Water included", "Security door"], contactPhone: "", contactName: "Bambeh Demo", postedAt: new Date().toISOString(), view_count: 0, status: "demo" },
+  "demo-3": { id: "demo-3", title: "Studio near University of YaoundÃ©", type: "Studio",  price: 60_000,  location: "YaoundÃ©", quartier: "Ngoa-EkÃ©lÃ©", region: "Centre", bedrooms: "Studio", bathrooms: "1", area: 28, isFurnished: true, description: "Compact, clean studio ideal for students. 5 minutes walk from the University of YaoundÃ© I campus.", images: [], amenities: ["WiFi", "Water included", "Security door"], contactPhone: "", contactName: "Bambeh Demo", postedAt: new Date().toISOString(), view_count: 0, status: "demo" },
   "demo-4": { id: "demo-4", title: "Professional office space in Akwa", type: "Office",  price: 200_000, location: "Douala",  quartier: "Akwa", region: "Littoral", bedrooms: "N/A", bathrooms: "1", area: 60, isFurnished: false, description: "Fully fitted professional office in the heart of Akwa business district. Fibre internet, A/C, shared conference room.", images: [], amenities: ["Fibre internet", "A/C", "Conference room", "Reception", "Parking"], contactPhone: "", contactName: "Bambeh Demo", postedAt: new Date().toISOString(), view_count: 0, status: "demo" },
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
   if (!expiresAt) return false;
   const diff = new Date(expiresAt).getTime() - Date.now();
@@ -81,7 +81,7 @@ function daysUntil(expiresAt: string): number {
 
 const EMPTY_BOOKING: BookingForm = { name: "", phone: "", date: "", time: "", note: "" };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const RentalDetails: React.FC = () => {
   const navigate            = useNavigate();
   const { id }              = useParams<{ id: string }>();
@@ -101,17 +101,17 @@ const RentalDetails: React.FC = () => {
   const [bookingSuccess,    setBookingSuccess]    = useState(false);
   const [bookingError,      setBookingError]      = useState<string | null>(null);
 
-  // ── Increment view count ────────────────────────────────────────────────
+  // â”€â”€ Increment view count â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const incrementView = useCallback(async (listingId: string) => {
     try {
       await supabase.rpc("increment_view_count", {
         table_name: "rentals",
         record_id:  listingId,
       });
-    } catch { /* silent — non-critical */ }
+    } catch { /* silent â€” non-critical */ }
   }, []);
 
-  // ── Fetch listing ───────────────────────────────────────────────────────
+  // â”€â”€ Fetch listing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!id) { setLoadError(t("rentals.listingNotFound")); setLoading(false); return; }
 
@@ -172,7 +172,7 @@ const RentalDetails: React.FC = () => {
     })();
   }, [id, t, incrementView]);
 
-  // ── Contact handlers ────────────────────────────────────────────────────
+  // â”€â”€ Contact handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleCall = () => {
     if (!listing?.contactPhone) return;
     window.location.href = `tel:${listing.contactPhone.replace(/\s+/g, "")}`;
@@ -182,7 +182,7 @@ const RentalDetails: React.FC = () => {
     if (!listing?.contactPhone) return;
     const num = listing.contactPhone.replace(/\s+/g, "").replace(/^\+/, "");
     const msg = encodeURIComponent(
-      `Hello, I'm interested in your rental listing on Bambeh: "${listing.title}" — ${listing.location}. Is it still available?`
+      `Hello, I'm interested in your rental listing on Bambeh: "${listing.title}" â€” ${listing.location}. Is it still available?`
     );
     window.open(`https://wa.me/${num}?text=${msg}`, "_blank", "noopener");
   };
@@ -198,7 +198,7 @@ const RentalDetails: React.FC = () => {
     }
   };
 
-  // ── Booking submission ──────────────────────────────────────────────────
+  // â”€â”€ Booking submission â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) { setBookingError(t("rentals.bookLoginRequired")); return; }
@@ -209,12 +209,12 @@ const RentalDetails: React.FC = () => {
 
     try {
       const content = [
-        `📅 VIEWING REQUEST`,
-        `Property: ${listing.title} — ${listing.location}`,
+        `ðŸ“… VIEWING REQUEST`,
+        `Property: ${listing.title} â€” ${listing.location}`,
         `Date: ${bookingForm.date}  Time: ${bookingForm.time}`,
         `Contact: ${bookingForm.name} | ${bookingForm.phone}`,
         bookingForm.note ? `Note: ${bookingForm.note}` : "",
-        `— via Bambeh Marketplace`,
+        `â€” via Bambeh Marketplace`,
       ].filter(Boolean).join("\n");
 
       const { error: msgErr } = await supabase.from("messages").insert({
@@ -246,7 +246,7 @@ const RentalDetails: React.FC = () => {
     setBookingForm(EMPTY_BOOKING);
   };
 
-  // ── Render: loading ─────────────────────────────────────────────────────
+  // â”€â”€ Render: loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -258,7 +258,7 @@ const RentalDetails: React.FC = () => {
     );
   }
 
-  // ── Render: error ───────────────────────────────────────────────────────
+  // â”€â”€ Render: error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (loadError || !listing) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 pb-28">
@@ -288,12 +288,12 @@ const RentalDetails: React.FC = () => {
 
   const isOwner = !!(user?.id && listing.user_id === user.id);
 
-  // ─── Main render ──────────────────────────────────────────────────────────
+  // â”€â”€â”€ Main render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="min-h-screen bg-gray-50 pb-28">
       <div className="max-w-2xl mx-auto">
 
-        {/* ── Sticky header ─────────────────────────────────────────────── */}
+        {/* â”€â”€ Sticky header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b px-4 py-3
                         flex items-center justify-between">
           <button
@@ -321,7 +321,7 @@ const RentalDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Image gallery ─────────────────────────────────────────────── */}
+        {/* â”€â”€ Image gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="relative bg-gray-200">
           {listing.images.length > 0 ? (
             <>
@@ -363,7 +363,7 @@ const RentalDetails: React.FC = () => {
           )}
         </div>
 
-        {/* ── Content ───────────────────────────────────────────────────── */}
+        {/* â”€â”€ Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="px-4 pt-5 space-y-5">
 
           {/* Expiry warning (owner only) */}
@@ -414,7 +414,7 @@ const RentalDetails: React.FC = () => {
             {[
               { icon: <Bed  className="w-5 h-5" />, label: t("rentals.bedrooms"),  value: listing.bedrooms  },
               { icon: <Bath className="w-5 h-5" />, label: t("rentals.bathrooms"), value: listing.bathrooms },
-              { icon: <Home className="w-5 h-5" />, label: t("rentals.area"),      value: listing.area ? `${listing.area} m²` : "N/A" },
+              { icon: <Home className="w-5 h-5" />, label: t("rentals.area"),      value: listing.area ? `${listing.area} mÂ²` : "N/A" },
             ].map(({ icon, label, value }) => (
               <div key={label} className="bg-white border rounded-xl p-3 text-center">
                 <div className="text-orange-400 flex justify-center mb-1">{icon}</div>
@@ -488,7 +488,7 @@ const RentalDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Fixed bottom — Contact / Demo CTA ─────────────────────────── */}
+        {/* â”€â”€ Fixed bottom â€” Contact / Demo CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {listing.status !== "demo" && listing.contactPhone && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-lg px-4 pt-3 pb-6">
             <div className="max-w-2xl mx-auto grid grid-cols-3 gap-2">
@@ -537,7 +537,7 @@ const RentalDetails: React.FC = () => {
         )}
       </div>
 
-      {/* ── Booking Modal ────────────────────────────────────────────────── */}
+      {/* â”€â”€ Booking Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {bookingOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
@@ -657,5 +657,7 @@ const RentalDetails: React.FC = () => {
 };
 
 export default RentalDetails;
+
+
 
 

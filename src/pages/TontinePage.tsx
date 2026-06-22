@@ -25,7 +25,7 @@ import {
   ChevronRight, Shield, Loader2, RefreshCw
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 // ── i18n strings (local table, keyed by the live language code) ─────────────
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
@@ -137,10 +137,10 @@ const DEMO_GROUPS: TontineGroup[] = [
 ];
 
 export default function TontinePage() {
-  const { language } = useLanguage();
-  const lang: Lang = (language in T ? language : "en") as Lang;
-  const s = T[lang];
-  const isRtl = lang === "ar";
+  const currentLang = useLang();
+    const lang: Lang = (currentLang in T ? currentLang : "en") as Lang;
+    const s = T[lang];
+    const isRtl = lang === "ar";
   const dateLocale = lang === "fr" ? "fr-CM" : "en-GB";
 
   // Pure status → localized label
@@ -406,5 +406,7 @@ export default function TontinePage() {
     </div>
   );
 }
+
+
 
 

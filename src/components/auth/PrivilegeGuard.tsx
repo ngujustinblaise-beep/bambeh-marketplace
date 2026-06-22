@@ -22,11 +22,13 @@ const PrivilegeGuard: React.FC<PrivilegeGuardProps> = ({
   const userTier = user.tier ?? "free";
   const hasAccess = TIER_RANK[userTier] >= TIER_RANK[requiredTier];
   if (!hasAccess) {
-    return fallback ? <>{fallback}</> : <Navigate to="/subscription-plans" replace />;
+    return fallback ? <>{fallback}</> : <Navigate to="/subscription" replace />;
   }
   return <>{children}</>;
 };
 
 export default PrivilegeGuard;
+
+
 
 

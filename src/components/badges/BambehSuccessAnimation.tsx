@@ -1,7 +1,7 @@
-/**
+﻿/**
  * BambehSuccessAnimation.tsx
  * The Bambeh figure sets down his load, wipes his brow, and gives a thumbs up.
- * © 2025 Bambeh. All rights reserved.
+ * Â© 2025 Bambeh. All rights reserved.
  */
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -143,7 +143,7 @@ function BambehFigureSVG({ phase }: { phase: number }) {
           <ellipse cx="59" cy="116" rx="10" ry="5" fill="#8B6F0A" />
           {[[-18, -12], [20, -8], [-14, 8], [22, 10]].map(([dx, dy], i) => (
             <g key={i} transform={`translate(${50 + dx}, ${36 + dy})`}>
-              <text fontSize="8" textAnchor="middle" dominantBaseline="middle" fill="#FFD700">★</text>
+              <text fontSize="8" textAnchor="middle" dominantBaseline="middle" fill="#FFD700">â˜…</text>
             </g>
           ))}
         </g>
@@ -310,7 +310,7 @@ export default function BambehSuccessAnimation({
               color: pt.shape === 'star' ? pt.color : undefined,
             }}
           >
-            {pt.shape === 'star' ? '★' : null}
+            {pt.shape === 'star' ? 'â˜…' : null}
           </div>
         );
       })}
@@ -378,7 +378,7 @@ export default function BambehSuccessAnimation({
               }, 500);
             }}
           >
-            Let's go! 🏋️
+            Let's go! ðŸ‹ï¸
           </button>
         )}
       </div>
@@ -412,5 +412,7 @@ export function useBambehSuccess() {
 
   return { triggerSuccess, SuccessAnimation };
 }
+
+
 
 

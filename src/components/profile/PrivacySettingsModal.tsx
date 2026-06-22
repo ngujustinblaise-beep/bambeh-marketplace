@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PRIVACY SETTINGS MODAL - Comprehensive Privacy Controls
  * FILE LOCATION: src/components/profile/PrivacySettingsModal.tsx
  */
@@ -41,18 +41,18 @@ export default function PrivacySettingsModal({ onClose }: PrivacySettingsModalPr
     setIsSaving(true);
     try {
       localStorage.setItem('Bambeh_privacy_settings', JSON.stringify(settings));
-      alert('✅ Privacy settings saved successfully!');
+      alert('âœ… Privacy settings saved successfully!');
       onClose();
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('❌ Failed to save settings. Please try again.');
+      alert('âŒ Failed to save settings. Please try again.');
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDeleteAccount = () => {
-    if (window.confirm('⚠ï¸ WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
+    if (window.confirm('âš Ã¯Â¸Â WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
       localStorage.clear();
       alert('Your account has been scheduled for deletion. You will be logged out.');
       window.location.href = '/';
@@ -212,5 +212,7 @@ export default function PrivacySettingsModal({ onClose }: PrivacySettingsModalPr
     </div>
   );
 }
+
+
 
 

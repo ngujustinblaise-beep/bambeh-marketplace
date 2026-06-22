@@ -155,3 +155,5 @@ const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
 export default GlobalSearchBar;
 
 
+
+

@@ -1,9 +1,9 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * ADMIN REPORTS PANEL
  * FILE LOCATION: src/components/admin/AdminReportsPanel.tsx
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * Â© 2025 Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import React, { useState, useMemo } from 'react';
@@ -16,7 +16,7 @@ import {
 import { useReports, Report, ReportStatus, ReportSource, ReportType } from '@/contexts/ReportContext';
 import { useAccountStatus } from '@/contexts/AccountStatusContext';
 
-// ── TYPE CONFIGURATIONS ───────────────────────────────────────────────────────
+// â”€â”€ TYPE CONFIGURATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const reportTypeConfig: Record<ReportType, { label: string; color: string; bgColor: string; icon: React.ElementType }> = {
   scam:                  { label: 'Scam',             color: 'text-red-700',    bgColor: 'bg-red-100',    icon: AlertCircle  },
@@ -55,7 +55,7 @@ const priorityConfig: Record<string, { label: string; color: string; bgColor: st
   urgent: { label: 'Urgent', color: 'text-red-600',    bgColor: 'bg-red-100'   },
 };
 
-// ── REPORT DETAIL MODAL ───────────────────────────────────────────────────────
+// â”€â”€ REPORT DETAIL MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ReportDetailModalProps {
   report: Report;
@@ -139,7 +139,7 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-red-900">{report.accusedName}</p>
-                  <p className="text-sm text-red-600">ID: {report.accusedId} • Type: {report.accusedType}</p>
+                  <p className="text-sm text-red-600">ID: {report.accusedId} â€¢ Type: {report.accusedType}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -165,7 +165,7 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-purple-900">{report.relatedItemTitle}</p>
-                  <p className="text-sm text-purple-600">Type: {report.relatedItemType} • ID: {report.relatedItemId}</p>
+                  <p className="text-sm text-purple-600">Type: {report.relatedItemType} â€¢ ID: {report.relatedItemId}</p>
                 </div>
                 <button className="px-3 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 flex items-center gap-1">
                   <ExternalLink className="w-4 h-4" />View
@@ -245,7 +245,7 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   );
 };
 
-// ── MAIN COMPONENT ────────────────────────────────────────────────────────────
+// â”€â”€ MAIN COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface AdminReportsPanelProps {
   showHeader?: boolean;
@@ -318,7 +318,7 @@ const AdminReportsPanel: React.FC<AdminReportsPanelProps> = ({
               <Flag className="w-8 h-8" />
               <div>
                 <h2 className="text-xl font-bold">Bambeh Reports Center</h2>
-                <p className="text-purple-200 text-sm">{stats.pending} pending • {stats.urgent} urgent</p>
+                <p className="text-purple-200 text-sm">{stats.pending} pending â€¢ {stats.urgent} urgent</p>
               </div>
             </div>
             <button onClick={() => refreshReports()} className="p-2 hover:bg-white/20 rounded-lg">
@@ -405,9 +405,9 @@ const AdminReportsPanel: React.FC<AdminReportsPanelProps> = ({
                     <p className="text-sm text-gray-600 line-clamp-2 mb-2">{report.description}</p>
                     <div className="flex items-center gap-3 text-xs text-gray-500">
                       <span className={`flex items-center gap-1 ${source.color}`}><SourceIcon className="w-3 h-3" />{source.label}</span>
-                      <span>•</span>
+                      <span>â€¢</span>
                       <span>{report.reporterName}</span>
-                      <span>•</span>
+                      <span>â€¢</span>
                       <span>{new Date(report.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -430,7 +430,7 @@ const AdminReportsPanel: React.FC<AdminReportsPanelProps> = ({
       {maxItems && reports.length > maxItems && (
         <div className="p-4 border-t bg-gray-50 text-center">
           <Link to="/admin/inbox" className="text-purple-600 font-medium hover:text-purple-700">
-            View all {reports.length} reports →
+            View all {reports.length} reports â†’
           </Link>
         </div>
       )}
@@ -451,5 +451,7 @@ const AdminReportsPanel: React.FC<AdminReportsPanelProps> = ({
 };
 
 export default AdminReportsPanel;
+
+
 
 

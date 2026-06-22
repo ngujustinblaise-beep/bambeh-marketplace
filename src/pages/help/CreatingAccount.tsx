@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 const T: Record<string, Record<string, string>> = {
   "en": {
@@ -16,15 +16,15 @@ const T: Record<string, Record<string, string>> = {
     "back": "Back to Help Center"
   },
   "fr": {
-    "title": "Créer un compte",
-    "subtitle": "Rejoignez Bambeh dès aujourd'hui !",
+    "title": "CrÃ©er un compte",
+    "subtitle": "Rejoignez Bambeh dÃ¨s aujourd'hui !",
     "how": "Comment s'inscrire",
-    "s1": "Cliquez sur « S'inscrire » dans l'en-tête",
-    "s2": "Saisissez votre e-mail et créez un mot de passe",
-    "s3": "Vérifiez votre adresse e-mail",
-    "s4": "Complétez votre profil",
-    "s5": "Commencez à explorer et à publier !",
-    "cta": "Créer un compte maintenant",
+    "s1": "Cliquez sur Â« S'inscrire Â» dans l'en-tÃªte",
+    "s2": "Saisissez votre e-mail et crÃ©ez un mot de passe",
+    "s3": "VÃ©rifiez votre adresse e-mail",
+    "s4": "ComplÃ©tez votre profil",
+    "s5": "Commencez Ã  explorer et Ã  publier !",
+    "cta": "CrÃ©er un compte maintenant",
     "back": "Retour au centre d'aide"
   },
   "pidgin": {
@@ -40,36 +40,36 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "إنشاء حساب",
-    "subtitle": "انضم إلى Bambeh اليوم!",
-    "how": "كيÙية التسجيل",
-    "s1": "اضغط على «التسجيل» Ùي الأعلى",
-    "s2": "أدخل بريدك الإلكتروني وأنشئ كلمة مرور",
-    "s3": "وثّق عنوان بريدك الإلكتروني",
-    "s4": "أكمل ملÙك الشخصي",
-    "s5": "ابدأ التصÙح والنشر!",
-    "cta": "أنشئ حسابًا الآن",
-    "back": "العودة إلى مركز المساعدة"
+    "title": "Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨",
+    "subtitle": "Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Bambeh Ø§Ù„ÙŠÙˆÙ…!",
+    "how": "ÙƒÙŠÃ™ÂÙŠØ© Ø§Ù„ØªØ³Ø¬ÙŠÙ„",
+    "s1": "Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Â«Ø§Ù„ØªØ³Ø¬ÙŠÙ„Â» Ã™ÂÙŠ Ø§Ù„Ø£Ø¹Ù„Ù‰",
+    "s2": "Ø£Ø¯Ø®Ù„ Ø¨Ø±ÙŠØ¯Ùƒ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ÙˆØ£Ù†Ø´Ø¦ ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ±",
+    "s3": "ÙˆØ«Ù‘Ù‚ Ø¹Ù†ÙˆØ§Ù† Ø¨Ø±ÙŠØ¯Ùƒ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
+    "s4": "Ø£ÙƒÙ…Ù„ Ù…Ù„Ã™ÂÙƒ Ø§Ù„Ø´Ø®ØµÙŠ",
+    "s5": "Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªØµÃ™ÂØ­ ÙˆØ§Ù„Ù†Ø´Ø±!",
+    "cta": "Ø£Ù†Ø´Ø¦ Ø­Ø³Ø§Ø¨Ù‹Ø§ Ø§Ù„Ø¢Ù†",
+    "back": "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ù…Ø±ÙƒØ² Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©"
   },
   "ff": {
     "title": "Sosgol konte",
     "subtitle": "Naatu e Bambeh hannde!",
     "how": "No winnditortoo",
-    "s1": "Ñiɓ \"Winndito\" ka dow",
+    "s1": "Ã‘iÉ“ \"Winndito\" ka dow",
     "s2": "Naatnu iimeel maa sosaa finnde",
-    "s3": "Teeŋtin iimeel maa",
+    "s3": "TeeÅ‹tin iimeel maa",
     "s4": "Timmin humpito maa",
-    "s5": "Fuɗɗo ƴeewde e neldude!",
+    "s5": "FuÉ—É—o Æ´eewde e neldude!",
     "cta": "Sosu konte jooni",
     "back": "Rutto to galle ballal"
   }
 };
 
 export default function CreatingAccount() {
-  const { language } = useLanguage();
-  const lang = T[language] ? language : "en";
-  const tr = (k: string) => (T[lang] && T[lang][k]) || T.en[k] || k;
-  const isRtl = lang === "ar";
+  const currentLang = useLang();
+    const lang = T[currentLang] ? currentLang : "en";
+    const tr = (k: string) => (T[lang] && T[lang][k]) || T.en[k] || k;
+    const isRtl = lang === "ar";
   const steps = ["s1", "s2", "s3", "s4", "s5"];
   return (
     <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 py-8">
@@ -101,12 +101,14 @@ export default function CreatingAccount() {
         </div>
         <div className="mt-8 text-center">
           <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">
-            ← {tr("back")}
+            â† {tr("back")}
           </Link>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 

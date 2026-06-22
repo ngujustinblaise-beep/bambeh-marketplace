@@ -1,6 +1,6 @@
 ﻿// @ts-nocheck
 import React, { useState } from "react";
-import { SUBSCRIPTION_PLANS, getSubscriptionPlan } from "../../config/subscriptionPlans";
+import { SUBSCRIPTION_PLANS, getSubscriptionPlan } from "../../config/subscription";
 import type { SubscriptionTier } from "../../types/subscription";
 import { PAYMENT_METHODS } from "../../types/subscription";
 import type { PaymentMethod } from "../../types/subscription";
@@ -91,5 +91,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 };
 
 export default SubscriptionModal;
+
+
 
 

@@ -96,3 +96,5 @@ const ImageGallery = ({ images, initialSlide = 0, onClose }: ImageGalleryProps) 
 export default ImageGallery;
 
 
+
+

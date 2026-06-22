@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UPGRADE PROMPT
  * FILE LOCATION: src/components/subscription/UpgradePrompt.tsx
  */
@@ -89,7 +89,7 @@ const UpgradePrompt: React.FC<UpgradePromptProps> = ({
             <div className="w-20 h-20 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce">
               <CurrentIcon className="w-10 h-10" />
             </div>
-            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">🎁 Special Offer!</div>
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">ðŸŽ Special Offer!</div>
           </div>
           <h2 className="text-2xl font-bold mb-2">{slides[currentSlide].title}</h2>
           <p className="text-white/90">{slides[currentSlide].description}</p>
@@ -174,5 +174,7 @@ export const UpgradeBanner: React.FC<{ onUpgrade?: () => void }> = ({ onUpgrade 
 };
 
 export default UpgradePrompt;
+
+
 
 

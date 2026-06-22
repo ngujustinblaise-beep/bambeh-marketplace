@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - CONVERSATION LIST COMPONENT
+﻿/**
+ * BAMBÃ‰ MARKETPLACE - CONVERSATION LIST COMPONENT
  * Version: 1.0.0
  */
 
@@ -70,13 +70,13 @@ const ConversationList: React.FC<ConversationListProps> = ({
           onChange={(e) => setSearchQuery(e.target.value)}
           className="search-input"
         />
-        <span className="search-icon">🔍</span>
+        <span className="search-icon">ðŸ”</span>
       </div>
 
       <div className="conversation-list">
         {sortedConversations.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-icon">💬</span>
+            <span className="empty-icon">ðŸ’¬</span>
             <p>{t('chat.noConversations')}</p>
           </div>
         ) : (
@@ -127,9 +127,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
                   </div>
 
                   <span className={`role-badge ${otherParticipant.role}`}>
-                    {otherParticipant.role === 'vendor' && '🏪'}
-                    {otherParticipant.role === 'customer' && '👤'}
-                    {otherParticipant.role === 'admin' && '⚙ï¸'}
+                    {otherParticipant.role === 'vendor' && 'ðŸª'}
+                    {otherParticipant.role === 'customer' && 'ðŸ‘¤'}
+                    {otherParticipant.role === 'admin' && 'âš™Ã¯Â¸Â'}
                   </span>
                 </div>
 
@@ -139,7 +139,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                     onClick={(e) => handleDelete(e, conversation.id)}
                     aria-label="Delete conversation"
                   >
-                    🗑ï¸
+                    ðŸ—‘Ã¯Â¸Â
                   </button>
                 )}
               </div>
@@ -152,5 +152,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
 };
 
 export default ConversationList;
+
+
 
 

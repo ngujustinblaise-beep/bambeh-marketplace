@@ -34,7 +34,7 @@ const PremiumGate: React.FC<PremiumGateProps> = ({
         Upgrade your plan to access this feature.
       </p>
       <button
-        onClick={() => navigate("/subscription-plans")}
+        onClick={() => navigate("/subscription")}
         className="bg-teal-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-700"
       >
         Upgrade Now
@@ -44,5 +44,7 @@ const PremiumGate: React.FC<PremiumGateProps> = ({
 };
 
 export default PremiumGate;
+
+
 
 

@@ -143,7 +143,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">
+                <Link to="/subscription" className="hover:text-teal-400 transition-colors">
                   Subscription Plans
                 </Link>
               </li>
@@ -236,7 +236,7 @@ export default function Footer() {
                 Contact
               </Link>
               <span className="text-gray-600">•</span>
-              <Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">
+              <Link to="/subscription" className="hover:text-teal-400 transition-colors">
                 Subscriptions
               </Link>
             </div>
@@ -251,6 +251,8 @@ export default function Footer() {
     </footer>
   );
 }
+
+
 
 
 

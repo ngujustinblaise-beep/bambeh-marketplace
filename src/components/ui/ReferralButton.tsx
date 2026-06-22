@@ -1,7 +1,7 @@
-/**
+﻿/**
  * src/components/ui/ReferralButton.tsx
- * Bambeh Marketplace — Referral Share Button
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Referral Share Button
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -47,7 +47,7 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
   const handleShare = useCallback(async () => {
     const code = await getReferralCode();
     const referralUrl = `${window.location.origin}/#/register?ref=${code}`;
-    const shareText = `🛍️ Rejoignez Bambeh Marketplace avec mon code de parrainage et obtenez des avantages exclusifs!\n\nCode: ${code}\nLien: ${referralUrl}`;
+    const shareText = `ðŸ›ï¸ Rejoignez Bambeh Marketplace avec mon code de parrainage et obtenez des avantages exclusifs!\n\nCode: ${code}\nLien: ${referralUrl}`;
 
     if (navigator.share) {
       try {
@@ -166,7 +166,7 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
           }`}
         >
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          {copied ? "Copié!" : "Copier le lien"}
+          {copied ? "CopiÃ©!" : "Copier le lien"}
         </button>
       </div>
     </div>
@@ -174,5 +174,7 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
 };
 
 export default ReferralButton;
+
+
 
 

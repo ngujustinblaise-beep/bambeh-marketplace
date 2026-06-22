@@ -100,3 +100,5 @@ const SavedSearches: React.FC = () => {
 export default SavedSearches;
 
 
+
+

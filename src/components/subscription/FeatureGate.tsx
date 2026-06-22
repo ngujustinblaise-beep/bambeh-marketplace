@@ -3,7 +3,7 @@ import React from "react";
 import type { SubscriptionTier } from "../../types/subscription";
 import { meetsAuthTierRequirement, getFeatureAccess } from "../../utils/tierBridge";
 import type { AuthTier } from "../../utils/tierBridge";
-import { SUBSCRIPTION_PLANS } from "../../config/subscriptionPlans";
+import { SUBSCRIPTION_PLANS } from "../../config/subscription";
 import { useNavigate } from "react-router-dom";
 
 export type { AuthTier };
@@ -91,7 +91,7 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
 }) => {
   const navigate  = useNavigate();
   const hasAccess = meetsAuthTierRequirement(userTier, requiredTier);
-  const upgrade   = () => navigate("/subscription-plans");
+  const upgrade   = () => navigate("/subscription");
 
   if (hasAccess) return <>{children}</>;
 
@@ -103,5 +103,7 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
 
 export default FeatureGate;
 export { CompactLockedContent, FreeUserBrowseOnly, TeaserContent };
+
+
 
 

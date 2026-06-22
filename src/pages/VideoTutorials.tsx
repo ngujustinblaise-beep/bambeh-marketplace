@@ -1,6 +1,6 @@
 ﻿import { Link } from "react-router-dom";
 import { Video } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLang } from '@/hooks/useAppLang';
 
 const T: Record<string, Record<string, string>> = {
   "en": {
@@ -36,10 +36,10 @@ const T: Record<string, Record<string, string>> = {
 };
 
 export default function VideoTutorials() {
-  const { language } = useLanguage();
-  const lang = T[language] ? language : "en";
-  const tr = (k: string) => (T[lang] && T[lang][k]) || T.en[k] || k;
-  const isRtl = lang === "ar";
+  const currentLang = useLang();
+    const lang = T[currentLang] ? currentLang : "en";
+    const tr = (k: string) => (T[lang] && T[lang][k]) || T.en[k] || k;
+    const isRtl = lang === "ar";
   return (
     <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -65,5 +65,7 @@ export default function VideoTutorials() {
     </div>
   );
 }
+
+
 
 

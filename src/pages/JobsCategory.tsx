@@ -1,15 +1,15 @@
-/**
+﻿/**
  * src/pages/JobsCategory.tsx
- * Bambeh Marketplace — Jobs Category Page
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace â€” Jobs Category Page
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXED:
- *  ✅ fmtSalary no longer calls useLang() inside a plain function (hook-rules violation)
- *  ✅ Company logo displayed if present
- *  ✅ Full i18n via useLang()
- *  ✅ Pagination "Load More"
- *  ✅ Share + deadline banners
- *  ✅ Searches listings table (correct Bambeh schema)
+ *  âœ… fmtSalary no longer calls useLang() inside a plain function (hook-rules violation)
+ *  âœ… Company logo displayed if present
+ *  âœ… Full i18n via useLang()
+ *  âœ… Pagination "Load More"
+ *  âœ… Share + deadline banners
+ *  âœ… Searches listings table (correct Bambeh schema)
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -19,59 +19,59 @@ import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { useLang } from "@/hooks/useAppLang";
 
-// ─── Category Map ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Category Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CATEGORY_MAP: Record<string, { label: string; dbValue: string; emoji: string }> = {
-  technology:  { label: "Technology",  dbValue: "Technology",  emoji: "💻" },
-  marketing:   { label: "Marketing",   dbValue: "Marketing",   emoji: "📣" },
-  finance:     { label: "Finance",     dbValue: "Finance",     emoji: "💰" },
-  engineering: { label: "Engineering", dbValue: "Engineering", emoji: "⚙ï¸" },
-  education:   { label: "Education",   dbValue: "Education",   emoji: "🎓" },
-  agriculture: { label: "Agriculture", dbValue: "Agriculture", emoji: "🌾" },
-  healthcare:  { label: "Healthcare",  dbValue: "Healthcare",  emoji: "🏥" },
-  logistics:   { label: "Logistics",   dbValue: "Logistics",   emoji: "🚚" },
-  sales:       { label: "Sales",       dbValue: "Sales",       emoji: "🤝" },
-  legal:       { label: "Legal",       dbValue: "Legal",       emoji: "⚖ï¸" },
-  other:       { label: "Other",       dbValue: "Other",       emoji: "📋" },
+  technology:  { label: "Technology",  dbValue: "Technology",  emoji: "ðŸ’»" },
+  marketing:   { label: "Marketing",   dbValue: "Marketing",   emoji: "ðŸ“£" },
+  finance:     { label: "Finance",     dbValue: "Finance",     emoji: "ðŸ’°" },
+  engineering: { label: "Engineering", dbValue: "Engineering", emoji: "âš™Ã¯Â¸Â" },
+  education:   { label: "Education",   dbValue: "Education",   emoji: "ðŸŽ“" },
+  agriculture: { label: "Agriculture", dbValue: "Agriculture", emoji: "ðŸŒ¾" },
+  healthcare:  { label: "Healthcare",  dbValue: "Healthcare",  emoji: "ðŸ¥" },
+  logistics:   { label: "Logistics",   dbValue: "Logistics",   emoji: "ðŸšš" },
+  sales:       { label: "Sales",       dbValue: "Sales",       emoji: "ðŸ¤" },
+  legal:       { label: "Legal",       dbValue: "Legal",       emoji: "âš–Ã¯Â¸Â" },
+  other:       { label: "Other",       dbValue: "Other",       emoji: "ðŸ“‹" },
 };
 
-// ─── i18n ──────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STR: Record<string, Record<string, string>> = {
-  jobs:         { en:"Jobs", fr:"Emplois", ha:"Ayyuka", ar:"وظائÙ", pcm:"Work", ful:"Golle" },
-  opportunity:  { en:"opportunity", fr:"opportunité", ha:"dama", ar:"Ùرصة", pcm:"opportunity", ful:"sago" },
-  opportunities:{ en:"opportunities", fr:"opportunités", ha:"damar aiki", ar:"Ùرص", pcm:"opportunities", ful:"sagoji" },
-  loading:      { en:"Loading", fr:"Chargement", ha:"Ana lodi", ar:"جارÙ التحميل", pcm:"Dey load", ful:"Nannginii" },
-  jobs_lc:      { en:"jobs…", fr:"offres…", ha:"ayyuka…", ar:"وظائÙ…", pcm:"work…", ful:"golle…" },
-  error:        { en:"Could not load jobs.", fr:"Impossible de charger les offres.", ha:"Ba a iya lodi", ar:"تعذر تحميل", pcm:"E no fit load", ful:"Golle naataani" },
-  tryAgain:     { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pcm:"Try again", ful:"Eɗɗoo yeeso" },
-  noJobs:       { en:"No jobs posted yet", fr:"Aucune offre publiée", ha:"Babu ayyuka", ar:"لا توجد وظائÙ بعد", pcm:"No work yet", ful:"Alaa golle" },
-  checkBack:    { en:"Check back soon or post one yourself!", fr:"Revenez bientôt ou publiez une offre!", ha:"Dawo cikin wuri ko wallafa aiki!", ar:"عد قريبًا أو انشر وظيÙة!", pcm:"Come back later or post work!", ful:"Ardi tuma ɓee ko fewtu!" },
-  allJobs:      { en:"All Jobs", fr:"Tous les emplois", ha:"Duk Ayyuka", ar:"جميع الوظائÙ", pcm:"All Work", ful:"Golle fof" },
-  postJob:      { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيÙة", pcm:"Post Work", ful:"Fewtu Golle" },
-  viewApply:    { en:"View & Apply →", fr:"Voir & Postuler →", ha:"Duba & Nema →", ar:"عرض وتقديم →", pcm:"See & Apply →", ful:"Yii & Dañ →" },
-  loadMore:     { en:"Load More Jobs", fr:"Charger plus d'offres", ha:"Ƙara ayyuka", ar:"تحميل المزيد", pcm:"Load more work", ful:"Nanngin Golleli" },
-  loading2:     { en:"Loading…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
-  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بÙعد", pcm:"Online", ful:"E Ɓanndu" },
-  negotiable:   { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pcm:"E fit negotiate", ful:"Naggi" },
-  salaryNotSpec:{ en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
-  closed:       { en:"⛔ Closed — Deadline passed", fr:"⛔ Fermé — Délai dépassé", ha:"⛔ An rufe — lokaci ya ƙare", ar:"⛔ مغلق — انتهى الموعد", pcm:"⛔ E don close", ful:"⛔ Uddii" },
-  closingSoon:  { en:"⏰ Closing soon", fr:"⏰ Ferme bientôt", ha:"⏰ Zai ƙare", ar:"⏰ ينتهي قريبًا", pcm:"⏰ E go close", ful:"⏰ Ɓennoo seeɗa" },
-  today:        { en:"Today!", fr:"Aujourd'hui!", ha:"Yau!", ar:"اليوم!", pcm:"Today!", ful:"Hannde!" },
-  dLeft:        { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام", pcm:"days left", ful:"balɗe" },
+  jobs:         { en:"Jobs", fr:"Emplois", ha:"Ayyuka", ar:"ÙˆØ¸Ø§Ø¦Ã™Â", pcm:"Work", ful:"Golle" },
+  opportunity:  { en:"opportunity", fr:"opportunitÃ©", ha:"dama", ar:"Ã™ÂØ±ØµØ©", pcm:"opportunity", ful:"sago" },
+  opportunities:{ en:"opportunities", fr:"opportunitÃ©s", ha:"damar aiki", ar:"Ã™ÂØ±Øµ", pcm:"opportunities", ful:"sagoji" },
+  loading:      { en:"Loading", fr:"Chargement", ha:"Ana lodi", ar:"Ø¬Ø§Ø±Ã™Â Ø§Ù„ØªØ­Ù…ÙŠÙ„", pcm:"Dey load", ful:"Nannginii" },
+  jobs_lc:      { en:"jobsâ€¦", fr:"offresâ€¦", ha:"ayyukaâ€¦", ar:"ÙˆØ¸Ø§Ø¦Ã™Ââ€¦", pcm:"workâ€¦", ful:"golleâ€¦" },
+  error:        { en:"Could not load jobs.", fr:"Impossible de charger les offres.", ha:"Ba a iya lodi", ar:"ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„", pcm:"E no fit load", ful:"Golle naataani" },
+  tryAgain:     { en:"Try Again", fr:"RÃ©essayer", ha:"Sake gwadawa", ar:"Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰", pcm:"Try again", ful:"EÉ—É—oo yeeso" },
+  noJobs:       { en:"No jobs posted yet", fr:"Aucune offre publiÃ©e", ha:"Babu ayyuka", ar:"Ù„Ø§ ØªÙˆØ¬Ø¯ ÙˆØ¸Ø§Ø¦Ã™Â Ø¨Ø¹Ø¯", pcm:"No work yet", ful:"Alaa golle" },
+  checkBack:    { en:"Check back soon or post one yourself!", fr:"Revenez bientÃ´t ou publiez une offre!", ha:"Dawo cikin wuri ko wallafa aiki!", ar:"Ø¹Ø¯ Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø£Ùˆ Ø§Ù†Ø´Ø± ÙˆØ¸ÙŠÃ™ÂØ©!", pcm:"Come back later or post work!", ful:"Ardi tuma É“ee ko fewtu!" },
+  allJobs:      { en:"All Jobs", fr:"Tous les emplois", ha:"Duk Ayyuka", ar:"Ø¬Ù…ÙŠØ¹ Ø§Ù„ÙˆØ¸Ø§Ø¦Ã™Â", pcm:"All Work", ful:"Golle fof" },
+  postJob:      { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"Ù†Ø´Ø± ÙˆØ¸ÙŠÃ™ÂØ©", pcm:"Post Work", ful:"Fewtu Golle" },
+  viewApply:    { en:"View & Apply â†’", fr:"Voir & Postuler â†’", ha:"Duba & Nema â†’", ar:"Ø¹Ø±Ø¶ ÙˆØªÙ‚Ø¯ÙŠÙ… â†’", pcm:"See & Apply â†’", ful:"Yii & DaÃ± â†’" },
+  loadMore:     { en:"Load More Jobs", fr:"Charger plus d'offres", ha:"Æ˜ara ayyuka", ar:"ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø²ÙŠØ¯", pcm:"Load more work", ful:"Nanngin Golleli" },
+  loading2:     { en:"Loadingâ€¦", fr:"Chargementâ€¦", ha:"Ana lodiâ€¦", ar:"Ø¬Ø§Ø±Ã™Â Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦", pcm:"Dey loadâ€¦", ful:"Nannginiiâ€¦" },
+  remote:       { en:"Remote", fr:"TÃ©lÃ©travail", ha:"Nesa", ar:"Ø¹Ù† Ø¨Ã™ÂØ¹Ø¯", pcm:"Online", ful:"E Æanndu" },
+  negotiable:   { en:"Negotiable", fr:"NÃ©gociable", ha:"Ana tattaunawa", ar:"Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÃ™ÂØ§ÙˆØ¶", pcm:"E fit negotiate", ful:"Naggi" },
+  salaryNotSpec:{ en:"Salary not specified", fr:"Salaire non prÃ©cisÃ©", ha:"Ba a ambaci albashi", ar:"Ø§Ù„Ø±Ø§ØªØ¨ ØºÙŠØ± Ù…Ø­Ø¯Ø¯", pcm:"No salary talk", ful:"Njobdi alaa" },
+  closed:       { en:"â›” Closed â€” Deadline passed", fr:"â›” FermÃ© â€” DÃ©lai dÃ©passÃ©", ha:"â›” An rufe â€” lokaci ya Æ™are", ar:"â›” Ù…ØºÙ„Ù‚ â€” Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ù…ÙˆØ¹Ø¯", pcm:"â›” E don close", ful:"â›” Uddii" },
+  closingSoon:  { en:"â° Closing soon", fr:"â° Ferme bientÃ´t", ha:"â° Zai Æ™are", ar:"â° ÙŠÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ù‹Ø§", pcm:"â° E go close", ful:"â° Æennoo seeÉ—a" },
+  today:        { en:"Today!", fr:"Aujourd'hui!", ha:"Yau!", ar:"Ø§Ù„ÙŠÙˆÙ…!", pcm:"Today!", ful:"Hannde!" },
+  dLeft:        { en:"d left", fr:"j restants", ha:"kwanaki", ar:"Ø£ÙŠØ§Ù…", pcm:"days left", ful:"balÉ—e" },
 };
 
 function s(key: string, lang: string): string {
   return STR[key]?.[lang] ?? STR[key]?.["en"] ?? key;
 }
 
-// ─── Helpers (NO hook calls inside plain functions) ─────────────────────────────
+// â”€â”€â”€ Helpers (NO hook calls inside plain functions) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmtSalary(min: number | undefined, max: number | undefined, lang: string, notSpecLabel: string): string {
   if (!min && !max) return notSpecLabel;
   const fmt = (n: number) =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` :
     n >= 1_000     ? `${Math.round(n / 1_000)}k` : `${n}`;
-  if (min && max) return `${fmt(min)} – ${fmt(max)} XAF`;
-  if (min) return lang === "fr" ? `À partir de ${fmt(min)} XAF` : `From ${fmt(min)} XAF`;
-  return lang === "fr" ? `Jusqu'à ${fmt(max!)} XAF` : `Up to ${fmt(max!)} XAF`;
+  if (min && max) return `${fmt(min)} â€“ ${fmt(max)} XAF`;
+  if (min) return lang === "fr" ? `Ã€ partir de ${fmt(min)} XAF` : `From ${fmt(min)} XAF`;
+  return lang === "fr" ? `Jusqu'Ã  ${fmt(max!)} XAF` : `Up to ${fmt(max!)} XAF`;
 }
 
 function daysUntilDeadline(deadline: string): number {
@@ -80,31 +80,31 @@ function daysUntilDeadline(deadline: string): number {
 
 function timeAgo(dateStr: string, lang: string): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
-  if (diff === 0) return lang === "fr" ? "Aujourd'hui" : lang === "ar" ? "اليوم" : "Today";
-  if (diff === 1) return lang === "fr" ? "Il y a 1j" : lang === "ar" ? "منذ يوم" : "1d ago";
-  return lang === "fr" ? `Il y a ${diff}j` : lang === "ar" ? `منذ ${diff} أيام` : `${diff}d ago`;
+  if (diff === 0) return lang === "fr" ? "Aujourd'hui" : lang === "ar" ? "Ø§Ù„ÙŠÙˆÙ…" : "Today";
+  if (diff === 1) return lang === "fr" ? "Il y a 1j" : lang === "ar" ? "Ù…Ù†Ø° ÙŠÙˆÙ…" : "1d ago";
+  return lang === "fr" ? `Il y a ${diff}j` : lang === "ar" ? `Ù…Ù†Ø° ${diff} Ø£ÙŠØ§Ù…` : `${diff}d ago`;
 }
 
 const JOB_TYPE_LABELS: Record<string, Record<string, string>> = {
-  full_time:  { en:"Full-time",  fr:"Temps plein",   ar:"دوام كامل",  ha:"Cikakken lokaci", pcm:"Full time",  ful:"Waktu fof" },
-  part_time:  { en:"Part-time",  fr:"Temps partiel", ar:"دوام جزئي",  ha:"Rabin lokaci",    pcm:"Half time",  ful:"Waktu didi" },
-  contract:   { en:"Contract",   fr:"Contrat",       ar:"عقد",         ha:"Kwantiragi",      pcm:"Contract",   ful:"Kontoraaji" },
-  internship: { en:"Internship", fr:"Stage",         ar:"تدريب",       ha:"Horarwa",         pcm:"Training",   ful:"Jannginagol" },
-  freelance:  { en:"Freelance",  fr:"Freelance",     ar:"حر",          ha:"Yanci",           pcm:"Freelance",  ful:"Freelance" },
-  temporary:  { en:"Temporary",  fr:"Temporaire",    ar:"مؤقت",        ha:"Wucin gadi",      pcm:"Small time", ful:"Seeɗa" },
+  full_time:  { en:"Full-time",  fr:"Temps plein",   ar:"Ø¯ÙˆØ§Ù… ÙƒØ§Ù…Ù„",  ha:"Cikakken lokaci", pcm:"Full time",  ful:"Waktu fof" },
+  part_time:  { en:"Part-time",  fr:"Temps partiel", ar:"Ø¯ÙˆØ§Ù… Ø¬Ø²Ø¦ÙŠ",  ha:"Rabin lokaci",    pcm:"Half time",  ful:"Waktu didi" },
+  contract:   { en:"Contract",   fr:"Contrat",       ar:"Ø¹Ù‚Ø¯",         ha:"Kwantiragi",      pcm:"Contract",   ful:"Kontoraaji" },
+  internship: { en:"Internship", fr:"Stage",         ar:"ØªØ¯Ø±ÙŠØ¨",       ha:"Horarwa",         pcm:"Training",   ful:"Jannginagol" },
+  freelance:  { en:"Freelance",  fr:"Freelance",     ar:"Ø­Ø±",          ha:"Yanci",           pcm:"Freelance",  ful:"Freelance" },
+  temporary:  { en:"Temporary",  fr:"Temporaire",    ar:"Ù…Ø¤Ù‚Øª",        ha:"Wucin gadi",      pcm:"Small time", ful:"SeeÉ—a" },
 };
 
-// ─── Main Component ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const JobsCategory: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const navigate     = useNavigate();
-  const lang         = useLang();  // ← hook called correctly at component top-level
+  const lang         = useLang();  // â† hook called correctly at component top-level
   const dir          = lang === "ar" ? "rtl" : "ltr";
 
   const slug       = category ? decodeURIComponent(category).toLowerCase() : "";
   const meta       = CATEGORY_MAP[slug];
   const label      = meta?.label  ?? (category ? decodeURIComponent(category).replace(/-/g, " ") : "All");
-  const emoji      = meta?.emoji  ?? "💼";
+  const emoji      = meta?.emoji  ?? "ðŸ’¼";
   const dbCategory = meta?.dbValue ?? label;
 
   const [jobs,        setJobs]        = useState<JobListing[]>([]);
@@ -158,7 +158,7 @@ const JobsCategory: React.FC = () => {
       <div className="bg-gradient-to-br from-teal-600 to-teal-800 px-4 pt-5 pb-8">
         <div className="flex items-center gap-2 mb-4 text-sm text-teal-200">
           <Link to="/jobs" className="hover:text-white transition-colors">{s("jobs", lang)}</Link>
-          <span>›</span>
+          <span>â€º</span>
           <span className="text-white font-medium capitalize">{label}</span>
         </div>
         <div className="flex items-center gap-3">
@@ -190,7 +190,7 @@ const JobsCategory: React.FC = () => {
         {/* Error */}
         {!loading && error && (
           <div className="text-center py-16">
-            <p className="text-4xl mb-3">⚠ï¸</p>
+            <p className="text-4xl mb-3">âš Ã¯Â¸Â</p>
             <p className="text-gray-600 dark:text-gray-400">{error}</p>
             <button onClick={() => void load(1)}
               className="mt-4 bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
@@ -226,7 +226,7 @@ const JobsCategory: React.FC = () => {
           const expiringSoon  = deadlineDays !== null && deadlineDays <= 3 && deadlineDays >= 0;
           const expired       = deadlineDays !== null && deadlineDays < 0;
           const displayType   = JOB_TYPE_LABELS[job.jobType]?.[lang] ?? JOB_TYPE_LABELS[job.jobType]?.en ?? job.jobType;
-          // pass lang to fmtSalary — no hook call inside plain fn
+          // pass lang to fmtSalary â€” no hook call inside plain fn
           const salaryText    = fmtSalary(job.salaryMinXAF, job.salaryMaxXAF, lang, s("salaryNotSpec", lang));
 
           return (
@@ -245,7 +245,7 @@ const JobsCategory: React.FC = () => {
                                    : "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"}`}>
                   {expired
                     ? s("closed", lang)
-                    : `${s("closingSoon", lang)} — ${deadlineDays === 0 ? s("today", lang) : `${deadlineDays} ${s("dLeft", lang)}`}`}
+                    : `${s("closingSoon", lang)} â€” ${deadlineDays === 0 ? s("today", lang) : `${deadlineDays} ${s("dLeft", lang)}`}`}
                 </div>
               )}
 
@@ -262,7 +262,7 @@ const JobsCategory: React.FC = () => {
                     />
                   ) : job.company ? (
                     job.company.charAt(0).toUpperCase()
-                  ) : "💼"}
+                  ) : "ðŸ’¼"}
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -280,17 +280,17 @@ const JobsCategory: React.FC = () => {
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{job.company}</p>
                   )}
                   <p className="text-xs text-gray-400 mt-0.5">
-                    📍 {job.location.city}
-                    {job.location.region ? ` · ${job.location.region}` : ""}
-                    {job.isRemote && ` · 🌐 ${s("remote", lang)}`}
-                    {" · "}
+                    ðŸ“ {job.location.city}
+                    {job.location.region ? ` Â· ${job.location.region}` : ""}
+                    {job.isRemote && ` Â· ðŸŒ ${s("remote", lang)}`}
+                    {" Â· "}
                     <span className="text-teal-600 dark:text-teal-400 font-medium">{displayType}</span>
                   </p>
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-sm text-teal-600 dark:text-teal-400 font-semibold">
-                      💰 {salaryText}
+                      ðŸ’° {salaryText}
                       {job.isSalaryNegotiable && (
-                        <span className="text-gray-400 text-xs font-normal"> · {s("negotiable", lang)}</span>
+                        <span className="text-gray-400 text-xs font-normal"> Â· {s("negotiable", lang)}</span>
                       )}
                     </p>
                     <span className="text-xs text-gray-400">{timeAgo(job.createdAt, lang)}</span>
@@ -323,5 +323,7 @@ const JobsCategory: React.FC = () => {
 };
 
 export default JobsCategory;
+
+
 
 
