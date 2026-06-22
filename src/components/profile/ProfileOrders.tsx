@@ -1,11 +1,20 @@
-﻿/**
+/**
  * PROFILE ORDERS COMPONENT
  * FILE LOCATION: src/components/profile/ProfileOrders.tsx
+ *
+ * i18n: all visible strings come from the local S table below, keyed by the live
+ * language (useLang from @/hooks/useAppLang), so the list re-translates the
+ * instant the language changes. Status labels, filter options, dates and the
+ * item-count line are all localized. All logic (fetch, mock orders, filter,
+ * search, currency formatting) is unchanged.
  */
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock, ChevronRight, AlertCircle, Search, Filter, RefreshCw, ShoppingBag } from 'lucide-react';
+import { useLang } from '@/hooks/useAppLang';
+
+type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 
 type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
 
@@ -16,19 +25,98 @@ interface Order {
   total: number; itemCount: number; items: OrderItem[]; estimatedDelivery?: string;
 }
 
-const STATUS_CONFIG: Record<OrderStatus, { color: string; bgColor: string; borderColor: string; icon: any; label: string }> = {
-  pending:          { color: 'text-yellow-600', bgColor: 'bg-yellow-50',  borderColor: 'border-yellow-200',  icon: Clock,          label: 'Pending'          },
-  confirmed:        { color: 'text-blue-600',   bgColor: 'bg-blue-50',    borderColor: 'border-blue-200',    icon: CheckCircle,    label: 'Confirmed'        },
-  processing:       { color: 'text-purple-600', bgColor: 'bg-purple-50',  borderColor: 'border-purple-200',  icon: Package,        label: 'Processing'       },
-  shipped:          { color: 'text-indigo-600', bgColor: 'bg-indigo-50',  borderColor: 'border-indigo-200',  icon: Truck,          label: 'Shipped'          },
-  out_for_delivery: { color: 'text-orange-600', bgColor: 'bg-orange-50',  borderColor: 'border-orange-200',  icon: Truck,          label: 'Out for Delivery' },
-  delivered:        { color: 'text-green-600',  bgColor: 'bg-green-50',   borderColor: 'border-green-200',   icon: CheckCircle,    label: 'Delivered'        },
-  cancelled:        { color: 'text-red-600',    bgColor: 'bg-red-50',     borderColor: 'border-red-200',     icon: AlertCircle,    label: 'Cancelled'        },
+const STATUS_STYLE: Record<OrderStatus, { color: string; bgColor: string; borderColor: string; icon: any }> = {
+  pending:          { color: 'text-yellow-600', bgColor: 'bg-yellow-50',  borderColor: 'border-yellow-200',  icon: Clock       },
+  confirmed:        { color: 'text-blue-600',   bgColor: 'bg-blue-50',    borderColor: 'border-blue-200',    icon: CheckCircle },
+  processing:       { color: 'text-purple-600', bgColor: 'bg-purple-50',  borderColor: 'border-purple-200',  icon: Package     },
+  shipped:          { color: 'text-indigo-600', bgColor: 'bg-indigo-50',  borderColor: 'border-indigo-200',  icon: Truck       },
+  out_for_delivery: { color: 'text-orange-600', bgColor: 'bg-orange-50',  borderColor: 'border-orange-200',  icon: Truck       },
+  delivered:        { color: 'text-green-600',  bgColor: 'bg-green-50',   borderColor: 'border-green-200',   icon: CheckCircle },
+  cancelled:        { color: 'text-red-600',    bgColor: 'bg-red-50',     borderColor: 'border-red-200',     icon: AlertCircle },
+};
+
+const S: Record<Lang, {
+  locale: string;
+  status: Record<OrderStatus, string>;
+  loading: string; errorMsg: string; tryAgain: string;
+  emptyTitle: string; emptyDesc: string; browse: string;
+  myOrders: string; totalOrders: (n: number) => string; refresh: string;
+  searchPh: string;
+  filterAll: (n: number) => string; filterPending: (n: number) => string; filterProcessing: (n: number) => string;
+  filterShipped: (n: number) => string; filterDelivered: (n: number) => string; filterCancelled: (n: number) => string;
+  noMatch: string; placedOn: string; itemsCount: (n: number) => string; estDelivery: string;
+  trackOrder: string; details: string;
+}> = {
+  en: {
+    locale: 'en-US',
+    status: { pending: 'Pending', confirmed: 'Confirmed', processing: 'Processing', shipped: 'Shipped', out_for_delivery: 'Out for Delivery', delivered: 'Delivered', cancelled: 'Cancelled' },
+    loading: 'Loading orders...', errorMsg: 'Unable to load orders. Please try again.', tryAgain: 'Try Again',
+    emptyTitle: 'No Orders Yet', emptyDesc: "You haven't placed any orders yet. Start shopping to see your orders here!", browse: 'Browse Marketplace',
+    myOrders: 'My Orders', totalOrders: (n) => `${n} total orders`, refresh: 'Refresh',
+    searchPh: 'Search orders...',
+    filterAll: (n) => `All Orders (${n})`, filterPending: (n) => `Pending (${n})`, filterProcessing: (n) => `Processing (${n})`,
+    filterShipped: (n) => `Shipped (${n})`, filterDelivered: (n) => `Delivered (${n})`, filterCancelled: (n) => `Cancelled (${n})`,
+    noMatch: 'No orders found matching your criteria.', placedOn: 'Placed on', itemsCount: (n) => `${n} item${n > 1 ? 's' : ''}`, estDelivery: 'Est. delivery:',
+    trackOrder: 'Track Order', details: 'Details',
+  },
+  fr: {
+    locale: 'fr-FR',
+    status: { pending: 'En attente', confirmed: 'Confirmée', processing: 'En traitement', shipped: 'Expédiée', out_for_delivery: 'En cours de livraison', delivered: 'Livrée', cancelled: 'Annulée' },
+    loading: 'Chargement des commandes...', errorMsg: 'Impossible de charger les commandes. Veuillez réessayer.', tryAgain: 'Réessayer',
+    emptyTitle: 'Aucune commande', emptyDesc: "Vous n'avez pas encore passé de commande. Commencez vos achats pour les voir ici !", browse: 'Parcourir la marketplace',
+    myOrders: 'Mes commandes', totalOrders: (n) => `${n} commandes au total`, refresh: 'Actualiser',
+    searchPh: 'Rechercher des commandes...',
+    filterAll: (n) => `Toutes les commandes (${n})`, filterPending: (n) => `En attente (${n})`, filterProcessing: (n) => `En traitement (${n})`,
+    filterShipped: (n) => `Expédiées (${n})`, filterDelivered: (n) => `Livrées (${n})`, filterCancelled: (n) => `Annulées (${n})`,
+    noMatch: 'Aucune commande ne correspond à vos critères.', placedOn: 'Passée le', itemsCount: (n) => `${n} article${n > 1 ? 's' : ''}`, estDelivery: 'Livraison estimée :',
+    trackOrder: 'Suivre la commande', details: 'Détails',
+  },
+  pidgin: {
+    locale: 'en-GB',
+    status: { pending: 'Dey Wait', confirmed: 'Confirmed', processing: 'Dey Process', shipped: 'Don Ship', out_for_delivery: 'Dey Come', delivered: 'Don Deliver', cancelled: 'Cancelled' },
+    loading: 'Orders dey load...', errorMsg: 'Orders no fit load. Try again.', tryAgain: 'Try Again',
+    emptyTitle: 'No Order Yet', emptyDesc: 'You never order anything. Start to shop make your orders show here!', browse: 'Check Marketplace',
+    myOrders: 'My Orders', totalOrders: (n) => `${n} orders all together`, refresh: 'Refresh',
+    searchPh: 'Find orders...',
+    filterAll: (n) => `All Orders (${n})`, filterPending: (n) => `Dey Wait (${n})`, filterProcessing: (n) => `Dey Process (${n})`,
+    filterShipped: (n) => `Don Ship (${n})`, filterDelivered: (n) => `Don Deliver (${n})`, filterCancelled: (n) => `Cancelled (${n})`,
+    noMatch: 'No order match wetin you dey find.', placedOn: 'You order am for', itemsCount: (n) => `${n} item${n > 1 ? 's' : ''}`, estDelivery: 'E go reach:',
+    trackOrder: 'Track Order', details: 'Details',
+  },
+  ar: {
+    locale: 'ar',
+    status: { pending: 'قيد الانتظار', confirmed: 'مؤكَّد', processing: 'قيد المعالجة', shipped: 'تم الشحن', out_for_delivery: 'قيد التوصيل', delivered: 'تم التسليم', cancelled: 'ملغى' },
+    loading: 'جارٍ تحميل الطلبات...', errorMsg: 'تعذّر تحميل الطلبات. يرجى المحاولة مرة أخرى.', tryAgain: 'حاول مرة أخرى',
+    emptyTitle: 'لا توجد طلبات بعد', emptyDesc: 'لم تقم بأي طلب بعد. ابدأ التسوّق لتظهر طلباتك هنا!', browse: 'تصفّح السوق',
+    myOrders: 'طلباتي', totalOrders: (n) => `${n} طلبات إجمالاً`, refresh: 'تحديث',
+    searchPh: 'ابحث في الطلبات...',
+    filterAll: (n) => `كل الطلبات (${n})`, filterPending: (n) => `قيد الانتظار (${n})`, filterProcessing: (n) => `قيد المعالجة (${n})`,
+    filterShipped: (n) => `تم الشحن (${n})`, filterDelivered: (n) => `تم التسليم (${n})`, filterCancelled: (n) => `ملغاة (${n})`,
+    noMatch: 'لا توجد طلبات مطابقة لمعاييرك.', placedOn: 'تم الطلب في', itemsCount: (n) => `${n} عنصر`, estDelivery: 'التسليم المتوقع:',
+    trackOrder: 'تتبّع الطلب', details: 'التفاصيل',
+  },
+  ff: {
+    locale: 'en-GB',
+    status: { pending: 'Habbiiɗo', confirmed: 'Teeŋtinaaɗo', processing: 'Ɗon golleera', shipped: 'Nuliraaɗo', out_for_delivery: 'Ɗon ara', delivered: 'Yottinaaɗo', cancelled: 'Haaytiraaɗo' },
+    loading: 'Umrooje ɗon loowee...', errorMsg: 'Umrooje mbaawaa loweede. Tiiɗno eto kadi.', tryAgain: 'Eto kadi',
+    emptyTitle: 'Umre woodaani tawo', emptyDesc: 'A umrii hay huunde tawo. Fuɗɗo soodde ngam yiyde umrooje maa ɗoo!', browse: 'Ndaar luumo',
+    myOrders: 'Umrooje am', totalOrders: (n) => `umrooje ${n} denndaangal`, refresh: 'Hesɗitin',
+    searchPh: 'Ɗaɓɓo umrooje...',
+    filterAll: (n) => `Umrooje fof (${n})`, filterPending: (n) => `Habbiiɗe (${n})`, filterProcessing: (n) => `Ɗe ɗon golleera (${n})`,
+    filterShipped: (n) => `Nuliraaɗe (${n})`, filterDelivered: (n) => `Yottinaaɗe (${n})`, filterCancelled: (n) => `Haaytiraaɗe (${n})`,
+    noMatch: 'Umre fotnde e ko ɗaɓɓuɗaa heɓaaka.', placedOn: 'Umraama ñalnde', itemsCount: (n) => `kuuje ${n}`, estDelivery: 'Jonnugol hiisaaɗo:',
+    trackOrder: 'Jokku umre', details: 'Humpito',
+  },
 };
 
 interface ProfileOrdersProps { userId?: string; }
 
 export default function ProfileOrders({ userId }: ProfileOrdersProps) {
+  const langCode = useLang();
+  const l: Lang = (langCode in S ? langCode : 'en') as Lang;
+  const s = S[l];
+  const isRtl = l === 'ar';
+
   const [orders, setOrders]         = useState<Order[]>([]);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState<string | null>(null);
@@ -57,7 +145,7 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
       ];
       setOrders(mockOrders);
     } catch (err) {
-      setError('Unable to load orders. Please try again.');
+      setError(s.errorMsg);
     } finally {
       setLoading(false);
     }
@@ -70,7 +158,7 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return new Date(dateString).toLocaleDateString(s.locale, { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const formatCurrency = (amount: number) => {
@@ -91,63 +179,63 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
 
   if (loading && orders.length === 0) {
     return (
-      <div className="p-6 text-center">
+      <div dir={isRtl ? 'rtl' : 'ltr'} className="p-6 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent mx-auto mb-4" />
-        <p className="text-gray-600">Loading orders...</p>
+        <p className="text-gray-600">{s.loading}</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 text-center">
+      <div dir={isRtl ? 'rtl' : 'ltr'} className="p-6 text-center">
         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <p className="text-gray-600 mb-4">{error}</p>
-        <button onClick={handleRefresh} className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">Try Again</button>
+        <button onClick={handleRefresh} className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">{s.tryAgain}</button>
       </div>
     );
   }
 
   if (orders.length === 0) {
     return (
-      <div className="p-8 text-center">
+      <div dir={isRtl ? 'rtl' : 'ltr'} className="p-8 text-center">
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><ShoppingBag className="w-10 h-10 text-gray-400" /></div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Orders Yet</h3>
-        <p className="text-gray-600 mb-6">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{s.emptyTitle}</h3>
+        <p className="text-gray-600 mb-6">{s.emptyDesc}</p>
         <Link to="/marketplace" className="inline-flex items-center gap-2 px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors font-medium">
-          <ShoppingBag className="w-5 h-5" />Browse Marketplace
+          <ShoppingBag className="w-5 h-5" />{s.browse}
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">My Orders</h2>
-          <p className="text-sm text-gray-500">{orders.length} total orders</p>
+          <h2 className="text-xl font-bold text-gray-900">{s.myOrders}</h2>
+          <p className="text-sm text-gray-500">{s.totalOrders(orders.length)}</p>
         </div>
         <button onClick={handleRefresh} disabled={refreshing} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />Refresh
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />{s.refresh}
         </button>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search orders..."
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={s.searchPh}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
         </div>
         <div className="relative">
           <select value={filter} onChange={(e) => setFilter(e.target.value as OrderStatus | 'all')}
             className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white">
-            <option value="all">All Orders ({orders.length})</option>
-            <option value="pending">Pending ({statusCounts['pending'] || 0})</option>
-            <option value="processing">Processing ({statusCounts['processing'] || 0})</option>
-            <option value="shipped">Shipped ({statusCounts['shipped'] || 0})</option>
-            <option value="delivered">Delivered ({statusCounts['delivered'] || 0})</option>
-            <option value="cancelled">Cancelled ({statusCounts['cancelled'] || 0})</option>
+            <option value="all">{s.filterAll(orders.length)}</option>
+            <option value="pending">{s.filterPending(statusCounts['pending'] || 0)}</option>
+            <option value="processing">{s.filterProcessing(statusCounts['processing'] || 0)}</option>
+            <option value="shipped">{s.filterShipped(statusCounts['shipped'] || 0)}</option>
+            <option value="delivered">{s.filterDelivered(statusCounts['delivered'] || 0)}</option>
+            <option value="cancelled">{s.filterCancelled(statusCounts['cancelled'] || 0)}</option>
           </select>
           <Filter className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         </div>
@@ -155,25 +243,26 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
 
       <div className="space-y-4">
         {filteredOrders.length === 0 ? (
-          <div className="p-8 text-center bg-gray-50 rounded-lg"><p className="text-gray-600">No orders found matching your criteria.</p></div>
+          <div className="p-8 text-center bg-gray-50 rounded-lg"><p className="text-gray-600">{s.noMatch}</p></div>
         ) : (
           filteredOrders.map((order) => {
-            const statusConfig = STATUS_CONFIG[order.status];
-            const StatusIcon   = statusConfig.icon;
+            const statusStyle = STATUS_STYLE[order.status];
+            const StatusIcon  = statusStyle.icon;
+            const statusLabel = s.status[order.status];
             return (
-              <div key={order.id} className={`bg-white rounded-xl border ${statusConfig.borderColor} overflow-hidden hover:shadow-md transition-shadow`}>
-                <div className={`${statusConfig.bgColor} px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2`}>
+              <div key={order.id} className={`bg-white rounded-xl border ${statusStyle.borderColor} overflow-hidden hover:shadow-md transition-shadow`}>
+                <div className={`${statusStyle.bgColor} px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2`}>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                      <StatusIcon className={`w-4 h-4 ${statusConfig.color}`} />
+                      <StatusIcon className={`w-4 h-4 ${statusStyle.color}`} />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{order.orderNumber}</p>
-                      <p className="text-xs text-gray-500">Placed on {formatDate(order.placedAt)}</p>
+                      <p className="text-xs text-gray-500">{s.placedOn} {formatDate(order.placedAt)}</p>
                     </div>
                   </div>
-                  <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bgColor} ${statusConfig.color} border ${statusConfig.borderColor}`}>
-                    <StatusIcon className="w-3 h-3" />{statusConfig.label}
+                  <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusStyle.bgColor} ${statusStyle.color} border ${statusStyle.borderColor}`}>
+                    <StatusIcon className="w-3 h-3" />{statusLabel}
                   </div>
                 </div>
                 <div className="p-4">
@@ -196,18 +285,18 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <p className="text-sm text-gray-500">{order.itemCount} item{order.itemCount > 1 ? 's' : ''}</p>
+                      <p className="text-sm text-gray-500">{s.itemsCount(order.itemCount)}</p>
                       <p className="font-bold text-gray-900 text-lg">{formatCurrency(order.total)}</p>
                       {order.estimatedDelivery && order.status !== 'delivered' && order.status !== 'cancelled' && (
-                        <p className="text-xs text-gray-500 mt-1">Est. delivery: {formatDate(order.estimatedDelivery)}</p>
+                        <p className="text-xs text-gray-500 mt-1">{s.estDelivery} {formatDate(order.estimatedDelivery)}</p>
                       )}
                     </div>
                     <div className="flex gap-3">
                       <Link to={`/track/${order.id}`} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors font-medium text-sm">
-                        <Truck className="w-4 h-4" />Track Order
+                        <Truck className="w-4 h-4" />{s.trackOrder}
                       </Link>
                       <Link to={`/order/${order.id}`} className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
-                        Details<ChevronRight className="w-4 h-4" />
+                        {s.details}<ChevronRight className="w-4 h-4" />
                       </Link>
                     </div>
                   </div>
@@ -220,7 +309,3 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
     </div>
   );
 }
-
-
-
-
