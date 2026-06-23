@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
  *
@@ -15,6 +15,7 @@
 
 import { useState } from 'react';
 import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Menu, X, User, LogOut, LogIn, Search,
@@ -23,7 +24,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { NotificationBell } from '@/components/NotificationBell';
-import { useLang, t } from "@/hooks/useAppLang";
 
 type LanguageCode = "en" | "fr" | "pcm" | "ff" | "ar";
 const AVAILABLE_LANGUAGES: { code: LanguageCode; name: string; flag: string }[] = [
@@ -307,7 +307,7 @@ export default function Header() {
                       }`}
                     >
                       <span className="text-lg">{lang.flag}</span>
-                      <span className="flex-1">{lang.nativeName}</span>
+                      <span className="flex-1">{lang.name}</span>
                       {language === lang.code && <span className="text-teal-500">âœ“</span>}
                     </button>
                   ))}
@@ -426,7 +426,7 @@ export default function Header() {
                       style={{ touchAction: 'auto', minHeight: '48px' }}
                     >
                       <span className="text-lg">{lang.flag}</span>
-                      <span className="flex-1">{lang.nativeName}</span>
+                      <span className="flex-1">{lang.name}</span>
                       {language === lang.code && <span className="text-teal-300 font-bold">âœ“</span>}
                     </button>
                   ))}
