@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/layout/Footer.tsx – Bambeh Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
  *
@@ -23,6 +23,7 @@ const FOOTER_T = {
     contact: "Contact Support",
     terms: "Terms & Conditions",
     privacy: "Privacy Policy",
+    donate: "Donate",
     allRights: "All rights reserved.",
   },
   fr: {
@@ -37,6 +38,7 @@ const FOOTER_T = {
     contact: "Nous contacter",
     terms: "Conditions d'utilisation",
     privacy: "Politique de confidentialité",
+    donate: "Faire un don",
     allRights: "Tous droits réservés.",
   },
   pidgin: {
@@ -51,6 +53,7 @@ const FOOTER_T = {
     contact: "Call Us",
     terms: "Rules & Conditions",
     privacy: "Privacy",
+    donate: "Donate",
     allRights: "All rights reserved.",
   },
   ar: {
@@ -65,6 +68,7 @@ const FOOTER_T = {
     contact: "اتصل بنا",
     terms: "الشروط والأحكام",
     privacy: "سياسة الخصوصية",
+    donate: "تبرع",
     allRights: "جميع الحقوق محفوظة.",
   },
   ff: {
@@ -79,6 +83,7 @@ const FOOTER_T = {
     contact: "Kontakta Amen",
     terms: "Shartooɗi",
     privacy: "Juwi Yimɓe",
+    donate: "Dokkal",
     allRights: "Haande fof njuɗɗi.",
   },
 };
@@ -119,6 +124,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link to="/help" className="hover:text-white">{t.helpCentre}</Link></li>
               <li><Link to="/contact" className="hover:text-white">{t.contact}</Link></li>
+              <li><Link to="/donate" className="hover:text-white">{t.donate}</Link></li>
             </ul>
           </div>
 
