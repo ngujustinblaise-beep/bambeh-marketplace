@@ -315,4 +315,3 @@ class GPSTrackingService {
 }
 
 export default new GPSTrackingService();
-

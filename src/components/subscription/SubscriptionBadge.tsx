@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import type { SubscriptionTier } from "../../types/subscription";
 import { useLanguage } from '@/App';
@@ -26,8 +26,6 @@ const SubscriptionBadge: React.FC<SubscriptionBadgeProps> = ({ tier, compact }) 
 };
 
 export default SubscriptionBadge;
-
-
 
 
 

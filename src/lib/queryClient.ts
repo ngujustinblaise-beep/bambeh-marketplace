@@ -166,4 +166,3 @@ export const invalidateVendorDashboard = (vendorId: string) =>
 
 export default queryClient;
 
-

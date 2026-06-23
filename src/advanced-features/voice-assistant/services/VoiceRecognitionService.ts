@@ -389,4 +389,3 @@ class VoiceRecognitionService {
 }
 
 export default new VoiceRecognitionService();
-

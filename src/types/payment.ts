@@ -13,4 +13,3 @@ export interface WithdrawalResult {
   netPayout?: number;
   message?: string;
 }
-

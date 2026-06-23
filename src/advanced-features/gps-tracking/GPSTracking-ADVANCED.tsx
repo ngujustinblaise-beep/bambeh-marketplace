@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * BAMBÃ‰ MARKETPLACE - GPS TRACKING COMPONENT
+ * BAMBÉ MARKETPLACE - GPS TRACKING COMPONENT
  * Version: 1.0.0
  */
 
@@ -138,13 +138,13 @@ const GPSTrackingADVANCED: React.FC<GPSTrackingProps> = ({
 
   const getStatusInfo = () => {
     const statusMap: Record<string, { text: string; color: string; icon: string }> = {
-      pending:    { text: 'Order Pending',    color: '#FFA500', icon: 'â³' },
-      confirmed:  { text: 'Order Confirmed',  color: '#4CAF50', icon: 'âœ“'  },
-      assigned:   { text: 'Driver Assigned',  color: '#2196F3', icon: 'ðŸ‘¤' },
-      picked_up:  { text: 'Order Picked Up',  color: '#9C27B0', icon: 'ðŸ“¦' },
-      in_transit: { text: 'In Transit',       color: '#FF9800', icon: 'ðŸš—' },
-      nearby:     { text: 'Driver Nearby',    color: '#4CAF50', icon: 'ðŸ“' },
-      delivered:  { text: 'Delivered',        color: '#4CAF50', icon: 'ðŸŽ‰' },
+      pending:    { text: 'Order Pending',    color: '#FFA500', icon: '⏳' },
+      confirmed:  { text: 'Order Confirmed',  color: '#4CAF50', icon: '✓'  },
+      assigned:   { text: 'Driver Assigned',  color: '#2196F3', icon: '👤' },
+      picked_up:  { text: 'Order Picked Up',  color: '#9C27B0', icon: '📦' },
+      in_transit: { text: 'In Transit',       color: '#FF9800', icon: '🚗' },
+      nearby:     { text: 'Driver Nearby',    color: '#4CAF50', icon: '📍' },
+      delivered:  { text: 'Delivered',        color: '#4CAF50', icon: '🎉' },
     };
     return statusMap[status] || statusMap.pending;
   };
@@ -163,7 +163,7 @@ const GPSTrackingADVANCED: React.FC<GPSTrackingProps> = ({
     return (
       <div className="gps-tracking-container">
         <div className="error-state">
-          <span className="error-icon">âš Ã¯Â¸Â</span>
+          <span className="error-icon">⚠ï¸</span>
           <p>{error}</p>
           <button onClick={initializeTracking} className="retry-button">Retry</button>
         </div>
@@ -253,9 +253,9 @@ const GPSTrackingADVANCED: React.FC<GPSTrackingProps> = ({
           <span className="update-title">Live Updates</span>
         </div>
         <div className="update-content">
-          {status === 'nearby'     && <p>ðŸš— Driver is nearby! Please be ready to receive your order.</p>}
-          {status === 'in_transit' && <p>ðŸ“¦ Your order is on the way. ETA: {eta}</p>}
-          {status === 'picked_up'  && <p>âœ“ Driver has picked up your order and is heading your way.</p>}
+          {status === 'nearby'     && <p>🚗 Driver is nearby! Please be ready to receive your order.</p>}
+          {status === 'in_transit' && <p>📦 Your order is on the way. ETA: {eta}</p>}
+          {status === 'picked_up'  && <p>✓ Driver has picked up your order and is heading your way.</p>}
         </div>
       </div>
     </div>
@@ -263,9 +263,5 @@ const GPSTrackingADVANCED: React.FC<GPSTrackingProps> = ({
 };
 
 export default GPSTrackingADVANCED;
-
-
-
-
 
 

@@ -87,4 +87,3 @@ export const checkAPIHealth = async (): Promise<boolean> => {
     return false;
   }
 };
-

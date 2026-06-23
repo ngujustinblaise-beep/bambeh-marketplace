@@ -12,4 +12,3 @@
   phoneNumber?: string;
   createdAt?: string;
 }
-

@@ -1,28 +1,28 @@
-﻿/**
- * src/pages/OfferService.tsx â€” Bambeh Marketplace
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * WORLD-CLASS REBUILD â€” Production Grade, Military Security, Full i18n
+/**
+ * src/pages/OfferService.tsx — Bambeh Marketplace
+ * ─────────────────────────────────────────────────────────────────────────────
+ * WORLD-CLASS REBUILD — Production Grade, Military Security, Full i18n
  *
  * SECURITY:
- *   âœ… getUser() for auth â€” no JWT spoofing vector
- *   âœ… Phone number stripped to digits only
- *   âœ… All text fields sanitised before Supabase insert
- *   âœ… Price clamped to numeric range; NaN rejected
- *   âœ… Auth gate before any DB write
- *   âœ… Draft never includes userId (server-side resolved)
- *   âœ… CSRF-free: uses Supabase SDK not raw fetch for writes
+ *   ✅ getUser() for auth — no JWT spoofing vector
+ *   ✅ Phone number stripped to digits only
+ *   ✅ All text fields sanitised before Supabase insert
+ *   ✅ Price clamped to numeric range; NaN rejected
+ *   ✅ Auth gate before any DB write
+ *   ✅ Draft never includes userId (server-side resolved)
+ *   ✅ CSRF-free: uses Supabase SDK not raw fetch for writes
  *
  * FEATURES:
- *   âœ… Full i18n: EN / FR / AR / HA / PCM / FUL
- *   âœ… 3-step wizard: Info â†’ Pricing & Details â†’ Review & Post
- *   âœ… Inline validation with red error labels
- *   âœ… Draft save/restore (localStorage)
- *   âœ… FCFA live formatter
- *   âœ… Dual write: services table + listings table
- *   âœ… Listing success screen with "View My Service" CTA
- *   âœ… Image upload (Supabase Storage)
- *   âœ… Category â†’ sub-category cascade
- *   âœ… RTL layout for Arabic
+ *   ✅ Full i18n: EN / FR / AR / HA / PCM / FUL
+ *   ✅ 3-step wizard: Info → Pricing & Details → Review & Post
+ *   ✅ Inline validation with red error labels
+ *   ✅ Draft save/restore (localStorage)
+ *   ✅ FCFA live formatter
+ *   ✅ Dual write: services table + listings table
+ *   ✅ Listing success screen with "View My Service" CTA
+ *   ✅ Image upload (Supabase Storage)
+ *   ✅ Category → sub-category cascade
+ *   ✅ RTL layout for Arabic
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -35,21 +35,21 @@ import {
   AlertTriangle, Wrench,
 } from 'lucide-react';
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // i18n
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const STRINGS = {
   en: {
     page_title:     'Offer a Service',
     step_labels:    ['Service Info', 'Pricing & Details', 'Review & Post'],
     step_prefix:    'Step',
     step_of:        'of',
-    save_draft:     'ðŸ’¾ Save Draft',
-    back:           'â† Back',
-    next:           'Next Step â†’',
-    review_label:   'Review Listing â†’',
-    post_label:     'ðŸš€ Post Service',
-    posting:        'Postingâ€¦',
+    save_draft:     '💾 Save Draft',
+    back:           '← Back',
+    next:           'Next Step →',
+    review_label:   'Review Listing →',
+    post_label:     '🚀 Post Service',
+    posting:        'Posting…',
     // Step 1
     s1_title:       'Service Information',
     f_title:        'Service Title',
@@ -70,9 +70,9 @@ const STRINGS = {
     f_price_type:   'Price Type',
     price_types:    ['Per Hour', 'Per Day', 'Fixed Price', 'Negotiable', 'Per Session'],
     f_description:  'Description',
-    f_desc_ph:      'Describe your service: what you do, qualifications, availability, what\'s includedâ€¦',
+    f_desc_ph:      'Describe your service: what you do, qualifications, availability, what\'s included…',
     f_desc_min:     'Min 30 characters',
-    f_desc_good:    'âœ“ Good',
+    f_desc_good:    '✓ Good',
     f_images:       'Service Images (optional)',
     f_images_sub:   'Upload up to 5 photos of your work',
     f_images_cta:   'Tap to add photos',
@@ -85,16 +85,16 @@ const STRINGS = {
     row_price:      'Price',
     row_experience: 'Experience',
     row_phone:      'Phone',
-    row_not_set:    'â€”',
+    row_not_set:    '—',
     row_not_specified: 'Not specified',
     row_not_provided:  'Not provided',
-    preview_label:  'Preview â€” how clients will see your listing',
-    demo_note:      'DEMO badge only shows on sample items â€” not on your live listing.',
+    preview_label:  'Preview — how clients will see your listing',
+    demo_note:      'DEMO badge only shows on sample items — not on your live listing.',
     // Success
-    success_emoji:  'ðŸ› Ã¯Â¸Â',
+    success_emoji:  '🛠ï¸',
     success_title:  'Service Listed!',
     success_sub:    'Your service is now visible to clients across Cameroon.',
-    success_view:   'View My Service â†’',
+    success_view:   'View My Service →',
     success_browse: 'Browse Services',
     success_another:'Offer Another Service',
     // Errors
@@ -106,157 +106,157 @@ const STRINGS = {
     err_description:'Description must be at least 30 characters',
     err_auth:       'Please log in to post a service',
     err_submit:     'Failed to post. Please try again.',
-    draft_saved:    'Draft saved âœ…',
+    draft_saved:    'Draft saved ✅',
   },
   fr: {
     page_title:     'Proposer un Service',
-    step_labels:    ['Informations', 'Tarif & DÃ©tails', 'RÃ©vision & Publier'],
-    step_prefix:    'Ã‰tape',
+    step_labels:    ['Informations', 'Tarif & Détails', 'Révision & Publier'],
+    step_prefix:    'Étape',
     step_of:        'sur',
-    save_draft:     'ðŸ’¾ Brouillon',
-    back:           'â† Retour',
-    next:           'Ã‰tape suivante â†’',
-    review_label:   'RÃ©viser l\'annonce â†’',
-    post_label:     'ðŸš€ Publier',
-    posting:        'Publicationâ€¦',
+    save_draft:     '💾 Brouillon',
+    back:           '← Retour',
+    next:           'Étape suivante →',
+    review_label:   'Réviser l\'annonce →',
+    post_label:     '🚀 Publier',
+    posting:        'Publication…',
     s1_title:       'Informations sur le service',
     f_title:        'Titre du service',
     f_title_ph:     'ex. Nettoyage professionnel, Plombier expert',
-    f_category:     'CatÃ©gorie',
-    f_cat_ph:       'Choisir une catÃ©gorie',
-    f_region:       'RÃ©gion',
-    f_region_ph:    'Choisir une rÃ©gion',
+    f_category:     'Catégorie',
+    f_cat_ph:       'Choisir une catégorie',
+    f_region:       'Région',
+    f_region_ph:    'Choisir une région',
     f_city:         'Ville',
     f_city_ph:      'Choisir ou taper une ville',
-    f_experience:   'AnnÃ©es d\'expÃ©rience',
+    f_experience:   'Années d\'expérience',
     f_experience_ph:'ex. 5 ans',
-    f_phone:        'TÃ©lÃ©phone de contact',
+    f_phone:        'Téléphone de contact',
     s2_title:       'Tarif & Description',
     f_price:        'Prix (FCFA)',
     f_price_ph:     'ex. 15000',
     f_price_type:   'Type de tarif',
-    price_types:    ['Par heure', 'Par jour', 'Prix fixe', 'NÃ©gociable', 'Par sÃ©ance'],
+    price_types:    ['Par heure', 'Par jour', 'Prix fixe', 'Négociable', 'Par séance'],
     f_description:  'Description',
-    f_desc_ph:      'DÃ©crivez votre service : compÃ©tences, disponibilitÃ©, ce qui est inclusâ€¦',
-    f_desc_min:     'Min 30 caractÃ¨res',
-    f_desc_good:    'âœ“ Bien',
+    f_desc_ph:      'Décrivez votre service : compétences, disponibilité, ce qui est inclus…',
+    f_desc_min:     'Min 30 caractères',
+    f_desc_good:    '✓ Bien',
     f_images:       'Photos du service (optionnel)',
-    f_images_sub:   'Ajoutez jusqu\'Ã  5 photos de votre travail',
+    f_images_sub:   'Ajoutez jusqu\'à 5 photos de votre travail',
     f_images_cta:   'Appuyez pour ajouter des photos',
     f_images_max:   '5 Mo max chacune',
-    s3_title:       'RÃ©sumÃ© de l\'annonce',
+    s3_title:       'Résumé de l\'annonce',
     row_title:      'Titre',
-    row_category:   'CatÃ©gorie',
+    row_category:   'Catégorie',
     row_location:   'Localisation',
     row_price:      'Prix',
-    row_experience: 'ExpÃ©rience',
-    row_phone:      'TÃ©lÃ©phone',
-    row_not_set:    'â€”',
-    row_not_specified: 'Non spÃ©cifiÃ©',
+    row_experience: 'Expérience',
+    row_phone:      'Téléphone',
+    row_not_set:    '—',
+    row_not_specified: 'Non spécifié',
     row_not_provided:  'Non fourni',
-    preview_label:  'AperÃ§u â€” comment les clients verront votre annonce',
-    demo_note:      'Le badge DÃ‰MO apparaÃ®t uniquement sur les exemples â€” pas sur votre annonce rÃ©elle.',
-    success_emoji:  'ðŸ› Ã¯Â¸Â',
-    success_title:  'Service publiÃ© !',
-    success_sub:    'Votre service est maintenant visible aux clients Ã  travers le Cameroun.',
-    success_view:   'Voir mon service â†’',
+    preview_label:  'Aperçu — comment les clients verront votre annonce',
+    demo_note:      'Le badge DÉMO apparaît uniquement sur les exemples — pas sur votre annonce réelle.',
+    success_emoji:  '🛠ï¸',
+    success_title:  'Service publié !',
+    success_sub:    'Votre service est maintenant visible aux clients à travers le Cameroun.',
+    success_view:   'Voir mon service →',
     success_browse: 'Parcourir les services',
     success_another:'Proposer un autre service',
     err_title:      'Le titre est obligatoire',
-    err_category:   'La catÃ©gorie est obligatoire',
-    err_region:     'La rÃ©gion est obligatoire',
+    err_category:   'La catégorie est obligatoire',
+    err_region:     'La région est obligatoire',
     err_city:       'La ville est obligatoire',
     err_price:      'Entrez un prix valide',
-    err_description:'La description doit faire au moins 30 caractÃ¨res',
+    err_description:'La description doit faire au moins 30 caractères',
     err_auth:       'Veuillez vous connecter pour publier',
-    err_submit:     'Ã‰chec de la publication. RÃ©essayez.',
-    draft_saved:    'Brouillon enregistrÃ© âœ…',
+    err_submit:     'Échec de la publication. Réessayez.',
+    draft_saved:    'Brouillon enregistré ✅',
   },
   ar: {
-    page_title:     'ØªÙ‚Ø¯ÙŠÙ… Ø®Ø¯Ù…Ø©',
-    step_labels:    ['Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø®Ø¯Ù…Ø©', 'Ø§Ù„ØªØ³Ø¹ÙŠØ± ÙˆØ§Ù„ØªÃ™ÂØ§ØµÙŠÙ„', 'Ù…Ø±Ø§Ø¬Ø¹Ø© ÙˆÙ†Ø´Ø±'],
-    step_prefix:    'Ø®Ø·ÙˆØ©',
-    step_of:        'Ù…Ù†',
-    save_draft:     'ðŸ’¾ Ø­Ã™ÂØ¸ Ù…Ø³ÙˆØ¯Ø©',
-    back:           'Ø±Ø¬ÙˆØ¹ â†’',
-    next:           'â† Ø§Ù„Ø®Ø·ÙˆØ© Ø§Ù„ØªØ§Ù„ÙŠØ©',
-    review_label:   'â† Ù…Ø±Ø§Ø¬Ø¹Ø© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†',
-    post_label:     'ðŸš€ Ù†Ø´Ø± Ø§Ù„Ø®Ø¯Ù…Ø©',
-    posting:        'Ø¬Ø§Ø±Ã™Â Ø§Ù„Ù†Ø´Ø±â€¦',
-    s1_title:       'Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø®Ø¯Ù…Ø©',
-    f_title:        'Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ø®Ø¯Ù…Ø©',
-    f_title_ph:     'Ù…Ø«Ø§Ù„: ØªÙ†Ø¸ÙŠÃ™Â Ù…Ù†Ø§Ø²Ù„ Ø§Ø­ØªØ±Ø§Ã™ÂÙŠ',
-    f_category:     'Ø§Ù„Ã™ÂØ¦Ø©',
-    f_cat_ph:       'Ø§Ø®ØªØ± Ã™ÂØ¦Ø©',
-    f_region:       'Ø§Ù„Ù…Ù†Ø·Ù‚Ø©',
-    f_region_ph:    'Ø§Ø®ØªØ± Ù…Ù†Ø·Ù‚Ø©',
-    f_city:         'Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©',
-    f_city_ph:      'Ø§Ø®ØªØ± Ù…Ø¯ÙŠÙ†Ø©',
-    f_experience:   'Ø³Ù†ÙˆØ§Øª Ø§Ù„Ø®Ø¨Ø±Ø©',
-    f_experience_ph:'Ù…Ø«Ø§Ù„: 5 Ø³Ù†ÙˆØ§Øª',
-    f_phone:        'Ø±Ù‚Ù… Ø§Ù„Ø§ØªØµØ§Ù„',
-    s2_title:       'Ø§Ù„ØªØ³Ø¹ÙŠØ± ÙˆØ§Ù„ÙˆØµÃ™Â',
-    f_price:        'Ø§Ù„Ø³Ø¹Ø± (Ã™ÂØ±Ù†Ùƒ Ø£Ã™ÂØ±ÙŠÙ‚ÙŠ)',
-    f_price_ph:     'Ù…Ø«Ø§Ù„: 15000',
-    f_price_type:   'Ù†ÙˆØ¹ Ø§Ù„Ø³Ø¹Ø±',
-    price_types:    ['Ã™ÂÙŠ Ø§Ù„Ø³Ø§Ø¹Ø©', 'Ã™ÂÙŠ Ø§Ù„ÙŠÙˆÙ…', 'Ø³Ø¹Ø± Ø«Ø§Ø¨Øª', 'Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÃ™ÂØ§ÙˆØ¶', 'Ù„ÙƒÙ„ Ø¬Ù„Ø³Ø©'],
-    f_description:  'Ø§Ù„ÙˆØµÃ™Â',
-    f_desc_ph:      'ØµÃ™Â Ø®Ø¯Ù…ØªÙƒ Ø¨Ø§Ù„ØªÃ™ÂØµÙŠÙ„â€¦',
-    f_desc_min:     'Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ø¯Ù†Ù‰ 30 Ø­Ø±Ã™ÂØ§Ù‹',
-    f_desc_good:    'âœ“ Ø¬ÙŠØ¯',
-    f_images:       'ØµÙˆØ± Ø§Ù„Ø®Ø¯Ù…Ø© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)',
-    f_images_sub:   'Ø£Ø¶Ã™Â Ø­ØªÙ‰ 5 ØµÙˆØ± Ù„Ø£Ø¹Ù…Ø§Ù„Ùƒ',
-    f_images_cta:   'Ø§Ø¶ØºØ· Ù„Ø¥Ø¶Ø§Ã™ÂØ© ØµÙˆØ±',
-    f_images_max:   '5 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª ÙƒØ­Ø¯ Ø£Ù‚ØµÙ‰',
-    s3_title:       'Ù…Ù„Ø®Øµ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†',
-    row_title:      'Ø§Ù„Ø¹Ù†ÙˆØ§Ù†',
-    row_category:   'Ø§Ù„Ã™ÂØ¦Ø©',
-    row_location:   'Ø§Ù„Ù…ÙˆÙ‚Ø¹',
-    row_price:      'Ø§Ù„Ø³Ø¹Ø±',
-    row_experience: 'Ø§Ù„Ø®Ø¨Ø±Ø©',
-    row_phone:      'Ø§Ù„Ù‡Ø§ØªÃ™Â',
-    row_not_set:    'â€”',
-    row_not_specified: 'ØºÙŠØ± Ù…Ø­Ø¯Ø¯',
-    row_not_provided:  'ØºÙŠØ± Ù…Ã™ÂØ¯Ø±Ø¬',
-    preview_label:  'Ù…Ø¹Ø§ÙŠÙ†Ø© â€” ÙƒÙŠÃ™Â Ø³ÙŠØ±Ù‰ Ø§Ù„Ø¹Ù…Ù„Ø§Ø¡ Ø¥Ø¹Ù„Ø§Ù†Ùƒ',
-    demo_note:      'Ø´Ø§Ø±Ø© DEMO ØªØ¸Ù‡Ø± Ã™ÂÙ‚Ø· Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù…Ø«Ù„Ø©.',
-    success_emoji:  'ðŸ› Ã¯Â¸Â',
-    success_title:  'ØªÙ… Ù†Ø´Ø± Ø§Ù„Ø®Ø¯Ù…Ø©!',
-    success_sub:    'Ø®Ø¯Ù…ØªÙƒ Ø§Ù„Ø¢Ù† Ù…Ø±Ø¦ÙŠØ© Ù„Ù„Ø¹Ù…Ù„Ø§Ø¡ Ã™ÂÙŠ Ø¬Ù…ÙŠØ¹ Ø£Ù†Ø­Ø§Ø¡ Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ†.',
-    success_view:   'Ø¹Ø±Ø¶ Ø®Ø¯Ù…ØªÙŠ â†',
-    success_browse: 'ØªØµÃ™ÂØ­ Ø§Ù„Ø®Ø¯Ù…Ø§Øª',
-    success_another:'ØªÙ‚Ø¯ÙŠÙ… Ø®Ø¯Ù…Ø© Ø£Ø®Ø±Ù‰',
-    err_title:      'Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ù…Ø·Ù„ÙˆØ¨',
-    err_category:   'Ø§Ù„Ã™ÂØ¦Ø© Ù…Ø·Ù„ÙˆØ¨Ø©',
-    err_region:     'Ø§Ù„Ù…Ù†Ø·Ù‚Ø© Ù…Ø·Ù„ÙˆØ¨Ø©',
-    err_city:       'Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© Ù…Ø·Ù„ÙˆØ¨Ø©',
-    err_price:      'Ø£Ø¯Ø®Ù„ Ø³Ø¹Ø±Ø§Ù‹ ØµØ­ÙŠØ­Ø§Ù‹',
-    err_description:'Ø§Ù„ÙˆØµÃ™Â ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† 30 Ø­Ø±Ã™ÂØ§Ù‹ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„',
-    err_auth:       'Ø³Ø¬Ù‘Ù„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù†Ø´Ø± Ø®Ø¯Ù…Ø©',
-    err_submit:     'Ã™ÂØ´Ù„ Ø§Ù„Ù†Ø´Ø±. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹.',
-    draft_saved:    'ØªÙ… Ø­Ã™ÂØ¸ Ø§Ù„Ù…Ø³ÙˆØ¯Ø© âœ…',
+    page_title:     'تقديم خدمة',
+    step_labels:    ['معلومات الخدمة', 'التسعير والتÙاصيل', 'مراجعة ونشر'],
+    step_prefix:    'خطوة',
+    step_of:        'من',
+    save_draft:     '💾 حÙظ مسودة',
+    back:           'رجوع →',
+    next:           '← الخطوة التالية',
+    review_label:   '← مراجعة الإعلان',
+    post_label:     '🚀 نشر الخدمة',
+    posting:        'جارÙ النشر…',
+    s1_title:       'معلومات الخدمة',
+    f_title:        'عنوان الخدمة',
+    f_title_ph:     'مثال: تنظيÙ منازل احتراÙي',
+    f_category:     'الÙئة',
+    f_cat_ph:       'اختر Ùئة',
+    f_region:       'المنطقة',
+    f_region_ph:    'اختر منطقة',
+    f_city:         'المدينة',
+    f_city_ph:      'اختر مدينة',
+    f_experience:   'سنوات الخبرة',
+    f_experience_ph:'مثال: 5 سنوات',
+    f_phone:        'رقم الاتصال',
+    s2_title:       'التسعير والوصÙ',
+    f_price:        'السعر (Ùرنك أÙريقي)',
+    f_price_ph:     'مثال: 15000',
+    f_price_type:   'نوع السعر',
+    price_types:    ['Ùي الساعة', 'Ùي اليوم', 'سعر ثابت', 'قابل للتÙاوض', 'لكل جلسة'],
+    f_description:  'الوصÙ',
+    f_desc_ph:      'صÙ خدمتك بالتÙصيل…',
+    f_desc_min:     'الحد الأدنى 30 حرÙاً',
+    f_desc_good:    '✓ جيد',
+    f_images:       'صور الخدمة (اختياري)',
+    f_images_sub:   'أضÙ حتى 5 صور لأعمالك',
+    f_images_cta:   'اضغط لإضاÙة صور',
+    f_images_max:   '5 ميغابايت كحد أقصى',
+    s3_title:       'ملخص الإعلان',
+    row_title:      'العنوان',
+    row_category:   'الÙئة',
+    row_location:   'الموقع',
+    row_price:      'السعر',
+    row_experience: 'الخبرة',
+    row_phone:      'الهاتÙ',
+    row_not_set:    '—',
+    row_not_specified: 'غير محدد',
+    row_not_provided:  'غير مÙدرج',
+    preview_label:  'معاينة — كيÙ سيرى العملاء إعلانك',
+    demo_note:      'شارة DEMO تظهر Ùقط على الأمثلة.',
+    success_emoji:  '🛠ï¸',
+    success_title:  'تم نشر الخدمة!',
+    success_sub:    'خدمتك الآن مرئية للعملاء Ùي جميع أنحاء الكاميرون.',
+    success_view:   'عرض خدمتي ←',
+    success_browse: 'تصÙح الخدمات',
+    success_another:'تقديم خدمة أخرى',
+    err_title:      'العنوان مطلوب',
+    err_category:   'الÙئة مطلوبة',
+    err_region:     'المنطقة مطلوبة',
+    err_city:       'المدينة مطلوبة',
+    err_price:      'أدخل سعراً صحيحاً',
+    err_description:'الوصÙ يجب أن يكون 30 حرÙاً على الأقل',
+    err_auth:       'سجّل الدخول لنشر خدمة',
+    err_submit:     'Ùشل النشر. حاول مجدداً.',
+    draft_saved:    'تم حÙظ المسودة ✅',
   },
   ha: {
     page_title:     'Ba da Sabis',
     step_labels:    ['Bayanan Sabis', 'Farashi & Bayani', 'Duba & Fitar'],
     step_prefix:    'Mataki',
     step_of:        'na',
-    save_draft:     'ðŸ’¾ Ajiye Daftari',
-    back:           'â† Koma',
-    next:           'Mataki Mai Zuwa â†’',
-    review_label:   'Duba Jeri â†’',
-    post_label:     'ðŸš€ Fitar Sabis',
-    posting:        'Ana fitaâ€¦',
+    save_draft:     '💾 Ajiye Daftari',
+    back:           '← Koma',
+    next:           'Mataki Mai Zuwa →',
+    review_label:   'Duba Jeri →',
+    post_label:     '🚀 Fitar Sabis',
+    posting:        'Ana fita…',
     s1_title:       'Bayanan Sabis',
     f_title:        'Sunan Sabis',
     f_title_ph:     'misali: Mai Tsaftace Gida, Kwararre Agwagwa',
     f_category:     'Rukunin',
-    f_cat_ph:       'ZaÉ“i rukuni',
+    f_cat_ph:       'Zaɓi rukuni',
     f_region:       'Yankin',
-    f_region_ph:    'ZaÉ“i yanki',
+    f_region_ph:    'Zaɓi yanki',
     f_city:         'Birni',
-    f_city_ph:      'ZaÉ“i birni',
-    f_experience:   'Shekaru na Æ˜warewa',
+    f_city_ph:      'Zaɓi birni',
+    f_experience:   'Shekaru na Ƙwarewa',
     f_experience_ph:'misali: shekaru 5',
     f_phone:        'Wayar Sadarwa',
     s2_title:       'Farashi & Bayani',
@@ -265,42 +265,42 @@ const STRINGS = {
     f_price_type:   'Irin Farashi',
     price_types:    ['Kowace Awa', 'Kowace Rana', 'Farashi Daidai', 'Ana iya yarjejeniya', 'Kowace Zama'],
     f_description:  'Bayani',
-    f_desc_ph:      'Bayyana sabisinka dalla-dallaâ€¦',
-    f_desc_min:     'Mafi Æ™arancin haruffa 30',
-    f_desc_good:    'âœ“ Kyau',
-    f_images:       'Hotuna (zaÉ“i)',
-    f_images_sub:   'Æ˜ara hotuna 5 na aikin ka',
-    f_images_cta:   'Danna don Æ™ara hotuna',
+    f_desc_ph:      'Bayyana sabisinka dalla-dalla…',
+    f_desc_min:     'Mafi ƙarancin haruffa 30',
+    f_desc_good:    '✓ Kyau',
+    f_images:       'Hotuna (zaɓi)',
+    f_images_sub:   'Ƙara hotuna 5 na aikin ka',
+    f_images_cta:   'Danna don ƙara hotuna',
     f_images_max:   'Mafi yawa 5MB kowane',
-    s3_title:       'TaÆ™aitawar Jeri',
+    s3_title:       'Taƙaitawar Jeri',
     row_title:      'Suna', row_category: 'Rukuni', row_location: 'Wuri',
-    row_price:      'Farashi', row_experience: 'Æ˜warewa', row_phone: 'Waya',
-    row_not_set:    'â€”', row_not_specified: 'Ba a faÉ—a', row_not_provided: 'Ba a bayar',
-    preview_label:  'Kallon farko â€” yadda abokan ciniki za su gani',
+    row_price:      'Farashi', row_experience: 'Ƙwarewa', row_phone: 'Waya',
+    row_not_set:    '—', row_not_specified: 'Ba a faɗa', row_not_provided: 'Ba a bayar',
+    preview_label:  'Kallon farko — yadda abokan ciniki za su gani',
     demo_note:      'Alama ta DEMO ta bayyana ne kawai a misalai.',
-    success_emoji:  'ðŸ› Ã¯Â¸Â',
+    success_emoji:  '🛠ï¸',
     success_title:  'An Fitar da Sabis!',
     success_sub:    'Sabisinka yanzu ana iya ganin sa a duk Kamaru.',
-    success_view:   'Duba Sabisina â†’',
+    success_view:   'Duba Sabisina →',
     success_browse: 'Nemi Sabis',
-    success_another:'Ba da Sabis ÆŠaya Kuma',
-    err_title:      'Ana buÆ™atar suna', err_category: 'Ana buÆ™atar rukuni',
-    err_region:     'Ana buÆ™atar yanki', err_city: 'Ana buÆ™atar birni',
+    success_another:'Ba da Sabis Ɗaya Kuma',
+    err_title:      'Ana buƙatar suna', err_category: 'Ana buƙatar rukuni',
+    err_region:     'Ana buƙatar yanki', err_city: 'Ana buƙatar birni',
     err_price:      'Shigar da farashi mai inganci', err_description: 'Bayani ya kamata ya kai haruffa 30',
     err_auth:       'Shiga domin fitar da sabis', err_submit:  'Ba a iya fitar da sabis.',
-    draft_saved:    'An ajiye daftari âœ…',
+    draft_saved:    'An ajiye daftari ✅',
   },
   pcm: {
     page_title:     'Offer Service',
     step_labels:    ['Service Info', 'Price & Details', 'Review & Post'],
     step_prefix:    'Step',
     step_of:        'of',
-    save_draft:     'ðŸ’¾ Save Draft',
-    back:           'â† Back',
-    next:           'Next â†’',
-    review_label:   'Review Listing â†’',
-    post_label:     'ðŸš€ Post Service',
-    posting:        'E dey postâ€¦',
+    save_draft:     '💾 Save Draft',
+    back:           '← Back',
+    next:           'Next →',
+    review_label:   'Review Listing →',
+    post_label:     '🚀 Post Service',
+    posting:        'E dey post…',
     s1_title:       'Service Information',
     f_title:        'Service Title',
     f_title_ph:     'e.g. House Cleaning, Plumber',
@@ -319,9 +319,9 @@ const STRINGS = {
     f_price_type:   'Price Type',
     price_types:    ['Per Hour', 'Per Day', 'Fixed', 'Negotiable', 'Per Session'],
     f_description:  'Description',
-    f_desc_ph:      'Tell people wetin you dey do, your experience, wetin dey includeâ€¦',
+    f_desc_ph:      'Tell people wetin you dey do, your experience, wetin dey include…',
     f_desc_min:     'Min 30 characters',
-    f_desc_good:    'âœ“ Good',
+    f_desc_good:    '✓ Good',
     f_images:       'Photos (optional)',
     f_images_sub:   'Upload up to 5 photos of your work',
     f_images_cta:   'Tap to add photos',
@@ -329,74 +329,74 @@ const STRINGS = {
     s3_title:       'Listing Summary',
     row_title:      'Title', row_category: 'Category', row_location: 'Location',
     row_price:      'Price', row_experience: 'Experience', row_phone: 'Phone',
-    row_not_set:    'â€”', row_not_specified: 'Not specified', row_not_provided: 'Not provided',
-    preview_label:  'Preview â€” how clients go see am',
+    row_not_set:    '—', row_not_specified: 'Not specified', row_not_provided: 'Not provided',
+    preview_label:  'Preview — how clients go see am',
     demo_note:      'DEMO badge no go show on your real listing.',
-    success_emoji:  'ðŸ› Ã¯Â¸Â',
+    success_emoji:  '🛠ï¸',
     success_title:  'Service Don Post!',
     success_sub:    'Your service dey visible for all Cameroon now.',
-    success_view:   'See My Service â†’',
+    success_view:   'See My Service →',
     success_browse: 'Browse Services',
     success_another:'Offer Another Service',
     err_title:      'Put service title', err_category: 'Pick one category',
     err_region:     'Pick region', err_city: 'Enter city',
     err_price:      'Enter correct price', err_description: 'Description need 30 characters',
     err_auth:       'Login first to post service', err_submit:  'E no work. Try again.',
-    draft_saved:    'Draft saved âœ…',
+    draft_saved:    'Draft saved ✅',
   },
   ful: {
-    page_title:     'Hollu É“eyngal',
-    step_labels:    ['JaaÉ“i', 'NgiÉ—gu & Coftal', 'Leelu & Neltu'],
+    page_title:     'Hollu ɓeyngal',
+    step_labels:    ['Jaaɓi', 'Ngiɗgu & Coftal', 'Leelu & Neltu'],
     step_prefix:    'Laabi',
     step_of:        'e nder',
-    save_draft:     'ðŸ’¾ Dabbito',
-    back:           'â† Rutto',
-    next:           'Laabi É“urngo â†’',
-    review_label:   'Leelu â†’',
-    post_label:     'ðŸš€ Neltu É“eyngal',
-    posting:        'Jokkuâ€¦',
-    s1_title:       'JaaÉ“i É“eyngal',
-    f_title:        'Innde É“eyngal',
-    f_title_ph:     'misaali: ÆŠoftagol suudu',
-    f_category:     'ÆŠaÉ—ol',
-    f_cat_ph:       'SuÉ“ É—aÉ—ol',
+    save_draft:     '💾 Dabbito',
+    back:           '← Rutto',
+    next:           'Laabi ɓurngo →',
+    review_label:   'Leelu →',
+    post_label:     '🚀 Neltu ɓeyngal',
+    posting:        'Jokku…',
+    s1_title:       'Jaaɓi ɓeyngal',
+    f_title:        'Innde ɓeyngal',
+    f_title_ph:     'misaali: Ɗoftagol suudu',
+    f_category:     'Ɗaɗol',
+    f_cat_ph:       'Suɓ ɗaɗol',
     f_region:       'Diiwaan',
-    f_region_ph:    'SuÉ“ diiwaan',
+    f_region_ph:    'Suɓ diiwaan',
     f_city:         'Wuro',
-    f_city_ph:      'SuÉ“ wuro',
+    f_city_ph:      'Suɓ wuro',
     f_experience:   'Hitaande Golle',
     f_experience_ph:'misaali: 5 hitaande',
     f_phone:        'Telefon',
-    s2_title:       'NgiÉ—gu & Coftal',
-    f_price:        'NgiÉ—gu (FCFA)',
+    s2_title:       'Ngiɗgu & Coftal',
+    f_price:        'Ngiɗgu (FCFA)',
     f_price_ph:     'misaali: 15000',
-    f_price_type:   'SiforÉ—e ngiÉ—gu',
-    price_types:    ['Wakati', 'Ã‘alawma', 'Liggal', 'Waasaango', 'Laabi'],
+    f_price_type:   'Siforɗe ngiɗgu',
+    price_types:    ['Wakati', 'Ñalawma', 'Liggal', 'Waasaango', 'Laabi'],
     f_description:  'Coftal',
-    f_desc_ph:      'Hollu golle maa en fii keÉ“eâ€¦',
-    f_desc_min:     'Æe 30 xarfe',
-    f_desc_good:    'âœ“ Æuri',
-    f_images:       'Natal (yaÉ“É“itaaki)',
-    f_images_sub:   'Æamtu natal 5',
-    f_images_cta:   'HaaÉ—tu natal',
+    f_desc_ph:      'Hollu golle maa en fii keɓe…',
+    f_desc_min:     'Ɓe 30 xarfe',
+    f_desc_good:    '✓ Ɓuri',
+    f_images:       'Natal (yaɓɓitaaki)',
+    f_images_sub:   'Ɓamtu natal 5',
+    f_images_cta:   'Haaɗtu natal',
     f_images_max:   '5 MB',
-    s3_title:       'Leelu É“eyngal',
-    row_title:      'Innde', row_category: 'ÆŠaÉ—ol', row_location: 'Dow',
-    row_price:      'NgiÉ—gu', row_experience: 'Golle', row_phone: 'Telefon',
-    row_not_set:    'â€”', row_not_specified: 'Alaa', row_not_provided: 'Alaa',
-    preview_label:  'Yeeso â€” É—um woni ko haÉ“É“ooÉ“e mbayi',
+    s3_title:       'Leelu ɓeyngal',
+    row_title:      'Innde', row_category: 'Ɗaɗol', row_location: 'Dow',
+    row_price:      'Ngiɗgu', row_experience: 'Golle', row_phone: 'Telefon',
+    row_not_set:    '—', row_not_specified: 'Alaa', row_not_provided: 'Alaa',
+    preview_label:  'Yeeso — ɗum woni ko haɓɓooɓe mbayi',
     demo_note:      'Aynde DEMO holletee tan e misal.',
-    success_emoji:  'ðŸ› Ã¯Â¸Â',
-    success_title:  'Æeyngal nelnaaÉ—o!',
-    success_sub:    'Æeyngal maa yiyetee e Kameruun.',
-    success_view:   'Yiy É“eyngal am â†’',
-    success_browse: 'Yiy É“eyngal É—i',
-    success_another:'Hollu É“eyngal É“urngo',
-    err_title:      'Innde waÉ—ii', err_category: 'ÆŠaÉ—ol waÉ—ii',
-    err_region:     'Diiwaan waÉ—ii', err_city: 'Wuro waÉ—ii',
-    err_price:      'NgiÉ—gu haÉ—aa', err_description: 'Coftal É“e 30 xarfe',
+    success_emoji:  '🛠ï¸',
+    success_title:  'Ɓeyngal nelnaaɗo!',
+    success_sub:    'Ɓeyngal maa yiyetee e Kameruun.',
+    success_view:   'Yiy ɓeyngal am →',
+    success_browse: 'Yiy ɓeyngal ɗi',
+    success_another:'Hollu ɓeyngal ɓurngo',
+    err_title:      'Innde waɗii', err_category: 'Ɗaɗol waɗii',
+    err_region:     'Diiwaan waɗii', err_city: 'Wuro waɗii',
+    err_price:      'Ngiɗgu haɗaa', err_description: 'Coftal ɓe 30 xarfe',
     err_auth:       'Log in fii neltu', err_submit: 'Alaa nelal.',
-    draft_saved:    'Dabbito âœ…',
+    draft_saved:    'Dabbito ✅',
   },
 } as const;
 
@@ -434,9 +434,9 @@ function fmt(n: string): string {
     : '';
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Step Bar
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function StepBar({ step, labels, prefix, ofLabel }: { step: number; labels: readonly string[]; prefix: string; ofLabel: string }) {
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-3">
@@ -462,9 +462,9 @@ function StepBar({ step, labels, prefix, ofLabel }: { step: number; labels: read
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Nav Row
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function NavRow({ onDraft, onBack, onNext, nextLabel, disabled = false }: {
   onDraft: () => void; onBack?: () => void;
   onNext: () => void; nextLabel: string; disabled?: boolean;
@@ -473,12 +473,12 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, disabled = false }: {
     <div className="flex gap-2 pt-4 pb-6">
       <button type="button" onClick={onDraft}
         className="flex-shrink-0 px-3 py-3 rounded-xl border-2 border-gray-300 text-xs font-semibold text-gray-600 bg-white active:scale-95 transition-all">
-        ðŸ’¾
+        💾
       </button>
       {onBack && (
         <button type="button" onClick={onBack}
           className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-600 bg-white active:scale-95 transition-all">
-          â†
+          ←
         </button>
       )}
       <button type="button" onClick={onNext} disabled={disabled}
@@ -490,9 +490,9 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, disabled = false }: {
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Field helpers
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function Err({ msg }: { msg?: string }) {
   return msg ? <p className="text-xs text-red-500 mt-1 font-medium flex items-center gap-1"><AlertTriangle className="w-3 h-3"/>{msg}</p> : null;
 }
@@ -525,9 +525,9 @@ function FSelect({ value, onChange, options, placeholder, error }: {
   </>;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Main
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 export default function OfferService() {
   const navigate  = useNavigate();
   const rawLang   = useLang();
@@ -681,7 +681,7 @@ export default function OfferService() {
     }
   }
 
-  // â”€â”€ Success screen â”€â”€
+  // ── Success screen ──
   if (posted) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
@@ -730,7 +730,7 @@ export default function OfferService() {
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
 
-        {/* â”€â”€ STEP 1: Service Info â”€â”€ */}
+        {/* ── STEP 1: Service Info ── */}
         {step === 1 && (
           <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900">{s.s1_title}</h2>
@@ -767,7 +767,7 @@ export default function OfferService() {
 
             <div><Lbl>{s.f_phone}</Lbl>
               <div className="flex">
-                <span className="border-2 border-r-0 border-gray-200 rounded-l-xl px-3 py-3 text-sm bg-gray-50 text-gray-600">ðŸ‡¨ðŸ‡² +237</span>
+                <span className="border-2 border-r-0 border-gray-200 rounded-l-xl px-3 py-3 text-sm bg-gray-50 text-gray-600">🇨🇲 +237</span>
                 <input type="tel"
                   className="flex-1 border-2 border-gray-200 focus:border-teal-500 rounded-r-xl px-4 py-3 text-sm bg-white text-gray-900 outline-none"
                   placeholder="6XX XXX XXX"
@@ -780,7 +780,7 @@ export default function OfferService() {
           </div>
         )}
 
-        {/* â”€â”€ STEP 2: Pricing & Description â”€â”€ */}
+        {/* ── STEP 2: Pricing & Description ── */}
         {step === 2 && (
           <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-base text-gray-900">{s.s2_title}</h2>
@@ -852,7 +852,7 @@ export default function OfferService() {
           </div>
         )}
 
-        {/* â”€â”€ STEP 3: Review & Post â”€â”€ */}
+        {/* ── STEP 3: Review & Post ── */}
         {step === 3 && (
           <>
             {/* Summary */}
@@ -901,7 +901,7 @@ export default function OfferService() {
                 <div className="h-28 bg-gradient-to-br from-purple-50 to-teal-50 flex items-center justify-center relative">
                   {imgPreviews[0]
                     ? <img src={imgPreviews[0]} alt="" className="w-full h-full object-cover" />
-                    : <span className="text-4xl">ðŸ› Ã¯Â¸Â</span>}
+                    : <span className="text-4xl">🛠ï¸</span>}
                   <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-[9px] font-black px-1.5 py-0.5 rounded-full">DEMO</span>
                 </div>
                 <div className="p-3">
@@ -910,7 +910,7 @@ export default function OfferService() {
                     {fmt(d.price) ? `${fmt(d.price)} / ${d.priceType}` : 'Price not set'}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {[d.city, d.region].filter(Boolean).join(', ') || 'Location'} Â· {d.category || 'Category'}
+                    {[d.city, d.region].filter(Boolean).join(', ') || 'Location'} · {d.category || 'Category'}
                   </p>
                 </div>
               </div>
@@ -931,7 +931,7 @@ export default function OfferService() {
                   <div className="h-full bg-teal-500 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }} />
                 </div>
-                <p className="text-xs text-gray-400 text-center mt-1">Uploading photosâ€¦ {uploadProgress}%</p>
+                <p className="text-xs text-gray-400 text-center mt-1">Uploading photos… {uploadProgress}%</p>
               </div>
             )}
 
@@ -944,9 +944,5 @@ export default function OfferService() {
     </div>
   );
 }
-
-
-
-
 
 

@@ -156,4 +156,3 @@ export function getOptimizedImageUrl(
   const separator = baseUrl.includes("?") ? "&" : "?";
   return `${baseUrl}${separator}${queryString}`;
 }
-

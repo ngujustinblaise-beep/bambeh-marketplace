@@ -1,5 +1,5 @@
-﻿/**
- * BAMBÃ‰ MARKETPLACE - VOICE RECORDER COMPONENT
+/**
+ * BAMBÉ MARKETPLACE - VOICE RECORDER COMPONENT
  * Version: 1.0.0
  */
 
@@ -88,7 +88,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
       <div className="voice-recorder-modal">
         <div className="voice-recorder-header">
           <h3>{t('chat.recordVoiceMessage')}</h3>
-          <button className="close-button" onClick={handleCancel}>âœ•</button>
+          <button className="close-button" onClick={handleCancel}>✕</button>
         </div>
 
         <div className="voice-recorder-visualizer">
@@ -103,18 +103,18 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
         </div>
 
         <div className="voice-recorder-timer">
-          <span className={`recording-indicator ${isRecording && !isPaused ? 'active' : ''}`}>âº</span>
+          <span className={`recording-indicator ${isRecording && !isPaused ? 'active' : ''}`}>⏺</span>
           <span className="timer-text">{formatVoiceDuration(duration)}</span>
           <span className="max-duration">/ 5:00</span>
         </div>
 
         <div className="voice-recorder-controls">
           <button className="recorder-button delete" onClick={handleCancel} disabled={isSending}>
-            ðŸ—‘Ã¯Â¸Â
+            🗑ï¸
           </button>
 
           <button className="recorder-button pause" onClick={togglePause} disabled={isSending || !isRecording}>
-            {isPaused ? 'â–¶Ã¯Â¸Â' : 'â¸ï¸'}
+            {isPaused ? '▶ï¸' : '⏸️'}
           </button>
 
           <button
@@ -125,7 +125,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
             }}
             disabled={isSending || duration < 1}
           >
-            {isSending ? 'â³' : 'ðŸ“¤'}
+            {isSending ? '⏳' : '📤'}
           </button>
         </div>
 
@@ -136,9 +136,5 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
 };
 
 export default VoiceRecorder;
-
-
-
-
 
 

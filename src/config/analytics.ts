@@ -17,4 +17,3 @@ export const logEvent = (category: string, action: string, label?: string) => {
     label
   });
 }
-

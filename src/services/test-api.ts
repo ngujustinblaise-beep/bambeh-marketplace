@@ -20,4 +20,3 @@ export const testAllServices = async (): Promise<{ jobs: boolean; market: boolea
   try { await testJobsApi(); await testMarketApi(); return { jobs: true, market: true }; }
   catch { return { jobs: false, market: false }; }
 };
-

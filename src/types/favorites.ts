@@ -8,4 +8,3 @@
   currency?: string;
   addedAt: string;
 }
-

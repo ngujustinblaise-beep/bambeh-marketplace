@@ -1,15 +1,15 @@
-﻿/**
+/**
  * src/pages/Jobs.tsx
- * Bambeh Marketplace Ã¢â‚¬â€ Find Jobs Page
- * Ã‚Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Find Jobs Page
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * Ã¢Å“â€¦ Language changes INSTANTLY via useLanguage().t() from LanguageContext
- * Ã¢Å“â€¦ No inline STR dictionary Ã¢â‚¬â€ all strings come from the central context
- * Ã¢Å“â€¦ Queries listings table (type='job') Ã¢â‚¬â€ correct Bambeh schema
- * Ã¢Å“â€¦ Category, job-type, region filters + search
- * Ã¢Å“â€¦ Save / Share per card
- * Ã¢Å“â€¦ Realtime new-job push via Supabase channel
- * Ã¢Å“â€¦ RTL layout for Arabic
+ * ✅ Language changes INSTANTLY via useLanguage().t() from LanguageContext
+ * ✅ No inline STR dictionary — all strings come from the central context
+ * ✅ Queries listings table (type='job') — correct Bambeh schema
+ * ✅ Category, job-type, region filters + search
+ * ✅ Save / Share per card
+ * ✅ Realtime new-job push via Supabase channel
+ * ✅ RTL layout for Arabic
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
@@ -19,10 +19,10 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from '@/App';
+import { useLanguage } from "@/App";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Static data (not translated Ã¢â‚¬â€ just identifiers) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Static data (not translated — just identifiers) ──────────────────────────
 const CATEGORIES = [
   "All","Technology","Marketing","Finance","Engineering",
   "Education","Agriculture","Healthcare","Logistics","Sales","Legal","Other",
@@ -44,18 +44,18 @@ const CATEGORY_I18N_KEY: Record<string, string> = {
 
 // Category display labels per language
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
-  All:         { en:"All",          fr:"Tous",          pidgin:"All",          ar:"Ã˜Â§Ã™â€žÃ™Æ’Ã™â€ž",          ff:"Fof" },
-  Technology:  { en:"Technology",   fr:"Technologie",   pidgin:"Tech",         ar:"Ã˜ÂªÃ™Æ’Ã™â€ Ã™Ë†Ã™â€žÃ™Ë†Ã˜Â¬Ã™Å Ã˜Â§",     ff:"Tekinoloji" },
-  Marketing:   { en:"Marketing",    fr:"Marketing",     pidgin:"Marketing",    ar:"Ã˜ÂªÃ˜Â³Ã™Ë†Ã™Å Ã™â€š",         ff:"Marketing" },
-  Finance:     { en:"Finance",      fr:"Finance",       pidgin:"Money work",   ar:"Ã™â€¦Ã˜Â§Ã™â€žÃ™Å Ã˜Â©",         ff:"Mbappu" },
-  Engineering: { en:"Engineering",  fr:"IngÃƒÂ©nierie",    pidgin:"Engineering",  ar:"Ã™â€¡Ã™â€ Ã˜Â¯Ã˜Â³Ã˜Â©",         ff:"Engineering" },
-  Education:   { en:"Education",    fr:"Ãƒâ€°ducation",     pidgin:"School work",  ar:"Ã˜Â§Ã™â€žÃ˜ÂªÃ˜Â¹Ã™â€žÃ™Å Ã™â€¦",       ff:"Janngugol" },
-  Agriculture: { en:"Agriculture",  fr:"Agriculture",   pidgin:"Farm work",    ar:"Ã˜Â²Ã˜Â±Ã˜Â§Ã˜Â¹Ã˜Â©",         ff:"Ndemndi" },
-  Healthcare:  { en:"Healthcare",   fr:"SantÃƒÂ©",         pidgin:"Hospital work",ar:"Ã˜Â±Ã˜Â¹Ã˜Â§Ã™Å Ã˜Â© Ã˜ÂµÃ˜Â­Ã™Å Ã˜Â©",   ff:"Cellal" },
-  Logistics:   { en:"Logistics",    fr:"Logistique",    pidgin:"Transport",    ar:"Ã™â€žÃ™Ë†Ã˜Â¬Ã˜Â³Ã˜ÂªÃ™Å Ã˜Â§Ã˜Âª",      ff:"Heftugol" },
-  Sales:       { en:"Sales",        fr:"Ventes",        pidgin:"Sell sell",    ar:"Ã™â€¦Ã˜Â¨Ã™Å Ã˜Â¹Ã˜Â§Ã˜Âª",        ff:"Jaral" },
-  Legal:       { en:"Legal",        fr:"Juridique",     pidgin:"Law work",     ar:"Ã™â€šÃ˜Â§Ã™â€ Ã™Ë†Ã™â€ Ã™Å ",        ff:"Laawol" },
-  Other:       { en:"Other",        fr:"Autre",         pidgin:"Other",        ar:"Ã˜Â£Ã˜Â®Ã˜Â±Ã™â€°",          ff:"WoÃ‰â€”Ã‰â€”um" },
+  All:         { en:"All",          fr:"Tous",          pidgin:"All",          ar:"الكل",          ff:"Fof" },
+  Technology:  { en:"Technology",   fr:"Technologie",   pidgin:"Tech",         ar:"تكنولوجيا",     ff:"Tekinoloji" },
+  Marketing:   { en:"Marketing",    fr:"Marketing",     pidgin:"Marketing",    ar:"تسويق",         ff:"Marketing" },
+  Finance:     { en:"Finance",      fr:"Finance",       pidgin:"Money work",   ar:"مالية",         ff:"Mbappu" },
+  Engineering: { en:"Engineering",  fr:"Ingénierie",    pidgin:"Engineering",  ar:"هندسة",         ff:"Engineering" },
+  Education:   { en:"Education",    fr:"Éducation",     pidgin:"School work",  ar:"التعليم",       ff:"Janngugol" },
+  Agriculture: { en:"Agriculture",  fr:"Agriculture",   pidgin:"Farm work",    ar:"زراعة",         ff:"Ndemndi" },
+  Healthcare:  { en:"Healthcare",   fr:"Santé",         pidgin:"Hospital work",ar:"رعاية صحية",   ff:"Cellal" },
+  Logistics:   { en:"Logistics",    fr:"Logistique",    pidgin:"Transport",    ar:"لوجستيات",      ff:"Heftugol" },
+  Sales:       { en:"Sales",        fr:"Ventes",        pidgin:"Sell sell",    ar:"مبيعات",        ff:"Jaral" },
+  Legal:       { en:"Legal",        fr:"Juridique",     pidgin:"Law work",     ar:"قانوني",        ff:"Laawol" },
+  Other:       { en:"Other",        fr:"Autre",         pidgin:"Other",        ar:"أخرى",          ff:"Woɗɗum" },
 };
 
 const JOB_TYPE_MAP: Record<string, string> = {
@@ -64,40 +64,40 @@ const JOB_TYPE_MAP: Record<string, string> = {
 };
 
 const JOB_TYPES_I18N: Record<string, Record<string, string>> = {
-  "All Types":  { en:"All Types",  fr:"Tous types",    pidgin:"All type",   ar:"Ã˜Â¬Ã™â€¦Ã™Å Ã˜Â¹ Ã˜Â§Ã™â€žÃ˜Â£Ã™â€ Ã™Ë†Ã˜Â§Ã˜Â¹", ff:"Suudu fof" },
-  "Full-time":  { en:"Full-time",  fr:"Temps plein",   pidgin:"Full time",  ar:"Ã˜Â¯Ã™Ë†Ã˜Â§Ã™â€¦ Ã™Æ’Ã˜Â§Ã™â€¦Ã™â€ž",    ff:"Waktu fof" },
-  "Part-time":  { en:"Part-time",  fr:"Temps partiel", pidgin:"Half time",  ar:"Ã˜Â¯Ã™Ë†Ã˜Â§Ã™â€¦ Ã˜Â¬Ã˜Â²Ã˜Â¦Ã™Å ",    ff:"Waktu didi" },
-  "Contract":   { en:"Contract",   fr:"Contrat",       pidgin:"Contract",   ar:"Ã˜Â¹Ã™â€šÃ˜Â¯",          ff:"Kontoraaji" },
-  "Internship": { en:"Internship", fr:"Stage",         pidgin:"Training",   ar:"Ã˜ÂªÃ˜Â¯Ã˜Â±Ã™Å Ã˜Â¨",        ff:"Jannginagol" },
-  "Remote":     { en:"Remote",     fr:"TÃƒÂ©lÃƒÂ©travail",   pidgin:"Online",     ar:"Ã˜Â¹Ã™â€  Ã˜Â¨Ãƒâ„¢Ã‚ÂÃ˜Â¹Ã˜Â¯",      ff:"E Ã†Âanndu" },
-  "Freelance":  { en:"Freelance",  fr:"Freelance",     pidgin:"Freelance",  ar:"Ã˜Â­Ã˜Â±",           ff:"Freelance" },
-  "Temporary":  { en:"Temporary",  fr:"Temporaire",    pidgin:"Small time", ar:"Ã™â€¦Ã˜Â¤Ã™â€šÃ˜Âª",         ff:"SeeÃ‰â€”a" },
+  "All Types":  { en:"All Types",  fr:"Tous types",    pidgin:"All type",   ar:"جميع الأنواع", ff:"Suudu fof" },
+  "Full-time":  { en:"Full-time",  fr:"Temps plein",   pidgin:"Full time",  ar:"دوام كامل",    ff:"Waktu fof" },
+  "Part-time":  { en:"Part-time",  fr:"Temps partiel", pidgin:"Half time",  ar:"دوام جزئي",    ff:"Waktu didi" },
+  "Contract":   { en:"Contract",   fr:"Contrat",       pidgin:"Contract",   ar:"عقد",          ff:"Kontoraaji" },
+  "Internship": { en:"Internship", fr:"Stage",         pidgin:"Training",   ar:"تدريب",        ff:"Jannginagol" },
+  "Remote":     { en:"Remote",     fr:"Télétravail",   pidgin:"Online",     ar:"عن بÙعد",      ff:"E Ɓanndu" },
+  "Freelance":  { en:"Freelance",  fr:"Freelance",     pidgin:"Freelance",  ar:"حر",           ff:"Freelance" },
+  "Temporary":  { en:"Temporary",  fr:"Temporaire",    pidgin:"Small time", ar:"مؤقت",         ff:"Seeɗa" },
 };
 
 const REGIONS_I18N: Record<string, Record<string, string>> = {
-  "All Regions":{ en:"All Regions", fr:"Toutes rÃƒÂ©gions", pidgin:"All area", ar:"Ã™Æ’Ã™â€ž Ã˜Â§Ã™â€žÃ™â€¦Ã™â€ Ã˜Â§Ã˜Â·Ã™â€š",   ff:"LeyÃ‰â€”e fof" },
-  "Centre":     { en:"Centre",      fr:"Centre",          pidgin:"Centre",   ar:"Ã˜Â§Ã™â€žÃ™Ë†Ã˜Â³Ã˜Â·",        ff:"Centre" },
-  "Littoral":   { en:"Littoral",    fr:"Littoral",        pidgin:"Coast",    ar:"Ã˜Â§Ã™â€žÃ˜Â³Ã˜Â§Ã˜Â­Ã™â€ž",       ff:"Littoral" },
-  "West":       { en:"West",        fr:"Ouest",           pidgin:"West",     ar:"Ã˜Â§Ã™â€žÃ˜ÂºÃ˜Â±Ã˜Â¨",        ff:"Hirnaange" },
-  "South West": { en:"South West",  fr:"Sud-Ouest",       pidgin:"SW",       ar:"Ã˜Â¬Ã™â€ Ã™Ë†Ã˜Â¨ Ã˜ÂºÃ˜Â±Ã˜Â¨",     ff:"Worgo-Hirnaange" },
-  "North West": { en:"North West",  fr:"Nord-Ouest",      pidgin:"NW",       ar:"Ã˜Â´Ã™â€¦Ã˜Â§Ã™â€ž Ã˜ÂºÃ˜Â±Ã˜Â¨",     ff:"Rewo-Hirnaange" },
-  "Adamawa":    { en:"Adamawa",     fr:"Adamaoua",        pidgin:"Adamawa",  ar:"Ã˜Â¢Ã˜Â¯Ã™â€¦Ã˜Â§Ã™Ë†Ã˜Â§",       ff:"Adamawa" },
-  "South":      { en:"South",       fr:"Sud",             pidgin:"South",    ar:"Ã˜Â§Ã™â€žÃ˜Â¬Ã™â€ Ã™Ë†Ã˜Â¨",       ff:"Worgo" },
-  "East":       { en:"East",        fr:"Est",             pidgin:"East",     ar:"Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â±Ã™â€š",        ff:"FuÃ‰â€”naange" },
-  "North":      { en:"North",       fr:"Nord",            pidgin:"North",    ar:"Ã˜Â§Ã™â€žÃ˜Â´Ã™â€¦Ã˜Â§Ã™â€ž",       ff:"Rewo" },
-  "Far North":  { en:"Far North",   fr:"ExtrÃƒÂªme-Nord",    pidgin:"Far North",ar:"Ã˜Â£Ã™â€šÃ˜ÂµÃ™â€° Ã˜Â§Ã™â€žÃ˜Â´Ã™â€¦Ã˜Â§Ã™â€ž",  ff:"Rewo Rewo" },
+  "All Regions":{ en:"All Regions", fr:"Toutes régions", pidgin:"All area", ar:"كل المناطق",   ff:"Leyɗe fof" },
+  "Centre":     { en:"Centre",      fr:"Centre",          pidgin:"Centre",   ar:"الوسط",        ff:"Centre" },
+  "Littoral":   { en:"Littoral",    fr:"Littoral",        pidgin:"Coast",    ar:"الساحل",       ff:"Littoral" },
+  "West":       { en:"West",        fr:"Ouest",           pidgin:"West",     ar:"الغرب",        ff:"Hirnaange" },
+  "South West": { en:"South West",  fr:"Sud-Ouest",       pidgin:"SW",       ar:"جنوب غرب",     ff:"Worgo-Hirnaange" },
+  "North West": { en:"North West",  fr:"Nord-Ouest",      pidgin:"NW",       ar:"شمال غرب",     ff:"Rewo-Hirnaange" },
+  "Adamawa":    { en:"Adamawa",     fr:"Adamaoua",        pidgin:"Adamawa",  ar:"آدماوا",       ff:"Adamawa" },
+  "South":      { en:"South",       fr:"Sud",             pidgin:"South",    ar:"الجنوب",       ff:"Worgo" },
+  "East":       { en:"East",        fr:"Est",             pidgin:"East",     ar:"الشرق",        ff:"Fuɗnaange" },
+  "North":      { en:"North",       fr:"Nord",            pidgin:"North",    ar:"الشمال",       ff:"Rewo" },
+  "Far North":  { en:"Far North",   fr:"Extrême-Nord",    pidgin:"Far North",ar:"أقصى الشمال",  ff:"Rewo Rewo" },
 };
 
 const JOB_TYPES  = ["All Types","Full-time","Part-time","Contract","Internship","Remote","Freelance","Temporary"];
 const REGIONS    = ["All Regions","Centre","Littoral","West","South West","North West","Adamawa","South","East","North","Far North"];
 const SAVED_KEY  = "bambeh_saved_jobs";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function timeAgo(dateStr: string, lang: string): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
-  if (diff === 0) return lang === "fr" ? "Aujourd'hui" : lang === "ar" ? "Ã˜Â§Ã™â€žÃ™Å Ã™Ë†Ã™â€¦" : lang === "ff" ? "Hannde" : "Today";
-  if (diff === 1) return lang === "fr" ? "Il y a 1j" : lang === "ar" ? "Ã™â€¦Ã™â€ Ã˜Â° Ã™Å Ã™Ë†Ã™â€¦" : "1d ago";
-  return lang === "fr" ? `Il y a ${diff}j` : lang === "ar" ? `Ã™â€¦Ã™â€ Ã˜Â° ${diff} Ã˜Â£Ã™Å Ã˜Â§Ã™â€¦` : `${diff}d ago`;
+  if (diff === 0) return lang === "fr" ? "Aujourd'hui" : lang === "ar" ? "اليوم" : lang === "ff" ? "Hannde" : "Today";
+  if (diff === 1) return lang === "fr" ? "Il y a 1j" : lang === "ar" ? "منذ يوم" : "1d ago";
+  return lang === "fr" ? `Il y a ${diff}j` : lang === "ar" ? `منذ ${diff} أيام` : `${diff}d ago`;
 }
 
 function fmtSalary(min: number | undefined, max: number | undefined, lang: string, notSpecLabel: string): string {
@@ -105,9 +105,9 @@ function fmtSalary(min: number | undefined, max: number | undefined, lang: strin
   const fmt = (n: number) =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` :
     n >= 1_000     ? `${Math.round(n / 1_000)}k` : `${n}`;
-  if (min && max) return `${fmt(min)} Ã¢â‚¬â€œ ${fmt(max)} XAF`;
-  if (min) return lang === "fr" ? `Ãƒâ‚¬ partir de ${fmt(min)} XAF` : `From ${fmt(min)} XAF`;
-  return lang === "fr" ? `Jusqu'ÃƒÂ  ${fmt(max!)} XAF` : `Up to ${fmt(max!)} XAF`;
+  if (min && max) return `${fmt(min)} – ${fmt(max)} XAF`;
+  if (min) return lang === "fr" ? `À partir de ${fmt(min)} XAF` : `From ${fmt(min)} XAF`;
+  return lang === "fr" ? `Jusqu'à ${fmt(max!)} XAF` : `Up to ${fmt(max!)} XAF`;
 }
 
 function readSaved(): Set<string> {
@@ -118,7 +118,7 @@ function persistSaved(saved: Set<string>) {
   try { localStorage.setItem(SAVED_KEY, JSON.stringify([...saved])); } catch {}
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Job Card Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Job Card ──────────────────────────────────────────────────────────────────
 function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
   job: JobListing; saved: boolean; lang: string;
   tFn: (key: string) => string;
@@ -141,7 +141,7 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
             {(job as any).companyLogoUrl ? (
               <img src={(job as any).companyLogoUrl} alt={job.company ?? ""} className="w-full h-full object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            ) : job.company ? job.company.charAt(0).toUpperCase() : "Ã°Å¸â€™Â¼"}
+            ) : job.company ? job.company.charAt(0).toUpperCase() : "💼"}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -152,7 +152,7 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
               </span>
               {job.isRemote && (
                 <span className="bg-blue-100 text-blue-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                  Ã°Å¸Å’Â {tFn("remote")}
+                  🌐 {tFn("remote")}
                 </span>
               )}
               <div className="ml-auto flex gap-1">
@@ -160,12 +160,12 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-sm
                               transition-all active:scale-90
                               ${saved ? "bg-red-100 dark:bg-red-900/30 text-red-500" : "bg-gray-100 dark:bg-gray-700 text-gray-400"}`}>
-                  {saved ? "Ã¢ÂÂ¤Ã¯Â¸Â" : "Ã°Å¸Â¤Â"}
+                  {saved ? "❤️" : "🤍"}
                 </button>
                 <button onClick={onShare} aria-label="Share"
                   className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center
                              justify-center text-gray-400 text-sm active:scale-90">
-                  Ã°Å¸â€œÂ¤
+                  📤
                 </button>
               </div>
             </div>
@@ -178,23 +178,23 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
         </div>
 
         <div className="mt-3 flex items-center gap-3 flex-wrap text-xs text-gray-500 dark:text-gray-400">
-          <span>Ã°Å¸â€œÂ {job.location.city}{job.location.region ? ` Ã‚Â· ${job.location.region}` : ""}</span>
+          <span>📍 {job.location.city}{job.location.region ? ` · ${job.location.region}` : ""}</span>
           {job.experienceLevel && (
-            <span>Ã°Å¸Å½â€œ {job.experienceLevel.replace(/_/g, " ")}</span>
+            <span>🎓 {job.experienceLevel.replace(/_/g, " ")}</span>
           )}
           <span className="ml-auto">{timeAgo(job.createdAt, lang)}</span>
         </div>
 
         <div className="mt-2 text-xs font-semibold text-teal-700 dark:text-teal-400">
-          Ã°Å¸â€™Â° {fmtSalary(job.salaryMinXAF, job.salaryMaxXAF, lang, tFn("salaryNotSpec"))}
+          💰 {fmtSalary(job.salaryMinXAF, job.salaryMaxXAF, lang, tFn("salaryNotSpec"))}
           {job.isSalaryNegotiable && (
-            <span className="text-gray-400 font-normal"> Ã‚Â· {tFn("negotiable")}</span>
+            <span className="text-gray-400 font-normal"> · {tFn("negotiable")}</span>
           )}
         </div>
 
         {job.applicationDeadline && (
           <div className="mt-1 text-[11px] text-orange-500 dark:text-orange-400">
-            Ã¢ÂÂ° {tFn("deadline")}: {new Date(job.applicationDeadline).toLocaleDateString(
+            ⏰ {tFn("deadline")}: {new Date(job.applicationDeadline).toLocaleDateString(
               lang === "fr" ? "fr-CM" : "en-CM"
             )}
           </div>
@@ -226,8 +226,8 @@ function JobCard({ job, saved, lang, tFn, onSave, onShare }: {
   );
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Main Page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Error boundary Ã¢â‚¬â€ wraps FeaturedAdsStrip so its errors never kill Jobs page Ã¢â€â‚¬
+// ─── Main Page ─────────────────────────────────────────────────────────────────
+// ─── Error boundary — wraps FeaturedAdsStrip so its errors never kill Jobs page ─
 class AdStripBoundary extends React.Component<
   { children: React.ReactNode },
   { failed: boolean }
@@ -247,7 +247,7 @@ class AdStripBoundary extends React.Component<
 
 export default function Jobs() {
   const navigate = useNavigate();
-  // Use the context t() directly Ã¢â‚¬â€ re-renders whenever language changes
+  // Use the context t() directly — re-renders whenever language changes
   const { language: lang, t, isRtl } = useLanguage();
 
   const [jobs,    setJobs]    = useState<JobListing[]>([]);
@@ -366,7 +366,7 @@ export default function Jobs() {
           {loading ? t("loading") : `${jobs.length} ${t("opportunities")}`}
         </p>
         <div className="relative">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">Ã°Å¸â€Â</span>
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
           <input
             className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white/95 text-gray-900
                        text-sm placeholder-gray-400 outline-none shadow"
@@ -386,7 +386,7 @@ export default function Jobs() {
                       ${showFilters || activeFilterCount > 0
                         ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700"
                         : "border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400"}`}>
-          Ã°Å¸Å½â€º {t("filters")}
+          🎛 {t("filters")}
           {activeFilterCount > 0 && (
             <span className="w-4 h-4 rounded-full bg-teal-500 text-white text-[10px] flex items-center justify-center">
               {activeFilterCount}
@@ -399,7 +399,7 @@ export default function Jobs() {
                       text-xs font-semibold transition-all
                       ${mostRecent ? "border-teal-500 bg-teal-500 text-white"
                                    : "border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400"}`}>
-          Ã°Å¸â€¢Â {t("mostRecent")}
+          🕐 {t("mostRecent")}
         </button>
 
         {CATEGORIES.map((c) => (
@@ -466,7 +466,7 @@ export default function Jobs() {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold text-gray-900 dark:text-white">{filtered.length}</span>{" "}
           {t("jobsFound")}
-          {mostRecent && <span className="text-teal-600"> Ã‚Â· {t("newestFirst")}</span>}
+          {mostRecent && <span className="text-teal-600"> · {t("newestFirst")}</span>}
         </p>
         {!loading && (
           <button onClick={() => void fetchJobs()} className="text-xs text-teal-600 font-semibold">
@@ -486,7 +486,7 @@ export default function Jobs() {
 
         {!loading && error && (
           <div className="text-center py-16">
-            <p className="text-4xl mb-3">Ã¢Å¡Â ÃƒÂ¯Ã‚Â¸Ã‚Â</p>
+            <p className="text-4xl mb-3">⚠ï¸</p>
             <p className="font-semibold text-gray-600 dark:text-gray-400">{error}</p>
             <button onClick={() => void fetchJobs()}
               className="mt-4 bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
@@ -509,7 +509,7 @@ export default function Jobs() {
 
         {!loading && !error && jobs.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-5xl mb-3">Ã°Å¸â€Â</p>
+            <p className="text-5xl mb-3">🔍</p>
             <p className="font-semibold text-gray-600 dark:text-gray-400">{t("noMatch")}</p>
             <button
               onClick={() => { setSearch(""); setCategory("All"); setJobType("All Types"); setRegion("All Regions"); setLocationFilters(EMPTY_LOCATION); }}
@@ -528,9 +528,5 @@ export default function Jobs() {
     </div>
   );
 }
-
-
-
-
 
 

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import type { VendorStatus, VendorVerificationLevel } from "@/types/vendor";
 
@@ -23,11 +23,11 @@ interface BecomeVendorButtonProps {
 const STATUS_CONFIG: Partial<Record<VendorStatus, {
   label: string; color: string; bgColor: string; icon: string;
 }>> = {
-  pending:   { label: "Pending",   color: "text-yellow-700", bgColor: "bg-yellow-100", icon: "â³" },
-  approved:  { label: "Approved",  color: "text-green-700",  bgColor: "bg-green-100",  icon: "âœ…" },
-  rejected:  { label: "Rejected",  color: "text-red-700",    bgColor: "bg-red-100",    icon: "âŒ" },
-  suspended: { label: "Suspended", color: "text-gray-700",   bgColor: "bg-gray-100",   icon: "ðŸ”’" },
-  none:      { label: "Not Vendor",color: "text-gray-500",   bgColor: "bg-gray-50",    icon: "â€”"  },
+  pending:   { label: "Pending",   color: "text-yellow-700", bgColor: "bg-yellow-100", icon: "⏳" },
+  approved:  { label: "Approved",  color: "text-green-700",  bgColor: "bg-green-100",  icon: "✅" },
+  rejected:  { label: "Rejected",  color: "text-red-700",    bgColor: "bg-red-100",    icon: "❌" },
+  suspended: { label: "Suspended", color: "text-gray-700",   bgColor: "bg-gray-100",   icon: "🔒" },
+  none:      { label: "Not Vendor",color: "text-gray-500",   bgColor: "bg-gray-50",    icon: "—"  },
 };
 
 const VendorIcon: React.FC<VendorIconProps> = ({ status, size = "md" }) => {
@@ -42,7 +42,7 @@ const VendorCardBadge: React.FC<VendorCardBadgeProps> = ({ status, verificationL
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${cfg.bgColor} ${cfg.color}`}>
       {cfg.icon} {cfg.label}
       {verificationLevel && verificationLevel !== "unverified" && (
-        <span className="ml-1 opacity-70">Â· {verificationLevel}</span>
+        <span className="ml-1 opacity-70">· {verificationLevel}</span>
       )}
     </span>
   );
@@ -77,9 +77,5 @@ const VendorBadge: React.FC<VendorBadgeProps> = ({ status, verificationLevel, sh
 export default VendorBadge;
 export { VendorIcon, VendorCardBadge, BecomeVendorButton };
 export type { VendorIconProps, VendorCardBadgeProps, BecomeVendorButtonProps };
-
-
-
-
 
 

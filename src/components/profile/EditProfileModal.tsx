@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EDIT PROFILE MODAL - Enhanced with scrollable content
  * FILE LOCATION: src/components/profile/EditProfileModal.tsx
  *
@@ -18,12 +18,12 @@ type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 interface EditProfileModalProps { onClose: () => void; }
 
 const LANGUAGES = [
-  { code: 'en',  name: 'English',        flag: 'ðŸ‡¬ðŸ‡§' },
-  { code: 'fr',  name: 'FranÃ§ais',        flag: 'ðŸ‡«ðŸ‡·' },
-  { code: 'pcm', name: 'Pidgin English',  flag: 'ðŸ‡¨ðŸ‡²' },
-  { code: 'ff',  name: 'Fulfulde',        flag: 'ðŸ‡³ðŸ‡¬' },
-  { code: 'ar',  name: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',          flag: 'ðŸ‡¸ðŸ‡¦' },
-  { code: 'ha',  name: 'Hausa',           flag: 'ðŸ‡³ðŸ‡¬' },
+  { code: 'en',  name: 'English',        flag: '🇬🇧' },
+  { code: 'fr',  name: 'Français',        flag: '🇫🇷' },
+  { code: 'pcm', name: 'Pidgin English',  flag: '🇨🇲' },
+  { code: 'ff',  name: 'Fulfulde',        flag: '🇳🇬' },
+  { code: 'ar',  name: 'العربية',          flag: '🇸🇦' },
+  { code: 'ha',  name: 'Hausa',           flag: '🇳🇬' },
 ];
 
 const REGIONS = ['Adamawa','Centre','East','Far North','Littoral','North','Northwest','South','Southwest','West'];
@@ -61,13 +61,13 @@ const S: Record<Lang, {
     fullName: 'Nom complet *', fullNamePh: 'Entrez votre nom complet', nameRequired: 'Le nom complet est requis',
     username: "Nom d'utilisateur", usernamePh: "Choisissez un nom d'utilisateur",
     email: 'E-mail', emailPh: 'votre.email@exemple.com', emailInvalid: 'Veuillez saisir un e-mail valide',
-    phone: 'NumÃ©ro de tÃ©lÃ©phone', phonePh: '+237 6XX XXX XXX', phoneInvalid: 'Veuillez saisir un numÃ©ro valide',
+    phone: 'Numéro de téléphone', phonePh: '+237 6XX XXX XXX', phoneInvalid: 'Veuillez saisir un numéro valide',
     bio: 'Bio', bioPh: 'Parlez-nous de vous...',
-    region: 'RÃ©gion', selectRegion: 'Choisir une rÃ©gion',
+    region: 'Région', selectRegion: 'Choisir une région',
     city: 'Ville', cityPh: 'Entrez votre ville',
     address: 'Adresse', addressPh: 'Entrez votre adresse',
-    prefLang: 'Langue prÃ©fÃ©rÃ©e', prefLangHint: "Choisissez la langue de l'application",
-    saveFailed: "Ã‰chec de l'enregistrement. Veuillez rÃ©essayer.", saveSuccess: 'Profil enregistrÃ© avec succÃ¨s !',
+    prefLang: 'Langue préférée', prefLangHint: "Choisissez la langue de l'application",
+    saveFailed: "Échec de l'enregistrement. Veuillez réessayer.", saveSuccess: 'Profil enregistré avec succès !',
     cancel: 'Annuler', saving: 'Enregistrement...', saveChanges: 'Enregistrer',
   },
   pidgin: {
@@ -85,32 +85,32 @@ const S: Record<Lang, {
     cancel: 'Cancel', saving: 'E dey save...', saveChanges: 'Save Changes',
   },
   ar: {
-    title: 'ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ', tapPhoto: 'Ø§Ø¶ØºØ· Ù„ØªØºÙŠÙŠØ± Ø§Ù„ØµÙˆØ±Ø©', imgTooLarge: 'ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† Ø§Ù„ØµÙˆØ±Ø© Ø£Ù‚Ù„ Ù…Ù† 5 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª',
-    fullName: 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„ *', fullNamePh: 'Ø£Ø¯Ø®Ù„ Ø§Ø³Ù…Ùƒ Ø§Ù„ÙƒØ§Ù…Ù„', nameRequired: 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„ Ù…Ø·Ù„ÙˆØ¨',
-    username: 'Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…', usernamePh: 'Ø§Ø®ØªØ± Ø§Ø³Ù… Ù…Ø³ØªØ®Ø¯Ù…',
-    email: 'Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ', emailPh: 'your.email@example.com', emailInvalid: 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ØµØ§Ù„Ø­',
-    phone: 'Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ', phonePh: '+237 6XX XXX XXX', phoneInvalid: 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø±Ù‚Ù… Ù‡Ø§ØªÙ ØµØ§Ù„Ø­',
-    bio: 'Ù†Ø¨Ø°Ø©', bioPh: 'Ø£Ø®Ø¨Ø±Ù†Ø§ Ø¹Ù† Ù†ÙØ³Ùƒ...',
-    region: 'Ø§Ù„Ù…Ù†Ø·Ù‚Ø©', selectRegion: 'Ø§Ø®ØªØ± Ø§Ù„Ù…Ù†Ø·Ù‚Ø©',
-    city: 'Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©', cityPh: 'Ø£Ø¯Ø®Ù„ Ù…Ø¯ÙŠÙ†ØªÙƒ',
-    address: 'Ø§Ù„Ø¹Ù†ÙˆØ§Ù†', addressPh: 'Ø£Ø¯Ø®Ù„ Ø¹Ù†ÙˆØ§Ù†Ùƒ',
-    prefLang: 'Ø§Ù„Ù„ØºØ© Ø§Ù„Ù…ÙØ¶Ù„Ø©', prefLangHint: 'Ø§Ø®ØªØ± Ù„ØºØ© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ù…ÙØ¶Ù„Ø© Ù„Ø¯ÙŠÙƒ',
-    saveFailed: 'ÙØ´Ù„ Ø§Ù„Ø­ÙØ¸. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.', saveSuccess: 'ØªÙ… Ø­ÙØ¸ Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ Ø¨Ù†Ø¬Ø§Ø­!',
-    cancel: 'Ø¥Ù„ØºØ§Ø¡', saving: 'Ø¬Ø§Ø±Ù Ø§Ù„Ø­ÙØ¸...', saveChanges: 'Ø­ÙØ¸ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª',
+    title: 'تعديل الملف الشخصي', tapPhoto: 'اضغط لتغيير الصورة', imgTooLarge: 'يجب أن تكون الصورة أقل من 5 ميغابايت',
+    fullName: 'الاسم الكامل *', fullNamePh: 'أدخل اسمك الكامل', nameRequired: 'الاسم الكامل مطلوب',
+    username: 'اسم المستخدم', usernamePh: 'اختر اسم مستخدم',
+    email: 'البريد الإلكتروني', emailPh: 'your.email@example.com', emailInvalid: 'يرجى إدخال بريد إلكتروني صالح',
+    phone: 'رقم الهاتف', phonePh: '+237 6XX XXX XXX', phoneInvalid: 'يرجى إدخال رقم هاتف صالح',
+    bio: 'نبذة', bioPh: 'أخبرنا عن نفسك...',
+    region: 'المنطقة', selectRegion: 'اختر المنطقة',
+    city: 'المدينة', cityPh: 'أدخل مدينتك',
+    address: 'العنوان', addressPh: 'أدخل عنوانك',
+    prefLang: 'اللغة المفضلة', prefLangHint: 'اختر لغة التطبيق المفضلة لديك',
+    saveFailed: 'فشل الحفظ. يرجى المحاولة مرة أخرى.', saveSuccess: 'تم حفظ الملف الشخصي بنجاح!',
+    cancel: 'إلغاء', saving: 'جارٍ الحفظ...', saveChanges: 'حفظ التغييرات',
   },
   ff: {
-    title: 'TaÆ´to profil', tapPhoto: 'Meem ngam waylude natal', imgTooLarge: 'Natal foti É“urde famÉ—ude 5MB',
-    fullName: 'Innde timmunde *', fullNamePh: 'Naatnu innde maa timmunde', nameRequired: 'Innde timmunde ina waÉ—É—ii',
-    username: 'Innde huutoraande', usernamePh: 'SuÉ“o innde huutoraande',
-    email: 'Iimeel', emailPh: 'your.email@example.com', emailInvalid: 'TiiÉ—no naatnu iimeel feewÉ—o',
-    phone: 'Limndo telefoÅ‹', phonePh: '+237 6XX XXX XXX', phoneInvalid: 'TiiÉ—no naatnu limndo feewÉ—o',
+    title: 'Taƴto profil', tapPhoto: 'Meem ngam waylude natal', imgTooLarge: 'Natal foti ɓurde famɗude 5MB',
+    fullName: 'Innde timmunde *', fullNamePh: 'Naatnu innde maa timmunde', nameRequired: 'Innde timmunde ina waɗɗii',
+    username: 'Innde huutoraande', usernamePh: 'Suɓo innde huutoraande',
+    email: 'Iimeel', emailPh: 'your.email@example.com', emailInvalid: 'Tiiɗno naatnu iimeel feewɗo',
+    phone: 'Limndo telefoŋ', phonePh: '+237 6XX XXX XXX', phoneInvalid: 'Tiiɗno naatnu limndo feewɗo',
     bio: 'Faltaade', bioPh: 'Haalan min hoore maa...',
-    region: 'Diiwaan', selectRegion: 'SuÉ“o diiwaan',
+    region: 'Diiwaan', selectRegion: 'Suɓo diiwaan',
     city: 'Wuro', cityPh: 'Naatnu wuro maa',
-    address: 'Ã‘iiÉ“irde', addressPh: 'Naatnu Ã±iiÉ“irde maa',
-    prefLang: 'ÆŠemngal cuÉ“aaÉ—o', prefLangHint: 'SuÉ“o É—emngal aplikeysiÉ”Ìƒ ngal njiÉ—-É—aa',
-    saveFailed: 'Dannugol hawri. TiiÉ—no eto kadi.', saveSuccess: 'Profil danaama no moÆ´Æ´i!',
-    cancel: 'Haaytu', saving: 'ÆŠon danee...', saveChanges: 'Dannu baylamuuji',
+    address: 'Ñiiɓirde', addressPh: 'Naatnu ñiiɓirde maa',
+    prefLang: 'Ɗemngal cuɓaaɗo', prefLangHint: 'Suɓo ɗemngal aplikeysiɔ̃ ngal njiɗ-ɗaa',
+    saveFailed: 'Dannugol hawri. Tiiɗno eto kadi.', saveSuccess: 'Profil danaama no moƴƴi!',
+    cancel: 'Haaytu', saving: 'Ɗon danee...', saveChanges: 'Dannu baylamuuji',
   },
 };
 
@@ -363,5 +363,3 @@ export default function EditProfileModal({ onClose }: EditProfileModalProps) {
     </div>
   );
 }
-
-

@@ -1,10 +1,10 @@
-﻿/**
- * src/pages/Profile.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/Profile.tsx — Bambeh Marketplace
  *
  * i18n: all visible strings live in the local S table below, keyed by the live
  * language (EN / FR / Pidgin / Arabic / Fulfulde). The language code comes from
  * useLang() (@/hooks/useAppLang), which reacts to the same "bambeh:langchange"
- * event the real LanguageProvider (in @/App) fires â€” so this page re-renders
+ * event the real LanguageProvider (in @/App) fires — so this page re-renders
  * and re-translates the instant the user switches language anywhere.
  *
  * Behaviour unchanged: avatar upload (base64, max 3MB), Supabase + localStorage
@@ -33,7 +33,7 @@ interface UserProfile {
   joinedAt: string;
 }
 
-// â”€â”€ i18n strings (local; keyed by live language) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── i18n strings (local; keyed by live language) ──────────────────────────
 const S: Record<Lang, {
   imgTypeErr: string; imgTooLarge: (mb: string) => string;
   myProfile: string; logout: string; memberSince: string;
@@ -63,7 +63,7 @@ const S: Record<Lang, {
     location: "Location",
     bio: "Bio",
     notSet: "Not set",
-    locationPh: "e.g. YaoundÃ©, Centre",
+    locationPh: "e.g. Yaoundé, Centre",
     bioPh: "Tell buyers and sellers a little about yourself...",
     quickLinks: "Quick Links",
     qlCoins: "Zerm Coins",
@@ -77,12 +77,12 @@ const S: Record<Lang, {
     signOut: "Sign Out",
   },
   fr: {
-    imgTypeErr: "Seules les images JPG, PNG ou WebP sont autorisÃ©es.",
-    imgTooLarge: (mb) => "Image trop volumineuse (max 3 Mo). ReÃ§u " + mb + " Mo.",
+    imgTypeErr: "Seules les images JPG, PNG ou WebP sont autorisées.",
+    imgTooLarge: (mb) => "Image trop volumineuse (max 3 Mo). Reçu " + mb + " Mo.",
     myProfile: "Mon profil",
-    logout: "DÃ©connexion",
+    logout: "Déconnexion",
     memberSince: "Membre depuis",
-    tapCamera: "Touchez l'icÃ´ne de l'appareil photo pour changer votre photo",
+    tapCamera: "Touchez l'icône de l'appareil photo pour changer votre photo",
     changePhotoAria: "Changer la photo de profil",
     personalInfo: "Informations personnelles",
     saving: "Enregistrement...",
@@ -90,22 +90,22 @@ const S: Record<Lang, {
     edit: "Modifier",
     fullName: "Nom complet",
     email: "E-mail",
-    phone: "TÃ©lÃ©phone",
+    phone: "Téléphone",
     location: "Localisation",
     bio: "Bio",
-    notSet: "Non dÃ©fini",
-    locationPh: "ex. YaoundÃ©, Centre",
-    bioPh: "PrÃ©sentez-vous briÃ¨vement aux acheteurs et vendeurs...",
+    notSet: "Non défini",
+    locationPh: "ex. Yaoundé, Centre",
+    bioPh: "Présentez-vous brièvement aux acheteurs et vendeurs...",
     quickLinks: "Liens rapides",
-    qlCoins: "PiÃ¨ces Zerm",
+    qlCoins: "Pièces Zerm",
     qlListings: "Mes annonces",
     qlOrders: "Mes commandes",
-    qlSaved: "Articles enregistrÃ©s",
-    qlSettings: "ParamÃ¨tres",
-    qlFarmFresh: "Ferme FraÃ®che",
+    qlSaved: "Articles enregistrés",
+    qlSettings: "Paramètres",
+    qlFarmFresh: "Ferme Fraîche",
     qlPostAd: "Publier une annonce",
     account: "Compte",
-    signOut: "Se dÃ©connecter",
+    signOut: "Se déconnecter",
   },
   pidgin: {
     imgTypeErr: "Na only JPG, PNG or WebP image dem dey allow.",
@@ -125,7 +125,7 @@ const S: Record<Lang, {
     location: "Wia You Dey",
     bio: "Bio",
     notSet: "You never set am",
-    locationPh: "e.g. YaoundÃ©, Centre",
+    locationPh: "e.g. Yaoundé, Centre",
     bioPh: "Talk small about yourself make buyers and sellers know you...",
     quickLinks: "Quick Links",
     qlCoins: "Zerm Coins",
@@ -139,35 +139,35 @@ const S: Record<Lang, {
     signOut: "Comot",
   },
   ar: {
-    imgTypeErr: "ÙŠÙØ³Ù…Ø­ ÙÙ‚Ø· Ø¨ØµÙˆØ± JPG Ø£Ùˆ PNG Ø£Ùˆ WebP.",
-    imgTooLarge: (mb) => "Ø§Ù„ØµÙˆØ±Ø© ÙƒØ¨ÙŠØ±Ø© Ø¬Ø¯Ù‹Ø§ (Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰ 3 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª). Ø§Ù„Ø­Ø¬Ù… " + mb + " Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª.",
-    myProfile: "Ù…Ù„ÙÙŠ Ø§Ù„Ø´Ø®ØµÙŠ",
-    logout: "ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬",
-    memberSince: "Ø¹Ø¶Ùˆ Ù…Ù†Ø°",
-    tapCamera: "Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø£ÙŠÙ‚ÙˆÙ†Ø© Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ Ù„ØªØºÙŠÙŠØ± ØµÙˆØ±ØªÙƒ",
-    changePhotoAria: "ØªØºÙŠÙŠØ± ØµÙˆØ±Ø© Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ",
-    personalInfo: "Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø´Ø®ØµÙŠØ©",
-    saving: "Ø¬Ø§Ø±Ù Ø§Ù„Ø­ÙØ¸...",
-    save: "Ø­ÙØ¸",
-    edit: "ØªØ¹Ø¯ÙŠÙ„",
-    fullName: "Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„",
-    email: "Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
-    phone: "Ø§Ù„Ù‡Ø§ØªÙ",
-    location: "Ø§Ù„Ù…ÙˆÙ‚Ø¹",
-    bio: "Ù†Ø¨Ø°Ø©",
-    notSet: "ØºÙŠØ± Ù…Ø­Ø¯Ø¯",
-    locationPh: "Ù…Ø«Ø§Ù„: ÙŠØ§ÙˆÙ†Ø¯ÙŠØŒ Ø§Ù„ÙˆØ³Ø·Ù‰",
-    bioPh: "Ø¹Ø±Ù‘Ù Ø¨Ù†ÙØ³Ùƒ Ù‚Ù„ÙŠÙ„Ù‹Ø§ Ù„Ù„Ù…Ø´ØªØ±ÙŠÙ† ÙˆØ§Ù„Ø¨Ø§Ø¦Ø¹ÙŠÙ†...",
-    quickLinks: "Ø±ÙˆØ§Ø¨Ø· Ø³Ø±ÙŠØ¹Ø©",
-    qlCoins: "Ø¹Ù…Ù„Ø§Øª Ø²ÙŠØ±Ù…",
-    qlListings: "Ø¥Ø¹Ù„Ø§Ù†Ø§ØªÙŠ",
-    qlOrders: "Ø·Ù„Ø¨Ø§ØªÙŠ",
-    qlSaved: "Ø§Ù„Ø¹Ù†Ø§ØµØ± Ø§Ù„Ù…Ø­ÙÙˆØ¸Ø©",
-    qlSettings: "Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª",
-    qlFarmFresh: "Ø·Ø§Ø²Ø¬ Ù…Ù† Ø§Ù„Ù…Ø²Ø±Ø¹Ø©",
-    qlPostAd: "Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†",
-    account: "Ø§Ù„Ø­Ø³Ø§Ø¨",
-    signOut: "ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬",
+    imgTypeErr: "يُسمح فقط بصور JPG أو PNG أو WebP.",
+    imgTooLarge: (mb) => "الصورة كبيرة جدًا (الحد الأقصى 3 ميغابايت). الحجم " + mb + " ميغابايت.",
+    myProfile: "ملفي الشخصي",
+    logout: "تسجيل الخروج",
+    memberSince: "عضو منذ",
+    tapCamera: "اضغط على أيقونة الكاميرا لتغيير صورتك",
+    changePhotoAria: "تغيير صورة الملف الشخصي",
+    personalInfo: "المعلومات الشخصية",
+    saving: "جارٍ الحفظ...",
+    save: "حفظ",
+    edit: "تعديل",
+    fullName: "الاسم الكامل",
+    email: "البريد الإلكتروني",
+    phone: "الهاتف",
+    location: "الموقع",
+    bio: "نبذة",
+    notSet: "غير محدد",
+    locationPh: "مثال: ياوندي، الوسطى",
+    bioPh: "عرّف بنفسك قليلًا للمشترين والبائعين...",
+    quickLinks: "روابط سريعة",
+    qlCoins: "عملات زيرم",
+    qlListings: "إعلاناتي",
+    qlOrders: "طلباتي",
+    qlSaved: "العناصر المحفوظة",
+    qlSettings: "الإعدادات",
+    qlFarmFresh: "طازج من المزرعة",
+    qlPostAd: "نشر إعلان",
+    account: "الحساب",
+    signOut: "تسجيل الخروج",
   },
   ff: {
     imgTypeErr: "Ko natal JPG, PNG walla WebP tan yamiraa.",
@@ -178,22 +178,22 @@ const S: Record<Lang, {
     tapCamera: "Meem ikon kamera ndee ngam waylude natal maa",
     changePhotoAria: "Waylu natal profil",
     personalInfo: "Kabaruuji maa",
-    saving: "ÆŠon danee...",
+    saving: "Ɗon danee...",
     save: "Dannu",
-    edit: "TaÆ´to",
+    edit: "Taƴto",
     fullName: "Innde timmunde",
     email: "Iimeel",
-    phone: "TelefoÅ‹",
+    phone: "Telefoŋ",
     location: "Nokku",
     bio: "Faltaade",
     notSet: "Teelaaka",
-    locationPh: "misal: YaoundÃ©, Centre",
-    bioPh: "Falto hoore maa seeÉ—a fayde soodooÉ“e e njeeyooÉ“e...",
-    quickLinks: "JokkorÉ—e yaawÉ—e",
+    locationPh: "misal: Yaoundé, Centre",
+    bioPh: "Falto hoore maa seeɗa fayde soodooɓe e njeeyooɓe...",
+    quickLinks: "Jokkorɗe yaawɗe",
     qlCoins: "Ceede Zerm",
     qlListings: "Ko njeeyetee am",
     qlOrders: "Sarwiiji am",
-    qlSaved: "Kuuje danaaÉ—e",
+    qlSaved: "Kuuje danaaɗe",
     qlSettings: "Teelte",
     qlFarmFresh: "Ko hecci diga ngesa",
     qlPostAd: "Fewtu njeeyannde",
@@ -207,7 +207,7 @@ const LOCALE_MAP: Record<Lang, string> = {
 };
 
 const ALLOWED_IMG  = ["image/jpeg", "image/png", "image/webp"];
-const MAX_AVATAR   = 3 * 1024 * 1024; // 3MB â€” keeps localStorage manageable
+const MAX_AVATAR   = 3 * 1024 * 1024; // 3MB — keeps localStorage manageable
 
 export default function Profile() {
   const lang = useLang();
@@ -223,7 +223,7 @@ export default function Profile() {
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [saving,      setSaving]      = useState(false);
 
-  // â”€â”€ Load profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Load profile ─────────────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
       // 1. Try Supabase auth session
@@ -241,7 +241,7 @@ export default function Profile() {
               .eq("id", u.id)
               .single();
             if (data) extra = data;
-          } catch { /* profiles table may not exist â€” that's fine */ }
+          } catch { /* profiles table may not exist — that's fine */ }
 
           const p: UserProfile = {
             id:       u.id,
@@ -302,7 +302,7 @@ export default function Profile() {
     void load();
   }, []);
 
-  // â”€â”€ Avatar upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Avatar upload ─────────────────────────────────────────────────────────
   function handleAvatarClick() {
     setAvatarError(null);
     fileRef.current?.click();
@@ -351,10 +351,10 @@ export default function Profile() {
           .update({ avatar_url: base64 })
           .eq("id", session.user.id);
       }
-    } catch { /* Storage not configured â€” localStorage saved above is enough */ }
+    } catch { /* Storage not configured — localStorage saved above is enough */ }
   }
 
-  // â”€â”€ Save profile edits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Save profile edits ────────────────────────────────────────────────────
   async function saveProfile() {
     if (!profile) return;
     setSaving(true);
@@ -385,13 +385,13 @@ export default function Profile() {
             bio:          updated.bio,
           });
       }
-    } catch { /* offline or profiles table doesn't exist â€” localStorage saved */ }
+    } catch { /* offline or profiles table doesn't exist — localStorage saved */ }
 
     setSaving(false);
     setEditing(false);
   }
 
-  // â”€â”€ Logout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Logout ────────────────────────────────────────────────────────────────
   async function logout() {
     try { await supabase.auth.signOut(); } catch {}
     ["Bambeh_user","bambeh_user","Bambeh_vendor","Bambeh_cart","Bambeh_language","Bambeh_terms_accepted","Bambeh_welcome_shown"]
@@ -399,7 +399,7 @@ export default function Profile() {
     navigate("/login");
   }
 
-  // â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Loading ───────────────────────────────────────────────────────────────
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -415,13 +415,13 @@ export default function Profile() {
   })();
 
   const quickLinks: [string, string][] = [
-    ["âš¡  " + s.qlCoins,     "/coins"],
-    ["ðŸ›ï¸  " + s.qlListings,  "/marketplace"],
-    ["ðŸ“¦  " + s.qlOrders,    "/orders"],
-    ["â¤ï¸   " + s.qlSaved,     "/favorites"],
-    ["âš™ï¸   " + s.qlSettings,  "/settings"],
-    ["ðŸŒ¿  " + s.qlFarmFresh, "/farm-fresh"],
-    ["ðŸ“¢  " + s.qlPostAd,    "/post-ad"],
+    ["⚡  " + s.qlCoins,     "/coins"],
+    ["🛍️  " + s.qlListings,  "/marketplace"],
+    ["📦  " + s.qlOrders,    "/orders"],
+    ["❤️   " + s.qlSaved,     "/favorites"],
+    ["⚙️   " + s.qlSettings,  "/settings"],
+    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],
+    ["📢  " + s.qlPostAd,    "/post-ad"],
   ];
 
   return (
@@ -449,7 +449,7 @@ export default function Profile() {
               }
             </div>
 
-            {/* Camera button â€” wired to file input */}
+            {/* Camera button — wired to file input */}
             <button
               type="button"
               onClick={handleAvatarClick}
@@ -561,7 +561,7 @@ export default function Profile() {
               {editing
                 ? <div className="flex">
                     <span className="border-2 border-r-0 border-gray-200 rounded-l-xl px-3 py-2.5 text-sm bg-gray-50 text-gray-600 flex-shrink-0">
-                      ðŸ‡¨ðŸ‡² +237
+                      🇨🇲 +237
                     </span>
                     <input
                       type="tel"
@@ -615,7 +615,7 @@ export default function Profile() {
                 onClick={() => navigate(route)}
                 className="w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 text-sm text-gray-700 flex items-center justify-between transition-colors">
                 <span>{label}</span>
-                <span className="text-gray-400 text-base">â€º</span>
+                <span className="text-gray-400 text-base">›</span>
               </button>
             ))}
           </div>
@@ -636,7 +636,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
-
-

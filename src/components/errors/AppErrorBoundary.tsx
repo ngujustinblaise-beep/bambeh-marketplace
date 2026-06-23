@@ -1,14 +1,14 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * APP ERROR BOUNDARY - MILITARY-GRADE ERROR HANDLING
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  * Features:
- * âœ… Catches React errors
- * âœ… Logs to monitoring service
- * âœ… Beautiful fallback UI
- * âœ… Auto-recovery attempts
- * âœ… Error reporting
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ✅ Catches React errors
+ * ✅ Logs to monitoring service
+ * ✅ Beautiful fallback UI
+ * ✅ Auto-recovery attempts
+ * ✅ Error reporting
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
@@ -69,7 +69,7 @@ export class AppErrorBoundary extends Component<Props, State> {
 
   logErrorToService(error: Error, errorInfo: ErrorInfo) {
     // TODO: Replace with your error tracking service
-    console.error("ðŸš¨ Error caught by boundary:", {
+    console.error("🚨 Error caught by boundary:", {
       error: error.toString(),
       errorInfo: errorInfo.componentStack,
       timestamp: new Date().toISOString(),
@@ -162,7 +162,7 @@ Time: ${new Date().toISOString()}
             {this.state.errorCount >= 3 && (
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
                 <p className="text-yellow-800 text-sm">
-                  âš Ã¯Â¸Â Multiple errors detected. Please try clearing your cache or
+                  ⚠ï¸ Multiple errors detected. Please try clearing your cache or
                   contact support.
                 </p>
               </div>
@@ -215,9 +215,5 @@ Time: ${new Date().toISOString()}
 }
 
 export default AppErrorBoundary;
-
-
-
-
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/types/src_types_items.ts
  * Bambeh Marketplace — Marketplace Item & Listing Types
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -123,9 +123,6 @@ export type ExperienceLevel =
   | "no_experience";
 
 export interface JobListing {
-  companyLogoUrl?: string;
-  applyMethod?: 'in_app' | 'whatsapp' | 'call' | 'email';
-  applyContact?: string;
   id: string;
   employerId: string;
   employer?: SellerInfo;
@@ -246,4 +243,3 @@ export interface ItemFilters {
   page?: number;
   pageSize?: number;
 }
-

@@ -275,4 +275,3 @@ export function useFeaturedAds({
     refetch:      () => void fetchAds(),
   };
 }
-

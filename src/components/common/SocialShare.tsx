@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE COMPONENT - COMPACT DROPDOWN VERSION
  * FILE LOCATION: src/components/common/SocialShare.tsx
  */
@@ -100,13 +100,13 @@ export default function SocialShare({ url, title, description = '', className = 
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#1e40af' }}>Facebook</span>
             </a>
             <a href={shareUrls.twitter} target="_blank" rel="noopener noreferrer" onClick={() => setShowMenu(false)} style={shareItemStyle('#f3f4f6')}>
-              <div style={iconStyle('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>ð•</span></div>
+              <div style={iconStyle('#000000')}><span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>𝕏</span></div>
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>X (Twitter)</span>
             </a>
             <a href={BAMBEH_SOCIAL.instagram} target="_blank" rel="noopener noreferrer" onClick={() => { handleCopyLink(); setShowMenu(false); }}
               style={{ ...shareItemStyle('#fce7f3'), background: 'linear-gradient(135deg, #fae8ff, #fce7f3)' }}>
               <div style={{ ...iconStyle('#ec4899'), background: 'linear-gradient(135deg, #9333ea, #ec4899, #f97316)' }}>
-                <span style={{ fontSize: '16px' }}>ðŸ“·</span>
+                <span style={{ fontSize: '16px' }}>📷</span>
               </div>
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#9d174d' }}>Instagram</span>
             </a>
@@ -131,16 +131,12 @@ export default function SocialShare({ url, title, description = '', className = 
           </div>
 
           <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
-            <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0 }}>Share and help grow Bambeh! ðŸ’š</p>
+            <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0 }}>Share and help grow Bambeh! 💚</p>
           </div>
         </div>
       )}
     </div>
   );
 }
-
-
-
-
 
 

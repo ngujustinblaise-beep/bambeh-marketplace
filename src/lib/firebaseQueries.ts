@@ -437,4 +437,3 @@ export const searchAll = async (searchTerm: string) => {
     throw error;
   }
 };
-

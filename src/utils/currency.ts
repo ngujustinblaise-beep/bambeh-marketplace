@@ -30,4 +30,3 @@ export function formatCurrency(amount: number, currency: string = 'XAF'): string
 
 const currencyUtils = { formatXAF, formatNumber, parseXAF, xafToUSD, formatCurrency };
 export default currencyUtils;
-

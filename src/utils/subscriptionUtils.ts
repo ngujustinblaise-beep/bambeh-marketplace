@@ -25,4 +25,3 @@ export const canContactSeller = (tier: SubscriptionTier | undefined): boolean =>
 
 export const getUpgradeMessage = (feature: string): string =>
   `Upgrade your plan to access ${feature}.`;
-

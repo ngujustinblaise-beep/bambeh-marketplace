@@ -145,5 +145,3 @@ export function getChatCount(userId1: string, userId2: string): number {
 
 
 
-
-

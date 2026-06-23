@@ -119,4 +119,3 @@ export function useVendor(userId: string): UseVendorState & UseVendorActions {
 }
 
 export default useVendor;
-

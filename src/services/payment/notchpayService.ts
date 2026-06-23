@@ -67,4 +67,3 @@ export const initiateWithdrawal = async (
   const data = await res.json() as { reference?: string; amount?: number };
   return { success: true, reference: data.reference, netPayout: data.amount };
 };
-

@@ -1,9 +1,15 @@
-/**
+﻿/**
  * FAVORITES CONTEXT
  * Manages user's favorite items (jobs, products, services, rentals)
  */
 
-import React, { useEffect, createContext, useContext, useState, useCallback } from "react";
+import React, { useEffect, 
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback
+} from "react";
 
 // Favorite Item Type
 export interface FavoriteItem {
@@ -149,8 +155,6 @@ export function useFavorites() {
 }
 
 export default FavoritesContext;
-
-
 
 
 

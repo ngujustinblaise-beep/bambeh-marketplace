@@ -1,19 +1,19 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * ADVANCED FILTER SYSTEM - WORLD-CLASS
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  *
- * âœ… Price range slider
- * âœ… Category & subcategory filters
- * âœ… Condition filters
- * âœ… Date posted filters
- * âœ… Sort options (newest, price, popular)
- * âœ… Save filter presets
- * âœ… Filter count badges
- * âœ… Mobile responsive drawer
+ * ✅ Price range slider
+ * ✅ Category & subcategory filters
+ * ✅ Condition filters
+ * ✅ Date posted filters
+ * ✅ Sort options (newest, price, popular)
+ * ✅ Save filter presets
+ * ✅ Filter count badges
+ * ✅ Mobile responsive drawer
  *
- * Â© 2025 Bambeh. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * © 2025 Bambeh. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import { useState, useEffect } from 'react';
@@ -144,7 +144,7 @@ export default function AdvancedFilterSystem({
     localStorage.setItem('Bambeh_filter_presets', JSON.stringify(updated));
     setPresetName('');
     setShowSavePreset(false);
-    alert('âœ… Filter preset saved!');
+    alert('✅ Filter preset saved!');
   };
 
   const handleLoadPreset = (preset: any) => {
@@ -183,7 +183,7 @@ export default function AdvancedFilterSystem({
         {/* SAVED PRESETS */}
         {savedPresets.length > 0 && (
           <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-3">ðŸ’¾ Saved Filter Presets</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">💾 Saved Filter Presets</h3>
             <div className="space-y-2">
               {savedPresets.map((preset) => (
                 <div key={preset.id} className="flex items-center justify-between bg-white p-2 rounded-lg">
@@ -207,7 +207,7 @@ export default function AdvancedFilterSystem({
 
         {/* PRICE RANGE */}
         <div>
-          <h3 className="font-semibold text-gray-900 mb-3">ðŸ’° Price Range (XAF)</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">💰 Price Range (XAF)</h3>
           <div className="grid grid-cols-2 gap-4 mb-3">
             <div>
               <label className="block text-sm text-gray-600 mb-1">Min Price</label>
@@ -244,7 +244,7 @@ export default function AdvancedFilterSystem({
         {/* CATEGORY */}
         {categories.length > 0 && (
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">ðŸ“‚ Category</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">📂 Category</h3>
             <select
               value={localFilters.category || ''}
               onChange={(e) => updateFilter('category', e.target.value)}
@@ -273,7 +273,7 @@ export default function AdvancedFilterSystem({
         {/* TYPE FILTER */}
         {showTypeFilter && typeOptions.length > 0 && (
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">ðŸ·ï¸ Type</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">🏷️ Type</h3>
             <select
               value={localFilters.type || ''}
               onChange={(e) => updateFilter('type', e.target.value)}
@@ -290,7 +290,7 @@ export default function AdvancedFilterSystem({
         {/* CONDITION */}
         {showCondition && (
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">âœ¨ Condition</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">✨ Condition</h3>
             <div className="grid grid-cols-2 gap-2">
               {conditionOptions.map((condition) => {
                 const isSelected = localFilters.condition?.includes(condition.id);
@@ -322,7 +322,7 @@ export default function AdvancedFilterSystem({
         {/* DATE POSTED */}
         {showDateFilter && (
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">ðŸ“… Date Posted</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">📅 Date Posted</h3>
             <div className="grid grid-cols-2 gap-2">
               {dateOptions.map((date) => (
                 <button
@@ -343,7 +343,7 @@ export default function AdvancedFilterSystem({
 
         {/* SORT BY */}
         <div>
-          <h3 className="font-semibold text-gray-900 mb-3">ðŸ”„ Sort By</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">🔄 Sort By</h3>
           <select
             value={localFilters.sortBy || 'newest'}
             onChange={(e) => updateFilter('sortBy', e.target.value)}
@@ -407,9 +407,5 @@ export default function AdvancedFilterSystem({
     </div>
   );
 }
-
-
-
-
 
 

@@ -33,4 +33,3 @@ export const QUARTIERS_BY_CITY: Record<string, string[]> = {
   Garoua: ["Centre","Yelwa","Roumde Adjia"],
   Ebolowa: ["Centre","Nkoemvone"],
 };
-

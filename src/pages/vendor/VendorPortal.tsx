@@ -186,5 +186,3 @@ export default function VendorPortal() {
 
 
 
-
-

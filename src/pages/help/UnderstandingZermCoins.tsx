@@ -76,19 +76,19 @@ export default function UnderstandingZermCoins() {
             </h2>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500"></span>
+                <span className="text-yellow-500">�</span>
                 <span>Boost your listings to appear at the top (5 coins per boost)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500"></span>
+                <span className="text-yellow-500">�</span>
                 <span>Get featured on the homepage (10 coins)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500"></span>
+                <span className="text-yellow-500">�</span>
                 <span>Unlock premium filters (3 coins per month)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-500"></span>
+                <span className="text-yellow-500">�</span>
                 <span>Send highlighted messages (1 coin per message)</span>
               </li>
             </ul>
@@ -136,8 +136,6 @@ export default function UnderstandingZermCoins() {
     </div>
   );
 }
-
-
 
 
 

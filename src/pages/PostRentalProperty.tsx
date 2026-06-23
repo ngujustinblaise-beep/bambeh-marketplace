@@ -1,4 +1,4 @@
-﻿/**
+/**
  * POST RENTAL PROPERTY
  * FILE LOCATION: src/pages/PostRentalProperty.tsx
  */
@@ -195,7 +195,7 @@ const PostRentalProperty: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div><Label htmlFor="bedrooms">Bedrooms</Label><Input id="bedrooms" name="bedrooms" type="number" min="0" value={formData.bedrooms} onChange={handleInputChange} /></div>
                 <div><Label htmlFor="bathrooms">Bathrooms</Label><Input id="bathrooms" name="bathrooms" type="number" min="1" value={formData.bathrooms} onChange={handleInputChange} /></div>
-                <div><Label htmlFor="area">Area (mÂ²)</Label><Input id="area" name="area" type="number" placeholder="e.g., 85" value={formData.area} onChange={handleInputChange} /></div>
+                <div><Label htmlFor="area">Area (m²)</Label><Input id="area" name="area" type="number" placeholder="e.g., 85" value={formData.area} onChange={handleInputChange} /></div>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="furnished" checked={formData.furnished} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, furnished: checked as boolean }))} />
@@ -210,7 +210,7 @@ const PostRentalProperty: React.FC = () => {
             <CardContent className="space-y-4">
               <div><Label htmlFor="address">Street Address *</Label><Input id="address" name="address" placeholder="e.g., Rue de Bastos" value={formData.address} onChange={handleInputChange} required /></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><Label htmlFor="city">City</Label><Input id="city" name="city" placeholder="e.g., YaoundÃ©" value={formData.city} onChange={handleInputChange} /></div>
+                <div><Label htmlFor="city">City</Label><Input id="city" name="city" placeholder="e.g., Yaoundé" value={formData.city} onChange={handleInputChange} /></div>
                 <div><Label htmlFor="neighborhood">Neighborhood</Label><Input id="neighborhood" name="neighborhood" placeholder="e.g., Bastos, Mvan" value={formData.neighborhood} onChange={handleInputChange} /></div>
               </div>
             </CardContent>
@@ -356,8 +356,6 @@ const PostRentalProperty: React.FC = () => {
 };
 
 export default PostRentalProperty;
-
-
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/security/AuthGate.tsx — Bambeh Marketplace
  *
  * SPEED: Subscription check is INSTANT — reads localStorage synchronously.
@@ -57,7 +57,7 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
 
   // ── Vendor ─────────────────────────────────────────────────────────────────
   if (level === "vendor") {
-    const ok = (isVendor ?? false) || (user as any)?.role === "vendor" || (user as any)?.isVendor === true;
+    const ok = isVendor ?? (user as any)?.role === "vendor" ?? (user as any)?.isVendor;
     if (!ok) return <Navigate to="/vendor/register" state={{ from: location }} replace />;
     return <>{children}</>;
   }
@@ -88,8 +88,6 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
 };
 
 export default AuthGate;
-
-
 
 
 

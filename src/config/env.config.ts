@@ -27,4 +27,3 @@
 
 export default env;
 export { env };
-

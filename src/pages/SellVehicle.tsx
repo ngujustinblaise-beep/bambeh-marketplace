@@ -1,8 +1,8 @@
-﻿/**
- * src/pages/SellVehicle.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/SellVehicle.tsx — Bambeh Marketplace
  * Full vehicle listing form: multilingual, Supabase storage image upload,
- * category, price, location, phone, description â€” zero errors.
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * category, price, location, phone, description — zero errors.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useState, useRef } from "react";
@@ -16,9 +16,9 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/hooks/useAppLang";
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // i18n
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 const I18N: Record<string, Record<string, string>> = {
   en: {
     pageTitle: "Sell Your Vehicle",
@@ -33,11 +33,11 @@ const I18N: Record<string, Record<string, string>> = {
     price: "Price (XAF) *",
     pricePlaceholder: "e.g. 8500000",
     location: "Location *",
-    locationPlaceholder: "e.g. YaoundÃ©, Bastos",
+    locationPlaceholder: "e.g. Yaoundé, Bastos",
     phone: "Contact Phone *",
     phonePlaceholder: "e.g. +237 6XX XXX XXX",
     description: "Description",
-    descPlaceholder: "Describe your vehicle â€” condition, history, features, reason for sellingâ€¦",
+    descPlaceholder: "Describe your vehicle — condition, history, features, reason for selling…",
     year: "Year",
     yearPlaceholder: "e.g. 2020",
     mileage: "Mileage",
@@ -49,7 +49,7 @@ const I18N: Record<string, Record<string, string>> = {
     seats: "Seats",
     seatsPlaceholder: "e.g. 5",
     submit: "Post Listing",
-    submitting: "Postingâ€¦",
+    submitting: "Posting…",
     success: "Your vehicle has been listed!",
     successHint: "Buyers can now find and contact you.",
     viewListing: "View My Listing",
@@ -69,59 +69,59 @@ const I18N: Record<string, Record<string, string>> = {
     manual: "Manual",
     vehicleDetails: "Vehicle Details",
     contactInfo: "Contact & Location",
-    uploadingImages: "Uploading imagesâ€¦",
+    uploadingImages: "Uploading images…",
     imageError: "Failed to upload one or more images.",
   },
   fr: {
-    pageTitle: "Vendre votre vÃ©hicule",
-    pageSubtitle: "Atteignez des milliers d'acheteurs Ã  travers le Cameroun",
-    back: "VÃ©hicules",
+    pageTitle: "Vendre votre véhicule",
+    pageSubtitle: "Atteignez des milliers d'acheteurs à travers le Cameroun",
+    back: "Véhicules",
     photos: "Photos",
-    photosHint: "Ajoutez jusqu'Ã  6 photos. La premiÃ¨re est la couverture.",
+    photosHint: "Ajoutez jusqu'à 6 photos. La première est la couverture.",
     addPhoto: "Ajouter une photo",
     title: "Titre *",
     titlePlaceholder: "ex: Toyota Camry 2020",
-    category: "CatÃ©gorie *",
+    category: "Catégorie *",
     price: "Prix (XAF) *",
     pricePlaceholder: "ex: 8500000",
     location: "Localisation *",
-    locationPlaceholder: "ex: YaoundÃ©, Bastos",
-    phone: "TÃ©lÃ©phone *",
+    locationPlaceholder: "ex: Yaoundé, Bastos",
+    phone: "Téléphone *",
     phonePlaceholder: "ex: +237 6XX XXX XXX",
     description: "Description",
-    descPlaceholder: "DÃ©crivez votre vÃ©hicule â€” Ã©tat, historique, caractÃ©ristiques, raison de la venteâ€¦",
-    year: "AnnÃ©e",
+    descPlaceholder: "Décrivez votre véhicule — état, historique, caractéristiques, raison de la vente…",
+    year: "Année",
     yearPlaceholder: "ex: 2020",
-    mileage: "KilomÃ©trage",
+    mileage: "Kilométrage",
     mileagePlaceholder: "ex: 45 000 km",
     fuel: "Carburant",
     transmission: "Transmission",
     color: "Couleur",
-    colorPlaceholder: "ex: ArgentÃ©",
-    seats: "SiÃ¨ges",
+    colorPlaceholder: "ex: Argenté",
+    seats: "Sièges",
     seatsPlaceholder: "ex: 5",
     submit: "Publier l'annonce",
-    submitting: "Publicationâ€¦",
-    success: "Votre vÃ©hicule est maintenant en ligne!",
+    submitting: "Publication…",
+    success: "Votre véhicule est maintenant en ligne!",
     successHint: "Les acheteurs peuvent vous trouver et vous contacter.",
     viewListing: "Voir mon annonce",
     postAnother: "Publier une autre",
-    loginRequired: "Vous devez Ãªtre connectÃ© pour publier une annonce.",
+    loginRequired: "Vous devez être connecté pour publier une annonce.",
     login: "Se connecter",
-    errorGeneric: "Une erreur est survenue. Veuillez rÃ©essayer.",
+    errorGeneric: "Une erreur est survenue. Veuillez réessayer.",
     required: "Veuillez remplir tous les champs obligatoires.",
-    selectCategory: "SÃ©lectionner une catÃ©gorie",
-    selectFuel: "SÃ©lectionner le carburant",
-    selectTransmission: "SÃ©lectionner la transmission",
+    selectCategory: "Sélectionner une catégorie",
+    selectFuel: "Sélectionner le carburant",
+    selectTransmission: "Sélectionner la transmission",
     petrol: "Essence",
     diesel: "Diesel",
-    electric: "Ã‰lectrique",
+    electric: "Électrique",
     hybrid: "Hybride",
     automatic: "Automatique",
     manual: "Manuel",
-    vehicleDetails: "DÃ©tails du vÃ©hicule",
+    vehicleDetails: "Détails du véhicule",
     contactInfo: "Contact & Localisation",
-    uploadingImages: "Chargement des imagesâ€¦",
+    uploadingImages: "Chargement des images…",
     imageError: "Impossible de charger une ou plusieurs images.",
   },
   ha: {
@@ -129,19 +129,19 @@ const I18N: Record<string, Record<string, string>> = {
     pageSubtitle: "Kai ga dubun-dubun masu siya ko'ina a Kamaru",
     back: "Ababen Hawa",
     photos: "Hotuna",
-    photosHint: "Æ˜ara zuwa hoto 6. Na farko shine murfin.",
-    addPhoto: "Æ˜ara Hoto",
+    photosHint: "Ƙara zuwa hoto 6. Na farko shine murfin.",
+    addPhoto: "Ƙara Hoto",
     title: "Take *",
     titlePlaceholder: "misali: Toyota Camry 2020",
     category: "Rukunin *",
     price: "Farashi (XAF) *",
     pricePlaceholder: "misali: 8500000",
     location: "Wurin *",
-    locationPlaceholder: "misali: YaoundÃ©, Bastos",
+    locationPlaceholder: "misali: Yaoundé, Bastos",
     phone: "Waya *",
     phonePlaceholder: "misali: +237 6XX XXX XXX",
     description: "Bayanin",
-    descPlaceholder: "Bayyana abin hawankaâ€¦",
+    descPlaceholder: "Bayyana abin hawanka…",
     year: "Shekara",
     yearPlaceholder: "misali: 2020",
     mileage: "Nisan Tafiya",
@@ -153,7 +153,7 @@ const I18N: Record<string, Record<string, string>> = {
     seats: "Kujeru",
     seatsPlaceholder: "misali: 5",
     submit: "Buga Lissafin",
-    submitting: "Ana bugaâ€¦",
+    submitting: "Ana buga…",
     success: "An lissafa abin hawanku!",
     successHint: "Masu siya yanzu za su iya samun ku.",
     viewListing: "Duba Lissafina",
@@ -162,9 +162,9 @@ const I18N: Record<string, Record<string, string>> = {
     login: "Shiga",
     errorGeneric: "Wani abu ya fita. Da fatan a sake gwadawa.",
     required: "Da fatan a cika duk filayen da ake bukata.",
-    selectCategory: "ZaÉ“i rukuni",
-    selectFuel: "ZaÉ“i nau'in man fetur",
-    selectTransmission: "ZaÉ“i watsa iko",
+    selectCategory: "Zaɓi rukuni",
+    selectFuel: "Zaɓi nau'in man fetur",
+    selectTransmission: "Zaɓi watsa iko",
     petrol: "Petrol",
     diesel: "Dizal",
     electric: "Lantarki",
@@ -173,60 +173,60 @@ const I18N: Record<string, Record<string, string>> = {
     manual: "Hannu",
     vehicleDetails: "Bayanan Abin Hawa",
     contactInfo: "Waya & Wuri",
-    uploadingImages: "Ana loda hotunaâ€¦",
+    uploadingImages: "Ana loda hotuna…",
     imageError: "Kuskure wajen loda hotunan.",
   },
   ar: {
-    pageTitle: "Ø¨ÙŠØ¹ Ù…Ø±ÙƒØ¨ØªÙƒ",
-    pageSubtitle: "ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø¢Ù„Ø§Ã™Â Ø§Ù„Ù…Ø´ØªØ±ÙŠÙ† Ã™ÂÙŠ Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ†",
-    back: "Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª",
-    photos: "Ø§Ù„ØµÙˆØ±",
-    photosHint: "Ø£Ø¶Ã™Â Ø­ØªÙ‰ 6 ØµÙˆØ±. Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ø£ÙˆÙ„Ù‰ Ù‡ÙŠ Ø§Ù„ØºÙ„Ø§Ã™Â.",
-    addPhoto: "Ø¥Ø¶Ø§Ã™ÂØ© ØµÙˆØ±Ø©",
-    title: "Ø§Ù„Ø¹Ù†ÙˆØ§Ù† *",
-    titlePlaceholder: "Ù…Ø«Ø§Ù„: Toyota Camry 2020",
-    category: "Ø§Ù„Ã™ÂØ¦Ø© *",
-    price: "Ø§Ù„Ø³Ø¹Ø± (XAF) *",
-    pricePlaceholder: "Ù…Ø«Ø§Ù„: 8500000",
-    location: "Ø§Ù„Ù…ÙˆÙ‚Ø¹ *",
-    locationPlaceholder: "Ù…Ø«Ø§Ù„: ÙŠØ§ÙˆÙ†Ø¯ÙŠØŒ Ø¨Ø§Ø³ØªÙˆØ³",
-    phone: "Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÃ™Â *",
-    phonePlaceholder: "Ù…Ø«Ø§Ù„: +237 6XX XXX XXX",
-    description: "Ø§Ù„ÙˆØµÃ™Â",
-    descPlaceholder: "ØµÃ™Â Ù…Ø±ÙƒØ¨ØªÙƒ â€” Ø§Ù„Ø­Ø§Ù„Ø©ØŒ Ø§Ù„ØªØ§Ø±ÙŠØ®ØŒ Ø§Ù„Ù…Ù…ÙŠØ²Ø§ØªØŒ Ø³Ø¨Ø¨ Ø§Ù„Ø¨ÙŠØ¹â€¦",
-    year: "Ø§Ù„Ø³Ù†Ø©",
-    yearPlaceholder: "Ù…Ø«Ø§Ù„: 2020",
-    mileage: "Ø¹Ø¯Ø§Ø¯ Ø§Ù„Ù…Ø³Ø§Ã™ÂØ©",
-    mileagePlaceholder: "Ù…Ø«Ø§Ù„: 45,000 ÙƒÙ…",
-    fuel: "Ù†ÙˆØ¹ Ø§Ù„ÙˆÙ‚ÙˆØ¯",
-    transmission: "Ù†Ø§Ù‚Ù„ Ø§Ù„Ø­Ø±ÙƒØ©",
-    color: "Ø§Ù„Ù„ÙˆÙ†",
-    colorPlaceholder: "Ù…Ø«Ø§Ù„: Ã™ÂØ¶ÙŠ",
-    seats: "Ø§Ù„Ù…Ù‚Ø§Ø¹Ø¯",
-    seatsPlaceholder: "Ù…Ø«Ø§Ù„: 5",
-    submit: "Ù†Ø´Ø± Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†",
-    submitting: "Ø¬Ø§Ø±Ã™Â Ø§Ù„Ù†Ø´Ø±â€¦",
-    success: "ØªÙ… Ù†Ø´Ø± Ù…Ø±ÙƒØ¨ØªÙƒ!",
-    successHint: "ÙŠÙ…ÙƒÙ† Ù„Ù„Ù…Ø´ØªØ±ÙŠÙ† Ø§Ù„Ø¢Ù† Ø§Ù„ÙˆØµÙˆÙ„ Ø¥Ù„ÙŠÙƒ ÙˆØ§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹Ùƒ.",
-    viewListing: "Ø¹Ø±Ø¶ Ø¥Ø¹Ù„Ø§Ù†ÙŠ",
-    postAnother: "Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù† Ø¢Ø®Ø±",
-    loginRequired: "ÙŠØ¬Ø¨ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù†.",
-    login: "ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„",
-    errorGeneric: "Ø­Ø¯Ø« Ø®Ø·Ø£ Ù…Ø§. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.",
-    required: "ÙŠØ±Ø¬Ù‰ Ù…Ù„Ø¡ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©.",
-    selectCategory: "Ø§Ø®ØªØ± Ø§Ù„Ã™ÂØ¦Ø©",
-    selectFuel: "Ø§Ø®ØªØ± Ù†ÙˆØ¹ Ø§Ù„ÙˆÙ‚ÙˆØ¯",
-    selectTransmission: "Ø§Ø®ØªØ± Ù†Ø§Ù‚Ù„ Ø§Ù„Ø­Ø±ÙƒØ©",
-    petrol: "Ø¨Ù†Ø²ÙŠÙ†",
-    diesel: "Ø¯ÙŠØ²Ù„",
-    electric: "ÙƒÙ‡Ø±Ø¨Ø§Ø¦ÙŠ",
-    hybrid: "Ù‡Ø¬ÙŠÙ†",
-    automatic: "Ø£ÙˆØªÙˆÙ…Ø§ØªÙŠÙƒ",
-    manual: "ÙŠØ¯ÙˆÙŠ",
-    vehicleDetails: "ØªÃ™ÂØ§ØµÙŠÙ„ Ø§Ù„Ù…Ø±ÙƒØ¨Ø©",
-    contactInfo: "Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø§ØªØµØ§Ù„ ÙˆØ§Ù„Ù…ÙˆÙ‚Ø¹",
-    uploadingImages: "Ø¬Ø§Ø±Ã™Â Ø±Ã™ÂØ¹ Ø§Ù„ØµÙˆØ±â€¦",
-    imageError: "Ã™ÂØ´Ù„ Ø±Ã™ÂØ¹ ØµÙˆØ±Ø© ÙˆØ§Ø­Ø¯Ø© Ø£Ùˆ Ø£ÙƒØ«Ø±.",
+    pageTitle: "بيع مركبتك",
+    pageSubtitle: "تواصل مع آلاÙ المشترين Ùي الكاميرون",
+    back: "المركبات",
+    photos: "الصور",
+    photosHint: "أضÙ حتى 6 صور. الصورة الأولى هي الغلاÙ.",
+    addPhoto: "إضاÙة صورة",
+    title: "العنوان *",
+    titlePlaceholder: "مثال: Toyota Camry 2020",
+    category: "الÙئة *",
+    price: "السعر (XAF) *",
+    pricePlaceholder: "مثال: 8500000",
+    location: "الموقع *",
+    locationPlaceholder: "مثال: ياوندي، باستوس",
+    phone: "رقم الهاتÙ *",
+    phonePlaceholder: "مثال: +237 6XX XXX XXX",
+    description: "الوصÙ",
+    descPlaceholder: "صÙ مركبتك — الحالة، التاريخ، المميزات، سبب البيع…",
+    year: "السنة",
+    yearPlaceholder: "مثال: 2020",
+    mileage: "عداد المساÙة",
+    mileagePlaceholder: "مثال: 45,000 كم",
+    fuel: "نوع الوقود",
+    transmission: "ناقل الحركة",
+    color: "اللون",
+    colorPlaceholder: "مثال: Ùضي",
+    seats: "المقاعد",
+    seatsPlaceholder: "مثال: 5",
+    submit: "نشر الإعلان",
+    submitting: "جارÙ النشر…",
+    success: "تم نشر مركبتك!",
+    successHint: "يمكن للمشترين الآن الوصول إليك والتواصل معك.",
+    viewListing: "عرض إعلاني",
+    postAnother: "نشر إعلان آخر",
+    loginRequired: "يجب تسجيل الدخول لنشر إعلان.",
+    login: "تسجيل الدخول",
+    errorGeneric: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    required: "يرجى ملء جميع الحقول المطلوبة.",
+    selectCategory: "اختر الÙئة",
+    selectFuel: "اختر نوع الوقود",
+    selectTransmission: "اختر ناقل الحركة",
+    petrol: "بنزين",
+    diesel: "ديزل",
+    electric: "كهربائي",
+    hybrid: "هجين",
+    automatic: "أوتوماتيك",
+    manual: "يدوي",
+    vehicleDetails: "تÙاصيل المركبة",
+    contactInfo: "معلومات الاتصال والموقع",
+    uploadingImages: "جارÙ رÙع الصور…",
+    imageError: "Ùشل رÙع صورة واحدة أو أكثر.",
   },
   pcm: {
     pageTitle: "Sell Your Motor",
@@ -241,11 +241,11 @@ const I18N: Record<string, Record<string, string>> = {
     price: "Price (XAF) *",
     pricePlaceholder: "e.g. 8500000",
     location: "Location *",
-    locationPlaceholder: "e.g. YaoundÃ©, Bastos",
+    locationPlaceholder: "e.g. Yaoundé, Bastos",
     phone: "Phone Number *",
     phonePlaceholder: "e.g. +237 6XX XXX XXX",
     description: "Description",
-    descPlaceholder: "Describe your motor â€” condition, story, features, why you dey sellâ€¦",
+    descPlaceholder: "Describe your motor — condition, story, features, why you dey sell…",
     year: "Year",
     yearPlaceholder: "e.g. 2020",
     mileage: "Mileage",
@@ -257,7 +257,7 @@ const I18N: Record<string, Record<string, string>> = {
     seats: "Seats",
     seatsPlaceholder: "e.g. 5",
     submit: "Post Ad",
-    submitting: "Postingâ€¦",
+    submitting: "Posting…",
     success: "Your motor don enter the platform!",
     successHint: "Buyers go see you now.",
     viewListing: "See My Post",
@@ -277,27 +277,27 @@ const I18N: Record<string, Record<string, string>> = {
     manual: "Manual",
     vehicleDetails: "Motor Details",
     contactInfo: "Contact & Location",
-    uploadingImages: "Uploading photosâ€¦",
+    uploadingImages: "Uploading photos…",
     imageError: "Problem uploading photos.",
   },
   ff: {
-    pageTitle: "Yillitu LaaÉ“al Maa",
-    pageSubtitle: "Njangu tumaraneeÉ“e ko'e Kameruun",
-    back: "LaaÉ“e",
+    pageTitle: "Yillitu Laaɓal Maa",
+    pageSubtitle: "Njangu tumaraneeɓe ko'e Kameruun",
+    back: "Laaɓe",
     photos: "Sawru",
-    photosHint: "Æeydu sawru haa 6. Adannde wonata koloore.",
-    addPhoto: "Æeydu Sawru",
+    photosHint: "Ɓeydu sawru haa 6. Adannde wonata koloore.",
+    addPhoto: "Ɓeydu Sawru",
     title: "Tiitoonde *",
     titlePlaceholder: "Toyota Camry 2020",
     category: "Sifo *",
     price: "Njaru (XAF) *",
     pricePlaceholder: "8500000",
     location: "Wuro *",
-    locationPlaceholder: "YaoundÃ©, Bastos",
+    locationPlaceholder: "Yaoundé, Bastos",
     phone: "Wowloore *",
     phonePlaceholder: "+237 6XX XXX XXX",
     description: "Tinndi",
-    descPlaceholder: "Tinndu laaÉ“al maaâ€¦",
+    descPlaceholder: "Tinndu laaɓal maa…",
     year: "Hitaande",
     yearPlaceholder: "2020",
     mileage: "Laawol",
@@ -305,40 +305,40 @@ const I18N: Record<string, Record<string, string>> = {
     fuel: "Susiyel",
     transmission: "Watse",
     color: "Ranynde",
-    colorPlaceholder: "HaaÉ—di",
-    seats: "TooÉ—e",
+    colorPlaceholder: "Haaɗdi",
+    seats: "Tooɗe",
     seatsPlaceholder: "5",
-    submit: "JaÉ“du JaÅ‹tere",
-    submitting: "Yilliteeâ€¦",
-    success: "LaaÉ“al maa jaÅ‹teraa!",
-    successHint: "SoodotooÉ“e mbaawi yiytude maa.",
-    viewListing: "Yiy JaÅ‹tere Am",
-    postAnother: "JaÉ“du GoÉ—É—o",
-    loginRequired: "Tiimto ko adii jaÉ“dude.",
+    submit: "Jaɓdu Jaŋtere",
+    submitting: "Yillitee…",
+    success: "Laaɓal maa jaŋteraa!",
+    successHint: "Soodotooɓe mbaawi yiytude maa.",
+    viewListing: "Yiy Jaŋtere Am",
+    postAnother: "Jaɓdu Goɗɗo",
+    loginRequired: "Tiimto ko adii jaɓdude.",
     login: "Tiimto",
-    errorGeneric: "Ko woÉ—É—aani hawi. Ngaloo kadi.",
-    required: "Æeydu batu keeriiÉ—e.",
-    selectCategory: "SuÉ“o sifo",
-    selectFuel: "SuÉ“o susiyel",
-    selectTransmission: "SuÉ“o watse",
+    errorGeneric: "Ko woɗɗaani hawi. Ngaloo kadi.",
+    required: "Ɓeydu batu keeriiɗe.",
+    selectCategory: "Suɓo sifo",
+    selectFuel: "Suɓo susiyel",
+    selectTransmission: "Suɓo watse",
     petrol: "Petrol",
     diesel: "Diesel",
     electric: "Elektrik",
     hybrid: "Hybrid",
     automatic: "Otomatik",
-    manual: "JuuÉ—e",
-    vehicleDetails: "BayÉ—e LaaÉ“al",
+    manual: "Juuɗe",
+    vehicleDetails: "Bayɗe Laaɓal",
     contactInfo: "Wowloore & Wuro",
-    uploadingImages: "Sawruuje njilloyineeâ€¦",
+    uploadingImages: "Sawruuje njilloyinee…",
     imageError: "Sawru ujaaki.",
   },
 };
 
 const CATEGORIES = ["Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck", "Other"];
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Form state shape
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 interface FormState {
   title:        string;
   category:     string;
@@ -360,9 +360,9 @@ const EMPTY_FORM: FormState = {
   color:"", seats:"",
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Upload images to Supabase Storage
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 async function uploadImages(files: File[]): Promise<string[]> {
   const urls: string[] = [];
   for (const file of files) {
@@ -378,9 +378,9 @@ async function uploadImages(files: File[]): Promise<string[]> {
   return urls;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // Component
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 const SellVehicle: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -398,12 +398,12 @@ const SellVehicle: React.FC = () => {
   const [error,            setError]            = useState<string | null>(null);
   const [successId,        setSuccessId]        = useState<string | null>(null);
 
-  // â”€â”€ Field update helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Field update helper ─────────────────────────────────────
   const set = (field: keyof FormState) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  // â”€â”€ Image picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Image picker ────────────────────────────────────────────
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const remaining = 6 - imageFiles.length;
@@ -425,7 +425,7 @@ const SellVehicle: React.FC = () => {
     setImagePreviews((prev) => prev.filter((_, idx) => idx !== i));
   };
 
-  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Submit ──────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -494,9 +494,9 @@ const SellVehicle: React.FC = () => {
     }
   };
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────
   // Not logged in
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={isRtl ? "rtl" : "ltr"}>
@@ -515,9 +515,9 @@ const SellVehicle: React.FC = () => {
     );
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────
   // Success
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────
   if (successId) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={isRtl ? "rtl" : "ltr"}>
@@ -544,9 +544,9 @@ const SellVehicle: React.FC = () => {
     );
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────
   // Form
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────
   const inputClass = `w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none
     focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white placeholder-gray-400`;
   const labelClass = "block text-sm font-semibold text-gray-700 mb-1.5";
@@ -554,7 +554,7 @@ const SellVehicle: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-32" dir={isRtl ? "rtl" : "ltr"}>
 
-      {/* â”€â”€ Top bar â”€â”€ */}
+      {/* ── Top bar ── */}
       <div className={`sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center gap-3 ${isRtl ? "flex-row-reverse" : ""}`}>
         <button
           onClick={() => navigate("/vehicles")}
@@ -571,7 +571,7 @@ const SellVehicle: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 py-6 space-y-6">
 
-        {/* â”€â”€ Error banner â”€â”€ */}
+        {/* ── Error banner ── */}
         {error && (
           <div className={`flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm ${isRtl ? "flex-row-reverse" : ""}`}>
             <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -579,7 +579,7 @@ const SellVehicle: React.FC = () => {
           </div>
         )}
 
-        {/* â”€â”€ Photos â”€â”€ */}
+        {/* ── Photos ── */}
         <div>
           <p className={`text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
             <ImagePlus className="w-4 h-4 text-green-600" /> {tr("photos")}
@@ -627,7 +627,7 @@ const SellVehicle: React.FC = () => {
           />
         </div>
 
-        {/* â”€â”€ Basic info â”€â”€ */}
+        {/* ── Basic info ── */}
         <div className="bg-white rounded-2xl border p-4 space-y-4">
 
           {/* Title */}
@@ -663,7 +663,7 @@ const SellVehicle: React.FC = () => {
           </div>
         </div>
 
-        {/* â”€â”€ Vehicle details â”€â”€ */}
+        {/* ── Vehicle details ── */}
         <div className="bg-white rounded-2xl border p-4 space-y-4">
           <p className={`text-sm font-bold text-gray-700 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
             <Car className="w-4 h-4 text-green-600" /> {tr("vehicleDetails")}
@@ -732,7 +732,7 @@ const SellVehicle: React.FC = () => {
           </div>
         </div>
 
-        {/* â”€â”€ Contact & location â”€â”€ */}
+        {/* ── Contact & location ── */}
         <div className="bg-white rounded-2xl border p-4 space-y-4">
           <p className={`text-sm font-bold text-gray-700 flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
             <Phone className="w-4 h-4 text-green-600" /> {tr("contactInfo")}
@@ -762,7 +762,7 @@ const SellVehicle: React.FC = () => {
           </div>
         </div>
 
-        {/* â”€â”€ Description â”€â”€ */}
+        {/* ── Description ── */}
         <div className="bg-white rounded-2xl border p-4">
           <label className={`${labelClass} flex items-center gap-2`}>
             <AlignLeft className="w-3.5 h-3.5 text-green-600" />{tr("description")}
@@ -775,7 +775,7 @@ const SellVehicle: React.FC = () => {
           />
         </div>
 
-        {/* â”€â”€ Submit â”€â”€ */}
+        {/* ── Submit ── */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 pt-3 pb-6 z-[60]">
           <div className="max-w-2xl mx-auto">
             <button
@@ -806,9 +806,5 @@ const SellVehicle: React.FC = () => {
 };
 
 export default SellVehicle;
-
-
-
-
 
 

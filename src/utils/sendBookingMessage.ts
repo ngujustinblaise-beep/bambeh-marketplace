@@ -121,4 +121,3 @@ export async function sendBookingMessage(params: BookingMessageParams): Promise<
     console.warn('[sendBookingMessage] failed to send in-app message:', err);
   }
 }
-

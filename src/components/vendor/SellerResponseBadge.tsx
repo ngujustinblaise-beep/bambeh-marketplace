@@ -261,5 +261,3 @@ export default SellerResponseBadge;
 
 
 
-
-

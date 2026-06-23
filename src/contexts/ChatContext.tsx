@@ -1,4 +1,10 @@
-import React, { useEffect, createContext, useContext, useState, ReactNode } from "react";
+import React, { 
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode
+} from "react";
 import { io, Socket } from "socket.io-client";
 
 export interface ChatMessage {
@@ -334,8 +340,6 @@ export const useChat = () => {
   }
   return context;
 };
-
-
 
 
 

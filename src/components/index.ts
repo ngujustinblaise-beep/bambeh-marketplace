@@ -12,4 +12,3 @@ export type { VerificationStatus, VerificationLevel } from "./Verification/Verif
 // Re-export as aliases that legacy files may reference
 export { default as VerificationApplication } from "./Verification/VerificationBadge";
 export { VerificationStepsPanel as VerificationDetails } from "./Verification/VerificationBadge";
-

@@ -1,9 +1,8 @@
 ﻿/**
- * TermsOfService.tsx — Bambeh Marketplace - The Pulse of African Commerce
+ * TermsOfService.tsx — Bambeh Marketplace
  * ---------------------------------------------------------------------------
  * Play Store / App Store compliant — June 2026
  * Governed by: Cameroon Law No. 2024/017 of 23 December 2024 on Personal
- * CNI/RC Number: CM-NSI-02-2026-B13-00179 as well as NIU Number: M022618405804C, and having as D-U-N-S Number: 850379853.
  * Data Protection, OHADA Uniform Acts, and general principles of Cameroonian law.
  *
  * FIXED from original:
@@ -40,9 +39,7 @@ const SECTIONS: Section[] = [
           related services (collectively, the "Platform") — you agree to be legally
           bound by these Terms of Service ("Terms") and all applicable laws of the
           Republic of Cameroon. If you do not agree to these Terms, you must
-          immediately stop using the Platform. Our importnt registration details include:
-          CNI/RC Number: CM-NSI-02-2026-B13-00179 as well as NIU Number: M022618405804C, 
-          and having as D-U-N-S Number: 850379853.
+          immediately stop using the Platform.
         </p>
         <p className="mt-3">
           These Terms constitute a legally binding agreement between you and
@@ -597,8 +594,6 @@ const TermsOfService: React.FC = () => {
 };
 
 export default TermsOfService;
-
-
 
 
 

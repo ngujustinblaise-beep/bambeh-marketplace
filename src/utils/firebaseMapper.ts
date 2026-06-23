@@ -14,4 +14,3 @@ export const mapFirebaseUser = (firebaseUser: FirebaseUser): Partial<User> => {
     isVerified: firebaseUser.emailVerified,
     createdAt: new Date(firebaseUser.metadata.creationTime ?? Date.now()),
   }; };
-

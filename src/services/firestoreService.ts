@@ -33,4 +33,3 @@ export const setDocument = async (
 export const db      = null;
 export const auth    = null;
 export const storage = null;
-

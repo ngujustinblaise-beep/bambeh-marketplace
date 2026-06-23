@@ -172,4 +172,3 @@ export async function getPublicProfile(userId: string): Promise<ProfileResponse>
   }
 }
 
-

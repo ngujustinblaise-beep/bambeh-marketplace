@@ -9,4 +9,3 @@
 
 export const securityManager = new SecurityManager();
 export default securityManager;
-

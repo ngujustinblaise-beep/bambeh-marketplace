@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FarmFreshOrderPage.tsx — Bambeh Marketplace
  *
  * FIXED:
@@ -190,7 +190,7 @@ export default function FarmFreshOrderPage() {
             <p className="text-gray-500 text-sm mb-2">{t("demoOrderNote", lang)}</p>
           ) : (
             <p className="text-gray-500 text-sm mb-2">
-              {(t("farmerContact", lang) as unknown as (phone: string) => string)(phone)}
+              {(t("farmerContact", lang) as (phone: string) => string)(phone)}
             </p>
           )}
           <p className="text-gray-400 text-xs mb-6">{t("total", lang)}: {fmtXAF((product?.price ?? 0) * qty)}</p>
@@ -372,8 +372,6 @@ export default function FarmFreshOrderPage() {
     </div>
   );
 }
-
-
 
 
 

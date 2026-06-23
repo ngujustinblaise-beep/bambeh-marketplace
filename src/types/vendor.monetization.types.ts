@@ -342,4 +342,3 @@ export interface AnalyticsResponse {
   data: VendorAnalyticsSnapshot | null;
   error: string | null;
 }
-

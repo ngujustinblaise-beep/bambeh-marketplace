@@ -84,4 +84,3 @@ class AuditLoggerClass {
 export const auditLogger = new AuditLoggerClass();
 
 export default auditLogger;
-

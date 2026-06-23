@@ -220,4 +220,3 @@ export const RankingRequirements = {
   minimumResponseRate: 50, // percentage,
   recencyWeightDays: 90, // Recent reviews weighted more heavily
 };
-

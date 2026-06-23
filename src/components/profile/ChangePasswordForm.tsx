@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CHANGE PASSWORD FORM - With Email/Phone Verification
  * FILE LOCATION: src/components/profile/ChangePasswordForm.tsx
  */
@@ -34,26 +34,26 @@ const S: Record<Lang, any> = {
   },
   fr: {
     title: 'Changer le mot de passe',
-    subtitle: 'Mettre Ã  jour le mot de passe de votre compte',
+    subtitle: 'Mettre à jour le mot de passe de votre compte',
     currentLabel: 'Mot de passe actuel *',
-    newLabel: 'Nouveau mot de passe * (minimum 8 caractÃ¨res)',
+    newLabel: 'Nouveau mot de passe * (minimum 8 caractères)',
     confirmLabel: 'Confirmer le nouveau mot de passe *',
     errCurrentWrong: 'Le mot de passe actuel est incorrect',
-    errMin8: 'Le nouveau mot de passe doit comporter au moins 8 caractÃ¨res',
+    errMin8: 'Le nouveau mot de passe doit comporter au moins 8 caractères',
     errNoMatch: 'Les nouveaux mots de passe ne correspondent pas',
-    errSameAsOld: 'Le nouveau mot de passe doit Ãªtre diffÃ©rent du mot de passe actuel',
-    verifyTitle: 'VÃ©rifier votre identitÃ©',
-    verifyDescPrefix: 'Entrez le code Ã  6 chiffres envoyÃ© Ã  votre ',
-    codeLabel: 'Code de vÃ©rification',
+    errSameAsOld: 'Le nouveau mot de passe doit être différent du mot de passe actuel',
+    verifyTitle: 'Vérifier votre identité',
+    verifyDescPrefix: 'Entrez le code à 6 chiffres envoyé à votre ',
+    codeLabel: 'Code de vérification',
     continueBtn: 'Continuer',
-    verifyBtn: 'VÃ©rifier le code',
-    successTitle: 'Mot de passe changÃ© !',
-    successDesc: 'Votre mot de passe a Ã©tÃ© mis Ã  jour avec succÃ¨s.',
-    done: 'TerminÃ©',
+    verifyBtn: 'Vérifier le code',
+    successTitle: 'Mot de passe changé !',
+    successDesc: 'Votre mot de passe a été mis à jour avec succès.',
+    done: 'Terminé',
     back: 'Retour',
-    verifyVia: 'VÃ©rifier via :',
+    verifyVia: 'Vérifier via :',
     emailBtn: 'E-mail',
-    phoneBtn: 'TÃ©lÃ©phone'
+    phoneBtn: 'Téléphone'
   },
   pidgin: {
     title: 'Change Password',
@@ -79,31 +79,31 @@ const S: Record<Lang, any> = {
     phoneBtn: 'Phone'
   },
   ar: {
-    title: 'ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±',
-    subtitle: 'ØªØ­Ø¯ÙŠØ« ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø­Ø³Ø§Ø¨Ùƒ',
-    currentLabel: 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø­Ø§Ù„ÙŠØ© *',
-    newLabel: 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø© * (8 Ø±Ù…ÙˆØ² Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„)',
-    confirmLabel: 'ØªØ£ÙƒÙŠØ¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø© *',
-    errCurrentWrong: 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø­Ø§Ù„ÙŠØ© ØºÙŠØ± ØµØ­ÙŠØ­Ø©',
-    errMin8: 'ÙŠØ¬Ø¨ Ø£Ù† ØªØªÙƒÙˆÙ† Ù…Ù† 8 Ø±Ù…ÙˆØ² Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„',
-    errNoMatch: 'ÙƒÙ„Ù…Ø§Øª Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± Ù…ØªØ·Ø§Ø¨Ù‚Ø©',
-    errSameAsOld: 'ÙŠØ¬Ø¨ Ø£Ù† ØªØ®ØªÙ„Ù Ø¹Ù† ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø­Ø§Ù„ÙŠØ©',
-    verifyTitle: 'Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ù‡ÙˆÙŠØ©',
-    verifyDescPrefix: 'Ø£Ø¯Ø®Ù„ Ø±Ù…Ø² Ø§Ù„ØªØ­Ù‚Ù‚ Ø§Ù„Ù…ÙƒÙˆÙ† Ù…Ù† 6 Ø£Ø±Ù‚Ø§Ù… Ø§Ù„Ù…Ø±Ø³Ù„ Ø¥Ù„Ù‰ ',
-    codeLabel: 'Ø±Ù…Ø² Ø§Ù„ØªØ­Ù‚Ù‚',
-    continueBtn: 'Ù…ØªØ§Ø¨Ø¹Ø©',
-    verifyBtn: 'ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ø±Ù…Ø²',
-    successTitle: 'ØªÙ… ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±!',
-    successDesc: 'ØªÙ… ØªØ­Ø¯ÙŠØ« ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø®Ø§ØµØ© Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­.',
-    done: 'ØªÙ…',
-    back: 'Ø±Ø¬ÙˆØ¹',
-    verifyVia: 'Ø§Ù„ØªØ­Ù‚Ù‚ Ø¹Ø¨Ø±:',
-    emailBtn: 'Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ',
-    phoneBtn: 'Ø§Ù„Ù‡Ø§ØªÙ'
+    title: 'تغيير كلمة المرور',
+    subtitle: 'تحديث كلمة مرور حسابك',
+    currentLabel: 'كلمة المرور الحالية *',
+    newLabel: 'كلمة المرور الجديدة * (8 رموز على الأقل)',
+    confirmLabel: 'تأكيد كلمة المرور الجديدة *',
+    errCurrentWrong: 'كلمة المرور الحالية غير صحيحة',
+    errMin8: 'يجب أن تتكون من 8 رموز على الأقل',
+    errNoMatch: 'كلمات المرور غير متطابقة',
+    errSameAsOld: 'يجب أن تختلف عن كلمة المرور الحالية',
+    verifyTitle: 'التحقق من الهوية',
+    verifyDescPrefix: 'أدخل رمز التحقق المكون من 6 أرقام المرسل إلى ',
+    codeLabel: 'رمز التحقق',
+    continueBtn: 'متابعة',
+    verifyBtn: 'تحقق من الرمز',
+    successTitle: 'تم تغيير كلمة المرور!',
+    successDesc: 'تم تحديث كلمة المرور الخاصة بك بنجاح.',
+    done: 'تم',
+    back: 'رجوع',
+    verifyVia: 'التحقق عبر:',
+    emailBtn: 'البريد الإلكتروني',
+    phoneBtn: 'الهاتف'
   },
   ff: {
     title: 'Waylu udditirgal',
-    subtitle: 'HesÉ—itinu udditirgal ngal suudu ma',
+    subtitle: 'Hesɗitinu udditirgal ngal suudu ma',
     currentLabel: 'Udditirgal jooni ngal *',
     newLabel: 'Udditirgal kesal ngal * (haa hebba 8 harfeere)',
     confirmLabel: 'Tabbitinu udditirgal kesal ngal *',
@@ -302,4 +302,3 @@ export default function ChangePasswordForm({ onClose }: { onClose?: () => void }
     </div>
   );
 }
-

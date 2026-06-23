@@ -1,45 +1,45 @@
-﻿/**
+/**
  * src/services/jobs.service.ts
- * Bambeh Marketplace â€” Jobs Service
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Jobs Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * â”€â”€â”€ IMPORTANT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * ─── IMPORTANT ───────────────────────────────────────────────────────────────
  * Bambeh uses ONE "listings" table for ALL content types.
  * Jobs are stored as: listings WHERE type = 'job'
  * Job-specific fields are stored in the listings.extra JSONB column.
  *
- * Column mapping (listings â†’ JobListing):
- *   listings.id                â†’ id
- *   listings.user_id           â†’ employerId
- *   listings.title             â†’ title
- *   listings.description       â†’ description
- *   listings.category          â†’ category
- *   listings.location          â†’ location.city
- *   listings.country           â†’ location.country
- *   listings.price             â†’ salaryMinXAF  (re-purposed)
- *   listings.tags              â†’ tags
- *   listings.view_count        â†’ viewCount
- *   listings.status            â†’ status
- *   listings.extra.company          â†’ company
- *   listings.extra.logo_url         â†’ companyLogoUrl  â† NEW: company logo
- *   listings.extra.job_type         â†’ jobType
- *   listings.extra.exp_level        â†’ experienceLevel
- *   listings.extra.salary_max       â†’ salaryMaxXAF
- *   listings.extra.negotiable       â†’ isSalaryNegotiable
- *   listings.extra.region           â†’ location.region
- *   listings.extra.is_remote        â†’ isRemote
- *   listings.extra.deadline         â†’ applicationDeadline
- *   listings.extra.application_count â†’ applicationCount
- *   listings.extra.apply_method      â†’ applyMethod  ('whatsapp'|'call'|'email'|'in_app')
- *   listings.extra.apply_contact     â†’ applyContact (phone/email string)
- *   listings.extra.requirements      â†’ requirements
- *   listings.extra.benefits          â†’ benefits
+ * Column mapping (listings → JobListing):
+ *   listings.id                → id
+ *   listings.user_id           → employerId
+ *   listings.title             → title
+ *   listings.description       → description
+ *   listings.category          → category
+ *   listings.location          → location.city
+ *   listings.country           → location.country
+ *   listings.price             → salaryMinXAF  (re-purposed)
+ *   listings.tags              → tags
+ *   listings.view_count        → viewCount
+ *   listings.status            → status
+ *   listings.extra.company          → company
+ *   listings.extra.logo_url         → companyLogoUrl  ← NEW: company logo
+ *   listings.extra.job_type         → jobType
+ *   listings.extra.exp_level        → experienceLevel
+ *   listings.extra.salary_max       → salaryMaxXAF
+ *   listings.extra.negotiable       → isSalaryNegotiable
+ *   listings.extra.region           → location.region
+ *   listings.extra.is_remote        → isRemote
+ *   listings.extra.deadline         → applicationDeadline
+ *   listings.extra.application_count → applicationCount
+ *   listings.extra.apply_method      → applyMethod  ('whatsapp'|'call'|'email'|'in_app')
+ *   listings.extra.apply_contact     → applyContact (phone/email string)
+ *   listings.extra.requirements      → requirements
+ *   listings.extra.benefits          → benefits
  */
 
 import { supabase } from "@/lib/supabase";
 import type { JobListing, ItemFilters, PaginatedItemsResponse } from "@/types/src_types_items";
 
-// â”€â”€â”€ Response Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Response Types ────────────────────────────────────────────────────────────
 export interface JobResponse {
   data: JobListing | null;
   error: string | null;
@@ -57,7 +57,7 @@ export interface JobActionResponse {
   error: string | null;
 }
 
-// â”€â”€â”€ Row â†’ JobListing mapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Row → JobListing mapper ───────────────────────────────────────────────────
 function mapRow(row: Record<string, any>): JobListing {
   const extra = (row.extra ?? {}) as Record<string, any>;
   return {
@@ -65,7 +65,7 @@ function mapRow(row: Record<string, any>): JobListing {
     employerId:         row.user_id ?? row.seller_id ?? "",
     title:              row.title ?? "",
     company:            extra.company ?? row.company ?? undefined,
-    companyLogoUrl:     extra.logo_url ?? undefined,          // â† company logo
+    companyLogoUrl:     extra.logo_url ?? undefined,          // ← company logo
     description:        row.description ?? "",
     requirements:       extra.requirements ?? undefined,
     benefits:           extra.benefits ?? undefined,
@@ -95,7 +95,7 @@ function mapRow(row: Record<string, any>): JobListing {
   };
 }
 
-// â”€â”€â”€ Get Jobs (paginated + filtered) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Jobs (paginated + filtered) ──────────────────────────────────────────
 export async function getJobs(
   filters: Partial<ItemFilters> = {}
 ): Promise<PaginatedItemsResponse<JobListing>> {
@@ -139,7 +139,7 @@ export async function getJobs(
   }
 }
 
-// â”€â”€â”€ Get Job by ID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get Job by ID ─────────────────────────────────────────────────────────────
 export async function getJobById(id: string): Promise<JobResponse> {
   try {
     const { data, error } = await supabase
@@ -158,7 +158,7 @@ export async function getJobById(id: string): Promise<JobResponse> {
   }
 }
 
-// â”€â”€â”€ Create Job â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Create Job ────────────────────────────────────────────────────────────────
 export async function createJob(
   employerId: string,
   payload: Omit<JobListing, "id" | "employerId" | "viewCount" | "applicationCount" | "createdAt" | "updatedAt">
@@ -210,7 +210,7 @@ export async function createJob(
   }
 }
 
-// â”€â”€â”€ Update Job â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Update Job ────────────────────────────────────────────────────────────────
 export async function updateJob(
   id: string,
   employerId: string,
@@ -261,7 +261,7 @@ export async function updateJob(
   }
 }
 
-// â”€â”€â”€ Delete Job â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Delete Job ────────────────────────────────────────────────────────────────
 export async function deleteJob(id: string, employerId: string): Promise<JobActionResponse> {
   try {
     const { error } = await supabase
@@ -274,16 +274,16 @@ export async function deleteJob(id: string, employerId: string): Promise<JobActi
   }
 }
 
-// â”€â”€â”€ Increment View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Increment View ────────────────────────────────────────────────────────────
 export async function incrementJobView(id: string): Promise<void> {
   try {
     await supabase.rpc("increment_view_count", { table_name: "listings", record_id: id });
   } catch {
-    // Non-critical â€” silently fail
+    // Non-critical — silently fail
   }
 }
 
-// â”€â”€â”€ Get My Jobs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Get My Jobs ───────────────────────────────────────────────────────────────
 export async function getMyJobs(employerId: string): Promise<JobListResponse> {
   try {
     const { data, error } = await supabase
@@ -302,7 +302,7 @@ export async function getMyJobs(employerId: string): Promise<JobListResponse> {
   }
 }
 
-// â”€â”€â”€ Apply for Job (in-app) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Apply for Job (in-app) ────────────────────────────────────────────────────
 export async function applyForJob(
   jobId: string,
   applicantId: string
@@ -346,4 +346,3 @@ export async function applyForJob(
     return { success: false, error: err instanceof Error ? err.message : "Failed to apply" };
   }
 }
-

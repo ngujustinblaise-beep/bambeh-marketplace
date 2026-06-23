@@ -528,5 +528,3 @@ if (query.toLowerCase().includes('job') || query.toLowerCase().includes('work'))
 
 
 
-
-

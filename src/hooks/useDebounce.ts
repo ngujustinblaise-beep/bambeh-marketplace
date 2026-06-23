@@ -18,4 +18,3 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 // USAGE:
 // const searchQuery = useDebounce(inputValue, 500);
-

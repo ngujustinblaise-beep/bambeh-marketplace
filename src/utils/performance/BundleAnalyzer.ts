@@ -90,4 +90,3 @@ export async function measureAssetSize(url: string): Promise<number> {
     return 0;
   }
 }
-

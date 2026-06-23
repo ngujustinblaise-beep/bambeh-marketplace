@@ -1,5 +1,5 @@
-﻿/**
- * src/pages/MyListings.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/MyListings.tsx — Bambeh Marketplace
  *
  * Seller's personal dashboard showing ALL their listings across every category.
  * Shows:
@@ -8,7 +8,7 @@
  *  - Status (active / pending / expired)
  *  - Quick links to edit / delete
  *
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -21,7 +21,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from '@/App';
 
-// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface MyListing {
   id: string;
@@ -36,7 +36,7 @@ interface MyListing {
   table: string;      // which DB table this came from
 }
 
-// â”€â”€ Icon helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Icon helper ────────────────────────────────────────────────────────────────
 
 function ListingIcon({ type }: { type: string }) {
   const cls = "w-5 h-5";
@@ -64,7 +64,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-// â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main Component ─────────────────────────────────────────────────────────────
 
 function filterLabel(f: string, t: (k: string) => string) {
   return t("myListings.filter." + f);
@@ -82,7 +82,7 @@ export default function MyListings() {
   const [activeFilter,setActiveFilter]= useState<string>("all");
   const [userId,      setUserId]      = useState<string | null>(null);
 
-  // â”€â”€ Fetch all listings from all tables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Fetch all listings from all tables ──────────────────────────────────────
 
   async function fetchAll() {
     setLoading(true);
@@ -157,7 +157,7 @@ export default function MyListings() {
 
   useEffect(() => { fetchAll(); }, []);
 
-  // â”€â”€ Derived stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Derived stats ────────────────────────────────────────────────────────────
 
   const totalViews  = listings.reduce((sum, l) => sum + (l.view_count ?? 0), 0);
   const activeCount = listings.filter(l => l.status === "active").length;
@@ -169,7 +169,7 @@ export default function MyListings() {
     return l.type === activeFilter;
   });
 
-  // â”€â”€ Navigate to correct detail page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Navigate to correct detail page ─────────────────────────────────────────
 
   function goToListing(l: MyListing) {
     const routes: Record<string, string> = {
@@ -184,7 +184,7 @@ export default function MyListings() {
     navigate((routes[l.type] ?? "/marketplace/") + l.id);
   }
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <div dir={language === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-24">
@@ -211,7 +211,7 @@ export default function MyListings() {
             <p className="text-2xl font-bold text-green-700">{activeCount}</p>
             <p className="text-xs text-green-600">{t("myListings.active")}</p>
           </div>
-          {/* âœ… Total ad views â€” the big number */}
+          {/* ✅ Total ad views — the big number */}
           <div className="bg-blue-50 rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-blue-700">{totalViews.toLocaleString()}</p>
             <p className="text-xs text-blue-600">{t("myListings.totalViews")}</p>
@@ -272,13 +272,13 @@ export default function MyListings() {
                   <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 flex-1">{l.title}</h3>
                   <StatusBadge status={l.status} />
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5 capitalize">{l.type} Â· {l.category}</p>
+                <p className="text-xs text-gray-400 mt-0.5 capitalize">{l.type} · {l.category}</p>
                 {l.price && <p className="text-xs text-teal-600 font-semibold mt-0.5">{l.price.toLocaleString()} XAF</p>}
-                {l.location && <p className="text-xs text-gray-400 mt-0.5">ðŸ“ {l.location}</p>}
+                {l.location && <p className="text-xs text-gray-400 mt-0.5">📍 {l.location}</p>}
               </div>
             </div>
 
-            {/* âœ… View count â€” prominent green display for seller */}
+            {/* ✅ View count — prominent green display for seller */}
             <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-2 bg-green-50 rounded-lg px-3 py-1.5">
                 <Eye className="w-4 h-4 text-green-600" />
@@ -295,8 +295,6 @@ export default function MyListings() {
     </div>
   );
 }
-
-
 
 
 

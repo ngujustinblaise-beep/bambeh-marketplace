@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SECURITY INITIALIZER
  * FILE LOCATION: src/components/security/SecurityInitializer.tsx
  */
@@ -18,9 +18,9 @@ const checkAllSessionExpiry = (): 'user' | 'vendor' | 'admin' | null => {
 };
 
 const SESSION_EXPIRED_MESSAGES: Record<string, string> = {
-  admin:  'Votre session administrateur a expirÃ© (1 heure). Reconnectez-vous.\nYour admin session expired (1 hour). Please log in again.',
-  vendor: 'Votre session vendeur a expirÃ© (24 heures). Reconnectez-vous.\nYour vendor session expired (24 hours). Please log in again.',
-  user:   'Votre session a expirÃ©. Reconnectez-vous.\nYour session expired. Please log in again.',
+  admin:  'Votre session administrateur a expiré (1 heure). Reconnectez-vous.\nYour admin session expired (1 hour). Please log in again.',
+  vendor: 'Votre session vendeur a expiré (24 heures). Reconnectez-vous.\nYour vendor session expired (24 hours). Please log in again.',
+  user:   'Votre session a expiré. Reconnectez-vous.\nYour session expired. Please log in again.',
 };
 
 const REDIRECT_PATHS: Record<string, string> = {
@@ -39,7 +39,7 @@ const SecurityInitializer: React.FC = () => {
     sessionManager.migrateOldSessions();
     initializeFirebaseAppCheck();
     if (import.meta.env.MODE === 'development') {
-      console.log('ðŸ”’ SecurityInitializer: All security systems active');
+      console.log('🔒 SecurityInitializer: All security systems active');
     }
     intervalRef.current = setInterval(() => {
       const expiredType = checkAllSessionExpiry();
@@ -55,7 +55,7 @@ const SecurityInitializer: React.FC = () => {
       if (shouldRedirect) {
         const message    = SESSION_EXPIRED_MESSAGES[expiredType];
         const redirectTo = REDIRECT_PATHS[expiredType];
-        if (import.meta.env.MODE === 'development') { console.warn(`â° Session expired: ${expiredType}`); }
+        if (import.meta.env.MODE === 'development') { console.warn(`⏰ Session expired: ${expiredType}`); }
         window.dispatchEvent(new CustomEvent('bambeh:session-expired', { detail: { type: expiredType, message, redirectTo } }));
         navigate(redirectTo, { replace: true, state: { sessionExpired: true, expiredType } });
       }
@@ -69,9 +69,5 @@ const SecurityInitializer: React.FC = () => {
 };
 
 export default SecurityInitializer;
-
-
-
-
 
 

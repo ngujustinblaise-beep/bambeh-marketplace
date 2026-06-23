@@ -1,16 +1,16 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * VendorLayout.tsx - REDESIGNED v2 (February 14, 2026)
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  * 
  * v2 FIXES:
- * âœ… Profile dropdown z-index 9999 â€” appears ABOVE all banners
- * âœ… Colorful header with gradient accent line
- * âœ… Two-row header preserved
- * âœ… All routes preserved â€” zero routing changes
+ * ✅ Profile dropdown z-index 9999 — appears ABOVE all banners
+ * ✅ Colorful header with gradient accent line
+ * ✅ Two-row header preserved
+ * ✅ All routes preserved — zero routing changes
  * 
- * Â© 2026 Bambeh Marketplace. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * © 2026 Bambeh Marketplace. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import React, { useState, useEffect } from 'react';
@@ -99,7 +99,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* â•â•â• HEADER â•â•â• */}
+      {/* ═══ HEADER ═══ */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-sm'}`}>
 
         {/* Gradient accent line */}
@@ -132,7 +132,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
                 <Link to="/vendor/settings" className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"><Settings className="w-5 h-5" /></Link>
                 <Link to="/vendor/notifications" className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all relative"><Bell className="w-5 h-5" /></Link>
 
-                {/* PROFILE DROPDOWN â€” z-[9999] to always be on top */}
+                {/* PROFILE DROPDOWN — z-[9999] to always be on top */}
                 <div className="relative">
                   <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-gray-100 transition-all">
                     <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-full flex items-center justify-center shadow-sm">
@@ -152,7 +152,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
                         <div className="p-1.5">
                           <Link to="/vendor/profile" className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"><User className="w-4 h-4 text-gray-400" />Profile</Link>
                           <Link to="/vendor/settings" className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"><Settings className="w-4 h-4 text-gray-400" />Settings</Link>
-                          <Link to="/vendor/subscription" className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"><Crown className="w-4 h-4 text-amber-500" />Subscription</Link>
+                          <Link to="/vendor/subscription-plans" className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"><Crown className="w-4 h-4 text-amber-500" />Subscription</Link>
                           <Link to="/help" className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"><HelpCircle className="w-4 h-4 text-gray-400" />Help Center</Link>
                           <div className="border-t border-gray-100 mt-1 pt-1">
                             <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg font-medium"><LogOut className="w-4 h-4" />Logout</button>
@@ -207,7 +207,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
               </div>
               <div className="border-t border-gray-100 mt-3 pt-3 space-y-1">
                 <Link to="/vendor/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50"><User className="w-5 h-5 text-gray-400" />Profile</Link>
-                <Link to="/vendor/subscription" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-50 to-orange-50 text-orange-700"><Crown className="w-5 h-5 text-amber-500" />Upgrade Plan</Link>
+                <Link to="/vendor/subscription-plans" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-50 to-orange-50 text-orange-700"><Crown className="w-5 h-5 text-amber-500" />Upgrade Plan</Link>
                 <Link to="/" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50"><Home className="w-5 h-5 text-gray-400" />Back to Marketplace</Link>
                 <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-600 hover:bg-red-50 font-semibold"><LogOut className="w-5 h-5" />Logout</button>
               </div>
@@ -253,9 +253,5 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
 };
 
 export default VendorLayout;
-
-
-
-
 
 

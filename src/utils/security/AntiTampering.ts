@@ -34,4 +34,3 @@ initializeAntiTampering();
 }
 }
 export default initializeAntiTampering;
-

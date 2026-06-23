@@ -1,17 +1,17 @@
 /**
- * src/pages/FarmFreshPage.tsx â€” Bambeh Marketplace
+ * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
  *
  * REBUILT & FIXED:
- *  âœ… Category buttons show real words (All, Vegetables, Fruitsâ€¦) NOT raw keys (catAll, catVegetablesâ€¦)
- *  âœ… Full i18n â€” instantly switches when user changes language from ANY part of the app
- *  âœ… Search works â€” no "Oops, something went wrong" errors
- *  âœ… Add to Cart fully functional (goes to /cart for checkout)
- *  âœ… Products clickable â†’ /farm-fresh/:id (FarmFreshDetail)
- *  âœ… Realtime Supabase subscription for new listings
- *  âœ… View count displayed
- *  âœ… 1% transaction fee shown at checkout
- *  âœ… RTL support for Arabic
- * Â© 2025â€“2026 BAMBEH SARL. All rights reserved.
+ *  ✅ Category buttons show real words (All, Vegetables, Fruits…) NOT raw keys (catAll, catVegetables…)
+ *  ✅ Full i18n — instantly switches when user changes language from ANY part of the app
+ *  ✅ Search works — no "Oops, something went wrong" errors
+ *  ✅ Add to Cart fully functional (goes to /cart for checkout)
+ *  ✅ Products clickable → /farm-fresh/:id (FarmFreshDetail)
+ *  ✅ Realtime Supabase subscription for new listings
+ *  ✅ View count displayed
+ *  ✅ 1% transaction fee shown at checkout
+ *  ✅ RTL support for Arabic
+ * © 2025–2026 BAMBEH SARL. All rights reserved.
  */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ import { supabase } from "@/lib/supabase";
 import { useCart } from "@/components/CartDrawer";
 import { useLanguage } from '@/App';
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface FarmProduct {
   id: string;
   title: string;
@@ -54,20 +54,20 @@ interface AdSlot {
   emoji: string;
 }
 
-// â”€â”€â”€ Demo data (shown when DB is empty) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Demo data (shown when DB is empty) ───────────────────────────────────────
 const DEMO_PRODUCTS: FarmProduct[] = [
   { id: "s1", title: "Fresh Tomatoes",      price_per_unit_xaf: 500,  unit: "kg",    category: "Vegetables", location: "Bafoussam, West",      is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80", sellerName: "Fon's Farm",         sellerPhone: "+237671234567", view_count: 24 },
-  { id: "s2", title: "Plantains (1 bunch)", price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "YaoundÃ©, Centre",      is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", sellerName: "Mama Ngo's Produce", sellerPhone: "+237682345678", view_count: 41 },
+  { id: "s2", title: "Plantains (1 bunch)", price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaoundé, Centre",      is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", sellerName: "Mama Ngo's Produce", sellerPhone: "+237682345678", view_count: 41 },
   { id: "s3", title: "Cocoyams (Macabo)",   price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", sellerName: "Douala Fresh",       sellerPhone: "+237693456789", view_count: 18 },
   { id: "s4", title: "Fresh Maize (Corn)",  price_per_unit_xaf: 300,  unit: "cob",   category: "Grains",     location: "Bamenda, NW Region",   is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80", sellerName: "NW Farm Co-op",      sellerPhone: "+237654567890", view_count: 33 },
-  { id: "s5", title: "Groundnuts (1kg bag)",price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "NgaoundÃ©rÃ©, Adamaoua", is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", sellerName: "Adamaoua Nuts",      sellerPhone: "+237665678901", view_count: 12 },
-  { id: "s6", title: "Bitter Leaf (NdolÃ©)", price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "YaoundÃ©, Centre",      is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", sellerName: "Centre Greens",      sellerPhone: "+237676789012", view_count: 57 },
+  { id: "s5", title: "Groundnuts (1kg bag)",price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaoundéré, Adamaoua", is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", sellerName: "Adamaoua Nuts",      sellerPhone: "+237665678901", view_count: 12 },
+  { id: "s6", title: "Bitter Leaf (Ndolé)", price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaoundé, Centre",      is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", sellerName: "Centre Greens",      sellerPhone: "+237676789012", view_count: 57 },
   { id: "s7", title: "Fresh Avocados",       price_per_unit_xaf: 800,  unit: "kg",    category: "Fruits",     location: "Dschang, West",        is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80", sellerName: "Highlands Harvest",  sellerPhone: "+237687890123", view_count: 29 },
   { id: "s8", title: "Pineapples (Large)",   price_per_unit_xaf: 600,  unit: "piece", category: "Fruits",     location: "Edea, Littoral",       is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", sellerName: "Littoral Tropicals", sellerPhone: "+237698901234", view_count: 16 },
 ];
 
-// â”€â”€â”€ Category definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Key = i18n key â†’ used to get translated label
+// ─── Category definitions ─────────────────────────────────────────────────────
+// Key = i18n key → used to get translated label
 // Value = DB category string used to filter
 const CATEGORIES: { key: string; value: string }[] = [
   { key: "catAll",        value: "All" },
@@ -80,7 +80,7 @@ const CATEGORIES: { key: string; value: string }[] = [
   { key: "catDairy",      value: "Dairy" },
 ];
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function getImage(p: FarmProduct): string {
   return p.image_url || p.images?.[0] || "";
 }
@@ -88,7 +88,7 @@ function hasImage(p: FarmProduct): boolean {
   return !!(p.image_url?.trim() || p.images?.[0]?.trim());
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function FarmFreshPage() {
   const navigate    = useNavigate();
   const { addToCart } = useCart();
@@ -102,7 +102,7 @@ export default function FarmFreshPage() {
   const [category,  setCategory]  = useState("All");   // always the English DB value
   const [addedId,   setAddedId]   = useState<string | null>(null);
 
-  // â”€â”€ Fetch from Supabase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Fetch from Supabase ───────────────────────────────────────────────────
   async function fetchProducts() {
     setLoading(true);
     setFetchErr(null);
@@ -144,14 +144,14 @@ export default function FarmFreshPage() {
 
       setProducts([...realWithPhoto, ...realWithoutPhoto, ...demoWithPhoto]);
     } catch {
-      setFetchErr(t("error") as string);
+      setFetchErr(t("error", lang) as string);
       setProducts(DEMO_PRODUCTS.filter(hasImage));
     } finally {
       setLoading(false);
     }
   }
 
-  // â”€â”€ Realtime subscription â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Realtime subscription ─────────────────────────────────────────────────
   useEffect(() => {
     fetchProducts();
     const channel = supabase
@@ -166,7 +166,7 @@ export default function FarmFreshPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // â”€â”€ Add to cart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Add to cart ───────────────────────────────────────────────────────────
   function handleAddToCart(e: React.MouseEvent, p: FarmProduct) {
     e.stopPropagation();
     try {
@@ -191,7 +191,7 @@ export default function FarmFreshPage() {
     setTimeout(() => setAddedId(null), 1500);
   }
 
-  // â”€â”€ Filtering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Filtering ─────────────────────────────────────────────────────────────
   const realCount = products.filter((p) => !p.isDemo).length;
 
   const filtered = products.filter((p) => {
@@ -205,28 +205,28 @@ export default function FarmFreshPage() {
     return matchSearch && matchCat;
   });
 
-  // â”€â”€ Interleaved ad slots â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const groupBuyingAdData = t("groupBuyingAd") as any;
-  const sellProduceAdData = t("sellProduceAd") as any;
+  // ── Interleaved ad slots ──────────────────────────────────────────────────
+  const groupBuyingAdData = t("groupBuyingAd", lang) as any;
+  const sellProduceAdData = t("sellProduceAd", lang) as any;
 
   const adSlots: AdSlot[] = [
     {
       id: "ad1",
       isAd: true,
-      title:    typeof groupBuyingAdData === "object" ? groupBuyingAdData.title    : t("groupBuyingAdTitle") as string,
-      subtitle: typeof groupBuyingAdData === "object" ? groupBuyingAdData.subtitle : t("groupBuyingAdSub") as string,
-      cta:      typeof groupBuyingAdData === "object" ? groupBuyingAdData.cta      : t("groupBuyingAdCta") as string,
+      title:    typeof groupBuyingAdData === "object" ? groupBuyingAdData.title    : t("groupBuyingAdTitle", lang) as string,
+      subtitle: typeof groupBuyingAdData === "object" ? groupBuyingAdData.subtitle : t("groupBuyingAdSub",   lang) as string,
+      cta:      typeof groupBuyingAdData === "object" ? groupBuyingAdData.cta      : t("groupBuyingAdCta",   lang) as string,
       route:    "/group-buying",
-      emoji:    "ðŸ¤",
+      emoji:    "🤝",
     },
     {
       id: "ad2",
       isAd: true,
-      title:    typeof sellProduceAdData === "object" ? sellProduceAdData.title    : t("sellProduceAdTitle") as string,
-      subtitle: typeof sellProduceAdData === "object" ? sellProduceAdData.subtitle : t("sellProduceAdSub") as string,
-      cta:      typeof sellProduceAdData === "object" ? sellProduceAdData.cta      : t("sellProduceAdCta") as string,
+      title:    typeof sellProduceAdData === "object" ? sellProduceAdData.title    : t("sellProduceAdTitle", lang) as string,
+      subtitle: typeof sellProduceAdData === "object" ? sellProduceAdData.subtitle : t("sellProduceAdSub",   lang) as string,
+      cta:      typeof sellProduceAdData === "object" ? sellProduceAdData.cta      : t("sellProduceAdCta",   lang) as string,
       route:    "/farm-fresh/sell",
-      emoji:    "ðŸŒ¿",
+      emoji:    "🌿",
     },
   ];
 
@@ -239,17 +239,17 @@ export default function FarmFreshPage() {
     }
   });
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50" dir={isRtl ? "rtl" : "ltr"}>
 
-      {/* â”€â”€ Sticky header â”€â”€ */}
+      {/* ── Sticky header ── */}
       <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
         {/* Title row */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Leaf className="w-5 h-5 text-green-600" />
-            {t("farmFresh") as string}
+            {t("farmFresh", lang) as string}
           </h1>
           <div className="flex gap-2">
             <button
@@ -264,7 +264,7 @@ export default function FarmFreshPage() {
               className="bg-green-600 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1 hover:bg-green-700 transition"
             >
               <Plus className="w-4 h-4" />
-              {t("sell") as string}
+              {t("sell", lang) as string}
             </button>
           </div>
         </div>
@@ -277,12 +277,12 @@ export default function FarmFreshPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("searchPlaceholder") as string}
+            placeholder={t("searchPlaceholder", lang) as string}
             className={`w-full ${isRtl ? "pr-9 pl-4" : "pl-9 pr-4"} py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none bg-gray-50`}
           />
         </div>
 
-        {/* Category chips â”€â”€ labels come from i18n, but filter value stays English */}
+        {/* Category chips ── labels come from i18n, but filter value stays English */}
         <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
           {CATEGORIES.map(({ key, value }) => (
             <button
@@ -294,35 +294,35 @@ export default function FarmFreshPage() {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {/* âœ… FIX: t() resolves to the translated word, not the raw key */}
-              {t(key) as string}
+              {/* ✅ FIX: t() resolves to the translated word, not the raw key */}
+              {t(key, lang) as string}
             </button>
           ))}
         </div>
       </div>
 
-      {/* â”€â”€ Hero banner â”€â”€ */}
+      {/* ── Hero banner ── */}
       <div className="mx-4 mt-4 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl p-4 text-white mb-3">
-        <h2 className="font-bold text-lg mb-1">{t("buyDirect") as string}</h2>
-        <p className="text-green-100 text-sm mb-3">{t("buyDirectSub") as string}</p>
+        <h2 className="font-bold text-lg mb-1">{t("buyDirect", lang) as string}</h2>
+        <p className="text-green-100 text-sm mb-3">{t("buyDirectSub", lang) as string}</p>
         <button
           onClick={() => navigate("/group-buying")}
           className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-sm font-semibold transition"
         >
           <Users className="w-4 h-4" />
-          {t("joinGroup") as string}
+          {t("joinGroup", lang) as string}
         </button>
       </div>
 
-      {/* â”€â”€ Fetch error banner â”€â”€ */}
+      {/* ── Fetch error banner ── */}
       {fetchErr && (
         <div className="mx-4 mb-3 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl px-3 py-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>{fetchErr} â€” Showing {DEMO_PRODUCTS.length} sample listings</span>
+          <span>{fetchErr} — Showing {DEMO_PRODUCTS.length} sample listings</span>
         </div>
       )}
 
-      {/* â”€â”€ Product grid â”€â”€ */}
+      {/* ── Product grid ── */}
       <div className="px-4 pb-24">
         {/* Count badge */}
         {!loading && (
@@ -337,17 +337,17 @@ export default function FarmFreshPage() {
         {loading ? (
           <div className="flex flex-col items-center py-12 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-green-600" />
-            <p className="text-sm text-gray-500">{t("loading") as string}</p>
+            <p className="text-sm text-gray-500">{t("loading", lang) as string}</p>
           </div>
         ) : filtered.length === 0 ? (
           /* Empty state */
           <div className="text-center py-12">
             <ShoppingBag className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-            <p className="font-semibold text-gray-700 mb-1">{t("noProduceFound") as string}</p>
+            <p className="font-semibold text-gray-700 mb-1">{t("noProduceFound", lang) as string}</p>
             <p className="text-sm text-gray-400 mb-4">
               {search
                 ? `No results for "${search}"`
-                : t("noProduceFoundSub") as string}
+                : t("noProduceFoundSub", lang) as string}
             </p>
             <button
               onClick={() => { setSearch(""); setCategory("All"); }}
@@ -359,7 +359,7 @@ export default function FarmFreshPage() {
               onClick={() => navigate("/farm-fresh/sell")}
               className="mt-2 bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold"
             >
-              {t("listYourProduce") as string}
+              {t("listYourProduce", lang) as string}
             </button>
           </div>
         ) : (
@@ -410,10 +410,10 @@ export default function FarmFreshPage() {
                       />
                     ) : (
                       <div className="flex flex-col items-center gap-1 px-2 text-center">
-                        <span className="text-4xl">ðŸŒ¿</span>
+                        <span className="text-4xl">🌿</span>
                         {!p.isDemo && (
                           <span className="text-xs text-gray-400 leading-tight">
-                            {t("noPhotoYet") as string}
+                            {t("noPhotoYet", lang) as string}
                           </span>
                         )}
                       </div>
@@ -425,7 +425,7 @@ export default function FarmFreshPage() {
                     )}
                     {p.is_organic && (
                       <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                        {t("organic") as string}
+                        {t("organic", lang) as string}
                       </div>
                     )}
                   </div>
@@ -453,14 +453,14 @@ export default function FarmFreshPage() {
                       }`}
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
-                      {isAdded ? t("added") as string : t("addToCart") as string}
+                      {isAdded ? t("added", lang) as string : t("addToCart", lang) as string}
                     </button>
 
                     {/* View count (real listings only) */}
                     {!p.isDemo && (
                       <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
                         <Eye className="w-3 h-3" />
-                        {p.view_count ?? 0} {t("views") as string}
+                        {p.view_count ?? 0} {t("views", lang) as string}
                       </div>
                     )}
                   </div>
@@ -471,13 +471,13 @@ export default function FarmFreshPage() {
         )}
       </div>
 
-      {/* â”€â”€ Floating Cart Button â”€â”€ */}
+      {/* ── Floating Cart Button ── */}
       <CartFloater lang={lang} />
     </div>
   );
 }
 
-// â”€â”€â”€ Floating cart button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Floating cart button ─────────────────────────────────────────────────────
 function CartFloater({ lang }: { lang: string }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -490,12 +490,10 @@ function CartFloater({ lang }: { lang: string }) {
       className="fixed bottom-24 right-4 z-40 bg-green-600 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 font-semibold text-sm active:scale-95 transition hover:bg-green-700"
     >
       <ShoppingCart className="w-4 h-4" />
-      {t("cart") as string} ({count})
+      {t("cart", lang) as string} ({count})
     </button>
   );
 }
-
-
 
 
 

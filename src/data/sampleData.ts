@@ -505,4 +505,3 @@ export const SAMPLE_FARM_FRESH = [
     image_url: 'https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80',
   },
 ];
-

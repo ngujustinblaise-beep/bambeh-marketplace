@@ -31,7 +31,7 @@ export default function Terms() {
               <FileText className="w-8 h-8 text-teal-600" />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Terms and Conditions</h1>
-                <p className="text-sm text-gray-600">Bambeh Marketplace - The Pulse of African Commerce App</p>
+                <p className="text-sm text-gray-600">Bambeh Marketplace App</p>
               </div>
             </div>
           </div>
@@ -48,8 +48,8 @@ export default function Terms() {
         <div className="mt-6 text-center text-sm text-gray-600">
           <p>
             For questions about these terms, contact:{' '}
-            <a href="mailto:bambehtheapp@gmail.com" className="text-teal-600 hover:underline">
-              bambehtheapp@gmail.com
+            <a href="mailto:Bambehtheapp@gmail.com" className="text-teal-600 hover:underline">
+              Bambehtheapp@gmail.com
             </a>
           </p>
         </div>
@@ -57,8 +57,6 @@ export default function Terms() {
     </div>
   );
 }
-
-
 
 
 

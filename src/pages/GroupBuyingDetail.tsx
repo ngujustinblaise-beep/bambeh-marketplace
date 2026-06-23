@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/GroupBuyingDetail.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -159,7 +159,8 @@ export default function GroupBuyingDetail() {
         }
 
         // FIX: use RPC increment to avoid overwrite race
-        await supabase.rpc('increment_group_deal_buyers', { deal_id: deal.id }).then(undefined, () => {
+        await supabase.rpc('increment_group_deal_buyers', { deal_id: deal.id })
+          .catch(() => {
             // Fallback if RPC not defined: direct update (less safe under contention)
             supabase
               .from('group_deals')
@@ -377,8 +378,6 @@ export default function GroupBuyingDetail() {
     </div>
   );
 }
-
-
 
 
 

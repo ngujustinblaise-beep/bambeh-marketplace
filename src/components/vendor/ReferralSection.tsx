@@ -1,19 +1,19 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * REFERRAL SECTION COMPONENT
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  *
  * Complete referral management for vendors:
- * âœ… Unique referral code display
- * âœ… Share functionality (copy, WhatsApp, social)
- * âœ… Referral progress tracking (2 referrals = 10 ZC)
- * âœ… Referral history
- * âœ… Reward tracking
+ * ✅ Unique referral code display
+ * ✅ Share functionality (copy, WhatsApp, social)
+ * ✅ Referral progress tracking (2 referrals = 10 ZC)
+ * ✅ Referral history
+ * ✅ Reward tracking
  *
  * FILE LOCATION: src/components/vendor/ReferralSection.tsx
  *
- * Â© 2025 Bambeh. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * © 2025 Bambeh. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import { useState, useEffect } from "react";
@@ -37,9 +37,9 @@ import {
   ExternalLink
 } from "lucide-react";
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════════════════════════════════
 // TYPES
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════════════════════════════════
 
 interface Referral {
   referrerId?: string;
@@ -66,9 +66,9 @@ interface ReferralSectionProps {
   vendorName?: string;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════
 
 export default function ReferralSection({
   vendorId,
@@ -164,11 +164,11 @@ export default function ReferralSection({
 
   const shareViaWhatsApp = () => {
     const message = encodeURIComponent(
-      `ðŸŽ‰ Join me on Bambeh Marketplace!\n\n` +
+      `🎉 Join me on Bambeh Marketplace!\n\n` +
         `I'm earning money selling on 's best marketplace. Use my referral code to get started:\n\n` +
-        `ðŸ“± Code: ${referralCode}\n` +
-        `ðŸ”— Link: ${referralLink}\n\n` +
-        `Start selling today! ðŸš€`,
+        `📱 Code: ${referralCode}\n` +
+        `🔗 Link: ${referralLink}\n\n` +
+        `Start selling today! 🚀`,
     );
     window.open(`https://wa.me/?text=${message}`, "_blank");
     setShowShareOptions(false);
@@ -195,7 +195,7 @@ export default function ReferralSection({
         `Use my referral code to sign up as a vendor:\n` +
         `Code: ${referralCode}\n` +
         `Link: ${referralLink}\n\n` +
-        `See you on Bambeh! ðŸŽ‰`,
+        `See you on Bambeh! 🎉`,
     );
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     setShowShareOptions(false);
@@ -526,9 +526,5 @@ export default function ReferralSection({
     </div>
   );
 }
-
-
-
-
 
 

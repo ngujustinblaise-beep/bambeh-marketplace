@@ -1,19 +1,19 @@
-﻿/**
- * src/hooks/useAppLang.ts â€” Bambeh Marketplace
+/**
+ * src/hooks/useAppLang.ts — Bambeh Marketplace
  *
- * SAFE VERSION â€” zero external file dependencies. Never crashes regardless of
+ * SAFE VERSION — zero external file dependencies. Never crashes regardless of
  * which other files exist. All existing pages that call useLang() or t()
  * continue to work unchanged.
  *
  * WHAT THIS VERSION ADDS (app-wide instant language switching):
- *  â€¢ A single global listener (installed once on import) flips the document
+ *  • A single global listener (installed once on import) flips the document
  *    <html lang> and dir (RTL for Arabic) the INSTANT the language changes,
  *    no matter which screen triggered it. This makes the whole app re-orient
- *    immediately â€” Arabic switches the entire layout to right-to-left.
- *  â€¢ setLang(code): one canonical entry point any component can call to switch
- *    the whole app â€” it persists to localStorage, applies dir/lang, and
+ *    immediately — Arabic switches the entire layout to right-to-left.
+ *  • setLang(code): one canonical entry point any component can call to switch
+ *    the whole app — it persists to localStorage, applies dir/lang, and
  *    broadcasts "bambeh:langchange" so every reactive screen updates at once.
- *  â€¢ applyDocumentLang(code): exported helper if you ever need to re-apply.
+ *  • applyDocumentLang(code): exported helper if you ever need to re-apply.
  *
  * The active LanguageProvider (in @/App) already dispatches "bambeh:langchange"
  * on setLanguage, so existing language selectors keep working AND now also
@@ -36,7 +36,7 @@ export function resolveCode(raw: string | null | undefined): LangCode {
 }
 
 /**
- * applyDocumentLang â€” set <html lang> and text direction for the whole app.
+ * applyDocumentLang — set <html lang> and text direction for the whole app.
  * RTL for Arabic, LTR otherwise. Safe to call anywhere; never throws.
  */
 export function applyDocumentLang(code: LangCode): void {
@@ -44,11 +44,11 @@ export function applyDocumentLang(code: LangCode): void {
     const el = document.documentElement;
     el.lang = code;
     el.dir = RTL_LANGS.includes(code) ? "rtl" : "ltr";
-  } catch { /* SSR or no document â€” ignore */ }
+  } catch { /* SSR or no document — ignore */ }
 }
 
 /**
- * setLang â€” single global entry point to switch the entire app instantly.
+ * setLang — single global entry point to switch the entire app instantly.
  * Persists the choice, flips document dir/lang, and broadcasts the change so
  * every reactive screen (anything using useLang / useLanguage) re-renders now.
  */
@@ -62,7 +62,7 @@ export function setLang(code: string): void {
 }
 
 /**
- * useLang â€” returns current language code, reactive to language changes.
+ * useLang — returns current language code, reactive to language changes.
  * Works without LanguageProvider. Safe to use on any page.
  */
 export function useLang(): LangCode {
@@ -95,14 +95,14 @@ export function useLang(): LangCode {
 }
 
 /**
- * t â€” standalone translation lookup (non-hook). Pages pass their own STR table;
+ * t — standalone translation lookup (non-hook). Pages pass their own STR table;
  * this is just an API-compatibility export so existing imports keep working.
  */
 export function t(key: string, _lang?: string): string {
   return key;
 }
 
-// â”€â”€ Install ONE global listener at import time â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Install ONE global listener at import time ─────────────────────────────
 // Flips <html> dir/lang app-wide the instant the language changes, from any
 // source (the LanguageProvider's event, setLang(), or a cross-tab storage
 // change). Guarded so it only ever wires up once.
@@ -121,4 +121,3 @@ function wireGlobalLang(): void {
   } catch { /* ignore */ }
 }
 if (typeof window !== "undefined") wireGlobalLang();
-

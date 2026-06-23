@@ -262,4 +262,3 @@ export function getThreatSummary(): Record<ThreatLevel, number> {
     { low: 0, medium: 0, high: 0, critical: 0 }
   );
 }
-

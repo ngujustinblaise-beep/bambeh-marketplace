@@ -75,4 +75,3 @@ export async function registerFCM(userId: string): Promise<void> {
     }
   });
 }
-

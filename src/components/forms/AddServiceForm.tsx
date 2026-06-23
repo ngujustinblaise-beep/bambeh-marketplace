@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/forms/AddServiceForm.tsx
  * Bambeh Marketplace — Add Service Listing Form
  */
@@ -58,7 +58,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onSuccess, onCancel }) 
           <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="Décrivez votre service en détail..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" /></div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Expérience</label>
           <input type="text" value={form.experience} onChange={e=>set("experience",e.target.value)} placeholder="Ex: 5 ans d'expérience en informatique" className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none" /></div>
-        <LocationSelector value={location} onChange={(loc) => setLocation((prev) => ({ ...prev, ...loc }))} />
+        <LocationSelector value={location} onChange={setLocation} label="Zone de service" />
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={form.isAvailable} onChange={e=>set("isAvailable",e.target.checked)} className="w-4 h-4 text-teal-600 rounded" />
           <span className="text-sm text-gray-700">Disponible immédiatement</span>
@@ -74,8 +74,6 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onSuccess, onCancel }) 
 };
 
 export default AddServiceForm;
-
-
 
 
 

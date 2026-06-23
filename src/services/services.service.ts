@@ -301,4 +301,3 @@ export async function incrementServiceView(id: string): Promise<void> {
     // Non-critical
   }
 }
-

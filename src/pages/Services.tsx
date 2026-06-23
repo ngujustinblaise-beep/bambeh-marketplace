@@ -1,33 +1,33 @@
 /**
- * src/pages/Services.tsx â€” Bambeh Marketplace
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * WORLD-CLASS REWRITE â€” Production Grade, Military Security, Full i18n
+ * src/pages/Services.tsx — Bambeh Marketplace
+ * ─────────────────────────────────────────────────────────────────────────────
+ * WORLD-CLASS REWRITE — Production Grade, Military Security, Full i18n
  *
  * SECURITY:
- *   âœ… getUser() (not getSession()) â€” prevents JWT spoofing
- *   âœ… XSS-safe: no dangerouslySetInnerHTML anywhere
- *   âœ… Phone URIs sanitised before tel: scheme
- *   âœ… Rate-limited realtime (debounce 500ms)
- *   âœ… Input sanitisation on all text fields
- *   âœ… RLS enforced at DB layer; no sensitive fields in SELECT
- *   âœ… Auth gate before booking modal
- *   âœ… Report-a-scam flow via secure backend route
+ *   ✅ getUser() (not getSession()) — prevents JWT spoofing
+ *   ✅ XSS-safe: no dangerouslySetInnerHTML anywhere
+ *   ✅ Phone URIs sanitised before tel: scheme
+ *   ✅ Rate-limited realtime (debounce 500ms)
+ *   ✅ Input sanitisation on all text fields
+ *   ✅ RLS enforced at DB layer; no sensitive fields in SELECT
+ *   ✅ Auth gate before booking modal
+ *   ✅ Report-a-scam flow via secure backend route
  *
  * FEATURES:
- *   âœ… Full i18n: EN / FR / AR / HA / PCM / FUL
- *   âœ… Category filter with live counts
- *   âœ… Location filter (region / city / quarter)
- *   âœ… 300ms debounced search
- *   âœ… Real-time updates via Supabase channel
- *   âœ… Skeleton loaders, empty states
- *   âœ… Expiry warning banners on provider's own listings
- *   âœ… View count, like count, book CTA
- *   âœ… Report service modal (sends to /api/report)
- *   âœ… Share button (Web Share API + clipboard fallback)
- *   âœ… Pull-to-refresh on mobile
- *   âœ… Toast notification system
- *   âœ… Featured ads strip
- *   âœ… Demo listings fallback
+ *   ✅ Full i18n: EN / FR / AR / HA / PCM / FUL
+ *   ✅ Category filter with live counts
+ *   ✅ Location filter (region / city / quarter)
+ *   ✅ 300ms debounced search
+ *   ✅ Real-time updates via Supabase channel
+ *   ✅ Skeleton loaders, empty states
+ *   ✅ Expiry warning banners on provider's own listings
+ *   ✅ View count, like count, book CTA
+ *   ✅ Report service modal (sends to /api/report)
+ *   ✅ Share button (Web Share API + clipboard fallback)
+ *   ✅ Pull-to-refresh on mobile
+ *   ✅ Toast notification system
+ *   ✅ Featured ads strip
+ *   ✅ Demo listings fallback
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -44,25 +44,25 @@ import BookServiceModal from '@/components/services/BookServiceModal';
 import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
 import { useLang, t } from '@/hooks/useAppLang';
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // i18n strings
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const STRINGS = {
   en: {
     hero_title:        'Professional Services',
     hero_sub:          'Find trusted providers across Cameroon',
-    search_placeholder:'Search servicesâ€¦',
+    search_placeholder:'Search services…',
     offer_service:     'Offer Service',
-    loading:           'Loadingâ€¦',
+    loading:           'Loading…',
     services_found:    (n: number) => `${n} service${n !== 1 ? 's' : ''} found`,
     no_results_q:      (q: string) => `No results for "${q}"`,
     no_results_empty:  'Be the first to offer a service in this category!',
     clear_search:      'Clear search',
     first_offer:       'Offer a Service',
     no_services_found: 'No services found',
-    safety_note:       'ðŸ›¡Ã¯Â¸Â Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
-    sample_label:      'Sample listing â€” not a real service',
-    expiry_warning:    (days: number) => `This listing expires in ${days} day${days !== 1 ? 's' : ''} â€” renew to keep it visible`,
+    safety_note:       '🛡ï¸ Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
+    sample_label:      'Sample listing — not a real service',
+    expiry_warning:    (days: number) => `This listing expires in ${days} day${days !== 1 ? 's' : ''} — renew to keep it visible`,
     book:              'Book',
     report:            'Report',
     share:             'Share',
@@ -85,86 +85,86 @@ const STRINGS = {
   fr: {
     hero_title:        'Services Professionnels',
     hero_sub:          'Trouvez des prestataires de confiance au Cameroun',
-    search_placeholder:'Rechercher des servicesâ€¦',
+    search_placeholder:'Rechercher des services…',
     offer_service:     'Proposer un Service',
-    loading:           'Chargementâ€¦',
-    services_found:    (n: number) => `${n} service${n !== 1 ? 's' : ''} trouvÃ©${n !== 1 ? 's' : ''}`,
-    no_results_q:      (q: string) => `Aucun rÃ©sultat pour "${q}"`,
-    no_results_empty:  'Soyez le premier Ã  proposer un service dans cette catÃ©gorie !',
+    loading:           'Chargement…',
+    services_found:    (n: number) => `${n} service${n !== 1 ? 's' : ''} trouvé${n !== 1 ? 's' : ''}`,
+    no_results_q:      (q: string) => `Aucun résultat pour "${q}"`,
+    no_results_empty:  'Soyez le premier à proposer un service dans cette catégorie !',
     clear_search:      'Effacer la recherche',
     first_offer:       'Proposer un Service',
-    no_services_found: 'Aucun service trouvÃ©',
-    safety_note:       'ðŸ›¡Ã¯Â¸Â VÃ©rifiez toujours l\'identitÃ© d\'un prestataire avant tout paiement. Bambeh ne vous demande jamais de payer en dehors de l\'application.',
-    sample_label:      'Annonce exemple â€” pas un vrai service',
-    expiry_warning:    (days: number) => `Cette annonce expire dans ${days} jour${days !== 1 ? 's' : ''} â€” renouvelez pour rester visible`,
-    book:              'RÃ©server',
+    no_services_found: 'Aucun service trouvé',
+    safety_note:       '🛡ï¸ Vérifiez toujours l\'identité d\'un prestataire avant tout paiement. Bambeh ne vous demande jamais de payer en dehors de l\'application.',
+    sample_label:      'Annonce exemple — pas un vrai service',
+    expiry_warning:    (days: number) => `Cette annonce expire dans ${days} jour${days !== 1 ? 's' : ''} — renouvelez pour rester visible`,
+    book:              'Réserver',
     report:            'Signaler',
     share:             'Partager',
-    demo:              'DÃ‰MO',
+    demo:              'DÉMO',
     all:               'Tout',
     refresh:           'Actualiser',
     fetch_error:       'Impossible de charger les services. Affichage des exemples.',
     report_title:      'Signaler ce service',
     report_reason:     'Raison',
     report_reasons: [
-      'Arnaque ou fraude', 'Annonce fausse', 'Contenu inappropriÃ©',
-      'Mauvaise catÃ©gorie', 'Prix trompeur', 'Autre',
+      'Arnaque ou fraude', 'Annonce fausse', 'Contenu inapproprié',
+      'Mauvaise catégorie', 'Prix trompeur', 'Autre',
     ],
-    report_details:    'DÃ©tails supplÃ©mentaires (optionnel)',
+    report_details:    'Détails supplémentaires (optionnel)',
     report_submit:     'Envoyer le signalement',
     report_cancel:     'Annuler',
-    report_success:    'Signalement envoyÃ©. Merci.',
-    report_error:      'Impossible d\'envoyer le signalement. RÃ©essayez.',
+    report_success:    'Signalement envoyé. Merci.',
+    report_error:      'Impossible d\'envoyer le signalement. Réessayez.',
   },
   ar: {
-    hero_title:        'Ø§Ù„Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ù…Ù‡Ù†ÙŠØ©',
-    hero_sub:          'Ø§Ø¨Ø­Ø« Ø¹Ù† Ù…Ù‚Ø¯Ù…ÙŠ Ø®Ø¯Ù…Ø§Øª Ù…ÙˆØ«ÙˆÙ‚ÙŠÙ† Ø¹Ø¨Ø± Ø§Ù„ÙƒØ§Ù…ÙŠØ±ÙˆÙ†',
-    search_placeholder:'Ø§Ø¨Ø­Ø« Ø¹Ù† Ø®Ø¯Ù…Ø§Øªâ€¦',
-    offer_service:     'ØªÙ‚Ø¯ÙŠÙ… Ø®Ø¯Ù…Ø©',
-    loading:           'Ø¬Ø§Ø±Ã™Â Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦',
-    services_found:    (n: number) => `${n} Ø®Ø¯Ù…Ø© ÙˆØ¬Ø¯Øª`,
-    no_results_q:      (q: string) => `Ù„Ø§ Ù†ØªØ§Ø¦Ø¬ Ù„Ù€ "${q}"`,
-    no_results_empty:  'ÙƒÙ† Ø£ÙˆÙ„ Ù…Ù† ÙŠÙ‚Ø¯Ù… Ø®Ø¯Ù…Ø© Ã™ÂÙŠ Ù‡Ø°Ù‡ Ø§Ù„Ã™ÂØ¦Ø©!',
-    clear_search:      'Ù…Ø³Ø­ Ø§Ù„Ø¨Ø­Ø«',
-    first_offer:       'ØªÙ‚Ø¯ÙŠÙ… Ø®Ø¯Ù…Ø©',
-    no_services_found: 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø®Ø¯Ù…Ø§Øª',
-    safety_note:       'ðŸ›¡Ã¯Â¸Â ØªØ­Ù‚Ù‚ Ø¯Ø§Ø¦Ù…Ù‹Ø§ Ù…Ù† Ù‡ÙˆÙŠØ© Ø§Ù„Ù…Ø²ÙˆØ¯ Ù‚Ø¨Ù„ Ø§Ù„Ø¯Ã™ÂØ¹. Ù„Ø§ ØªØ·Ù„Ø¨ Ø¨Ø§Ù…Ø¨ÙŠÙ‡ Ø§Ù„Ø¯Ã™ÂØ¹ Ø®Ø§Ø±Ø¬ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚.',
-    sample_label:      'Ø¥Ø¹Ù„Ø§Ù† ØªØ¬Ø±ÙŠØ¨ÙŠ â€” Ù„ÙŠØ³ Ø®Ø¯Ù…Ø© Ø­Ù‚ÙŠÙ‚ÙŠØ©',
-    expiry_warning:    (days: number) => `ÙŠÙ†ØªÙ‡ÙŠ Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ø®Ù„Ø§Ù„ ${days} ÙŠÙˆÙ…`,
-    book:              'Ø­Ø¬Ø²',
-    report:            'Ø§Ù„Ø¥Ø¨Ù„Ø§Øº',
-    share:             'Ù…Ø´Ø§Ø±ÙƒØ©',
-    demo:              'ØªØ¬Ø±ÙŠØ¨ÙŠ',
-    all:               'Ø§Ù„ÙƒÙ„',
-    refresh:           'ØªØ­Ø¯ÙŠØ«',
-    fetch_error:       'ØªØ¹Ø°Ù‘Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø®Ø¯Ù…Ø§Øª. Ø¹Ø±Ø¶ Ø§Ù„Ø£Ù…Ø«Ù„Ø©.',
-    report_title:      'Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ù‡Ø°Ù‡ Ø§Ù„Ø®Ø¯Ù…Ø©',
-    report_reason:     'Ø§Ù„Ø³Ø¨Ø¨',
+    hero_title:        'الخدمات المهنية',
+    hero_sub:          'ابحث عن مقدمي خدمات موثوقين عبر الكاميرون',
+    search_placeholder:'ابحث عن خدمات…',
+    offer_service:     'تقديم خدمة',
+    loading:           'جارÙ التحميل…',
+    services_found:    (n: number) => `${n} خدمة وجدت`,
+    no_results_q:      (q: string) => `لا نتائج لـ "${q}"`,
+    no_results_empty:  'كن أول من يقدم خدمة Ùي هذه الÙئة!',
+    clear_search:      'مسح البحث',
+    first_offer:       'تقديم خدمة',
+    no_services_found: 'لا توجد خدمات',
+    safety_note:       '🛡ï¸ تحقق دائمًا من هوية المزود قبل الدÙع. لا تطلب بامبيه الدÙع خارج التطبيق.',
+    sample_label:      'إعلان تجريبي — ليس خدمة حقيقية',
+    expiry_warning:    (days: number) => `ينتهي هذا الإعلان خلال ${days} يوم`,
+    book:              'حجز',
+    report:            'الإبلاغ',
+    share:             'مشاركة',
+    demo:              'تجريبي',
+    all:               'الكل',
+    refresh:           'تحديث',
+    fetch_error:       'تعذّر تحميل الخدمات. عرض الأمثلة.',
+    report_title:      'الإبلاغ عن هذه الخدمة',
+    report_reason:     'السبب',
     report_reasons: [
-      'Ø§Ø­ØªÙŠØ§Ù„', 'Ø¥Ø¹Ù„Ø§Ù† Ù…Ø²ÙŠÃ™Â', 'Ù…Ø­ØªÙˆÙ‰ ØºÙŠØ± Ù„Ø§Ø¦Ù‚',
-      'Ã™ÂØ¦Ø© Ø®Ø§Ø·Ø¦Ø©', 'Ø³Ø¹Ø± Ù…Ø¶Ù„Ù„', 'Ø£Ø®Ø±Ù‰',
+      'احتيال', 'إعلان مزيÙ', 'محتوى غير لائق',
+      'Ùئة خاطئة', 'سعر مضلل', 'أخرى',
     ],
-    report_details:    'ØªÃ™ÂØ§ØµÙŠÙ„ Ø¥Ø¶Ø§Ã™ÂÙŠØ© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)',
-    report_submit:     'Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ù„Ø§Øº',
-    report_cancel:     'Ø¥Ù„ØºØ§Ø¡',
-    report_success:    'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ù„Ø§Øº. Ø´ÙƒØ±Ø§Ù‹.',
-    report_error:      'ØªØ¹Ø°Ù‘Ø± Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ù„Ø§Øº. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ø§Ù‹.',
+    report_details:    'تÙاصيل إضاÙية (اختياري)',
+    report_submit:     'إرسال البلاغ',
+    report_cancel:     'إلغاء',
+    report_success:    'تم إرسال البلاغ. شكراً.',
+    report_error:      'تعذّر إرسال البلاغ. حاول مجدداً.',
   },
   ha: {
-    hero_title:        'Ayyukan Æ˜wararru',
+    hero_title:        'Ayyukan Ƙwararru',
     hero_sub:          'Sami masu ba da sabis amintattun a Kamaru',
-    search_placeholder:'Nemi ayyukaâ€¦',
+    search_placeholder:'Nemi ayyuka…',
     offer_service:     'Ba da Sabis',
-    loading:           'Ana lodiâ€¦',
+    loading:           'Ana lodi…',
     services_found:    (n: number) => `An sami ayyuka ${n}`,
     no_results_q:      (q: string) => `Babu sakamakon "${q}"`,
     no_results_empty:  'Ka zama na farko da ya ba da sabis a wannan rukunin!',
     clear_search:      'Share bincike',
     first_offer:       'Ba da Sabis',
     no_services_found: 'Ba a sami ayyuka ba',
-    safety_note:       'ðŸ›¡Ã¯Â¸Â Koyaushe tabbatar da ainihin mai ba da sabis kafin biyan kuÉ—i.',
-    sample_label:      'Misalin jeri â€” ba ainihin sabis ba',
-    expiry_warning:    (days: number) => `Wannan jeri yana Æ™arewa cikin kwana ${days}`,
+    safety_note:       '🛡ï¸ Koyaushe tabbatar da ainihin mai ba da sabis kafin biyan kuɗi.',
+    sample_label:      'Misalin jeri — ba ainihin sabis ba',
+    expiry_warning:    (days: number) => `Wannan jeri yana ƙarewa cikin kwana ${days}`,
     book:              'Yi Rijistar',
     report:            'Bayar da Rahoto',
     share:             'Raba',
@@ -178,7 +178,7 @@ const STRINGS = {
       'Zamba', 'Karya ne', 'Abun da bai dace ba',
       'Rukunin kuskure', 'Farashin yaudara', 'Wani abu',
     ],
-    report_details:    'Æ˜arin bayani (zaÉ“i)',
+    report_details:    'Ƙarin bayani (zaɓi)',
     report_submit:     'Aika Rahoto',
     report_cancel:     'Soke',
     report_success:    'An aika rahoto. Na gode.',
@@ -187,17 +187,17 @@ const STRINGS = {
   pcm: {
     hero_title:        'Professional Services',
     hero_sub:          'Find trusted people weh dey do work for Cameroon',
-    search_placeholder:'Search for servicesâ€¦',
+    search_placeholder:'Search for services…',
     offer_service:     'Offer Service',
-    loading:           'E dey loadâ€¦',
+    loading:           'E dey load…',
     services_found:    (n: number) => `${n} service dem dey`,
     no_results_q:      (q: string) => `No result for "${q}"`,
     no_results_empty:  'Be first person to offer service for this category!',
     clear_search:      'Clear search',
     first_offer:       'Offer Service',
     no_services_found: 'No service dey',
-    safety_note:       'ðŸ›¡Ã¯Â¸Â Always check person identity before you pay. Bambeh no go ask you pay outside app.',
-    sample_label:      'Sample listing â€” na demo, no be real service',
+    safety_note:       '🛡ï¸ Always check person identity before you pay. Bambeh no go ask you pay outside app.',
+    sample_label:      'Sample listing — na demo, no be real service',
     expiry_warning:    (days: number) => `This listing go expire for ${days} day`,
     book:              'Book Am',
     report:            'Report',
@@ -219,37 +219,37 @@ const STRINGS = {
     report_error:      'E no fit send report.',
   },
   ful: {
-    hero_title:        'Æeyngal Æurtooji',
-    hero_sub:          'YiÉ— neÉ—É—o feewi Kameruun',
-    search_placeholder:'YiÉ— É“eyngalâ€¦',
-    offer_service:     'Hollu É“eyngal',
-    loading:           'Jokkuâ€¦',
-    services_found:    (n: number) => `Æeyngal ${n} yiÉ—aama`,
+    hero_title:        'Ɓeyngal Ɓurtooji',
+    hero_sub:          'Yiɗ neɗɗo feewi Kameruun',
+    search_placeholder:'Yiɗ ɓeyngal…',
+    offer_service:     'Hollu ɓeyngal',
+    loading:           'Jokku…',
+    services_found:    (n: number) => `Ɓeyngal ${n} yiɗaama`,
     no_results_q:      (q: string) => `Alaa "kalamu" "${q}"`,
-    no_results_empty:  'Æe mawÉ—o É“eyngal!',
-    clear_search:      'YiÉ— hala',
-    first_offer:       'Hollu É“eyngal',
-    no_services_found: 'Alaa É“eyngal',
-    safety_note:       'ðŸ›¡Ã¯Â¸Â TiiÉ—nu É—emngal neÉ—É—o nde hade.',
-    sample_label:      'Misal â€” alaa É“eyngal goÉ—É—ungel',
-    expiry_warning:    (days: number) => `Æeyngal ngel wuura ${days} Ã±alawma`,
-    book:              'JaÉ“É“u',
+    no_results_empty:  'Ɓe mawɗo ɓeyngal!',
+    clear_search:      'Yiɗ hala',
+    first_offer:       'Hollu ɓeyngal',
+    no_services_found: 'Alaa ɓeyngal',
+    safety_note:       '🛡ï¸ Tiiɗnu ɗemngal neɗɗo nde hade.',
+    sample_label:      'Misal — alaa ɓeyngal goɗɗungel',
+    expiry_warning:    (days: number) => `Ɓeyngal ngel wuura ${days} ñalawma`,
+    book:              'Jaɓɓu',
     report:            'Habru',
     share:             'Hollu',
     demo:              'DEMO',
     all:               'Fof',
     refresh:           'Uddit',
-    fetch_error:       'Alaa É“eyngal. Misal woni.',
-    report_title:      'Habru É“eyngal ngel',
+    fetch_error:       'Alaa ɓeyngal. Misal woni.',
+    report_title:      'Habru ɓeyngal ngel',
     report_reason:     'Sabu',
     report_reasons: [
-      'Kalangal', 'Misal ceniiÉ—o', 'DaÃ±al moÆ´Æ´aani',
-      'ÆŠaÉ—ol nafataa', 'NgiÉ—gu semmbe', 'GoÉ—É—um',
+      'Kalangal', 'Misal ceniiɗo', 'Dañal moƴƴaani',
+      'Ɗaɗol nafataa', 'Ngiɗgu semmbe', 'Goɗɗum',
     ],
-    report_details:    'Coftal goÉ—ngal (yaÉ“É“itaaki)',
+    report_details:    'Coftal goɗngal (yaɓɓitaaki)',
     report_submit:     'Neln habru',
-    report_cancel:     'HaÉ—tu',
-    report_success:    'Habru nelnaaÉ—o. A jaaraaÉ—aa.',
+    report_cancel:     'Haɗtu',
+    report_success:    'Habru nelnaaɗo. A jaaraaɗaa.',
     report_error:      'Alaa nelal.',
   },
 } as const;
@@ -257,9 +257,9 @@ const STRINGS = {
 type Lang = keyof typeof STRINGS;
 type S = typeof STRINGS['en'];
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Types
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 interface Service {
   id:            string;
   title:         string;
@@ -277,16 +277,16 @@ interface Service {
 
 interface Toast { id: number; message: string; type: 'error' | 'success' }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Constants
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const SAMPLE_SERVICES: Service[] = [
-  { id: 's1', title: 'Professional House Cleaning',      category: 'Cleaning',    price: 15000,  location: 'YaoundÃ©',  description: 'Deep cleaning for homes and offices. All equipment provided.',    created_at: new Date().toISOString(), view_count: 0, phone: '', isDemo: true },
-  { id: 's2', title: 'Plumbing Repairs & Installation',  category: 'Plumbing',    price: 25000,  location: 'Douala',   description: 'Expert plumbing â€” pipes, water heaters, taps. Emergency callouts.', created_at: new Date().toISOString(), view_count: 0, phone: '', isDemo: true },
-  { id: 's3', title: 'Electrical Services',              category: 'Electrical',  price: 20000,  location: 'YaoundÃ©',  description: 'Wiring, installations, repairs. Licensed electrician.',              created_at: new Date().toISOString(), view_count: 0, phone: '', isDemo: true },
-  { id: 's4', title: 'Web Development & Design',         category: 'IT & Tech',   price: 150000, location: 'Bambili',  description: 'Custom websites, React apps, and mobile apps. Portfolio on request.', created_at: new Date().toISOString(), view_count: 0, phone: '', isDemo: true },
-  { id: 's5', title: 'Photography & Videography',        category: 'Photography', price: 50000,  location: 'YaoundÃ©',  description: 'Events, portraits, commercial photography. Same-day delivery.',     created_at: new Date().toISOString(), view_count: 0, phone: '', isDemo: true },
-  { id: 's6', title: 'Private Tutoring (Math/Sciences)', category: 'Tutoring',    price: 10000,  location: 'Buea',     description: 'Tutoring for secondary and university students. Results guaranteed.', created_at: new Date().toISOString(), view_count: 0, phone: '', isDemo: true },
+  { id: 's1', title: 'Professional House Cleaning',      category: 'Cleaning',    price: 15000,  location: 'Yaoundé',  description: 'Deep cleaning for homes and offices. All equipment provided.',    created_at: new Date().toISOString(), view_count: 0, isDemo: true },
+  { id: 's2', title: 'Plumbing Repairs & Installation',  category: 'Plumbing',    price: 25000,  location: 'Douala',   description: 'Expert plumbing — pipes, water heaters, taps. Emergency callouts.', created_at: new Date().toISOString(), view_count: 0, isDemo: true },
+  { id: 's3', title: 'Electrical Services',              category: 'Electrical',  price: 20000,  location: 'Yaoundé',  description: 'Wiring, installations, repairs. Licensed electrician.',              created_at: new Date().toISOString(), view_count: 0, isDemo: true },
+  { id: 's4', title: 'Web Development & Design',         category: 'IT & Tech',   price: 150000, location: 'Bambili',  description: 'Custom websites, React apps, and mobile apps. Portfolio on request.', created_at: new Date().toISOString(), view_count: 0, isDemo: true },
+  { id: 's5', title: 'Photography & Videography',        category: 'Photography', price: 50000,  location: 'Yaoundé',  description: 'Events, portraits, commercial photography. Same-day delivery.',     created_at: new Date().toISOString(), view_count: 0, isDemo: true },
+  { id: 's6', title: 'Private Tutoring (Math/Sciences)', category: 'Tutoring',    price: 10000,  location: 'Buea',     description: 'Tutoring for secondary and university students. Results guaranteed.', created_at: new Date().toISOString(), view_count: 0, isDemo: true },
 ];
 
 const SVC_CAT_T: Record<string, Record<string, string>> = {
@@ -305,9 +305,9 @@ const CATEGORIES = [
 const EXPIRY_WARNING_DAYS  = 5;
 const LISTING_LIFESPAN_DAYS = 30;
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Helpers
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function daysOld(dateStr: string): number {
   return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
 }
@@ -331,9 +331,9 @@ function getLang(raw: string): Lang {
   return map[raw] ?? 'en';
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Report Modal
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 interface ReportModalProps {
   serviceId: string;
   onClose: () => void;
@@ -439,7 +439,7 @@ function ReportModal({ serviceId, onClose, s }: ReportModalProps) {
                 disabled={!reason || loading}
                 className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold disabled:opacity-50 hover:bg-red-700 transition-colors"
               >
-                {loading ? 'â€¦' : s.report_submit}
+                {loading ? '…' : s.report_submit}
               </button>
             </div>
           </>
@@ -449,9 +449,9 @@ function ReportModal({ serviceId, onClose, s }: ReportModalProps) {
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Toast Bar
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function ToastBar({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
   if (!toasts.length) return null;
   return (
@@ -470,9 +470,9 @@ function ToastBar({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: numb
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Service Card
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 interface CardProps {
   service:         Service;
   s:               S;
@@ -489,7 +489,7 @@ function ServiceCard({ service, s, currentUserId, onBook, onNavigate, onLoginReq
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200">
-      {/* Expiry warning â€” only shown to the listing's own provider */}
+      {/* Expiry warning — only shown to the listing's own provider */}
       {expiring && currentUserId === service.provider_id && (
         <div className="bg-amber-500 text-white text-xs font-semibold py-1.5 px-4 flex items-center gap-2">
           <AlertTriangle className="w-3 h-3 flex-shrink-0" />
@@ -538,7 +538,7 @@ function ServiceCard({ service, s, currentUserId, onBook, onNavigate, onLoginReq
           </div>
         </div>
 
-        {/* Actions â€” only for real listings */}
+        {/* Actions — only for real listings */}
         {!service.isDemo && (
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50"
             onClick={e => e.stopPropagation()}>
@@ -590,9 +590,9 @@ function ServiceCard({ service, s, currentUserId, onBook, onNavigate, onLoginReq
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Main Page
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 export default function Services() {
   const navigate        = useNavigate();
   const rawLang         = useLang();
@@ -612,18 +612,18 @@ export default function Services() {
   const [currentUserId,   setCurrentUserId]   = useState<string | null>(null);
   const toastId = useRef(0);
 
-  // â”€â”€ Auth check (secure: getUser not getSession) â”€â”€
+  // ── Auth check (secure: getUser not getSession) ──
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
   }, []);
 
-  // â”€â”€ Debounce search â”€â”€
+  // ── Debounce search ──
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(t);
   }, [search]);
 
-  // â”€â”€ Toast helpers â”€â”€
+  // ── Toast helpers ──
   const addToast = useCallback((message: string, type: Toast['type'] = 'error') => {
     const id = ++toastId.current;
     setToasts(prev => [...prev, { id, message, type }]);
@@ -634,7 +634,7 @@ export default function Services() {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  // â”€â”€ Fetch services â”€â”€
+  // ── Fetch services ──
   const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
@@ -693,7 +693,7 @@ export default function Services() {
     }
   }, [addToast, s.fetch_error]);
 
-  // â”€â”€ Real-time subscription â”€â”€
+  // ── Real-time subscription ──
   useEffect(() => {
     fetchServices();
     let debounceTimer: ReturnType<typeof setTimeout>;
@@ -707,7 +707,7 @@ export default function Services() {
     return () => { clearTimeout(debounceTimer); supabase.removeChannel(channel); };
   }, [fetchServices]);
 
-  // â”€â”€ Share handler â”€â”€
+  // ── Share handler ──
   const handleShare = useCallback(async (service: Service) => {
     const url  = `${window.location.origin}/services/${service.id}`;
     const text = `Check out "${service.title}" on Bambeh Marketplace`;
@@ -720,14 +720,14 @@ export default function Services() {
     } catch { /* silent */ }
   }, [addToast]);
 
-  // â”€â”€ Book handler (requires auth) â”€â”€
+  // ── Book handler (requires auth) ──
   const handleBook = useCallback(async (service: Service) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate('/login'); return; }
     setBookingService(service);
   }, [navigate]);
 
-  // â”€â”€ Filter â”€â”€
+  // ── Filter ──
   const filtered = (() => {
     const q = debouncedSearch.toLowerCase();
     return [...services
@@ -754,14 +754,14 @@ export default function Services() {
     return acc;
   }, {} as Record<string, number>);
 
-  const allLabel = lang === 'fr' ? 'Tout' : lang === 'ar' ? 'Ø§Ù„ÙƒÙ„' : lang === 'ha' ? 'Duka' : lang === 'ful' ? 'Fof' : 'All';
+  const allLabel = lang === 'fr' ? 'Tout' : lang === 'ar' ? 'الكل' : lang === 'ha' ? 'Duka' : lang === 'ful' ? 'Fof' : 'All';
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
 
       <ToastBar toasts={toasts} onDismiss={dismissToast} />
 
-      {/* â”€â”€ Hero â”€â”€ */}
+      {/* ── Hero ── */}
       <div className="bg-gradient-to-r from-purple-600 to-purple-800 text-white pt-10 pb-14 px-4">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold mb-1">{s.hero_title}</h1>
@@ -788,7 +788,7 @@ export default function Services() {
 
       <div className="max-w-2xl mx-auto px-4 -mt-4 space-y-3">
 
-        {/* â”€â”€ Category chips â”€â”€ */}
+        {/* ── Category chips ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 flex gap-2 overflow-x-auto scrollbar-none">
           {CATEGORIES.map(c => {
             const count  = categoryCounts[c] ?? 0;
@@ -809,10 +809,10 @@ export default function Services() {
           })}
         </div>
 
-        {/* â”€â”€ Featured ads â”€â”€ */}
+        {/* ── Featured ads ── */}
         <FeaturedAdsStrip category="services" showHeader={false} maxVisible={20} />
 
-        {/* â”€â”€ Actions row â”€â”€ */}
+        {/* ── Actions row ── */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
             {loading ? s.loading : s.services_found(filtered.length)}
@@ -830,10 +830,10 @@ export default function Services() {
           </div>
         </div>
 
-        {/* â”€â”€ Location filter â”€â”€ */}
+        {/* ── Location filter ── */}
         <LocationFilter onFilterChange={setLocationFilters} accentClass="purple" />
 
-        {/* â”€â”€ Content â”€â”€ */}
+        {/* ── Content ── */}
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
@@ -888,7 +888,7 @@ export default function Services() {
           </div>
         )}
 
-        {/* â”€â”€ Safety footer â”€â”€ */}
+        {/* ── Safety footer ── */}
         <div className="bg-amber-50 border border-amber-100 rounded-2xl p-3 text-center text-xs text-amber-700 flex items-center justify-center gap-2">
           <Shield className="w-4 h-4 flex-shrink-0" />
           {s.safety_note}
@@ -896,7 +896,7 @@ export default function Services() {
 
       </div>
 
-      {/* â”€â”€ Modals â”€â”€ */}
+      {/* ── Modals ── */}
       {bookingService && (
         <BookServiceModal
           serviceId={bookingService.id}
@@ -918,9 +918,5 @@ export default function Services() {
     </div>
   );
 }
-
-
-
-
 
 

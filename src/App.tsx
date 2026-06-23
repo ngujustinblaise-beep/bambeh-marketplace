@@ -1,4 +1,4 @@
-const AVAILABLE_LANGUAGES = ['en','fr','ar','ha','pcm','ful'];
+﻿const AVAILABLE_LANGUAGES = ['en','fr','ar','ha','pcm','ful'];
 
 /**
  * App.tsx — Bambeh Online Marketplace
@@ -97,27 +97,27 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     back:"Back", cancel:"Cancel", save:"Save", loading:"Loading…",
     error:"Something went wrong. Please try again.", retry:"Retry", seeAll:"See all",
     tryAgain:"Try Again", share:"Share", copyLink:"Link copied!",
-    jobsTitle:"Find Jobs", postJob:"+ Post Job",
+    jobsTitle:"Find Jobs ??", postJob:"+ Post Job",
     jobSearchPlaceholder:"Search jobs or companies…",
     opportunities:"opportunities across Cameroon",
     filters:"Filters", mostRecent:"Most Recent",
-    clearFilters:"Clear all filters", jobType:"Job Type", region:"Region",
-    jobsFound:"jobs found", newestFirst:"newest first", refresh:"Refresh",
+    clearFilters:"? Clear all filters", jobType:"Job Type", region:"Region",
+    jobsFound:"jobs found", newestFirst:"newest first", refresh:"? Refresh",
     noJobs:"No jobs posted yet", noJobsHint:"Be the first to post a job opportunity!",
     noMatch:"No jobs match your filters", clearAll:"Clear all filters",
-    applyNow:"Apply Now", views:"views", negotiable:"Negotiable",
+    applyNow:"?? Apply Now", views:"views", negotiable:"Negotiable",
     salaryNotSpec:"Salary not specified", deadline:"Deadline", remote:"Remote",
     jobError:"Could not load jobs. Check your connection.", salary:"Monthly Salary",
     allJobs:"All Jobs", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No jobs posted yet", checkBack:"Check back soon or post one yourself!",
-    viewApply:"View & Apply", loadMore:"Load More Jobs",
-    closed:"Closed — Deadline passed", closingSoon:"Closing soon",
+    viewApply:"View & Apply ?", loadMore:"Load More Jobs",
+    closed:"? Closed — Deadline passed", closingSoon:"? Closing soon",
     today:"Today!", dLeft:"d left",
     jobNotFound:"Job not found", jobLoading:"Loading job details…",
     jobDescription:"Job Description", requirements:"Requirements & Skills",
     benefits:"Benefits & Perks", jobApplyNow:"Apply Now",
     applyWhatsApp:"Apply via WhatsApp", applyCall:"Call to Apply",
-    applyEmail:"Apply via Email", applied:"Application Sent",
+    applyEmail:"Apply via Email", applied:"Application Sent ?",
     applying:"Sending application…", alreadyApplied:"You already applied for this job",
     expired:"This job has expired", deadline2:"Application deadline",
     candidates:"applicants", views2:"views", published:"Published",
@@ -138,8 +138,8 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     benefitsPh:"Health insurance, transport allowance, bonuses…",
     tagsLabel:"Skills / Tags (comma separated)", tagsPh:"React, Node.js, Marketing…",
     howApply:"How should candidates apply?",
-    applyInApp:"Through Bambeh Platform", applyWhatsAppOpt:"WhatsApp",
-    applyCallOpt:"Phone Call", applyEmailOpt:"Email",
+    applyInApp:"?? Through Bambeh Platform", applyWhatsAppOpt:"?? WhatsApp",
+    applyCallOpt:"?? Phone Call", applyEmailOpt:"?? Email",
     applyContactPh:"Enter phone number or email for applications",
     publishing:"Publishing your job…", jobPosted:"Job posted successfully!",
     publishJob:"Publish Job", fillRequired:"Please fill all required fields (*)",
@@ -164,29 +164,29 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     save:"Enregistrer", loading:"Chargement…", error:"Une erreur est survenue.",
     retry:"Réessayer", seeAll:"Voir tout", tryAgain:"Réessayer",
     share:"Partager", copyLink:"Lien copié !",
-    jobsTitle:"Trouver un emploi", postJob:"+ Publier une offre",
+    jobsTitle:"Trouver un emploi ??", postJob:"+ Publier une offre",
     jobSearchPlaceholder:"Rechercher emplois ou entreprises…",
     opportunities:"opportunités au Cameroun",
     filters:"Filtres", mostRecent:"Plus récent",
-    clearFilters:"Effacer tous les filtres", jobType:"Type d'emploi", region:"Région",
+    clearFilters:"? Effacer tous les filtres", jobType:"Type d'emploi", region:"Région",
     jobsFound:"offres trouvées", newestFirst:"plus récent d'abord",
-    refresh:"Actualiser", noJobs:"Aucune offre publiée",
+    refresh:"? Actualiser", noJobs:"Aucune offre publiée",
     noJobsHint:"Soyez le premier à publier une offre !",
     noMatch:"Aucune offre ne correspond", clearAll:"Effacer les filtres",
-    applyNow:"Postuler maintenant", views:"vues", negotiable:"Négociable",
+    applyNow:"?? Postuler maintenant", views:"vues", negotiable:"Négociable",
     salaryNotSpec:"Salaire non précisé", deadline:"Date limite", remote:"Télétravail",
     jobError:"Impossible de charger les offres.", salary:"Salaire mensuel",
-    allJobs:"Tous les emplois", opportunity:"opportunité",
+    allJobs:"Tous les emplois", opportunity:"opportunity",
     opportunitiesPlural:"opportunités", noJobsCategory:"Aucune offre publiée",
     checkBack:"Revenez bientôt ou publiez une offre !",
-    viewApply:"Voir & Postuler", loadMore:"Charger plus d'offres",
-    closed:"Fermé — Délai dépassé", closingSoon:"Ferme bientôt",
+    viewApply:"Voir & Postuler ?", loadMore:"Charger plus d'offres",
+    closed:"? Fermé — Délai dépassé", closingSoon:"? Ferme bientôt",
     today:"Aujourd'hui !", dLeft:"j restants",
     jobNotFound:"Offre introuvable", jobLoading:"Chargement…",
     jobDescription:"Description du poste", requirements:"Exigences & Compétences",
     benefits:"Avantages", jobApplyNow:"Postuler maintenant",
     applyWhatsApp:"Postuler via WhatsApp", applyCall:"Appeler pour postuler",
-    applyEmail:"Postuler par email", applied:"Candidature envoyée",
+    applyEmail:"Postuler par email", applied:"Candidature envoyée ?",
     applying:"Envoi en cours…", alreadyApplied:"Vous avez déjà postulé",
     expired:"Cette offre a expiré", deadline2:"Date limite",
     candidates:"candidats", views2:"vues", published:"Publié le",
@@ -206,8 +206,8 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     benefitsLabel:"Avantages", benefitsPh:"Assurance maladie, transport, primes…",
     tagsLabel:"Compétences / Tags (virgule)", tagsPh:"React, Node.js, Marketing…",
     howApply:"Comment les candidats doivent-ils postuler ?",
-    applyInApp:"Via la plateforme Bambeh", applyWhatsAppOpt:"WhatsApp",
-    applyCallOpt:"Appel téléphonique", applyEmailOpt:"Email",
+    applyInApp:"?? Via la plateforme Bambeh", applyWhatsAppOpt:"?? WhatsApp",
+    applyCallOpt:"?? Appel téléphonique", applyEmailOpt:"?? Email",
     applyContactPh:"Entrez le numéro ou email pour les candidatures",
     publishing:"Publication en cours…", jobPosted:"Offre publiée avec succès !",
     publishJob:"Publier l'offre", fillRequired:"Veuillez remplir tous les champs obligatoires (*)",
@@ -233,27 +233,27 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     back:"Back", cancel:"Cancel", save:"Save", loading:"E dey load…",
     error:"Something spoil. Try again.", retry:"Try Again", seeAll:"See all",
     tryAgain:"Try again", share:"Share", copyLink:"Link don copy!",
-    jobsTitle:"Find Work", postJob:"+ Post Work",
+    jobsTitle:"Find Work ??", postJob:"+ Post Work",
     jobSearchPlaceholder:"Search work or company…",
     opportunities:"opportunities for Cameroon",
     filters:"Filter", mostRecent:"New new",
-    clearFilters:"Clear all filter", jobType:"Work Type", region:"Region",
-    jobsFound:"work dey", newestFirst:"new ones first", refresh:"Refresh",
+    clearFilters:"? Clear all filter", jobType:"Work Type", region:"Region",
+    jobsFound:"work dey", newestFirst:"new ones first", refresh:"? Refresh",
     noJobs:"No work yet", noJobsHint:"You be the first to post work!",
     noMatch:"No work match your filter", clearAll:"Clear filter",
-    applyNow:"Apply Now", views:"people see am", negotiable:"E fit negotiate",
-    salaryNotSpec:"Salary no set", deadline:"Last date", remote:"Online work",
+    applyNow:"?? Apply Now", views:"people see am", negotiable:"E fit negotiate",
+    salaryNotSpec:"No salary talk", deadline:"Last date", remote:"Online work",
     jobError:"We no fit load work.", salary:"Month salary",
     allJobs:"All Work", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No work yet", checkBack:"Come back later or post work!",
-    viewApply:"See & Apply", loadMore:"Load more work",
-    closed:"E don close", closingSoon:"E go close soon",
+    viewApply:"See & Apply ?", loadMore:"Load more work",
+    closed:"? E don close", closingSoon:"? E go close soon",
     today:"Today!", dLeft:"days left",
     jobNotFound:"Work no dey", jobLoading:"Dey load…",
     jobDescription:"Work description", requirements:"Wetin dem need",
     benefits:"Bonus things", jobApplyNow:"Apply Now",
     applyWhatsApp:"Apply for WhatsApp", applyCall:"Call make apply",
-    applyEmail:"Send email apply", applied:"You don apply",
+    applyEmail:"Send email apply", applied:"You don apply ?",
     applying:"Dey send am…", alreadyApplied:"You don apply before",
     expired:"Work don finish", deadline2:"Last date",
     candidates:"people apply", views2:"people see am", published:"Dem post am",
@@ -272,9 +272,9 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     requirementsPh:"List all the things dem need…",
     benefitsLabel:"Bonus things", benefitsPh:"Health, transport, bonus things…",
     tagsLabel:"Skills (separate with comma)", tagsPh:"React, Node.js, Marketing…",
-    howApply:"How dem go apply?", applyInApp:"Through Bambeh",
-    applyWhatsAppOpt:"WhatsApp", applyCallOpt:"Phone call",
-    applyEmailOpt:"Email", applyContactPh:"Enter number or email",
+    howApply:"How dem go apply?", applyInApp:"?? Through Bambeh",
+    applyWhatsAppOpt:"?? WhatsApp", applyCallOpt:"?? Phone call",
+    applyEmailOpt:"?? Email", applyContactPh:"Enter number or email",
     publishing:"Dey post your work…", jobPosted:"Your work don post!",
     publishJob:"Post the work", fillRequired:"Fill all * fields abeg",
     loginRequired:"You need login first",
@@ -305,9 +305,9 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     jobsFound:"وظيفة موجودة", newestFirst:"الأحدث أولاً", refresh:"تحديث",
     noJobs:"لا توجد وظائف منشورة بعد", noJobsHint:"كن أول من ينشر فرصة عمل!", noMatch:"لا توجد وظائف تطابق عوامل التصفية",
     clearAll:"مسح الكل", applyNow:"تقدّم الآن", views:"مشاهدات",
-    negotiable:"قابل للتفاوض", salaryNotSpec:"الراتب غير محدد", deadline:"الموعد النهائي",
+    negotiable:"قابل للتفاوض", salaryNotSpec:"الراتة غير محدد", deadline:"الموعد النهائي",
     remote:"عن بُعد", jobError:"تعذّر تحميل الوظائف. تحقق من اتصالك.", salary:"الراتة الشهري",
-    allJobs:"كل الوظائف", opportunity:"فرصة", opportunitiesPlural:"فرص",
+    allJobs:"كل الوظائف", opportunity:"رنصة", opportunitiesPlural:"فرص",
     noJobsCategory:"لا توجد وظائف منشورة بعد", checkBack:"عُد قريبًا أو انشر واحدة بنفسك!", viewApply:"عرض وتقديم",
     loadMore:"تحميل المزيد من الوظائف", closed:"مغلق — انتهى الموعد النهائي", closingSoon:"يُغلق قريبًا",
     today:"اليوم!", dLeft:"يوم متبقٍ", jobNotFound:"الوظيفة غير موجودة",
@@ -329,7 +329,7 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     applyEmailOpt:"البريد الإلكتروني", applyContactPh:"أدخل رقم الهاتف أو البريد الإلكتروني للتقديم", publishing:"جارٍ نشر وظيفتك…",
     jobPosted:"تم نشر الوظيفة بنجاح!", publishJob:"نشر الوظيفة", fillRequired:"يرجى ملء جميع الحقول المطلوبة (*)",
     loginRequired:"يجب تسجيل الدخول لنشر وظيفة", companyLogoLabel:"شعار الشركة", chooseImage:"اختر صورة",
-    catAll:"الكل", catVegetables:"خضروات", catFruits:"فواكه",
+    catAll:"الكل", catVegetables:"خضروات", catFruits:"֪واكه",
     catTubers:"درنات", catGrains:"حبوب", catLegumes:"بقوليات",
     catHerbs:"أعشاب", catDairy:"منتجات الألبان", cartEmpty:"سلة التسوق فارغة",
     continueShopping:"متابعة التسوق", checkout:"إتمام الشراء", subtotal:"المجموع الفرعي",
@@ -348,27 +348,27 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     save:"Dannee", loading:"E nder loodi…", error:"Huunde wa??i. ?ettoo.",
     retry:"?ettoo", seeAll:"Hol fof", tryAgain:"E??oo yeeso",
     share:"Siiwtindiraa", copyLink:"Ñolndi ja??aama!",
-    jobsTitle:"Yiyde Golle", postJob:"+ Fewtu Golle",
+    jobsTitle:"Yiyde Golle ??", postJob:"+ Fewtu Golle",
     jobSearchPlaceholder:"Yiylo golle walla liggey…",
     opportunities:"golle e Kameruun",
     filters:"Tippitor?e", mostRecent:"?uu??um",
-    clearFilters:"Huccit tippitorde fof", jobType:"Suudu Golle", region:"Leydi",
-    jobsFound:"golle he?taama", newestFirst:"?uu??um ?oo", refresh:"Hestu",
+    clearFilters:"? Huccit tippitor?e fof", jobType:"Suudu Golle", region:"Leydi",
+    jobsFound:"golle he?taama", newestFirst:"?uu??um ?oo", refresh:"? He?tu",
     noJobs:"Alaa golle fewti", noJobsHint:"Ardi fewtu golle!",
     noMatch:"Alaa golle faayi", clearAll:"Huccit tippitor?e",
-    applyNow:"Dañ Golle", views:"yiylaama", negotiable:"Naggi",
-    salaryNotSpec:"Njobdi suwaa hollireede", deadline:"Balde tennoo", remote:"E ?anndu",
+    applyNow:"?? Dañ Golle", views:"yiylaama", negotiable:"Naggi",
+    salaryNotSpec:"Njobdi alaa", deadline:"Bal?e ?ennoo", remote:"E ?anndu",
     jobError:"Golle naataani.", salary:"Njobdi koorka",
     allJobs:"Golle fof", opportunity:"sago", opportunitiesPlural:"sagoji",
     noJobsCategory:"Alaa golle", checkBack:"Ardi tuma ?ee ko fewtu!",
-    viewApply:"Yii & Dañ", loadMore:"Nanngin Golleli",
-    closed:"Uddii", closingSoon:"Tennoo seeda",
+    viewApply:"Yii & Dañ ?", loadMore:"Nanngin Golleli",
+    closed:"? Uddii", closingSoon:"? ?ennoo see?a",
     today:"Hannde!", dLeft:"bal?e",
     jobNotFound:"Golle he?aani", jobLoading:"Nannginii…",
     jobDescription:"Ja?tugol Golle", requirements:"Ko he?etee",
     benefits:"Nafaaji", jobApplyNow:"Dañ Golle",
     applyWhatsApp:"Jokkude e WhatsApp", applyCall:"Noddu ngam Dañde",
-    applyEmail:"Imeel ngam Dañde", applied:"Jokkunde nootii",
+    applyEmail:"Imeel ngam Dañde", applied:"Jokkunde nootii ?",
     applying:"Nannginii…", alreadyApplied:"Ko njimonaa yoodi",
     expired:"Golle ?enni", deadline2:"Bal?e ?ennoo",
     candidates:"jokkoo?e", views2:"yiylaama", published:"Fewtiima",
@@ -386,14 +386,14 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     requirementsPh:"Ja?tu ko he?etee, ?em?e…",
     benefitsLabel:"Nafaaji", benefitsPh:"Laamu cellal, nju??udi…",
     tagsLabel:"?em?e (tippu?e e tiindol)", tagsPh:"React, Node.js…",
-    howApply:"No jokkor?e poti jokkude?", applyInApp:"E Bambeh",
-    applyWhatsAppOpt:"WhatsApp", applyCallOpt:"Noddaare",
-    applyEmailOpt:"Imeel", applyContactPh:"Naatnu numeerol maa imeel",
+    howApply:"No jokkor?e poti jokkude?", applyInApp:"?? E Bambeh",
+    applyWhatsAppOpt:"?? WhatsApp", applyCallOpt:"?? Noddaare",
+    applyEmailOpt:"?? Imeel", applyContactPh:"Naatnu numeerol maa imeel",
     publishing:"Fewtinaama…", jobPosted:"Golle fewtiima!",
     publishJob:"Fewtu Golle", fillRequired:"He?tu go??e fof peewnaa?e (*)",
     loginRequired:"Naatir ngam fewtoyde golle",
     companyLogoLabel:"Sawru Liggey", chooseImage:"Soodii sawru",
-    catAll:"Fof", catVegetables:"Le??e", catFruits:"Bibbe ledde", catTubers:"Yonnde",
+    catAll:"Fof", catVegetables:"Le??e", catFruits:"Bi??o", catTubers:"Yonnde",
     catGrains:"Gan?al", catLegumes:"Ku??e", catHerbs:"Caali", catDairy:"Kosam",
     cartEmpty:"Sagas maa fotaani", continueShopping:"Jokku Sooding",
     checkout:"Ñammbu", subtotal:"Dow", fee1pct:"Ñamiri Bambeh (1%)", total:"Timmol",
@@ -544,7 +544,7 @@ const CoinsTransfer     = lazy(() => import("@/pages/CoinsTransfer"));
 const About           = lazy(() => import("@/pages/About"));
 const PrivacyPolicy   = lazy(() => import("@/pages/PrivacyPolicy"));
 const TermsOfService  = lazy(() => import("@/pages/TermsOfService"));
-const DonatePremium   = lazy(() => import("@/pages/DonatePremium") as unknown as Promise<{ default: (props: any) => any }>);
+const DonatePremium   = lazy(() => import("@/pages/DonatePremium"));
 const ReferralProgram = lazy(() => import("@/pages/ReferralProgram"));
 const Chat            = lazy(() => import("@/pages/Chat"));
 const SearchResults   = lazy(() => import("@/pages/SearchResults"));
@@ -713,8 +713,7 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
   if (hidden) return null;
   return (
     <>
-      <MovableChatWidget />
-      <DonateButton />
+      <MovableChatWidget defaultPosition="bottom-right" />
       <MovableVoiceControl />
       <MonthlyFeedbackBanner />
       <BackToTopButton />
@@ -996,7 +995,7 @@ export default function App() {
 
                         {/* -- 3. PUBLIC MARKETPLACE -------------------------------- */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-                        <Route path="/home" element={<MainLayout><Home /></MainLayout>} />
+                        <Route path="/home" element={<Navigate to="/" replace />} />
                         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
                         <Route path="/marketplace" element={<MainLayout><Marketplace /></MainLayout>} />
                         <Route path="/services" element={<MainLayout><Services /></MainLayout>} />
@@ -1052,7 +1051,7 @@ export default function App() {
                           path="/jobs/post"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PostJobPage /></AuthGate>
+                              <AuthGate require="user"><PostJobPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1060,7 +1059,7 @@ export default function App() {
                           path="/marketplace/sell"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PostMarketplaceItemPage /></AuthGate>
+                              <AuthGate require="user"><PostMarketplaceItemPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1068,7 +1067,7 @@ export default function App() {
                           path="/services/offer"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><OfferService /></AuthGate>
+                              <AuthGate require="user"><OfferService /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1079,7 +1078,7 @@ export default function App() {
                           path="/rentals/list"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><ListProperty /></AuthGate>
+                              <AuthGate require="user"><ListProperty /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1090,7 +1089,7 @@ export default function App() {
                           path="/vehicles/sell"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><SellVehicle /></AuthGate>
+                              <AuthGate require="user"><SellVehicle /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1098,7 +1097,7 @@ export default function App() {
                           path="/post-ad"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PostAd /></AuthGate>
+                              <AuthGate require="user"><PostAd /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1107,7 +1106,7 @@ export default function App() {
                           path="/exchange/post"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><ExchangeItemPost /></AuthGate>
+                              <AuthGate require="user"><ExchangeItemPost /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1115,7 +1114,7 @@ export default function App() {
                           path="/exchange/offer/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><ExchangeOfferPage /></AuthGate>
+                              <AuthGate require="user"><ExchangeOfferPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1175,7 +1174,7 @@ export default function App() {
                           path="/profile"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><Profile /></AuthGate>
+                              <AuthGate require="user"><Profile /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1191,7 +1190,7 @@ export default function App() {
                           path="/favorites"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><Favorites /></AuthGate>
+                              <AuthGate require="user"><Favorites /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1207,7 +1206,7 @@ export default function App() {
                           path="/alerts"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><AlertsPage /></AuthGate>
+                              <AuthGate require="user"><AlertsPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1215,7 +1214,7 @@ export default function App() {
                           path="/orders"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><Orders /></AuthGate>
+                              <AuthGate require="user"><Orders /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1223,7 +1222,7 @@ export default function App() {
                           path="/orders/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><OrderTracking /></AuthGate>
+                              <AuthGate require="user"><OrderTracking /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1231,7 +1230,7 @@ export default function App() {
                           path="/my-listings"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><MyListings /></AuthGate>
+                              <AuthGate require="user"><MyListings /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1239,7 +1238,7 @@ export default function App() {
                           path="/settings"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><UserSettings /></AuthGate>
+                              <AuthGate require="user"><UserSettings /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1247,7 +1246,7 @@ export default function App() {
                           path="/settings/notifications"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><UserSettings /></AuthGate>
+                              <AuthGate require="user"><UserSettings /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1255,7 +1254,7 @@ export default function App() {
                           path="/settings/privacy"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><UserSettings /></AuthGate>
+                              <AuthGate require="user"><UserSettings /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1263,7 +1262,7 @@ export default function App() {
                           path="/settings/security"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><UserSettings /></AuthGate>
+                              <AuthGate require="user"><UserSettings /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1271,7 +1270,7 @@ export default function App() {
                           path="/marketplace/edit/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><EditMarketplaceListing /></AuthGate>
+                              <AuthGate require="user"><EditMarketplaceListing /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1279,7 +1278,7 @@ export default function App() {
                           path="/jobs/edit/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><EditJobListing /></AuthGate>
+                              <AuthGate require="user"><EditJobListing /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1287,7 +1286,7 @@ export default function App() {
                           path="/services/edit/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><EditServiceListing /></AuthGate>
+                              <AuthGate require="user"><EditServiceListing /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1295,7 +1294,7 @@ export default function App() {
                           path="/marketplace/drafts"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><MarketplaceDrafts /></AuthGate>
+                              <AuthGate require="user"><MarketplaceDrafts /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1309,7 +1308,7 @@ export default function App() {
                           path="/coins"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsPage /></AuthGate>
+                              <AuthGate require="user"><CoinsPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1317,7 +1316,7 @@ export default function App() {
                           path="/coins/buy"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsBuyPage /></AuthGate>
+                              <AuthGate require="user"><CoinsBuyPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1325,7 +1324,7 @@ export default function App() {
                           path="/coins/transfer"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsTransfer /></AuthGate>
+                              <AuthGate require="user"><CoinsTransfer /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1333,7 +1332,7 @@ export default function App() {
                           path="/coins/history"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CoinsHistory /></AuthGate>
+                              <AuthGate require="user"><CoinsHistory /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1373,7 +1372,7 @@ export default function App() {
                         <Route path="/vendor/verification" element={<AuthGate require="vendor"><VendorLayout><VendorVerification /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/notifications" element={<AuthGate require="vendor"><VendorLayout><VendorNotifications /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/premium-tools" element={<AuthGate require="vendor"><VendorLayout><VendorPremiumToolsEnhanced /></VendorLayout></AuthGate>} />
-                        <Route path="/vendor/subscription-payment" element={<AuthGate require="vendor"><VendorLayout><VendorSubscriptionPayment /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/subscription" element={<AuthGate require="vendor"><VendorLayout><VendorSubscriptionPayment /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/orders" element={<AuthGate require="vendor"><VendorLayout><VendorOrders /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/reviews" element={<AuthGate require="vendor"><VendorLayout><VendorReviews /></VendorLayout></AuthGate>} />
                         <Route path="/vendor/payments" element={<AuthGate require="vendor"><VendorLayout><VendorPayments /></VendorLayout></AuthGate>} />
@@ -1446,7 +1445,7 @@ export default function App() {
                           path="/tracking"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><OrderTracking /></AuthGate>
+                              <AuthGate require="user"><OrderTracking /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1468,7 +1467,7 @@ export default function App() {
                           path="/saved-searches"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><SavedSearches /></AuthGate>
+                              <AuthGate require="user"><SavedSearches /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1478,7 +1477,7 @@ export default function App() {
                           path="/payment/checkout"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PaymentCheckout /></AuthGate>
+                              <AuthGate require="user"><PaymentCheckout /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1486,7 +1485,7 @@ export default function App() {
                           path="/payment/callback"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PaymentCallback /></AuthGate>
+                              <AuthGate require="user"><PaymentCallback /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1494,7 +1493,7 @@ export default function App() {
                           path="/payment/pending"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PaymentPending /></AuthGate>
+                              <AuthGate require="user"><PaymentPending /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1502,7 +1501,7 @@ export default function App() {
                           path="/payment/success"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PaymentSuccess /></AuthGate>
+                              <AuthGate require="user"><PaymentSuccess /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1510,7 +1509,7 @@ export default function App() {
                           path="/payment/failed"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><PaymentFailed /></AuthGate>
+                              <AuthGate require="user"><PaymentFailed /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1610,7 +1609,7 @@ export default function App() {
                           path="/farm-fresh/sell"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><FarmFreshSellerPage /></AuthGate>
+                              <AuthGate require="user"><FarmFreshSellerPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1618,7 +1617,7 @@ export default function App() {
                           path="/make-offer/:listingId"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><MakeOfferPage /></AuthGate>
+                              <AuthGate require="user"><MakeOfferPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1639,10 +1638,14 @@ export default function App() {
                           }
                         />
 
-                        {/* -- 17. SUPPORT + 404 (catch-all MUST be last) -------- */}
-                        <Route path="/support" element={<MainLayout><ContactSupport /></MainLayout>} />
-                        <Route path="*" element={<MainLayout><NotFoundPage /></MainLayout>} />
-                      </Routes>
+                        {/* -- 17. 404 ---------------------------------------------- */}
+                        <Route
+                          path="*"
+                          element={<MainLayout><NotFoundPage /></MainLayout>}
+                        />
+
+                      <Route path='*' element={<Navigate to='/' />} />
+</Routes>
 
                       <RouteAwareWidgets />
                     </Suspense>
@@ -1662,3 +1665,5 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
+

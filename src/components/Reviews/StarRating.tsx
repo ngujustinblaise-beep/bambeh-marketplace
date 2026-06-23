@@ -153,5 +153,3 @@ export function AverageRatingDisplay({ average, total, distribution, className =
 
 
 
-
-

@@ -1,28 +1,9 @@
-import { useEffect } from 'react';
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-useEffect(() => {
-  if (!SpeechRecognition) return;
-
-  const recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.lang = 'en-US';
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    window.location.href = '/marketplace?search=' + encodeURIComponent(transcript);
-  };
-
-  const micButton = document.getElementById('header-mic');
-  micButton?.addEventListener('click', () => recognition.start());
-
-}, []);/**
+﻿/**
  * src/components/Header.tsx
  * Bambeh Marketplace — Main App Header
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
@@ -188,9 +169,6 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
-
-
 
 
 

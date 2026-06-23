@@ -1,14 +1,14 @@
-﻿/**
- * src/pages/ExchangeOfferPage.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/ExchangeOfferPage.tsx — Bambeh Marketplace
  *
- * âœ… Full i18n: en, fr, ha, ar, pcm, ff
- * âœ… Blocks owner from making offer on own item
- * âœ… Blocks duplicate offers (unique constraint + pre-check)
- * âœ… Auth gate â†’ /login redirect
- * âœ… Success state with deep-link back to item
- * âœ… Character counter + minimum length enforced
- * âœ… Estimated value field (FCFA)
- * âœ… Safe area bottom padding (Android)
+ * ✅ Full i18n: en, fr, ha, ar, pcm, ff
+ * ✅ Blocks owner from making offer on own item
+ * ✅ Blocks duplicate offers (unique constraint + pre-check)
+ * ✅ Auth gate → /login redirect
+ * ✅ Success state with deep-link back to item
+ * ✅ Character counter + minimum length enforced
+ * ✅ Estimated value field (FCFA)
+ * ✅ Safe area bottom padding (Android)
  */
 
 import { useState, useEffect } from 'react';
@@ -20,14 +20,14 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 
-// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n ──────────────────────────────────────────────────────────────────────
 const STRINGS = {
   en: {
     pageTitle:  'Make an Exchange Offer',
     for:        'For:',
     cantSend:   'Can\'t send offer',
     goBack:     'Go Back',
-    offerSent:  'Offer Sent! ðŸŽ‰',
+    offerSent:  'Offer Sent! 🎉',
     ownerReview:'The item owner will review your offer and get back to you via chat.',
     browseMore: 'Browse More Items',
     backToItem: 'Back to Item',
@@ -36,9 +36,9 @@ const STRINGS = {
     offerPlaceholder:'e.g. Samsung Galaxy S21',
     descLabel:  'Description *',
     minChars:   (n: number) => `min ${n} characters`,
-    descPlaceholder:'Describe your item â€” condition, age, features, any defectsâ€¦',
+    descPlaceholder:'Describe your item — condition, age, features, any defects…',
     chars:      (n: number) => `${n} chars`,
-    need:       (n: number) => ` â€” need ${n} more`,
+    need:       (n: number) => ` — need ${n} more`,
     condition:  'Condition *',
     estValue:   'Est. Value (FCFA)',
     estPlaceholder:'e.g. 75000',
@@ -49,7 +49,7 @@ const STRINGS = {
     step4:      'Meet in a safe, public place to exchange items',
     cancel:     'Cancel',
     sendOffer:  'Send Offer',
-    sending:    'Sendingâ€¦',
+    sending:    'Sending…',
     errOffering:'Please enter what you are offering.',
     errDesc:    'Please describe your item.',
     errDescMin: 'Description must be at least 20 characters.',
@@ -58,68 +58,68 @@ const STRINGS = {
     errGeneric: 'Failed to send offer. Please try again.',
   },
   fr: {
-    pageTitle:  'Faire une offre d\'Ã©change',
+    pageTitle:  'Faire une offre d\'échange',
     for:        'Pour :',
     cantSend:   'Impossible d\'envoyer l\'offre',
     goBack:     'Retour',
-    offerSent:  'Offre envoyÃ©e ! ðŸŽ‰',
-    ownerReview:'Le propriÃ©taire examinera votre offre et vous contactera via le chat.',
+    offerSent:  'Offre envoyée ! 🎉',
+    ownerReview:'Le propriétaire examinera votre offre et vous contactera via le chat.',
     browseMore: 'Voir plus d\'articles',
-    backToItem: 'Retour Ã  l\'article',
+    backToItem: 'Retour à l\'article',
     back:       'Retour',
     whatOffering:'Qu\'offrez-vous ? *',
     offerPlaceholder:'ex. Samsung Galaxy S21',
     descLabel:  'Description *',
-    minChars:   (n: number) => `min ${n} caractÃ¨res`,
-    descPlaceholder:'DÃ©crivez votre article â€” Ã©tat, Ã¢ge, fonctionnalitÃ©s, dÃ©fautsâ€¦',
+    minChars:   (n: number) => `min ${n} caractères`,
+    descPlaceholder:'Décrivez votre article — état, âge, fonctionnalités, défauts…',
     chars:      (n: number) => `${n} car.`,
-    need:       (n: number) => ` â€” encore ${n}`,
-    condition:  'Ã‰tat *',
+    need:       (n: number) => ` — encore ${n}`,
+    condition:  'État *',
     estValue:   'Valeur est. (FCFA)',
     estPlaceholder:'ex. 75000',
     howItWorks: 'Comment fonctionnent les offres',
-    step1:      'Soumettez votre offre avec les dÃ©tails de l\'article',
-    step2:      'Le propriÃ©taire accepte ou refuse',
-    step3:      'Si acceptÃ©e, finalisez l\'Ã©change via le chat',
-    step4:      'Rencontrez-vous dans un lieu public pour l\'Ã©change',
+    step1:      'Soumettez votre offre avec les détails de l\'article',
+    step2:      'Le propriétaire accepte ou refuse',
+    step3:      'Si acceptée, finalisez l\'échange via le chat',
+    step4:      'Rencontrez-vous dans un lieu public pour l\'échange',
     cancel:     'Annuler',
     sendOffer:  'Envoyer l\'offre',
-    sending:    'Envoiâ€¦',
+    sending:    'Envoi…',
     errOffering:'Veuillez indiquer ce que vous proposez.',
-    errDesc:    'Veuillez dÃ©crire votre article.',
-    errDescMin: 'La description doit comporter au moins 20 caractÃ¨res.',
+    errDesc:    'Veuillez décrire votre article.',
+    errDescMin: 'La description doit comporter au moins 20 caractères.',
     errItem:    'Article invalide.',
-    errDuplicate:'Vous avez dÃ©jÃ  fait une offre sur cet article.',
-    errGeneric: 'Ã‰chec de l\'envoi. RÃ©essayez.',
+    errDuplicate:'Vous avez déjà fait une offre sur cet article.',
+    errGeneric: 'Échec de l\'envoi. Réessayez.',
   },
   ha: {
     pageTitle:  'Yi Tayin Musanya',
     for:        'Don:',
     cantSend:   'Ba za a iya aika tayin ba',
     goBack:     'Koma Baya',
-    offerSent:  'An Aika Tayin! ðŸŽ‰',
-    ownerReview:'Mai abu zai duba tayin ku kuma zai tuntuÉ“e ku ta hanyar tattaunawa.',
-    browseMore: 'Nemo Æ˜arin Abubuwa',
+    offerSent:  'An Aika Tayin! 🎉',
+    ownerReview:'Mai abu zai duba tayin ku kuma zai tuntuɓe ku ta hanyar tattaunawa.',
+    browseMore: 'Nemo Ƙarin Abubuwa',
     backToItem: 'Koma Wurin Abu',
     back:       'Baya',
     whatOffering:'Me kuke bayarwa? *',
     offerPlaceholder:'misali: Samsung Galaxy S21',
     descLabel:  'Bayani *',
-    minChars:   (n: number) => `mafi Æ™aranci ${n} haruffa`,
-    descPlaceholder:'Bayyana abin ku â€” yanayi, shekaru, fasali, lahaniâ€¦',
+    minChars:   (n: number) => `mafi ƙaranci ${n} haruffa`,
+    descPlaceholder:'Bayyana abin ku — yanayi, shekaru, fasali, lahani…',
     chars:      (n: number) => `${n} harf`,
-    need:       (n: number) => ` â€” ana buÆ™atar ${n} Æ™ari`,
+    need:       (n: number) => ` — ana buƙatar ${n} ƙari`,
     condition:  'Yanayi *',
-    estValue:   'Æ˜imar da ake É—auka (FCFA)',
+    estValue:   'Ƙimar da ake ɗauka (FCFA)',
     estPlaceholder:'misali: 75000',
     howItWorks: 'Yadda Tayin Musanya ke Aiki',
     step1:      'Aika tayin ku tare da bayanan abu',
-    step2:      'Mai abu yana bincike ya yarda ko ya Æ™i',
+    step2:      'Mai abu yana bincike ya yarda ko ya ƙi',
     step3:      'Idan an yarda, kammala ta hanyar tattaunawa',
     step4:      'Ku sadu a wurin jama\'a don musanya',
     cancel:     'Soke',
     sendOffer:  'Aika Tayin',
-    sending:    'Ana aikaâ€¦',
+    sending:    'Ana aika…',
     errOffering:'Shigar da abin da kuke bayarwa.',
     errDesc:    'Bayyana abin ku.',
     errDescMin: 'Bayani dole ya kasance akalla haruffa 20.',
@@ -128,46 +128,46 @@ const STRINGS = {
     errGeneric: 'Aika ya kasa. Sake gwadawa.',
   },
   ar: {
-    pageTitle:  'ØªÙ‚Ø¯ÙŠÙ… Ø¹Ø±Ø¶ ØªØ¨Ø§Ø¯Ù„',
-    for:        'Ø¨Ø®ØµÙˆØµ:',
-    cantSend:   'Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¹Ø±Ø¶',
-    goBack:     'Ø§Ù„Ø¹ÙˆØ¯Ø©',
-    offerSent:  'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¹Ø±Ø¶! ðŸŽ‰',
-    ownerReview:'Ø³ÙŠØ±Ø§Ø¬Ø¹ ØµØ§Ø­Ø¨ Ø§Ù„Ø¹Ù†ØµØ± Ø¹Ø±Ø¶Ùƒ ÙˆØ³ÙŠØ±Ø¯ Ø¹Ù„ÙŠÙƒ Ø¹Ø¨Ø± Ø§Ù„Ù…Ø­Ø§Ø¯Ø«Ø©.',
-    browseMore: 'ØªØµÃ™ÂØ­ Ø§Ù„Ù…Ø²ÙŠØ¯ Ù…Ù† Ø§Ù„Ø¹Ù†Ø§ØµØ±',
-    backToItem: 'Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ø§Ù„Ø¹Ù†ØµØ±',
-    back:       'Ø±Ø¬ÙˆØ¹',
-    whatOffering:'Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ø¶ØŸ *',
-    offerPlaceholder:'Ù…Ø«Ø§Ù„: Ø³Ø§Ù…Ø³ÙˆÙ†Ø¬ ØºØ§Ù„Ø§ÙƒØ³ÙŠ S21',
-    descLabel:  'Ø§Ù„ÙˆØµÃ™Â *',
-    minChars:   (n: number) => `${n} Ø­Ø±Ã™Â Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„`,
-    descPlaceholder:'ØµÃ™Â Ø¹Ù†ØµØ±Ùƒ â€” Ø§Ù„Ø­Ø§Ù„Ø©ØŒ Ø§Ù„Ø¹Ù…Ø±ØŒ Ø§Ù„Ù…Ù…ÙŠØ²Ø§ØªØŒ Ø§Ù„Ø¹ÙŠÙˆØ¨â€¦',
-    chars:      (n: number) => `${n} Ø­Ø±Ã™Â`,
-    need:       (n: number) => ` â€” ÙŠØ­ØªØ§Ø¬ ${n} Ø£ÙƒØ«Ø±`,
-    condition:  'Ø§Ù„Ø­Ø§Ù„Ø© *',
-    estValue:   'Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„ØªÙ‚Ø¯ÙŠØ±ÙŠØ© (Ã™ÂØ±Ù†Ùƒ)',
-    estPlaceholder:'Ù…Ø«Ø§Ù„: 75000',
-    howItWorks: 'ÙƒÙŠÃ™Â ØªØ¹Ù…Ù„ Ø¹Ø±ÙˆØ¶ Ø§Ù„ØªØ¨Ø§Ø¯Ù„',
-    step1:      'Ù‚Ø¯Ù‘Ù… Ø¹Ø±Ø¶Ùƒ Ù…Ø¹ ØªÃ™ÂØ§ØµÙŠÙ„ Ø§Ù„Ø¹Ù†ØµØ±',
-    step2:      'ÙŠØ±Ø§Ø¬Ø¹ ØµØ§Ø­Ø¨ Ø§Ù„Ø¹Ù†ØµØ± Ø§Ù„Ø¹Ø±Ø¶ ÙˆÙŠÙ‚Ø¨Ù„Ù‡ Ø£Ùˆ ÙŠØ±Ã™ÂØ¶Ù‡',
-    step3:      'Ø¹Ù†Ø¯ Ø§Ù„Ù‚Ø¨ÙˆÙ„ØŒ Ø£ØªÙ…Ù‘ Ø§Ù„ØµÃ™ÂÙ‚Ø© Ø¹Ø¨Ø± Ø§Ù„Ù…Ø­Ø§Ø¯Ø«Ø©',
-    step4:      'Ø§Ù„ØªÙ‚Ã™Â Ã™ÂÙŠ Ù…ÙƒØ§Ù† Ø¹Ø§Ù… Ù„ØªØ¨Ø§Ø¯Ù„ Ø§Ù„Ø¹Ù†Ø§ØµØ±',
-    cancel:     'Ø¥Ù„ØºØ§Ø¡',
-    sendOffer:  'Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¹Ø±Ø¶',
-    sending:    'Ø¬Ø§Ø±Ã™Â Ø§Ù„Ø¥Ø±Ø³Ø§Ù„â€¦',
-    errOffering:'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ù…Ø§ ØªØ¹Ø±Ø¶Ù‡.',
-    errDesc:    'ÙŠØ±Ø¬Ù‰ ÙˆØµÃ™Â Ø¹Ù†ØµØ±Ùƒ.',
-    errDescMin: 'ÙŠØ¬Ø¨ Ø£Ù† ÙŠØ­ØªÙˆÙŠ Ø§Ù„ÙˆØµÃ™Â Ø¹Ù„Ù‰ 20 Ø­Ø±Ã™ÂÙ‹Ø§ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„.',
-    errItem:    'Ø¹Ù†ØµØ± ØªØ¨Ø§Ø¯Ù„ ØºÙŠØ± ØµØ§Ù„Ø­.',
-    errDuplicate:'Ù„Ù‚Ø¯ Ù‚Ø¯Ù‘Ù…Øª Ø¹Ø±Ø¶Ù‹Ø§ Ø¨Ø§Ù„Ã™ÂØ¹Ù„ Ø¹Ù„Ù‰ Ù‡Ø°Ø§ Ø§Ù„Ø¹Ù†ØµØ±.',
-    errGeneric: 'Ã™ÂØ´Ù„ Ø§Ù„Ø¥Ø±Ø³Ø§Ù„. Ø­Ø§ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ù‹Ø§.',
+    pageTitle:  'تقديم عرض تبادل',
+    for:        'بخصوص:',
+    cantSend:   'لا يمكن إرسال العرض',
+    goBack:     'العودة',
+    offerSent:  'تم إرسال العرض! 🎉',
+    ownerReview:'سيراجع صاحب العنصر عرضك وسيرد عليك عبر المحادثة.',
+    browseMore: 'تصÙح المزيد من العناصر',
+    backToItem: 'العودة إلى العنصر',
+    back:       'رجوع',
+    whatOffering:'ماذا تعرض؟ *',
+    offerPlaceholder:'مثال: سامسونج غالاكسي S21',
+    descLabel:  'الوصÙ *',
+    minChars:   (n: number) => `${n} حرÙ على الأقل`,
+    descPlaceholder:'صÙ عنصرك — الحالة، العمر، المميزات، العيوب…',
+    chars:      (n: number) => `${n} حرÙ`,
+    need:       (n: number) => ` — يحتاج ${n} أكثر`,
+    condition:  'الحالة *',
+    estValue:   'القيمة التقديرية (Ùرنك)',
+    estPlaceholder:'مثال: 75000',
+    howItWorks: 'كيÙ تعمل عروض التبادل',
+    step1:      'قدّم عرضك مع تÙاصيل العنصر',
+    step2:      'يراجع صاحب العنصر العرض ويقبله أو يرÙضه',
+    step3:      'عند القبول، أتمّ الصÙقة عبر المحادثة',
+    step4:      'التقÙ Ùي مكان عام لتبادل العناصر',
+    cancel:     'إلغاء',
+    sendOffer:  'إرسال العرض',
+    sending:    'جارÙ الإرسال…',
+    errOffering:'يرجى إدخال ما تعرضه.',
+    errDesc:    'يرجى وصÙ عنصرك.',
+    errDescMin: 'يجب أن يحتوي الوصÙ على 20 حرÙًا على الأقل.',
+    errItem:    'عنصر تبادل غير صالح.',
+    errDuplicate:'لقد قدّمت عرضًا بالÙعل على هذا العنصر.',
+    errGeneric: 'Ùشل الإرسال. حاول مجددًا.',
   },
   pcm: {
     pageTitle:  'Make Exchange Offer',
     for:        'For:',
     cantSend:   'Offer no fit go',
     goBack:     'Go Back',
-    offerSent:  'Offer Don Go! ðŸŽ‰',
+    offerSent:  'Offer Don Go! 🎉',
     ownerReview:'Di owner go check your offer and reply you for chat.',
     browseMore: 'See More Items',
     backToItem: 'Back To Item',
@@ -176,20 +176,20 @@ const STRINGS = {
     offerPlaceholder:'e.g. Samsung Galaxy S21',
     descLabel:  'Description *',
     minChars:   (n: number) => `at least ${n} characters`,
-    descPlaceholder:'Describe am â€” how e dey, how old, features, wahalaâ€¦',
+    descPlaceholder:'Describe am — how e dey, how old, features, wahala…',
     chars:      (n: number) => `${n} chars`,
-    need:       (n: number) => ` â€” need ${n} more`,
+    need:       (n: number) => ` — need ${n} more`,
     condition:  'Condition *',
     estValue:   'How much e worth (FCFA)',
     estPlaceholder:'e.g. 75000',
     howItWorks: 'How Exchange Offer Work',
     step1:      'Send your offer with details',
-    step2:      'Owner go check â€” accept or reject',
+    step2:      'Owner go check — accept or reject',
     step3:      'If e accept, sort am out for chat',
     step4:      'Meet for public place to swap',
     cancel:     'Cancel',
     sendOffer:  'Send Offer',
-    sending:    'E dey sendâ€¦',
+    sending:    'E dey send…',
     errOffering:'Put wetin you wan offer.',
     errDesc:    'Describe your item.',
     errDescMin: 'Description must be at least 20 characters.',
@@ -198,39 +198,39 @@ const STRINGS = {
     errGeneric: 'Send fail. Try again.',
   },
   ff: {
-    pageTitle:  'Hollit JaÉ“de Fewtere',
+    pageTitle:  'Hollit Jaɓde Fewtere',
     for:        'E:',
-    cantSend:   'JaÉ“de neldaaka',
-    goBack:     'Æeto Baawo',
-    offerSent:  'JaÉ“de Neldaama! ðŸŽ‰',
-    ownerReview:'Jom coftal ngol É“etotoo jaÉ“de maa e jokkondirde.',
-    browseMore: 'Yiy Coftal Æuri',
-    backToItem: 'Æeto Coftal',
+    cantSend:   'Jaɓde neldaaka',
+    goBack:     'Ɓeto Baawo',
+    offerSent:  'Jaɓde Neldaama! 🎉',
+    ownerReview:'Jom coftal ngol ɓetotoo jaɓde maa e jokkondirde.',
+    browseMore: 'Yiy Coftal Ɓuri',
+    backToItem: 'Ɓeto Coftal',
     back:       'Baawo',
     whatOffering:'Ko njollata? *',
     offerPlaceholder:'mis: Samsung Galaxy S21',
     descLabel:  'Haalannde *',
     minChars:   (n: number) => `timmugol ${n} batu`,
-    descPlaceholder:'Haalan coftal â€” ngol, É—oon, maa, baaÉ—eâ€¦',
+    descPlaceholder:'Haalan coftal — ngol, ɗoon, maa, baaɗe…',
     chars:      (n: number) => `${n} batu`,
-    need:       (n: number) => ` â€” ${n} É“uri`,
+    need:       (n: number) => ` — ${n} ɓuri`,
     condition:  'Ngol *',
     estValue:   'Njaru (FCFA)',
     estPlaceholder:'mis: 75000',
-    howItWorks: 'Ko JaÉ“de Fewtere',
-    step1:      'Neld jaÉ“de e haalannde coftal',
-    step2:      'Jom É“eto â€” jaÉ“de walla waÉ—tude',
-    step3:      'So jaÉ“ii, timminto e jokkondirde',
-    step4:      'Njarna e nokku É“urngo wuurde',
-    cancel:     'HaÉ—',
-    sendOffer:  'Neld JaÉ“de',
-    sending:    'E neldindeâ€¦',
+    howItWorks: 'Ko Jaɓde Fewtere',
+    step1:      'Neld jaɓde e haalannde coftal',
+    step2:      'Jom ɓeto — jaɓde walla waɗtude',
+    step3:      'So jaɓii, timminto e jokkondirde',
+    step4:      'Njarna e nokku ɓurngo wuurde',
+    cancel:     'Haɗ',
+    sendOffer:  'Neld Jaɓde',
+    sending:    'E neldinde…',
     errOffering:'Haala ko njollata.',
     errDesc:    'Haalan coftal maa.',
     errDescMin: 'Haalannde ko batu 20 timmugol.',
-    errItem:    'Coftal hiÉ“aani.',
-    errDuplicate:'Hollinaama jaÉ“de e coftal ngol.',
-    errGeneric: 'Neldugol hiÉ“i. HeÉ“to katin.',
+    errItem:    'Coftal hiɓaani.',
+    errDuplicate:'Hollinaama jaɓde e coftal ngol.',
+    errGeneric: 'Neldugol hiɓi. Heɓto katin.',
   },
 } as const;
 
@@ -330,7 +330,7 @@ export default function ExchangeOfferPage() {
     }
   }
 
-  // â”€â”€â”€ Blocked â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Blocked ────────────────────────────────────────────────────────────────
   if (blocked) return (
     <div className={`min-h-screen flex items-center justify-center bg-gray-50 p-6 ${isRtl ? 'rtl' : 'ltr'}`}>
       <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
@@ -345,7 +345,7 @@ export default function ExchangeOfferPage() {
     </div>
   );
 
-  // â”€â”€â”€ Success â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Success ────────────────────────────────────────────────────────────────
   if (done) return (
     <div className={`min-h-screen flex items-center justify-center bg-gray-50 p-6 ${isRtl ? 'rtl' : 'ltr'}`}>
       <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
@@ -366,7 +366,7 @@ export default function ExchangeOfferPage() {
     </div>
   );
 
-  // â”€â”€â”€ Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Form ───────────────────────────────────────────────────────────────────
   return (
     <div className={`min-h-screen bg-gray-50 ${isRtl ? 'rtl' : 'ltr'}`}
       style={{ paddingBottom: 'max(80px, env(safe-area-inset-bottom))' }}>
@@ -392,7 +392,7 @@ export default function ExchangeOfferPage() {
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
-            <span className="flex-shrink-0">âš Ã¯Â¸Â</span>
+            <span className="flex-shrink-0">⚠ï¸</span>
             <span>{error}</span>
           </div>
         )}
@@ -429,7 +429,7 @@ export default function ExchangeOfferPage() {
                 <span className="text-red-400">{s.need(MIN_DESC - description.length)}</span>
               )}
               {description.length >= MIN_DESC && (
-                <span className="text-teal-500 ml-1">âœ“</span>
+                <span className="text-teal-500 ml-1">✓</span>
               )}
             </p>
           </div>
@@ -498,9 +498,5 @@ export default function ExchangeOfferPage() {
     </div>
   );
 }
-
-
-
-
 
 

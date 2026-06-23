@@ -1,6 +1,4 @@
-﻿useEffect(() => {
-  navigator.mediaDevices?.getUserMedia({ audio: true }).catch(() => {});
-}, []);/**
+﻿/**
  * src/components/voice/MovableVoiceControl.tsx
  * FIXES: Removes duplicate isFinal/length/transcript/confidence declarations (TS2687)
  * Rebuilt clean with proper interface merging
@@ -201,9 +199,6 @@ const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
 };
 
 export default MovableVoiceControl;
-
-
-
 
 
 

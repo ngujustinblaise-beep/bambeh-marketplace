@@ -7,4 +7,3 @@ export function requireAuth(isAuthenticated: boolean, navigate: NavigateFunction
   }
   return true;
 }
-

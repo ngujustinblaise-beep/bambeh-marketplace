@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LOCATION SELECTOR COMPONENT
  * 
  * Cascading dropdowns for selecting location in Cameroon:
@@ -11,7 +11,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18n';
 import {
   Select,
   SelectContent,
@@ -415,8 +415,6 @@ export function LocationDisplay({
     </span>
   );
 }
-
-
 
 
 

@@ -44,4 +44,3 @@ export interface Chat {
 }
 
 export type Message = ChatMessage;
-

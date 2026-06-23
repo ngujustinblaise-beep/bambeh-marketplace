@@ -1,7 +1,7 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
 
-// Icon components (inline SVG â€” no extra dependency needed)
+// Icon components (inline SVG — no extra dependency needed)
 const BellIcon = ({ hasUnread }: { hasUnread: boolean }) => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -11,10 +11,10 @@ const BellIcon = ({ hasUnread }: { hasUnread: boolean }) => (
 );
 
 const typeIcon: Record<string, string> = {
-  welcome:      'ðŸ‘‹',
-  subscription: 'â­',
-  new_order:    'ðŸ›’',
-  new_message:  'ðŸ’¬',
+  welcome:      '👋',
+  subscription: '⭐',
+  new_order:    '🛒',
+  new_message:  '💬',
 };
 
 function timeAgo(dateStr: string): string {
@@ -47,7 +47,7 @@ function NotifItem({ notif, onRead }: { notif: BambehNotification; onRead: (id: 
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 16, flexShrink: 0,
       }}>
-        {typeIcon[notif.type] ?? 'ðŸ””'}
+        {typeIcon[notif.type] ?? '🔔'}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
@@ -59,7 +59,7 @@ function NotifItem({ notif, onRead }: { notif: BambehNotification; onRead: (id: 
           )}
         </div>
         <p style={{ fontSize: 12, color: 'rgba(128,128,128,0.9)', margin: '3px 0 0', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-          {notif.body.length > 120 ? notif.body.slice(0, 120) + 'â€¦' : notif.body}
+          {notif.body.length > 120 ? notif.body.slice(0, 120) + '…' : notif.body}
         </p>
         <span style={{ fontSize: 11, color: 'rgba(128,128,128,0.7)', marginTop: 3, display: 'block' }}>
           {timeAgo(notif.created_at)}
@@ -147,11 +147,11 @@ export function NotificationBell() {
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {loading ? (
               <div style={{ padding: 32, textAlign: 'center', color: 'rgba(128,128,128,0.7)', fontSize: 13 }}>
-                Loadingâ€¦
+                Loading…
               </div>
             ) : notifications.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>ðŸ””</div>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>🔔</div>
                 <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.8)' }}>No notifications yet</div>
               </div>
             ) : (
@@ -165,9 +165,5 @@ export function NotificationBell() {
     </div>
   );
 }
-
-
-
-
 
 

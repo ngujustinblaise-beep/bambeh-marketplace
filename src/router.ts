@@ -1,7 +1,7 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- * BAMBEH ROUTER â€” Singleton Navigation Module
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * BAMBEH ROUTER — Singleton Navigation Module
+ * ═══════════════════════════════════════════════════════════════════════════
  *
  * Why this file exists:
  * React Router's useNavigate() hook only works inside React components.
@@ -12,13 +12,13 @@
  * once by NavigationBridge in App.tsx via setNavigator(), then importable
  * anywhere in the codebase.
  *
- * Wiring is handled in App.tsx â€” NavigationBridge calls both
+ * Wiring is handled in App.tsx — NavigationBridge calls both
  * NavigationService.register(nav) AND setNavigator(nav) on mount.
  *
- * Usage â€” inside a React component:
- *   import { useNavigate } from 'react-router-dom';   â† always prefer this
+ * Usage — inside a React component:
+ *   import { useNavigate } from 'react-router-dom';   ← always prefer this
  *
- * Usage â€” outside a React component (services, utils, dynamic imports):
+ * Usage — outside a React component (services, utils, dynamic imports):
  *   import navigate from '@/router';
  *   navigate('/home');
  *
@@ -26,18 +26,18 @@
  *   import { navigate, goToListing, goToChat } from '@/router';
  *
  * FILE: src/router.ts
- * Â© 2026 BAMBEH SARL
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * © 2026 BAMBEH SARL
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
-// â”€â”€ Internal singleton reference â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Internal singleton reference ───────────────────────────────────────────
 let _navigator: NavigateFunction | null = null;
 
 /**
  * Called once by NavigationBridge (App.tsx) to wire the real React Router
- * navigate function into this singleton. Do not call this directly â€” it is
+ * navigate function into this singleton. Do not call this directly — it is
  * handled automatically by the bridge component.
  */
 export function setNavigator(nav: NavigateFunction): void {
@@ -52,7 +52,7 @@ export function getNavigator(): NavigateFunction | null {
 }
 
 /**
- * Programmatic navigation â€” safe to call from anywhere in the app.
+ * Programmatic navigation — safe to call from anywhere in the app.
  *
  * Falls back to window.location if the React Router navigator has not yet
  * been registered (e.g. very early boot), so navigation never silently fails.
@@ -92,7 +92,7 @@ export function navigate(
   }
 }
 
-// â”€â”€ Convenience helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Convenience helpers ────────────────────────────────────────────────────
 
 /** Navigate to a route, replacing the current history entry. */
 export function replace(to: string, options?: Omit<NavigateOptions, 'replace'>): void {
@@ -156,9 +156,8 @@ export function goToSubscription(): void {
   navigate('/subscription');
 }
 
-// â”€â”€ Default export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Default export ─────────────────────────────────────────────────────────
 // ActionButtons.tsx does:
 //   const { default: navigate } = await import('@/router')
 // The default export must therefore be the navigate function itself.
 export default navigate;
-

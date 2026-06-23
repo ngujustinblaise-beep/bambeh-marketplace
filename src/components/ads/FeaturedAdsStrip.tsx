@@ -461,5 +461,3 @@ export default FeaturedAdsStrip;
 
 
 
-
-

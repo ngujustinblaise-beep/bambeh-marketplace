@@ -4,3 +4,7 @@
 *.jpeg binary
 *.ico binary
 *.webp binary
+
+# Force UTF-8 on source files to prevent mojibake recurrence
+*.ts text working-tree-encoding=UTF-8 eol=lf
+*.tsx text working-tree-encoding=UTF-8 eol=lf

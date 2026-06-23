@@ -10,4 +10,3 @@ export function calculateWithFee(amount: number) {
     total,
   };
 }
-

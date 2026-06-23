@@ -1,6 +1,6 @@
-﻿/**
+/**
  * src/components/profile/EmailPreferences.tsx
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
  * i18n: labels/descriptions are pulled from the local S table by the live
  * language (useLang from @/hooks/useAppLang). State holds only id -> on/off,
@@ -32,7 +32,7 @@ const S: Record<Lang, {
   en: {
     title: "Email Preferences",
     subtitle: "Manage the emails you receive from Bambeh",
-    save: "Save", saving: "Saving...", saved: "âœ“ Saved",
+    save: "Save", saving: "Saving...", saved: "✓ Saved",
     items: {
       new_message:   { label: "New messages",        description: "Get an email when you receive a new message" },
       order_update:  { label: "Order updates",       description: "Status of your orders and deliveries" },
@@ -44,23 +44,23 @@ const S: Record<Lang, {
     },
   },
   fr: {
-    title: "PrÃ©fÃ©rences email",
-    subtitle: "GÃ©rez les emails que vous recevez de Bambeh",
-    save: "Sauvegarder", saving: "Sauvegarde...", saved: "âœ“ SauvegardÃ©",
+    title: "Préférences email",
+    subtitle: "Gérez les emails que vous recevez de Bambeh",
+    save: "Sauvegarder", saving: "Sauvegarde...", saved: "✓ Sauvegardé",
     items: {
       new_message:   { label: "Nouveaux messages",         description: "Recevez un email quand vous avez un nouveau message" },
-      order_update:  { label: "Mises Ã  jour des commandes", description: "Statut de vos commandes et livraisons" },
-      promotions:    { label: "Promotions & offres",       description: "Offres spÃ©ciales et rÃ©ductions Bambeh" },
-      new_listing:   { label: "Nouvelles annonces",        description: "Annonces qui correspondent Ã  vos recherches" },
-      vendor_update: { label: "ActualitÃ©s vendeurs",       description: "NouveautÃ©s de vos vendeurs favoris" },
-      security:      { label: "Alertes de sÃ©curitÃ©",       description: "Connexions et activitÃ©s suspectes" },
-      weekly_digest: { label: "RÃ©sumÃ© hebdomadaire",       description: "Les meilleures offres de la semaine" },
+      order_update:  { label: "Mises à jour des commandes", description: "Statut de vos commandes et livraisons" },
+      promotions:    { label: "Promotions & offres",       description: "Offres spéciales et réductions Bambeh" },
+      new_listing:   { label: "Nouvelles annonces",        description: "Annonces qui correspondent à vos recherches" },
+      vendor_update: { label: "Actualités vendeurs",       description: "Nouveautés de vos vendeurs favoris" },
+      security:      { label: "Alertes de sécurité",       description: "Connexions et activités suspectes" },
+      weekly_digest: { label: "Résumé hebdomadaire",       description: "Les meilleures offres de la semaine" },
     },
   },
   pidgin: {
     title: "Email Settings",
     subtitle: "Manage di emails wey you dey receive from Bambeh",
-    save: "Save", saving: "E dey save...", saved: "âœ“ Don save",
+    save: "Save", saving: "E dey save...", saved: "✓ Don save",
     items: {
       new_message:   { label: "New messages",        description: "We go email you when new message land" },
       order_update:  { label: "Order updates",       description: "How your orders and delivery dey go" },
@@ -72,31 +72,31 @@ const S: Record<Lang, {
     },
   },
   ar: {
-    title: "ØªÙØ¶ÙŠÙ„Ø§Øª Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
-    subtitle: "ØªØ­ÙƒÙ‘Ù… ÙÙŠ Ø§Ù„Ø±Ø³Ø§Ø¦Ù„ Ø§Ù„ØªÙŠ ØªØµÙ„Ùƒ Ù…Ù† Ø¨Ø§Ù…Ø¨ÙŠÙ‡",
-    save: "Ø­ÙØ¸", saving: "Ø¬Ø§Ø±Ù Ø§Ù„Ø­ÙØ¸...", saved: "âœ“ ØªÙ… Ø§Ù„Ø­ÙØ¸",
+    title: "تفضيلات البريد الإلكتروني",
+    subtitle: "تحكّم في الرسائل التي تصلك من بامبيه",
+    save: "حفظ", saving: "جارٍ الحفظ...", saved: "✓ تم الحفظ",
     items: {
-      new_message:   { label: "Ø±Ø³Ø§Ø¦Ù„ Ø¬Ø¯ÙŠØ¯Ø©",        description: "Ø§Ø­ØµÙ„ Ø¹Ù„Ù‰ Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ø¹Ù†Ø¯ ÙˆØµÙˆÙ„ Ø±Ø³Ø§Ù„Ø© Ø¬Ø¯ÙŠØ¯Ø©" },
-      order_update:  { label: "ØªØ­Ø¯ÙŠØ«Ø§Øª Ø§Ù„Ø·Ù„Ø¨Ø§Øª",     description: "Ø­Ø§Ù„Ø© Ø·Ù„Ø¨Ø§ØªÙƒ ÙˆØ¹Ù…Ù„ÙŠØ§Øª Ø§Ù„ØªØ³Ù„ÙŠÙ…" },
-      promotions:    { label: "Ø§Ù„Ø¹Ø±ÙˆØ¶ ÙˆØ§Ù„ØªØ®ÙÙŠØ¶Ø§Øª",   description: "Ø¹Ø±ÙˆØ¶ Ø®Ø§ØµØ© ÙˆØ®ØµÙˆÙ…Ø§Øª Ø¨Ø§Ù…Ø¨ÙŠÙ‡" },
-      new_listing:   { label: "Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø¬Ø¯ÙŠØ¯Ø©",       description: "Ø¥Ø¹Ù„Ø§Ù†Ø§Øª ØªØ·Ø§Ø¨Ù‚ Ø¹Ù…Ù„ÙŠØ§Øª Ø¨Ø­Ø«Ùƒ" },
-      vendor_update: { label: "Ø£Ø®Ø¨Ø§Ø± Ø§Ù„Ø¨Ø§Ø¦Ø¹ÙŠÙ†",      description: "Ø¬Ø¯ÙŠØ¯ Ø§Ù„Ø¨Ø§Ø¦Ø¹ÙŠÙ† Ø§Ù„Ù…ÙØ¶Ù„ÙŠÙ† Ù„Ø¯ÙŠÙƒ" },
-      security:      { label: "ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø§Ù„Ø£Ù…Ø§Ù†",      description: "ØªØ³Ø¬ÙŠÙ„Ø§Øª Ø§Ù„Ø¯Ø®ÙˆÙ„ ÙˆØ§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„Ù…Ø´Ø¨ÙˆÙ‡Ø©" },
-      weekly_digest: { label: "Ø§Ù„Ù…Ù„Ø®Ù‘Øµ Ø§Ù„Ø£Ø³Ø¨ÙˆØ¹ÙŠ",    description: "Ø£ÙØ¶Ù„ Ø§Ù„Ø¹Ø±ÙˆØ¶ Ù„Ù‡Ø°Ø§ Ø§Ù„Ø£Ø³Ø¨ÙˆØ¹" },
+      new_message:   { label: "رسائل جديدة",        description: "احصل على بريد إلكتروني عند وصول رسالة جديدة" },
+      order_update:  { label: "تحديثات الطلبات",     description: "حالة طلباتك وعمليات التسليم" },
+      promotions:    { label: "العروض والتخفيضات",   description: "عروض خاصة وخصومات بامبيه" },
+      new_listing:   { label: "إعلانات جديدة",       description: "إعلانات تطابق عمليات بحثك" },
+      vendor_update: { label: "أخبار البائعين",      description: "جديد البائعين المفضلين لديك" },
+      security:      { label: "تنبيهات الأمان",      description: "تسجيلات الدخول والأنشطة المشبوهة" },
+      weekly_digest: { label: "الملخّص الأسبوعي",    description: "أفضل العروض لهذا الأسبوع" },
     },
   },
   ff: {
     title: "Teelte iimeel",
-    subtitle: "Toppito iimeelji É—i keÉ“ataa to Bambeh",
-    save: "Dannu", saving: "ÆŠon danee...", saved: "âœ“ Dannaama",
+    subtitle: "Toppito iimeelji ɗi keɓataa to Bambeh",
+    save: "Dannu", saving: "Ɗon danee...", saved: "✓ Dannaama",
     items: {
-      new_message:   { label: "Nulalji kesi",        description: "KeÉ“ iimeel si nulal keso arii" },
-      order_update:  { label: "KesÉ—itineeji umrooje", description: "Ngonka umrooje maa e jonnugol" },
-      promotions:    { label: "NjeÃ±tudi e tewtooje",  description: "Tewtooje keeriiÉ—e e ustingol Bambeh" },
-      new_listing:   { label: "Njeeyaaji kesi",       description: "Njeeyaaji nanndi e É—aÉ“É“e maa" },
-      vendor_update: { label: "Kabaruuji njeeyooÉ“e",  description: "Keso njeeyooÉ“e É“e njiÉ—É—aa" },
-      security:      { label: "Tintinooje kisal",     description: "NaatirÉ—e e golle sikkitiniiÉ—e" },
-      weekly_digest: { label: "CosÉ—annde yontere",    description: "Tewtooje É“urÉ—e yontere oo" },
+      new_message:   { label: "Nulalji kesi",        description: "Keɓ iimeel si nulal keso arii" },
+      order_update:  { label: "Kesɗitineeji umrooje", description: "Ngonka umrooje maa e jonnugol" },
+      promotions:    { label: "Njeñtudi e tewtooje",  description: "Tewtooje keeriiɗe e ustingol Bambeh" },
+      new_listing:   { label: "Njeeyaaji kesi",       description: "Njeeyaaji nanndi e ɗaɓɓe maa" },
+      vendor_update: { label: "Kabaruuji njeeyooɓe",  description: "Keso njeeyooɓe ɓe njiɗɗaa" },
+      security:      { label: "Tintinooje kisal",     description: "Naatirɗe e golle sikkitiniiɗe" },
+      weekly_digest: { label: "Cosɗannde yontere",    description: "Tewtooje ɓurɗe yontere oo" },
     },
   },
 };
@@ -164,7 +164,3 @@ const EmailPreferences: React.FC = () => {
 };
 
 export default EmailPreferences;
-
-
-
-

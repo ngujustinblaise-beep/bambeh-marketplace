@@ -89,4 +89,3 @@ const sampleProperty: Property = {
   keywords: ['apartment', 'bastos', 'modern', 'yaoundé']
 };
 */
-

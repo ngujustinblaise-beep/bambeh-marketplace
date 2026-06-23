@@ -1,6 +1,6 @@
 /**
  * LANGUAGE SELECTION - ONBOARDING STEP 2
- * Â© 2025 Bambeh. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -13,43 +13,43 @@ const LANGUAGES = [
     code: "en",
     name: "English",
     nativeName: "English",
-    flag: "ðŸ‡¬ðŸ‡§",
+    flag: "🇬🇧",
     description: "Continue in English",
   },
   {
     code: "fr",
     name: "French",
-    nativeName: "FranÃ§ais",
-    flag: "ðŸ‡«ðŸ‡·",
-    description: "Continuer en franÃ§ais",
+    nativeName: "Français",
+    flag: "🇫🇷",
+    description: "Continuer en français",
   },
   {
     code: "ar",
     name: "Arabic",
-    nativeName: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",
-    flag: "ðŸ‡¸ðŸ‡¦",
-    description: "Ø§Ø³ØªÙ…Ø± Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",
+    nativeName: "العربية",
+    flag: "🇸🇦",
+    description: "استمر بالعربية",
     rtl: true,
   },
   {
     code: "ha",
     name: "Hausa",
     nativeName: "Hausa",
-    flag: "ðŸ‡³ðŸ‡¬",
+    flag: "🇳🇬",
     description: "Ci gaba da Hausa",
   },
   {
     code: "ff",
     name: "Fulfulde",
     nativeName: "Pulaar",
-    flag: "ðŸ‡¨ðŸ‡²",
+    flag: "🇨🇲",
     description: "Jokkondiro e Fulfulde",
   },
   {
     code: "pcm",
     name: "Pidgin English",
     nativeName: "Pidgin (Creole)",
-    flag: "ðŸ‡¨ðŸ‡²",
+    flag: "🇨🇲",
     description: "Continue for Pidgin",
   },
 ];
@@ -89,7 +89,6 @@ export default function LanguageSelection({
       return;
     }
 
-    setLanguage(selectedLanguage);
     localStorage.setItem("Bambeh_language", selectedLanguage);
     localStorage.setItem(
       "Bambeh_language_selected_date",
@@ -113,7 +112,6 @@ export default function LanguageSelection({
   };
 
   const handleSkip = () => {
-    setLanguage("en");
     localStorage.setItem("Bambeh_language", "en");
     localStorage.setItem(
       "Bambeh_language_selected_date",
@@ -233,25 +231,23 @@ export default function LanguageSelection({
 
         <div className="mt-12 text-center">
           <p className="text-sm text-gray-600 mb-2">
-            ðŸŽ‰{" "}
+            🎉{" "}
             <span className="font-bold text-green-600">
               Only 1% Transaction Fee
             </span>{" "}
-            - Lowest in ! ðŸ’š
+            - Lowest in ! 💚
           </p>
           <p className="text-sm text-gray-500">
             Online Marketplace
           </p>
           <p className="text-xs text-gray-400 mt-2">
-            Â© 2025 Bambeh. All rights reserved.
+            © 2025 Bambeh. All rights reserved.
           </p>
         </div>
       </div>
     </div>
   );
 }
-
-
 
 
 

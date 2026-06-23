@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ADD ITEM PAGE
  * 
@@ -229,8 +229,6 @@ export default function AddItem() {
     </div>
   );
 }
-
-
 
 
 

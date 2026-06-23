@@ -41,4 +41,3 @@ export const AD_PRICING: Record<AdPlacement, AdPricingOption> = Object.fromEntri
 ) as Record<AdPlacement, AdPricingOption>;
 
 export const PLACEMENT_PRICING = AD_PRICING_LIST;
-

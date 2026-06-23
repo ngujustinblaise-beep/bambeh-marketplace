@@ -466,4 +466,3 @@ export const isServiceItem = (item: AnyItem): item is ServiceItem => item.type =
 export const isRentalItem = (item: AnyItem): item is RentalItem => item.type === 'rental';
 
 
-

@@ -1,12 +1,12 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * API SERVICE - AXIOS WRAPPER
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════
  *
  * Base API service with interceptors for authentication and error handling
  *
- * Â© 2025 Bambeh. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * © 2025 Bambeh. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
@@ -32,12 +32,12 @@ class ApiService {
           config.headers.Authorization = `Bearer ${token}`;
         }
         console.log(
-          `ðŸš€ API Request: ${config.method?.toUpperCase()} ${config.url}`,
+          `🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`,
         );
         return config;
       },
       (error) => {
-        console.error("âŒ Request Error:", error);
+        console.error("❌ Request Error:", error);
         return Promise.reject(error);
       },
     );
@@ -45,12 +45,12 @@ class ApiService {
     // Response interceptor - Handle errors
     this.api.interceptors.response.use(
       (response) => {
-        console.log(`âœ… API Response: ${response.config.url}`, response.data);
+        console.log(`✅ API Response: ${response.config.url}`, response.data);
         return response;
       },
       (error) => {
         console.error(
-          "âŒ Response Error:",
+          "❌ Response Error:",
           error.response?.data || error.message,
         );
 
@@ -108,4 +108,3 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
-

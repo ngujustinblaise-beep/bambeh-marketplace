@@ -122,4 +122,3 @@ export function useSubscriptionGate() {
     requireSubscription
   };
 }
-

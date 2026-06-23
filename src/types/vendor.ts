@@ -68,4 +68,3 @@ export interface VendorContextValue {
   analyticsData?: unknown;
   fetchAnalytics?: () => void;
 }
-

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/utils/notifications.ts
  * Bambeh Marketplace - lightweight, self-contained notification utility.
  *
@@ -111,4 +111,3 @@ export const notifyWarning = (m: string, o: Omit<NotifyOptions, "type"> = {}) =>
   notify(m, { ...o, type: "warning" });
 
 export default notify;
-

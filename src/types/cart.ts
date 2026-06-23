@@ -19,4 +19,3 @@ export interface CartContextType {
   clearCart: () => void;
   total: number;
 }
-

@@ -1,25 +1,25 @@
-﻿/**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- * BambehLogo.tsx â€” SMART CLICKABLE LOGO
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * BambehLogo.tsx — SMART CLICKABLE LOGO
  *
  * FILE LOCATION: src/components/common/BambehLogo.tsx
  *
  * Behaviour:
- *  â€¢ On the regular side  (any path NOT starting with /vendor)  â†’ links to /
- *  â€¢ On the vendor side   (any path starting with /vendor)      â†’ links to /vendor/home
+ *  • On the regular side  (any path NOT starting with /vendor)  → links to /
+ *  • On the vendor side   (any path starting with /vendor)      → links to /vendor/home
  *
  * Usage (drop-in replacement for every existing logo Link):
  *   import BambehLogo from '@/components/common/BambehLogo';
  *   <BambehLogo />
  *
  * Optional props:
- *   <BambehLogo size="sm" />   â†’ 40Ã—40 image
- *   <BambehLogo size="md" />   â†’ 64Ã—64 image  (default)
- *   <BambehLogo size="lg" />   â†’ 80Ã—80 image
- *   <BambehLogo className="mb-4" />   â†’ extra wrapper classes
+ *   <BambehLogo size="sm" />   → 40×40 image
+ *   <BambehLogo size="md" />   → 64×64 image  (default)
+ *   <BambehLogo size="lg" />   → 80×80 image
+ *   <BambehLogo className="mb-4" />   → extra wrapper classes
  *
- * Â© 2026 Bambeh Marketplace. All rights reserved.
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * © 2026 Bambeh Marketplace. All rights reserved.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import React from 'react';
@@ -80,9 +80,5 @@ const BambehLogo: React.FC<BambehLogoProps> = ({
 
 }
 export default BambehLogo;
-
-
-
-
 
 

@@ -43,4 +43,3 @@ declare const Store: unknown;
 interface Window {
   gtag?: (...args: unknown[]) => void;
 }
-

@@ -52,4 +52,3 @@ export function useFirebaseCollection<T = DocumentData>(
 
   return { data, loading, error, refetch: fetchCollection };
 }
-

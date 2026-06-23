@@ -11,4 +11,3 @@
   longitude?: number;
   label?: string;
 }
-

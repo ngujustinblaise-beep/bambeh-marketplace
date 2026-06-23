@@ -1,22 +1,22 @@
-﻿/**
- * MainLayout.tsx â€” Bambeh Marketplace
+/**
+ * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  *
  * CHANGES FROM PREVIOUS VERSION:
- *  âœ… FeaturedAdsBar added below Header â€” shows featured marketplace listings
+ *  ✅ FeaturedAdsBar added below Header — shows featured marketplace listings
  *     to all users on every page. Hides itself when no featured listings exist.
- *  âœ… FeaturedAdsBar upgraded to FeaturedAdsStrip â€” full featured-ads system:
- *       â€¢ Up to 20 ads per set, auto-rotates every 30 s when >20 ads exist
- *       â€¢ Newest ads always on top
- *       â€¢ Time labels (days / weeks / months) in the active display language
- *       â€¢ Category-aware: each listing page can render its own filtered strip
- *       â€¢ Searchable across all 6 Bambeh languages
- *       â€¢ 500-ad capacity in Supabase (trigger evicts oldest on overflow)
- *       â€¢ Realtime â€” new ads appear instantly without page refresh
- *       â€¢ Hidden automatically on auth/vendor/admin/chat/payment routes
- *  âœ… All original behaviour preserved unchanged.
+ *  ✅ FeaturedAdsBar upgraded to FeaturedAdsStrip — full featured-ads system:
+ *       • Up to 20 ads per set, auto-rotates every 30 s when >20 ads exist
+ *       • Newest ads always on top
+ *       • Time labels (days / weeks / months) in the active display language
+ *       • Category-aware: each listing page can render its own filtered strip
+ *       • Searchable across all 6 Bambeh languages
+ *       • 500-ad capacity in Supabase (trigger evicts oldest on overflow)
+ *       • Realtime — new ads appear instantly without page refresh
+ *       • Hidden automatically on auth/vendor/admin/chat/payment routes
+ *  ✅ All original behaviour preserved unchanged.
  *
- * Â© 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  */
 
 import React, { useState } from "react";
@@ -30,10 +30,10 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotifications } from "@/hooks/useNotifications";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // âœ… NEW
+import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip"; // ✅ NEW
 
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -47,7 +47,7 @@ interface NavItem {
   requiresAuth?: boolean;
 }
 
-// â”€â”€â”€ Mobile bottom-nav items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Mobile bottom-nav items ──────────────────────────────────────────────────
 
 const mobileNavItems: NavItem[] = [
   { label: "Home",          labelKey: "nav.home",          path: "/",              icon: Home                             },
@@ -58,23 +58,23 @@ const mobileNavItems: NavItem[] = [
   { label: "Profile",       labelKey: "common.profile",    path: "/profile",       icon: User,          requiresAuth: true },
 ];
 
-// â”€â”€â”€ Routes where the ads strip is suppressed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Auth, vendor portal, admin, chat, payment â€” a strip is intrusive on these.
+// ─── Routes where the ads strip is suppressed ─────────────────────────────────
+// Auth, vendor portal, admin, chat, payment — a strip is intrusive on these.
 const ROUTES_WITHOUT_ADS = [
   "/login", "/register", "/forgot", "/vendor", "/admin", "/chat",
   "/payment", "/language-selection", "/terms-acceptance",
 ];
 
-// â”€â”€â”€ Share helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Share helpers ────────────────────────────────────────────────────────────
 
 const APP_URL  = "https://bambeh.com";
-const APP_NAME = "Bambeh â€” The Pulse of African Commerce";
+const APP_NAME = "Bambeh — The Pulse of African Commerce";
 
 function buildShareText(t: (k: string) => string): string {
-  // NOTE: do NOT call hooks here â€” this is a plain helper function, not a component.
+  // NOTE: do NOT call hooks here — this is a plain helper function, not a component.
   const translated = t("share.appMessage");
   if (translated && translated !== "share.appMessage") return translated;
-  return "ðŸ›’ Check out Bambeh â€” The Pulse of African Commerce! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee â€” lowest in any marketplace!";
+  return "🛒 Check out Bambeh — The Pulse of African Commerce! Buy, sell, find jobs, rent homes and more. Only 1% transaction fee — lowest in any marketplace!";
 }
 
 function whatsappUrl(text: string, url: string) {
@@ -87,7 +87,7 @@ function twitterUrl(text: string, url: string) {
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
 }
 
-// â”€â”€â”€ ShareMenu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── ShareMenu ────────────────────────────────────────────────────────────────
 
 function ShareMenu({
   onClose, shareText, shareUrl, copied, onCopy,
@@ -147,7 +147,7 @@ function ShareMenu({
   );
 }
 
-// â”€â”€â”€ Nav label helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Nav label helper ─────────────────────────────────────────────────────────
 
 function resolveLabel(t: (k: string) => string, item: NavItem): string {
   if (!item.labelKey) return item.label;
@@ -155,7 +155,7 @@ function resolveLabel(t: (k: string) => string, item: NavItem): string {
   return translated && translated !== item.labelKey ? translated : item.label;
 }
 
-// â”€â”€â”€ MainLayout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MainLayout ───────────────────────────────────────────────────────────────
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { t }           = useLanguage();
@@ -171,12 +171,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const shareText = buildShareText(t);
   const shareUrl  = APP_URL;
 
-  // â”€â”€ Decide whether to show the ads strip on this route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Decide whether to show the ads strip on this route ────────────────────
   const shouldShowAds = !ROUTES_WITHOUT_ADS.some((prefix) =>
     location.pathname.startsWith(prefix)
   );
 
-  // â”€â”€ Share handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Share handlers ────────────────────────────────────────────────────────
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -212,7 +212,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     navigate(path);
   };
 
-  // â”€â”€ Mobile bottom nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Mobile bottom nav ─────────────────────────────────────────────────────
   const renderMobileBottomNav = () => (
     <>
       <button
@@ -272,17 +272,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     </>
   );
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
-      {/* âœ… Featured ads strip â€” visible to all users on every applicable page.
+      {/* ✅ Featured ads strip — visible to all users on every applicable page.
        *
-       *  â€¢ Renders null automatically when no ads exist â€” safe to leave here permanently.
-       *  â€¢ Shows ALL categories in this global position (no `category` prop).
-       *  â€¢ Hidden on auth / vendor / admin / chat / payment routes via shouldShowAds.
-       *  â€¢ Time labels and UI text switch language with the active LanguageContext.
+       *  • Renders null automatically when no ads exist — safe to leave here permanently.
+       *  • Shows ALL categories in this global position (no `category` prop).
+       *  • Hidden on auth / vendor / admin / chat / payment routes via shouldShowAds.
+       *  • Time labels and UI text switch language with the active LanguageContext.
        *
        *  ADDING A CATEGORY-FILTERED STRIP TO INDIVIDUAL PAGES:
        *  Each listing page can add its own filtered strip inside its own JSX:
@@ -319,8 +319,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 };
 
 export default MainLayout;
-
-
 
 
 
