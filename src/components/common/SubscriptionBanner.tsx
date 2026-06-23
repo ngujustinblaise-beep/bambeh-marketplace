@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "@/types/auth";
@@ -18,7 +18,7 @@ const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ user, onDismiss
   return (
     <div dir={language === "ar" ? "rtl" : "ltr"} className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-4 py-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <span className="text-lg">â­</span>
+        <span className="text-lg">Ã¢Â­Â</span>
         <p className="text-sm font-medium">
           {t("subBanner.text")}</p>
       </div>
@@ -30,7 +30,7 @@ const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ user, onDismiss
           {t("subBanner.upgrade")}
         </button>
         {onDismiss && (
-          <button onClick={onDismiss} className="text-teal-200 hover:text-white text-xl">Ã—</button>
+          <button onClick={onDismiss} className="text-teal-200 hover:text-white text-xl">Ãƒâ€”</button>
         )}
       </div>
     </div>
@@ -38,6 +38,8 @@ const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ user, onDismiss
 };
 
 export default SubscriptionBanner;
+
+
 
 
 

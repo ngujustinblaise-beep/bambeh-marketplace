@@ -196,3 +196,4 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
 
   return { status, errorMsg, reference, countdown, initPayment, reset };
 }
+

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/RentalDetails.tsx â€” Bambeh Marketplace
  *
  * âœ… FULL REWRITE â€” production-ready:
@@ -133,7 +133,7 @@ const RentalDetails: React.FC = () => {
             "contact_name, created_at, expires_at, view_count, user_id, status"
           )
           .eq("id", id)
-          .single();
+          .single<any>();
 
         if (sbErr) throw sbErr;
         if (!data) throw new Error("not found");
@@ -657,6 +657,8 @@ const RentalDetails: React.FC = () => {
 };
 
 export default RentalDetails;
+
+
 
 
 

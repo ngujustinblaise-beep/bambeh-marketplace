@@ -197,3 +197,4 @@ export const refreshToken = async (): Promise<string> => {
     throw new Error(formatErrorMessage(error, "Failed to refresh token"));
   }
 };
+

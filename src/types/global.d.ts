@@ -4,3 +4,4 @@
     captureMessage: (message: string) => void;
   };
 }
+

@@ -13,3 +13,4 @@ export const getSubscriptionPlan = (tier: SubscriptionTier): SubscriptionPlan | 
 export const SUBSCRIPTION_PLANS_MAP = Object.fromEntries(
   SUBSCRIPTION_PLANS.map(p => [p.tier, p]),
 ) as Record<SubscriptionTier, SubscriptionPlan>;
+

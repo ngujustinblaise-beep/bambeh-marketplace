@@ -275,3 +275,4 @@ export interface CustomerInsight {
   lastOrderDate: string;
   favoriteProducts: string[];
 }
+

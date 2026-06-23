@@ -1,5 +1,5 @@
-﻿/**
- * PrivacyPolicy.tsx — Bambeh Marketplace
+﻿		/**
+ * PrivacyPolicy.tsx — Bambeh Marketplace - The Pusle of African Commerce
  * ---------------------------------------------------------------------------
  * Play Store / App Store compliant — June 2026
  * Governed by: Cameroon Law No. 2024/017 of 23 December 2024 on Personal
@@ -34,7 +34,9 @@ const SECTIONS: Section[] = [
       <p>
         This Privacy Policy describes how <strong>BAMBEH SARL</strong>{" "}
         ("Bambeh", "we", "us", or "our"), operator of the Bambeh Marketplace
-        (bambeh.com), collects, uses, stores, and protects your personal data
+        (bambeh.com) CNI/RC Number: CM-NSI-02-2026-B13-00179 as well as 
+        NIU Number: M022618405804C, and having as D-U-N-S Number: 850379853, 
+        collects, uses, stores, and protects your personal data
         when you use our platform. Our platform operates primarily in the
         Republic of Cameroon and serves users across the Central and West African
         region. Our registered address is in <strong>Yaoundé, Republic of
@@ -551,6 +553,8 @@ const PrivacyPolicy: React.FC = () => {
 };
 
 export default PrivacyPolicy;
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Rentals.tsx â€” Bambeh Marketplace
  *
  * âœ… FULL REWRITE â€” all features production-ready:
@@ -86,7 +86,7 @@ function expiringWithin(expiresAt: string | undefined, days: number): boolean {
 export default function Rentals() {
   const navigate   = useNavigate();
   const lang = useLang(); const isRtl = lang === 'ar';
-  const _rl = rentNormLang(language);
+  const _rl = rentNormLang(lang);
   const i18n = { language: _rl };
   const t = (k: string, o?: Record<string, any>) => { let v = ((RENT_T[_rl] || RENT_T.en)[k]) ?? RENT_T.en[k] ?? k; if (o) { for (const _p in o) v = v.split('{{' + _p + '}}').join(String(o[_p])); } return v; };
 
@@ -122,7 +122,7 @@ export default function Rentals() {
 
       if (data && data.length > 0) {
         setProperties(
-          data.map((d) => ({
+          data.map((d: any) => ({
             id:          d.id,
             title:       d.title        || "Untitled Property",
             type:        d.type         || "Apartment",
@@ -419,6 +419,8 @@ export default function Rentals() {
     </div>
   );
 }
+
+
 
 
 

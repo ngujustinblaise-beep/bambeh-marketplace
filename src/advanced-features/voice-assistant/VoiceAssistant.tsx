@@ -1,14 +1,4 @@
-﻿useEffect(() => {
-  async function requestMic() {
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      console.error('Microphone permission denied:', err);
-    }
-  }
-  requestMic();
-}, []);
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import TranscriptDisplay from "./components/TranscriptDisplay";
 
 interface ConversationEntry {
@@ -21,6 +11,17 @@ const VoiceAssistant: React.FC = () => {
   const [isListening,          setIsListening]          = useState(false);
   const [transcript,            setTranscript]            = useState("");
   const [conversationHistory,  setConversationHistory]  = useState<ConversationEntry[]>([]);
+
+  useEffect(() => {
+    async function requestMic() {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        console.error('Microphone permission denied:', err);
+      }
+    }
+    requestMic();
+  }, []);
 
   const toggleListen = useCallback(() => {
     setIsListening(prev => {
@@ -71,6 +72,8 @@ const VoiceAssistant: React.FC = () => {
 };
 
 export default VoiceAssistant;
+
+
 
 
 

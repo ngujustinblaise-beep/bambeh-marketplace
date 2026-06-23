@@ -8,3 +8,4 @@ export default setMainOrigin;
 export { setMainOrigin };
 
 export const getMainOrigin = (): string => _mainOrigin;
+

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LOGIN PAGE
  * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
@@ -152,14 +152,7 @@ export default function Login() {
     const inputLowerCase = usernameOrPhone.toLowerCase().trim();
     console.log("ðŸ”‘ Attempting authentication for:", inputLowerCase);
 
-    const account = Object.values(MASTER_ACCOUNTS).find(
-      (acc) => acc.username === inputLowerCase && acc.password === password,
-    );
-
-    if (account) {
-      console.log("âœ… Master account authenticated:", account.username);
-      return { success: true, user: account.user };
-    }
+    
 
     try {
       const storedUsers = localStorage.getItem("Bambeh_users");
@@ -521,6 +514,8 @@ export default function Login() {
     </div>
   );
 }
+
+
 
 
 

@@ -255,3 +255,4 @@ export const useVendorNotifications = (vendorId: string) => {
 
   return { notifications, unreadCount, isLoading, markAsRead, refreshNotifications: loadNotifications };
 };
+

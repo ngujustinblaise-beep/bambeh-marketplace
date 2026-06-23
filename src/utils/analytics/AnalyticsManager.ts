@@ -165,3 +165,4 @@ export function trackPurchase(orderId: string, amountXAF: number, items: Array<{
 
 export function getCurrentSessionId(): string { return analyticsManager.getCurrentSessionId(); }
 export function getCurrentUserId(): string | null { return analyticsManager.getCurrentUserId(); }
+

@@ -1,17 +1,10 @@
-﻿/**
+/**
  * ACCOUNT STATUS CONTEXT - USER ACCOUNT STATE MANAGEMENT
  * FILE LOCATION: src/contexts/AccountStatusContext.tsx
  * Â© 2025 Bambeh. All rights reserved.
  */
 
-import React, { useEffect, 
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-} from "react";
+import React, { useEffect, createContext, useContext, useState, useCallback, ReactNode } from "react";
 
 export type AccountStatus =
   | "active"
@@ -534,6 +527,8 @@ export const useAccountStatus = (): AccountStatusContextType => {
 };
 
 export default AccountStatusContext;
+
+
 
 
 

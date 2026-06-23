@@ -53,7 +53,10 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
           <ScrollArea className="h-[60vh] px-6 py-4" onScrollCapture={handleScroll} ref={scrollRef}>
             <div className="prose prose-sm max-w-none space-y-4">
               <p className="text-base leading-relaxed">
-                Welcome to the Bambeh mobile application ("App") and Services. Bambeh connects users for buying, selling, job and housing searches in a dynamic marketplace and community. By accessing or using the App, you agree to these Terms, a <strong>binding legal agreement.</strong>
+                Welcome to the Bambeh mobile application ("App") and Services,
+                CNI/RC Number: CM-NSI-02-2026-B13-00179 as well as NIU Number: M022618405804C, and having as 
+                D-U-N-S Number: 850379853. Bambeh connects users for buying, selling, job and housing searches in a dynamic marketplace 
+                and community. By accessing or using the App, you agree to these Terms, a <strong>binding legal agreement.</strong>
               </p>
 
               <div className="border-t pt-4 mt-6">
@@ -122,7 +125,7 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">Copyright and Contact</h2>
                 <p>Bambeh's code, design, and content are protected by ian and international copyright laws.</p>
-                <p className="font-semibold"><strong>Contact:</strong> Yaoundé,  | +237 670757326 | Bambehtheapp@gmail.com</p>
+                <p className="font-semibold"><strong>Contact:</strong> Yaoundé,  | +237 670757326 | support@bambeh.com | Bambehtheapp@gmail.com</p>
               </div>
 
               <div className="border-t-2 pt-6 mt-6 bg-indigo-50 p-6 rounded-lg">
@@ -165,6 +168,8 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
 };
 
 export default TermsAndConditions;
+
+
 
 
 

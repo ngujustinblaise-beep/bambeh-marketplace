@@ -51,3 +51,4 @@ export const ZERM_COIN_PACKAGES: ZermCoinPackage[] = [
 ];
 
 export const getTotalZermCoins = (pkg: ZermCoinPackage): number => pkg.amount + pkg.bonus;
+

@@ -26,3 +26,4 @@ export const useAnalytics = () => {
     setUserProperties, ga, mixpanel, sentry,
   };
 };
+

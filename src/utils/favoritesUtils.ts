@@ -1,15 +1,15 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * FAVORITES UTILITIES - WITH REAL-TIME EVENT SYNC
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * ✅ Saves to localStorage
- * ✅ Dispatches events for real-time updates
- * ✅ Used by all detail pages
- * ✅ Syncs with Favorites page instantly
+ * âœ… Saves to localStorage
+ * âœ… Dispatches events for real-time updates
+ * âœ… Used by all detail pages
+ * âœ… Syncs with Favorites page instantly
  *
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * Â© 2025 Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 const FAVORITES_KEY = "Bambeh_favorites";
@@ -63,7 +63,7 @@ export const saveFavorite = (item: FavoriteItem): boolean => {
     favorites.push(item);
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
 
-    // 🚀 Dispatch event for real-time sync with Favorites page!
+    // ðŸš€ Dispatch event for real-time sync with Favorites page!
     window.dispatchEvent(new Event("favoritesChanged"));
 
     return true;
@@ -85,7 +85,7 @@ export const removeFavorite = (id: string, type: string): boolean => {
 
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered));
 
-    // 🚀 Dispatch event for real-time sync!
+    // ðŸš€ Dispatch event for real-time sync!
     window.dispatchEvent(new Event("favoritesChanged"));
 
     return true;
@@ -115,7 +115,7 @@ export const clearFavorites = (): boolean => {
   try {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify([]));
 
-    // 🚀 Dispatch event for real-time sync!
+    // ðŸš€ Dispatch event for real-time sync!
     window.dispatchEvent(new Event("favoritesChanged"));
 
     return true;
@@ -132,9 +132,9 @@ export const getFavoritesCount = (): number => {
   return getFavorites().length;
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SOCIAL SHARING UTILITIES
-// ═══════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 export const shareToWhatsApp = (title: string, url: string) => {
   const text = encodeURIComponent(`Check out: ${title}\n${url}`);
@@ -191,3 +191,4 @@ export const copyLink = (url: string): boolean => {
     return false;
   }
 };
+

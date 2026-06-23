@@ -33,3 +33,4 @@ export function trackEvent(
 ): void {
   console.log({ category, action, label, value });
 }
+

@@ -1,14 +1,14 @@
 /**
- * UserSettings.tsx â€” Bambeh Marketplace
+ * UserSettings.tsx Ã¢â‚¬â€ Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  *
  * i18n: all visible settings strings live in the local S table below, keyed by
  * the live language (EN / FR / Pidgin / Arabic / Fulfulde). The page reads the
- * active language AND setLanguage from the ONE real provider â€” the inline
- * LanguageProvider exported from "@/App" â€” so the language selector reflects
+ * active language AND setLanguage from the ONE real provider Ã¢â‚¬â€ the inline
+ * LanguageProvider exported from "@/App" Ã¢â‚¬â€ so the language selector reflects
  * the active language and the whole page re-renders instantly on change.
  *
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Ã‚Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useRef } from "react";
@@ -26,9 +26,9 @@ type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 
 const AVAILABLE_LANGUAGES = [
   { code: "en", name: "English" },
-  { code: "fr", name: "FranÃ§ais" },
+  { code: "fr", name: "FranÃƒÂ§ais" },
   { code: "pidgin", name: "Pidgin" },
-  { code: "ar", name: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©" },
+  { code: "ar", name: "Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¨Ã™Å Ã˜Â©" },
   { code: "ff", name: "Fulfulde" },
 ];
 
@@ -90,39 +90,39 @@ const S: Record<Lang, {
     "orders": "Orders",
   },
   fr: {
-    "tab": { "general": "GÃ©nÃ©ral", "notifications": "Notifications", "privacy": "ConfidentialitÃ©", "security": "SÃ©curitÃ©" },
+    "tab": { "general": "GÃƒÂ©nÃƒÂ©ral", "notifications": "Notifications", "privacy": "ConfidentialitÃƒÂ©", "security": "SÃƒÂ©curitÃƒÂ©" },
     "profilePhoto": "Photo de profil",
-    "uploading": "TÃ©lÃ©versement...",
+    "uploading": "TÃƒÂ©lÃƒÂ©versement...",
     "changePhoto": "Changer la photo",
-    "photoHint": "JPG, PNG jusqu'Ã  5 Mo",
+    "photoHint": "JPG, PNG jusqu'ÃƒÂ  5 Mo",
     "errImageType": "Veuillez choisir un fichier image (JPG, PNG, etc.)",
     "errImageSize": "L'image doit faire moins de 5 Mo",
-    "photoSuccess": "Photo de profil mise Ã  jour !",
-    "photoFail": "Ã‰chec du tÃ©lÃ©versement. Veuillez rÃ©essayer.",
-    "langHint": "Ceci change la langue de toute l'application immÃ©diatement.",
+    "photoSuccess": "Photo de profil mise ÃƒÂ  jour !",
+    "photoFail": "Ãƒâ€°chec du tÃƒÂ©lÃƒÂ©versement. Veuillez rÃƒÂ©essayer.",
+    "langHint": "Ceci change la langue de toute l'application immÃƒÂ©diatement.",
     "account": "Compte",
     "editProfile": "Modifier le profil",
     "subscriptionPlans": "Forfaits d'abonnement",
     "session": "Session",
-    "signingOut": "DÃ©connexion...",
-    "logoutHint": "Vous pouvez vous reconnecter avec votre nom d'utilisateur, tÃ©lÃ©phone ou e-mail.",
-    "notifPrefs": "PrÃ©fÃ©rences de notification",
-    "notif": { "orderUpdates": "Suivi des commandes", "newMessages": "Nouveaux messages", "promotions": "Promotions", "priceAlerts": "Alertes de prix", "systemAlerts": "Alertes systÃ¨me", "communityPosts": "Publications de la communautÃ©", "newJobs": "Nouveaux emplois" },
-    "privacyControls": "ContrÃ´les de confidentialitÃ©",
-    "privacy": { "showProfile": "Montrer mon profil aux autres utilisateurs", "allowListings": "Autoriser les autres Ã  voir mes annonces", "showOnline": "Afficher mon statut en ligne", "allowDM": "Autoriser les messages directs d'inconnus" },
-    "privacyPolicy": "Politique de confidentialitÃ©",
+    "signingOut": "DÃƒÂ©connexion...",
+    "logoutHint": "Vous pouvez vous reconnecter avec votre nom d'utilisateur, tÃƒÂ©lÃƒÂ©phone ou e-mail.",
+    "notifPrefs": "PrÃƒÂ©fÃƒÂ©rences de notification",
+    "notif": { "orderUpdates": "Suivi des commandes", "newMessages": "Nouveaux messages", "promotions": "Promotions", "priceAlerts": "Alertes de prix", "systemAlerts": "Alertes systÃƒÂ¨me", "communityPosts": "Publications de la communautÃƒÂ©", "newJobs": "Nouveaux emplois" },
+    "privacyControls": "ContrÃƒÂ´les de confidentialitÃƒÂ©",
+    "privacy": { "showProfile": "Montrer mon profil aux autres utilisateurs", "allowListings": "Autoriser les autres ÃƒÂ  voir mes annonces", "showOnline": "Afficher mon statut en ligne", "allowDM": "Autoriser les messages directs d'inconnus" },
+    "privacyPolicy": "Politique de confidentialitÃƒÂ©",
     "termsOfService": "Conditions d'utilisation",
-    "security": "SÃ©curitÃ©",
+    "security": "SÃƒÂ©curitÃƒÂ©",
     "changePassword": "Changer le mot de passe",
-    "changePasswordHint": "Mettre Ã  jour le mot de passe du compte",
-    "accountRecovery": "RÃ©cupÃ©ration du compte",
-    "accountRecoveryHint": "RÃ©cupÃ©rer le nom d'utilisateur ou rÃ©initialiser le mot de passe",
+    "changePasswordHint": "Mettre ÃƒÂ  jour le mot de passe du compte",
+    "accountRecovery": "RÃƒÂ©cupÃƒÂ©ration du compte",
+    "accountRecoveryHint": "RÃƒÂ©cupÃƒÂ©rer le nom d'utilisateur ou rÃƒÂ©initialiser le mot de passe",
     "dangerZone": "Zone de danger",
-    "dangerHint": "Ces actions sont irrÃ©versibles.",
-    "deactivate": "DÃ©sactiver le compte",
-    "pageTitle": "ParamÃ¨tres",
+    "dangerHint": "Ces actions sont irrÃƒÂ©versibles.",
+    "deactivate": "DÃƒÂ©sactiver le compte",
+    "pageTitle": "ParamÃƒÂ¨tres",
     "languageLabel": "Langue",
-    "logout": "DÃ©connexion",
+    "logout": "DÃƒÂ©connexion",
     "myListings": "Mes annonces",
     "favorites": "Favoris",
     "orders": "Commandes",
@@ -166,79 +166,79 @@ const S: Record<Lang, {
     "orders": "Orders",
   },
   ar: {
-    "tab": { "general": "Ø¹Ø§Ù…", "notifications": "Ø§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª", "privacy": "Ø§Ù„Ø®ØµÙˆØµÙŠØ©", "security": "Ø§Ù„Ø£Ù…Ø§Ù†" },
-    "profilePhoto": "ØµÙˆØ±Ø© Ø§Ù„Ù…Ù„Ã™Â Ø§Ù„Ø´Ø®ØµÙŠ",
-    "uploading": "Ø¬Ø§Ø±Ã™Â Ø§Ù„Ø±Ã™ÂØ¹...",
-    "changePhoto": "ØªØºÙŠÙŠØ± Ø§Ù„ØµÙˆØ±Ø©",
-    "photoHint": "JPGØŒ PNG Ø­ØªÙ‰ 5 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª",
-    "errImageType": "ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ù…Ù„Ã™Â ØµÙˆØ±Ø© (JPGØŒ PNGØŒ Ø¥Ù„Ø®).",
-    "errImageSize": "ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† Ø§Ù„ØµÙˆØ±Ø© Ø£ØµØºØ± Ù…Ù† 5 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª",
-    "photoSuccess": "ØªÙ… ØªØ­Ø¯ÙŠØ« ØµÙˆØ±Ø© Ø§Ù„Ù…Ù„Ã™Â Ø§Ù„Ø´Ø®ØµÙŠ Ø¨Ù†Ø¬Ø§Ø­!",
-    "photoFail": "Ã™ÂØ´Ù„ Ø±Ã™ÂØ¹ Ø§Ù„ØµÙˆØ±Ø©. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.",
-    "langHint": "Ù‡Ø°Ø§ ÙŠØºÙŠÙ‘Ø± Ù„ØºØ© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¨Ø§Ù„ÙƒØ§Ù…Ù„ Ã™ÂÙˆØ±Ù‹Ø§.",
-    "account": "Ø§Ù„Ø­Ø³Ø§Ø¨",
-    "editProfile": "ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ù…Ù„Ã™Â Ø§Ù„Ø´Ø®ØµÙŠ",
-    "subscriptionPlans": "Ø®Ø·Ø· Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ",
-    "session": "Ø§Ù„Ø¬Ù„Ø³Ø©",
-    "signingOut": "Ø¬Ø§Ø±Ã™Â ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬...",
-    "logoutHint": "ÙŠÙ…ÙƒÙ†Ùƒ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù…Ø¬Ø¯Ø¯Ù‹Ø§ Ø¨Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø£Ùˆ Ø§Ù„Ù‡Ø§ØªÃ™Â Ø£Ùˆ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ.",
-    "notifPrefs": "ØªÃ™ÂØ¶ÙŠÙ„Ø§Øª Ø§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª",
-    "notif": { "orderUpdates": "ØªØ­Ø¯ÙŠØ«Ø§Øª Ø§Ù„Ø·Ù„Ø¨Ø§Øª", "newMessages": "Ø±Ø³Ø§Ø¦Ù„ Ø¬Ø¯ÙŠØ¯Ø©", "promotions": "Ø§Ù„Ø¹Ø±ÙˆØ¶", "priceAlerts": "ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø§Ù„Ø£Ø³Ø¹Ø§Ø±", "systemAlerts": "ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø§Ù„Ù†Ø¸Ø§Ù…", "communityPosts": "Ù…Ù†Ø´ÙˆØ±Ø§Øª Ø§Ù„Ù…Ø¬ØªÙ…Ø¹", "newJobs": "ÙˆØ¸Ø§Ø¦Ã™Â Ø¬Ø¯ÙŠØ¯Ø©" },
-    "privacyControls": "Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø®ØµÙˆØµÙŠØ©",
-    "privacy": { "showProfile": "Ø¥Ø¸Ù‡Ø§Ø± Ù…Ù„Ã™ÂÙŠ Ø§Ù„Ø´Ø®ØµÙŠ Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ† Ø§Ù„Ø¢Ø®Ø±ÙŠÙ†", "allowListings": "Ø§Ù„Ø³Ù…Ø§Ø­ Ù„Ù„Ø¢Ø®Ø±ÙŠÙ† Ø¨Ø±Ø¤ÙŠØ© Ø¥Ø¹Ù„Ø§Ù†Ø§ØªÙŠ", "showOnline": "Ø¥Ø¸Ù‡Ø§Ø± Ø­Ø§Ù„Ø© Ø§ØªØµØ§Ù„ÙŠ", "allowDM": "Ø§Ù„Ø³Ù…Ø§Ø­ Ø¨Ø§Ù„Ø±Ø³Ø§Ø¦Ù„ Ø§Ù„Ù…Ø¨Ø§Ø´Ø±Ø© Ù…Ù† Ø§Ù„ØºØ±Ø¨Ø§Ø¡" },
-    "privacyPolicy": "Ø³ÙŠØ§Ø³Ø© Ø§Ù„Ø®ØµÙˆØµÙŠØ©",
-    "termsOfService": "Ø´Ø±ÙˆØ· Ø§Ù„Ø®Ø¯Ù…Ø©",
-    "security": "Ø§Ù„Ø£Ù…Ø§Ù†",
-    "changePassword": "ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
-    "changePasswordHint": "ØªØ­Ø¯ÙŠØ« ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø­Ø³Ø§Ø¨Ùƒ",
-    "accountRecovery": "Ø§Ø³ØªØ¹Ø§Ø¯Ø© Ø§Ù„Ø­Ø³Ø§Ø¨",
-    "accountRecoveryHint": "Ø§Ø³ØªØ¹Ø§Ø¯Ø© Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø£Ùˆ Ø¥Ø¹Ø§Ø¯Ø© ØªØ¹ÙŠÙŠÙ† ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
-    "dangerZone": "Ù…Ù†Ø·Ù‚Ø© Ø§Ù„Ø®Ø·Ø±",
-    "dangerHint": "Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ø¹Ù† Ù‡Ø°Ù‡ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª.",
-    "deactivate": "ØªØ¹Ø·ÙŠÙ„ Ø§Ù„Ø­Ø³Ø§Ø¨",
-    "pageTitle": "Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª",
-    "languageLabel": "Ø§Ù„Ù„ØºØ©",
-    "logout": "ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬",
-    "myListings": "Ø¥Ø¹Ù„Ø§Ù†Ø§ØªÙŠ",
-    "favorites": "Ø§Ù„Ù…Ã™ÂØ¶Ù„Ø©",
-    "orders": "Ø§Ù„Ø·Ù„Ø¨Ø§Øª",
+    "tab": { "general": "Ã˜Â¹Ã˜Â§Ã™â€¦", "notifications": "Ã˜Â§Ã™â€žÃ˜Â¥Ã˜Â´Ã˜Â¹Ã˜Â§Ã˜Â±Ã˜Â§Ã˜Âª", "privacy": "Ã˜Â§Ã™â€žÃ˜Â®Ã˜ÂµÃ™Ë†Ã˜ÂµÃ™Å Ã˜Â©", "security": "Ã˜Â§Ã™â€žÃ˜Â£Ã™â€¦Ã˜Â§Ã™â€ " },
+    "profilePhoto": "Ã˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© Ã˜Â§Ã™â€žÃ™â€¦Ã™â€žÃƒâ„¢Ã‚Â Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â®Ã˜ÂµÃ™Å ",
+    "uploading": "Ã˜Â¬Ã˜Â§Ã˜Â±Ãƒâ„¢Ã‚Â Ã˜Â§Ã™â€žÃ˜Â±Ãƒâ„¢Ã‚ÂÃ˜Â¹...",
+    "changePhoto": "Ã˜ÂªÃ˜ÂºÃ™Å Ã™Å Ã˜Â± Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â±Ã˜Â©",
+    "photoHint": "JPGÃ˜Å’ PNG Ã˜Â­Ã˜ÂªÃ™â€° 5 Ã™â€¦Ã™Å Ã˜ÂºÃ˜Â§Ã˜Â¨Ã˜Â§Ã™Å Ã˜Âª",
+    "errImageType": "Ã™Å Ã˜Â±Ã˜Â¬Ã™â€° Ã˜Â§Ã˜Â®Ã˜ÂªÃ™Å Ã˜Â§Ã˜Â± Ã™â€¦Ã™â€žÃƒâ„¢Ã‚Â Ã˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© (JPGÃ˜Å’ PNGÃ˜Å’ Ã˜Â¥Ã™â€žÃ˜Â®).",
+    "errImageSize": "Ã™Å Ã˜Â¬Ã˜Â¨ Ã˜Â£Ã™â€  Ã˜ÂªÃ™Æ’Ã™Ë†Ã™â€  Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© Ã˜Â£Ã˜ÂµÃ˜ÂºÃ˜Â± Ã™â€¦Ã™â€  5 Ã™â€¦Ã™Å Ã˜ÂºÃ˜Â§Ã˜Â¨Ã˜Â§Ã™Å Ã˜Âª",
+    "photoSuccess": "Ã˜ÂªÃ™â€¦ Ã˜ÂªÃ˜Â­Ã˜Â¯Ã™Å Ã˜Â« Ã˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© Ã˜Â§Ã™â€žÃ™â€¦Ã™â€žÃƒâ„¢Ã‚Â Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â®Ã˜ÂµÃ™Å  Ã˜Â¨Ã™â€ Ã˜Â¬Ã˜Â§Ã˜Â­!",
+    "photoFail": "Ãƒâ„¢Ã‚ÂÃ˜Â´Ã™â€ž Ã˜Â±Ãƒâ„¢Ã‚ÂÃ˜Â¹ Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â±Ã˜Â©. Ã™Å Ã˜Â±Ã˜Â¬Ã™â€° Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â­Ã˜Â§Ã™Ë†Ã™â€žÃ˜Â© Ã™â€¦Ã˜Â±Ã˜Â© Ã˜Â£Ã˜Â®Ã˜Â±Ã™â€°.",
+    "langHint": "Ã™â€¡Ã˜Â°Ã˜Â§ Ã™Å Ã˜ÂºÃ™Å Ã™â€˜Ã˜Â± Ã™â€žÃ˜ÂºÃ˜Â© Ã˜Â§Ã™â€žÃ˜ÂªÃ˜Â·Ã˜Â¨Ã™Å Ã™â€š Ã˜Â¨Ã˜Â§Ã™â€žÃ™Æ’Ã˜Â§Ã™â€¦Ã™â€ž Ãƒâ„¢Ã‚ÂÃ™Ë†Ã˜Â±Ã™â€¹Ã˜Â§.",
+    "account": "Ã˜Â§Ã™â€žÃ˜Â­Ã˜Â³Ã˜Â§Ã˜Â¨",
+    "editProfile": "Ã˜ÂªÃ˜Â¹Ã˜Â¯Ã™Å Ã™â€ž Ã˜Â§Ã™â€žÃ™â€¦Ã™â€žÃƒâ„¢Ã‚Â Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â®Ã˜ÂµÃ™Å ",
+    "subscriptionPlans": "Ã˜Â®Ã˜Â·Ã˜Â· Ã˜Â§Ã™â€žÃ˜Â§Ã˜Â´Ã˜ÂªÃ˜Â±Ã˜Â§Ã™Æ’",
+    "session": "Ã˜Â§Ã™â€žÃ˜Â¬Ã™â€žÃ˜Â³Ã˜Â©",
+    "signingOut": "Ã˜Â¬Ã˜Â§Ã˜Â±Ãƒâ„¢Ã‚Â Ã˜ÂªÃ˜Â³Ã˜Â¬Ã™Å Ã™â€ž Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â±Ã™Ë†Ã˜Â¬...",
+    "logoutHint": "Ã™Å Ã™â€¦Ã™Æ’Ã™â€ Ã™Æ’ Ã˜ÂªÃ˜Â³Ã˜Â¬Ã™Å Ã™â€ž Ã˜Â§Ã™â€žÃ˜Â¯Ã˜Â®Ã™Ë†Ã™â€ž Ã™â€¦Ã˜Â¬Ã˜Â¯Ã˜Â¯Ã™â€¹Ã˜Â§ Ã˜Â¨Ã˜Â§Ã˜Â³Ã™â€¦ Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â³Ã˜ÂªÃ˜Â®Ã˜Â¯Ã™â€¦ Ã˜Â£Ã™Ë† Ã˜Â§Ã™â€žÃ™â€¡Ã˜Â§Ã˜ÂªÃƒâ„¢Ã‚Â Ã˜Â£Ã™Ë† Ã˜Â§Ã™â€žÃ˜Â¨Ã˜Â±Ã™Å Ã˜Â¯ Ã˜Â§Ã™â€žÃ˜Â¥Ã™â€žÃ™Æ’Ã˜ÂªÃ˜Â±Ã™Ë†Ã™â€ Ã™Å .",
+    "notifPrefs": "Ã˜ÂªÃƒâ„¢Ã‚ÂÃ˜Â¶Ã™Å Ã™â€žÃ˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ˜Â¥Ã˜Â´Ã˜Â¹Ã˜Â§Ã˜Â±Ã˜Â§Ã˜Âª",
+    "notif": { "orderUpdates": "Ã˜ÂªÃ˜Â­Ã˜Â¯Ã™Å Ã˜Â«Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ˜Â·Ã™â€žÃ˜Â¨Ã˜Â§Ã˜Âª", "newMessages": "Ã˜Â±Ã˜Â³Ã˜Â§Ã˜Â¦Ã™â€ž Ã˜Â¬Ã˜Â¯Ã™Å Ã˜Â¯Ã˜Â©", "promotions": "Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã™Ë†Ã˜Â¶", "priceAlerts": "Ã˜ÂªÃ™â€ Ã˜Â¨Ã™Å Ã™â€¡Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ˜Â£Ã˜Â³Ã˜Â¹Ã˜Â§Ã˜Â±", "systemAlerts": "Ã˜ÂªÃ™â€ Ã˜Â¨Ã™Å Ã™â€¡Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ™â€ Ã˜Â¸Ã˜Â§Ã™â€¦", "communityPosts": "Ã™â€¦Ã™â€ Ã˜Â´Ã™Ë†Ã˜Â±Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â¬Ã˜ÂªÃ™â€¦Ã˜Â¹", "newJobs": "Ã™Ë†Ã˜Â¸Ã˜Â§Ã˜Â¦Ãƒâ„¢Ã‚Â Ã˜Â¬Ã˜Â¯Ã™Å Ã˜Â¯Ã˜Â©" },
+    "privacyControls": "Ã˜Â¥Ã˜Â¹Ã˜Â¯Ã˜Â§Ã˜Â¯Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ˜Â®Ã˜ÂµÃ™Ë†Ã˜ÂµÃ™Å Ã˜Â©",
+    "privacy": { "showProfile": "Ã˜Â¥Ã˜Â¸Ã™â€¡Ã˜Â§Ã˜Â± Ã™â€¦Ã™â€žÃƒâ„¢Ã‚ÂÃ™Å  Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â®Ã˜ÂµÃ™Å  Ã™â€žÃ™â€žÃ™â€¦Ã˜Â³Ã˜ÂªÃ˜Â®Ã˜Â¯Ã™â€¦Ã™Å Ã™â€  Ã˜Â§Ã™â€žÃ˜Â¢Ã˜Â®Ã˜Â±Ã™Å Ã™â€ ", "allowListings": "Ã˜Â§Ã™â€žÃ˜Â³Ã™â€¦Ã˜Â§Ã˜Â­ Ã™â€žÃ™â€žÃ˜Â¢Ã˜Â®Ã˜Â±Ã™Å Ã™â€  Ã˜Â¨Ã˜Â±Ã˜Â¤Ã™Å Ã˜Â© Ã˜Â¥Ã˜Â¹Ã™â€žÃ˜Â§Ã™â€ Ã˜Â§Ã˜ÂªÃ™Å ", "showOnline": "Ã˜Â¥Ã˜Â¸Ã™â€¡Ã˜Â§Ã˜Â± Ã˜Â­Ã˜Â§Ã™â€žÃ˜Â© Ã˜Â§Ã˜ÂªÃ˜ÂµÃ˜Â§Ã™â€žÃ™Å ", "allowDM": "Ã˜Â§Ã™â€žÃ˜Â³Ã™â€¦Ã˜Â§Ã˜Â­ Ã˜Â¨Ã˜Â§Ã™â€žÃ˜Â±Ã˜Â³Ã˜Â§Ã˜Â¦Ã™â€ž Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â¨Ã˜Â§Ã˜Â´Ã˜Â±Ã˜Â© Ã™â€¦Ã™â€  Ã˜Â§Ã™â€žÃ˜ÂºÃ˜Â±Ã˜Â¨Ã˜Â§Ã˜Â¡" },
+    "privacyPolicy": "Ã˜Â³Ã™Å Ã˜Â§Ã˜Â³Ã˜Â© Ã˜Â§Ã™â€žÃ˜Â®Ã˜ÂµÃ™Ë†Ã˜ÂµÃ™Å Ã˜Â©",
+    "termsOfService": "Ã˜Â´Ã˜Â±Ã™Ë†Ã˜Â· Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©",
+    "security": "Ã˜Â§Ã™â€žÃ˜Â£Ã™â€¦Ã˜Â§Ã™â€ ",
+    "changePassword": "Ã˜ÂªÃ˜ÂºÃ™Å Ã™Å Ã˜Â± Ã™Æ’Ã™â€žÃ™â€¦Ã˜Â© Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â±Ã™Ë†Ã˜Â±",
+    "changePasswordHint": "Ã˜ÂªÃ˜Â­Ã˜Â¯Ã™Å Ã˜Â« Ã™Æ’Ã™â€žÃ™â€¦Ã˜Â© Ã™â€¦Ã˜Â±Ã™Ë†Ã˜Â± Ã˜Â­Ã˜Â³Ã˜Â§Ã˜Â¨Ã™Æ’",
+    "accountRecovery": "Ã˜Â§Ã˜Â³Ã˜ÂªÃ˜Â¹Ã˜Â§Ã˜Â¯Ã˜Â© Ã˜Â§Ã™â€žÃ˜Â­Ã˜Â³Ã˜Â§Ã˜Â¨",
+    "accountRecoveryHint": "Ã˜Â§Ã˜Â³Ã˜ÂªÃ˜Â¹Ã˜Â§Ã˜Â¯Ã˜Â© Ã˜Â§Ã˜Â³Ã™â€¦ Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â³Ã˜ÂªÃ˜Â®Ã˜Â¯Ã™â€¦ Ã˜Â£Ã™Ë† Ã˜Â¥Ã˜Â¹Ã˜Â§Ã˜Â¯Ã˜Â© Ã˜ÂªÃ˜Â¹Ã™Å Ã™Å Ã™â€  Ã™Æ’Ã™â€žÃ™â€¦Ã˜Â© Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â±Ã™Ë†Ã˜Â±",
+    "dangerZone": "Ã™â€¦Ã™â€ Ã˜Â·Ã™â€šÃ˜Â© Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â·Ã˜Â±",
+    "dangerHint": "Ã™â€žÃ˜Â§ Ã™Å Ã™â€¦Ã™Æ’Ã™â€  Ã˜Â§Ã™â€žÃ˜ÂªÃ˜Â±Ã˜Â§Ã˜Â¬Ã˜Â¹ Ã˜Â¹Ã™â€  Ã™â€¡Ã˜Â°Ã™â€¡ Ã˜Â§Ã™â€žÃ˜Â¥Ã˜Â¬Ã˜Â±Ã˜Â§Ã˜Â¡Ã˜Â§Ã˜Âª.",
+    "deactivate": "Ã˜ÂªÃ˜Â¹Ã˜Â·Ã™Å Ã™â€ž Ã˜Â§Ã™â€žÃ˜Â­Ã˜Â³Ã˜Â§Ã˜Â¨",
+    "pageTitle": "Ã˜Â§Ã™â€žÃ˜Â¥Ã˜Â¹Ã˜Â¯Ã˜Â§Ã˜Â¯Ã˜Â§Ã˜Âª",
+    "languageLabel": "Ã˜Â§Ã™â€žÃ™â€žÃ˜ÂºÃ˜Â©",
+    "logout": "Ã˜ÂªÃ˜Â³Ã˜Â¬Ã™Å Ã™â€ž Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â±Ã™Ë†Ã˜Â¬",
+    "myListings": "Ã˜Â¥Ã˜Â¹Ã™â€žÃ˜Â§Ã™â€ Ã˜Â§Ã˜ÂªÃ™Å ",
+    "favorites": "Ã˜Â§Ã™â€žÃ™â€¦Ãƒâ„¢Ã‚ÂÃ˜Â¶Ã™â€žÃ˜Â©",
+    "orders": "Ã˜Â§Ã™â€žÃ˜Â·Ã™â€žÃ˜Â¨Ã˜Â§Ã˜Âª",
   },
   ff: {
     "tab": { "general": "Huunde fof", "notifications": "Tintinooje", "privacy": "Sirru", "security": "Kisal" },
     "profilePhoto": "Natal profil",
-    "uploading": "ÆŠon É“amtee...",
+    "uploading": "Ã†Å on Ã‰â€œamtee...",
     "changePhoto": "Waylu natal",
     "photoHint": "JPG, PNG haa 5MB",
-    "errImageType": "TiiÉ—no suÉ“o fiijo natal (JPG, PNG, ekn.).",
-    "errImageSize": "Natal foti É“urde famÉ—ude 5MB",
-    "photoSuccess": "Natal profil hesÉ—itinaama!",
-    "photoFail": "Æamtugol natal hawri. TiiÉ—no eto kadi.",
-    "langHint": "ÆŠum waylat É—emngal aplikeysiÅ‹ ndee fof jaka.",
+    "errImageType": "TiiÃ‰â€”no suÃ‰â€œo fiijo natal (JPG, PNG, ekn.).",
+    "errImageSize": "Natal foti Ã‰â€œurde famÃ‰â€”ude 5MB",
+    "photoSuccess": "Natal profil hesÃ‰â€”itinaama!",
+    "photoFail": "Ã†Âamtugol natal hawri. TiiÃ‰â€”no eto kadi.",
+    "langHint": "Ã†Å um waylat Ã‰â€”emngal aplikeysiÃ…â€¹ ndee fof jaka.",
     "account": "Konto",
-    "editProfile": "TaÆ´to profil",
+    "editProfile": "TaÃ†Â´to profil",
     "subscriptionPlans": "Peeje jokkondiral",
-    "session": "SesoÅ‹",
-    "signingOut": "ÆŠon yalta...",
-    "logoutHint": "A waawi kadi naatde e innde maa, telefoÅ‹, walla iimeel.",
+    "session": "SesoÃ…â€¹",
+    "signingOut": "Ã†Å on yalta...",
+    "logoutHint": "A waawi kadi naatde e innde maa, telefoÃ…â€¹, walla iimeel.",
     "notifPrefs": "Teelte tintinooje",
-    "notif": { "orderUpdates": "KesÉ—itineeji umrooje", "newMessages": "Nulalji kesi", "promotions": "NjeÃ±tudi", "priceAlerts": "Tintinooje coggu", "systemAlerts": "Tintinooje sistem", "communityPosts": "Bindi renndo", "newJobs": "Golle kese" },
+    "notif": { "orderUpdates": "KesÃ‰â€”itineeji umrooje", "newMessages": "Nulalji kesi", "promotions": "NjeÃƒÂ±tudi", "priceAlerts": "Tintinooje coggu", "systemAlerts": "Tintinooje sistem", "communityPosts": "Bindi renndo", "newJobs": "Golle kese" },
     "privacyControls": "Teelte sirru",
-    "privacy": { "showProfile": "Hollu profil am yimÉ“e woÉ—É“e", "allowListings": "Yamiru woÉ“É“e yiyde njeeyaaji am", "showOnline": "Hollu miÉ—o e laawol", "allowDM": "Yamiru nulalji to yimÉ“e É“e anndaÉ—aa" },
+    "privacy": { "showProfile": "Hollu profil am yimÃ‰â€œe woÃ‰â€”Ã‰â€œe", "allowListings": "Yamiru woÃ‰â€œÃ‰â€œe yiyde njeeyaaji am", "showOnline": "Hollu miÃ‰â€”o e laawol", "allowDM": "Yamiru nulalji to yimÃ‰â€œe Ã‰â€œe anndaÃ‰â€”aa" },
     "privacyPolicy": "Sariya sirru",
-    "termsOfService": "SarÉ—iiji huutoragol",
+    "termsOfService": "SarÃ‰â€”iiji huutoragol",
     "security": "Kisal",
     "changePassword": "Waylu finnde",
-    "changePasswordHint": "HesÉ—itin finnde konto maa",
+    "changePasswordHint": "HesÃ‰â€”itin finnde konto maa",
     "accountRecovery": "Artirgol konto",
     "accountRecoveryHint": "Artir innde walla firtu finnde",
     "dangerZone": "Nokku bonki",
-    "dangerHint": "ÆŠii golle mbaawaa firteede.",
-    "deactivate": "ÆŠaÉ—É—u konto",
+    "dangerHint": "Ã†Å ii golle mbaawaa firteede.",
+    "deactivate": "Ã†Å aÃ‰â€”Ã‰â€”u konto",
     "pageTitle": "Teelte",
-    "languageLabel": "ÆŠemngal",
+    "languageLabel": "Ã†Å emngal",
     "logout": "Yaltude",
     "myListings": "Ko njeeyetee am",
-    "favorites": "FaaÉ“aaÉ“e",
+    "favorites": "FaaÃ‰â€œaaÃ‰â€œe",
     "orders": "Sarwiiji",
   },
 };
@@ -363,8 +363,8 @@ const UserSettings: React.FC = () => {
 
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {currentUser?.photoURL ? (
-                  <img src={currentUser.photoURL} alt="Avatar" className="w-full h-full object-cover" />
+                {(currentUser as any)?.photoURL ? (
+                  <img src={(currentUser as any).photoURL} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-teal-600 text-2xl font-bold">
                     {(currentUser?.displayName || currentUser?.email || "U")[0].toUpperCase()}
@@ -595,6 +595,8 @@ const UserSettings: React.FC = () => {
 };
 
 export default UserSettings;
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/i18n/appTranslations.ts — Bambeh Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
  *
@@ -267,7 +267,7 @@ export const T: TranslationMap = {
 
   // ── PRIVACY POLICY PAGE ──────────────────────────────────────────────────────
   privacyTitle:     { en: "Privacy Policy", fr: "Politique de confidentialité", pcm: "Privacy Policy", ar: "سياسة الخصوصية", ff: "Sarɗi Gaasooji" },
-  privacyDesc:      { en: "How BAMBEH SARL collects and uses your data", fr: "Comment BAMBEH SARL collecte et utilise vos données", pcm: "How Bambeh uses your data", ar: "كيفية جمع بامبيه لبياناتك واستخدامها", fr2: "Comment BAMBEH SARL utilise vos données", ff: "No Bambeh waɗi ɗatum maa" },
+  privacyDesc:      { en: "How BAMBEH SARL collects and uses your data", fr: "Comment BAMBEH SARL collecte et utilise vos données", pcm: "How Bambeh uses your data", ar: "كيفية جمع بامبيه لبياناتك واستخدامها", ff: "No Bambeh waɗi ɗatum maa" },
   dataCollected:    { en: "Data we collect", fr: "Données que nous collectons", pcm: "Data we dey collect", ar: "البيانات التي نجمعها", ff: "Ɗatum min hoɗtaa" },
   howWeUseData:     { en: "How we use your data", fr: "Comment nous utilisons vos données", pcm: "How we use your data", ar: "كيفية استخدامنا لبياناتك", ff: "No waɗmi ɗatum maa" },
   dataSharing:      { en: "Data sharing", fr: "Partage des données", pcm: "Data sharing", ar: "مشاركة البيانات", ff: "Wadande ɗatum" },
@@ -321,3 +321,4 @@ export function t(
   if (!entry) return key; // key not found → return raw key
   return entry[lang] ?? entry["en"] ?? key;
 }
+

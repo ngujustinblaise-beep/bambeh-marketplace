@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/AddJobForm.tsx
  * Bambeh Marketplace — Add Job Listing Form
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -140,8 +140,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
         {/* Location */}
         <LocationSelector
           value={location}
-          onChange={setLocation}
-          label="Localisation"
+          onChange={(loc) => setLocation((prev) => ({ ...prev, ...loc }))}
         />
 
         {/* Remote & Expiry */}
@@ -171,6 +170,8 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
 };
 
 export default AddJobForm;
+
+
 
 
 

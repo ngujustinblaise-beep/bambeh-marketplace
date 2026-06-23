@@ -60,3 +60,4 @@ export const validateImageDimensions = (
     };
     img.src = url;
   });
+

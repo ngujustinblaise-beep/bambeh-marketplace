@@ -12,3 +12,4 @@ export const useVendorAwareBack = (fallback = "/"): (() => void) => {
     }
   }, [navigate, fallback]);
 };
+

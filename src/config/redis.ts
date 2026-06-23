@@ -1,1 +1,2 @@
 ﻿// Redis is a server-side tool and cannot run in a React/browser app. // This stub prevents TypeScript errors. Use Supabase Realtime instead for live data. export const redis = null; export default redis;
+

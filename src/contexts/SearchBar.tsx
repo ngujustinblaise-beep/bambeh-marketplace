@@ -1,17 +1,10 @@
-﻿/**
+/**
  * src/contexts/SearchBar.tsx
  * Bambeh Marketplace — Search Bar Context & Provider
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
-import React, { useEffect, 
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-} from "react";
+import React, { useEffect, createContext, useContext, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -196,6 +189,8 @@ export function useSearchBar(): SearchBarContextValue {
 }
 
 export default SearchBarContext;
+
+
 
 
 

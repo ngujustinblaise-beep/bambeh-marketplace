@@ -69,3 +69,4 @@ export interface VendorCommissionSummary {
   pendingCommissionXAF: number;
   paidCommissionXAF: number;
 }
+

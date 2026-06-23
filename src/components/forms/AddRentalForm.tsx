@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/AddRentalForm.tsx
  * Bambeh Marketplace — Add Rental Listing Form
  */
@@ -62,7 +62,7 @@ const AddRentalForm: React.FC<AddRentalFormProps> = ({ onSuccess, onCancel }) =>
         </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="Décrivez votre bien..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" /></div>
-        <LocationSelector value={location} onChange={setLocation} label="Adresse du bien" required />
+        <LocationSelector value={location} onChange={(loc) => setLocation((prev) => ({ ...prev, ...loc }))} required />
         {error && <p className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</p>}
         <div className="flex gap-3 pt-2">
           {onCancel && <button type="button" onClick={onCancel} className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium">Annuler</button>}
@@ -74,6 +74,8 @@ const AddRentalForm: React.FC<AddRentalFormProps> = ({ onSuccess, onCancel }) =>
 };
 
 export default AddRentalForm;
+
+
 
 
 

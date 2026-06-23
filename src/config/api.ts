@@ -62,3 +62,4 @@ export const API_CONFIG = {
     "Content-Type": "application/json",
   },
 };
+

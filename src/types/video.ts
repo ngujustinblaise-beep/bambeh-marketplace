@@ -39,3 +39,4 @@ export interface VideoComment {
   likes: number;
   replies?: VideoComment[];
 }
+

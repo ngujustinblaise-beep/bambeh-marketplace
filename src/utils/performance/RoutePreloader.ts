@@ -172,3 +172,4 @@ export const BAMBEH_CORE_ROUTES: RouteModule[] = [
     priority: "low",
   },
 ];
+

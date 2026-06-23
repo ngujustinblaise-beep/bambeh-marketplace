@@ -156,3 +156,4 @@ export interface AdSlotConfig {
   supportedTypes: AdType[];
   isActive: boolean;
 }
+

@@ -27,3 +27,4 @@ export const markChatRead = async (chatId: string): Promise<unknown> => {
   const res = await fetch(`${EP.chat}/${chatId}/read`, { method: "PATCH" });
   return res.json();
 };
+

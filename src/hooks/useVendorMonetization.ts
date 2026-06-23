@@ -33,3 +33,4 @@ export const useVendorMonetization = () => {
 
   return { zermBalance, rewardAction, isLoading, validActions };
 };
+

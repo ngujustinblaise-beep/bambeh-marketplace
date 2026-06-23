@@ -14,3 +14,4 @@ export function initPerformanceMonitoring() {
 export function getOptimizedImageUrl(url: string, width: number): string {
   return url;
 }
+

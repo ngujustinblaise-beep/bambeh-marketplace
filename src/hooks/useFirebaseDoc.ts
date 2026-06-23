@@ -52,3 +52,4 @@ export function useFirebaseDoc<T = DocumentData>(
 
   return { data, loading, error, refetch: fetchDoc };
 }
+

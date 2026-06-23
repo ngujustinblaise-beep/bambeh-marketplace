@@ -88,3 +88,4 @@ export interface TrackingSession {
   startedAt: string;
   locations: Location[];
 }
+

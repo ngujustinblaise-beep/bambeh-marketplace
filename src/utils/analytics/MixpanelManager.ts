@@ -110,3 +110,4 @@ export function isMixpanelAvailable(): boolean {
   return Boolean(window.mixpanel && typeof window.mixpanel.track === "function");
 }
 
+

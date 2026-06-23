@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LOGIN.TSX — LOGIN PAGE — Bambeh Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
  */
@@ -34,7 +34,7 @@ export default function Login() {
     setLoading(true);
     try {
       const result = await login(username.trim(), password);
-      if (result.success) {
+      if (result.error === undefined) {
         navigate("/", { replace: true });
       } else {
         setError(result.error || "Login failed. Please try again.");
@@ -172,6 +172,8 @@ export default function Login() {
     </div>
   );
 }
+
+
 
 
 

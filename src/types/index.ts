@@ -1,4 +1,4 @@
-﻿// Bambeh Marketplace - Shared Types v6 (Final)
+// Bambeh Marketplace - Shared Types v6 (Final)
 
 export type UserRole         = 'buyer' | 'seller' | 'admin' | 'user' | 'vendor' | string;
 export type OrderStatus      = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
@@ -104,6 +104,7 @@ export interface VendorData extends User {
 }
 
 export interface LocationDetails {
+  neighborhood?: string;
   area?: string;
   region?: string;
   division?: string;
@@ -469,3 +470,4 @@ export interface PerformanceMonitor {
 export interface BundleAnalyzer {
   analyzeBundle?: () => void;
 }
+

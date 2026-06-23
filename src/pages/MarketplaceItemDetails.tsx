@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/MarketplaceItemDetails.tsx â€” Bambeh Marketplace
  *
  * FIXES â€” June 2026
@@ -311,7 +311,7 @@ export default function MarketplaceItemDetails() {
       }
 
       // Increment view count (non-blocking)
-      supabase.rpc("increment_view_count", { table_name: "listings", record_id: data.id }).catch(() => {});
+      supabase.rpc("increment_view_count", { table_name: "listings", record_id: data.id }).then(() => {}, () => {});
     } catch (e) {
       setError(e instanceof Error ? e.message : "unexpected");
     } finally {
@@ -755,6 +755,8 @@ export default function MarketplaceItemDetails() {
     </div>
   );
 }
+
+
 
 
 

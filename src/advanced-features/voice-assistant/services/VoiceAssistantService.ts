@@ -377,3 +377,4 @@ class VoiceAssistantService {
 }
 
 export default new VoiceAssistantService();
+

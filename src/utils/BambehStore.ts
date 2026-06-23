@@ -291,3 +291,4 @@ export function isCurrentUserSubscribed(): boolean {
   const tier = useBambehStore.getState().subscriptionTier;
   return tier !== "free" && tier !== "";
 }
+

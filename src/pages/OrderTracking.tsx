@@ -1,7 +1,7 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
+﻿/**
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  * ORDER TRACKING PAGE - PROFESSIONAL E-COMMERCE TRACKING
- * ═══════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
  * Features:
  * - Real-time order status tracking
@@ -11,8 +11,8 @@
  * - Contact support option
  * - Map integration ready
  *
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * Â© 2025 Bambeh. All rights reserved.
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
 import { useState, useEffect } from 'react';
@@ -153,7 +153,7 @@ export default function OrderTracking() {
           name: 'Jean-Pierre Mbarga',
           phone: '+237 6XX XXX XXX',
           street: '123 Rue de la Paix',
-          city: 'Yaoundé',
+          city: 'YaoundÃ©',
           region: 'Centre',
           country: '',
         },
@@ -198,7 +198,7 @@ export default function OrderTracking() {
             title: 'Out for Delivery',
             description: 'Your package is with the delivery agent.',
             timestamp: '',
-            location: 'Yaoundé Distribution Center',
+            location: 'YaoundÃ© Distribution Center',
             completed: false,
           },
           {
@@ -573,6 +573,8 @@ export default function OrderTracking() {
     </div>
   );
 }
+
+
 
 
 

@@ -35,3 +35,4 @@ class CacheManager {
 } // FIX: was missing closing brace for CacheManager class
 
 export const cacheManager = new CacheManager();
+

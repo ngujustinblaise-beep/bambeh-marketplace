@@ -1,11 +1,11 @@
-/**
- * src/components/LanguageSwitcher.tsx — Bambeh Marketplace
+﻿/**
+ * src/components/LanguageSwitcher.tsx â€” Bambeh Marketplace
  *
- * ✅ Actually calls setLanguage() from LanguageContext (was a no-op before)
- * ✅ Highlights the active language
- * ✅ Supports compact (icon-only) and full (flag + label) modes
- * ✅ Includes all 5 app languages
- * ✅ Language changes INSTANTLY app-wide — no page reload required
+ * âœ… Actually calls setLanguage() from LanguageContext (was a no-op before)
+ * âœ… Highlights the active language
+ * âœ… Supports compact (icon-only) and full (flag + label) modes
+ * âœ… Includes all 5 app languages
+ * âœ… Language changes INSTANTLY app-wide â€” no page reload required
  */
 import React from "react";
 import { useLanguage } from '@/App';
@@ -16,11 +16,11 @@ interface LanguageSwitcherProps {
 }
 
 const LANGUAGES = [
-  { code: "en",     label: "English",       flag: "🇬🇧" },
-  { code: "fr",     label: "Français",      flag: "🇫🇷" },
-  { code: "pidgin", label: "Pidgin",        flag: "🇨🇲" },
-  { code: "ar",     label: "العربية",       flag: "🇸🇦" },
-  { code: "ff",     label: "Fulfulde",      flag: "🇨🇲" },
+  { code: "en",     label: "English",       flag: "ðŸ‡¬ðŸ‡§" },
+  { code: "fr",     label: "FranÃ§ais",      flag: "ðŸ‡«ðŸ‡·" },
+  { code: "pidgin", label: "Pidgin",        flag: "ðŸ‡¨ðŸ‡²" },
+  { code: "ar",     label: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",       flag: "ðŸ‡¸ðŸ‡¦" },
+  { code: "ff",     label: "Fulfulde",      flag: "ðŸ‡¨ðŸ‡²" },
 ];
 
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
@@ -65,6 +65,8 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 };
 
 export default LanguageSwitcher;
+
+
 
 
 

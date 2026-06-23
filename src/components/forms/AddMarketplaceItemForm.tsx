@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/AddMarketplaceItemForm.tsx
  * Bambeh Marketplace — Add Marketplace Item Form
  */
@@ -97,7 +97,7 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
           </div>
           {imageUrls.length>0 && <div className="flex gap-2 mt-2 flex-wrap">{imageUrls.map((url,i)=><div key={i} className="relative"><img src={url} alt="" className="w-16 h-16 object-cover rounded-lg border"/><button type="button" onClick={()=>setImageUrls(p=>p.filter((_,j)=>j!==i))} className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">×</button></div>)}</div>}
         </div>
-        <LocationSelector value={location} onChange={setLocation} label="Localisation" />
+        <LocationSelector value={location} onChange={(loc) => setLocation((prev) => ({ ...prev, ...loc }))} />
         {error && <p className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</p>}
         <div className="flex gap-3 pt-2">
           {onCancel && <button type="button" onClick={onCancel} className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium">Annuler</button>}
@@ -109,6 +109,8 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
 };
 
 export default AddMarketplaceItemForm;
+
+
 
 
 

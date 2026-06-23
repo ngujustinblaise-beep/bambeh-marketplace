@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Favorites.tsx - Bambeh Marketplace
  * Saved items from localStorage + Supabase user_favorites.
  * Fully translated live via the singular LanguageContext (no refresh needed).
@@ -270,6 +270,8 @@ export default function Favorites() {
     </div>
   );
 }
+
+
 
 
 

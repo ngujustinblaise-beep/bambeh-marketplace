@@ -24,3 +24,4 @@ export const reportWebVitals = (metric: { name: string; value: number }): void =
   }
   sendToAnalytics(metric);
 };
+

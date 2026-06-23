@@ -208,3 +208,4 @@ export function injectCSPMetaTag(): void {
 // ── Export default for easy import ────────────────────────────────────────────
 }
 export default securityHeaders;
+

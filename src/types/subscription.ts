@@ -46,3 +46,4 @@ export interface UserSubscription {
   expiresAt: string;
   autoRenew?: boolean;
 }
+

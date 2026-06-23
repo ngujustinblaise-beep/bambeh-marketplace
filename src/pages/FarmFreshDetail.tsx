@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FarmFreshDetail.tsx — Bambeh Marketplace
  *
  * FIXED & REWRITTEN:
@@ -187,9 +187,9 @@ const FarmFreshDetail: React.FC = () => {
       title:        product.title,
       priceXAF:     product.price_per_unit_xaf,
       quantity:     qty,
-      unit:         product.unit,
       imageUrl:     product.image_url || "",
       listingType:  "farm-fresh",
+      sellerId:     product.seller_id || "",
       sellerName:   product.seller_name || "Farmer",
     });
     setAddedToCart(true);
@@ -468,6 +468,8 @@ const FarmFreshDetail: React.FC = () => {
 };
 
 export default FarmFreshDetail;
+
+
 
 
 

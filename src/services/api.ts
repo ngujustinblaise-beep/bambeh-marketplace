@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BAMBEH MARKETPLACE - WORLD-CLASS API SERVICE
  * Centralized API client with interceptors, error handling, offline support
  * Built to standards of: Jumia, Amazon, OLX, eBay
@@ -102,17 +102,17 @@ class ApiService {
           config.headers["X-App-Version"] = "1.0.0";
 
           console.log(
-            `📤 API Request: ${config.method?.toUpperCase()} ${config.url}`,
+            `ðŸ“¤ API Request: ${config.method?.toUpperCase()} ${config.url}`,
           );
 
           return config;
         } catch (error) {
-          console.error("❌ Request interceptor error:", error);
+          console.error("âŒ Request interceptor error:", error);
           return Promise.reject(error);
         }
       },
       (error) => {
-        console.error("❌ Request configuration error:", error);
+        console.error("âŒ Request configuration error:", error);
         return Promise.reject(error);
       },
     );
@@ -125,7 +125,7 @@ class ApiService {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         console.log(
-          `✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`,
+          `âœ… API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`,
         );
 
         // Cache successful responses
@@ -159,7 +159,7 @@ class ApiService {
         }
 
         console.error(
-          `❌ API Error: ${error.response.status} - ${error.message}`,
+          `âŒ API Error: ${error.response.status} - ${error.message}`,
         );
         return Promise.reject(this.normalizeError(error));
       },
@@ -175,14 +175,14 @@ class ApiService {
         const wasOffline = !this.isOnline;
         this.isOnline = true;
         if (wasOffline) {
-          console.log("🌐 Network restored - Processing queued requests");
+          console.log("ðŸŒ Network restored - Processing queued requests");
           this.processRequestQueue();
         }
       });
 
       window.addEventListener("offline", () => {
         this.isOnline = false;
-        console.log("📴 Network offline - Requests will be queued");
+        console.log("ðŸ“´ Network offline - Requests will be queued");
       });
 
       // Set initial online state
@@ -200,14 +200,14 @@ class ApiService {
     if (!this.isOnline) {
       return new Promise((resolve, reject) => {
         this.requestQueue.push({ config, resolve, reject });
-        console.log(`📥 Request queued: ${config.url}`);
+        console.log(`ðŸ“¥ Request queued: ${config.url}`);
       });
     }
 
     // Try to get cached response
     const cachedResponse = await this.getCachedResponse(config);
     if (cachedResponse) {
-      console.log(`💾 Serving cached response: ${config.url}`);
+      console.log(`ðŸ’¾ Serving cached response: ${config.url}`);
       return cachedResponse;
     }
 
@@ -246,7 +246,7 @@ class ApiService {
     const retryAfter = error.response?.headers["retry-after"];
     const delay = retryAfter ? parseInt(retryAfter) * 1000 : 5000;
 
-    console.log(`⏳ Rate limited - Retrying after ${delay}ms`);
+    console.log(`â³ Rate limited - Retrying after ${delay}ms`);
     await this.delay(delay);
 
     return this.axiosInstance.request(config);
@@ -270,7 +270,7 @@ class ApiService {
     await this.delay(RETRY_DELAY * (currentRetries + 1));
 
     console.log(
-      `🔄 Retrying request (${currentRetries + 1}/${MAX_RETRIES}): ${config.url}`,
+      `ðŸ”„ Retrying request (${currentRetries + 1}/${MAX_RETRIES}): ${config.url}`,
     );
 
     return this.axiosInstance.request(config);
@@ -282,7 +282,7 @@ class ApiService {
   private async processRequestQueue(): Promise<void> {
     if (this.requestQueue.length === 0) return;
 
-    console.log(`🔄 Processing ${this.requestQueue.length} queued requests`);
+    console.log(`ðŸ”„ Processing ${this.requestQueue.length} queued requests`);
 
     const queue = [...this.requestQueue];
     this.requestQueue = [];
@@ -476,3 +476,4 @@ class ApiService {
 // ============================================
 export const apiService = new ApiService();
 export default apiService;
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PROFILE ORDERS COMPONENT
  * FILE LOCATION: src/components/profile/ProfileOrders.tsx
  *
@@ -61,15 +61,15 @@ const S: Record<Lang, {
   },
   fr: {
     locale: 'fr-FR',
-    status: { pending: 'En attente', confirmed: 'Confirmée', processing: 'En traitement', shipped: 'Expédiée', out_for_delivery: 'En cours de livraison', delivered: 'Livrée', cancelled: 'Annulée' },
-    loading: 'Chargement des commandes...', errorMsg: 'Impossible de charger les commandes. Veuillez réessayer.', tryAgain: 'Réessayer',
-    emptyTitle: 'Aucune commande', emptyDesc: "Vous n'avez pas encore passé de commande. Commencez vos achats pour les voir ici !", browse: 'Parcourir la marketplace',
+    status: { pending: 'En attente', confirmed: 'ConfirmÃ©e', processing: 'En traitement', shipped: 'ExpÃ©diÃ©e', out_for_delivery: 'En cours de livraison', delivered: 'LivrÃ©e', cancelled: 'AnnulÃ©e' },
+    loading: 'Chargement des commandes...', errorMsg: 'Impossible de charger les commandes. Veuillez rÃ©essayer.', tryAgain: 'RÃ©essayer',
+    emptyTitle: 'Aucune commande', emptyDesc: "Vous n'avez pas encore passÃ© de commande. Commencez vos achats pour les voir ici !", browse: 'Parcourir la marketplace',
     myOrders: 'Mes commandes', totalOrders: (n) => `${n} commandes au total`, refresh: 'Actualiser',
     searchPh: 'Rechercher des commandes...',
     filterAll: (n) => `Toutes les commandes (${n})`, filterPending: (n) => `En attente (${n})`, filterProcessing: (n) => `En traitement (${n})`,
-    filterShipped: (n) => `Expédiées (${n})`, filterDelivered: (n) => `Livrées (${n})`, filterCancelled: (n) => `Annulées (${n})`,
-    noMatch: 'Aucune commande ne correspond à vos critères.', placedOn: 'Passée le', itemsCount: (n) => `${n} article${n > 1 ? 's' : ''}`, estDelivery: 'Livraison estimée :',
-    trackOrder: 'Suivre la commande', details: 'Détails',
+    filterShipped: (n) => `ExpÃ©diÃ©es (${n})`, filterDelivered: (n) => `LivrÃ©es (${n})`, filterCancelled: (n) => `AnnulÃ©es (${n})`,
+    noMatch: 'Aucune commande ne correspond Ã  vos critÃ¨res.', placedOn: 'PassÃ©e le', itemsCount: (n) => `${n} article${n > 1 ? 's' : ''}`, estDelivery: 'Livraison estimÃ©e :',
+    trackOrder: 'Suivre la commande', details: 'DÃ©tails',
   },
   pidgin: {
     locale: 'en-GB',
@@ -85,26 +85,26 @@ const S: Record<Lang, {
   },
   ar: {
     locale: 'ar',
-    status: { pending: 'قيد الانتظار', confirmed: 'مؤكَّد', processing: 'قيد المعالجة', shipped: 'تم الشحن', out_for_delivery: 'قيد التوصيل', delivered: 'تم التسليم', cancelled: 'ملغى' },
-    loading: 'جارٍ تحميل الطلبات...', errorMsg: 'تعذّر تحميل الطلبات. يرجى المحاولة مرة أخرى.', tryAgain: 'حاول مرة أخرى',
-    emptyTitle: 'لا توجد طلبات بعد', emptyDesc: 'لم تقم بأي طلب بعد. ابدأ التسوّق لتظهر طلباتك هنا!', browse: 'تصفّح السوق',
-    myOrders: 'طلباتي', totalOrders: (n) => `${n} طلبات إجمالاً`, refresh: 'تحديث',
-    searchPh: 'ابحث في الطلبات...',
-    filterAll: (n) => `كل الطلبات (${n})`, filterPending: (n) => `قيد الانتظار (${n})`, filterProcessing: (n) => `قيد المعالجة (${n})`,
-    filterShipped: (n) => `تم الشحن (${n})`, filterDelivered: (n) => `تم التسليم (${n})`, filterCancelled: (n) => `ملغاة (${n})`,
-    noMatch: 'لا توجد طلبات مطابقة لمعاييرك.', placedOn: 'تم الطلب في', itemsCount: (n) => `${n} عنصر`, estDelivery: 'التسليم المتوقع:',
-    trackOrder: 'تتبّع الطلب', details: 'التفاصيل',
+    status: { pending: 'Ù‚ÙŠØ¯ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø±', confirmed: 'Ù…Ø¤ÙƒÙŽÙ‘Ø¯', processing: 'Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø¹Ø§Ù„Ø¬Ø©', shipped: 'ØªÙ… Ø§Ù„Ø´Ø­Ù†', out_for_delivery: 'Ù‚ÙŠØ¯ Ø§Ù„ØªÙˆØµÙŠÙ„', delivered: 'ØªÙ… Ø§Ù„ØªØ³Ù„ÙŠÙ…', cancelled: 'Ù…Ù„ØºÙ‰' },
+    loading: 'Ø¬Ø§Ø±Ù ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø·Ù„Ø¨Ø§Øª...', errorMsg: 'ØªØ¹Ø°Ù‘Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø·Ù„Ø¨Ø§Øª. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.', tryAgain: 'Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰',
+    emptyTitle: 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ù„Ø¨Ø§Øª Ø¨Ø¹Ø¯', emptyDesc: 'Ù„Ù… ØªÙ‚Ù… Ø¨Ø£ÙŠ Ø·Ù„Ø¨ Ø¨Ø¹Ø¯. Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªØ³ÙˆÙ‘Ù‚ Ù„ØªØ¸Ù‡Ø± Ø·Ù„Ø¨Ø§ØªÙƒ Ù‡Ù†Ø§!', browse: 'ØªØµÙÙ‘Ø­ Ø§Ù„Ø³ÙˆÙ‚',
+    myOrders: 'Ø·Ù„Ø¨Ø§ØªÙŠ', totalOrders: (n) => `${n} Ø·Ù„Ø¨Ø§Øª Ø¥Ø¬Ù…Ø§Ù„Ø§Ù‹`, refresh: 'ØªØ­Ø¯ÙŠØ«',
+    searchPh: 'Ø§Ø¨Ø­Ø« ÙÙŠ Ø§Ù„Ø·Ù„Ø¨Ø§Øª...',
+    filterAll: (n) => `ÙƒÙ„ Ø§Ù„Ø·Ù„Ø¨Ø§Øª (${n})`, filterPending: (n) => `Ù‚ÙŠØ¯ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø± (${n})`, filterProcessing: (n) => `Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø¹Ø§Ù„Ø¬Ø© (${n})`,
+    filterShipped: (n) => `ØªÙ… Ø§Ù„Ø´Ø­Ù† (${n})`, filterDelivered: (n) => `ØªÙ… Ø§Ù„ØªØ³Ù„ÙŠÙ… (${n})`, filterCancelled: (n) => `Ù…Ù„ØºØ§Ø© (${n})`,
+    noMatch: 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ù„Ø¨Ø§Øª Ù…Ø·Ø§Ø¨Ù‚Ø© Ù„Ù…Ø¹Ø§ÙŠÙŠØ±Ùƒ.', placedOn: 'ØªÙ… Ø§Ù„Ø·Ù„Ø¨ ÙÙŠ', itemsCount: (n) => `${n} Ø¹Ù†ØµØ±`, estDelivery: 'Ø§Ù„ØªØ³Ù„ÙŠÙ… Ø§Ù„Ù…ØªÙˆÙ‚Ø¹:',
+    trackOrder: 'ØªØªØ¨Ù‘Ø¹ Ø§Ù„Ø·Ù„Ø¨', details: 'Ø§Ù„ØªÙØ§ØµÙŠÙ„',
   },
   ff: {
     locale: 'en-GB',
-    status: { pending: 'Habbiiɗo', confirmed: 'Teeŋtinaaɗo', processing: 'Ɗon golleera', shipped: 'Nuliraaɗo', out_for_delivery: 'Ɗon ara', delivered: 'Yottinaaɗo', cancelled: 'Haaytiraaɗo' },
-    loading: 'Umrooje ɗon loowee...', errorMsg: 'Umrooje mbaawaa loweede. Tiiɗno eto kadi.', tryAgain: 'Eto kadi',
-    emptyTitle: 'Umre woodaani tawo', emptyDesc: 'A umrii hay huunde tawo. Fuɗɗo soodde ngam yiyde umrooje maa ɗoo!', browse: 'Ndaar luumo',
-    myOrders: 'Umrooje am', totalOrders: (n) => `umrooje ${n} denndaangal`, refresh: 'Hesɗitin',
-    searchPh: 'Ɗaɓɓo umrooje...',
-    filterAll: (n) => `Umrooje fof (${n})`, filterPending: (n) => `Habbiiɗe (${n})`, filterProcessing: (n) => `Ɗe ɗon golleera (${n})`,
-    filterShipped: (n) => `Nuliraaɗe (${n})`, filterDelivered: (n) => `Yottinaaɗe (${n})`, filterCancelled: (n) => `Haaytiraaɗe (${n})`,
-    noMatch: 'Umre fotnde e ko ɗaɓɓuɗaa heɓaaka.', placedOn: 'Umraama ñalnde', itemsCount: (n) => `kuuje ${n}`, estDelivery: 'Jonnugol hiisaaɗo:',
+    status: { pending: 'HabbiiÉ—o', confirmed: 'TeeÅ‹tinaaÉ—o', processing: 'ÆŠon golleera', shipped: 'NuliraaÉ—o', out_for_delivery: 'ÆŠon ara', delivered: 'YottinaaÉ—o', cancelled: 'HaaytiraaÉ—o' },
+    loading: 'Umrooje É—on loowee...', errorMsg: 'Umrooje mbaawaa loweede. TiiÉ—no eto kadi.', tryAgain: 'Eto kadi',
+    emptyTitle: 'Umre woodaani tawo', emptyDesc: 'A umrii hay huunde tawo. FuÉ—É—o soodde ngam yiyde umrooje maa É—oo!', browse: 'Ndaar luumo',
+    myOrders: 'Umrooje am', totalOrders: (n) => `umrooje ${n} denndaangal`, refresh: 'HesÉ—itin',
+    searchPh: 'ÆŠaÉ“É“o umrooje...',
+    filterAll: (n) => `Umrooje fof (${n})`, filterPending: (n) => `HabbiiÉ—e (${n})`, filterProcessing: (n) => `ÆŠe É—on golleera (${n})`,
+    filterShipped: (n) => `NuliraaÉ—e (${n})`, filterDelivered: (n) => `YottinaaÉ—e (${n})`, filterCancelled: (n) => `HaaytiraaÉ—e (${n})`,
+    noMatch: 'Umre fotnde e ko É—aÉ“É“uÉ—aa heÉ“aaka.', placedOn: 'Umraama Ã±alnde', itemsCount: (n) => `kuuje ${n}`, estDelivery: 'Jonnugol hiisaaÉ—o:',
     trackOrder: 'Jokku umre', details: 'Humpito',
   },
 };
@@ -309,3 +309,5 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
     </div>
   );
 }
+
+

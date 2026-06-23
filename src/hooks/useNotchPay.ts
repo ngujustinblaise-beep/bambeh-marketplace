@@ -46,3 +46,4 @@ export const useNotchPay = () => {
 
   return { initiate, withdraw, isLoading, error, generateReference };
 };
+

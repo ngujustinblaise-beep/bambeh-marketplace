@@ -47,3 +47,4 @@ export function isAnalyticsReady(): boolean {
 export function resetAnalyticsInit(): void {
   analyticsInitialized = false;
 }
+

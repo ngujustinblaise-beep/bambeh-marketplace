@@ -479,3 +479,4 @@ export interface DeliveryReceipt {
   deliveredAt: Date;
   readAt?: Date;
 }
+

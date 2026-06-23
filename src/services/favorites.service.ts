@@ -180,3 +180,4 @@ export const toggleFavorite = async (
     throw new Error(formatErrorMessage(error, "Failed to toggle favorite"));
   }
 };
+

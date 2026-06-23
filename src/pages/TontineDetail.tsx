@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/TontineDetail.tsx — Bambeh Marketplace
  *
  * FIXES applied:
@@ -126,7 +126,7 @@ export default function TontineDetail() {
       if (memberData) {
         setMembers(memberData.map(m => ({
           userId:         m.user_id,
-          displayName:    (m.profiles as Record<string, string> | null)?.full_name || 'Member',
+          displayName:    (m.profiles as unknown as Record<string, string> | null)?.full_name || 'Member',
           payoutPosition: m.payout_position,
           hasPaid:        m.has_paid_current_round,
           joinedAt:       m.joined_at,
@@ -159,8 +159,7 @@ export default function TontineDetail() {
       });
 
       // FIX: try RPC increment; fallback to direct update
-      await supabase.rpc('increment_tontine_members', { group_id: group.id })
-        .catch(() =>
+      await supabase.rpc('increment_tontine_members', { group_id: group.id }).then(undefined, () =>
           supabase
             .from('tontine_groups')
             .update({ current_members: group.currentMembers + 1 })
@@ -314,6 +313,8 @@ export default function TontineDetail() {
     </div>
   );
 }
+
+
 
 
 

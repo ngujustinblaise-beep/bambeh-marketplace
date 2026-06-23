@@ -38,3 +38,4 @@ export function useFavorites() {
   return { favorites, toggleFavorite, addFavorite, removeFavorite, isFavorite };
 }
 export default useFavorites;
+

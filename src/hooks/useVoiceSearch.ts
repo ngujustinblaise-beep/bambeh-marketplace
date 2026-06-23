@@ -24,3 +24,4 @@ export function useVoiceSearch(onResult: (text: string) => void) {
 
   return { start, listening };
 }
+

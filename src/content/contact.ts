@@ -1,4 +1,4 @@
-export const contactInfo = {
+﻿export const contactInfo = {
   en: {
     title: "Contact Us",
     categories: [
@@ -22,29 +22,30 @@ export const contactInfo = {
       },
       {
         name: "Headquarters",
-        location: "Yaound�, ",
+        location: "Yaoundï¿½, ",
         purpose: "Primary jurisdiction for all legal contracts and agreements.",
       },
     ],
-    footer: "� 2025 Bambeh. All Rights Reserved.",
+    footer: "ï¿½ 2025 Bambeh. All Rights Reserved.",
   },
   fr: {
     title: "Contactez-nous",
     categories: [
       {
-        name: "Support G�n�ral & Demandes",
+        name: "Support Gï¿½nï¿½ral & Demandes",
         email: "Bambehtheapp@gmail.com",
         purpose:
-          "Pour l'aide technique, les questions sur les fonctionnalit�s et les litiges entre utilisateurs.",
+          "Pour l'aide technique, les questions sur les fonctionnalitï¿½s et les litiges entre utilisateurs.",
       },
       {
-        name: "Questions Financi�res & Urgentes",
+        name: "Questions Financiï¿½res & Urgentes",
         phone: "+237 670 757 326",
         purpose:
-          "Pour les probl�mes de transaction imm�diats, les probl�mes de retrait ou les pr�occupations de s�curit� du compte.",
+          "Pour les problï¿½mes de transaction immï¿½diats, les problï¿½mes de retrait ou les prï¿½occupations de sï¿½curitï¿½ du compte.",
       },
     ],
-    footer: "� 2025 Bambeh. Tous droits r�serv�s.",
+    footer: "ï¿½ 2025 Bambeh. Tous droits rï¿½servï¿½s.",
   },
 };
+
 

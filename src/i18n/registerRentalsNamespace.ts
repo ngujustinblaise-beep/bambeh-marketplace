@@ -106,3 +106,4 @@ setTimeout(safeRegister, 0);
 setTimeout(safeRegister, 500);
 
 export {};
+

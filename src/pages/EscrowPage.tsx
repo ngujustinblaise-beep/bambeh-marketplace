@@ -54,7 +54,7 @@ const MOCK_ESCROW: EscrowTransaction = {
   orderId: 'ORD-2026-00892',
   itemName: 'Samsung Galaxy S24 Ultra - 256GB',
   itemImage: 'https://via.placeholder.com/120x120/0d9488/ffffff?text=??',
-  sellerName: 'TechZone Yaound�',
+  sellerName: 'TechZone Yaound',
   sellerTrustScore: 4.8,
   buyerName: 'You',
   amountXAF: 350000,
@@ -139,7 +139,7 @@ const EscrowPage: React.FC = () => {
             <div>
               <h2 className="font-bold text-lg">Your Money Is Safe</h2>
               <p className="text-teal-100 text-sm mt-1">
-                Your Zerm Coins are locked in escrow � the seller <strong>cannot</strong> access them
+                Your Zerm Coins are locked in escrow  the seller <strong>cannot</strong> access them
                 until you confirm you received your item. If anything goes wrong, we refund you in full.
               </p>
             </div>
@@ -230,7 +230,7 @@ const EscrowPage: React.FC = () => {
                 onClick={() => setShowDisputeModal(true)}
                 className="w-full py-3 bg-red-50 text-red-600 border border-red-200 rounded-xl font-semibold text-sm hover:bg-red-100 transition-all"
               >
-                ?️ I Have a Problem � Raise Dispute
+                ?️ I Have a Problem  Raise Dispute
               </button>
             </div>
           </div>
@@ -352,6 +352,8 @@ const EscrowPage: React.FC = () => {
 };
 
 export default EscrowPage;
+
+
 
 
 

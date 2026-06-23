@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/utils/langBridge.ts — Bambeh Marketplace
  *
  * PURPOSE: When a user selects a language in the LanguageSelection page
@@ -88,7 +88,7 @@ export function useAppLang(): AppLang {
   // Lazy import React to avoid circular dependencies if used outside component tree.
   // In your component files, prefer importing useLangState directly from this module.
   const { useState, useEffect } = require("react");
-  const [lang, setLang] = useState<AppLang>(getAppLang);
+  const [lang, setLang] = useState(getAppLang);
   useEffect(() => {
     const update = () => setLang(getAppLang());
     window.addEventListener("langChange", update);
@@ -100,3 +100,4 @@ export function useAppLang(): AppLang {
   }, []);
   return lang;
 }
+

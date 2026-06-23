@@ -132,3 +132,4 @@ export function requestIdleOrTimeout(callback: () => void, timeoutMs = 2000): vo
     setTimeout(callback, 0);
   }
 }
+

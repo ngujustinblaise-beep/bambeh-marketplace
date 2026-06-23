@@ -1,4 +1,5 @@
-﻿import { useState } from "react";
+﻿import { useLanguage } from '@/App';
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -17,6 +18,9 @@ export default function Subscription() {
     </div>
   );
 }
+
+
+
 
 
 

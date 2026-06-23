@@ -50,3 +50,4 @@ export const useSearch = () => {
 
   return { query, results, search };
 };
+

@@ -6,3 +6,4 @@
   if(q.includes("farm"))  return "/farm-fresh";
   return "/search?q=" + encodeURIComponent(query);
 }
+

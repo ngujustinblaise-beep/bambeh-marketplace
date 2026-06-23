@@ -316,3 +316,4 @@ export const uploadCarImages = async (files: File[]): Promise<string[]> => {
     throw new Error(formatErrorMessage(error, "Failed to upload car images"));
   }
 };
+

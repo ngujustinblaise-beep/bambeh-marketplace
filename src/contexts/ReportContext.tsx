@@ -1,17 +1,10 @@
-﻿/**
+/**
  * REPORT CONTEXT - CENTRALIZED REPORT MANAGEMENT
  * FILE LOCATION: src/contexts/ReportContext.tsx
  * © 2025 Bambeh. All rights reserved.
  */
 
-import React, { useEffect, 
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-} from "react";
+import React, { useEffect, createContext, useContext, useState, useCallback, ReactNode } from "react";
 
 export type ReportType =
   | "scam"
@@ -467,6 +460,8 @@ export const useReports = (): ReportContextType => {
 };
 
 export default ReportContext;
+
+
 
 
 

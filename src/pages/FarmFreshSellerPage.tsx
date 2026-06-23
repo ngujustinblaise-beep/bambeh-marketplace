@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FarmFreshSellerPage.tsx â€” Bambeh Marketplace
  *
  * FIXES:
@@ -452,7 +452,7 @@ export default function FarmFreshSellerPage() {
                   ${errs.description ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
               <div className="flex justify-between text-xs mt-1 text-gray-400">
                 <span>{d.description.length < 20 ? t("minChars", lang) : "âœ“ Good"}</span>
-                <span>{(t("charCount", lang) as (n: number) => string)(d.description.length)}</span>
+                <span>{(t("charCount", lang) as unknown as (n: number) => string)(d.description.length)}</span>
               </div>
               <Err msg={errs.description} />
             </div>
@@ -554,6 +554,8 @@ export default function FarmFreshSellerPage() {
     </div>
   );
 }
+
+
 
 
 

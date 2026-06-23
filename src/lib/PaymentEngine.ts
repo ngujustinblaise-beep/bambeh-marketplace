@@ -18,3 +18,4 @@ export function normalizePayment(payload: PaymentPayload) {
     timestamp: new Date().toISOString(),
   };
 }
+

@@ -1,4 +1,4 @@
-﻿// src/services/index.ts
+// src/services/index.ts
 // Compatibility layer for existing imports
 
 import * as jobs from "./jobs.service";
@@ -27,6 +27,7 @@ export const profileService = profile;
 // Also export everything individually
 export * from "./jobs.service";
 export * from "./marketplace.service";
+export { type ServiceResponse as ServiceListingResponse } from "./services.service";
 export * from "./services.service";
 export * from "./properties.service";
 export * from "./carRentals.service";
@@ -36,3 +37,4 @@ export * from "./vendor.service";
 export * from "./auth.service";
 export * from "./profile.service";
 export * from "./api.config";
+export { type ServiceResponse } from "./marketplace.service";

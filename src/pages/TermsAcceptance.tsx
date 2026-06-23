@@ -165,8 +165,8 @@ export default function TermsAcceptance() {
 
               <p className="mb-4 font-semibold">
                 Welcome to Bambeh ("the App"), a marketplace platform operated
-                by BAMBEH SARL (RC/YAO/2020/A/1026), connecting buyers and
-                sellers digitally across  and beyond.
+                by BAMBEH SARL (RC/YAO/2020/A/1026), CNI/RC Number: CM-NSI-02-2026-B13-00179 as well as NIU Number: M022618405804C, and having as D-U-N-S Number: 850379853. We are connecting buyers and
+                sellers digitally across Afica. Bambeh Marketplace - The Pulse of African Cormmerce.
               </p>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">
@@ -205,7 +205,7 @@ export default function TermsAcceptance() {
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">4. ZERM COINS</h3>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Zerm Coins have no monetary value outside the platform.</li>
+                <li>Zerm Coins have no monetary value outsid	e the platform.</li>
                 <li>They cannot be exchanged for cash.</li>
                 <li>BAMBEH SARL reserves the right to modify Zerm Coin policies with 30 days' notice.</li>
               </ul>
@@ -215,7 +215,7 @@ export default function TermsAcceptance() {
                 The collection and processing of your personal data is governed by
                 's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.
                 You have the right to access, rectify, and request deletion of your data at
-                any time by contacting legal@bambeh.cm. Full details are in our{" "}
+                any time by contacting support@bambeh.cm. Full details are in our{" "}
                 <strong>Privacy Policy</strong> available at bambeh.cm/privacy-policy.
               </p>
 
@@ -273,7 +273,7 @@ export default function TermsAcceptance() {
               <p className="text-center text-sm text-gray-600 mt-8 pb-8">
                 <strong>Last Updated:</strong> January 1, 2026
                 <br />
-                <strong>Contact:</strong> legal@bambeh.cm
+                <strong>Contact:</strong> support@bambeh.cm
                 <br />Â© 2026 BAMBEH SARL â€” RC/YAO/2020/A/1026
               </p>
             </div>
@@ -406,7 +406,7 @@ export default function TermsAcceptance() {
                   <p className="text-xs text-gray-500 mt-2 leading-relaxed">
                     Your data is never sold to third parties. You may withdraw this
                     consent and request deletion of your data at any time by emailing{" "}
-                    <strong>legal@bambeh.cm</strong>. See our full{" "}
+                    <strong>support@bambeh.cm</strong>. See our full{" "}
                     <strong>Privacy Policy</strong> at bambeh.cm/privacy-policy.
                   </p>
                   {ohadaConsented && (
@@ -492,6 +492,8 @@ export default function TermsAcceptance() {
     </div>
   );
 }
+
+
 
 
 

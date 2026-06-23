@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/SearchPanel.tsx
  * Bambeh Marketplace â€” Full-Screen Search Panel
  * Â© 2026 Bambeh Marketplace. All rights reserved.
@@ -33,10 +33,10 @@ interface SearchPanelProps {
 const CATEGORIES: { id: SearchCategory; label: string; emoji: string }[] = [
   { id: "all",         label: "All",        emoji: "ðŸ”" },
   { id: "marketplace", label: "Items",      emoji: "ðŸ›ï¸" },
-  { id: "jobs",        label: "Jobs",       emoji: "ðŸ’¼" },
-  { id: "services",    label: "Services",   emoji: "ðŸ”§" },
-  { id: "rentals",     label: "Rentals",    emoji: "ðŸ " },
-  { id: "vehicles",    label: "Vehicles",   emoji: "ðŸš—" },
+  { id: "job",        label: "Jobs",       emoji: "ðŸ’¼" },
+  { id: "service",    label: "Services",   emoji: "ðŸ”§" },
+  { id: "rental",     label: "Rentals",    emoji: "ðŸ " },
+  { id: "vehicle",    label: "Vehicles",   emoji: "ðŸš—" },
   { id: "exchange",    label: "Exchange",   emoji: "ðŸ”„" },
   { id: "vendors",     label: "Shops",      emoji: "ðŸª" },
 ];
@@ -336,6 +336,8 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
 };
 
 export default SearchPanel;
+
+
 
 
 

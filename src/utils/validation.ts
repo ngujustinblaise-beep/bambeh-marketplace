@@ -19,3 +19,4 @@ export const validatePhone = (phone: string): boolean => {
 export const validatePrice = (price: number): boolean => {
   return price > 0 && price < 999999999999;
 };
+

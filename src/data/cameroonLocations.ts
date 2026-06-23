@@ -76,3 +76,43 @@ export const QUARTIERS_BY_CITY: Record<string, string[]> = {
   // Foumban
   Foumban: ["Centre", "Nkoumadjap", "Njimom"],
 };
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cascading helper functions consumed by LocationSelector.tsx
+// Maps the 2-level data above (region -> city -> quartier) onto the component's
+// expected cascade: Region -> Division -> Subdivision -> Village -> Neighborhood.
+//  - Division     = a city within the region
+//  - Subdivision  = a quartier within that city
+//  - Village / Neighborhood = not modelled in the source data (return [])
+// All functions are pure, never throw, and return [] for unknown inputs.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function getAllRegions(): string[] {
+  return [...REGIONS];
+}
+
+export function getDivisionsForRegion(region: string): string[] {
+  return CITIES_BY_REGION[region] ? [...CITIES_BY_REGION[region]] : [];
+}
+
+export function getSubdivisionsForDivision(_region: string, division: string): string[] {
+  return QUARTIERS_BY_CITY[division] ? [...QUARTIERS_BY_CITY[division]] : [];
+}
+
+export function getVillagesForSubdivision(
+  _region: string,
+  _division: string,
+  _subdivision: string
+): string[] {
+  return [];
+}
+
+export function getNeighborhoodsForVillage(
+  _region: string,
+  _division: string,
+  _subdivision: string,
+  _village: string
+): string[] {
+  return [];
+}

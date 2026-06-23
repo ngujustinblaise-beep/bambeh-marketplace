@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LOCATION TYPE DEFINITIONS
  *
  * Type definitions for  administrative divisions and location handling
@@ -21,7 +21,7 @@ export interface Division {
   subdivisions: Subdivision[];
 }
 
-export interface Region {
+export interface RegionInfo {
   name: string;
   nameFr: string;
   capital: string;
@@ -103,7 +103,7 @@ export interface LocationValidation {
 /**
  * Extended region information with metadata
  */
-export interface RegionInfo extends Region {
+export interface RegionInfo {
   population?: number;
   area?: number; // in square kilometers
   economicActivities?: string[];
@@ -217,4 +217,5 @@ export interface LocationChangeEvent {
   value: string;
   location: Partial<LocationDetails>;
 }
+
 

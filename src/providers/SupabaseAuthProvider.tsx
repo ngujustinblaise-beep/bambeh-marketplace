@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SupabaseAuthProvider.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -19,13 +19,7 @@
  *   const { user, loading } = useSupabaseAuth();
  */
 
-import React, { useEffect, 
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, createContext, useCallback, useContext, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/utils/auth/supabaseAuthGuard";
 
@@ -143,6 +137,8 @@ export function useSupabaseAuth(): SupabaseAuthContextType {
 }
 
 export default SupabaseAuthProvider;
+
+
 
 
 

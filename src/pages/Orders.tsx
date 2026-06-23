@@ -1,16 +1,16 @@
-/**
- * Orders.tsx — Bambeh Marketplace
+﻿/**
+ * Orders.tsx â€” Bambeh Marketplace
  * FILE LOCATION: src/pages/Orders.tsx
  *
  * FIXES FROM ORIGINAL:
- * 1. Track button was linking to /track/:id → goes to 404
+ * 1. Track button was linking to /track/:id â†’ goes to 404
  *    FIXED: Now links to /tracking?orderId=:id (correct route from App.tsx)
  * 2. Orders were hardcoded sample data only
  *    FIXED: Now loads real orders from Supabase "orders" table,
  *    falls back to sample data if table is empty
  * 3. Order status colours and badges improved
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -28,13 +28,13 @@ interface Order {
   createdAt: string;
 }
 
-// ── Sample orders shown when Supabase table is empty ──────────────────────────
+// â”€â”€ Sample orders shown when Supabase table is empty â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SAMPLE_ORDERS: Order[] = [
   { id: "1", orderNumber: "BH-2025-001234", item: "iPhone 13 Pro Max",   status: "In Transit", total: 463500, createdAt: new Date().toISOString() },
   { id: "2", orderNumber: "BH-2025-001233", item: 'Samsung TV 55"',      status: "Delivered",  total: 515000, createdAt: new Date(Date.now() - 86400000).toISOString() },
 ];
 
-// ── Status colour helper ──────────────────────────────────────────────────────
+// â”€â”€ Status colour helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function statusStyle(status: string) {
   switch (status.toLowerCase()) {
     case "delivered":      return "bg-green-100 text-green-700";
@@ -98,7 +98,7 @@ export default function Orders() {
           return;
         }
       }
-      // Not logged in or no orders yet → show sample data
+      // Not logged in or no orders yet â†’ show sample data
       setOrders(SAMPLE_ORDERS);
     } catch {
       setOrders(SAMPLE_ORDERS);
@@ -155,7 +155,7 @@ export default function Orders() {
               <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                 <div className="flex items-start justify-between gap-4">
 
-                  {/* Left — icon + info */}
+                  {/* Left â€” icon + info */}
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
                       <Package className="w-6 h-6 text-teal-600" />
@@ -174,7 +174,7 @@ export default function Orders() {
                     </div>
                   </div>
 
-                  {/* Right — status + track button */}
+                  {/* Right â€” status + track button */}
                   <div className="flex flex-col items-end gap-3 flex-shrink-0">
                     <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold ${statusStyle(order.status)}`}>
                       {statusIcon(order.status)}
@@ -182,7 +182,7 @@ export default function Orders() {
                     </span>
 
                     {/*
-                      FIX: Was linking to /track/:id → 404
+                      FIX: Was linking to /track/:id â†’ 404
                       Now links to /tracking?orderId=:id
                       The /tracking route exists in App.tsx (line 1064-1070).
                       Also aliased as /track-orders and /order-tracking in App.tsx.
@@ -204,6 +204,8 @@ export default function Orders() {
     </div>
   );
 }
+
+
 
 
 

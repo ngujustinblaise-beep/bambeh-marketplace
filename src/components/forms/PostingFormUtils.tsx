@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PostingFormUtils.tsx â€” Bambeh Marketplace
  * Path: src/components/forms/PostingFormUtils.tsx
  * ---------------------------------------------------------------------------
@@ -20,13 +20,7 @@
  * ---------------------------------------------------------------------------
  */
 
-import React, { useEffect, 
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  type ChangeEvent,
-} from "react";
+import React, { useEffect, useState, useCallback, useRef, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -658,6 +652,8 @@ export default {
   useSubmitGuard,
   SuccessModal,
 };
+
+
 
 
 
