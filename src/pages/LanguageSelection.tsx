@@ -90,6 +90,7 @@ export default function LanguageSelection({
     }
 
     localStorage.setItem("Bambeh_language", selectedLanguage);
+    setLanguage(selectedLanguage as any);
     localStorage.setItem(
       "Bambeh_language_selected_date",
       new Date().toISOString(),
@@ -113,6 +114,7 @@ export default function LanguageSelection({
 
   const handleSkip = () => {
     localStorage.setItem("Bambeh_language", "en");
+    setLanguage("en" as any);
     localStorage.setItem(
       "Bambeh_language_selected_date",
       new Date().toISOString(),
