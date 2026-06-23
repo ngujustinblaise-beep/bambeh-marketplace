@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Favorites.tsx - Bambeh Marketplace
  * Saved items from localStorage + Supabase user_favorites.
  * Fully translated live via the singular LanguageContext (no refresh needed).
@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trash2, ShoppingBag, Loader2, Briefcase, Wrench, Car, Leaf, Zap, Home } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 interface FavItem {
   id: string;

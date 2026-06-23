@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AuthLayout.tsx
  * FILE LOCATION: src/components/layout/AuthLayout.tsx
  *
@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 interface AuthLayoutProps {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/MyListings.tsx — Bambeh Marketplace
  *
  * Seller's personal dashboard showing ALL their listings across every category.
@@ -19,7 +19,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

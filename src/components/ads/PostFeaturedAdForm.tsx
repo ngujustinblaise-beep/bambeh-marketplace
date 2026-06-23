@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PostFeaturedAdForm.tsx Ã¢â‚¬Ã¢â‚¬Â Bambeh Marketplace
  * FILE LOCATION: src/components/ads/PostFeaturedAdForm.tsx
  *
@@ -19,7 +19,7 @@
  */
 
 import React, { useState } from "react";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Check, AlertCircle, Loader2 } from "lucide-react";

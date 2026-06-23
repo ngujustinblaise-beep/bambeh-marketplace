@@ -1,5 +1,5 @@
-﻿// @ts-nocheck
-﻿/**
+// @ts-nocheck
+/**
  * ADD ITEM PAGE
  * 
  * Category selection page for creating new listings
@@ -229,7 +229,7 @@ export default function AddItem() {
     </div>
   );
 }
-}
+
 
 
 

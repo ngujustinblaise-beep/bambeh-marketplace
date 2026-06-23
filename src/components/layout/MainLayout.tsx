@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  *
@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";

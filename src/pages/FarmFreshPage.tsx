@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
  *
  * REBUILT & FIXED:
@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/components/CartDrawer";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FarmProduct {

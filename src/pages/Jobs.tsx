@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Jobs.tsx
  * Bambeh Marketplace â€” Find Jobs Page
  * Â© 2026 Bambeh Marketplace. All rights reserved.
@@ -19,7 +19,7 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // â”€â”€â”€ Static data (not translated â€” just identifiers) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LANGUAGE SELECTION - ONBOARDING STEP 2
  * © 2025 Bambeh. All rights reserved.
  */
@@ -6,7 +6,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, CheckCircle, ArrowRight } from "lucide-react";
-import { useLang } from '@/hooks/useAppLang';   
+import { useLanguage } from '@/App';   
 
 const LANGUAGES = [
   {

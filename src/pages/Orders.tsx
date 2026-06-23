@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Orders.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/Orders.tsx
  *
@@ -17,7 +17,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Package, MapPin, Clock, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 interface Order {
   id: string;

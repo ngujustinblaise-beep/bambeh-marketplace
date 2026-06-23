@@ -1,8 +1,8 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "@/types/auth";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 interface SubscriptionBannerProps {
   user: AuthUser | null;

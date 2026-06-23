@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UserSettings.tsx â€” Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  *
@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 type Tab = "general" | "notifications" | "privacy" | "security";
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";

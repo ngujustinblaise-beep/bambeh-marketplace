@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/LanguageSwitcher.tsx — Bambeh Marketplace
  *
  * ✅ Actually calls setLanguage() from LanguageContext (was a no-op before)
@@ -8,7 +8,7 @@
  * ✅ Language changes INSTANTLY app-wide — no page reload required
  */
 import React from "react";
-import { useLang } from '@/hooks/useAppLang';
+import { useLanguage } from '@/App';
 
 interface LanguageSwitcherProps {
   compact?: boolean;
