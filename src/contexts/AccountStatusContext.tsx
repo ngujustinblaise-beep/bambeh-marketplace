@@ -4,7 +4,7 @@
  * © 2025 Bambeh. All rights reserved.
  */
 
-import React, { useEffect, 
+import React, { 
   createContext,
   useContext,
   useState,

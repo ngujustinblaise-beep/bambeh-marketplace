@@ -1,4 +1,4 @@
-﻿const AVAILABLE_LANGUAGES = ['en','fr','ar','ha','pcm','ful'];
+const AVAILABLE_LANGUAGES = ['en','fr','ar','ha','pcm','ful'];
 
 /**
  * App.tsx — Bambeh Online Marketplace
@@ -93,7 +93,7 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     home:"Home", jobs:"Jobs", marketplace:"Marketplace", services:"Services",
     rentals:"Rentals", vehicles:"Vehicles", exchange:"Exchange", community:"Community",
     sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
-    logout:"Logout", settings:"Settings", favorites:"Favorites", orders:"Orders",
+    logout:"Logout", profile:"Profile", settings:"Settings", favorites:"Favorites", orders:"Orders",
     back:"Back", cancel:"Cancel", save:"Save", loading:"Loading…",
     error:"Something went wrong. Please try again.", retry:"Retry", seeAll:"See all",
     tryAgain:"Try Again", share:"Share", copyLink:"Link copied!",
@@ -229,7 +229,7 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     home:"Home", jobs:"Jobs", marketplace:"Market", services:"Services",
     rentals:"Rentals", vehicles:"Cars", exchange:"Exchange", community:"Community",
     sell:"Sell", buy:"Buy", search:"Search", login:"Login", register:"Register",
-    logout:"Logout", settings:"Settings", favorites:"Favorites", orders:"Orders",
+    logout:"Logout", profile:"Profile", settings:"Settings", favorites:"Favorites", orders:"Orders",
     back:"Back", cancel:"Cancel", save:"Save", loading:"E dey load…",
     error:"Something spoil. Try again.", retry:"Try Again", seeAll:"See all",
     tryAgain:"Try again", share:"Share", copyLink:"Link don copy!",

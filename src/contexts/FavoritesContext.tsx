@@ -1,9 +1,9 @@
-﻿/**
+/**
  * FAVORITES CONTEXT
  * Manages user's favorite items (jobs, products, services, rentals)
  */
 
-import React, { useEffect, 
+import React, { 
   createContext,
   useContext,
   useState,

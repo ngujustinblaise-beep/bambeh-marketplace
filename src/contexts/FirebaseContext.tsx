@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/contexts/FirebaseContext.tsx
  * Firebase FCM Context — Bambeh Marketplace
  *
@@ -9,7 +9,7 @@
  * Use useFirebase() hook instead — resolves the Vite bundle split warning.
  */
 
-import React, { useEffect, 
+import React, { 
   createContext,
   useContext,
   useEffect,

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/contexts/SearchBar.tsx
  * Bambeh Marketplace — Search Bar Context & Provider
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -12,7 +12,7 @@
  * — SearchBarState and SearchBarActions export the scope API.
  */
 
-import React, { useEffect, 
+import React, { 
   createContext,
   useContext,
   useState,
