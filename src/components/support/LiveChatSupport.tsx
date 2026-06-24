@@ -46,7 +46,7 @@ export default function LiveChatSupport({ buttonText = 'Start Live Chat', classN
       return ["Great question about subscriptions! 🌟", "Bambeh offers Free, Basic (1,500 XAF/month), Premium (2,500 XAF/month), and Business (5,000 XAF/month) plans.", "Each plan comes with different features. Would you like me to connect you with a support agent for more details?"];
     }
     if (lc.includes('payment') || lc.includes('pay') || lc.includes('momo') || lc.includes('orange money')) {
-      return ["For payments, Bambeh accepts: 💳", "• MTN Mobile Money\n• Orange Money\n• Credit/Debit Cards", "We charge only 1% transaction fee - the lowest in ! 💚"];
+      return ["For payments, Bambeh accepts: 💳", "• MTN Mobile Money\n• Orange Money\n• Credit/Debit Cards", "We charge only 1% transaction fee - The lowest you will see online. 💚"];
     }
     if (lc.includes('sell') || lc.includes('list') || lc.includes('post')) {
       return ["Selling on Bambeh is easy! 📦", "1. Create an account\n2. Click 'Post Ad'\n3. Add photos and description\n4. Set your price\n5. Publish!", "Free users can post 1 listing per month. Upgrade for unlimited listings!"];
