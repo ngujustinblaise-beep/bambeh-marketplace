@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/vendor/VerifiedSeller.tsx
  * Bambeh Marketplace — Verified Seller Application Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -76,7 +76,7 @@ const VerifiedSeller: React.FC = () => {
 
   const uploadDoc = useCallback(async (file: File, type: "id" | "business"): Promise<string | null> => {
     const path = `verifications/${vendorId}/${type}_${Date.now()}_${file.name}`;
-    const { error: uploadErr } = await supabase.storage.from("vendor-docs").upload(path, file, { upsert: true });
+    const { error: uploadErr } = await supabase.storage.from("verification-docs").upload(path, file, { upsert: true });
     if (uploadErr) return null;
     return path;
   }, [vendorId]);

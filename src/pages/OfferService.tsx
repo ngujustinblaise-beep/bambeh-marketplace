@@ -610,10 +610,10 @@ export default function OfferService() {
       const ext  = imgFiles[i].name.split('.').pop() ?? 'jpg';
       const path = `service-images/${userId}/${Date.now()}-${i}.${ext}`;
       const { error } = await supabase.storage
-        .from('farm-images')
+        .from('service-images')
         .upload(path, imgFiles[i], { upsert: false });
       if (!error) {
-        const { data: pub } = supabase.storage.from('farm-images').getPublicUrl(path);
+        const { data: pub } = supabase.storage.from('service-images').getPublicUrl(path);
         if (pub?.publicUrl) urls.push(pub.publicUrl);
       }
     }

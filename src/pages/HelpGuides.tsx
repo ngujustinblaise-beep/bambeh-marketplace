@@ -1,298 +1,94 @@
-﻿/**
- * src/pages/HelpGuides.tsx — Bambeh Marketplace
- * FIXED: Was a stub. Now a full help center with categories and guides.
- */
+import { Link } from "react-router-dom";
+import { BookOpen, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/App";
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  ArrowLeft, BookOpen, ShoppingBag, Briefcase, Shield,
-  CreditCard, Zap, ChevronRight, Search, MessageCircle
-} from 'lucide-react';
-import { useLang, t } from "@/hooks/useAppLang";
-
-interface Guide {
-  id: string;
-  title: string;
-  summary: string;
-  content: string;
-}
-
-interface Category {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  color: string;
-  guides: Guide[];
-}
-
-const CATEGORIES: Category[] = [
-  {
-    id: 'getting-started',
-    title: 'Getting Started',
-    icon: <BookOpen className="w-5 h-5" />,
-    color: 'bg-teal-50 text-teal-700 border-teal-200',
-    guides: [
-      {
-        id: 'gs-1', title: 'How to create an account',
-        summary: 'Sign up with email or phone in under 2 minutes.',
-        content: '1. Open Bambeh and tap "Sign Up"\n2. Enter your email or phone number\n3. Choose a strong password\n4. Verify your email or phone\n5. Complete your profile with your name and photo\n\nYour account is now ready to buy and sell!',
-      },
-      {
-        id: 'gs-2', title: 'How to subscribe to a plan',
-        summary: 'Unlock all features with Daily, Weekly, or Monthly plan.',
-        content: '1. Tap the "Subscribe" button on any gated page\n2. Enter your MTN MoMo or Orange Money number\n3. Choose your plan:\n   • Daily — 100 XAF (24 hours)\n   • Weekly — 500 XAF (7 days)\n   • Monthly — 1500 XAF (30 days)\n4. Approve the payment prompt on your phone\n5. Access unlocks instantly!',
-      },
-      {
-        id: 'gs-3', title: 'How to post a listing',
-        summary: 'Sell items, post jobs, or offer services.',
-        content: '1. Tap the + (Add) button at the bottom\n2. Choose your listing type: Sell Item, Post Job, Offer Service, or List Property\n3. Fill in the title, description, price, and location\n4. Add photos (up to 6)\n5. Tap "Post" — your listing is now live and visible to all users!',
-      },
-    ],
-  },
-  {
-    id: 'buying',
-    title: 'Buying',
-    icon: <ShoppingBag className="w-5 h-5" />,
-    color: 'bg-blue-50 text-blue-700 border-blue-200',
-    guides: [
-      {
-        id: 'buy-1', title: 'How to contact a seller',
-        summary: 'Message or call sellers directly from any listing.',
-        content: '1. Open the listing you are interested in\n2. Tap "Message" to chat with the seller\n   OR tap "Call" if they have listed a phone number\n3. Negotiate the price if needed\n4. Agree on meeting point or delivery\n\nTip: Always meet in a public place for safety.',
-      },
-      {
-        id: 'buy-2', title: 'How escrow protection works',
-        summary: 'Pay safely — funds held until you confirm delivery.',
-        content: '1. Request escrow when buying expensive items\n2. Pay through Bambeh — funds are held securely\n3. Seller ships or delivers the item\n4. You inspect the item\n5. If all good: tap "Release Funds" → seller gets paid\n6. If there is a problem: tap "Dispute" → our team mediates within 48 hours\n\nEscrow protects both buyers and sellers.',
-      },
-      {
-        id: 'buy-3', title: 'How to add items to favorites',
-        summary: 'Save items to compare or buy later.',
-        content: '1. Open any listing\n2. Tap the heart ♡ icon at the top right\n3. The item is saved to your Favorites\n4. Find all saved items under Profile → Favorites\n\nFavorites sync across all your devices.',
-      },
-    ],
-  },
-  {
-    id: 'selling',
-    title: 'Selling',
-    icon: <Briefcase className="w-5 h-5" />,
-    color: 'bg-green-50 text-green-700 border-green-200',
-    guides: [
-      {
-        id: 'sell-1', title: 'Tips for a great listing',
-        summary: 'Get more buyers with these simple tips.',
-        content: 'Title: Be specific — "Samsung Galaxy A54 128GB" not just "Phone"\n\nPhotos: Add at least 3 clear photos from different angles\n\nPrice: Research what similar items sell for. Mark as "Negotiable" if flexible.\n\nDescription: Include condition, age, reason for selling, and any flaws.\n\nLocation: Always add your city — buyers filter by location.',
-      },
-      {
-        id: 'sell-2', title: 'How to edit or delete a listing',
-        summary: 'Update your listing at any time.',
-        content: '1. Go to Profile → My Listings\n2. Find the listing you want to change\n3. Tap the pencil ✏️ icon to edit\n   OR tap the trash 🗑️ icon to delete\n4. Make your changes and tap Save\n\nEdited listings update instantly on all devices.',
-      },
-    ],
-  },
-  {
-    id: 'safety',
-    title: 'Safety & Security',
-    icon: <Shield className="w-5 h-5" />,
-    color: 'bg-red-50 text-red-700 border-red-200',
-    guides: [
-      {
-        id: 'safe-1', title: 'How to meet safely',
-        summary: 'Best practices for in-person transactions.',
-        content: 'Always:\n✅ Meet in a public place (market, café, shopping mall)\n✅ Bring a friend or tell someone where you are going\n✅ Test electronics before paying\n✅ Count cash before handing over the item\n✅ Trust your instincts — if something feels wrong, leave\n\nNever:\n❌ Send money before seeing the item\n❌ Meet in isolated locations\n❌ Share your home address with strangers',
-      },
-      {
-        id: 'safe-2', title: 'How to spot and report scams',
-        summary: 'Protect yourself from fraudulent listings.',
-        content: 'Warning signs:\n🚩 Price too good to be true\n🚩 Seller asks you to pay first before meeting\n🚩 Asks you to pay via bank transfer to unknown account\n🚩 Rushes you to decide quickly\n🚩 Refuses to meet in person\n\nIf you spot a scam:\n1. Do not pay anything\n2. Open the listing → tap ⋯ → "Report Listing"\n3. Our team reviews all reports within 24 hours',
-      },
-    ],
-  },
-  {
-    id: 'payments',
-    title: 'Payments',
-    icon: <CreditCard className="w-5 h-5" />,
-    color: 'bg-purple-50 text-purple-700 border-purple-200',
-    guides: [
-      {
-        id: 'pay-1', title: 'Accepted payment methods',
-        summary: 'MTN MoMo, Orange Money, and more.',
-        content: 'Bambeh accepts:\n📱 MTN Mobile Money\n🟠 Orange Money\n💳 Visa / Mastercard\n🏦 Express Union\n\nFor subscriptions: pay directly from the subscription page.\nFor item purchases: agree with the seller — most use mobile money.\nFor escrow: Bambeh holds funds securely via CamPay.',
-      },
-      {
-        id: 'pay-2', title: 'What are Zerm Coins?',
-        summary: 'Bambeh\'s digital rewards currency.',
-        content: 'Zerm Coins (ZC) are Bambeh\'s loyalty currency.\n\nEarn coins by:\n⭐ Referring friends to Bambeh\n⭐ Daily login bonus\n⭐ Completing your profile\n⭐ Buying from verified sellers\n\nSpend coins on:\n💎 Boosting your listings\n💎 Unlocking premium features\n💎 Sending as gifts to other users\n\nFind your Zerm Coins balance under Profile → Wallet.',
-      },
-    ],
-  },
-  {
-    id: 'features',
-    title: 'Special Features',
-    icon: <Zap className="w-5 h-5" />,
-    color: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    guides: [
-      {
-        id: 'feat-1', title: 'How group buying works',
-        summary: 'More buyers = lower price for everyone.',
-        content: '1. Browse Group Deals from the home screen\n2. Tap "Join Deal" on a product you want\n3. Share the deal with friends\n4. When enough people join, the deal activates\n5. Everyone pays the reduced group price\n6. Order is placed together — you all receive your items\n\nThe more people join, the bigger the discount!',
-      },
-      {
-        id: 'feat-2', title: 'How tontine (njangi) groups work',
-        summary: 'Digital version of \'s traditional savings group.',
-        content: 'A tontine on Bambeh works like a traditional njangi:\n\n1. Join or create a group\n2. All members contribute an agreed amount each cycle\n3. One member receives the pot each cycle\n4. Cycle continues until everyone has received once\n\nBambeh\'s tontine is digital — contributions tracked automatically, no cash handling needed.',
-      },
-      {
-        id: 'feat-3', title: 'How to exchange items',
-        summary: 'Swap your item for someone else\'s — no money needed.',
-        content: '1. Go to Exchange from the menu\n2. Browse items people want to swap\n3. Tap "Make an Offer" and describe what you\'ll offer in return\n4. The owner reviews your offer and accepts or declines\n5. If accepted, arrange the swap via chat\n\nExchange is perfect when you want something but prefer to trade instead of pay cash.',
-      },
-    ],
-  },
-];
+type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
+const T: Record<Lang, Record<string,string>> = {
+  en: { title:"Help Guides", subtitle:"Step-by-step guides to get the most out of Bambeh",
+    g1t:"Getting Started", g1d:"Create your account and set up your profile in minutes.",
+    g2t:"Posting Your First Ad", g2d:"Learn how to create a listing that sells fast.",
+    g3t:"Buying Safely", g3d:"Tips to buy with confidence and avoid scams.",
+    g4t:"Selling Like a Pro", g4d:"Price right, photograph well, and close more deals.",
+    g5t:"Using Zerm Coins", g5d:"Pay, boost listings, and transfer coins to friends.",
+    g6t:"Staying Safe", g6d:"Meet safely and protect your personal information.",
+    read:"Read guide", back:"Back to Help Center" },
+  fr: { title:"Guides d'aide", subtitle:"Des guides pas \u00E0 pas pour tirer le meilleur de Bambeh",
+    g1t:"Pour commencer", g1d:"Cr\u00E9ez votre compte et configurez votre profil en quelques minutes.",
+    g2t:"Publier votre premi\u00E8re annonce", g2d:"Apprenez \u00E0 cr\u00E9er une annonce qui se vend vite.",
+    g3t:"Acheter en s\u00E9curit\u00E9", g3d:"Conseils pour acheter en confiance et \u00E9viter les arnaques.",
+    g4t:"Vendre comme un pro", g4d:"Fixez le bon prix, photographiez bien et concluez plus de ventes.",
+    g5t:"Utiliser les Zerm Coins", g5d:"Payez, boostez vos annonces et transf\u00E9rez des coins.",
+    g6t:"Rester en s\u00E9curit\u00E9", g6d:"Rencontrez-vous en s\u00E9curit\u00E9 et prot\u00E9gez vos informations.",
+    read:"Lire le guide", back:"Retour au centre d'aide" },
+  pidgin: { title:"Help Guides", subtitle:"Step-by-step guide dem to use Bambeh well",
+    g1t:"How to Start", g1d:"Open your account and set your profile for small time.",
+    g2t:"Post Your First Ad", g2d:"Learn how to create listing wey go sell fast.",
+    g3t:"Buy Safe", g3d:"Tips to buy with mind rest and avoid scam.",
+    g4t:"Sell Like Pro", g4d:"Price am well, snap good photo, and close plenty deal.",
+    g5t:"Use Zerm Coins", g5d:"Pay, boost listing, and send coin give friend.",
+    g6t:"Stay Safe", g6d:"Meet safe and protect your personal info.",
+    read:"Read guide", back:"Go back to Help Center" },
+  ar: { title:"\u0623\u062F\u0644\u0651\u0629 \u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629", subtitle:"\u0623\u062F\u0644\u0651\u0629 \u062E\u0637\u0648\u0629 \u0628\u062E\u0637\u0648\u0629 \u0644\u0644\u0627\u0633\u062A\u0641\u0627\u062F\u0629 \u0627\u0644\u0642\u0635\u0648\u0649 \u0645\u0646 Bambeh",
+    g1t:"\u0627\u0644\u0628\u062F\u0621", g1d:"\u0623\u0646\u0634\u0626 \u062D\u0633\u0627\u0628\u0643 \u0648\u0627\u0636\u0628\u0637 \u0645\u0644\u0641\u0643 \u0641\u064A \u062F\u0642\u0627\u0626\u0642.",
+    g2t:"\u0646\u0634\u0631 \u0623\u0648\u0644 \u0625\u0639\u0644\u0627\u0646", g2d:"\u062A\u0639\u0644\u0651\u0645 \u0643\u064A\u0641 \u062A\u0646\u0634\u0626 \u0625\u0639\u0644\u0627\u0646\u064B\u0627 \u064A\u0628\u064A\u0639 \u0628\u0633\u0631\u0639\u0629.",
+    g3t:"\u0627\u0644\u0634\u0631\u0627\u0621 \u0628\u0623\u0645\u0627\u0646", g3d:"\u0646\u0635\u0627\u0626\u062D \u0644\u0644\u0634\u0631\u0627\u0621 \u0628\u062B\u0642\u0629 \u0648\u062A\u062C\u0646\u0651\u0628 \u0627\u0644\u0627\u062D\u062A\u064A\u0627\u0644.",
+    g4t:"\u0627\u0644\u0628\u064A\u0639 \u0628\u0627\u062D\u062A\u0631\u0627\u0641", g4d:"\u062D\u062F\u0651\u062F \u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0635\u062D\u064A\u062D\u060C \u0635\u0648\u0651\u0631 \u062C\u064A\u062F\u064B\u0627\u060C \u0648\u0623\u062A\u0645\u0650\u0645 \u0635\u0641\u0642\u0627\u062A \u0623\u0643\u062B\u0631.",
+    g5t:"\u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0639\u0645\u0644\u0627\u062A Zerm", g5d:"\u0627\u062F\u0641\u0639\u060C \u0639\u0632\u0651\u0632 \u0625\u0639\u0644\u0627\u0646\u0627\u062A\u0643\u060C \u0648\u062D\u0648\u0651\u0644 \u0627\u0644\u0639\u0645\u0644\u0627\u062A \u0644\u0644\u0623\u0635\u062F\u0642\u0627\u0621.",
+    g6t:"\u0627\u0644\u0628\u0642\u0627\u0621 \u0622\u0645\u0646\u064B\u0627", g6d:"\u0627\u0644\u062A\u0642\u0650 \u0628\u0623\u0645\u0627\u0646 \u0648\u0627\u062D\u0645\u0650 \u0645\u0639\u0644\u0648\u0645\u0627\u062A\u0643 \u0627\u0644\u0634\u062E\u0635\u064A\u0629.",
+    read:"\u0627\u0642\u0631\u0623 \u0627\u0644\u062F\u0644\u064A\u0644", back:"\u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u0649 \u0645\u0631\u0643\u0632 \u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629" },
+  ff: { title:"Gardanleeji ballal", subtitle:"Gardanleeji ce\u00F1u-ce\u00F1u ngam huutoraade Bambeh no woory",
+    g1t:"Fu\u0257\u0257orde", g1d:"Sos konte maa tawaa teelaa profil maa nder hojomaaji se\u0257a.",
+    g2t:"Neldugol jeeyngal maa adan", g2d:"Janngu no neldirtaa jeeyngal ngal yeeyata law.",
+    g3t:"Soodgol e kisal", g3d:"Waajuuji ngam soodde e hoolaare e wo\u0257\u0257itaade nguyka.",
+    g4t:"Yeeygol no annduɓe", g4d:"Teel coggu mo\u01B4\u01B4u, na\u0257u natal mo\u01B4\u01B4o, timmin njulaaku buy.",
+    g5t:"Huutoraade Zerm Coins", g5d:"Yo\u0253u, \u0253eydu jeeyngeeji, neldu koppe to gi\u01B4i\u0253e.",
+    g6t:"Heddaade e kisal", g6d:"Hawru e kisal tawaa a reena kabaruuji maa keeri\u0257i.",
+    read:"Janngu gardanle", back:"Rutto to galle ballal" },
+};
 
 export default function HelpGuides() {
-  const lang = useLang();
+  const { language } = useLanguage();
+  const lang: Lang = (["en","fr","pidgin","ar","ff"].includes(language) ? language : "en") as Lang;
+  const tr = (k:string) => T[lang][k] || T.en[k] || k;
   const isRtl = lang === "ar";
-  const navigate   = useNavigate();
-  const [search,   setSearch]   = useState('');
-  const [selected, setSelected] = useState<Guide | null>(null);
-  const [catOpen,  setCatOpen]  = useState<string | null>(null);
-
-  const searchResults = search.trim().length > 1
-    ? CATEGORIES.flatMap(c => c.guides).filter(g =>
-        g.title.toLowerCase().includes(search.toLowerCase()) ||
-        g.summary.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
-
-  // ── Guide detail view ──────────────────────────────────────────────────────
-  if (selected) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setSelected(null)} className="p-2 hover:bg-gray-100 rounded-xl">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="font-bold text-gray-900 flex-1 text-sm leading-tight">{selected.title}</h1>
-        </div>
-        <div className="max-w-lg mx-auto p-5">
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h2 className="font-bold text-gray-900 text-lg mb-1">{selected.title}</h2>
-            <p className="text-gray-500 text-sm mb-4">{selected.summary}</p>
-            <div className="border-t pt-4">
-              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{selected.content}</p>
-            </div>
-          </div>
-          <div className="mt-4 bg-teal-50 border border-teal-200 rounded-2xl p-4 flex gap-3 items-start">
-            <MessageCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-teal-800 mb-1">Still need help?</p>
-              <p className="text-xs text-teal-600 mb-2">Our support team responds within 24 hours.</p>
-              <button onClick={() => navigate('/help/contact-support')}
-                className="text-xs bg-teal-600 text-white px-3 py-1.5 rounded-lg font-semibold">
-                Contact Support
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Main list view ─────────────────────────────────────────────────────────
+  const guides = [
+    { t:"g1t", d:"g1d", path:"/help/getting-started",   color:"from-blue-500 to-blue-700" },
+    { t:"g2t", d:"g2d", path:"/help/how-to-post-ad",     color:"from-green-500 to-green-700" },
+    { t:"g3t", d:"g3d", path:"/help/buying-selling",     color:"from-teal-500 to-teal-700" },
+    { t:"g4t", d:"g4d", path:"/help/setting-right-price",color:"from-amber-500 to-amber-700" },
+    { t:"g5t", d:"g5d", path:"/help/understanding-zerm-coins", color:"from-yellow-500 to-amber-600" },
+    { t:"g6t", d:"g6d", path:"/help/meeting-safely",     color:"from-red-500 to-red-700" },
+  ];
   return (
-    <div className="min-h-screen bg-gray-50 pb-10">
-      <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-xl">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="font-bold text-gray-900">Help Guides</h1>
-      </div>
-
-      <div className="max-w-lg mx-auto px-4 py-4 space-y-4">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search guides..."
-            className="w-full pl-9 pr-4 py-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500 bg-white"
-          />
+    <div dir={isRtl ? "rtl":"ltr"} className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="bg-gradient-to-r from-teal-600 to-teal-800 text-white rounded-2xl p-8 mb-8">
+          <div className="flex items-center gap-3">
+            <BookOpen className="w-12 h-12" />
+            <div>
+              <h1 className="text-4xl font-bold">{tr("title")}</h1>
+              <p className="text-teal-100">{tr("subtitle")}</p>
+            </div>
+          </div>
         </div>
-
-        {/* Search results */}
-        {search.trim().length > 1 && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            {searchResults.length === 0 ? (
-              <p className="text-center py-6 text-gray-400 text-sm">No guides found for "{search}"</p>
-            ) : (
-              searchResults.map(guide => (
-                <button key={guide.id} onClick={() => setSelected(guide)}
-                  className="w-full text-left px-4 py-3 border-b last:border-0 hover:bg-gray-50 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">{guide.title}</p>
-                    <p className="text-xs text-gray-500">{guide.summary}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                </button>
-              ))
-            )}
-          </div>
-        )}
-
-        {/* Categories */}
-        {!search.trim() && CATEGORIES.map(cat => (
-          <div key={cat.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <button
-              onClick={() => setCatOpen(catOpen === cat.id ? null : cat.id)}
-              className="w-full px-4 py-4 flex items-center gap-3 hover:bg-gray-50"
-            >
-              <div className={`p-2 rounded-xl border ${cat.color}`}>
-                {cat.icon}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {guides.map(g => (
+            <Link key={g.path} to={g.path} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden group">
+              <div className={`bg-gradient-to-r ${g.color} h-2`} />
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{tr(g.t)}</h3>
+                <p className="text-gray-600 mb-4">{tr(g.d)}</p>
+                <span className="inline-flex items-center gap-1 text-teal-600 font-semibold group-hover:gap-2 transition-all">
+                  {tr("read")}<ArrowRight className="w-4 h-4" />
+                </span>
               </div>
-              <span className="flex-1 text-left font-semibold text-gray-900 text-sm">{cat.title}</span>
-              <span className="text-xs text-gray-400 mr-1">{cat.guides.length} guides</span>
-              <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${catOpen === cat.id ? 'rotate-90' : ''}`} />
-            </button>
-
-            {catOpen === cat.id && (
-              <div className="border-t">
-                {cat.guides.map(guide => (
-                  <button
-                    key={guide.id}
-                    onClick={() => setSelected(guide)}
-                    className="w-full text-left px-4 py-3 border-b last:border-0 hover:bg-gray-50 flex items-center justify-between gap-3 pl-14"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-sm">{guide.title}</p>
-                      <p className="text-xs text-gray-400 truncate">{guide.summary}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-
-        {/* Contact support */}
-        <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-5 text-white">
-          <h3 className="font-bold mb-1">Can't find what you need?</h3>
-          <p className="text-teal-100 text-sm mb-3">Our team is here to help, 7 days a week.</p>
-          <button onClick={() => navigate('/help/contact-support')}
-            className="bg-white text-teal-700 font-bold px-4 py-2 rounded-xl text-sm">
-            Contact Support →
-          </button>
+            </Link>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <Link to="/help" className="text-teal-600 hover:text-teal-700 font-semibold">{"\u2190 "}{tr("back")}</Link>
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
-

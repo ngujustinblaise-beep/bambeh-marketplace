@@ -27,7 +27,7 @@ export const profileService = profile;
 // Also export everything individually
 export * from "./jobs.service";
 export * from "./marketplace.service";
-export * from "./services.service";
+
 export * from "./properties.service";
 export * from "./carRentals.service";
 export * from "./cart.service";
@@ -36,3 +36,4 @@ export * from "./vendor.service";
 export * from "./auth.service";
 export * from "./profile.service";
 export * from "./api.config";
+

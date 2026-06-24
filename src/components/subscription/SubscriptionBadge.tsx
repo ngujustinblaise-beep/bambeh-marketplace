@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import type { SubscriptionTier } from "../../types/subscription";
 import { useLanguage } from '@/App';
@@ -20,12 +20,13 @@ const SubscriptionBadge: React.FC<SubscriptionBadgeProps> = ({ tier, compact }) 
   const cfg = BADGE_CONFIG[tier];
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.color}`}>
-      {compact ? tier[0].toUpperCase() : t("subBadge." + tier)}
+      {compact ? tier[0].toUpperCase() : cfg.label}
     </span>
   );
 };
 
 export default SubscriptionBadge;
+
 
 
 

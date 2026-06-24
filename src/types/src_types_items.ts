@@ -123,6 +123,9 @@ export type ExperienceLevel =
   | "no_experience";
 
 export interface JobListing {
+  applyMethod?: "whatsapp" | "call" | "email" | "in_app";
+  applyContact?: string;
+  companyLogoUrl?: string;
   id: string;
   employerId: string;
   employer?: SellerInfo;
@@ -243,3 +246,4 @@ export interface ItemFilters {
   page?: number;
   pageSize?: number;
 }
+

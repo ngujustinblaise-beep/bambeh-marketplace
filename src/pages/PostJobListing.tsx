@@ -120,11 +120,11 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
           const ext  = logoFile.name.split(".").pop() ?? "jpg";
           const path = `job-logos/${userId}-${Date.now()}.${ext}`;
           const { error: upErr } = await supabase.storage
-            .from("listings-media")
+            .from("job-logos")
             .upload(path, logoFile, { upsert: true });
           if (!upErr) {
             const { data: urlData } = supabase.storage
-              .from("listings-media")
+              .from("job-logos")
               .getPublicUrl(path);
             logoUrl = urlData?.publicUrl;
           }

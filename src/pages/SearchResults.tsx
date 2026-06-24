@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/SearchResults.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -145,7 +145,7 @@ export default function SearchResults() {
 
       for (const type of typesToSearch) {
         let dbQuery = supabase
-          .from('farm-images')
+          .from('listings')
           .select('id, type, title, description, price, category, condition, location, country, images, created_at, extra')
           .eq('status', 'active')
           .eq('type', type)
@@ -262,11 +262,11 @@ export default function SearchResults() {
 
   // ── URL sync on search ────────────────────────────────────────────────────────
   function handleSearch() {
-if (query.toLowerCase().includes('car')) {
+if (query.toLowerCase().includes("car") || query.toLowerCase().includes("vehicle")) {
   navigate('/vehicles')
   return
 }
-if (query.toLowerCase().includes('house')) {
+if (query.toLowerCase().includes("house") || query.toLowerCase().includes("apartment")) {
   navigate('/rentals')
   return
 }
@@ -522,6 +522,7 @@ if (query.toLowerCase().includes('job') || query.toLowerCase().includes('work'))
     </div>
   );
 }
+
 
 
 

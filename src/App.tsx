@@ -97,27 +97,27 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     back:"Back", cancel:"Cancel", save:"Save", loading:"Loading…",
     error:"Something went wrong. Please try again.", retry:"Retry", seeAll:"See all",
     tryAgain:"Try Again", share:"Share", copyLink:"Link copied!",
-    jobsTitle:"Find Jobs ??", postJob:"+ Post Job",
+    jobsTitle:"Find Jobs \u{1F4BC}", postJob:"+ Post Job",
     jobSearchPlaceholder:"Search jobs or companies…",
     opportunities:"opportunities across Cameroon",
     filters:"Filters", mostRecent:"Most Recent",
-    clearFilters:"? Clear all filters", jobType:"Job Type", region:"Region",
-    jobsFound:"jobs found", newestFirst:"newest first", refresh:"? Refresh",
+    clearFilters:"\u{1F5D1}\u{FE0F} Clear all filters", jobType:"Job Type", region:"Region",
+    jobsFound:"jobs found", newestFirst:"newest first", refresh:"\u{1F504} Refresh",
     noJobs:"No jobs posted yet", noJobsHint:"Be the first to post a job opportunity!",
     noMatch:"No jobs match your filters", clearAll:"Clear all filters",
-    applyNow:"?? Apply Now", views:"views", negotiable:"Negotiable",
+    applyNow:"\u{1F4DD} Apply Now", views:"views", negotiable:"Negotiable",
     salaryNotSpec:"Salary not specified", deadline:"Deadline", remote:"Remote",
     jobError:"Could not load jobs. Check your connection.", salary:"Monthly Salary",
     allJobs:"All Jobs", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No jobs posted yet", checkBack:"Check back soon or post one yourself!",
-    viewApply:"View & Apply ?", loadMore:"Load More Jobs",
-    closed:"? Closed — Deadline passed", closingSoon:"? Closing soon",
+    viewApply:"View & Apply \u{1F449}", loadMore:"Load More Jobs",
+    closed:"\u{1F512} Closed — Deadline passed", closingSoon:"\u{23F0} Closing soon",
     today:"Today!", dLeft:"d left",
     jobNotFound:"Job not found", jobLoading:"Loading job details…",
     jobDescription:"Job Description", requirements:"Requirements & Skills",
     benefits:"Benefits & Perks", jobApplyNow:"Apply Now",
     applyWhatsApp:"Apply via WhatsApp", applyCall:"Call to Apply",
-    applyEmail:"Apply via Email", applied:"Application Sent ?",
+    applyEmail:"Apply via Email", applied:"Application Sent \u{2705}",
     applying:"Sending application…", alreadyApplied:"You already applied for this job",
     expired:"This job has expired", deadline2:"Application deadline",
     candidates:"applicants", views2:"views", published:"Published",
@@ -138,8 +138,8 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     benefitsPh:"Health insurance, transport allowance, bonuses…",
     tagsLabel:"Skills / Tags (comma separated)", tagsPh:"React, Node.js, Marketing…",
     howApply:"How should candidates apply?",
-    applyInApp:"?? Through Bambeh Platform", applyWhatsAppOpt:"?? WhatsApp",
-    applyCallOpt:"?? Phone Call", applyEmailOpt:"?? Email",
+    applyInApp:"\u{1F4F1} Through Bambeh Platform", applyWhatsAppOpt:"\u{1F4AC} WhatsApp",
+    applyCallOpt:"\u{1F4DE} Phone Call", applyEmailOpt:"\u{2709}\u{FE0F} Email",
     applyContactPh:"Enter phone number or email for applications",
     publishing:"Publishing your job…", jobPosted:"Job posted successfully!",
     publishJob:"Publish Job", fillRequired:"Please fill all required fields (*)",
@@ -164,22 +164,22 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     save:"Enregistrer", loading:"Chargement…", error:"Une erreur est survenue.",
     retry:"Réessayer", seeAll:"Voir tout", tryAgain:"Réessayer",
     share:"Partager", copyLink:"Lien copié !",
-    jobsTitle:"Trouver un emploi ??", postJob:"+ Publier une offre",
+    jobsTitle:"Trouver un emploi \u{1F4BC}", postJob:"+ Publier une offre",
     jobSearchPlaceholder:"Rechercher emplois ou entreprises…",
     opportunities:"opportunités au Cameroun",
     filters:"Filtres", mostRecent:"Plus récent",
-    clearFilters:"? Effacer tous les filtres", jobType:"Type d'emploi", region:"Région",
+    clearFilters:"\u{1F5D1}\u{FE0F} Effacer tous les filtres", jobType:"Type d'emploi", region:"Région",
     jobsFound:"offres trouvées", newestFirst:"plus récent d'abord",
-    refresh:"? Actualiser", noJobs:"Aucune offre publiée",
+    refresh:"\u{1F504} Actualiser", noJobs:"Aucune offre publiée",
     noJobsHint:"Soyez le premier à publier une offre !",
     noMatch:"Aucune offre ne correspond", clearAll:"Effacer les filtres",
-    applyNow:"?? Postuler maintenant", views:"vues", negotiable:"Négociable",
+    applyNow:"\u{1F4DD} Postuler maintenant", views:"vues", negotiable:"Négociable",
     salaryNotSpec:"Salaire non précisé", deadline:"Date limite", remote:"Télétravail",
     jobError:"Impossible de charger les offres.", salary:"Salaire mensuel",
     allJobs:"Tous les emplois", opportunity:"opportunity",
     opportunitiesPlural:"opportunités", noJobsCategory:"Aucune offre publiée",
     checkBack:"Revenez bientôt ou publiez une offre !",
-    viewApply:"Voir & Postuler ?", loadMore:"Charger plus d'offres",
+    viewApply:"Voir & Postuler \u{1F449}", loadMore:"Charger plus d'offres",
     closed:"? Fermé — Délai dépassé", closingSoon:"? Ferme bientôt",
     today:"Aujourd'hui !", dLeft:"j restants",
     jobNotFound:"Offre introuvable", jobLoading:"Chargement…",
@@ -206,8 +206,8 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     benefitsLabel:"Avantages", benefitsPh:"Assurance maladie, transport, primes…",
     tagsLabel:"Compétences / Tags (virgule)", tagsPh:"React, Node.js, Marketing…",
     howApply:"Comment les candidats doivent-ils postuler ?",
-    applyInApp:"?? Via la plateforme Bambeh", applyWhatsAppOpt:"?? WhatsApp",
-    applyCallOpt:"?? Appel téléphonique", applyEmailOpt:"?? Email",
+    applyInApp:"\u{1F4F1} Via la plateforme Bambeh", applyWhatsAppOpt:"\u{1F4AC} WhatsApp",
+    applyCallOpt:"\u{1F4DE} Appel téléphonique", applyEmailOpt:"\u{2709}\u{FE0F} Email",
     applyContactPh:"Entrez le numéro ou email pour les candidatures",
     publishing:"Publication en cours…", jobPosted:"Offre publiée avec succès !",
     publishJob:"Publier l'offre", fillRequired:"Veuillez remplir tous les champs obligatoires (*)",
@@ -233,27 +233,27 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     back:"Back", cancel:"Cancel", save:"Save", loading:"E dey load…",
     error:"Something spoil. Try again.", retry:"Try Again", seeAll:"See all",
     tryAgain:"Try again", share:"Share", copyLink:"Link don copy!",
-    jobsTitle:"Find Work ??", postJob:"+ Post Work",
+    jobsTitle:"Find Work \u{1F4BC}", postJob:"+ Post Work",
     jobSearchPlaceholder:"Search work or company…",
     opportunities:"opportunities for Cameroon",
     filters:"Filter", mostRecent:"New new",
-    clearFilters:"? Clear all filter", jobType:"Work Type", region:"Region",
-    jobsFound:"work dey", newestFirst:"new ones first", refresh:"? Refresh",
+    clearFilters:"\u{1F5D1}\u{FE0F} Clear all filter", jobType:"Work Type", region:"Region",
+    jobsFound:"work dey", newestFirst:"new ones first", refresh:"\u{1F504} Refresh",
     noJobs:"No work yet", noJobsHint:"You be the first to post work!",
     noMatch:"No work match your filter", clearAll:"Clear filter",
-    applyNow:"?? Apply Now", views:"people see am", negotiable:"E fit negotiate",
+    applyNow:"\u{1F4DD} Apply Now", views:"people see am", negotiable:"E fit negotiate",
     salaryNotSpec:"No salary talk", deadline:"Last date", remote:"Online work",
     jobError:"We no fit load work.", salary:"Month salary",
     allJobs:"All Work", opportunity:"opportunity", opportunitiesPlural:"opportunities",
     noJobsCategory:"No work yet", checkBack:"Come back later or post work!",
-    viewApply:"See & Apply ?", loadMore:"Load more work",
-    closed:"? E don close", closingSoon:"? E go close soon",
+    viewApply:"See & Apply \u{1F449}", loadMore:"Load more work",
+    closed:"\u{1F512} E don close", closingSoon:"\u{23F0} E go close soon",
     today:"Today!", dLeft:"days left",
     jobNotFound:"Work no dey", jobLoading:"Dey load…",
     jobDescription:"Work description", requirements:"Wetin dem need",
     benefits:"Bonus things", jobApplyNow:"Apply Now",
     applyWhatsApp:"Apply for WhatsApp", applyCall:"Call make apply",
-    applyEmail:"Send email apply", applied:"You don apply ?",
+    applyEmail:"Send email apply", applied:"You don apply \u{2705}",
     applying:"Dey send am…", alreadyApplied:"You don apply before",
     expired:"Work don finish", deadline2:"Last date",
     candidates:"people apply", views2:"people see am", published:"Dem post am",
@@ -272,9 +272,9 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     requirementsPh:"List all the things dem need…",
     benefitsLabel:"Bonus things", benefitsPh:"Health, transport, bonus things…",
     tagsLabel:"Skills (separate with comma)", tagsPh:"React, Node.js, Marketing…",
-    howApply:"How dem go apply?", applyInApp:"?? Through Bambeh",
-    applyWhatsAppOpt:"?? WhatsApp", applyCallOpt:"?? Phone call",
-    applyEmailOpt:"?? Email", applyContactPh:"Enter number or email",
+    howApply:"How dem go apply?", applyInApp:"\u{1F4F1} Through Bambeh",
+    applyWhatsAppOpt:"\u{1F4AC} WhatsApp", applyCallOpt:"\u{1F4DE} Phone call",
+    applyEmailOpt:"\u{2709}\u{FE0F} Email", applyContactPh:"Enter number or email",
     publishing:"Dey post your work…", jobPosted:"Your work don post!",
     publishJob:"Post the work", fillRequired:"Fill all * fields abeg",
     loginRequired:"You need login first",
@@ -340,9 +340,9 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     added:"أُضيف إلى محفظتك", buyCoins:"شراء عملات زرم",
   },
   ff: {
-    home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"?al?e",
-    rentals:"Hireeli", vehicles:"Ottooji", exchange:"Yo?taari", community:"?i??e",
-    sell:"Fiyee", buy:"Soodee", search:"?eewee", login:"Naatdee",
+    home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"ɗalɗe",
+    rentals:"Hireeli", vehicles:"Ottooji", exchange:"Yoƴtaari", community:"Ñiƴƴe",
+    sell:"Fiyee", buy:"Soodee", search:"Ɓeewee", login:"Naatdee",
     register:"Restoree", logout:"Fu??odee", settings:"Ha??itorde",
     favorites:"Faa?aa?e", orders:"Sarwiiji", back:"Heddii", cancel:"Ha?",
     save:"Dannee", loading:"E nder loodi…", error:"Huunde wa??i. ?ettoo.",
@@ -387,7 +387,7 @@ const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     benefitsLabel:"Nafaaji", benefitsPh:"Laamu cellal, nju??udi…",
     tagsLabel:"?em?e (tippu?e e tiindol)", tagsPh:"React, Node.js…",
     howApply:"No jokkor?e poti jokkude?", applyInApp:"?? E Bambeh",
-    applyWhatsAppOpt:"?? WhatsApp", applyCallOpt:"?? Noddaare",
+    applyWhatsAppOpt:"\u{1F4AC} WhatsApp", applyCallOpt:"?? Noddaare",
     applyEmailOpt:"?? Imeel", applyContactPh:"Naatnu numeerol maa imeel",
     publishing:"Fewtinaama…", jobPosted:"Golle fewtiima!",
     publishJob:"Fewtu Golle", fillRequired:"He?tu go??e fof peewnaa?e (*)",
@@ -544,7 +544,7 @@ const CoinsTransfer     = lazy(() => import("@/pages/CoinsTransfer"));
 const About           = lazy(() => import("@/pages/About"));
 const PrivacyPolicy   = lazy(() => import("@/pages/PrivacyPolicy"));
 const TermsOfService  = lazy(() => import("@/pages/TermsOfService"));
-const DonatePremium   = lazy(() => import("@/pages/DonatePremium"));
+const DonatePremium = lazy(() => import("@/pages/DonatePremium").then((mod) => ({ default: (mod as any).default })));
 const ReferralProgram = lazy(() => import("@/pages/ReferralProgram"));
 const Chat            = lazy(() => import("@/pages/Chat"));
 const SearchResults   = lazy(() => import("@/pages/SearchResults"));
@@ -713,7 +713,7 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
   if (hidden) return null;
   return (
     <>
-      <MovableChatWidget defaultPosition="bottom-right" />
+      <MovableChatWidget />
       <MovableVoiceControl />
       <MonthlyFeedbackBanner />
       <BackToTopButton />
@@ -1665,5 +1665,10 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
+
+
+
+
 
 

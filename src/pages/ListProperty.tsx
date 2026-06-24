@@ -71,12 +71,12 @@ async function uploadImage(file: File, userId: string): Promise<string> {
   const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error } = await supabase.storage
-    .from("rentals")
+    .from("rental-images")
     .upload(path, file, { upsert: false, contentType: file.type });
 
   if (error) throw error;
 
-  const { data } = supabase.storage.from("rentals").getPublicUrl(path);
+  const { data } = supabase.storage.from("rental-images").getPublicUrl(path);
   return data.publicUrl;
 }
 

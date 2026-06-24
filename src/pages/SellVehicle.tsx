@@ -369,10 +369,10 @@ async function uploadImages(files: File[]): Promise<string[]> {
     const ext  = file.name.split(".").pop() || "jpg";
     const path = `vehicles/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage
-      .from("listing-images")
+      .from("vehicle-images")
       .upload(path, file, { cacheControl: "3600", upsert: false });
     if (error) throw error;
-    const { data } = supabase.storage.from("listing-images").getPublicUrl(path);
+    const { data } = supabase.storage.from("vehicle-images").getPublicUrl(path);
     urls.push(data.publicUrl);
   }
   return urls;

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/vendor/VendorVerification.tsx
  * Bambeh Marketplace — Vendor Verification Workflow
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -120,7 +120,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
         const path = `verifications/${vendorId}/${step}_${Date.now()}_${file.name}`;
 
         const { error: uploadError } = await supabase.storage
-          .from("vendor-docs")
+          .from("verification-docs")
           .upload(path, file, { upsert: true });
 
         if (uploadError) {
