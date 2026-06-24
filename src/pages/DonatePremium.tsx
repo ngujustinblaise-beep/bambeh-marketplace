@@ -1,26 +1,9 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * DONATION PAGE - BAMBEH
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Supports:
- * - MTN / Orange Mobile Money via CamPay
- * - Card payments for foreign users when enabled on the payment server
- * - Minimum donation: 500 XAF
- * - Quick amounts + custom amount
- * - Cameroon phone default (+237)
- *
- * © 2025 Bambeh. Support Our Mission
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import { useMemo, useState } from 'react';
 import {
   Heart,
   CreditCard,
   Smartphone,
   Bitcoin,
-  Check,
   TrendingUp,
   Users,
   Zap,
@@ -28,49 +11,18 @@ import {
   Award,
   Sparkles,
   Target,
-  Crown,
-  Star,
   Calendar,
-  Download,
-  Share2
+  Check
 } from 'lucide-react';
 
 const MIN_DONATION = 500;
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
 const DONATION_TIERS = [
-  {
-    name: 'Supporter',
-    icon: '💚',
-    min: 500,
-    max: 4999,
-    color: 'from-green-400 to-emerald-600',
-    perks: ['Bronze badge', 'Thank you email', 'Recognition on website']
-  },
-  {
-    name: 'Champion',
-    icon: '⭐',
-    min: 5000,
-    max: 14999,
-    color: 'from-blue-400 to-indigo-600',
-    perks: ['Silver badge', 'Quarterly newsletter', 'Special mention', 'Early feature access']
-  },
-  {
-    name: 'Hero',
-    icon: '🏆',
-    min: 15000,
-    max: 49999,
-    color: 'from-purple-400 to-pink-600',
-    perks: ['Gold badge', 'Monthly updates', 'VIP support', 'Name in credits', 'Beta features']
-  },
-  {
-    name: 'Legend',
-    icon: '👑',
-    min: 50000,
-    max: 999999,
-    color: 'from-yellow-400 to-orange-600',
-    perks: ['Diamond badge', 'Direct access to team', 'Feature voting rights', 'Annual recognition', 'Lifetime VIP']
-  },
+  { name: 'Supporter', icon: '💚', min: 500, max: 4999, color: 'from-green-400 to-emerald-600', perks: ['Bronze badge', 'Thank you email', 'Recognition on website'] },
+  { name: 'Champion', icon: '⭐', min: 5000, max: 14999, color: 'from-blue-400 to-indigo-600', perks: ['Silver badge', 'Quarterly newsletter', 'Special mention', 'Early feature access'] },
+  { name: 'Hero', icon: '🏆', min: 15000, max: 49999, color: 'from-purple-400 to-pink-600', perks: ['Gold badge', 'Monthly updates', 'VIP support', 'Name in credits', 'Beta features'] },
+  { name: 'Legend', icon: '👑', min: 50000, max: 999999, color: 'from-yellow-400 to-orange-600', perks: ['Diamond badge', 'Direct access to team', 'Feature voting rights', 'Annual recognition', 'Lifetime VIP'] },
 ];
 
 type PayMethod = 'mtn' | 'orange' | 'card';
@@ -89,9 +41,6 @@ export default function DonatePremium() {
 
   const selectedAmount = Number(amount || customAmount || 0);
   const isValidAmount = selectedAmount >= MIN_DONATION;
-  const phoneValue = phone.trim();
-  const isPhoneValid = phoneValue.length >= 8;
-
   const selectedTier = useMemo(
     () => DONATION_TIERS.find(tier => selectedAmount >= tier.min && selectedAmount <= tier.max),
     [selectedAmount]
@@ -112,18 +61,13 @@ export default function DonatePremium() {
     { name: 'Mary K.', amount: 50000, time: '1 hour ago', badge: '👑' },
   ];
 
+  const canPay = isValidAmount && phone.trim().length >= 8 && (isAnonymous || name.trim()) && email.trim();
+
   const normalizePhone = (value: string) => {
-    const v = value.replace(/\s+/g, '');
-    if (v.startsWith('6') && v.length === 9) return `+237${v}`;
-    return v;
+    const cleaned = value.replace(/\s+/g, '');
+    if (cleaned.startsWith('6') && cleaned.length === 9) return `+237${cleaned}`;
+    return cleaned;
   };
-
-  const handleAmountSelect = (value: number) => {
-    setAmount(String(value));
-    setCustomAmount('');
-  };
-
-  const canPay = isValidAmount && isPhoneValid && (isAnonymous || name.trim()) && email.trim();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,8 +77,8 @@ export default function DonatePremium() {
       return;
     }
 
-    if (!isPhoneValid) {
-      alert('Please enter a valid mobile number');
+    if (!phone.trim()) {
+      alert('Please enter your phone number');
       return;
     }
 
@@ -144,23 +88,23 @@ export default function DonatePremium() {
       const payload = {
         amount: selectedAmount,
         currency: 'XAF',
-        phone: normalizePhone(phoneValue),
         paymentMethod,
         donationType,
         donorName: isAnonymous ? 'Anonymous' : name.trim(),
         email: email.trim(),
+        phone: normalizePhone(phone),
         source: 'donation-page'
       };
 
-      const res = await fetch('https://bambeh-payment-server.onrender.com/api/donations/create', {
+      const res = await fetch('https://bambeh-payment-server.onrender.com/api/payments/donation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const msg = await res.text();
-        throw new Error(msg || 'Payment request failed');
+        throw new Error(msg || 'Payment initiation failed');
       }
 
       const data = await res.json();
@@ -170,10 +114,16 @@ export default function DonatePremium() {
         return;
       }
 
-      setShowThankYou(true);
+      if (data?.status === 'pending') {
+        alert('Payment prompt sent. Please approve on your phone.');
+        setShowThankYou(true);
+        return;
+      }
+
+      throw new Error('Unexpected payment server response');
     } catch (error) {
-      console.error('Donation error:', error);
-      alert('Unable to start payment.');
+      console.error(error);
+      alert('Could not start payment.');
     } finally {
       setIsProcessing(false);
     }
@@ -190,7 +140,7 @@ export default function DonatePremium() {
           </div>
           <h1 className="text-5xl font-bold mb-4">Thank You! 🎉</h1>
           <p className="text-2xl text-purple-100 mb-8">
-            Your generous donation of {selectedAmount.toLocaleString()} XAF means the world to us!
+            Your donation of {selectedAmount.toLocaleString()} XAF is in progress.
           </p>
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8">
             <p className="text-lg mb-2">You've unlocked:</p>
@@ -199,9 +149,6 @@ export default function DonatePremium() {
             </div>
           </div>
           <p className="text-purple-200">Receipt sent to {email}</p>
-          <div className="mt-8">
-            <div className="animate-pulse text-6xl">💚🇨🇲</div>
-          </div>
         </div>
       </div>
     );
@@ -213,7 +160,6 @@ export default function DonatePremium() {
         <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-3xl p-8 md:p-12 mb-8 text-white">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32" />
-
           <div className="relative z-10 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-6">
               <Heart className="w-10 h-10" />
@@ -222,30 +168,18 @@ export default function DonatePremium() {
             <p className="text-xl md:text-2xl text-purple-100 mb-8 max-w-3xl mx-auto">
               Help us keep Bambeh free and accessible for all users worldwide
             </p>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="text-sm">Total Raised</span>
-                </div>
+                <div className="flex items-center justify-center gap-2 mb-2"><TrendingUp className="w-5 h-5" /><span className="text-sm">Total Raised</span></div>
                 <p className="text-3xl font-bold">{(impactStats.raised / 1000000).toFixed(1)}M</p>
                 <p className="text-xs text-purple-200">XAF</p>
               </div>
-
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Users className="w-5 h-5" />
-                  <span className="text-sm">Donors</span>
-                </div>
+                <div className="flex items-center justify-center gap-2 mb-2"><Users className="w-5 h-5" /><span className="text-sm">Donors</span></div>
                 <p className="text-3xl font-bold">{impactStats.donors.toLocaleString()}</p>
               </div>
-
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Target className="w-5 h-5" />
-                  <span className="text-sm">Goal Progress</span>
-                </div>
+                <div className="flex items-center justify-center gap-2 mb-2"><Target className="w-5 h-5" /><span className="text-sm">Goal Progress</span></div>
                 <p className="text-3xl font-bold">{progressPercent.toFixed(0)}%</p>
               </div>
             </div>
@@ -253,117 +187,89 @@ export default function DonatePremium() {
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8">
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
-                  <Calendar className="w-4 h-4 inline mr-2" />
-                  Donation Frequency
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button type="button" onClick={() => setDonationType('once')} className={`px-6 py-4 rounded-2xl font-bold transition-all ${donationType === 'once' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
-                    <Zap className="w-5 h-5 inline mr-2" />
-                    One-Time
-                  </button>
-                  <button type="button" onClick={() => setDonationType('monthly')} className={`px-6 py-4 rounded-2xl font-bold transition-all ${donationType === 'monthly' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
-                    <TrendingUp className="w-5 h-5 inline mr-2" />
-                    Monthly
-                  </button>
-                </div>
+          <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl p-6 md:p-8">
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-3">
+                <Calendar className="w-4 h-4 inline mr-2" />
+                Donation Frequency
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button type="button" onClick={() => setDonationType('once')} className={`px-6 py-4 rounded-2xl font-bold transition-all ${donationType === 'once' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  <Zap className="w-5 h-5 inline mr-2" /> One-Time
+                </button>
+                <button type="button" onClick={() => setDonationType('monthly')} className={`px-6 py-4 rounded-2xl font-bold transition-all ${donationType === 'monthly' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  <TrendingUp className="w-5 h-5 inline mr-2" /> Monthly
+                </button>
               </div>
-
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
-                  Select Amount (XAF)
-                </label>
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
-                  {QUICK_AMOUNTS.map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => handleAmountSelect(amt)}
-                      className={`px-4 py-4 rounded-2xl font-bold transition-all ${amount === String(amt) ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'}`}
-                    >
-                      {amt.toLocaleString()}
-                    </button>
-                  ))}
-                </div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Or Enter Custom Amount</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">XAF</span>
-                  <input
-                    type="number"
-                    value={customAmount}
-                    onChange={(e) => {
-                      setCustomAmount(e.target.value);
-                      setAmount('');
-                    }}
-                    placeholder="Enter amount..."
-                    className="w-full pl-16 pr-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 font-semibold text-lg"
-                    min={MIN_DONATION}
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Minimum: 500 XAF</p>
-              </div>
-
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">Payment Method</label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <button type="button" onClick={() => setPaymentMethod('mtn')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'mtn' ? 'bg-yellow-500 text-black ring-4 ring-yellow-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-yellow-50'}`}>
-                    <Smartphone className="w-6 h-6 mx-auto mb-2" />
-                    MTN MoMo
-                  </button>
-                  <button type="button" onClick={() => setPaymentMethod('orange')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'orange' ? 'bg-orange-500 text-white ring-4 ring-orange-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-orange-50'}`}>
-                    <Smartphone className="w-6 h-6 mx-auto mb-2" />
-                    Orange Money
-                  </button>
-                  <button type="button" onClick={() => setPaymentMethod('card')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'card' ? 'bg-blue-600 text-white ring-4 ring-blue-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}>
-                    <CreditCard className="w-6 h-6 mx-auto mb-2" />
-                    Card
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <input type="checkbox" id="anonymous" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500" />
-                  <label htmlFor="anonymous" className="text-sm font-medium text-gray-700">Donate anonymously</label>
-                </div>
-
-                {!isAnonymous && (
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Your Name *</label>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name..." className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Mobile Money / Card Number *</label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+237 6XXXXXXXX or international number"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={!canPay || isProcessing}
-                className={`w-full px-8 py-5 rounded-2xl font-bold text-xl transition-all ${canPay && !isProcessing ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl hover:scale-105' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-              >
-                <Heart className="w-6 h-6 inline mr-3" />
-                {isProcessing ? 'Sending payment prompt...' : `Pay ${selectedAmount ? selectedAmount.toLocaleString() : ''} XAF`}
-              </button>
             </div>
+
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-3">Select Amount (XAF)</label>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
+                {QUICK_AMOUNTS.map((amt) => (
+                  <button key={amt} type="button" onClick={() => { setAmount(String(amt)); setCustomAmount(''); }} className={`px-4 py-4 rounded-2xl font-bold transition-all ${amount === String(amt) ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'}`}>
+                    {amt.toLocaleString()}
+                  </button>
+                ))}
+              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Or Enter Custom Amount</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">XAF</span>
+                <input
+                  type="number"
+                  value={customAmount}
+                  onChange={(e) => { setCustomAmount(e.target.value); setAmount(''); }}
+                  placeholder="Enter amount..."
+                  min={MIN_DONATION}
+                  className="w-full pl-16 pr-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 font-semibold text-lg"
+                />
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-3">Payment Method</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button type="button" onClick={() => setPaymentMethod('mtn')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'mtn' ? 'bg-yellow-500 text-black ring-4 ring-yellow-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-yellow-50'}`}>
+                  <Smartphone className="w-6 h-6 mx-auto mb-2" /> MTN MoMo
+                </button>
+                <button type="button" onClick={() => setPaymentMethod('orange')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'orange' ? 'bg-orange-500 text-white ring-4 ring-orange-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-orange-50'}`}>
+                  <Smartphone className="w-6 h-6 mx-auto mb-2" /> Orange Money
+                </button>
+                <button type="button" onClick={() => setPaymentMethod('card')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'card' ? 'bg-blue-600 text-white ring-4 ring-blue-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}>
+                  <CreditCard className="w-6 h-6 mx-auto mb-2" /> Card
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <input type="checkbox" id="anonymous" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500" />
+                <label htmlFor="anonymous" className="text-sm font-medium text-gray-700">Donate anonymously</label>
+              </div>
+              {!isAnonymous && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Your Name *</label>
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name..." className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number *</label>
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+237 6XXXXXXXX" className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={!canPay || isProcessing}
+              className={`w-full px-8 py-5 rounded-2xl font-bold text-xl transition-all ${canPay && !isProcessing ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl hover:scale-105' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            >
+              <Heart className="w-6 h-6 inline mr-3" />
+              {isProcessing ? 'Sending payment prompt...' : `Pay ${selectedAmount ? selectedAmount.toLocaleString() : ''} XAF`}
+            </button>
           </div>
 
           <div className="space-y-6">
