@@ -10,9 +10,19 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import Verify from "./pages/auth/Verify";
 import ResetPassword from "./pages/auth/ResetPassword";
 
-// Core Mock Contexts to satisfy sub-component hooks (e.g., useLanguage inside AuthShell)
-const LanguageContext = createContext({ language: "en", setLanguage: () => {}, t: (k: string) => k, isRtl: false });
-function LanguageProvider({ children }: { children: React.ReactNode }) {
+// Strictly Typed Context Mocks to satisfy internal UI dependencies
+interface ProviderProps {
+  children: React.ReactNode;
+}
+
+const LanguageContext = createContext({ 
+  language: "en", 
+  setLanguage: (lang: string) => {}, 
+  t: (k: string) => k, 
+  isRtl: false 
+});
+
+function LanguageProvider({ children }: ProviderProps) {
   return (
     <LanguageContext.Provider value={{ language: "en", setLanguage: () => {}, t: (k: string) => k, isRtl: false }}>
       {children}
@@ -21,17 +31,17 @@ function LanguageProvider({ children }: { children: React.ReactNode }) {
 }
 
 const CartContext = createContext({});
-function CartProvider({ children }: { children: React.ReactNode }) {
-  return <CartContext.Provider value={{}}>{children}</CartContext.Provider>;
+function CartProvider({ children }: ProviderProps) { 
+  return <CartContext.Provider value={{}}>{children}</CartContext.Provider>; 
 }
 
 const NetworkContext = createContext({ isOnline: true });
-function NetworkProvider({ children }: { children: React.ReactNode }) {
-  return <NetworkContext.Provider value={{ isOnline: true }}>{children}</NetworkContext.Provider>;
+function NetworkProvider({ children }: ProviderProps) { 
+  return <NetworkContext.Provider value={{ isOnline: true }}>{children}</NetworkContext.Provider>; 
 }
 
-function AppProviders({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+function AppProviders({ children }: ProviderProps) { 
+  return <>{children}</>; 
 }
 
 export default function App() {
@@ -42,17 +52,17 @@ export default function App() {
           <AppProviders>
             <BrowserRouter>
               <Routes>
-                {/* Core Entry Point: Redirect to primary gateway */}
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                {/* Core Entry Point: Redirect to onboarding gateway */}
+                <Route path="/" element={<Navigate to="/auth/login" replace />} />
 
-                {/* Authentication Routes Matrix */}
+                {/* Authentication Router Tree Matrix */}
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/auth/login" element={<BiometricLogin />} />
                 <Route path="/auth/register" element={<div style={{ padding: '2rem' }}>Registration Page Template</div>} />
                 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/forgot-credentials" element={<ForgotCredentials />} />
                 
-                {/* Verification & Account Lifecycle Management */}
+                {/* Verification & Lifecycle Management */}
                 <Route path="/verify" element={<Verify />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/enable-biometrics" element={<BiometricSetup />} />
