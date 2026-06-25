@@ -1,16 +1,16 @@
 import React, { createContext, useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-// Pages Imports
+// Pages Dynamic Sanitized Scan Imports
 import AuthPage from "./pages/auth/AuthPage";
 import BiometricLogin from "./pages/auth/BiometricLogin";
 import BiometricSetup from "./pages/auth/BiometricSetup";
 import ForgotCredentials from "./pages/auth/ForgotCredentials";
 import ForgotPassword from "./pages/auth/ForgotPassword";
-import Verify from "./pages/auth/Verify";
+import login from "./pages/auth/login";
 import ResetPassword from "./pages/auth/ResetPassword";
+import Verify from "./pages/auth/Verify";
 
-// Strictly Typed Context Mocks to satisfy internal UI dependencies
 interface ProviderProps {
   children: React.ReactNode;
 }
@@ -52,23 +52,17 @@ export default function App() {
           <AppProviders>
             <BrowserRouter>
               <Routes>
-                {/* Core Entry Point: Redirect to onboarding gateway */}
-                <Route path="/" element={<Navigate to="/auth/login" replace />} />
-
-                {/* Authentication Router Tree Matrix */}
+                {/* Dynamic Clean Auth Scan Routes Layout Tree */}
                 <Route path="/login" element={<AuthPage />} />
-                <Route path="/auth/login" element={<BiometricLogin />} />
-                <Route path="/auth/register" element={<div style={{ padding: '2rem' }}>Registration Page Template</div>} />
-                <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-                <Route path="/auth/forgot-credentials" element={<ForgotCredentials />} />
-                
-                {/* Verification & Lifecycle Management */}
-                <Route path="/verify" element={<Verify />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/auth/biometriclogin" element={<BiometricLogin />} />
                 <Route path="/enable-biometrics" element={<BiometricSetup />} />
                 <Route path="/biometric-setup" element={<Navigate to="/enable-biometrics" replace />} />
-
-                {/* Safety Net Wildcard Catch-All to prevent empty screen failures */}
+                <Route path="/auth/forgotcredentials" element={<ForgotCredentials />} />
+                <Route path="/auth/forgotpassword" element={<ForgotPassword />} />
+                <Route path="/auth/login" element={<login />} />
+                <Route path="/resetpassword" element={<ResetPassword />} />
+                <Route path="/verify" element={<Verify />} />
+                <Route path="/auth/register" element={<div style={{ padding: '2rem' }}>Registration Page Template</div>} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
             </BrowserRouter>
