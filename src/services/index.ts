@@ -1,4 +1,4 @@
-﻿// src/services/index.ts
+// src/services/index.ts
 // Compatibility layer for existing imports
 
 import * as jobs from "./jobs.service";

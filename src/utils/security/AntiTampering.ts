@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ?? ANTI-TAMPERING - Detect App Modifications
  * Prevents code injection and unauthorized modifications
  */

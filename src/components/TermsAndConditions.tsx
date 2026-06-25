@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/components/TermsAndConditions.tsx
- * Bambeh Marketplace â€” Terms & Conditions Display Component
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Terms & Conditions Display Component
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState } from "react";
@@ -16,52 +16,52 @@ const SECTIONS: Section[] = [
   {
     title: "1. Acceptation des conditions",
     content:
-      "En utilisant Bambeh Marketplace, vous acceptez d'Ãªtre liÃ© par les prÃ©sentes Conditions GÃ©nÃ©rales d'Utilisation. Si vous n'acceptez pas ces conditions, vous ne pouvez pas utiliser nos services.",
+      "En utilisant Bambeh Marketplace, vous acceptez d'être lié par les présentes Conditions Générales d'Utilisation. Si vous n'acceptez pas ces conditions, vous ne pouvez pas utiliser nos services.",
   },
   {
     title: "2. Description du service",
     content:
-      "Bambeh Marketplace est une plateforme de mise en relation entre acheteurs et vendeurs au Cameroun. Nous facilitons les transactions via Mobile Money (MTN MoMo, Orange Money) et notre systÃ¨me de paiement sÃ©curisÃ© NotchPay.",
+      "Bambeh Marketplace est une plateforme de mise en relation entre acheteurs et vendeurs au Cameroun. Nous facilitons les transactions via Mobile Money (MTN MoMo, Orange Money) et notre système de paiement sécurisé NotchPay.",
   },
   {
     title: "3. Inscription et compte",
     content:
-      "Vous devez avoir au moins 18 ans pour crÃ©er un compte. Vous Ãªtes responsable de maintenir la confidentialitÃ© de vos identifiants et de toutes les activitÃ©s sur votre compte.",
+      "Vous devez avoir au moins 18 ans pour créer un compte. Vous êtes responsable de maintenir la confidentialité de vos identifiants et de toutes les activités sur votre compte.",
   },
   {
     title: "4. Politique de paiement",
     content:
-      "Bambeh prÃ©lÃ¨ve une commission de 1% sur chaque transaction. Les paiements sont traitÃ©s de maniÃ¨re sÃ©curisÃ©e via NotchPay. En cas de litige, notre systÃ¨me d'escrow protÃ¨ge les fonds jusqu'Ã  la rÃ©solution.",
+      "Bambeh prélève une commission de 1% sur chaque transaction. Les paiements sont traités de manière sécurisée via NotchPay. En cas de litige, notre système d'escrow protège les fonds jusqu'à la résolution.",
   },
   {
-    title: "5. RÃ¨gles des annonces",
+    title: "5. Règles des annonces",
     content:
-      "Toutes les annonces doivent Ãªtre vÃ©ridiques et lÃ©gales. Il est interdit de publier des produits contrefaits, illicites, ou trompeurs. Bambeh se rÃ©serve le droit de supprimer toute annonce non conforme.",
+      "Toutes les annonces doivent être véridiques et légales. Il est interdit de publier des produits contrefaits, illicites, ou trompeurs. Bambeh se réserve le droit de supprimer toute annonce non conforme.",
   },
   {
-    title: "6. PropriÃ©tÃ© intellectuelle",
+    title: "6. Propriété intellectuelle",
     content:
-      "Tout contenu publiÃ© sur Bambeh reste la propriÃ©tÃ© de son crÃ©ateur. En publiant du contenu, vous accordez Ã  Bambeh une licence non exclusive pour l'afficher et le promouvoir sur la plateforme.",
+      "Tout contenu publié sur Bambeh reste la propriété de son créateur. En publiant du contenu, vous accordez à Bambeh une licence non exclusive pour l'afficher et le promouvoir sur la plateforme.",
   },
   {
-    title: "7. ConfidentialitÃ©",
+    title: "7. Confidentialité",
     content:
-      "Nous collectons uniquement les donnÃ©es nÃ©cessaires au fonctionnement du service. Nous ne vendons jamais vos donnÃ©es Ã  des tiers. Voir notre Politique de ConfidentialitÃ© complÃ¨te pour plus de dÃ©tails.",
+      "Nous collectons uniquement les données nécessaires au fonctionnement du service. Nous ne vendons jamais vos données à des tiers. Voir notre Politique de Confidentialité complète pour plus de détails.",
   },
   {
-    title: "8. Limitation de responsabilitÃ©",
+    title: "8. Limitation de responsabilité",
     content:
-      "Bambeh agit comme intermÃ©diaire. Nous ne sommes pas responsables des transactions entre utilisateurs. Cependant, notre Ã©quipe de rÃ©solution des litiges est disponible pour aider en cas de problÃ¨me.",
+      "Bambeh agit comme intermédiaire. Nous ne sommes pas responsables des transactions entre utilisateurs. Cependant, notre équipe de résolution des litiges est disponible pour aider en cas de problème.",
   },
   {
     title: "9. Modifications",
     content:
-      "Bambeh peut modifier ces conditions Ã  tout moment. Les utilisateurs seront notifiÃ©s par e-mail et via l'application. L'utilisation continue du service aprÃ¨s notification vaut acceptation des nouvelles conditions.",
+      "Bambeh peut modifier ces conditions à tout moment. Les utilisateurs seront notifiés par e-mail et via l'application. L'utilisation continue du service après notification vaut acceptation des nouvelles conditions.",
   },
   {
     title: "10. Droit applicable",
     content:
-      "Ces conditions sont rÃ©gies par le droit camerounais. Tout litige sera soumis Ã  la juridiction des tribunaux compÃ©tents de YaoundÃ©, Cameroun.",
+      "Ces conditions sont régies par le droit camerounais. Tout litige sera soumis à la juridiction des tribunaux compétents de Yaoundé, Cameroun.",
   },
 ];
 
@@ -90,7 +90,7 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({
         <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
           <FileText className="w-5 h-5 text-teal-600" />
           <h2 className="text-lg font-bold text-gray-900">
-            Conditions GÃ©nÃ©rales d'Utilisation
+            Conditions Générales d'Utilisation
           </h2>
         </div>
       )}

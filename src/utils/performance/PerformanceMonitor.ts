@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/performance/PerformanceMonitor.ts
- * Bambeh Marketplace — Performance Monitor + singleton + formatBytes
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Performance Monitor + singleton + formatBytes
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -22,7 +22,7 @@ export interface PerformanceReport {
   generatedAt: string;
 }
 
-// ─── formatBytes — exported for PerformanceTest.tsx ──────────────────────────
+// --- formatBytes � exported for PerformanceTest.tsx --------------------------
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   const k = 1024;
@@ -31,7 +31,7 @@ export function formatBytes(bytes: number): string {
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
 }
 
-// ─── Manager Class ────────────────────────────────────────────────────────────
+// --- Manager Class ------------------------------------------------------------
 class PerformanceMonitorClass {
   private marks = new Map<string, number>();
   private completedMarks: PerformanceMark[] = [];
@@ -83,10 +83,10 @@ class PerformanceMonitorClass {
   formatBytes(bytes: number): string { return formatBytes(bytes); }
 }
 
-// ─── Singleton instance expected by PerformanceProvider.tsx ──────────────────
+// --- Singleton instance expected by PerformanceProvider.tsx ------------------
 export const performanceMonitor = new PerformanceMonitorClass();
 
-// ─── Standalone function aliases ─────────────────────────────────────────────
+// --- Standalone function aliases ---------------------------------------------
 export function markStart(name: string): void { performanceMonitor.markStart(name); }
 export function markEnd(name: string): number | null { return performanceMonitor.markEnd(name); }
 

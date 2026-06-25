@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/components/StarRating.tsx
- * Bambeh Marketplace â€” Star Rating Component
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Star Rating Component
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";

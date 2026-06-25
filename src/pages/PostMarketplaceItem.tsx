@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * POST MARKETPLACE ITEM - MILITARY GRADE VERSION
  * FILE LOCATION: src/pages/PostMarketplaceItem.tsx
@@ -33,11 +33,11 @@ const PostMarketplaceItem = () => {
   const [currentStep, setCurrentStep]     = useState(1);
 
   const categories = {
-    'Electronics & Gadgets': { icon: '📱', subcategories: ['Phones & Tablets', 'Laptops & Computers', 'Cameras', 'Audio', 'Gaming'] },
-    'Fashion & Clothing':    { icon: '👗', subcategories: ['Men', 'Women', 'Kids', 'Shoes', 'Accessories'] },
-    'Home & Furniture':      { icon: '🏠', subcategories: ['Living Room', 'Bedroom', 'Kitchen', 'Office', 'Decor'] },
-    'Vehicles & Parts':      { icon: '🚗', subcategories: ['Cars', 'Motorcycles', 'Bicycles', 'Parts'] },
-    'Other':                 { icon: '📦', subcategories: ['General', 'Miscellaneous'] },
+    'Electronics & Gadgets': { icon: '??', subcategories: ['Phones & Tablets', 'Laptops & Computers', 'Cameras', 'Audio', 'Gaming'] },
+    'Fashion & Clothing':    { icon: '??', subcategories: ['Men', 'Women', 'Kids', 'Shoes', 'Accessories'] },
+    'Home & Furniture':      { icon: '??', subcategories: ['Living Room', 'Bedroom', 'Kitchen', 'Office', 'Decor'] },
+    'Vehicles & Parts':      { icon: '??', subcategories: ['Cars', 'Motorcycles', 'Bicycles', 'Parts'] },
+    'Other':                 { icon: '??', subcategories: ['General', 'Miscellaneous'] },
   };
 
   const conditions = [
@@ -49,7 +49,7 @@ const PostMarketplaceItem = () => {
     { value: 'for-parts',  label: 'For Parts',  description: 'Not fully functional' },
   ];
 
-  const majorCities = ['Yaoundé', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
+  const majorCities = ['Yaound�', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;

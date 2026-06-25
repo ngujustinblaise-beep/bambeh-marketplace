@@ -20,7 +20,7 @@
 
 import React, { useState } from "react";
 import { useLanguage } from "@/App";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { Check, AlertCircle, Loader2 } from "lucide-react";
 import type { AdCategory } from "@/hooks/useFeaturedAds";
@@ -277,5 +277,6 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
 };
 
 export default PostFeaturedAdForm;
+
 
 

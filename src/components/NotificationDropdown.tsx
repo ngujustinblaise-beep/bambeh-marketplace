@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/components/NotificationDropdown.tsx
- * Bambeh Marketplace — Notification Dropdown
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Notification Dropdown
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,10 +28,10 @@ const NotificationDropdown: React.FC = () => {
 
   const iconFor = (type: string) => {
     switch (type) {
-      case "order":   return "🛒";
-      case "message": return "💬";
-      case "promo":   return "🎉";
-      default:        return "🔔";
+      case "order":   return "??";
+      case "message": return "??";
+      case "promo":   return "??";
+      default:        return "??";
     }
   };
 
@@ -72,7 +72,7 @@ const NotificationDropdown: React.FC = () => {
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
-                <span className="text-4xl mb-3">🔔</span>
+                <span className="text-4xl mb-3">??</span>
                 <p className="text-sm text-gray-500">Aucune notification</p>
               </div>
             ) : (

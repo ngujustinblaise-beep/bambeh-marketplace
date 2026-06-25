@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * FILTERBAR.TSX - Universal Filter Component
  * Can be used for Jobs, Marketplace, Services, Rentals
  */
@@ -227,12 +227,12 @@ export default function FilterBar({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 >
                   <option value="">All Locations</option>
-                  <option value="yaounde">YaoundÃ©</option>
+                  <option value="yaounde">Yaoundé</option>
                   <option value="douala">Douala</option>
                   <option value="bamenda">Bamenda</option>
                   <option value="garoua">Garoua</option>
                   <option value="bafoussam">Bafoussam</option>
-                  <option value="ngaoundere">NgaoundÃ©rÃ©</option>
+                  <option value="ngaoundere">Ngaoundéré</option>
                   <option value="maroua">Maroua</option>
                   <option value="buea">Buea</option>
                   <option value="limbe">Limbe</option>

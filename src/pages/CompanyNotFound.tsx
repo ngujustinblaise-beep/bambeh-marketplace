@@ -1,13 +1,13 @@
-﻿/**
- * src/pages/CompanyNotFound.tsx — Bambeh Marketplace
+/**
+ * src/pages/CompanyNotFound.tsx � Bambeh Marketplace
  *
  * FIXES applied:
- *  ✅ CRITICAL: Removed usage-example comments placed AFTER the closing brace — they
+ *  ? CRITICAL: Removed usage-example comments placed AFTER the closing brace � they
  *     were inside the function body in the original, which caused a TypeScript parse
  *     error: "Unreachable code detected" / code after return statement.
- *  ✅ Stray comma after the conditional paragraph block removed (JSX syntax error).
- *  ✅ Contact support link uses navigate() instead of bare <a href> for SPA routing.
- *  ✅ Component is now usable both as a full-page route and as an inline modal.
+ *  ? Stray comma after the conditional paragraph block removed (JSX syntax error).
+ *  ? Contact support link uses navigate() instead of bare <a href> for SPA routing.
+ *  ? Component is now usable both as a full-page route and as an inline modal.
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -59,9 +59,9 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
               <div className="text-left">
                 <p className="text-sm font-semibold text-blue-900 mb-1">What happened?</p>
                 <ul className="text-xs text-blue-700 space-y-1">
-                  <li>• The company may not have created a profile yet</li>
-                  <li>• The profile link may be incorrect</li>
-                  <li>• The company may have removed their profile</li>
+                  <li>� The company may not have created a profile yet</li>
+                  <li>� The profile link may be incorrect</li>
+                  <li>� The company may have removed their profile</li>
                 </ul>
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
             onClick={() => navigate('/help/contact')}
             className="text-teal-600 hover:text-teal-700 font-semibold text-sm"
           >
-            Contact Support →
+            Contact Support ?
           </button>
         </div>
       </div>

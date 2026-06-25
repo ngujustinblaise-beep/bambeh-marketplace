@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "@/types/auth";
@@ -26,7 +26,7 @@ const PremiumGate: React.FC<PremiumGateProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-      <div className="text-4xl mb-3">🔒</div>
+      <div className="text-4xl mb-3">??</div>
       <p className="font-semibold text-gray-800 mb-1">
         {featureName ? featureName + " requires " + requiredTier : "Premium Feature"}
       </p>

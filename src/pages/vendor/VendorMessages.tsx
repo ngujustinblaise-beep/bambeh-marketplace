@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/pages/vendor/VendorMessages.tsx
- * Bambeh Marketplace â€” Vendor Messages Page
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Vendor Messages Page
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -71,8 +71,8 @@ const VendorMessages: React.FC = () => {
             <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mb-4">
               <ArrowLeft className="w-7 h-7 text-teal-400 rotate-180" />
             </div>
-            <p className="text-base font-medium text-gray-400">SÃ©lectionnez une conversation</p>
-            <p className="text-sm text-gray-300 mt-1">Choisissez Ã  gauche pour commencer</p>
+            <p className="text-base font-medium text-gray-400">Sélectionnez une conversation</p>
+            <p className="text-sm text-gray-300 mt-1">Choisissez à gauche pour commencer</p>
           </div>
         )}
       </div>

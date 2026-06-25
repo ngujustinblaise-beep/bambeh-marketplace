@@ -1,5 +1,5 @@
-﻿/**
- * MINIMIZABLE CHAT WIDGET — Floating chat support widget.
+/**
+ * MINIMIZABLE CHAT WIDGET � Floating chat support widget.
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -9,7 +9,7 @@ const MinimizableChatWidget = () => {
   const [isOpen, setIsOpen]           = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages]       = useState([
-    { id: '1', text: 'Hello! Welcome to Bambe Marketplace 👋', isUser: false },
+    { id: '1', text: 'Hello! Welcome to Bambe Marketplace ??', isUser: false },
   ]);
   const [inputValue, setInputValue]   = useState('');
   const messagesEndRef                = useRef<HTMLDivElement>(null);

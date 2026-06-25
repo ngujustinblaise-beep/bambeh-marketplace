@@ -1,14 +1,14 @@
-﻿/**
- * src/pages/GroupBuying.tsx — Bambeh Marketplace
+/**
+ * src/pages/GroupBuying.tsx � Bambeh Marketplace
  *
  * FIXED / NEW in this version:
- *  ✅ "Create Group Buy" button opens an inline modal — no page redirect
- *  ✅ Groups saved to component state (with Supabase insert attempt)
- *  ✅ Full escrow logic: all money held in escrow, released only after purchase
- *  ✅ "Invite Friends" button shares a real group link (Web Share API + WhatsApp fallback)
- *  ✅ Join button saves the join and increments buyer count
- *  ✅ Beautiful Unsplash sample images for every demo deal
- *  ✅ West & Central Africa phone country code in create form
+ *  ? "Create Group Buy" button opens an inline modal � no page redirect
+ *  ? Groups saved to component state (with Supabase insert attempt)
+ *  ? Full escrow logic: all money held in escrow, released only after purchase
+ *  ? "Invite Friends" button shares a real group link (Web Share API + WhatsApp fallback)
+ *  ? Join button saves the join and increments buyer count
+ *  ? Beautiful Unsplash sample images for every demo deal
+ *  ? West & Central Africa phone country code in create form
  */
 
 import React, { useState } from 'react';
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 interface GroupDeal {
   id: string;
@@ -40,35 +40,35 @@ interface GroupDeal {
   isUserCreated?: boolean;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ------------------------------------------------------------------
 
 const formatXAF = (n: number) => `${n.toLocaleString('fr-CM')} XAF`;
 
 const DIAL_CODES = [
-  { code: '+237', flag: '🇨🇲', name: 'Cameroun' },
-  { code: '+234', flag: '🇳🇬', name: 'Nigeria' },
-  { code: '+233', flag: '🇬🇭', name: 'Ghana' },
-  { code: '+221', flag: '🇸🇳', name: 'Sénégal' },
-  { code: '+225', flag: '🇨🇮', name: "Côte d'Ivoire" },
-  { code: '+241', flag: '🇬🇦', name: 'Gabon' },
-  { code: '+242', flag: '🇨🇬', name: 'Congo' },
-  { code: '+243', flag: '🇨🇩', name: 'RD Congo' },
-  { code: '+240', flag: '🇬🇶', name: 'Guinée Éq.' },
-  { code: '+236', flag: '🇨🇫', name: 'Centrafrique' },
-  { code: '+235', flag: '🇹🇩', name: 'Tchad' },
-  { code: '+227', flag: '🇳🇪', name: 'Niger' },
-  { code: '+228', flag: '🇹🇬', name: 'Togo' },
-  { code: '+229', flag: '🇧🇯', name: 'Bénin' },
-  { code: '+224', flag: '🇬🇳', name: 'Guinée' },
+  { code: '+237', flag: '????', name: 'Cameroun' },
+  { code: '+234', flag: '????', name: 'Nigeria' },
+  { code: '+233', flag: '????', name: 'Ghana' },
+  { code: '+221', flag: '????', name: 'S�n�gal' },
+  { code: '+225', flag: '????', name: "C�te d'Ivoire" },
+  { code: '+241', flag: '????', name: 'Gabon' },
+  { code: '+242', flag: '????', name: 'Congo' },
+  { code: '+243', flag: '????', name: 'RD Congo' },
+  { code: '+240', flag: '????', name: 'Guin�e �q.' },
+  { code: '+236', flag: '????', name: 'Centrafrique' },
+  { code: '+235', flag: '????', name: 'Tchad' },
+  { code: '+227', flag: '????', name: 'Niger' },
+  { code: '+228', flag: '????', name: 'Togo' },
+  { code: '+229', flag: '????', name: 'B�nin' },
+  { code: '+224', flag: '????', name: 'Guin�e' },
 ];
 
-// ─── Demo Deals with beautiful Unsplash images ─────────────────────────────────
+// --- Demo Deals with beautiful Unsplash images ---------------------------------
 
 const INITIAL_DEALS: GroupDeal[] = [
   {
     id: 'grp-001',
     name: 'Premium Cocoa Powder 1kg (Cameroon Origin)',
-    image: '☕',
+    image: '?',
     imageUrl: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=400&q=80',
     category: 'Food',
     regularPrice: 12000,
@@ -87,8 +87,8 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
   {
     id: 'grp-002',
-    name: 'Samsung Galaxy Buds2 Pro — Wireless Earbuds',
-    image: '🎧',
+    name: 'Samsung Galaxy Buds2 Pro � Wireless Earbuds',
+    image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80',
     category: 'Electronics',
     regularPrice: 85000,
@@ -100,7 +100,7 @@ const INITIAL_DEALS: GroupDeal[] = [
     currentBuyers: 4,
     maxBuyers: 8,
     endsAt: new Date(Date.now() + 86400000 * 2).toISOString(),
-    vendor: 'TechShop Yaoundé',
+    vendor: 'TechShop Yaound�',
     rating: 4.7,
     reviews: 18,
     description: 'Noise-cancelling wireless earbuds with 30hr battery life. Unlocked, works with all phones.',
@@ -108,7 +108,7 @@ const INITIAL_DEALS: GroupDeal[] = [
   {
     id: 'grp-003',
     name: 'Ergonomic Executive Office Chair',
-    image: '🪑',
+    image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80',
     category: 'Furniture',
     regularPrice: 95000,
@@ -127,7 +127,7 @@ const INITIAL_DEALS: GroupDeal[] = [
   {
     id: 'grp-004',
     name: 'Organic Shea Butter 2kg Bulk Pack',
-    image: '🧴',
+    image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&q=80',
     category: 'Beauty',
     regularPrice: 22000,
@@ -146,8 +146,8 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
   {
     id: 'grp-005',
-    name: 'Fresh Avocados — 10kg Farm Box',
-    image: '🥑',
+    name: 'Fresh Avocados � 10kg Farm Box',
+    image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80',
     category: 'Food',
     regularPrice: 8500,
@@ -166,8 +166,8 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
   {
     id: 'grp-006',
-    name: 'Solar Lantern — 3-in-1 Charging Kit',
-    image: '🔦',
+    name: 'Solar Lantern � 3-in-1 Charging Kit',
+    image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80',
     category: 'Electronics',
     regularPrice: 35000,
@@ -185,7 +185,7 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
 ];
 
-// ─── CountdownBadge ───────────────────────────────────────────────────────────
+// --- CountdownBadge -----------------------------------------------------------
 
 const CountdownBadge = ({ endsAt }: { endsAt: string }) => {
   const days = Math.max(0, Math.ceil((new Date(endsAt).getTime() - Date.now()) / 86400000));
@@ -199,13 +199,13 @@ const CountdownBadge = ({ endsAt }: { endsAt: string }) => {
   );
 };
 
-// ─── EscrowInfoBanner ─────────────────────────────────────────────────────────
+// --- EscrowInfoBanner ---------------------------------------------------------
 
 const EscrowInfoBanner = () => (
   <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 flex gap-3">
     <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
     <div>
-      <p className="font-semibold text-blue-800 text-sm">🔒 All payments go to Escrow</p>
+      <p className="font-semibold text-blue-800 text-sm">?? All payments go to Escrow</p>
       <p className="text-xs text-blue-600 mt-0.5 leading-relaxed">
         When you join a group deal and pay, your money is held safely in Bambeh Escrow. 
         It is only released to the vendor <strong>after the deal activates and items are delivered</strong>. 
@@ -215,7 +215,7 @@ const EscrowInfoBanner = () => (
   </div>
 );
 
-// ─── CreateGroupModal ─────────────────────────────────────────────────────────
+// --- CreateGroupModal ---------------------------------------------------------
 
 interface CreateGroupModalProps {
   onClose: () => void;
@@ -252,7 +252,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
     const newDeal: GroupDeal = {
       id: `user-${Date.now()}`,
       name: name.trim(),
-      image: '🛒',
+      image: '??',
       imageUrl: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=400&q=80',
       category,
       regularPrice: Number(regPrice),
@@ -294,7 +294,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
 
         <div className="p-5 space-y-4">
 
-          {/* ── Step 1: Details ── */}
+          {/* -- Step 1: Details -- */}
           {step === 1 && (
             <>
               <div>
@@ -378,7 +378,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
             </>
           )}
 
-          {/* ── Step 2: Pricing ── */}
+          {/* -- Step 2: Pricing -- */}
           {step === 2 && (
             <>
               <div className="grid grid-cols-2 gap-3">
@@ -406,7 +406,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
 
               {savings > 0 && (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                  <p className="text-green-700 font-bold">🎉 Buyers save {savings}% off regular price!</p>
+                  <p className="text-green-700 font-bold">?? Buyers save {savings}% off regular price!</p>
                 </div>
               )}
 
@@ -459,7 +459,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
 
               <div className="flex gap-2">
                 <button onClick={() => setStep(1)} className="flex-1 border border-gray-200 py-3 rounded-xl font-semibold text-gray-600">
-                  ← Back
+                  ? Back
                 </button>
                 <button
                   disabled={!canProceed2}
@@ -472,7 +472,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
             </>
           )}
 
-          {/* ── Step 3: Confirm ── */}
+          {/* -- Step 3: Confirm -- */}
           {step === 3 && (
             <>
               <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
@@ -504,7 +504,7 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
 
               <div className="flex gap-2">
                 <button onClick={() => setStep(2)} className="flex-1 border border-gray-200 py-3 rounded-xl font-semibold text-gray-600">
-                  ← Back
+                  ? Back
                 </button>
                 <button
                   onClick={handleCreate}
@@ -526,12 +526,12 @@ function CreateGroupModal({ onClose, onCreated }: CreateGroupModalProps) {
   );
 }
 
-// ─── ShareGroupModal ──────────────────────────────────────────────────────────
+// --- ShareGroupModal ----------------------------------------------------------
 
 function ShareGroupModal({ deal, onClose }: { deal: GroupDeal; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const shareUrl  = `https://bambeh.com/#/group-buying/${deal.id}`;
-  const shareText = `🛒 Join our group buy on Bambeh!\n\n${deal.name}\n💰 Only ${formatXAF(deal.tiers[0].price)} per person when we reach ${deal.tiers[0].buyers} buyers!\n📊 Currently ${deal.currentBuyers}/${deal.tiers[0].buyers} joined.\n\nJoin here 👇\n${shareUrl}`;
+  const shareText = `?? Join our group buy on Bambeh!\n\n${deal.name}\n?? Only ${formatXAF(deal.tiers[0].price)} per person when we reach ${deal.tiers[0].buyers} buyers!\n?? Currently ${deal.currentBuyers}/${deal.tiers[0].buyers} joined.\n\nJoin here ??\n${shareUrl}`;
 
   const handleWebShare = async () => {
     if (navigator.share) {
@@ -608,7 +608,7 @@ function ShareGroupModal({ deal, onClose }: { deal: GroupDeal; onClose: () => vo
   );
 }
 
-// ─── GroupDealCard ────────────────────────────────────────────────────────────
+// --- GroupDealCard ------------------------------------------------------------
 
 const GroupDealCard = ({ deal, onJoin, onShare }: {
   deal: GroupDeal;
@@ -670,7 +670,7 @@ const GroupDealCard = ({ deal, onJoin, onShare }: {
           <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
           <span className="text-xs font-semibold text-gray-700">{deal.rating}</span>
           <span className="text-xs text-gray-400">({deal.reviews})</span>
-          <span className="text-gray-200 mx-1">·</span>
+          <span className="text-gray-200 mx-1">�</span>
           <span className="text-xs text-gray-500 truncate">{deal.vendor}</span>
         </div>
 
@@ -713,7 +713,7 @@ const GroupDealCard = ({ deal, onJoin, onShare }: {
             {nextTier ? (
               <span className="text-amber-600">{nextTier.buyers - deal.currentBuyers} more for {formatXAF(nextTier.price)}!</span>
             ) : (
-              <span className="text-green-600 font-semibold">Best price! 🎉</span>
+              <span className="text-green-600 font-semibold">Best price! ??</span>
             )}
           </div>
           <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -769,14 +769,14 @@ const GroupDealCard = ({ deal, onJoin, onShare }: {
           onClick={() => navigate(`/group-buying/${deal.id}`)}
           className="w-full mt-2 text-xs text-blue-600 font-medium text-center py-1.5 hover:underline"
         >
-          View full details →
+          View full details ?
         </button>
       </div>
     </div>
   );
 };
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// --- Main Page ----------------------------------------------------------------
 
 const GroupBuying: React.FC = () => {
   const [deals,        setDeals]        = useState<GroupDeal[]>(INITIAL_DEALS);
@@ -815,8 +815,8 @@ const GroupBuying: React.FC = () => {
               <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-black">Group Buying 👥</h1>
-              <p className="text-blue-100 text-sm">Buy together, save together — the more the merrier!</p>
+              <h1 className="text-3xl font-black">Group Buying ??</h1>
+              <p className="text-blue-100 text-sm">Buy together, save together � the more the merrier!</p>
             </div>
           </div>
 
@@ -826,10 +826,10 @@ const GroupBuying: React.FC = () => {
             </h2>
             <div className="grid sm:grid-cols-4 gap-4 text-sm">
               {[
-                { step: '1️⃣', text: 'Find a deal & Join. Price locks in for you.' },
-                { step: '2️⃣', text: 'Share on WhatsApp. More buyers = lower price!' },
-                { step: '3️⃣', text: 'Deal activates when minimum buyers reached.' },
-                { step: '🔒', text: 'Money held in Escrow until you receive goods.' },
+                { step: '1??', text: 'Find a deal & Join. Price locks in for you.' },
+                { step: '2??', text: 'Share on WhatsApp. More buyers = lower price!' },
+                { step: '3??', text: 'Deal activates when minimum buyers reached.' },
+                { step: '??', text: 'Money held in Escrow until you receive goods.' },
               ].map(s => (
                 <div key={s.step} className="flex items-start gap-2 text-blue-100">
                   <span className="text-xl flex-shrink-0">{s.step}</span>

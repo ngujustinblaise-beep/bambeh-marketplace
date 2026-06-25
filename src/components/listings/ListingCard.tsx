@@ -1,4 +1,4 @@
-ï»¿import React from 'react';
+import React from 'react';
 import { DemoBadge } from './DemoBadge';
 
 export interface Listing {
@@ -17,7 +17,7 @@ interface ListingCardProps {
 export function ListingCard({ listing }: ListingCardProps) {
   return (
     <div className="rounded-xl overflow-hidden shadow-md bg-white border border-gray-100 hover:shadow-lg transition-shadow">
-      {/* Image container â€” must be `relative` so the badge positions correctly */}
+      {/* Image container — must be `relative` so the badge positions correctly */}
       <div className="relative w-full h-48">
         <img
           src={listing.imageUrl}
@@ -34,7 +34,7 @@ export function ListingCard({ listing }: ListingCardProps) {
         </p>
         {listing.isDemo && (
           <p className="text-xs text-yellow-700 mt-1 italic">
-            Sample listing â€” not for sale
+            Sample listing — not for sale
           </p>
         )}
       </div>

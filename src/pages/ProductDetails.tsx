@@ -1,14 +1,14 @@
-﻿/**
- * src/pages/ProductDetails.tsx — Bambeh Marketplace
+/**
+ * src/pages/ProductDetails.tsx � Bambeh Marketplace
  *
  * FIXED:
- *  ✅ Was showing "Product #id" with 0 XAF — now resolves from SAMPLE_MARKETPLACE
- *  ✅ Shows beautiful Unsplash product image
- *  ✅ Add to Cart wired to CartContext (useCart)
- *  ✅ Favorite button wired to CartContext (toggleFavorite)
- *  ✅ Contact Vendor via WhatsApp / phone
- *  ✅ Report item button
- *  ✅ DEMO badge on sample items
+ *  ? Was showing "Product #id" with 0 XAF � now resolves from SAMPLE_MARKETPLACE
+ *  ? Shows beautiful Unsplash product image
+ *  ? Add to Cart wired to CartContext (useCart)
+ *  ? Favorite button wired to CartContext (toggleFavorite)
+ *  ? Contact Vendor via WhatsApp / phone
+ *  ? Report item button
+ *  ? DEMO badge on sample items
  */
 
 import React, { useState } from 'react';
@@ -72,7 +72,7 @@ export default function ProductDetails() {
     if (!product) return;
     const shareData = {
       title: product.title,
-      text:  `${product.title} — ${fmt(product.priceXAF)} XAF on Bambeh`,
+      text:  `${product.title} � ${fmt(product.priceXAF)} XAF on Bambeh`,
       url:   `https://bambeh.com/#/marketplace/${product.id}`,
     };
     if (navigator.share) {
@@ -85,7 +85,7 @@ export default function ProductDetails() {
   if (!product) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
-        <div className="text-5xl mb-4">🔍</div>
+        <div className="text-5xl mb-4">??</div>
         <h2 className="text-xl font-bold text-gray-800 mb-2">Item not found</h2>
         <p className="text-gray-500 text-sm mb-6 text-center">
           This item may have been sold or removed. Browse the marketplace for more listings.
@@ -121,13 +121,13 @@ export default function ProductDetails() {
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl text-gray-300">🛍️</div>
+          <div className="w-full h-full flex items-center justify-center text-6xl text-gray-300">???</div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"/>
 
         {/* DEMO badge */}
         <div className="absolute top-3 left-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full shadow">
-          DEMO — Sample Item
+          DEMO � Sample Item
         </div>
 
         {/* Favourite button */}
@@ -169,13 +169,13 @@ export default function ProductDetails() {
               <p className="text-sm text-teal-500 mt-0.5">{fmt(product.priceXAF)} XAF each</p>
             )}
             {product.negotiable && (
-              <p className="text-xs text-green-600 font-semibold mt-1">✓ Price negotiable</p>
+              <p className="text-xs text-green-600 font-semibold mt-1">? Price negotiable</p>
             )}
           </div>
           {/* Quantity */}
           <div className="flex items-center gap-2 border border-gray-300 rounded-xl overflow-hidden">
             <button onClick={() => setQty(q => Math.max(1, q - 1))}
-              className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition font-bold text-lg">−</button>
+              className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition font-bold text-lg">-</button>
             <span className="w-8 text-center font-semibold">{qty}</span>
             <button onClick={() => setQty(q => q + 1)}
               className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition font-bold text-lg">+</button>
@@ -197,14 +197,14 @@ export default function ProductDetails() {
             </div>
             <div className="flex-1">
               <p className="font-semibold text-gray-900 dark:text-white text-sm">{product.sellerName}</p>
-              <p className="text-xs text-gray-400">Verified Bambeh Seller · {product.location}</p>
+              <p className="text-xs text-gray-400">Verified Bambeh Seller � {product.location}</p>
             </div>
           </div>
 
           {/* Contact buttons */}
           <div className="flex gap-2 mt-3">
             <a
-              href={`https://wa.me/237600000000?text=${encodeURIComponent(`Hi, I'm interested in your listing: ${product.title} — ${fmt(product.priceXAF)} XAF on Bambeh`)}`}
+              href={`https://wa.me/237600000000?text=${encodeURIComponent(`Hi, I'm interested in your listing: ${product.title} � ${fmt(product.priceXAF)} XAF on Bambeh`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 transition"
@@ -220,8 +220,8 @@ export default function ProductDetails() {
 
         {/* Safety note */}
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700">
-          ⚠️ <strong>Safety tip:</strong> Always use Bambeh Escrow for payments. Never send money in advance outside the app.
-          <button onClick={() => navigate('/meet-safely')} className="underline ml-1">Learn to meet safely →</button>
+          ?? <strong>Safety tip:</strong> Always use Bambeh Escrow for payments. Never send money in advance outside the app.
+          <button onClick={() => navigate('/meet-safely')} className="underline ml-1">Learn to meet safely ?</button>
         </div>
 
         {/* Report */}
@@ -252,7 +252,7 @@ export default function ProductDetails() {
           {added ? (
             <><CheckCircle className="w-5 h-5" /> Added to Cart!</>
           ) : (
-            <><ShoppingCart className="w-5 h-5" /> Add to Cart — {fmt(product.priceXAF * qty)} XAF</>
+            <><ShoppingCart className="w-5 h-5" /> Add to Cart � {fmt(product.priceXAF * qty)} XAF</>
           )}
         </button>
       </div>

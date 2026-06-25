@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
 export function useVoiceSearch(onResult: (text: string) => void) {
   const [listening, setListening] = useState(false);

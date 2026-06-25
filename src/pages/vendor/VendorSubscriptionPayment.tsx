@@ -1,7 +1,7 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR SUBSCRIPTION PAYMENT PAGE
- * © 2025 Bambeh. All rights reserved.
+ * � 2025 Bambeh. All rights reserved.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -474,7 +474,7 @@ Support: support@bambeh.cm
 
               <button onClick={() => navigate('/vendor/subscription')}
                 className="mt-4 w-full py-3 text-center text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors">
-                ← Change Plan
+                ? Change Plan
               </button>
             </div>
           </div>

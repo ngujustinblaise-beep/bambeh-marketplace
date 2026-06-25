@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ const SubscriptionPurchase = () => {
     try {
       toast({ title: "Processing Subscription", description: "Please wait while we process your payment..." });
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast({ title: "Subscription Successful! 🎉", description: `You are now subscribed to ${tiers.find(t => t.id === tierId)?.name}` });
+      toast({ title: "Subscription Successful! ??", description: `You are now subscribed to ${tiers.find(t => t.id === tierId)?.name}` });
       const subscriptionData = { tier: tierId, startDate: new Date().toISOString(), status: 'active' };
       localStorage.setItem('Bambeh_subscription', JSON.stringify(subscriptionData));
       setTimeout(() => { navigate('/profile'); }, 1500);
@@ -65,7 +65,7 @@ const SubscriptionPurchase = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Choose Your Plan</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">Unlock premium features and get the most out of Bambeh marketplace</p>
           <div className="mt-4 bg-indigo-50 border border-indigo-200 rounded-lg p-4 max-w-md mx-auto">
-            <p className="text-sm text-indigo-900">🪙 <strong>Exchange Rate:</strong> 1 Zerm Coin = 100 XAF</p>
+            <p className="text-sm text-indigo-900">?? <strong>Exchange Rate:</strong> 1 Zerm Coin = 100 XAF</p>
           </div>
         </div>
 
@@ -116,7 +116,7 @@ const SubscriptionPurchase = () => {
           <CardHeader><CardTitle className="text-center">Payment Methods</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[{emoji:'📱',label:'MTN MoMo'},{emoji:'🟠',label:'Orange Money'},{emoji:'💳',label:'Credit Card'},{emoji:'🪙',label:'Zerm Coins'}].map(m => (
+              {[{emoji:'??',label:'MTN MoMo'},{emoji:'??',label:'Orange Money'},{emoji:'??',label:'Credit Card'},{emoji:'??',label:'Zerm Coins'}].map(m => (
                 <div key={m.label} className="flex flex-col items-center p-4 border rounded-lg">
                   <div className="text-3xl mb-2">{m.emoji}</div>
                   <p className="text-sm font-semibold">{m.label}</p>

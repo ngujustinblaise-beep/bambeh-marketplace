@@ -1,19 +1,19 @@
-﻿/**
- * src/pages/TontineCreate.tsx — Bambeh Marketplace
+/**
+ * src/pages/TontineCreate.tsx � Bambeh Marketplace
  *
  * FIXES applied:
- *  ✅ handleCreate: navigate('/login') inside async function — added return after
+ *  ? handleCreate: navigate('/login') inside async function � added return after
  *     navigate() so supabase insert doesn't proceed without a user.
- *  ✅ Supabase insert: current_members set to 1 AND immediately inserts admin into
+ *  ? Supabase insert: current_members set to 1 AND immediately inserts admin into
  *     tontine_members table so the creator is always listed as a member.
- *  ✅ Error display: now shows the Supabase error message (e.g. RLS violation)
+ *  ? Error display: now shows the Supabase error message (e.g. RLS violation)
  *     instead of a generic string.
- *  ✅ Number inputs: min/max validation enforced in state — negative amounts blocked.
- *  ✅ Start date: stored as ISO date string, not ISO datetime, matching DB column type.
- *  ✅ canSubmit: now also checks frequency is set and description is non-empty.
- *  ✅ Success redirect timeout cleared on unmount to prevent setState-after-unmount.
- *  ✅ Form fields have proper id+htmlFor pairing for accessibility.
- *  ✅ Keyboard dismiss: pressing Escape while on modal-style page navigates back.
+ *  ? Number inputs: min/max validation enforced in state � negative amounts blocked.
+ *  ? Start date: stored as ISO date string, not ISO datetime, matching DB column type.
+ *  ? canSubmit: now also checks frequency is set and description is non-empty.
+ *  ? Success redirect timeout cleared on unmount to prevent setState-after-unmount.
+ *  ? Form fields have proper id+htmlFor pairing for accessibility.
+ *  ? Keyboard dismiss: pressing Escape while on modal-style page navigates back.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -127,11 +127,11 @@ export default function TontineCreate() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm w-full">
           <CheckCircle className="w-14 h-14 text-purple-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Group Created! 💰</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Group Created! ??</h2>
           <p className="text-gray-500 text-sm">
             Your tontine group is live. Share it with friends to start saving together.
           </p>
-          <p className="text-xs text-gray-400 mt-3 animate-pulse">Redirecting to Tontine…</p>
+          <p className="text-xs text-gray-400 mt-3 animate-pulse">Redirecting to Tontine�</p>
         </div>
       </div>
     );
@@ -190,7 +190,7 @@ export default function TontineCreate() {
               value={description}
               onChange={e => setDescription(e.target.value)}
               rows={3}
-              placeholder="Describe the purpose and rules of your group…"
+              placeholder="Describe the purpose and rules of your group�"
               className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-purple-500 resize-none"
             />
           </div>
@@ -258,7 +258,7 @@ export default function TontineCreate() {
               className="w-4 h-4 accent-purple-600"
             />
             <div>
-              <span className="text-sm font-medium text-gray-700">🔒 Private group</span>
+              <span className="text-sm font-medium text-gray-700">?? Private group</span>
               <p className="text-xs text-gray-400">Only visible to invited members</p>
             </div>
           </label>
@@ -268,7 +268,7 @@ export default function TontineCreate() {
             <div className="bg-purple-50 rounded-xl p-3 text-sm">
               <p className="font-semibold text-purple-900 mb-1">Group Summary</p>
               <p className="text-purple-700">
-                {parsedMembers} members × {parsedAmount.toLocaleString('fr-CM')} XAF/
+                {parsedMembers} members � {parsedAmount.toLocaleString('fr-CM')} XAF/
                 {frequency === 'monthly' ? 'month' : 'week'} ={' '}
                 <strong>{(parsedMembers * parsedAmount).toLocaleString('fr-CM')} XAF</strong> total pool
               </p>
@@ -294,7 +294,7 @@ export default function TontineCreate() {
           className="w-full bg-purple-700 text-white py-3.5 rounded-2xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-purple-800 transition"
         >
           {submitting
-            ? <><Loader2 className="w-4 h-4 animate-spin" />Creating…</>
+            ? <><Loader2 className="w-4 h-4 animate-spin" />Creating�</>
             : <><Users className="w-5 h-5" />Create Group</>}
         </button>
       </div>

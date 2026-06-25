@@ -1,6 +1,6 @@
-ï»¿/**
+/**
  * src/components/forms/AddServiceForm.tsx
- * Bambeh Marketplace â€” Add Service Listing Form
+ * Bambeh Marketplace — Add Service Listing Form
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ import LocationSelector from "@/components/location/LocationSelector";
 
 interface AddServiceFormProps { onSuccess?: () => void; onCancel?: () => void; }
 
-const SERVICE_CATEGORIES = ["Informatique & Tech","Plomberie","Ã‰lectricitÃ©","Peinture & DÃ©coration","Jardinage","Nettoyage","Transport & DÃ©mÃ©nagement","Coiffure & BeautÃ©","Cours & Formation","Photographie","Design","Autres"] as const;
+const SERVICE_CATEGORIES = ["Informatique & Tech","Plomberie","Électricité","Peinture & Décoration","Jardinage","Nettoyage","Transport & Déménagement","Coiffure & Beauté","Cours & Formation","Photographie","Design","Autres"] as const;
 
 const AddServiceForm: React.FC<AddServiceFormProps> = ({ onSuccess, onCancel }) => {
   const { user } = useAuth();
@@ -43,9 +43,9 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onSuccess, onCancel }) 
       <div className="mb-6"><h2 className="text-xl font-bold text-gray-900">Proposer un service</h2></div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Titre du service <span className="text-red-500">*</span></label>
-          <input type="text" value={form.title} onChange={e=>set("title",e.target.value)} placeholder="Ex: RÃ©paration ordinateurs & smartphones" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+          <input type="text" value={form.title} onChange={e=>set("title",e.target.value)} placeholder="Ex: Réparation ordinateurs & smartphones" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
         <div className="grid grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">CatÃ©gorie <span className="text-red-500">*</span></label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Catégorie <span className="text-red-500">*</span></label>
             <select value={form.category} onChange={e=>set("category",e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
               <option value="">-- Choisir --</option>{SERVICE_CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
           <div><label className="block text-sm font-medium text-gray-700 mb-1">Tarif (FCFA) <span className="text-red-500">*</span></label>
@@ -55,13 +55,13 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onSuccess, onCancel }) 
             </div></div>
         </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-red-500">*</span></label>
-          <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="DÃ©crivez votre service en dÃ©tail..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" /></div>
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">ExpÃ©rience</label>
-          <input type="text" value={form.experience} onChange={e=>set("experience",e.target.value)} placeholder="Ex: 5 ans d'expÃ©rience en informatique" className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none" /></div>
+          <textarea value={form.description} onChange={e=>set("description",e.target.value)} rows={4} placeholder="Décrivez votre service en détail..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none resize-none" /></div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Expérience</label>
+          <input type="text" value={form.experience} onChange={e=>set("experience",e.target.value)} placeholder="Ex: 5 ans d'expérience en informatique" className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none" /></div>
         <LocationSelector value={location} onChange={(loc) => setLocation((prev) => ({ ...prev, ...loc }))} />
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={form.isAvailable} onChange={e=>set("isAvailable",e.target.checked)} className="w-4 h-4 text-teal-600 rounded" />
-          <span className="text-sm text-gray-700">Disponible immÃ©diatement</span>
+          <span className="text-sm text-gray-700">Disponible immédiatement</span>
         </label>
         {error && <p className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</p>}
         <div className="flex gap-3 pt-2">

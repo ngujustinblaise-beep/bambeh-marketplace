@@ -1,24 +1,24 @@
-﻿/**
+/**
  * useSubscriptionGate.ts
- * ────────────────────────────────────────────────────────────────────────────
+ * ----------------------------------------------------------------------------
  * Central hook that determines whether the current user can access
  * subscription-gated features.
  *
  * FILE LOCATION: src/hooks/useSubscriptionGate.ts
  *
  * Returns:
- *   isLoggedIn      — user has a valid session
- *   isSubscribed    — user has an active paid plan
- *   plan            — 'basic' | 'standard' | 'premium' | null
- *   showGate(msg?)  — call this to trigger the subscription modal
- *   GateModal       — render this anywhere; it self-manages visibility
- * ────────────────────────────────────────────────────────────────────────────
+ *   isLoggedIn      � user has a valid session
+ *   isSubscribed    � user has an active paid plan
+ *   plan            � 'basic' | 'standard' | 'premium' | null
+ *   showGate(msg?)  � call this to trigger the subscription modal
+ *   GateModal       � render this anywhere; it self-manages visibility
+ * ----------------------------------------------------------------------------
  */
 
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// -- Helpers ------------------------------------------------------------------
 
 function getCurrentUser(): Record<string, unknown> | null {
   try {
@@ -49,7 +49,7 @@ function getSubscription(): { plan: string; active: boolean } | null {
   return null;
 }
 
-// ── Special features requiring subscription ───────────────────────────────────
+// -- Special features requiring subscription -----------------------------------
 export const GATED_FEATURES = [
   "/farm-fresh",
   "/community",
@@ -62,7 +62,7 @@ export const GATED_FEATURES = [
   "/escrow",
 ] as const;
 
-// ── Hook ─────────────────────────────────────────────────────────────────────
+// -- Hook ---------------------------------------------------------------------
 export function useSubscriptionGate() {
   const navigate = useNavigate();
   const [gateOpen, setGateOpen] = useState(false);

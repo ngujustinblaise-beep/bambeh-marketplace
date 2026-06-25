@@ -1,7 +1,7 @@
-﻿/**
+/**
  * NETWORK MONITOR - DETECT NETWORK STRENGTH & OPTIMIZE FOR POOR CONNECTIONS
  * FILE LOCATION: src/components/network/NetworkMonitor.tsx
- * © 2025 Bambeh. All rights reserved.
+ * � 2025 Bambeh. All rights reserved.
  */
 
 import {
@@ -330,7 +330,7 @@ export function NetworkStatusBar() {
               : "bg-yellow-700 text-white"
           }`}
         >
-          {isDataSaverEnabled ? "✓ Data Saver On" : "Enable Data Saver"}
+          {isDataSaverEnabled ? "? Data Saver On" : "Enable Data Saver"}
         </button>
       </div>
     </div>

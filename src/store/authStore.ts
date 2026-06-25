@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AUTH STORE
  * Zustand store for Supabase Auth state
  * FILE LOCATION: src/store/authStore.ts

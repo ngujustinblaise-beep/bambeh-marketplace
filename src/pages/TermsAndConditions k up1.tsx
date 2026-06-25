@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TERMS AND CONDITIONS
  * FILE LOCATION: src/pages/TermsAndConditions.tsx
  */
@@ -101,7 +101,7 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">V. Protection of User Data and Security</h2>
                 <p>Bambeh processes Personal Data in compliance with <strong>Law No. 2024/017</strong> and retains the right to cooperate with ian law enforcement, which may include the <strong>disclosure of User data without prior notice.</strong></p>
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 my-3">
-                  <strong>⚠️ IMPORTANT SECURITY DISCLAIMER:</strong> Despite reasonable security measures, Bambeh <strong>does not warrant absolute security.</strong> Bambeh shall <strong>have no liability whatsoever</strong> for any damages arising from unauthorized access, malware, data theft, hacking, or cyberattacks.
+                  <strong>?? IMPORTANT SECURITY DISCLAIMER:</strong> Despite reasonable security measures, Bambeh <strong>does not warrant absolute security.</strong> Bambeh shall <strong>have no liability whatsoever</strong> for any damages arising from unauthorized access, malware, data theft, hacking, or cyberattacks.
                 </div>
               </div>
 
@@ -109,24 +109,24 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">VI. Disclaimers and Liability Limitations</h2>
                 <p>The Services are provided on an <strong>"AS IS" and "AS AVAILABLE" basis, without any warranties of any kind.</strong></p>
                 <div className="bg-red-50 border-l-4 border-red-400 p-3 my-3">
-                  <strong>⚠️ INDEMNIFICATION CLAUSE:</strong> You agree to <strong>defend, indemnify, and hold harmless Bambeh</strong> from any and all claims, liabilities, costs, and expenses arising out of your use of the Services or violation of these Terms.
+                  <strong>?? INDEMNIFICATION CLAUSE:</strong> You agree to <strong>defend, indemnify, and hold harmless Bambeh</strong> from any and all claims, liabilities, costs, and expenses arising out of your use of the Services or violation of these Terms.
                 </div>
               </div>
 
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">VII. Termination and Dispute Resolution</h2>
                 <p>Bambeh may suspend or terminate accounts for breaches <strong>immediately and without refund.</strong></p>
-                <p>Disputes are governed by ian law and resolved in <strong>Yaoundé courts</strong>.</p>
+                <p>Disputes are governed by ian law and resolved in <strong>Yaound� courts</strong>.</p>
               </div>
 
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">Copyright and Contact</h2>
                 <p>Bambeh's code, design, and content are protected by ian and international copyright laws.</p>
-                <p className="font-semibold"><strong>Contact:</strong> Yaoundé,  | +237 670757326 | Bambehtheapp@gmail.com</p>
+                <p className="font-semibold"><strong>Contact:</strong> Yaound�,  | +237 670757326 | Bambehtheapp@gmail.com</p>
               </div>
 
               <div className="border-t-2 pt-6 mt-6 bg-indigo-50 p-6 rounded-lg">
-                <h2 className="text-xl font-bold text-indigo-900 mb-3 text-center">📋 End of Terms and Conditions</h2>
+                <h2 className="text-xl font-bold text-indigo-900 mb-3 text-center">?? End of Terms and Conditions</h2>
                 <p className="text-center text-gray-700">You have reached the end of the document. Please indicate your acceptance below.</p>
               </div>
             </div>

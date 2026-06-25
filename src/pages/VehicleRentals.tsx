@@ -1,8 +1,8 @@
-﻿/**
- * src/pages/VehicleRentals.tsx — Bambeh Marketplace
+/**
+ * src/pages/VehicleRentals.tsx � Bambeh Marketplace
  * Full vehicle listings page with multilingual support, Supabase realtime,
  * rich filters, and zero-error UX.
- * © 2026 BAMBEH SARL. All rights reserved.
+ * � 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -18,24 +18,24 @@ import { DemoBadge } from "@/components/listings/DemoBadge";
 import { useLang } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // i18n dictionary
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 const I18N: Record<string, Record<string, string>> = {
   en: {
     title: "Cars & Vehicles",
     subtitle: "Buy and sell vehicles across Cameroon",
-    searchPlaceholder: "Search by make, model, or title…",
+    searchPlaceholder: "Search by make, model, or title�",
     allCities: "All Cities",
     refresh: "Refresh",
     sell: "Sell",
     vehiclesFound: "vehicle found",
     vehiclesFoundPlural: "vehicles found",
-    loading: "Loading vehicles…",
+    loading: "Loading vehicles�",
     noVehicles: "No vehicles found",
     noVehiclesHint: "Try clearing your filters or be the first to list!",
     listYourVehicle: "List Your Vehicle",
-    sample: "Sample — not a real listing",
+    sample: "Sample � not a real listing",
     expiringLabel: "Expiring soon",
     errorBanner: "Could not load listings. Showing demo data.",
     allTypes: "All",
@@ -44,21 +44,21 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Back to top",
   },
   fr: {
-    title: "Voitures & Véhicules",
-    subtitle: "Achetez et vendez des véhicules au Cameroun",
-    searchPlaceholder: "Rechercher par marque, modèle ou titre…",
+    title: "Voitures & V�hicules",
+    subtitle: "Achetez et vendez des v�hicules au Cameroun",
+    searchPlaceholder: "Rechercher par marque, mod�le ou titre�",
     allCities: "Toutes les villes",
     refresh: "Actualiser",
     sell: "Vendre",
-    vehiclesFound: "véhicule trouvé",
-    vehiclesFoundPlural: "véhicules trouvés",
-    loading: "Chargement des véhicules…",
-    noVehicles: "Aucun véhicule trouvé",
-    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier à lister!",
-    listYourVehicle: "Listez votre véhicule",
-    sample: "Exemple — pas une vraie annonce",
-    expiringLabel: "Expire bientôt",
-    errorBanner: "Impossible de charger les annonces. Données de démonstration affichées.",
+    vehiclesFound: "v�hicule trouv�",
+    vehiclesFoundPlural: "v�hicules trouv�s",
+    loading: "Chargement des v�hicules�",
+    noVehicles: "Aucun v�hicule trouv�",
+    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier � lister!",
+    listYourVehicle: "Listez votre v�hicule",
+    sample: "Exemple � pas une vraie annonce",
+    expiringLabel: "Expire bient�t",
+    errorBanner: "Impossible de charger les annonces. Donn�es de d�monstration affich�es.",
     allTypes: "Tous",
     views: "vue",
     viewsPlural: "vues",
@@ -67,17 +67,17 @@ const I18N: Record<string, Record<string, string>> = {
   ha: {
     title: "Motoci & Ababen Hawa",
     subtitle: "Saya da sayar da ababen hawa a Kamaru",
-    searchPlaceholder: "Nemo ta marka, model ko take…",
+    searchPlaceholder: "Nemo ta marka, model ko take�",
     allCities: "Dukkan Biranen",
     refresh: "Sabunta",
     sell: "Sayar",
     vehiclesFound: "abin hawa an samu",
     vehiclesFoundPlural: "ababen hawa an samu",
-    loading: "Ana loda ababen hawa…",
+    loading: "Ana loda ababen hawa�",
     noVehicles: "Ba a sami ababen hawa ba",
     noVehiclesHint: "Gwada share tace ko kasance na farko don lissafi!",
     listYourVehicle: "Lissafa Abin Hawanku",
-    sample: "Samfuri — ba lissafi na gaske ba",
+    sample: "Samfuri � ba lissafi na gaske ba",
     expiringLabel: "Kusa ya kare",
     errorBanner: "Ba a iya loda lissafin. Ana nuna bayanin demo.",
     allTypes: "Duka",
@@ -86,40 +86,40 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Koma sama",
   },
   ar: {
-    title: "السيارات والمركبات",
-    subtitle: "بيع وشراء المركبات Ùي الكاميرون",
-    searchPlaceholder: "ابحث بالماركة أو الطراز أو العنوان…",
-    allCities: "جميع المدن",
-    refresh: "تحديث",
-    sell: "بيع",
-    vehiclesFound: "مركبة وجدت",
-    vehiclesFoundPlural: "مركبات وجدت",
-    loading: "جارÙ تحميل المركبات…",
-    noVehicles: "لا توجد مركبات",
-    noVehiclesHint: "حاول مسح الÙلاتر أو كن أول من يضيÙ إعلاناً!",
-    listYourVehicle: "أضÙ مركبتك",
-    sample: "نموذج — ليس إعلاناً حقيقياً",
-    expiringLabel: "تنتهي قريباً",
-    errorBanner: "تعذّر تحميل الإعلانات. يتم عرض البيانات التجريبية.",
-    allTypes: "الكل",
-    views: "مشاهدة",
-    viewsPlural: "مشاهدات",
-    backToTop: "العودة للأعلى",
+    title: "???????? ?????????",
+    subtitle: "??? ????? ???????? ف? ?????????",
+    searchPlaceholder: "???? ???????? ?? ?????? ?? ???????�",
+    allCities: "???? ?????",
+    refresh: "?????",
+    sell: "???",
+    vehiclesFound: "????? ????",
+    vehiclesFoundPlural: "?????? ????",
+    loading: "???ٍ ????? ????????�",
+    noVehicles: "?? ???? ??????",
+    noVehiclesHint: "???? ??? ??ف???? ?? ?? ??? ?? ???ف ???????!",
+    listYourVehicle: "??ف ??????",
+    sample: "????? � ??? ??????? ???????",
+    expiringLabel: "????? ??????",
+    errorBanner: "????? ????? ?????????. ??? ??? ???????? ?????????.",
+    allTypes: "????",
+    views: "??????",
+    viewsPlural: "???????",
+    backToTop: "?????? ??????",
   },
   pcm: {
     title: "Cars & Motor",
     subtitle: "Buy and sell motor for all Cameroon",
-    searchPlaceholder: "Search by make, model or name…",
+    searchPlaceholder: "Search by make, model or name�",
     allCities: "All Towns",
     refresh: "Refresh",
     sell: "Sell",
     vehiclesFound: "motor find",
     vehiclesFoundPlural: "motors find",
-    loading: "Motor dey load…",
+    loading: "Motor dey load�",
     noVehicles: "No motor find",
     noVehiclesHint: "Try remove filter or be first person post!",
     listYourVehicle: "Post Your Motor",
-    sample: "Sample — no be real post",
+    sample: "Sample � no be real post",
     expiringLabel: "Go expire soon",
     errorBanner: "We no fit load posts. We dey show demo data.",
     allTypes: "All",
@@ -128,46 +128,46 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Go top",
   },
   ff: {
-    title: "Jawdi & Laaɓal",
-    subtitle: "Soodde e yillitde laaɓal e Kameruun",
-    searchPlaceholder: "Yiyto e innde, model walla tiitoonde…",
+    title: "Jawdi & Laa?al",
+    subtitle: "Soodde e yillitde laa?al e Kameruun",
+    searchPlaceholder: "Yiyto e innde, model walla tiitoonde�",
     allCities: "Telli Wuro",
-    refresh: "Haaɓtu",
+    refresh: "Haa?tu",
     sell: "Yillitu",
-    vehiclesFound: "laaɓal heɓaa",
-    vehiclesFoundPlural: "laaɓe heɓaa",
-    loading: "Laaɓe njilloyinee…",
-    noVehicles: "Laaɓe heɓaaki",
-    noVehiclesHint: "Wiɓ siftooje maa ar tawa fowo!",
-    listYourVehicle: "Haaɗtu Laaɓal Maa",
-    sample: "Misaali — woɗɗaaki jaŋtere goonga",
+    vehiclesFound: "laa?al he?aa",
+    vehiclesFoundPlural: "laa?e he?aa",
+    loading: "Laa?e njilloyinee�",
+    noVehicles: "Laa?e he?aaki",
+    noVehiclesHint: "Wi? siftooje maa ar tawa fowo!",
+    listYourVehicle: "Haa?tu Laa?al Maa",
+    sample: "Misaali � wo??aaki ja?tere goonga",
     expiringLabel: "Timmata jooni",
-    errorBanner: "Jaŋtere nde nahataa. Yeeso misaali hannde.",
+    errorBanner: "Ja?tere nde nahataa. Yeeso misaali hannde.",
     allTypes: "Fof",
     views: "yiyaade",
-    viewsPlural: "yiyaaɗe",
-    backToTop: "Haaɗtu dow",
+    viewsPlural: "yiyaa?e",
+    backToTop: "Haa?tu dow",
   },
 };
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Category labels (multilingual)
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   en: { All:"All", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motorcycle", Van:"Van", Minibus:"Minibus", Truck:"Truck" },
   fr: { All:"Tous", Sedan:"Berline", SUV:"SUV", Pickup:"Pick-up", Motorcycle:"Moto", Van:"Fourgon", Minibus:"Minibus", Truck:"Camion" },
   ha: { All:"Duka", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Babur", Van:"Van", Minibus:"Minibus", Truck:"Lori" },
-  ar: { All:"الكل", Sedan:"سيدان", SUV:"سيارة دÙع رباعي", Pickup:"بيك أب", Motorcycle:"دراجة نارية", Van:"Ùان", Minibus:"حاÙلة صغيرة", Truck:"شاحنة" },
+  ar: { All:"????", Sedan:"?????", SUV:"????? ?ف? ?????", Pickup:"??? ??", Motorcycle:"????? ?????", Van:"ف??", Minibus:"??ف?? ?????", Truck:"?????" },
   pcm: { All:"All", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motor", Van:"Van", Minibus:"Minibus", Truck:"Truck" },
   ff: { All:"Fof", Sedan:"Sedan", SUV:"SUV", Pickup:"Pickup", Motorcycle:"Motor", Van:"Van", Minibus:"Minibus", Truck:"Lorri" },
 };
 
 const VEHICLE_TYPES = ["All", "Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck"];
-const CITIES        = ["All", "Yaoundé", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
+const CITIES        = ["All", "Yaound�", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Types
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 interface Vehicle {
   id:          string;
   title:       string;
@@ -182,13 +182,13 @@ interface Vehicle {
   view_count?: number;
 }
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Demo data (ids start with demo- for VehicleDetails detection)
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 const DEMO_VEHICLES: Vehicle[] = [
-  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"Yaoundé", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
+  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"Yaound�", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
   { id:"demo-v2", title:"Honda Activa Motorcycle",   price:850_000,    location:"Douala",  category:"Motorcycle", images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Manual",    mileage:"12,000 km", year:2021}, isDemo:true },
-  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"Yaoundé", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
+  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"Yaound�", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
   { id:"demo-v4", title:"Nissan Pickup 4x4",         price:12_000_000, location:"Bamenda", category:"Pickup",     images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Manual",    mileage:"95,000 km", year:2018}, isDemo:true },
 ];
 
@@ -198,9 +198,9 @@ function expiringWithin(expiresAt?: string, days = 3): boolean {
   return diff > 0 && diff <= days * 86_400_000;
 }
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Component
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 export default function VehicleRentals() {
   const navigate = useNavigate();
   const lang = (useLang() || "en") as string;
@@ -251,7 +251,7 @@ export default function VehicleRentals() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchVehicles]);
 
-  // ── Filtered list ──────────────────────────────────────────
+  // -- Filtered list ------------------------------------------
   const filtered = [...vehicles]
     .filter((v) => {
       if (search) {
@@ -281,11 +281,11 @@ export default function VehicleRentals() {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-  // ── Render ─────────────────────────────────────────────────
+  // -- Render -------------------------------------------------
   return (
     <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? "rtl" : "ltr"}>
 
-      {/* ── Hero ── */}
+      {/* -- Hero -- */}
       <div className="bg-gradient-to-r from-green-700 to-green-800 text-white pt-10 pb-14 px-4">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold mb-1 flex items-center gap-2">
@@ -308,7 +308,7 @@ export default function VehicleRentals() {
 
       <div className="max-w-2xl mx-auto px-4 -mt-4">
 
-        {/* ── Filters card ── */}
+        {/* -- Filters card -- */}
         <div className="bg-white rounded-2xl shadow-sm p-4 mb-4 space-y-3">
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
             {VEHICLE_TYPES.map((type) => (
@@ -356,7 +356,7 @@ export default function VehicleRentals() {
           </div>
         </div>
 
-        {/* ── Error banner ── */}
+        {/* -- Error banner -- */}
         {error && (
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-4 py-3 mb-4 text-sm">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -364,18 +364,18 @@ export default function VehicleRentals() {
           </div>
         )}
 
-        {/* ── Location filter ── */}
+        {/* -- Location filter -- */}
         <LocationFilter onFilterChange={setLocationFilters} />
 
-        {/* ── Featured strip ── */}
+        {/* -- Featured strip -- */}
         <FeaturedAdsStrip category="vehicles" showHeader={false} maxVisible={20} />
 
-        {/* ── Count ── */}
+        {/* -- Count -- */}
         <div className="mb-3 text-sm text-gray-400">
           {filtered.length} {filtered.length === 1 ? tr("vehiclesFound") : tr("vehiclesFoundPlural")}
         </div>
 
-        {/* ── Loading ── */}
+        {/* -- Loading -- */}
         {loading && (
           <div className="flex flex-col items-center py-16 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-green-600" />
@@ -383,7 +383,7 @@ export default function VehicleRentals() {
           </div>
         )}
 
-        {/* ── Empty ── */}
+        {/* -- Empty -- */}
         {!loading && filtered.length === 0 && (
           <div className="text-center py-16">
             <Car className="w-14 h-14 text-gray-200 mx-auto mb-3" />
@@ -398,7 +398,7 @@ export default function VehicleRentals() {
           </div>
         )}
 
-        {/* ── Cards ── */}
+        {/* -- Cards -- */}
         {!loading && filtered.length > 0 && (
           <div className="space-y-4">
             {filtered.map((v) => (
@@ -418,7 +418,7 @@ export default function VehicleRentals() {
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
                   ) : (
-                    <span className="text-5xl">🚗</span>
+                    <span className="text-5xl">??</span>
                   )}
                   {v.isDemo && <DemoBadge />}
                   {expiringWithin(v.expires_at, 3) && (

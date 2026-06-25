@@ -1,7 +1,7 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * ZERM PURCHASE PAGE
- * © 2025 Bambé. All rights reserved.
+ * � 2025 Bamb�. All rights reserved.
  */
 
 import { useState } from 'react';
@@ -13,7 +13,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Packages ────────────────────────────────────────────────────────────────
+// --- Packages ----------------------------------------------------------------
 
 const ZERM_COIN_PACKAGES = [
   { id: 'starter', name: 'Starter Pack', amount: 10, bonus: 0, priceXAF: 1000 },
@@ -28,14 +28,14 @@ const getTotalZermCoins = (pkgId: string): number => {
   return pkg.amount + (pkg.bonus || 0);
 };
 
-// ─── Payment Methods ──────────────────────────────────────────────────────────
+// --- Payment Methods ----------------------------------------------------------
 
 const paymentMethods = [
-  { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', color: 'bg-yellow-500', description: 'Pay with MTN MoMo' },
-  { id: 'orange', name: 'Orange Money', icon: '🟠', color: 'bg-orange-500', description: 'Pay with Orange Money' },
+  { id: 'mtn', name: 'MTN Mobile Money', icon: '??', color: 'bg-yellow-500', description: 'Pay with MTN MoMo' },
+  { id: 'orange', name: 'Orange Money', icon: '??', color: 'bg-orange-500', description: 'Pay with Orange Money' },
 ];
 
-// ─── Package Card ─────────────────────────────────────────────────────────────
+// --- Package Card -------------------------------------------------------------
 
 interface PackageCardProps {
   pkg: typeof ZERM_COIN_PACKAGES[0];
@@ -99,7 +99,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg, isSelected, onSelect }) 
   );
 };
 
-// ─── Payment Method Card ──────────────────────────────────────────────────────
+// --- Payment Method Card ------------------------------------------------------
 
 interface PaymentMethodCardProps {
   method: typeof paymentMethods[0];
@@ -127,7 +127,7 @@ const PaymentMethodCard: React.FC<PaymentMethodCardProps> = ({ method, isSelecte
   </button>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// --- Main Component -----------------------------------------------------------
 
 export default function ZermPurchase() {
   const lang = useLang();
@@ -194,7 +194,7 @@ export default function ZermPurchase() {
             <Coins className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Buy Zerm Coins</h1>
-          <p className="text-gray-600 mb-4">1 Zerm = 100 XAF • Use coins for purchases, ads, and premium features</p>
+          <p className="text-gray-600 mb-4">1 Zerm = 100 XAF � Use coins for purchases, ads, and premium features</p>
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white rounded-xl shadow-lg">
             <Wallet className="w-6 h-6 text-yellow-600" />
             <div className="text-left">
@@ -332,7 +332,7 @@ export default function ZermPurchase() {
           {showFAQ && (
             <div className="px-6 pb-6 space-y-4">
               {[
-                { q: 'What are Zerm coins?', a: "Zerm coins are Bambé's digital currency. 1 Zerm = 100 XAF. Use them for purchases, promoting listings, and premium features." },
+                { q: 'What are Zerm coins?', a: "Zerm coins are Bamb�'s digital currency. 1 Zerm = 100 XAF. Use them for purchases, promoting listings, and premium features." },
                 { q: 'Do I get free coins with my subscription?', a: 'No. Zerm coins are not included in any subscription tier. All coins must be purchased separately. However, larger packages include bonus coins.' },
                 { q: 'How do I receive my coins?', a: "Once your payment is confirmed, coins are instantly added to your wallet. You'll receive a confirmation notification." },
                 { q: 'Do Zerm coins expire?', a: 'No, your Zerm coins never expire. Use them whenever you want!' },

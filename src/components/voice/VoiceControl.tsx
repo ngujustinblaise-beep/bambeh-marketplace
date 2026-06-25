@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Mic, MicOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -15,20 +15,20 @@ const voiceCommands: Record<string, Record<string, string>> = {
     "my favorites": "/favorites",
   },
   fr: {
-    "aller à l'accueil": "/home",
+    "aller � l'accueil": "/home",
     "afficher les emplois": "/jobs",
-    "ouvrir le marché": "/marketplace",
+    "ouvrir le march�": "/marketplace",
     rechercher: "/search?q=",
     "mon profil": "/profile",
     "afficher le panier": "/cart",
     "mes favoris": "/favorites",
   },
   ar: {
-    "اذهب إلى الرئيسية": "/home",
-    "عرض الوظائÙ": "/jobs",
-    "Ùتح السوق": "/marketplace",
-    "بحث عن": "/search?q=",
-    "ملÙي الشخصي": "/profile",
+    "???? ??? ????????": "/home",
+    "??? ??????ف": "/jobs",
+    "ف?? ?????": "/marketplace",
+    "??? ??": "/search?q=",
+    "??ف? ??????": "/profile",
   },
   ha: {
     "je gida": "/home",

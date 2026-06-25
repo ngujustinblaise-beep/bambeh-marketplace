@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Play, Pause, Volume2, VolumeX, Maximize, Minimize,
   Settings, Download, Share2, SkipBack, SkipForward, Loader2
@@ -358,7 +358,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         className={playbackRate === rate ? 'bg-blue-50' : ''}
                       >
                         {rate === 1 ? 'Normal' : `${rate}x`}
-                        {playbackRate === rate && ' ✓'}
+                        {playbackRate === rate && ' ?'}
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
@@ -369,7 +369,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         onClick={() => setQuality(q)}
                         className={quality === q ? 'bg-blue-50' : ''}
                       >
-                        {q} {quality === q && '✓'}
+                        {q} {quality === q && '?'}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -399,7 +399,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   );
 };
 
-// ─── Video Thumbnail Component ────────────────────────────────────────────────
+// --- Video Thumbnail Component ------------------------------------------------
 interface VideoThumbnailProps {
   src: string;
   poster?: string;

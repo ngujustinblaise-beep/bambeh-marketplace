@@ -1,24 +1,24 @@
-﻿/**
+/**
  * src/components/shared/index.tsx
  * Shared UI building blocks used across all updated Bambeh pages.
  *
  * Exports:
- *  • BigTick           — large visible ✓ checkbox/radio (main fix requested)
- *  • RadioCard         — selection card with big tick
- *  • ShareButton       — compact share icon button (replaces full-screen share banner)
- *  • ModalSheet        — bottom sheet modal wrapper
- *  • LocationCascade   — Region → City → Quarter/Kwata cascading selectors
- *  • Spinner           — loading spinner
- *  • StepBar           — multi-step progress indicator
+ *  � BigTick           � large visible ? checkbox/radio (main fix requested)
+ *  � RadioCard         � selection card with big tick
+ *  � ShareButton       � compact share icon button (replaces full-screen share banner)
+ *  � ModalSheet        � bottom sheet modal wrapper
+ *  � LocationCascade   � Region ? City ? Quarter/Kwata cascading selectors
+ *  � Spinner           � loading spinner
+ *  � StepBar           � multi-step progress indicator
  */
 
 import React, { useState, useEffect } from "react";
 import { REGIONS, CITIES_BY_REGION, QUARTIERS_BY_CITY } from "@/data/Locations";
 
-// ─── BigTick — large, clearly visible checkbox ──────────────────────────────
+// --- BigTick � large, clearly visible checkbox ------------------------------
 /**
  * Use this EVERYWHERE a user must tick/check something.
- * The tick is large (28×28px), high-contrast, and animates on state change.
+ * The tick is large (28�28px), high-contrast, and animates on state change.
  */
 export function BigTick({
   checked,
@@ -51,7 +51,7 @@ export function BigTick({
                   active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
                   ${checked ? c.ring : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800"}`}
     >
-      {/* The big tick box — 28×28, clearly visible */}
+      {/* The big tick box � 28�28, clearly visible */}
       <div className={`flex-shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center
                        transition-all duration-200
                        ${checked ? c.active : "border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700"}`}>
@@ -70,7 +70,7 @@ export function BigTick({
   );
 }
 
-// ─── BigRadio — large radio button for single-select options ────────────────
+// --- BigRadio � large radio button for single-select options ----------------
 export function BigRadio({
   selected,
   onSelect,
@@ -102,7 +102,7 @@ export function BigRadio({
                   active:scale-[0.99]
                   ${selected ? c.card : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800"}`}
     >
-      {/* Big radio circle — 28×28, clearly visible ✓ when selected */}
+      {/* Big radio circle � 28�28, clearly visible ? when selected */}
       <div className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center
                        transition-all duration-200
                        ${selected ? c.dot : "border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700"}`}>
@@ -129,7 +129,7 @@ export function BigRadio({
   );
 }
 
-// ─── ShareButton — compact share icon (replaces full-screen share banner) ──
+// --- ShareButton � compact share icon (replaces full-screen share banner) --
 /**
  * CRITICAL FIX: The old share banner was covering the entire screen and blocking
  * buttons (e.g. "Create Group" in Community). This ShareButton renders as a
@@ -159,7 +159,7 @@ export function ShareButton({
       try {
         await navigator.share({ title, text: shareText, url: shareUrl });
       } catch {
-        // User cancelled — no error needed
+        // User cancelled � no error needed
       }
     } else {
       await navigator.clipboard.writeText(shareUrl);
@@ -201,7 +201,7 @@ export function ShareButton({
   );
 }
 
-// ─── ModalSheet — bottom sheet modal ────────────────────────────────────────
+// --- ModalSheet � bottom sheet modal ----------------------------------------
 export function ModalSheet({
   open,
   onClose,
@@ -267,12 +267,12 @@ export function ModalSheet({
   );
 }
 
-// ─── LocationCascade — Region → City → Quarter/Kwata ────────────────────────
+// --- LocationCascade � Region ? City ? Quarter/Kwata ------------------------
 /**
  * Used on all posting forms (PostJob, PostMarketplace, SellVehicle, etc.)
  * Selecting a Region opens a modal of cities.
  * Selecting a City opens a modal of quarters/kwatas.
- * Each modal uses large radio circles with big visible ✓.
+ * Each modal uses large radio circles with big visible ?.
  */
 export interface LocationValue {
   region: string;
@@ -335,10 +335,10 @@ export function LocationCascade({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        {errors.region && <p className="text-xs text-red-500 mt-1 font-medium">⚠ {errors.region}</p>}
+        {errors.region && <p className="text-xs text-red-500 mt-1 font-medium">? {errors.region}</p>}
       </div>
 
-      {/* City field — shown after region selected */}
+      {/* City field � shown after region selected */}
       {value.region && (
         <div>
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
@@ -371,11 +371,11 @@ export function LocationCascade({
                          focus:border-teal-500 outline-none"
             />
           )}
-          {errors.city && <p className="text-xs text-red-500 mt-1 font-medium">⚠ {errors.city}</p>}
+          {errors.city && <p className="text-xs text-red-500 mt-1 font-medium">? {errors.city}</p>}
         </div>
       )}
 
-      {/* Quarter/Kwata field — shown after city selected */}
+      {/* Quarter/Kwata field � shown after city selected */}
       {value.city && (
         <div>
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
@@ -408,7 +408,7 @@ export function LocationCascade({
                             "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
             />
           )}
-          {errors.quartier && <p className="text-xs text-red-500 mt-1 font-medium">⚠ {errors.quartier}</p>}
+          {errors.quartier && <p className="text-xs text-red-500 mt-1 font-medium">? {errors.quartier}</p>}
         </div>
       )}
 
@@ -427,7 +427,7 @@ export function LocationCascade({
                             : "text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"}`}
             >
               <span>{r}</span>
-              {/* Big visible radio ✓ */}
+              {/* Big visible radio ? */}
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0
                                ${value.region === r
                                  ? "border-teal-500 bg-teal-500"
@@ -478,7 +478,7 @@ export function LocationCascade({
   );
 }
 
-// ─── Spinner ─────────────────────────────────────────────────────────────────
+// --- Spinner -----------------------------------------------------------------
 export function Spinner({ size = "md", color = "teal" }: {
   size?: "sm" | "md" | "lg";
   color?: "teal" | "white" | "purple";
@@ -494,7 +494,7 @@ export function Spinner({ size = "md", color = "teal" }: {
   );
 }
 
-// ─── StepBar — multi-step progress indicator ─────────────────────────────────
+// --- StepBar � multi-step progress indicator ---------------------------------
 export function StepBar({
   steps,
   currentStep,
@@ -545,12 +545,12 @@ export function StepBar({
   );
 }
 
-// ─── NavButtons — Back / Save Draft / Next row ───────────────────────────────
+// --- NavButtons � Back / Save Draft / Next row -------------------------------
 export function NavButtons({
   onBack,
   onNext,
   onSaveDraft,
-  nextLabel = "Next →",
+  nextLabel = "Next ?",
   nextDisabled = false,
   nextLoading = false,
   color = "teal",
@@ -577,7 +577,7 @@ export function NavButtons({
                      text-xs font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800
                      active:scale-95 transition-transform whitespace-nowrap"
         >
-          💾 Draft
+          ?? Draft
         </button>
       )}
       {onBack && (
@@ -588,7 +588,7 @@ export function NavButtons({
                      text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800
                      active:scale-95 transition-transform"
         >
-          ← Back
+          ? Back
         </button>
       )}
       <button

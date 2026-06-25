@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -8,7 +8,7 @@ const VendorProfile: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-lg mx-auto bg-white rounded-2xl shadow p-6">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center text-2xl">🏪</div>
+          <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center text-2xl">??</div>
           <div>
             <h1 className="text-xl font-bold">{vendor.name}</h1>
             <p className="text-sm text-gray-500">{vendor.businessName}</p>

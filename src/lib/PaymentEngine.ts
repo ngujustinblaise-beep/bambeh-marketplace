@@ -1,4 +1,4 @@
-﻿export type PaymentSource = "cart" | "zerm" | "farmfresh" | "subscription" | "donation";
+export type PaymentSource = "cart" | "zerm" | "farmfresh" | "subscription" | "donation";
 
 export interface PaymentPayload {
   amountXAF: number;

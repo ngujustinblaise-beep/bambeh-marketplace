@@ -1,7 +1,7 @@
-﻿/**
- * SellerProfilePage.tsx — BAMBEH MARKETPLACE
+/**
+ * SellerProfilePage.tsx � BAMBEH MARKETPLACE
  * Route: /seller/:id
- * © 2026 Bambeh Marketplace
+ * � 2026 Bambeh Marketplace
  */
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -24,28 +24,28 @@ interface SellerData {
 const normKey = (s: string) => decodeURIComponent(s).toLowerCase().replace(/\s+/g, '-');
 
 const MOCK_SELLERS: Record<string, SellerData> = {
-  'techshop-yaoundé': {
-    id: 'techshop-yaoundé', name: 'TechShop Yaoundé', avatar: '🖥️', coverEmoji: '📱',
-    bio: "Yaoundé's most trusted electronics retailer since 2018. Authorised reseller for Samsung, HP, and Sony. All products come with genuine manufacturer warranties.",
-    location: 'Centre-ville, Yaoundé', memberSince: 'March 2018',
+  'techshop-yaound�': {
+    id: 'techshop-yaound�', name: 'TechShop Yaound�', avatar: '???', coverEmoji: '??',
+    bio: "Yaound�'s most trusted electronics retailer since 2018. Authorised reseller for Samsung, HP, and Sony. All products come with genuine manufacturer warranties.",
+    location: 'Centre-ville, Yaound�', memberSince: 'March 2018',
     verified: true, responseRate: 98, avgResponseTime: '< 1 hour',
     totalSales: 1243, rating: 4.9, reviewCount: 312,
     ratingDistribution: [89, 8, 2, 1, 0],
     categories: ['Electronics', 'Phones', 'Laptops', 'Accessories'],
     listings: [
-      { id: 'l1', title: 'Samsung Galaxy A54 128GB', price: 159000, image: '📱', category: 'Phones', condition: 'New' },
-      { id: 'l2', title: 'HP Laptop Core i5 256GB SSD', price: 285000, image: '💻', category: 'Laptops', condition: 'New' },
-      { id: 'l3', title: 'AirPods Pro 2nd Gen', price: 65000, image: '🎧', category: 'Accessories', condition: 'New' },
-      { id: 'l4', title: 'Samsung 43" Smart TV', price: 180000, image: '📺', category: 'Electronics', condition: 'New' },
+      { id: 'l1', title: 'Samsung Galaxy A54 128GB', price: 159000, image: '??', category: 'Phones', condition: 'New' },
+      { id: 'l2', title: 'HP Laptop Core i5 256GB SSD', price: 285000, image: '??', category: 'Laptops', condition: 'New' },
+      { id: 'l3', title: 'AirPods Pro 2nd Gen', price: 65000, image: '??', category: 'Accessories', condition: 'New' },
+      { id: 'l4', title: 'Samsung 43" Smart TV', price: 180000, image: '??', category: 'Electronics', condition: 'New' },
     ],
     reviews: [
-      { id: 'r1', reviewerName: 'Paul Ateba', reviewerAvatar: '👨🏾', rating: 5, comment: 'Excellent service! Phone was exactly as described, came sealed with all accessories. Delivered same day to Bastos.', date: '3 days ago', itemBought: 'Samsung Galaxy A54' },
-      { id: 'r2', reviewerName: 'Fatima Bello', reviewerAvatar: '👩🏾', rating: 5, comment: 'Very professional. Offered me a genuine receipt and warranty card. Will definitely buy again!', date: '1 week ago', itemBought: 'HP Laptop Core i5' },
-      { id: 'r3', reviewerName: 'Eric Tamba', reviewerAvatar: '🧑', rating: 4, comment: 'Good quality product, delivery took slightly longer than promised but communication was great throughout.', date: '2 weeks ago', itemBought: 'AirPods Pro' },
+      { id: 'r1', reviewerName: 'Paul Ateba', reviewerAvatar: '????', rating: 5, comment: 'Excellent service! Phone was exactly as described, came sealed with all accessories. Delivered same day to Bastos.', date: '3 days ago', itemBought: 'Samsung Galaxy A54' },
+      { id: 'r2', reviewerName: 'Fatima Bello', reviewerAvatar: '????', rating: 5, comment: 'Very professional. Offered me a genuine receipt and warranty card. Will definitely buy again!', date: '1 week ago', itemBought: 'HP Laptop Core i5' },
+      { id: 'r3', reviewerName: 'Eric Tamba', reviewerAvatar: '??', rating: 4, comment: 'Good quality product, delivery took slightly longer than promised but communication was great throughout.', date: '2 weeks ago', itemBought: 'AirPods Pro' },
     ],
   },
   'natural-': {
-    id: 'natural-', name: 'Natural ', avatar: '🌿', coverEmoji: '🧴',
+    id: 'natural-', name: 'Natural ', avatar: '??', coverEmoji: '??',
     bio: 'Handcrafted natural beauty products made from ian raw materials. Cold-pressed shea butter, palm oil, and moringa from West and Adamawa Regions.',
     location: 'Bafoussam, West Region', memberSince: 'June 2020',
     verified: true, responseRate: 95, avgResponseTime: '< 3 hours',
@@ -53,15 +53,15 @@ const MOCK_SELLERS: Record<string, SellerData> = {
     ratingDistribution: [97, 2, 1, 0, 0],
     categories: ['Beauty', 'Skincare', 'Haircare', 'Natural Foods'],
     listings: [
-      { id: 'l1', title: 'Shea Butter Gift Set (6 items)', price: 19500, image: '🧴', category: 'Beauty', condition: 'New' },
-      { id: 'l2', title: 'Raw Shea Butter 500g', price: 8000, image: '🌿', category: 'Skincare', condition: 'New' },
+      { id: 'l1', title: 'Shea Butter Gift Set (6 items)', price: 19500, image: '??', category: 'Beauty', condition: 'New' },
+      { id: 'l2', title: 'Raw Shea Butter 500g', price: 8000, image: '??', category: 'Skincare', condition: 'New' },
     ],
     reviews: [
-      { id: 'r1', reviewerName: 'Sophie Mvodo', reviewerAvatar: '👱‍♀️', rating: 5, comment: "The best shea butter I've ever used. Completely transformed my skin in two weeks. Authentic and pure!", date: '1 day ago', itemBought: 'Raw Shea Butter 500g' },
+      { id: 'r1', reviewerName: 'Sophie Mvodo', reviewerAvatar: '?????', rating: 5, comment: "The best shea butter I've ever used. Completely transformed my skin in two weeks. Authentic and pure!", date: '1 day ago', itemBought: 'Raw Shea Butter 500g' },
     ],
   },
   'heritage-fabrics': {
-    id: 'heritage-fabrics', name: 'Heritage Fabrics', avatar: '🎨', coverEmoji: '🪡',
+    id: 'heritage-fabrics', name: 'Heritage Fabrics', avatar: '??', coverEmoji: '??',
     bio: "Preserving 's weaving traditions since 2015. Our master weavers from Foumban create authentic Kente, Ndop, and Toghu textiles.",
     location: 'Foumban, West Region', memberSince: 'January 2015',
     verified: true, responseRate: 87, avgResponseTime: '< 12 hours',
@@ -69,10 +69,10 @@ const MOCK_SELLERS: Record<string, SellerData> = {
     ratingDistribution: [100, 0, 0, 0, 0],
     categories: ['Fashion', 'Traditional Wear', 'Home Decor'],
     listings: [
-      { id: 'l1', title: 'Traditional Kente Cloth (5m)', price: 32000, image: '🎨', category: 'Fashion', condition: 'New' },
+      { id: 'l1', title: 'Traditional Kente Cloth (5m)', price: 32000, image: '??', category: 'Fashion', condition: 'New' },
     ],
     reviews: [
-      { id: 'r1', reviewerName: 'Alain Fouda', reviewerAvatar: '👨🏾', rating: 5, comment: 'Absolutely stunning Kente. The colours are vibrant and the weave quality is exceptional.', date: '2 weeks ago', itemBought: 'Traditional Kente Cloth' },
+      { id: 'r1', reviewerName: 'Alain Fouda', reviewerAvatar: '????', rating: 5, comment: 'Absolutely stunning Kente. The colours are vibrant and the weave quality is exceptional.', date: '2 weeks ago', itemBought: 'Traditional Kente Cloth' },
     ],
   },
 };
@@ -94,7 +94,7 @@ const SellerProfilePage: React.FC = () => {
   if (!seller) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="text-center">
-        <div className="text-6xl mb-4">🔍</div>
+        <div className="text-6xl mb-4">??</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">Seller Not Found</h2>
         <p className="text-gray-500 mb-6">This seller profile doesn't exist or has been removed.</p>
         <Link to="/marketplace" className="px-6 py-3 bg-teal-600 text-white rounded-xl font-bold">Browse Marketplace</Link>
@@ -151,9 +151,9 @@ const SellerProfilePage: React.FC = () => {
           </div>
           <div className="grid grid-cols-3 gap-3 mt-5">
             {[
-              { v: seller.totalSales.toLocaleString(), l: 'Sales', e: '📦' },
-              { v: `${seller.responseRate}%`, l: 'Response rate', e: '💬' },
-              { v: seller.avgResponseTime, l: 'Avg response', e: '⚡' },
+              { v: seller.totalSales.toLocaleString(), l: 'Sales', e: '??' },
+              { v: `${seller.responseRate}%`, l: 'Response rate', e: '??' },
+              { v: seller.avgResponseTime, l: 'Avg response', e: '?' },
             ].map(s => (
               <div key={s.l} className="bg-white/15 rounded-xl p-3 text-center">
                 <div className="font-bold text-sm">{s.e} {s.v}</div>
@@ -171,7 +171,7 @@ const SellerProfilePage: React.FC = () => {
           </Link>
           <button onClick={() => setFollowed(!followed)}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border transition-colors ${followed ? 'border-teal-300 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
-            <UserPlus className="w-4 h-4" />{followed ? 'Following ✓' : 'Follow'}
+            <UserPlus className="w-4 h-4" />{followed ? 'Following ?' : 'Follow'}
           </button>
           <Link to={`/seller/${id}/rating`} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-bold text-sm">
             <Star className="w-4 h-4 text-amber-400" />Rate
@@ -190,11 +190,11 @@ const SellerProfilePage: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-md p-1 flex gap-1">
           <button onClick={() => setActiveTab('listings')}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${activeTab === 'listings' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
-            📦 Listings ({seller.listings.length})
+            ?? Listings ({seller.listings.length})
           </button>
           <button onClick={() => setActiveTab('reviews')}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${activeTab === 'reviews' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
-            ⭐ Reviews ({seller.reviewCount})
+            ? Reviews ({seller.reviewCount})
           </button>
         </div>
 
@@ -256,7 +256,7 @@ const SellerProfilePage: React.FC = () => {
               </div>
             ))}
             <Link to={`/seller/${id}/rating`} className="block w-full py-3 bg-white border border-teal-200 text-teal-700 rounded-2xl font-bold text-center hover:bg-teal-50 transition-colors">
-              Leave a Review →
+              Leave a Review ?
             </Link>
           </div>
         )}
@@ -281,7 +281,7 @@ const SellerProfilePage: React.FC = () => {
               </a>
               <button onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                 className="w-full flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-700 font-semibold">
-                <Copy className="w-5 h-5 text-gray-400" />{copied ? '✓ Copied!' : 'Copy Profile Link'}
+                <Copy className="w-5 h-5 text-gray-400" />{copied ? '? Copied!' : 'Copy Profile Link'}
               </button>
             </div>
             <button onClick={() => setShareOpen(false)} className="w-full mt-3 py-3 text-gray-500 text-sm">Cancel</button>

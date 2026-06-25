@@ -1,4 +1,4 @@
-﻿export interface AppNotification {
+export interface AppNotification {
   id: string;
   userId: string;
   title: string;

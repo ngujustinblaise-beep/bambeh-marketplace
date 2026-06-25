@@ -1,4 +1,4 @@
-﻿export interface SearchResult {
+export interface SearchResult {
   id: string;
   type: "marketplace" | "job" | "service" | "rental" | "vehicle";
   title: string;

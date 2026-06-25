@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Cameroon Locations Data (Clean UTF-8 Safe Version)
  * Auto-rebuilt to remove corrupted encoding
  */

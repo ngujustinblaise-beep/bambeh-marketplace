@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -19,7 +19,7 @@ const PaymentPending: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50 px-4 py-12">
       <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full text-center">
-        <div className="text-6xl mb-6 animate-pulse">⏳</div>
+        <div className="text-6xl mb-6 animate-pulse">?</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Payment Pending{dots}
         </h1>

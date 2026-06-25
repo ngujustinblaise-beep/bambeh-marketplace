@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 export type PaymentProvider = "notchpay" | "mtn_momo" | "orange_money" | "stripe";
 
 export interface PaymentIntent {

@@ -1,12 +1,12 @@
-﻿/**
+/**
  * src/utils/security/RASP.ts
- * Bambeh Marketplace — Runtime Application Self-Protection
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Runtime Application Self-Protection
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
 
-// ─── Threat Level ─────────────────────────────────────────────────────────────
+// --- Threat Level -------------------------------------------------------------
 export type ThreatLevel = "low" | "medium" | "high" | "critical";
 
 export interface ThreatEvent {
@@ -18,7 +18,7 @@ export interface ThreatEvent {
   userAgent: string;
 }
 
-// ─── Internal state ───────────────────────────────────────────────────────────
+// --- Internal state -----------------------------------------------------------
 const threatLog: ThreatEvent[] = [];
 let isMonitoring = false;
 
@@ -39,11 +39,11 @@ function recordThreat(type: string, level: ThreatLevel, detail: string): void {
   }
 
   if (level === "high" || level === "critical") {
-    logger.warn(`[RASP] ${level.toUpperCase()} threat detected: ${type} — ${detail}`);
+    logger.warn(`[RASP] ${level.toUpperCase()} threat detected: ${type} � ${detail}`);
   }
 }
 
-// ─── XSS Detection ───────────────────────────────────────────────────────────
+// --- XSS Detection -----------------------------------------------------------
 function detectXSSPatterns(input: string): boolean {
   const xssPatterns = [
     /<script[\s\S]*?>/i,
@@ -61,7 +61,7 @@ function detectXSSPatterns(input: string): boolean {
   return xssPatterns.some((pattern) => pattern.test(input));
 }
 
-// ─── SQL Injection Detection ──────────────────────────────────────────────────
+// --- SQL Injection Detection --------------------------------------------------
 function detectSQLInjection(input: string): boolean {
   const sqlPatterns = [
     /('|")\s*(or|and)\s*('|"|\d)/i,
@@ -76,13 +76,13 @@ function detectSQLInjection(input: string): boolean {
   return sqlPatterns.some((pattern) => pattern.test(input));
 }
 
-// ─── Path Traversal Detection ─────────────────────────────────────────────────
+// --- Path Traversal Detection -------------------------------------------------
 function detectPathTraversal(input: string): boolean {
   const traversalPatterns = [/\.\.[/\\]/g, /%2e%2e[/\\]/gi, /\.\.%2f/gi];
   return traversalPatterns.some((pattern) => pattern.test(input));
 }
 
-// ─── Validate User Input ──────────────────────────────────────────────────────
+// --- Validate User Input ------------------------------------------------------
 export function validateInput(
   input: string,
   context: "search" | "form" | "url" | "general" = "general"
@@ -105,7 +105,7 @@ export function validateInput(
   return { isSafe: true };
 }
 
-// ─── Sanitize String ──────────────────────────────────────────────────────────
+// --- Sanitize String ----------------------------------------------------------
 export function sanitizeString(input: string): string {
   return input
     .replace(/&/g, "&amp;")
@@ -115,7 +115,7 @@ export function sanitizeString(input: string): string {
     .replace(/'/g, "&#x27;");
 }
 
-// ─── Detect DevTools ──────────────────────────────────────────────────────────
+// --- Detect DevTools ----------------------------------------------------------
 function setupDevToolsDetection(): void {
   if (import.meta.env.DEV) return;
 
@@ -139,7 +139,7 @@ function setupDevToolsDetection(): void {
   window.addEventListener("resize", check, { passive: true });
 }
 
-// ─── Monitor Console Tampering ────────────────────────────────────────────────
+// --- Monitor Console Tampering ------------------------------------------------
 function setupConsoleTamperDetection(): void {
   if (import.meta.env.DEV) return;
 
@@ -154,7 +154,7 @@ function setupConsoleTamperDetection(): void {
       configurable: true,
     });
   } catch {
-    // Property definition may fail in some environments — ignore
+    // Property definition may fail in some environments � ignore
   }
 
   // Restore original in case it was tampered with
@@ -164,7 +164,7 @@ function setupConsoleTamperDetection(): void {
   }
 }
 
-// ─── Monitor Prototype Pollution ─────────────────────────────────────────────
+// --- Monitor Prototype Pollution ---------------------------------------------
 function setupPrototypePollutionDetection(): void {
   const dangerousKeys = ["__proto__", "constructor", "prototype"];
 
@@ -189,7 +189,7 @@ function setupPrototypePollutionDetection(): void {
   };
 }
 
-// ─── Monitor Navigation ───────────────────────────────────────────────────────
+// --- Monitor Navigation -------------------------------------------------------
 function setupNavigationMonitoring(): void {
   window.addEventListener(
     "click",
@@ -210,7 +210,7 @@ function setupNavigationMonitoring(): void {
   );
 }
 
-// ─── Initialize RASP ─────────────────────────────────────────────────────────
+// --- Initialize RASP ---------------------------------------------------------
 export function initializeRASP(): void {
   if (isMonitoring) return;
   isMonitoring = true;
@@ -242,17 +242,17 @@ export function initializeRASP(): void {
   logger.log("[RASP] Runtime protection initialized");
 }
 
-// ─── Get Threat Log ───────────────────────────────────────────────────────────
+// --- Get Threat Log -----------------------------------------------------------
 export function getThreatLog(): readonly ThreatEvent[] {
   return Object.freeze([...threatLog]);
 }
 
-// ─── Clear Threat Log ─────────────────────────────────────────────────────────
+// --- Clear Threat Log ---------------------------------------------------------
 export function clearThreatLog(): void {
   threatLog.length = 0;
 }
 
-// ─── Get Threat Summary ───────────────────────────────────────────────────────
+// --- Get Threat Summary -------------------------------------------------------
 export function getThreatSummary(): Record<ThreatLevel, number> {
   return threatLog.reduce(
     (acc, event) => {

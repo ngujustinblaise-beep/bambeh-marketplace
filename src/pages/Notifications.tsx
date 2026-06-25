@@ -1,12 +1,12 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
 import { useLang, t } from "@/hooks/useAppLang";
 
 const typeIcon: Record<string, string> = {
-  welcome:      '👋',
-  subscription: '⭐',
-  new_order:    '🛒',
-  new_message:  '💬',
+  welcome:      '??',
+  subscription: '?',
+  new_order:    '??',
+  new_message:  '??',
 };
 
 const typeBg: Record<string, string> = {
@@ -31,7 +31,7 @@ function timeAgo(dateStr: string): string {
 }
 
 function NotifCard({ notif, onRead }: { notif: BambehNotification; onRead: (id: string) => void }) {
-  const icon = typeIcon[notif.type] ?? '🔔';
+  const icon = typeIcon[notif.type] ?? '??';
   const bg   = typeBg[notif.type]   ?? 'rgba(29,158,117,0.12)';
 
   return (
@@ -119,11 +119,11 @@ export default function Notifications() {
       {/* Content */}
       {loading ? (
         <div style={{ padding: 60, textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.7)' }}>Loading notifications…</div>
+          <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.7)' }}>Loading notifications�</div>
         </div>
       ) : notifications.length === 0 ? (
         <div style={{ padding: 80, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🔔</div>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>??</div>
           <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>All caught up!</div>
           <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.8)' }}>
             Your notifications will appear here

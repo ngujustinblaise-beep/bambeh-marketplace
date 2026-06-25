@@ -1,4 +1,4 @@
-﻿export type VendorStatus =
+export type VendorStatus =
   | "pending" | "approved" | "rejected" | "suspended" | "none";
 
 export type VendorVerificationLevel = "unverified" | "basic" | "verified" | "premium";

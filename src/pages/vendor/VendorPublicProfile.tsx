@@ -1,5 +1,5 @@
-﻿/**
- * src/pages/vendor/VendorPublicProfile.tsx — Bambeh Marketplace
+/**
+ * src/pages/vendor/VendorPublicProfile.tsx � Bambeh Marketplace
  * FIXED: Reads real vendor data from Supabase vendor_profiles table.
  * Also loads vendor's active listings from the listings table.
  */
@@ -60,7 +60,7 @@ const VendorPublicProfile: React.FC = () => {
     setError(null);
 
     try {
-      // ── Load vendor profile ──────────────────────────────────────────────
+      // -- Load vendor profile ----------------------------------------------
       // Try by user_id first (most common), then by UUID id
       let { data: vendorData, error: vendorErr } = await supabase
         .from('vendor_profiles')
@@ -87,7 +87,7 @@ const VendorPublicProfile: React.FC = () => {
 
       setVendor(vendorData);
 
-      // ── Load vendor's listings ───────────────────────────────────────────
+      // -- Load vendor's listings -------------------------------------------
       const { data: listingData } = await supabase
         .from('farm-images')
         .select('id, title, price, images, category, condition')
@@ -105,7 +105,7 @@ const VendorPublicProfile: React.FC = () => {
     }
   }
 
-  // ── Loading ───────────────────────────────────────────────────────────────
+  // -- Loading ---------------------------------------------------------------
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto py-6 px-4 space-y-4">
@@ -118,7 +118,7 @@ const VendorPublicProfile: React.FC = () => {
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────────────────
+  // -- Error -----------------------------------------------------------------
   if (error || !vendor) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
@@ -135,7 +135,7 @@ const VendorPublicProfile: React.FC = () => {
     );
   }
 
-  // ── Vendor initials for logo fallback ─────────────────────────────────────
+  // -- Vendor initials for logo fallback -------------------------------------
   const initials = vendor.business_name
     .split(' ')
     .map(w => w[0])
@@ -202,11 +202,11 @@ const VendorPublicProfile: React.FC = () => {
               <span className="font-bold text-gray-900">{vendor.rating.toFixed(1)}</span>
               <span className="text-gray-500 text-xs">({vendor.total_reviews} reviews)</span>
             </div>
-            <span className="text-gray-400 text-xs">·</span>
+            <span className="text-gray-400 text-xs">�</span>
             <span className="text-xs text-gray-500">
               <strong className="text-gray-700">{vendor.total_sales}</strong> sales
             </span>
-            <span className="text-gray-400 text-xs">·</span>
+            <span className="text-gray-400 text-xs">�</span>
             <span className="text-xs text-gray-500">Member since {memberYear}</span>
           </div>
 

@@ -1,5 +1,5 @@
-﻿/**
- * BAMBÉ MARKETPLACE - MAIN CHAT APP COMPONENT
+/**
+ * BAMB� MARKETPLACE - MAIN CHAT APP COMPONENT
  * Version: 1.0.0
  */
 
@@ -92,7 +92,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ userId, userName }) => {
             <ChatWindow conversation={selectedConversation} currentUserId={userId} />
           ) : (
             <div className="no-conversation-selected">
-              <div className="empty-state-icon">💬</div>
+              <div className="empty-state-icon">??</div>
               <h3>{t('chat.selectConversation')}</h3>
               <p>{t('chat.selectConversationDescription')}</p>
               {connectionStatus}

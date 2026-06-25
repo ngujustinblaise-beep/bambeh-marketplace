@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * SERVICE LIST PAGE — BAMBEH MARKETPLACE
+ * SERVICE LIST PAGE � BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/listings/ServiceList.tsx
  */
 import { useState, useEffect } from 'react';
@@ -141,7 +141,7 @@ const ServiceList = () => {
 
       {services.length === 0 && !loading && (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4">🔧</div>
+          <div className="text-6xl mb-4">??</div>
           <p className="text-gray-500 text-lg mb-4">{t('noServicesFound', 'No services found yet')}</p>
           <p className="text-gray-400 mb-6">Be the first to offer a service!</p>
           <Button onClick={() => { setMainOrigin(); navigate('/offer-service'); }}>Offer a Service</Button>

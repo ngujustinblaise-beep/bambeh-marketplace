@@ -1,4 +1,4 @@
-﻿/**
+/**
  * REPORT ISSUE BUTTON - UNIVERSAL REPORT COMPONENT
  * FILE LOCATION: src/components/report/ReportIssueButton.tsx
  */
@@ -136,7 +136,7 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, itemId, item
             {/* Step 2 */}
             {step === 2 && (
               <div className="p-6">
-                <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-gray-700 mb-4">â† Back to issue types</button>
+                <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-gray-700 mb-4">← Back to issue types</button>
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
                   <p className="text-sm font-medium text-red-800">Reporting: {reportTypes.find(t => t.id === selectedType)?.label}</p>
                 </div>

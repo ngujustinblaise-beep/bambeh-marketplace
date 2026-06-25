@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/components/social/SocialShare.tsx
- * Bambeh Marketplace â€” Social Share Panel
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Social Share Panel
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -109,7 +109,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
     try {
       await navigator.share({ title, text: description, url });
     } catch {
-      // User dismissed â€” ignore
+      // User dismissed — ignore
     }
   }, [title, description, url]);
 
@@ -174,7 +174,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
           {copied ? (
             <>
               <Check className="w-3.5 h-3.5" />
-              CopiÃ©
+              Copié
             </>
           ) : (
             <>

@@ -1,9 +1,9 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR SUBSCRIPTION PLANS EXCLUSIVE - VENDOR-ONLY PAGE
  * ROUTE: /vendor/manage-plan
  * FILE LOCATION: src/pages/vendor/VendorSubscriptionPlansExclusive.tsx
- * © 2025 Bambeh. All rights reserved.
+ * � 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -19,9 +19,9 @@ import {
 import BambehLogo from '@/assets/images/bambeh-logo.png';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // TYPES & INTERFACES
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 
 interface PlanFeature {
   text: string;
@@ -61,9 +61,9 @@ type PaymentMethod = 'mtn' | 'orange' | 'card' | 'zerm';
 type PaymentStep = 'select' | 'details' | 'processing' | 'success';
 type BillingPeriod = 'monthly' | 'annual';
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // SUBSCRIPTION PLANS DATA
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 
 const PLANS: SubscriptionPlan[] = [
   {
@@ -108,8 +108,8 @@ const PLANS: SubscriptionPlan[] = [
       { text: 'Unlimited chat + priority messaging', included: true },
       { text: 'Social media integration', included: true },
       { text: '10 ZC renewal bonus', included: true, highlight: true },
-      { text: 'Featured badge ✓', included: true },
-      { text: 'Priority placement ✓', included: true },
+      { text: 'Featured badge ?', included: true },
+      { text: 'Priority placement ?', included: true },
       { text: 'Bulk upload (CSV/Excel)', included: true },
       { text: 'Ad-free experience', included: true },
     ],
@@ -180,9 +180,9 @@ const getTierConfig = (tier: string | undefined) => {
   return tierConfig[tier.toLowerCase()] || tierConfig.free;
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 // MAIN COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════
+// ---------------------------------------------------------------------------
 
 export default function VendorSubscriptionPlansExclusive() {
   const lang = useLang();

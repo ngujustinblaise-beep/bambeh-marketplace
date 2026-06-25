@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, Zap } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -49,7 +49,7 @@ export default function CoinsBuyPage() {
     try {
       const newBalance = balance + selected.coins;
 
-      // 1ï¸⃣ record purchase
+      // 1️? record purchase
       await supabase.from("zerm_purchases").insert({
         user_id: userId,
         package_id: selected.id,
@@ -61,7 +61,7 @@ export default function CoinsBuyPage() {
         status: "completed",
       });
 
-      // 2ï¸⃣ update wallet
+      // 2️? update wallet
       await supabase.from("zerm_coins").upsert(
         {
           user_id: userId,
@@ -71,7 +71,7 @@ export default function CoinsBuyPage() {
         { onConflict: "user_id" }
       );
 
-      // 3ï¸⃣ log transaction
+      // 3️? log transaction
       await supabase.from("zerm_transactions").insert({
         user_id: userId,
         type: "credit",

@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * ADVANCED SEARCH COMPONENT
  * FILE LOCATION: src/components/search/AdvancedSearch.tsx
  */
@@ -49,7 +49,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     all:        ['All Categories'],
   };
 
-  const locations = ['All Locations','YaoundÃ©','Douala','Bamenda','Bafoussam','Garoua','Maroua','NgaoundÃ©rÃ©','Bertoua','Buea','Kribi','Limbe','Ebolowa','Kumba','EdÃ©a','Loum'];
+  const locations = ['All Locations','Yaoundé','Douala','Bamenda','Bafoussam','Garoua','Maroua','Ngaoundéré','Bertoua','Buea','Kribi','Limbe','Ebolowa','Kumba','Edéa','Loum'];
 
   useEffect(() => {
     let count = 0;
@@ -137,7 +137,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             {[0, 1, 2, 3, 4, 5].map(r => (
               <button key={r} onClick={() => handleFilterChange('rating', r)}
                 className={`px-3 py-1 rounded-lg border text-sm transition-colors ${filters.rating === r ? 'bg-teal-600 text-white border-teal-600' : 'border-gray-300 hover:border-teal-400'}`}>
-                {r === 0 ? 'Any' : `${r}â˜…+`}
+                {r === 0 ? 'Any' : `${r}?+`}
               </button>
             ))}
           </div>

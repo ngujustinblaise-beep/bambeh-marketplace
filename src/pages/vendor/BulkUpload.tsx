@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -54,7 +54,7 @@ const BulkUpload: React.FC = () => {
   };
 
   const ICONS: Record<UploadStatus, string> = {
-    pending: "⏳", uploading: "🔄", success: "✅", error: "❌",
+    pending: "?", uploading: "??", success: "?", error: "?",
   };
 
   return (

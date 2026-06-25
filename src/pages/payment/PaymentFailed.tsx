@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/payment/PaymentFailed.tsx
  * Shown when payment fails or is canceled.
  */

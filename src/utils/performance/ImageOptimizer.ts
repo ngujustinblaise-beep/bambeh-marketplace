@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/performance/ImageOptimizer.ts
- * Bambeh Marketplace — Image Optimization Utilities
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Image Optimization Utilities
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 export interface ResizeOptions {
@@ -20,7 +20,7 @@ export interface OptimizedImage {
   format: string;
 }
 
-// ─── Load Image from File ─────────────────────────────────────────────────────
+// --- Load Image from File -----------------------------------------------------
 function loadImageFromFile(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -40,7 +40,7 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
   });
 }
 
-// ─── Canvas to Blob ───────────────────────────────────────────────────────────
+// --- Canvas to Blob -----------------------------------------------------------
 function canvasToBlob(
   canvas: HTMLCanvasElement,
   format: string,
@@ -61,7 +61,7 @@ function canvasToBlob(
   });
 }
 
-// ─── Resize & Compress Image ──────────────────────────────────────────────────
+// --- Resize & Compress Image --------------------------------------------------
 export async function optimizeImage(
   file: File,
   options: ResizeOptions = {}
@@ -111,7 +111,7 @@ export async function optimizeImage(
   };
 }
 
-// ─── Create Thumbnail ─────────────────────────────────────────────────────────
+// --- Create Thumbnail ---------------------------------------------------------
 export async function createThumbnail(
   file: File,
   size: number = 200
@@ -124,7 +124,7 @@ export async function createThumbnail(
   });
 }
 
-// ─── Validate Image Dimensions ────────────────────────────────────────────────
+// --- Validate Image Dimensions ------------------------------------------------
 export async function getImageDimensions(
   file: File
 ): Promise<{ width: number; height: number }> {
@@ -132,12 +132,12 @@ export async function getImageDimensions(
   return { width: img.naturalWidth, height: img.naturalHeight };
 }
 
-// ─── Convert Blob to File ─────────────────────────────────────────────────────
+// --- Convert Blob to File -----------------------------------------------------
 export function blobToFile(blob: Blob, filename: string): File {
   return new File([blob], filename, { type: blob.type });
 }
 
-// ─── Get Supabase Image URL with Transform ─────────────────────────────────────
+// --- Get Supabase Image URL with Transform -------------------------------------
 export function getOptimizedImageUrl(
   baseUrl: string,
   options: { width?: number; height?: number; quality?: number } = {}

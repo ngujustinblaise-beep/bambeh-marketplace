@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -10,10 +10,10 @@ const VerificationProcess: React.FC = () => {
   const [done,     setDone]     = useState(false);
 
   const types = [
-    { id: "identity", label: "Identity",  icon: "🪪", desc: "Upload a national ID or passport" },
-    { id: "business", label: "Business",  icon: "🏢", desc: "Upload business registration" },
-    { id: "address",  label: "Address",   icon: "📍", desc: "Upload a utility bill" },
-    { id: "phone",    label: "Phone",     icon: "📱", desc: "Verify via OTP" },
+    { id: "identity", label: "Identity",  icon: "??", desc: "Upload a national ID or passport" },
+    { id: "business", label: "Business",  icon: "??", desc: "Upload business registration" },
+    { id: "address",  label: "Address",   icon: "??", desc: "Upload a utility bill" },
+    { id: "phone",    label: "Phone",     icon: "??", desc: "Verify via OTP" },
   ];
 
   const handleSubmit = async () => {
@@ -26,7 +26,7 @@ const VerificationProcess: React.FC = () => {
 
   if (done) return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6">
-      <div className="text-5xl mb-4">✅</div>
+      <div className="text-5xl mb-4">?</div>
       <h1 className="text-xl font-bold mb-2">Request Submitted</h1>
       <p className="text-gray-500 text-center mb-6">We will review your documents within 24-48 hours.</p>
       <button onClick={() => navigate("/profile")} className="bg-teal-600 text-white px-6 py-2 rounded-full">Back to Profile</button>

@@ -1,23 +1,23 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * ADMIN DASHBOARD - ADMIN PANEL INTEGRATION EXAMPLE
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * 
  * This page demonstrates how to integrate the Admin Panel
  * for managing orders, users, and viewing analytics.
  * 
  * FEATURES:
- * ✅ Dashboard with real-time statistics
- * ✅ Order management
- * ✅ User management
- * ✅ Analytics and charts
- * ✅ Dispute resolution
+ * ? Dashboard with real-time statistics
+ * ? Order management
+ * ? User management
+ * ? Analytics and charts
+ * ? Dispute resolution
  * 
  * SECURITY:
- * ⚠️ This page should be protected with admin-only access
+ * ?? This page should be protected with admin-only access
  * 
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { useEffect, useState } from 'react';
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
 
       if (!isAdmin) {
         // User doesn't have admin access
-        alert('⛔ Access Denied\n\nYou do not have permission to access the admin panel.');
+        alert('? Access Denied\n\nYou do not have permission to access the admin panel.');
         navigate('/', { replace: true });
         return;
       }
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       setAdminUser(admin);
       setHasAdminAccess(true);
 
-      console.log('✅ Admin access verified:', admin);
+      console.log('? Admin access verified:', admin);
     } catch (error) {
       console.error('Error checking admin access:', error);
       alert('Error verifying admin access. Please try again.');
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
-          <div className="text-6xl mb-4">⛔</div>
+          <div className="text-6xl mb-4">?</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
           <p className="text-gray-600 mb-6">
             You do not have permission to access the admin panel.
@@ -141,9 +141,9 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="text-3xl">⚡</div>
+              <div className="text-3xl">?</div>
               <div>
-                <h1 className="text-2xl font-bold">Bambé Admin Panel</h1>
+                <h1 className="text-2xl font-bold">Bamb� Admin Panel</h1>
                 <p className="text-teal-100 text-sm">
                   Welcome back, {adminUser.name}
                 </p>
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
                 onClick={() => navigate('/')}
                 className="px-4 py-2 bg-white text-teal-600 hover:bg-gray-100 rounded-lg font-semibold transition-all"
               >
-                Back to Site →
+                Back to Site ?
               </button>
             </div>
           </div>
@@ -186,22 +186,22 @@ export default function AdminDashboard() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button className="p-4 bg-teal-50 hover:bg-teal-100 rounded-lg text-center transition-colors">
-              <div className="text-3xl mb-2">📦</div>
+              <div className="text-3xl mb-2">??</div>
               <div className="text-sm font-semibold text-gray-900">View Orders</div>
             </button>
 
             <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg text-center transition-colors">
-              <div className="text-3xl mb-2">👥</div>
+              <div className="text-3xl mb-2">??</div>
               <div className="text-sm font-semibold text-gray-900">Manage Users</div>
             </button>
 
             <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-center transition-colors">
-              <div className="text-3xl mb-2">📊</div>
+              <div className="text-3xl mb-2">??</div>
               <div className="text-sm font-semibold text-gray-900">View Analytics</div>
             </button>
 
             <button className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg text-center transition-colors">
-              <div className="text-3xl mb-2">⚠️</div>
+              <div className="text-3xl mb-2">??</div>
               <div className="text-sm font-semibold text-gray-900">Disputes</div>
             </button>
           </div>
@@ -218,16 +218,16 @@ export default function AdminDashboard() {
         {/* Footer Note */}
         <div className="mt-8 bg-blue-50 rounded-2xl shadow-lg p-6">
           <div className="flex items-start space-x-4">
-            <div className="text-3xl">💡</div>
+            <div className="text-3xl">??</div>
             <div>
               <h3 className="font-bold text-blue-900 mb-2">Admin Panel Features</h3>
               <ul className="text-blue-800 text-sm space-y-1">
-                <li>✅ Real-time dashboard with live statistics</li>
-                <li>✅ Order management with status updates</li>
-                <li>✅ User management and moderation</li>
-                <li>✅ Analytics with interactive charts</li>
-                <li>✅ Dispute resolution system</li>
-                <li>✅ Export data and generate reports</li>
+                <li>? Real-time dashboard with live statistics</li>
+                <li>? Order management with status updates</li>
+                <li>? User management and moderation</li>
+                <li>? Analytics with interactive charts</li>
+                <li>? Dispute resolution system</li>
+                <li>? Export data and generate reports</li>
               </ul>
             </div>
           </div>

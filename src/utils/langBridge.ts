@@ -1,5 +1,5 @@
-﻿/**
- * src/utils/langBridge.ts — Bambeh Marketplace
+/**
+ * src/utils/langBridge.ts � Bambeh Marketplace
  *
  * PURPOSE: When a user selects a language in the LanguageSelection page
  * (or any language switcher), call `setAppLang(lang)` from this module.
@@ -8,7 +8,7 @@
  *   2. Dispatch a "langChange" CustomEvent on window
  *
  * All marketplace pages listen for "langChange" via useLangState() and
- * re-render immediately — no page reload needed.
+ * re-render immediately � no page reload needed.
  *
  * USAGE in your language selector:
  *
@@ -16,7 +16,7 @@
  *
  *   function LanguageSelection() {
  *     return (
- *       <button onClick={() => setAppLang("fr")}>Français</button>
+ *       <button onClick={() => setAppLang("fr")}>Fran�ais</button>
  *       <button onClick={() => setAppLang("en")}>English</button>
  *       <button onClick={() => setAppLang("pcm")}>Pidgin</button>
  *       ...
@@ -26,18 +26,18 @@
  * STORAGE KEY:  "bambeh_lang"
  * VALID VALUES: "en" | "fr" | "ha" | "ar" | "pcm" | "ff"
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * � 2026 BAMBEH SARL. All rights reserved.
  */
 
 export type AppLang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 
 export const SUPPORTED_LANGS: { code: AppLang; label: string; nativeLabel: string; dir: "ltr" | "rtl" }[] = [
   { code: "en",  label: "English",          nativeLabel: "English",        dir: "ltr" },
-  { code: "fr",  label: "French",           nativeLabel: "Français",       dir: "ltr" },
+  { code: "fr",  label: "French",           nativeLabel: "Fran�ais",       dir: "ltr" },
   { code: "pcm", label: "Pidgin English",   nativeLabel: "Pidgin",         dir: "ltr" },
   { code: "ha",  label: "Hausa",            nativeLabel: "Hausa",          dir: "ltr" },
   { code: "ff",  label: "Fulfulde",         nativeLabel: "Fulfulde",       dir: "ltr" },
-  { code: "ar",  label: "Arabic",           nativeLabel: "العربية",        dir: "rtl" },
+  { code: "ar",  label: "Arabic",           nativeLabel: "???????",        dir: "rtl" },
 ];
 
 const LANG_KEY = "bambeh_lang";
@@ -70,7 +70,7 @@ export function setAppLang(lang: AppLang): void {
       newValue: lang,
       storageArea: localStorage,
     }));
-  } catch { /* ignore — StorageEvent not always constructable */ }
+  } catch { /* ignore � StorageEvent not always constructable */ }
 
   // Update document direction for Arabic
   const langData = SUPPORTED_LANGS.find((l) => l.code === lang);
@@ -88,7 +88,7 @@ export function useAppLang(): AppLang {
   // Lazy import React to avoid circular dependencies if used outside component tree.
   // In your component files, prefer importing useLangState directly from this module.
   const { useState, useEffect } = require("react");
-  const [lang, setLang] = useState<AppLang>(getAppLang);
+  const [lang, setLang] = useState(getAppLang as any);
   useEffect(() => {
     const update = () => setLang(getAppLang());
     window.addEventListener("langChange", update);
@@ -100,3 +100,4 @@ export function useAppLang(): AppLang {
   }, []);
   return lang;
 }
+

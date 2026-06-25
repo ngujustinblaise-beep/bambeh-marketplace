@@ -1,4 +1,4 @@
-﻿export function routeSearch(query: string): string {
+export function routeSearch(query: string): string {
   const q = query.toLowerCase();
   if(q.includes("house")) return "/rentals";
   if(q.includes("car"))   return "/vehicles";

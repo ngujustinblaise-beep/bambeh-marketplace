@@ -1,8 +1,8 @@
-﻿// src/services/api.config.ts
+// src/services/api.config.ts
 
 /**
  * ============================================
- * BAMBÉ MARKETPLACE - API CONFIGURATION
+ * BAMB� MARKETPLACE - API CONFIGURATION
  * ============================================
  * Central configuration for all Firebase Cloud Functions
  * Deployed on: January 29, 2026

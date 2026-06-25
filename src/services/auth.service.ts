@@ -1,4 +1,4 @@
-﻿// src/services/auth.service.ts
+// src/services/auth.service.ts
 import axios from "axios";
 import {
   API_CONFIG,
@@ -62,7 +62,7 @@ export const login = async (
     const { token, user } = response.data.data;
 
     // Store auth data
-    localStorage.setItem("authToken", token);
+    sessionStorage.setItem("Bambeh_auth_token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
     return response.data.data;
@@ -85,7 +85,7 @@ export const register = async (
     const { token, user } = response.data.data;
 
     // Store auth data
-    localStorage.setItem("authToken", token);
+    sessionStorage.setItem("Bambeh_auth_token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
     return response.data.data;
@@ -157,7 +157,7 @@ export const verifyEmail = async (token: string): Promise<void> => {
  * Check if user is authenticated
  */
 export const isAuthenticated = (): boolean => {
-  const token = localStorage.getItem("authToken");
+  const token = sessionStorage.getItem("Bambeh_auth_token");
   return token !== null;
 };
 
@@ -189,7 +189,7 @@ export const refreshToken = async (): Promise<string> => {
     );
 
     const { token } = response.data.data;
-    localStorage.setItem("authToken", token);
+    sessionStorage.setItem("Bambeh_auth_token", token);
 
     return token;
   } catch (error: any) {
@@ -197,3 +197,4 @@ export const refreshToken = async (): Promise<string> => {
     throw new Error(formatErrorMessage(error, "Failed to refresh token"));
   }
 };
+

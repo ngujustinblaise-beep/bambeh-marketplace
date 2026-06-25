@@ -1,5 +1,5 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * ESCROW PAGE - BAMBEH MARKETPLACE
  * Zerm Coins Escrow / Buyer Protection System
  * 
@@ -10,7 +10,7 @@
  * 4. If dispute ? Admin adjudicates within 48h
  * 
  * This is the #1 trust-building feature for Cameroon's market.
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  */
 
 import React, { useState } from 'react';
@@ -54,7 +54,7 @@ const MOCK_ESCROW: EscrowTransaction = {
   orderId: 'ORD-2026-00892',
   itemName: 'Samsung Galaxy S24 Ultra - 256GB',
   itemImage: 'https://via.placeholder.com/120x120/0d9488/ffffff?text=??',
-  sellerName: 'TechZone Yaound�',
+  sellerName: 'TechZone Yaound?',
   sellerTrustScore: 4.8,
   buyerName: 'You',
   amountXAF: 350000,
@@ -119,7 +119,7 @@ const EscrowPage: React.FC = () => {
         {/* -- Header -- */}
         <div className="mb-6">
           <Link to="/orders" className="flex items-center gap-2 text-teal-600 hover:text-teal-800 text-sm font-medium mb-4 transition-colors">
-            <span>←</span> Back to Orders
+            <span>?</span> Back to Orders
           </Link>
           <div className="flex items-center justify-between">
             <div>
@@ -135,11 +135,11 @@ const EscrowPage: React.FC = () => {
         {/* -- What Is Escrow Banner -- */}
         <div className="bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-2xl p-5 mb-6 shadow-lg">
           <div className="flex items-start gap-3">
-            <span className="text-3xl">??️</span>
+            <span className="text-3xl">???</span>
             <div>
               <h2 className="font-bold text-lg">Your Money Is Safe</h2>
               <p className="text-teal-100 text-sm mt-1">
-                Your Zerm Coins are locked in escrow � the seller <strong>cannot</strong> access them
+                Your Zerm Coins are locked in escrow ? the seller <strong>cannot</strong> access them
                 until you confirm you received your item. If anything goes wrong, we refund you in full.
               </p>
             </div>
@@ -230,7 +230,7 @@ const EscrowPage: React.FC = () => {
                 onClick={() => setShowDisputeModal(true)}
                 className="w-full py-3 bg-red-50 text-red-600 border border-red-200 rounded-xl font-semibold text-sm hover:bg-red-100 transition-all"
               >
-                ?️ I Have a Problem � Raise Dispute
+                ?? I Have a Problem ? Raise Dispute
               </button>
             </div>
           </div>
@@ -252,8 +252,8 @@ const EscrowPage: React.FC = () => {
           <div className="space-y-3">
             {[
               { icon: '??', title: 'Funds Always Frozen', desc: 'Your Zerm Coins are locked the moment you order. The seller gets nothing until you confirm receipt.' },
-              { icon: '⏱️', title: '7-Day Window', desc: 'You have 7 days to confirm delivery. If you don\'t respond, we contact you to verify.' },
-              { icon: '?️', title: 'Fair Dispute Resolution', desc: 'Disputes are reviewed by a Bambeh admin within 48 hours. We examine chat history and evidence.' },
+              { icon: '??', title: '7-Day Window', desc: 'You have 7 days to confirm delivery. If you don\'t respond, we contact you to verify.' },
+              { icon: '??', title: 'Fair Dispute Resolution', desc: 'Disputes are reviewed by a Bambeh admin within 48 hours. We examine chat history and evidence.' },
               { icon: '??', title: 'Full Refund if Scammed', desc: 'If the seller is found fraudulent, 100% of your Zerm Coins are returned immediately.' },
             ].map((item) => (
               <div key={item.title} className="flex gap-3 items-start">
@@ -269,7 +269,7 @@ const EscrowPage: React.FC = () => {
 
         {/* -- Safe Meeting Prompt -- */}
         <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
-          <p className="text-orange-800 font-semibold text-sm">📍 Meeting in person?</p>
+          <p className="text-orange-800 font-semibold text-sm">?? Meeting in person?</p>
           <p className="text-orange-700 text-xs mt-1">
             Always meet in a public place. Use our verified safe exchange locations.
           </p>
@@ -315,7 +315,7 @@ const EscrowPage: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="text-center mb-4">
-              <div className="text-5xl mb-3">?️</div>
+              <div className="text-5xl mb-3">??</div>
               <h3 className="text-xl font-bold text-gray-900">Raise a Dispute</h3>
               <p className="text-gray-600 text-sm mt-2">
                 Describe your problem. Our admin team will review and respond within 48 hours.

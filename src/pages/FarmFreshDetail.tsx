@@ -1,15 +1,15 @@
-﻿/**
- * src/pages/FarmFreshDetail.tsx — Bambeh Marketplace
+/**
+ * src/pages/FarmFreshDetail.tsx � Bambeh Marketplace
  *
  * FIXED & REWRITTEN:
- *  ✅ Loads real product from Supabase (was only showing hardcoded mock data)
- *  ✅ Falls back gracefully to demo products if no DB match
- *  ✅ i18n — reacts instantly when user changes language (useLang / t)
- *  ✅ "Buy via app" → navigates to /farm-fresh/order/:id
- *  ✅ "Contact Seller via WhatsApp" — if seller_phone is available
- *  ✅ Add to cart uses CartContext
- *  ✅ Increments view_count in Supabase on mount
- *  ✅ Handles s1-s8 demo IDs as well as UUID real products
+ *  ? Loads real product from Supabase (was only showing hardcoded mock data)
+ *  ? Falls back gracefully to demo products if no DB match
+ *  ? i18n � reacts instantly when user changes language (useLang / t)
+ *  ? "Buy via app" ? navigates to /farm-fresh/order/:id
+ *  ? "Contact Seller via WhatsApp" � if seller_phone is available
+ *  ? Add to cart uses CartContext
+ *  ? Increments view_count in Supabase on mount
+ *  ? Handles s1-s8 demo IDs as well as UUID real products
  */
 
 import React, { useState, useEffect } from "react";
@@ -23,7 +23,7 @@ import { supabase } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// -- Types ---------------------------------------------------------------------
 interface RealProduct {
   id: string;
   title: string;
@@ -46,14 +46,14 @@ interface RealProduct {
   created_at?: string;
 }
 
-// ── Demo products (s1-s8 fallback) ────────────────────────────────────────────
+// -- Demo products (s1-s8 fallback) --------------------------------------------
 const DEMO_PRODUCTS: Record<string, RealProduct> = {
   s1: { id: "s1", title: "Fresh Tomatoes",      description: "Sun-ripened organic tomatoes from highland farms.", price_per_unit_xaf: 500,  unit: "kg",    category: "Vegetables", location: "Bafoussam, West",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80", seller_name: "Fon's Farm",           seller_phone: "+237671234567" },
-  s2: { id: "s2", title: "Plantains (1 bunch)",  description: "Fresh ripe plantains, 12–15 fingers per bunch.",    price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaoundé, Centre",      is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", seller_name: "Mama Ngo's Produce",   seller_phone: "+237682345678" },
-  s3: { id: "s3", title: "Cocoyams (Macabo)",    description: "Fresh macabo cocoyams for Eru and Ndolé.",          price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", seller_name: "Douala Fresh",         seller_phone: "+237693456789" },
+  s2: { id: "s2", title: "Plantains (1 bunch)",  description: "Fresh ripe plantains, 12�15 fingers per bunch.",    price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaound�, Centre",      is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", seller_name: "Mama Ngo's Produce",   seller_phone: "+237682345678" },
+  s3: { id: "s3", title: "Cocoyams (Macabo)",    description: "Fresh macabo cocoyams for Eru and Ndol�.",          price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", seller_name: "Douala Fresh",         seller_phone: "+237693456789" },
   s4: { id: "s4", title: "Fresh Maize (Corn)",   description: "Sweet, juicy corn on the cob from Bamenda.",        price_per_unit_xaf: 300,  unit: "cob",   category: "Grains",     location: "Bamenda, NW Region",   is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80", seller_name: "NW Farm Co-op",        seller_phone: "+237654567890" },
-  s5: { id: "s5", title: "Groundnuts (1kg bag)", description: "Premium shelled groundnuts from the Adamaoua.",     price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaoundéré, Adamaoua", is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", seller_name: "Adamaoua Nuts",        seller_phone: "+237665678901" },
-  s6: { id: "s6", title: "Bitter Leaf (Ndolé)",  description: "Fresh bitter leaf for authentic Ndolé.",            price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaoundé, Centre",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", seller_name: "Centre Fresh Greens",  seller_phone: "+237676789012" },
+  s5: { id: "s5", title: "Groundnuts (1kg bag)", description: "Premium shelled groundnuts from the Adamaoua.",     price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaound�r�, Adamaoua", is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", seller_name: "Adamaoua Nuts",        seller_phone: "+237665678901" },
+  s6: { id: "s6", title: "Bitter Leaf (Ndol�)",  description: "Fresh bitter leaf for authentic Ndol�.",            price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaound�, Centre",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", seller_name: "Centre Fresh Greens",  seller_phone: "+237676789012" },
   s7: { id: "s7", title: "Fresh Avocados",        description: "Hand-picked highland avocados, creamy and nutritious.", price_per_unit_xaf: 800, unit: "kg", category: "Fruits",     location: "Dschang, West",        is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80", seller_name: "Highlands Harvest",    seller_phone: "+237687890123" },
   s8: { id: "s8", title: "Pineapples (Large)",    description: "Sweet, extra-large pineapples from coastal farms.", price_per_unit_xaf: 600, unit: "piece", category: "Fruits",     location: "Edea, Littoral",       is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", seller_name: "Littoral Tropicals",   seller_phone: "+237698901234" },
 };
@@ -64,7 +64,7 @@ function isUUID(s: string): boolean {
 
 const fmtXAF = (n: number) => new Intl.NumberFormat("fr-CM").format(Math.round(n)) + " FCFA";
 
-// ── Main Component ─────────────────────────────────────────────────────────────
+// -- Main Component -------------------------------------------------------------
 const FarmFreshDetail: React.FC = () => {
   const { id }    = useParams<{ id: string }>();
   const navigate  = useNavigate();
@@ -91,7 +91,7 @@ const FarmFreshDetail: React.FC = () => {
   async function loadProduct(pid: string) {
     setLoading(true);
 
-    // 1. Check demo map first (s1–s8)
+    // 1. Check demo map first (s1�s8)
     if (DEMO_PRODUCTS[pid]) {
       setProduct(DEMO_PRODUCTS[pid]);
       setIsDemo(true);
@@ -187,10 +187,11 @@ const FarmFreshDetail: React.FC = () => {
       title:        product.title,
       priceXAF:     product.price_per_unit_xaf,
       quantity:     qty,
-      unit:         product.unit,
+      
       imageUrl:     product.image_url || "",
       listingType:  "farm-fresh",
       sellerName:   product.seller_name || "Farmer",
+      sellerId:     (product as any).seller_id || "",
     });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2500);
@@ -198,7 +199,7 @@ const FarmFreshDetail: React.FC = () => {
 
   const shareUrl = `https://bambeh.cm/farm-fresh/${id}`;
 
-  // ── Loading ──────────────────────────────────────────────────────────────
+  // -- Loading --------------------------------------------------------------
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -210,7 +211,7 @@ const FarmFreshDetail: React.FC = () => {
     );
   }
 
-  // ── Not found ────────────────────────────────────────────────────────────
+  // -- Not found ------------------------------------------------------------
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -260,7 +261,7 @@ const FarmFreshDetail: React.FC = () => {
             </div>
           ) : (
             <div className="h-40 flex items-center justify-center">
-              <span className="text-8xl">🌿</span>
+              <span className="text-8xl">??</span>
             </div>
           )}
           <div className="p-5">
@@ -348,7 +349,7 @@ const FarmFreshDetail: React.FC = () => {
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             <h2 className="font-bold text-gray-900 mb-4">{t("yourFarmer", lang) || "Your Farmer"}</h2>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">🌾</div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">??</div>
               <div className="flex-1">
                 <p className="font-bold text-gray-900">{product.seller_name || "Farmer"}</p>
                 <div className="flex items-center gap-1 text-gray-500 text-xs mt-0.5">
@@ -372,7 +373,7 @@ const FarmFreshDetail: React.FC = () => {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-bold text-gray-900">{t("moreFarm", lang) || "More Farm Products"}</h2>
-              <Link to="/farm-fresh" className="text-green-600 text-sm font-semibold">{t("seeAll", lang) || "See all"} →</Link>
+              <Link to="/farm-fresh" className="text-green-600 text-sm font-semibold">{t("seeAll", lang) || "See all"} ?</Link>
             </div>
             <div className="space-y-3">
               {relatedItems.map(rp => (
@@ -381,7 +382,7 @@ const FarmFreshDetail: React.FC = () => {
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-green-50 flex-shrink-0">
                     {rp.image_url
                       ? <img src={rp.image_url} alt={rp.title} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center text-2xl">🌿</div>
+                      : <div className="w-full h-full flex items-center justify-center text-2xl">??</div>
                     }
                   </div>
                   <div className="flex-1 min-w-0">
@@ -415,7 +416,7 @@ const FarmFreshDetail: React.FC = () => {
               <span className="text-sm text-gray-600 font-medium">{t("quantity", lang) || "Qty"}</span>
               <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
                 <button onClick={() => setQty(q => Math.max(1, q - 1))}
-                  className="w-8 h-8 flex items-center justify-center font-bold text-gray-700 hover:bg-white rounded-lg">−</button>
+                  className="w-8 h-8 flex items-center justify-center font-bold text-gray-700 hover:bg-white rounded-lg">-</button>
                 <span className="w-10 text-center font-bold text-sm">{qty}</span>
                 <button onClick={() => setQty(q => q + 1)}
                   className="w-8 h-8 flex items-center justify-center font-bold text-gray-700 hover:bg-white rounded-lg">+</button>
@@ -423,7 +424,7 @@ const FarmFreshDetail: React.FC = () => {
             </div>
             <div className="text-right">
               <div className="text-lg font-black text-gray-900">{fmtXAF(totalPrice)}</div>
-              <div className="text-xs text-gray-400">{qty} × {product.unit}</div>
+              <div className="text-xs text-gray-400">{qty} � {product.unit}</div>
             </div>
           </div>
           <div className="flex gap-3">
@@ -437,7 +438,7 @@ const FarmFreshDetail: React.FC = () => {
             </button>
             <button onClick={() => navigate(`/farm-fresh/order/${product.id}?quantity=${qty}`)}
               className="flex-1 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700 transition-all shadow-md">
-              🌿 {t("orderNow", lang) || "Order Now"}
+              ?? {t("orderNow", lang) || "Order Now"}
             </button>
           </div>
         </div>
@@ -449,14 +450,14 @@ const FarmFreshDetail: React.FC = () => {
           <div className="bg-white rounded-3xl w-full max-w-md mx-auto p-5" onClick={e => e.stopPropagation()}>
             <h3 className="font-bold text-gray-900 text-lg mb-4">{t("shareProduct", lang) || "Share This Product"}</h3>
             <div className="space-y-3">
-              <a href={`https://wa.me/?text=${encodeURIComponent(`🌿 Check this on Bambeh FarmFresh! ${product.title} — ${fmtXAF(product.price_per_unit_xaf)}/${product.unit}. Fresh from Cameroon! ${shareUrl}`)}`}
+              <a href={`https://wa.me/?text=${encodeURIComponent(`?? Check this on Bambeh FarmFresh! ${product.title} � ${fmtXAF(product.price_per_unit_xaf)}/${product.unit}. Fresh from Cameroon! ${shareUrl}`)}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-2xl text-[#128C7E] font-semibold">
                 <MessageCircle className="w-5 h-5" />{t("shareWhatsApp", lang) || "Share on WhatsApp"}
               </a>
               <button onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                 className="w-full flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-700 font-semibold">
-                <Copy className="w-5 h-5 text-gray-400" />{copied ? "✓ Copied!" : (t("copyLink", lang) || "Copy Link")}
+                <Copy className="w-5 h-5 text-gray-400" />{copied ? "? Copied!" : (t("copyLink", lang) || "Copy Link")}
               </button>
             </div>
             <button onClick={() => setShareOpen(false)} className="w-full mt-3 py-3 text-gray-500 text-sm">{t("cancel", lang) || "Cancel"}</button>
@@ -468,6 +469,9 @@ const FarmFreshDetail: React.FC = () => {
 };
 
 export default FarmFreshDetail;
+
+
+
 
 
 

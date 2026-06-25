@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useRef, useState } from "react";
 
 interface VideoThumbnailProps {

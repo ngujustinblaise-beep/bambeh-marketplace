@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { securityManager } from "../utils/security/SecurityHeaders";
 import { rateLimiter }     from "../utils/security/RateLimiter";
@@ -11,16 +11,16 @@ const SecurityTest: React.FC = () => {
     const out: string[] = [];
 
     securityManager.applyHeaders();
-    out.push("✅ SecurityManager.applyHeaders()");
+    out.push("? SecurityManager.applyHeaders()");
 
     const ok = rateLimiter.check("test", 5, 60_000);
-    out.push(`✅ RateLimiter: ${ok ? "allowed" : "blocked"}`);
+    out.push(`? RateLimiter: ${ok ? "allowed" : "blocked"}`);
 
     try {
       await apiClient.get("/health");
-      out.push("✅ SecureAPIClient GET /health");
+      out.push("? SecureAPIClient GET /health");
     } catch (e) {
-      out.push(`⚠ï¸  SecureAPIClient: ${e instanceof Error ? e.message : String(e)}`);
+      out.push(`?️  SecureAPIClient: ${e instanceof Error ? e.message : String(e)}`);
     }
 
     setResults(out);

@@ -1,15 +1,15 @@
-﻿/**
- * src/services/exchange-referral.service.ts — Bambeh Marketplace
+/**
+ * src/services/exchange-referral.service.ts � Bambeh Marketplace
  *
- * ✅ Pure Supabase — no axios, no localStorage, no Firebase URL calls
- * ✅ Exchange requests stored in "listings" table (type='exchange')
- * ✅ Referrals stored in "referrals" table (graceful fallback if absent)
- * ✅ All function signatures preserved — no caller changes needed
+ * ? Pure Supabase � no axios, no localStorage, no Firebase URL calls
+ * ? Exchange requests stored in "listings" table (type='exchange')
+ * ? Referrals stored in "referrals" table (graceful fallback if absent)
+ * ? All function signatures preserved � no caller changes needed
  */
 
 import { supabase } from '@/lib/supabase';
 
-// ─── Exchange Types ────────────────────────────────────────────────────────────
+// --- Exchange Types ------------------------------------------------------------
 export interface ExchangeRequest {
   id:            string;
   type:          'currency' | 'item-swap';
@@ -43,7 +43,7 @@ function rowToExchange(row: Record<string, any>): ExchangeRequest {
   };
 }
 
-// ─── Exchange Service ──────────────────────────────────────────────────────────
+// --- Exchange Service ----------------------------------------------------------
 class ExchangeService {
 
   async getAllExchangeRequests(filters?: { type?: string }): Promise<ExchangeRequest[]> {
@@ -151,7 +151,7 @@ class ExchangeService {
   }
 }
 
-// ─── Referral Types ────────────────────────────────────────────────────────────
+// --- Referral Types ------------------------------------------------------------
 export interface Referral {
   id:                string;
   referrerId:        string;
@@ -172,7 +172,7 @@ export interface ReferralStats {
   totalRewardsClaimed: number;
 }
 
-// ─── Referral Service ──────────────────────────────────────────────────────────
+// --- Referral Service ----------------------------------------------------------
 class ReferralService {
 
   async getReferralCode(): Promise<string> {
@@ -243,7 +243,7 @@ class ReferralService {
       });
 
     if (error) console.warn('[ReferralService] sendReferralInvite:', error.message);
-    // Don't throw — referrals table may not exist yet
+    // Don't throw � referrals table may not exist yet
   }
 
   async claimReferralReward(referralId: string): Promise<void> {

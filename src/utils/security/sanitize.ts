@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import DOMPurify from "dompurify";
 
 const CHAR_MAP: Record<string, string> = {

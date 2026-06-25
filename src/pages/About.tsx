@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ABOUT US PAGE - COMPLETE & BEAUTIFUL
  * The Bambeh Chronicle with Professional Stats
  */
@@ -19,9 +19,9 @@ export default function About() {
           <h1 className="text-5xl font-bold mb-4">About Bambeh</h1>
           <p className="text-xl text-teal-100 max-w-3xl mx-auto">
             Bambeh's online marketplace connecting buyers, sellers, job seekers, and service providers
-           <p1 className="text-xl text-teal-100 max-w-3xl mx-auto">
+           <p className="text-xl text-teal-100 max-w-3xl mx-auto">
             Bambeh-marketplace The Pulse of African Commerce
-          </p1>
+          </p>
           </p>
         </div>
 
@@ -100,8 +100,8 @@ export default function About() {
               </p>
               
               <p className="text-lg text-gray-700 leading-relaxed mb-6 font-serif">
-                We understand that to truly empower your reign�whether you seek a perfect home, a life-changing career, 
-                or a fair price for your creations�we must operate at a depth the world rarely sees:
+                We understand that to truly empower your reign?whether you seek a perfect home, a life-changing career, 
+                or a fair price for your creations?we must operate at a depth the world rarely sees:
               </p>
 
               {/* The Three Pillars */}
@@ -165,7 +165,7 @@ export default function About() {
                 <h4 className="text-xl font-bold text-teal-700 mb-3">You Are the Center</h4>
                 <p className="text-gray-700 leading-relaxed font-serif">
                   The depth of our commitment is visible in our actions. While others focus on what they take, we focus on 
-                  what you stand to gain�from the glittering referral bonuses we gift you for ushering in fellow nobles, 
+                  what you stand to gain?from the glittering referral bonuses we gift you for ushering in fellow nobles, 
                   to the ease of watching your digital wallet swell with rewards.
                 </p>
               </div>
@@ -349,6 +349,7 @@ export default function About() {
     </div>
   );
 }
+
 
 
 

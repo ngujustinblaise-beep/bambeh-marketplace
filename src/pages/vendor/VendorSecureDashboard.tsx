@@ -1,7 +1,7 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR SECURE DASHBOARD - ENHANCED VERSION
- * © 2025 Bambeh. All rights reserved.
+ * � 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -122,7 +122,7 @@ export default function VendorSecureDashboard() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back, {vendor.businessName}! 👋
+              Welcome back, {vendor.businessName}! ??
             </h2>
             <p className="text-gray-600">Manage your store, track performance, and grow your business from one place.</p>
           </div>

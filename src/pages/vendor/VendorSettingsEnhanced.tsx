@@ -1,8 +1,8 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR SETTINGS ENHANCED - COMPREHENSIVE SETTINGS PAGE
  * FILE LOCATION: src/pages/vendor/VendorSettingsEnhanced.tsx
- * © 2025 Bambeh. All rights reserved.
+ * � 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -449,7 +449,7 @@ export default function VendorSettingsEnhanced() {
               </h4>
               <div className="space-y-3">
                 {[
-                  { device: 'Chrome on Windows', location: 'Yaoundé, CM', time: 'Now (Current session)', current: true },
+                  { device: 'Chrome on Windows', location: 'Yaound�, CM', time: 'Now (Current session)', current: true },
                   { device: 'Mobile App on Android', location: 'Douala, CM', time: '2 hours ago', current: false },
                   { device: 'Safari on iPhone', location: 'Bamenda, CM', time: 'Yesterday', current: false },
                 ].map((session, index) => (
@@ -460,7 +460,7 @@ export default function VendorSettingsEnhanced() {
                           {session.device}
                           {session.current && <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">Current</span>}
                         </p>
-                        <p className="text-sm text-gray-500">{session.location} • {session.time}</p>
+                        <p className="text-sm text-gray-500">{session.location} � {session.time}</p>
                       </div>
                       {!session.current && (
                         <button className="text-red-500 text-sm hover:text-red-700">End session</button>
@@ -499,8 +499,8 @@ export default function VendorSettingsEnhanced() {
                   onChange={(e) => handleInputChange('language', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                   <option value="en">English</option>
-                  <option value="fr">Français</option>
-                  <option value="ar">العربية</option>
+                  <option value="fr">Fran�ais</option>
+                  <option value="ar">???????</option>
                   <option value="ha">Hausa</option>
                 </select>
               </div>

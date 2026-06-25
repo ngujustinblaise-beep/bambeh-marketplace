@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LOCATION TYPE DEFINITIONS
  *
  * Type definitions for  administrative divisions and location handling
@@ -21,12 +21,7 @@ export interface Division {
   subdivisions: Subdivision[];
 }
 
-export interface Region {
-  name: string;
-  nameFr: string;
-  capital: string;
-  divisions: Division[];
-}
+
 
 // ==================== LOCATION DETAILS ====================
 
@@ -103,7 +98,7 @@ export interface LocationValidation {
 /**
  * Extended region information with metadata
  */
-export interface RegionInfo extends Region {
+export interface RegionInfo {
   population?: number;
   area?: number; // in square kilometers
   economicActivities?: string[];
@@ -183,7 +178,7 @@ export const _REGIONS_FR = [
   "Adamaoua",
   "Centre",
   "Est",
-  "Extrême-Nord",
+  "Extr�me-Nord",
   "Littoral",
   "Nord",
   "Nord-Ouest",
@@ -217,4 +212,6 @@ export interface LocationChangeEvent {
   value: string;
   location: Partial<LocationDetails>;
 }
+
+
 

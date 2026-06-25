@@ -1,8 +1,8 @@
-﻿/**
- * src/pages/PostVehicle.tsx — Bambeh Marketplace
+/**
+ * src/pages/PostVehicle.tsx � Bambeh Marketplace
  *
  * PHONE INPUT CHANGE:
- *  ✅ contactPhone field replaced with AfricanPhoneInput
+ *  ? contactPhone field replaced with AfricanPhoneInput
  *     - Cameroon default, all West + Central Africa covered
  *     - Full international number stored (e.g. "+237671234567")
  *     - phoneValid flag wired into validateForm()
@@ -12,7 +12,7 @@
  *  The active production posting form is SellVehicle.tsx (saves to Supabase).
  *  This file is kept and fixed so it is ready if you wire it to Supabase later.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState } from 'react';
@@ -106,7 +106,7 @@ const PostVehicle: React.FC = () => {
   // AfricanPhoneInput validity flag
   const [phoneValid,    setPhoneValid]    = useState(false);
 
-  // ── Static data ──────────────────────────────────────────────────────────
+  // -- Static data ----------------------------------------------------------
 
   const vehicleTypes = ['Car','Truck','SUV','Van','Motorcycle','Bus','Trailer','Heavy Equipment','Other'];
   const bodyTypes    = ['Sedan','Hatchback','SUV','Coupe','Convertible','Wagon','Pickup','Minivan','Van','Other'];
@@ -114,7 +114,7 @@ const PostVehicle: React.FC = () => {
   const carMakes     = ['Toyota','Honda','Ford','Nissan','Chevrolet','Hyundai','Kia','Mercedes-Benz','BMW','Audi','Volkswagen','Peugeot','Renault','Mazda','Subaru','Mitsubishi','Lexus','Jeep','Land Rover','Porsche','Volvo','Suzuki','Isuzu','Other'];
   const availableFeatures = ['Air Conditioning','Power Steering','Power Windows','Central Locking','ABS','Airbags','Sunroof','Leather Seats','Navigation System','Bluetooth','Backup Camera','Parking Sensors','Cruise Control','Alloy Wheels','Fog Lights','Keyless Entry','Push Start','Heated Seats','Sound System'];
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
+  // -- Handlers -------------------------------------------------------------
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -165,7 +165,7 @@ const PostVehicle: React.FC = () => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  // ── Validation ───────────────────────────────────────────────────────────
+  // -- Validation -----------------------------------------------------------
 
   const validateForm = (): boolean => {
     if (!formData.title.trim()) {
@@ -186,7 +186,7 @@ const PostVehicle: React.FC = () => {
     if (formData.images.length === 0) {
       toast({ title: 'Missing images', description: 'Please upload at least one image', variant: 'destructive' }); return false;
     }
-    // ✅ AfricanPhoneInput validation
+    // ? AfricanPhoneInput validation
     if (!formData.contactPhone) {
       toast({ title: 'Missing phone', description: 'Please enter a contact phone number', variant: 'destructive' }); return false;
     }
@@ -196,7 +196,7 @@ const PostVehicle: React.FC = () => {
     return true;
   };
 
-  // ── Submit ────────────────────────────────────────────────────────────────
+  // -- Submit ----------------------------------------------------------------
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,7 +211,7 @@ const PostVehicle: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // NOTE: This is a localStorage demo — contactPhone now contains the full
+      // NOTE: This is a localStorage demo � contactPhone now contains the full
       // international number from AfricanPhoneInput e.g. "+237671234567"
       await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -239,7 +239,7 @@ const PostVehicle: React.FC = () => {
     }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // -- Render ----------------------------------------------------------------
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -499,7 +499,7 @@ const PostVehicle: React.FC = () => {
 
               <div>
                 <Label htmlFor="location">Location *</Label>
-                <Input id="location" name="location" placeholder="e.g., Yaoundé, Centre"
+                <Input id="location" name="location" placeholder="e.g., Yaound�, Centre"
                   value={formData.location} onChange={handleInputChange} required />
               </div>
             </CardContent>
@@ -525,7 +525,7 @@ const PostVehicle: React.FC = () => {
                   value={formData.contactName} onChange={handleInputChange} />
               </div>
 
-              {/* ── AfricanPhoneInput replaces the old tel Input ── */}
+              {/* -- AfricanPhoneInput replaces the old tel Input -- */}
               <AfricanPhoneInput
                 label="Phone Number"
                 required

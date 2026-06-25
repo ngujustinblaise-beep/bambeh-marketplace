@@ -144,7 +144,7 @@ export default function FarmFreshPage() {
 
       setProducts([...realWithPhoto, ...realWithoutPhoto, ...demoWithPhoto]);
     } catch {
-      setFetchErr(t("error", lang) as string);
+      setFetchErr(t("error") as string);
       setProducts(DEMO_PRODUCTS.filter(hasImage));
     } finally {
       setLoading(false);
@@ -206,25 +206,25 @@ export default function FarmFreshPage() {
   });
 
   // ── Interleaved ad slots ──────────────────────────────────────────────────
-  const groupBuyingAdData = t("groupBuyingAd", lang) as any;
-  const sellProduceAdData = t("sellProduceAd", lang) as any;
+  const groupBuyingAdData = t("groupBuyingAd") as any;
+  const sellProduceAdData = t("sellProduceAd") as any;
 
   const adSlots: AdSlot[] = [
     {
       id: "ad1",
       isAd: true,
-      title:    typeof groupBuyingAdData === "object" ? groupBuyingAdData.title    : t("groupBuyingAdTitle", lang) as string,
-      subtitle: typeof groupBuyingAdData === "object" ? groupBuyingAdData.subtitle : t("groupBuyingAdSub",   lang) as string,
-      cta:      typeof groupBuyingAdData === "object" ? groupBuyingAdData.cta      : t("groupBuyingAdCta",   lang) as string,
+      title:    typeof groupBuyingAdData === "object" ? groupBuyingAdData.title    : t("groupBuyingAdTitle") as string,
+      subtitle: typeof groupBuyingAdData === "object" ? groupBuyingAdData.subtitle : t("groupBuyingAdSub") as string,
+      cta:      typeof groupBuyingAdData === "object" ? groupBuyingAdData.cta      : t("groupBuyingAdCta") as string,
       route:    "/group-buying",
       emoji:    "🤝",
     },
     {
       id: "ad2",
       isAd: true,
-      title:    typeof sellProduceAdData === "object" ? sellProduceAdData.title    : t("sellProduceAdTitle", lang) as string,
-      subtitle: typeof sellProduceAdData === "object" ? sellProduceAdData.subtitle : t("sellProduceAdSub",   lang) as string,
-      cta:      typeof sellProduceAdData === "object" ? sellProduceAdData.cta      : t("sellProduceAdCta",   lang) as string,
+      title:    typeof sellProduceAdData === "object" ? sellProduceAdData.title    : t("sellProduceAdTitle") as string,
+      subtitle: typeof sellProduceAdData === "object" ? sellProduceAdData.subtitle : t("sellProduceAdSub") as string,
+      cta:      typeof sellProduceAdData === "object" ? sellProduceAdData.cta      : t("sellProduceAdCta") as string,
       route:    "/farm-fresh/sell",
       emoji:    "🌿",
     },
@@ -249,7 +249,7 @@ export default function FarmFreshPage() {
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Leaf className="w-5 h-5 text-green-600" />
-            {t("farmFresh", lang) as string}
+            {t("farmFresh") as string}
           </h1>
           <div className="flex gap-2">
             <button
@@ -264,7 +264,7 @@ export default function FarmFreshPage() {
               className="bg-green-600 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1 hover:bg-green-700 transition"
             >
               <Plus className="w-4 h-4" />
-              {t("sell", lang) as string}
+              {t("sell") as string}
             </button>
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function FarmFreshPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("searchPlaceholder", lang) as string}
+            placeholder={t("searchPlaceholder") as string}
             className={`w-full ${isRtl ? "pr-9 pl-4" : "pl-9 pr-4"} py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none bg-gray-50`}
           />
         </div>
@@ -295,7 +295,7 @@ export default function FarmFreshPage() {
               }`}
             >
               {/* ✅ FIX: t() resolves to the translated word, not the raw key */}
-              {t(key, lang) as string}
+              {t(key) as string}
             </button>
           ))}
         </div>
@@ -303,14 +303,14 @@ export default function FarmFreshPage() {
 
       {/* ── Hero banner ── */}
       <div className="mx-4 mt-4 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl p-4 text-white mb-3">
-        <h2 className="font-bold text-lg mb-1">{t("buyDirect", lang) as string}</h2>
-        <p className="text-green-100 text-sm mb-3">{t("buyDirectSub", lang) as string}</p>
+        <h2 className="font-bold text-lg mb-1">{t("buyDirect") as string}</h2>
+        <p className="text-green-100 text-sm mb-3">{t("buyDirectSub") as string}</p>
         <button
           onClick={() => navigate("/group-buying")}
           className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-sm font-semibold transition"
         >
           <Users className="w-4 h-4" />
-          {t("joinGroup", lang) as string}
+          {t("joinGroup") as string}
         </button>
       </div>
 
@@ -337,17 +337,17 @@ export default function FarmFreshPage() {
         {loading ? (
           <div className="flex flex-col items-center py-12 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-green-600" />
-            <p className="text-sm text-gray-500">{t("loading", lang) as string}</p>
+            <p className="text-sm text-gray-500">{t("loading") as string}</p>
           </div>
         ) : filtered.length === 0 ? (
           /* Empty state */
           <div className="text-center py-12">
             <ShoppingBag className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-            <p className="font-semibold text-gray-700 mb-1">{t("noProduceFound", lang) as string}</p>
+            <p className="font-semibold text-gray-700 mb-1">{t("noProduceFound") as string}</p>
             <p className="text-sm text-gray-400 mb-4">
               {search
                 ? `No results for "${search}"`
-                : t("noProduceFoundSub", lang) as string}
+                : t("noProduceFoundSub") as string}
             </p>
             <button
               onClick={() => { setSearch(""); setCategory("All"); }}
@@ -359,7 +359,7 @@ export default function FarmFreshPage() {
               onClick={() => navigate("/farm-fresh/sell")}
               className="mt-2 bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold"
             >
-              {t("listYourProduce", lang) as string}
+              {t("listYourProduce") as string}
             </button>
           </div>
         ) : (
@@ -413,7 +413,7 @@ export default function FarmFreshPage() {
                         <span className="text-4xl">🌿</span>
                         {!p.isDemo && (
                           <span className="text-xs text-gray-400 leading-tight">
-                            {t("noPhotoYet", lang) as string}
+                            {t("noPhotoYet") as string}
                           </span>
                         )}
                       </div>
@@ -425,7 +425,7 @@ export default function FarmFreshPage() {
                     )}
                     {p.is_organic && (
                       <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                        {t("organic", lang) as string}
+                        {t("organic") as string}
                       </div>
                     )}
                   </div>
@@ -453,14 +453,14 @@ export default function FarmFreshPage() {
                       }`}
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
-                      {isAdded ? t("added", lang) as string : t("addToCart", lang) as string}
+                      {isAdded ? t("added") as string : t("addToCart") as string}
                     </button>
 
                     {/* View count (real listings only) */}
                     {!p.isDemo && (
                       <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
                         <Eye className="w-3 h-3" />
-                        {p.view_count ?? 0} {t("views", lang) as string}
+                        {p.view_count ?? 0} {t("views") as string}
                       </div>
                     )}
                   </div>
@@ -490,10 +490,12 @@ function CartFloater({ lang }: { lang: string }) {
       className="fixed bottom-24 right-4 z-40 bg-green-600 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 font-semibold text-sm active:scale-95 transition hover:bg-green-700"
     >
       <ShoppingCart className="w-4 h-4" />
-      {t("cart", lang) as string} ({count})
+      {t("cart") as string} ({count})
     </button>
   );
 }
+
+
 
 
 

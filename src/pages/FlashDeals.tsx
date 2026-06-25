@@ -1,19 +1,19 @@
-﻿/**
+/**
  * src/pages/FlashDeals.tsx
- * Bambeh Marketplace — Flash Deals page
+ * Bambeh Marketplace � Flash Deals page
  *
  * Features:
- * • Notify Me banner at top
- * • Deal cards with countdown timer, Add to Cart, WhatsApp Chat
- * • CamPay Mobile Money payment modal
- * • Become a Vendor CTA at bottom
+ * � Notify Me banner at top
+ * � Deal cards with countdown timer, Add to Cart, WhatsApp Chat
+ * � CamPay Mobile Money payment modal
+ * � Become a Vendor CTA at bottom
  */
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+// --- Types -----------------------------------------------------------------
 interface Deal {
   id: string;
   title: string;
@@ -30,13 +30,13 @@ interface Deal {
   category: string;
 }
 
-// ─── Demo deals ────────────────────────────────────────────────────────────
+// --- Demo deals ------------------------------------------------------------
 const DEMO_DEALS: Deal[] = [
   {
     id: "1",
-    title: "iPhone 15 Pro — Open Box 128GB",
+    title: "iPhone 15 Pro � Open Box 128GB",
     description: "Barely used, Space Grey. Original accessories included. Battery 98%. No scratches.",
-    image: "📱",
+    image: "??",
     originalPrice: 750000,
     dealPrice: 480000,
     currency: "XAF",
@@ -51,7 +51,7 @@ const DEMO_DEALS: Deal[] = [
     id: "2",
     title: "Samsung 65\" 4K Smart TV",
     description: "Brand new sealed box. 2-year  warranty. HDMI x3, WiFi, Bluetooth.",
-    image: "📺",
+    image: "??",
     originalPrice: 450000,
     dealPrice: 280000,
     currency: "XAF",
@@ -64,9 +64,9 @@ const DEMO_DEALS: Deal[] = [
   },
   {
     id: "3",
-    title: "Nike Air Max 270 — Size 42",
+    title: "Nike Air Max 270 � Size 42",
     description: "100% original imported from France. Comes with box and receipt.",
-    image: "👟",
+    image: "??",
     originalPrice: 95000,
     dealPrice: 55000,
     currency: "XAF",
@@ -79,9 +79,9 @@ const DEMO_DEALS: Deal[] = [
   },
   {
     id: "4",
-    title: "HP Laptop 15\" — i5 12th Gen",
+    title: "HP Laptop 15\" � i5 12th Gen",
     description: "New, 16GB RAM, 512GB SSD, Windows 11 Pro. Full warranty from HP .",
-    image: "💻",
+    image: "??",
     originalPrice: 380000,
     dealPrice: 250000,
     currency: "XAF",
@@ -94,7 +94,7 @@ const DEMO_DEALS: Deal[] = [
   },
 ];
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// --- Helpers ---------------------------------------------------------------
 function fmtXAF(n: number) {
   const lang = useLang();
   const isRtl = lang === "ar";
@@ -117,7 +117,7 @@ function useCountdown(target: Date) {
   return { h, m, s, expired: remaining === 0 };
 }
 
-// ─── Countdown display ──────────────────────────────────────────────────────
+// --- Countdown display ------------------------------------------------------
 function Countdown({ endsAt }: { endsAt: Date }) {
   const { h, m, s, expired } = useCountdown(endsAt);
   if (expired) return <span className="text-red-500 font-bold text-xs">Expired</span>;
@@ -137,7 +137,7 @@ function Countdown({ endsAt }: { endsAt: Date }) {
   );
 }
 
-// ─── Payment Modal ──────────────────────────────────────────────────────────
+// --- Payment Modal ----------------------------------------------------------
 function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
   const [phone, setPhone] = useState("");
   const [method, setMethod] = useState<"mtn" | "orange">("mtn");
@@ -149,7 +149,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
       setError("Enter a valid  phone number"); return;
     }
     setError(""); setStep("processing");
-    // Simulate payment — replace with real CamPay call
+    // Simulate payment � replace with real CamPay call
     await new Promise(r => setTimeout(r, 2000));
     setStep("done");
   }
@@ -163,7 +163,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
             <h2 className="font-bold text-base text-gray-900 dark:text-white">Pay with Mobile Money</h2>
             <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[220px]">{deal.title}</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500">✕</button>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500">?</button>
         </div>
 
         <div className="p-5">
@@ -178,7 +178,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
 
               {/* Payment method */}
               <div className="flex gap-3 mb-4">
-                {([["mtn", "MTN MoMo 🟡"], ["orange", "Orange Money 🟠"]] as const).map(([k, label]) => (
+                {([["mtn", "MTN MoMo ??"], ["orange", "Orange Money ??"]] as const).map(([k, label]) => (
                   <button key={k} onClick={() => setMethod(k)}
                     className={`flex-1 py-3 rounded-xl text-sm font-bold border-2 transition-all
                                 ${method === k ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700" :
@@ -194,7 +194,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
                   {method === "mtn" ? "MTN" : "Orange"} Number
                 </label>
                 <div className="flex">
-                  <span className="border-2 border-r-0 border-gray-200 dark:border-gray-600 rounded-l-xl px-3 py-3 text-sm bg-gray-50 dark:bg-gray-700 text-gray-600">🇨🇲 +237</span>
+                  <span className="border-2 border-r-0 border-gray-200 dark:border-gray-600 rounded-l-xl px-3 py-3 text-sm bg-gray-50 dark:bg-gray-700 text-gray-600">???? +237</span>
                   <input type="tel"
                     className={`flex-1 border-2 rounded-r-xl px-4 py-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none
                                 ${error ? "border-red-400" : "border-gray-200 dark:border-gray-600 focus:border-teal-500"}`}
@@ -202,12 +202,12 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
                     value={phone}
                     onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 9))} />
                 </div>
-                {error && <p className="text-xs text-red-500 mt-1">⚠ {error}</p>}
+                {error && <p className="text-xs text-red-500 mt-1">? {error}</p>}
               </div>
 
               <button onClick={pay}
                 className="w-full py-4 bg-gradient-to-r from-teal-500 to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-teal-500/30 text-base">
-                💳 Pay {fmtXAF(deal.dealPrice)}
+                ?? Pay {fmtXAF(deal.dealPrice)}
               </button>
             </>
           )}
@@ -222,7 +222,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
 
           {step === "done" && (
             <div className="text-center py-6">
-              <p className="text-6xl mb-3">🎉</p>
+              <p className="text-6xl mb-3">??</p>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Payment Successful!</h3>
               <p className="text-sm text-gray-500 mb-1">You bought: <strong>{deal.title}</strong></p>
               <p className="text-sm text-gray-500 mb-6">The vendor will contact you shortly.</p>
@@ -238,7 +238,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
   );
 }
 
-// ─── Deal Card ──────────────────────────────────────────────────────────────
+// --- Deal Card --------------------------------------------------------------
 function DealCard({ deal }: { deal: Deal }) {
   const [notified, setNotified] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -264,7 +264,7 @@ function DealCard({ deal }: { deal: Deal }) {
           </div>
           {urgency && (
             <div className="absolute top-3 right-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
-              🔥 {deal.stockLeft} left
+              ?? {deal.stockLeft} left
             </div>
           )}
         </div>
@@ -301,11 +301,11 @@ function DealCard({ deal }: { deal: Deal }) {
           <div className="flex gap-2 mb-2">
             <button onClick={() => setShowPay(true)}
               className="flex-1 py-2.5 bg-gradient-to-r from-teal-500 to-teal-700 text-white text-xs font-bold rounded-xl shadow-sm shadow-teal-500/20 active:scale-[0.98]">
-              🛒 Buy Now
+              ?? Buy Now
             </button>
             <button onClick={whatsapp}
               className="flex-1 py-2.5 bg-green-600 text-white text-xs font-bold rounded-xl active:scale-[0.98]">
-              💬 WhatsApp
+              ?? WhatsApp
             </button>
           </div>
 
@@ -314,7 +314,7 @@ function DealCard({ deal }: { deal: Deal }) {
             className={`w-full py-2 rounded-xl text-xs font-semibold border-2 transition-all active:scale-[0.98]
                         ${inCart ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300" :
                           "border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400"}`}>
-            {inCart ? "✓ Added to Cart" : "＋ Add to Cart"}
+            {inCart ? "? Added to Cart" : "+ Add to Cart"}
           </button>
 
           <p className="text-[10px] text-gray-400 text-center mt-2">by {deal.vendor}</p>
@@ -326,7 +326,7 @@ function DealCard({ deal }: { deal: Deal }) {
   );
 }
 
-// ─── Main Page ──────────────────────────────────────────────────────────────
+// --- Main Page --------------------------------------------------------------
 export default function FlashDeals() {
   const navigate = useNavigate();
   const [notifyAll, setNotifyAll] = useState(false);
@@ -342,12 +342,12 @@ export default function FlashDeals() {
       <div className="bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 px-4 pt-5 pb-8">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h1 className="text-white font-bold text-2xl">⚡ Flash Deals</h1>
-            <p className="text-orange-100 text-sm mt-0.5">Limited time · Limited stock</p>
+            <h1 className="text-white font-bold text-2xl">? Flash Deals</h1>
+            <p className="text-orange-100 text-sm mt-0.5">Limited time � Limited stock</p>
           </div>
           <Link to="/cart"
             className="bg-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1">
-            🛒 Cart
+            ?? Cart
           </Link>
         </div>
 
@@ -355,14 +355,14 @@ export default function FlashDeals() {
         <div className={`mt-4 rounded-2xl p-4 flex items-center justify-between transition-all
                          ${notifyAll ? "bg-white/20" : "bg-white/10 border border-white/30"}`}>
           <div className="flex-1">
-            <p className="text-white font-semibold text-sm">🔔 Notify me of new deals</p>
+            <p className="text-white font-semibold text-sm">?? Notify me of new deals</p>
             <p className="text-orange-100 text-xs mt-0.5">Be the first to know when new flash deals drop</p>
           </div>
           <button
             onClick={() => setNotifyAll(v => !v)}
             className={`ml-3 flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95
                         ${notifyAll ? "bg-white text-orange-600" : "bg-orange-600 text-white border border-white/50"}`}>
-            {notifyAll ? "✓ On" : "Notify Me"}
+            {notifyAll ? "? On" : "Notify Me"}
           </button>
         </div>
       </div>
@@ -382,8 +382,8 @@ export default function FlashDeals() {
 
       {/* Stats bar */}
       <div className="flex gap-4 px-4 py-3 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <span>⚡ <strong className="text-gray-900 dark:text-white">{filtered.length}</strong> active deals</span>
-        <span>🔥 Up to <strong className="text-red-500">36% off</strong> today</span>
+        <span>? <strong className="text-gray-900 dark:text-white">{filtered.length}</strong> active deals</span>
+        <span>?? Up to <strong className="text-red-500">36% off</strong> today</span>
       </div>
 
       {/* Deal cards */}
@@ -393,7 +393,7 @@ export default function FlashDeals() {
 
       {/* Become a Vendor CTA */}
       <div className="mx-4 mb-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-5 text-white">
-        <p className="text-2xl mb-2">🏪</p>
+        <p className="text-2xl mb-2">??</p>
         <h2 className="font-bold text-lg mb-1">Become a Flash Deal Vendor</h2>
         <p className="text-gray-300 text-sm leading-relaxed mb-4">
           Reach thousands of buyers instantly. List your products as flash deals and boost sales today.
@@ -413,7 +413,7 @@ export default function FlashDeals() {
         <button
           onClick={() => navigate("/vendor/register")}
           className="w-full py-3 bg-teal-600 text-white font-bold rounded-xl active:scale-[0.98] transition-transform">
-          Register as a Vendor →
+          Register as a Vendor ?
         </button>
       </div>
     </div>

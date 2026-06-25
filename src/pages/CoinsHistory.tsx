@@ -1,10 +1,10 @@
-﻿/**
- * src/pages/CoinsHistory.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/CoinsHistory.tsx — Bambeh Marketplace
  *
  * FIXED (this version):
- *  âœ… Full i18n â€” EN, FR, Pidgin, Arabic, Fulfulde
- *  âœ… RTL support for Arabic
- *  âœ… Shows all 50 most recent transactions with signed amounts
+ *  ✅ Full i18n — EN, FR, Pidgin, Arabic, Fulfulde
+ *  ✅ RTL support for Arabic
+ *  ✅ Shows all 50 most recent transactions with signed amounts
  */
 
 import React, { useEffect, useState } from 'react';
@@ -15,29 +15,29 @@ import { useLang } from '@/hooks/useAppLang';
 
 const strings = {
   en: {
-    back:    'â† Back to Wallet',
+    back:    '← Back to Wallet',
     title:   'Transaction History',
     noTx:    'No transactions yet',
   },
   fr: {
-    back:    'â† Retour au portefeuille',
+    back:    '← Retour au portefeuille',
     title:   'Historique des transactions',
     noTx:    'Aucune transaction pour le moment',
   },
   pidgin: {
-    back:    'â† Back to Wallet',
+    back:    '← Back to Wallet',
     title:   'Your Transactions',
     noTx:    'No transaction yet',
   },
   ar: {
-    back:    'Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ù…Ø­Ã™ÂØ¸Ø© â†’',
-    title:   'Ø³Ø¬Ù„ Ø§Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª',
-    noTx:    'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¹Ø§Ù…Ù„Ø§Øª Ø¨Ø¹Ø¯',
+    back:    'العودة للمحÙظة →',
+    title:   'سجل المعاملات',
+    noTx:    'لا توجد معاملات بعد',
   },
   fulfulde: {
-    back:    'â† Rutto Jaaborgal',
-    title:   'Laamu LiÉ“É“itol',
-    noTx:    'Alaa liÉ“É“itol fewndo jooni',
+    back:    '← Rutto Jaaborgal',
+    title:   'Laamu Liɓɓitol',
+    noTx:    'Alaa liɓɓitol fewndo jooni',
   },
 } as const;
 

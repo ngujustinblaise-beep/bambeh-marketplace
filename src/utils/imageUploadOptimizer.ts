@@ -1,6 +1,6 @@
-﻿/**
- * imageUploadOptimizer.ts — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+/**
+ * imageUploadOptimizer.ts � Bambeh Marketplace
+ * � 2026 Bambeh Marketplace. All rights reserved.
  *
  * Client-side image optimization before Supabase Storage upload.
  * Compresses and converts to WebP using the browser Canvas API.
@@ -14,20 +14,20 @@
  *   console.log(result.url, result.savings); // "saved 847 KB (73%)"
  *
  * Results on typical  3G:
- *   5 MB phone photo → ~400 KB WebP = 92% smaller → 8x faster upload
+ *   5 MB phone photo ? ~400 KB WebP = 92% smaller ? 8x faster upload
  */
 
 import { supabase } from "@/lib/supabase";
 import { logger } from "@/utils/logger";
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
+// --- TYPES --------------------------------------------------------------------
 
 export interface OptimizeOptions {
   /** Max width in pixels. Default: 1280 (good for marketplace listings) */
   maxWidth?: number;
   /** Max height in pixels. Default: 1280 */
   maxHeight?: number;
-  /** WebP quality 0–1. Default: 0.82 (excellent quality, small size) */
+  /** WebP quality 0�1. Default: 0.82 (excellent quality, small size) */
   quality?: number;
   /** Output format. Default: 'webp' (best compression) */
   format?: "webp" | "jpeg" | "png";
@@ -60,7 +60,7 @@ export interface UploadResult {
   uploadedSize: number;
 }
 
-// ─── DEFAULTS ─────────────────────────────────────────────────────────────────
+// --- DEFAULTS -----------------------------------------------------------------
 
 const DEFAULTS: Required<OptimizeOptions> = {
   maxWidth: 1280,
@@ -69,7 +69,7 @@ const DEFAULTS: Required<OptimizeOptions> = {
   format: "webp",
 };
 
-// ─── CORE OPTIMIZER ───────────────────────────────────────────────────────────
+// --- CORE OPTIMIZER -----------------------------------------------------------
 
 /**
  * Compresses and resizes an image file using the Canvas API.
@@ -93,7 +93,7 @@ export async function optimizeImage(
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
 
-      // ── Calculate output dimensions (preserve aspect ratio) ──────────────
+      // -- Calculate output dimensions (preserve aspect ratio) --------------
       let { width, height } = img;
 
       if (width > opts.maxWidth || height > opts.maxHeight) {
@@ -102,7 +102,7 @@ export async function optimizeImage(
         height = Math.round(height * ratio);
       }
 
-      // ── Draw onto canvas ──────────────────────────────────────────────────
+      // -- Draw onto canvas --------------------------------------------------
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
@@ -118,7 +118,7 @@ export async function optimizeImage(
       ctx.fillRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
 
-      // ── Export as WebP blob ───────────────────────────────────────────────
+      // -- Export as WebP blob -----------------------------------------------
       const mimeType = `image/${opts.format}`;
 
       canvas.toBlob(
@@ -178,7 +178,7 @@ export async function optimizeImage(
   });
 }
 
-// ─── UPLOAD HELPER ────────────────────────────────────────────────────────────
+// --- UPLOAD HELPER ------------------------------------------------------------
 
 /**
  * Optimizes an image then uploads it to Supabase Storage.
@@ -195,12 +195,12 @@ export async function uploadOptimizedImage(
   userId: string,
   options: OptimizeOptions = {}
 ): Promise<UploadResult> {
-  // ── Optimize first ───────────────────────────────────────────────────────
+  // -- Optimize first -------------------------------------------------------
   let optimized: OptimizeResult;
   try {
     optimized = await optimizeImage(file, options);
     logger.log(
-      `[ImageOptimizer] ${file.name}: ${formatBytes(optimized.originalSize)} → ` +
+      `[ImageOptimizer] ${file.name}: ${formatBytes(optimized.originalSize)} ? ` +
       `${formatBytes(optimized.optimizedSize)} (${optimized.savings})`
     );
   } catch (err) {
@@ -216,7 +216,7 @@ export async function uploadOptimizedImage(
     };
   }
 
-  // ── Build storage path ───────────────────────────────────────────────────
+  // -- Build storage path ---------------------------------------------------
   // Path: userId/timestamp-randomhex.webp
   // The userId prefix allows Supabase RLS to enforce: user can only write
   // to their own folder.
@@ -225,11 +225,11 @@ export async function uploadOptimizedImage(
   const ext = optimized.file.name.split(".").pop() ?? "webp";
   const storagePath = `${userId}/${timestamp}-${hex}.${ext}`;
 
-  // ── Upload to Supabase Storage ────────────────────────────────────────────
+  // -- Upload to Supabase Storage --------------------------------------------
   const { data, error } = await supabase.storage
     .from(bucket)
     .upload(storagePath, optimized.file, {
-      cacheControl: "31536000", // 1 year — images are immutable (content-addressed)
+      cacheControl: "31536000", // 1 year � images are immutable (content-addressed)
       upsert: false,
       contentType: optimized.file.type,
     });
@@ -238,7 +238,7 @@ export async function uploadOptimizedImage(
     throw new Error(`Upload failed: ${error.message}`);
   }
 
-  // ── Get public URL ────────────────────────────────────────────────────────
+  // -- Get public URL --------------------------------------------------------
   const { data: urlData } = supabase.storage
     .from(bucket)
     .getPublicUrl(data.path);
@@ -274,7 +274,7 @@ export async function uploadMultipleOptimized(
   return results;
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
+// --- HELPERS ------------------------------------------------------------------
 
 function renameToFormat(filename: string, format: string): string {
   const base = filename.replace(/\.[^/.]+$/, "");

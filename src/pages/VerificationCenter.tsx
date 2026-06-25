@@ -1,7 +1,7 @@
-﻿/**
- * src/pages/VerificationCenter.tsx — Bambeh Marketplace
+/**
+ * src/pages/VerificationCenter.tsx � Bambeh Marketplace
  * FIXED: Saves verification requests to Supabase verification_requests table.
- * Was only calling alert() — no data was being saved anywhere.
+ * Was only calling alert() � no data was being saved anywhere.
  */
 
 import { useState, useEffect } from 'react';
@@ -80,7 +80,7 @@ export default function VerificationCenter() {
       }
 
       const requestData: any = {
-        user_id: userId,   // UUID — not text
+        user_id: userId,   // UUID � not text
         level,
         status: 'pending',
       };
@@ -199,7 +199,7 @@ export default function VerificationCenter() {
                 </div>
                 {isSubmitted
                   ? <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  : <span className="text-gray-400 text-lg flex-shrink-0">{isActive ? '▲' : '▶'}</span>
+                  : <span className="text-gray-400 text-lg flex-shrink-0">{isActive ? '?' : '?'}</span>
                 }
               </button>
 
@@ -240,7 +240,7 @@ export default function VerificationCenter() {
                           className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
                       </div>
                       <p className="text-xs text-gray-400">
-                        📷 Document uploads will be added in a future update. Submit now to be placed in the queue.
+                        ?? Document uploads will be added in a future update. Submit now to be placed in the queue.
                       </p>
                     </>
                   )}
@@ -253,7 +253,7 @@ export default function VerificationCenter() {
                           className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
                       </div>
                       <p className="text-xs text-gray-400">
-                        📄 Business registration documents upload coming soon. Submit now to be placed in the review queue.
+                        ?? Business registration documents upload coming soon. Submit now to be placed in the review queue.
                       </p>
                     </>
                   )}
@@ -275,10 +275,10 @@ export default function VerificationCenter() {
 
         {/* Info */}
         <div className="bg-white rounded-2xl p-4 border text-sm text-gray-600 space-y-2">
-          <p className="font-semibold text-gray-800">⏱ Review Times</p>
-          <p>• Email & Phone: Instant</p>
-          <p>• ID & Address: 24-48 hours</p>
-          <p>• Business: 2-5 business days</p>
+          <p className="font-semibold text-gray-800">? Review Times</p>
+          <p>� Email & Phone: Instant</p>
+          <p>� ID & Address: 24-48 hours</p>
+          <p>� Business: 2-5 business days</p>
         </div>
       </div>
     </div>

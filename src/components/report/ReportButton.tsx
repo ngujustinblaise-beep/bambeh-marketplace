@@ -1,4 +1,4 @@
-﻿/**
+/**
  * REPORT BUTTON - Quick report submission from any page
  * FILE LOCATION: src/components/report/ReportButton.tsx
  */

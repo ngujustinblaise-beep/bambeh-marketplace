@@ -317,5 +317,6 @@ export function t<K extends keyof typeof T>(
   key: K,
   lang: Lang,
 ): (typeof T)[K][Lang] {
-  return T[key][lang] ?? T[key]["en"];
+  return (T as any)[key]?.[lang] ?? (T as any)[key]?.["en"];
 }
+

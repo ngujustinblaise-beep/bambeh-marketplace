@@ -1,19 +1,19 @@
-﻿/**
- * src/pages/BambehAIChatbot.tsx — Bambeh Marketplace
+/**
+ * src/pages/BambehAIChatbot.tsx � Bambeh Marketplace
  *
  * FIXES applied:
- *  ✅ Web search tool enabled — AI can now look up real-time prices, products, news
- *  ✅ Source citations shown in responses (verifiable links)
- *  ✅ Conversation history sent with each request (multi-turn memory)
- *  ✅ Character encoding fixed — removed garbled â€" chars from system prompt
- *  ✅ AbortController added — avoids memory leak on unmount / fast re-sends
- *  ✅ Input disabled during loading (prevents duplicate sends)
- *  ✅ Keyboard submit: Enter sends, Shift+Enter inserts newline
- *  ✅ Auto-scroll only when user is near the bottom (prevents jarring jumps)
- *  ✅ Message timestamps stable (not re-generated on re-render)
- *  ✅ Error state properly cleared on new message
- *  ✅ Max message length enforced (2000 chars) to prevent API abuse
- *  ✅ Quick suggestion chips clear on click and populate input
+ *  ? Web search tool enabled � AI can now look up real-time prices, products, news
+ *  ? Source citations shown in responses (verifiable links)
+ *  ? Conversation history sent with each request (multi-turn memory)
+ *  ? Character encoding fixed � removed garbled �" chars from system prompt
+ *  ? AbortController added � avoids memory leak on unmount / fast re-sends
+ *  ? Input disabled during loading (prevents duplicate sends)
+ *  ? Keyboard submit: Enter sends, Shift+Enter inserts newline
+ *  ? Auto-scroll only when user is near the bottom (prevents jarring jumps)
+ *  ? Message timestamps stable (not re-generated on re-render)
+ *  ? Error state properly cleared on new message
+ *  ? Max message length enforced (2000 chars) to prevent API abuse
+ *  ? Quick suggestion chips clear on click and populate input
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -30,7 +30,7 @@ const SYSTEM_PROMPT =
   'You are Bambeh AI, a helpful and friendly assistant for the Bambeh Marketplace app in Cameroon. ' +
   'Help users with buying, selling, finding jobs, rentals, vehicles, services, and using the app. ' +
   'Keep answers concise and practical. Use XAF for prices. ' +
-  'Be culturally aware of Cameroonian context (Yaoundé, Douala, francophone/anglophone regions). ' +
+  'Be culturally aware of Cameroonian context (Yaound�, Douala, francophone/anglophone regions). ' +
   'When asked about current prices, product availability, or recent news, search the web and cite your sources. ' +
   'Always provide source URLs when you use web search results.';
 
@@ -50,7 +50,7 @@ interface Message {
   sources?: { title: string; url: string }[];
 }
 
-// ─── Source pills ──────────────────────────────────────────────────────────
+// --- Source pills ----------------------------------------------------------
 
 function SourcePills({ sources }: { sources: { title: string; url: string }[] }) {
   const lang = useLang();
@@ -67,14 +67,14 @@ function SourcePills({ sources }: { sources: { title: string; url: string }[] })
           className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full hover:underline"
         >
           <Globe className="w-2.5 h-2.5" />
-          {s.title.slice(0, 30)}{s.title.length > 30 ? '…' : ''}
+          {s.title.slice(0, 30)}{s.title.length > 30 ? '�' : ''}
         </a>
       ))}
     </div>
   );
 }
 
-// ─── Typing indicator ──────────────────────────────────────────────────────
+// --- Typing indicator ------------------------------------------------------
 
 function TypingIndicator() {
   return (
@@ -97,7 +97,7 @@ function TypingIndicator() {
   );
 }
 
-// ─── Main Component ────────────────────────────────────────────────────────
+// --- Main Component --------------------------------------------------------
 
 export default function BambehAIChatbot() {
   const [messages, setMessages] = useState<Message[]>([
@@ -323,7 +323,7 @@ export default function BambehAIChatbot() {
             value={input}
             onChange={e => setInput(e.target.value.slice(0, MAX_INPUT_LENGTH))}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Bambeh AI anything…"
+            placeholder="Ask Bambeh AI anything�"
             disabled={loading}
             maxLength={MAX_INPUT_LENGTH}
             className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-gray-50 disabled:text-gray-400"

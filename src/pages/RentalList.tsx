@@ -1,18 +1,18 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * src/components/listings/RentalList.tsx — Bambeh Marketplace
+ * src/components/listings/RentalList.tsx � Bambeh Marketplace
  *
  * FIXES IN THIS VERSION:
- *  ✅ FIX 1 — CRITICAL: Broken JSX structure fixed (loading block was never closed,
- *             trapping the main return statement inside it — caused the "Oops" crash)
- *  ✅ FIX 2 — Reads from Supabase instead of localStorage (cross-device visibility)
- *  ✅ FIX 3 — Real-time subscription so new listings appear without refresh
- *  ✅ FIX 4 — Storage event listener now properly cleaned up (no memory leak)
- *  ✅ FIX 5 — Navigate to /rentals/:id for details (correct route)
- *  ✅ FIX 6 — pb-28 so bottom nav never covers cards
- *  ✅ FIX 7 — Error state with user-friendly banner
+ *  ? FIX 1 � CRITICAL: Broken JSX structure fixed (loading block was never closed,
+ *             trapping the main return statement inside it � caused the "Oops" crash)
+ *  ? FIX 2 � Reads from Supabase instead of localStorage (cross-device visibility)
+ *  ? FIX 3 � Real-time subscription so new listings appear without refresh
+ *  ? FIX 4 � Storage event listener now properly cleaned up (no memory leak)
+ *  ? FIX 5 � Navigate to /rentals/:id for details (correct route)
+ *  ? FIX 6 � pb-28 so bottom nav never covers cards
+ *  ? FIX 7 � Error state with user-friendly banner
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -51,7 +51,7 @@ const RentalList = () => {
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
 
-  // ✅ FIX 2: fetch from Supabase so all users see the same data
+  // ? FIX 2: fetch from Supabase so all users see the same data
   const loadRentals = useCallback(async () => {
     setError(null);
     setLoading(true);
@@ -91,7 +91,7 @@ const RentalList = () => {
     }
   }, []);
 
-  // ✅ FIX 3 + FIX 4: realtime subscription with proper cleanup
+  // ? FIX 3 + FIX 4: realtime subscription with proper cleanup
   useEffect(() => {
     loadRentals();
 
@@ -105,7 +105,7 @@ const RentalList = () => {
     };
   }, [loadRentals]);
 
-  // ✅ FIX 1 CRITICAL: loading block is now properly closed before the main return
+  // ? FIX 1 CRITICAL: loading block is now properly closed before the main return
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 pb-28">
@@ -120,7 +120,7 @@ const RentalList = () => {
         </div>
       </div>
     );
-  } // ← ✅ FIX 1: this brace was missing — closing the if(loading) block properly
+  } // ? ? FIX 1: this brace was missing � closing the if(loading) block properly
 
   return (
     <div className="container mx-auto px-4 py-8 pb-28">
@@ -176,7 +176,7 @@ const RentalList = () => {
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center text-4xl">🏠</div>
+                <div className="h-full w-full flex items-center justify-center text-4xl">??</div>
               )}
               {rental.featured && (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1
@@ -229,7 +229,7 @@ const RentalList = () => {
                 {rental.area && (
                   <div className="flex items-center gap-1">
                     <Square className="h-3.5 w-3.5" />
-                    <span>{rental.area} m²</span>
+                    <span>{rental.area} m�</span>
                   </div>
                 )}
               </div>
@@ -260,7 +260,7 @@ const RentalList = () => {
       {/* Empty state */}
       {rentals.length === 0 && !loading && (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4">🏠</div>
+          <div className="text-6xl mb-4">??</div>
           <p className="text-gray-600 text-lg font-medium mb-2">
             {t('noRentalsFound', 'No rental listings found yet')}
           </p>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CHAT & MESSAGING TYPE DEFINITIONS
  *
  * Type definitions for the real-time chat and messaging system

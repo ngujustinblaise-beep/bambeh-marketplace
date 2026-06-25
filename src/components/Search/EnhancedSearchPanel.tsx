@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ENHANCED SEARCH PANEL
  * FILE LOCATION: src/components/search/EnhancedSearchPanel.tsx
  */

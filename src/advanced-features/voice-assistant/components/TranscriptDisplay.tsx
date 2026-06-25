@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 
 interface ConversationEntry {
@@ -47,7 +47,7 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
               style={{ animationDelay: `${i * 150}ms` }} />
           ))}
         </div>
-        Listening…
+        Listening�
       </div>
     )}
   </div>

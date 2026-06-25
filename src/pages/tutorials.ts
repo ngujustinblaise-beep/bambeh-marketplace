@@ -1,4 +1,4 @@
-﻿export type Tutorial = {
+export type Tutorial = {
   id: string;
   title: string;
   description: string;

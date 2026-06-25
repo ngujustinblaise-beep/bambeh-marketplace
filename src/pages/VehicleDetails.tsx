@@ -1,8 +1,8 @@
-﻿/**
- * src/pages/VehicleDetails.tsx — Bambeh Marketplace
+/**
+ * src/pages/VehicleDetails.tsx � Bambeh Marketplace
  * Full vehicle detail page: multilingual, Supabase, image gallery,
  * Call / WhatsApp CTA, expiry warning, view count, share.
- * © 2026 BAMBEH SARL. All rights reserved.
+ * � 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -17,13 +17,13 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/hooks/useAppLang";
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // i18n
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 const I18N: Record<string, Record<string, string>> = {
   en: {
     back: "Vehicles",
-    loading: "Loading vehicle details…",
+    loading: "Loading vehicle details�",
     unavailable: "Vehicle unavailable",
     notFound: "This listing could not be found.",
     browseOther: "Browse other vehicles",
@@ -52,51 +52,51 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "Seller",
     saved: "Saved",
     save: "Save",
-    whatsappMsg: "Hi, I'm interested in your vehicle listing on Bambeh: \"{title}\" — {location}. Is it still available?",
+    whatsappMsg: "Hi, I'm interested in your vehicle listing on Bambeh: \"{title}\" � {location}. Is it still available?",
   },
   fr: {
-    back: "Véhicules",
-    loading: "Chargement des détails…",
-    unavailable: "Véhicule indisponible",
-    notFound: "Cette annonce n'a pas pu être trouvée.",
-    browseOther: "Parcourir d'autres véhicules",
-    vehicleSpecs: "Caractéristiques",
-    aboutVehicle: "À propos de ce véhicule",
+    back: "V�hicules",
+    loading: "Chargement des d�tails�",
+    unavailable: "V�hicule indisponible",
+    notFound: "Cette annonce n'a pas pu �tre trouv�e.",
+    browseOther: "Parcourir d'autres v�hicules",
+    vehicleSpecs: "Caract�ristiques",
+    aboutVehicle: "� propos de ce v�hicule",
     noDesc: "Aucune description fournie.",
-    safetyNote: "Inspectez toujours le véhicule en personne et vérifiez les documents de propriété avant tout paiement. Bambeh ne gère pas les paiements.",
+    safetyNote: "Inspectez toujours le v�hicule en personne et v�rifiez les documents de propri�t� avant tout paiement. Bambeh ne g�re pas les paiements.",
     noReviews: "(Aucun avis pour l'instant)",
     callSeller: "Appeler le vendeur",
     whatsapp: "WhatsApp",
-    demoNote: "Ceci est une annonce de démonstration. Listez votre propre véhicule pour apparaître ici.",
-    sellVehicle: "Vendre un véhicule",
+    demoNote: "Ceci est une annonce de d�monstration. Listez votre propre v�hicule pour appara�tre ici.",
+    sellVehicle: "Vendre un v�hicule",
     expiringSoon: "Votre annonce expire dans",
     day: "jour",
     days: "jours",
-    renewHint: "Renouvelez-la pour continuer à recevoir des demandes.",
+    renewHint: "Renouvelez-la pour continuer � recevoir des demandes.",
     renewNow: "Renouveler maintenant",
     views: "vues",
-    mileage: "Kilométrage",
+    mileage: "Kilom�trage",
     fuel: "Carburant",
     transmission: "Transmission",
-    year: "Année",
-    seats: "Sièges",
+    year: "Ann�e",
+    seats: "Si�ges",
     colour: "Couleur",
-    shareSuccess: "Lien copié dans le presse-papier!",
+    shareSuccess: "Lien copi� dans le presse-papier!",
     sellerInfo: "Vendeur",
-    saved: "Enregistré",
+    saved: "Enregistr�",
     save: "Enregistrer",
-    whatsappMsg: "Bonjour, je suis intéressé(e) par votre véhicule sur Bambeh: \"{title}\" — {location}. Est-il encore disponible?",
+    whatsappMsg: "Bonjour, je suis int�ress�(e) par votre v�hicule sur Bambeh: \"{title}\" � {location}. Est-il encore disponible?",
   },
   ha: {
     back: "Ababen Hawa",
-    loading: "Ana loda bayanan abin hawa…",
+    loading: "Ana loda bayanan abin hawa�",
     unavailable: "Babu abin hawa",
     notFound: "Ba a sami wannan lissafin ba.",
     browseOther: "Nemo sauran ababen hawa",
     vehicleSpecs: "Bayanan Abin Hawa",
     aboutVehicle: "Game da wannan abin hawa",
     noDesc: "Babu bayani da aka bayar.",
-    safetyNote: "Koyaushe duba abin hawa da kai kuma tabbatar da takardun mallakar kafin yin wani biya. Bambeh ba ta sarrafa biyan kuɗi.",
+    safetyNote: "Koyaushe duba abin hawa da kai kuma tabbatar da takardun mallakar kafin yin wani biya. Bambeh ba ta sarrafa biyan ku?i.",
     noReviews: "(Babu sake dubawa tukuna)",
     callSeller: "Kira Mai Sayar",
     whatsapp: "WhatsApp",
@@ -105,7 +105,7 @@ const I18N: Record<string, Record<string, string>> = {
     expiringSoon: "Lissafin ku ya kare a cikin",
     day: "rana",
     days: "ranaku",
-    renewHint: "Sabunta shi don ci gaba da karɓar tambayoyi.",
+    renewHint: "Sabunta shi don ci gaba da kar?ar tambayoyi.",
     renewNow: "Sabunta Yanzu",
     views: "kallaye",
     mileage: "Nisan Tafiya",
@@ -114,48 +114,48 @@ const I18N: Record<string, Record<string, string>> = {
     year: "Shekara",
     seats: "Kujeru",
     colour: "Launi",
-    shareSuccess: "An kwafi hanyar haɗin!",
+    shareSuccess: "An kwafi hanyar ha?in!",
     sellerInfo: "Mai Sayarwa",
     saved: "An Ajiye",
     save: "Ajiye",
-    whatsappMsg: "Sannu, ina sha'awar abin hawanku akan Bambeh: \"{title}\" — {location}. Yana nan?",
+    whatsappMsg: "Sannu, ina sha'awar abin hawanku akan Bambeh: \"{title}\" � {location}. Yana nan?",
   },
   ar: {
-    back: "المركبات",
-    loading: "جارÙ تحميل تÙاصيل المركبة…",
-    unavailable: "المركبة غير متاحة",
-    notFound: "لم يتم العثور على هذا الإعلان.",
-    browseOther: "تصÙح مركبات أخرى",
-    vehicleSpecs: "مواصÙات المركبة",
-    aboutVehicle: "عن هذه المركبة",
-    noDesc: "لم يتم تقديم وصÙ.",
-    safetyNote: "اÙحص المركبة دائمًا شخصيًا وتحقق من وثائق الملكية قبل إجراء أي دÙع. لا تتعامل Bambeh مع المدÙوعات.",
-    noReviews: "(لا توجد تقييمات بعد)",
-    callSeller: "اتصل بالبائع",
-    whatsapp: "واتساب",
-    demoNote: "هذا إعلان تجريبي. أضÙ مركبتك الخاصة لتظهر هنا.",
-    sellVehicle: "بيع مركبة",
-    expiringSoon: "ينتهي إعلانك خلال",
-    day: "يوم",
-    days: "أيام",
-    renewHint: "جدده للاستمرار Ùي تلقي الاستÙسارات.",
-    renewNow: "جدد الآن",
-    views: "مشاهدات",
-    mileage: "عداد المساÙة",
-    fuel: "نوع الوقود",
-    transmission: "ناقل الحركة",
-    year: "السنة",
-    seats: "المقاعد",
-    colour: "اللون",
-    shareSuccess: "تم نسخ الرابط!",
-    sellerInfo: "البائع",
-    saved: "محÙوظ",
-    save: "حÙظ",
-    whatsappMsg: "مرحبًا، أنا مهتم بمركبتك على Bambeh: \"{title}\" — {location}. هل لا تزال متاحة؟",
+    back: "????????",
+    loading: "???ٍ ????? ?ف???? ???????�",
+    unavailable: "??????? ??? ?????",
+    notFound: "?? ??? ?????? ??? ??? ???????.",
+    browseOther: "??ف? ?????? ????",
+    vehicleSpecs: "????ف?? ???????",
+    aboutVehicle: "?? ??? ???????",
+    noDesc: "?? ??? ????? ??ف.",
+    safetyNote: "?ف?? ??????? ?????? ?????? ????? ?? ????? ??????? ??? ????? ?? ?ف?. ?? ?????? Bambeh ?? ????ف????.",
+    noReviews: "(?? ???? ??????? ???)",
+    callSeller: "???? ???????",
+    whatsapp: "??????",
+    demoNote: "??? ????? ??????. ??ف ?????? ?????? ????? ???.",
+    sellVehicle: "??? ?????",
+    expiringSoon: "????? ?????? ????",
+    day: "???",
+    days: "????",
+    renewHint: "???? ????????? ف? ???? ?????ف?????.",
+    renewNow: "??? ????",
+    views: "???????",
+    mileage: "???? ?????ف?",
+    fuel: "??? ??????",
+    transmission: "???? ??????",
+    year: "?????",
+    seats: "???????",
+    colour: "?????",
+    shareSuccess: "?? ??? ??????!",
+    sellerInfo: "??????",
+    saved: "??ف??",
+    save: "?ف?",
+    whatsappMsg: "??????? ??? ???? ??????? ??? Bambeh: \"{title}\" � {location}. ?? ?? ???? ??????",
   },
   pcm: {
     back: "Motors",
-    loading: "Motor dey load…",
+    loading: "Motor dey load�",
     unavailable: "Motor no dey",
     notFound: "We no find dis post.",
     browseOther: "Look other motors",
@@ -184,56 +184,56 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "Seller",
     saved: "Saved",
     save: "Save",
-    whatsappMsg: "How far, I dey look your motor for Bambeh: \"{title}\" — {location}. E still dey?",
+    whatsappMsg: "How far, I dey look your motor for Bambeh: \"{title}\" � {location}. E still dey?",
   },
   ff: {
-    back: "Laaɓe",
-    loading: "Laaɓal njilloyinee…",
-    unavailable: "Laaɓal heɓaaki",
-    notFound: "Jaŋtere nde heɓaaki.",
-    browseOther: "Yiyt laaɓe goɗɗe",
-    vehicleSpecs: "Bayɗe Laaɓal",
-    aboutVehicle: "E dow laaɓal ngal",
-    noDesc: "Bayɗe alaa.",
-    safetyNote: "Yiy laaɓal maa e neɗɗo kadi njangu takkareeji dow ko adii hokku jawdi. Bambeh natta hawl ngawte.",
-    noReviews: "(Tiiɗnde alaa hannde)",
-    callSeller: "Noddu Soodotooɗo",
+    back: "Laa?e",
+    loading: "Laa?al njilloyinee�",
+    unavailable: "Laa?al he?aaki",
+    notFound: "Ja?tere nde he?aaki.",
+    browseOther: "Yiyt laa?e go??e",
+    vehicleSpecs: "Bay?e Laa?al",
+    aboutVehicle: "E dow laa?al ngal",
+    noDesc: "Bay?e alaa.",
+    safetyNote: "Yiy laa?al maa e ne??o kadi njangu takkareeji dow ko adii hokku jawdi. Bambeh natta hawl ngawte.",
+    noReviews: "(Tii?nde alaa hannde)",
+    callSeller: "Noddu Soodotoo?o",
     whatsapp: "WhatsApp",
-    demoNote: "Ngal misaali. Haaɗtu laaɓal maa ngam yiyeede haa no.",
-    sellVehicle: "Yillitu Laaɓal",
-    expiringSoon: "Jaŋtere maa timmata e",
+    demoNote: "Ngal misaali. Haa?tu laa?al maa ngam yiyeede haa no.",
+    sellVehicle: "Yillitu Laa?al",
+    expiringSoon: "Ja?tere maa timmata e",
     day: "day",
     days: "naye",
-    renewHint: "Haaɗtu ngam heɓtude ɓatakeeji.",
-    renewNow: "Haaɗtu Jooni",
-    views: "yiyaaɗe",
+    renewHint: "Haa?tu ngam he?tude ?atakeeji.",
+    renewNow: "Haa?tu Jooni",
+    views: "yiyaa?e",
     mileage: "Laawol",
     fuel: "Susiyel",
     transmission: "Watse",
     year: "Hitaande",
-    seats: "Tooɗe",
+    seats: "Too?e",
     colour: "Ranynde",
     shareSuccess: "Hakkille reenaa!",
-    sellerInfo: "Soodotooɗo",
-    saved: "Ɗowɗaa",
-    save: "Ɗow",
-    whatsappMsg: "Jam, mi anndinorii laaɓal maa e Bambeh: \"{title}\" — {location}. Ɗum ɗii?",
+    sellerInfo: "Soodotoo?o",
+    saved: "?ow?aa",
+    save: "?ow",
+    whatsappMsg: "Jam, mi anndinorii laa?al maa e Bambeh: \"{title}\" � {location}. ?um ?ii?",
   },
 };
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Demo vehicle data
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 const DEMO_VEHICLES: Record<string, any> = {
-  "demo-v1": { id:"demo-v1", title:"Toyota Camry 2020", price:8_500_000, location:"Yaoundé", category:"Sedan", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Petrol",transmission:"Automatic",mileage:"45,000 km",year:2020,color:"Silver",seats:5}, description:"Well-maintained Toyota Camry 2020, single owner, full service history. Leather seats, reversing camera, push-start. No accident history.", contact_phone:"", contact_name:"Bambeh Demo" },
+  "demo-v1": { id:"demo-v1", title:"Toyota Camry 2020", price:8_500_000, location:"Yaound�", category:"Sedan", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Petrol",transmission:"Automatic",mileage:"45,000 km",year:2020,color:"Silver",seats:5}, description:"Well-maintained Toyota Camry 2020, single owner, full service history. Leather seats, reversing camera, push-start. No accident history.", contact_phone:"", contact_name:"Bambeh Demo" },
   "demo-v2": { id:"demo-v2", title:"Honda Activa Motorcycle", price:850_000, location:"Douala", category:"Motorcycle", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Petrol",transmission:"Manual",mileage:"12,000 km",year:2021,color:"Red",seats:2}, description:"Honda Activa in excellent condition, used mainly for city commute. New tyres, recent oil change. Ideal for students and professionals.", contact_phone:"", contact_name:"Bambeh Demo" },
-  "demo-v3": { id:"demo-v3", title:"Toyota Land Cruiser V8 2019", price:35_000_000, location:"Yaoundé", category:"SUV", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Diesel",transmission:"Automatic",mileage:"78,000 km",year:2019,color:"Black",seats:7}, description:"Iconic Land Cruiser V8, fully loaded with leather interior, sunroof, and advanced 4WD. Perfect for Cameroon's diverse terrain.", contact_phone:"", contact_name:"Bambeh Demo" },
+  "demo-v3": { id:"demo-v3", title:"Toyota Land Cruiser V8 2019", price:35_000_000, location:"Yaound�", category:"SUV", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Diesel",transmission:"Automatic",mileage:"78,000 km",year:2019,color:"Black",seats:7}, description:"Iconic Land Cruiser V8, fully loaded with leather interior, sunroof, and advanced 4WD. Perfect for Cameroon's diverse terrain.", contact_phone:"", contact_name:"Bambeh Demo" },
   "demo-v4": { id:"demo-v4", title:"Nissan Pickup 4x4", price:12_000_000, location:"Bamenda", category:"Pickup", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Diesel",transmission:"Manual",mileage:"95,000 km",year:2018,color:"White",seats:5}, description:"Robust Nissan Pickup 4x4 with hardtop canopy. Great load capacity, ideal for business and off-road use. Bull bar and tow hitch included.", contact_phone:"", contact_name:"Bambeh Demo" },
 };
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Helpers
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 function expiringWithin(expiresAt?: string, days = 7): boolean {
   if (!expiresAt) return false;
   const diff = new Date(expiresAt).getTime() - Date.now();
@@ -243,9 +243,9 @@ function daysLeft(expiresAt: string): number {
   return Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86_400_000);
 }
 
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 // Component
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
 const VehicleDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id }   = useParams<{ id: string }>();
@@ -264,7 +264,7 @@ const VehicleDetails: React.FC = () => {
   const [saved,       setSaved]       = useState(false);
   const [imgIndex,    setImgIndex]    = useState(0);
 
-  // ── Increment view count ────────────────────────────────────
+  // -- Increment view count ------------------------------------
   const incrementView = useCallback(async (listingId: string) => {
     try {
       await supabase.rpc("increment_view_count", {
@@ -273,7 +273,7 @@ const VehicleDetails: React.FC = () => {
     } catch { /* non-fatal */ }
   }, []);
 
-  // ── Fetch ───────────────────────────────────────────────────
+  // -- Fetch ---------------------------------------------------
   useEffect(() => {
     if (!id) { setError("Invalid vehicle ID."); setLoading(false); return; }
 
@@ -313,7 +313,7 @@ const VehicleDetails: React.FC = () => {
     })();
   }, [id]);
 
-  // ── Actions ─────────────────────────────────────────────────
+  // -- Actions -------------------------------------------------
   const handleCall = () => {
     if (!vehicle?.contact_phone) return;
     window.location.href = `tel:${vehicle.contact_phone.replace(/\s+/g, "")}`;
@@ -337,7 +337,7 @@ const VehicleDetails: React.FC = () => {
     }
   };
 
-  // ── Specs array ─────────────────────────────────────────────
+  // -- Specs array ---------------------------------------------
   const specs = vehicle ? [
     { icon: <Gauge    className="w-4 h-4"/>, label: tr("mileage"),      value: vehicle.extra?.mileage },
     { icon: <Fuel     className="w-4 h-4"/>, label: tr("fuel"),         value: vehicle.extra?.fuel },
@@ -349,7 +349,7 @@ const VehicleDetails: React.FC = () => {
 
   const isOwner = user?.id && vehicle?.user_id === user.id;
 
-  // ── Loading ─────────────────────────────────────────────────
+  // -- Loading -------------------------------------------------
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -361,7 +361,7 @@ const VehicleDetails: React.FC = () => {
     );
   }
 
-  // ── Error / not found ────────────────────────────────────────
+  // -- Error / not found ----------------------------------------
   if (error || !vehicle) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 pb-28" dir={isRtl ? "rtl" : "ltr"}>
@@ -388,12 +388,12 @@ const VehicleDetails: React.FC = () => {
     );
   }
 
-  // ── Main render ──────────────────────────────────────────────
+  // -- Main render ----------------------------------------------
   return (
     <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? "rtl" : "ltr"}>
       <div className="max-w-2xl mx-auto">
 
-        {/* ── Sticky top bar ── */}
+        {/* -- Sticky top bar -- */}
         <div className={`sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between ${isRtl ? "flex-row-reverse" : ""}`}>
           <button
             onClick={() => navigate("/vehicles")}
@@ -421,7 +421,7 @@ const VehicleDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Image gallery ── */}
+        {/* -- Image gallery -- */}
         <div className="bg-gray-200 relative">
           {vehicle.images.length > 0 ? (
             <>
@@ -450,7 +450,7 @@ const VehicleDetails: React.FC = () => {
             </>
           ) : (
             <div className="h-64 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
-              <span className="text-7xl">🚗</span>
+              <span className="text-7xl">??</span>
             </div>
           )}
 
@@ -461,7 +461,7 @@ const VehicleDetails: React.FC = () => {
           )}
         </div>
 
-        {/* ── Content ── */}
+        {/* -- Content -- */}
         <div className="px-4 pt-5 space-y-5">
 
           {/* Expiry warning (owner only) */}
@@ -561,7 +561,7 @@ const VehicleDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Bottom CTA bar — real listing ── */}
+        {/* -- Bottom CTA bar � real listing -- */}
         {vehicle.status !== "demo" && vehicle.contact_phone && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-lg px-4 pt-3 pb-6">
             <div className={`max-w-2xl mx-auto grid grid-cols-2 gap-3 ${isRtl ? "dir-rtl" : ""}`}>
@@ -585,7 +585,7 @@ const VehicleDetails: React.FC = () => {
           </div>
         )}
 
-        {/* ── Bottom CTA bar — demo ── */}
+        {/* -- Bottom CTA bar � demo -- */}
         {vehicle.status === "demo" && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-yellow-50 border-t border-yellow-200 px-4 pt-3 pb-6">
             <div className="max-w-2xl mx-auto text-center">

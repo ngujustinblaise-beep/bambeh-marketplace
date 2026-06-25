@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ADVERTISEMENTS PAGE - ENHANCED VERSION 2.0
  * FILE LOCATION: src/pages/Advertisements.tsx
@@ -357,11 +357,11 @@ export default function Advertisements() {
           paymentReference: `PAY-${Date.now()}`,
           startDate: new Date(),
         });
-        alert('✅ Payment successful! Your advertisement is now active.');
+        alert('? Payment successful! Your advertisement is now active.');
         setShowPaymentDialog(false);
         fetchAds();
       } else {
-        alert('❌ Payment failed. Please try again or use a different payment method.');
+        alert('? Payment failed. Please try again or use a different payment method.');
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -501,14 +501,14 @@ export default function Advertisements() {
     const ctr = calculateCTR(ad);
     const conversionRate = calculateConversionRate(ad);
 
-    if (ctr < 2) suggestions.push('📉 Low CTR detected. Consider improving your ad title or using better keywords.');
-    if (conversionRate < 5) suggestions.push('🎯 Conversion rate is low. Try offering a special promotion or clearer call-to-action.');
-    if (ad.tier === 'bronze' && ad.views > 100) suggestions.push('⭐ Consider upgrading to Silver or Gold tier for 2-5x more visibility.');
-    if (!ad.abTestingEnabled && ad.tier !== 'bronze') suggestions.push('🔬 Enable A/B testing to optimize your ad performance automatically.');
-    if (!ad.autoRenewal && ad.tier === 'gold') suggestions.push('🔄 Enable auto-renewal to get 10% discount on renewals.');
-    if (ad.budget - ad.spent < ad.price * 0.2) suggestions.push('💰 Budget running low. Consider increasing budget to maintain visibility.');
+    if (ctr < 2) suggestions.push('?? Low CTR detected. Consider improving your ad title or using better keywords.');
+    if (conversionRate < 5) suggestions.push('?? Conversion rate is low. Try offering a special promotion or clearer call-to-action.');
+    if (ad.tier === 'bronze' && ad.views > 100) suggestions.push('? Consider upgrading to Silver or Gold tier for 2-5x more visibility.');
+    if (!ad.abTestingEnabled && ad.tier !== 'bronze') suggestions.push('?? Enable A/B testing to optimize your ad performance automatically.');
+    if (!ad.autoRenewal && ad.tier === 'gold') suggestions.push('?? Enable auto-renewal to get 10% discount on renewals.');
+    if (ad.budget - ad.spent < ad.price * 0.2) suggestions.push('?? Budget running low. Consider increasing budget to maintain visibility.');
 
-    return suggestions.length > 0 ? suggestions : ['✅ Your ad is performing well! Keep it up.'];
+    return suggestions.length > 0 ? suggestions : ['? Your ad is performing well! Keep it up.'];
   };
 
   const handleViewAnalytics = (ad: Advertisement) => {
@@ -789,10 +789,10 @@ export default function Advertisements() {
                     <Select value={itemType} onValueChange={(v) => setItemType(v as AdCategory)}>
                       <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="job">💼 {t('ads.job', 'Job Listing')}</SelectItem>
-                        <SelectItem value="marketplace">🛒 {t('ads.marketplace', 'Marketplace Item')}</SelectItem>
-                        <SelectItem value="service">🔧 {t('ads.service', 'Service')}</SelectItem>
-                        <SelectItem value="rental">🏠 {t('ads.rental', 'Rental Property')}</SelectItem>
+                        <SelectItem value="job">?? {t('ads.job', 'Job Listing')}</SelectItem>
+                        <SelectItem value="marketplace">?? {t('ads.marketplace', 'Marketplace Item')}</SelectItem>
+                        <SelectItem value="service">?? {t('ads.service', 'Service')}</SelectItem>
+                        <SelectItem value="rental">?? {t('ads.rental', 'Rental Property')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -819,7 +819,7 @@ export default function Advertisements() {
                         onClick={() => setSelectedTier(tier.tier)}
                       >
                         {tier.recommended && (
-                          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold text-center py-1">⭐ RECOMMENDED</div>
+                          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold text-center py-1">? RECOMMENDED</div>
                         )}
                         <CardHeader className="pb-3">
                           <div className="flex items-center justify-between">
@@ -858,9 +858,9 @@ export default function Advertisements() {
                   <Select value={selectedDuration} onValueChange={(v) => setSelectedDuration(v as AdDuration)}>
                     <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">📅 {t('ads.daily', 'Daily (1 day)')} — {calculatePrice(selectedTier, 'daily').toLocaleString()} XAF</SelectItem>
-                      <SelectItem value="weekly">📅 {t('ads.weekly', 'Weekly (7 days)')} — {calculatePrice(selectedTier, 'weekly').toLocaleString()} XAF</SelectItem>
-                      <SelectItem value="monthly">📅 {t('ads.monthly', 'Monthly (30 days)')} — {calculatePrice(selectedTier, 'monthly').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="daily">?? {t('ads.daily', 'Daily (1 day)')} � {calculatePrice(selectedTier, 'daily').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="weekly">?? {t('ads.weekly', 'Weekly (7 days)')} � {calculatePrice(selectedTier, 'weekly').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="monthly">?? {t('ads.monthly', 'Monthly (30 days)')} � {calculatePrice(selectedTier, 'monthly').toLocaleString()} XAF</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -919,7 +919,7 @@ export default function Advertisements() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-sm text-gray-600 pt-3 border-t border-teal-200">
-                    <span>🪙 Zerm Coins equivalent:</span>
+                    <span>?? Zerm Coins equivalent:</span>
                     <span className="font-semibold text-teal-700">{convertToZermCoins(calculatePrice(selectedTier, selectedDuration))} Coins</span>
                   </div>
                   {autoRenewalEnabled && selectedTier === 'gold' && (
@@ -959,7 +959,7 @@ export default function Advertisements() {
                     <div className="text-center mb-4">
                       <p className="text-sm text-gray-600 mb-2">Total Amount</p>
                       <p className="text-4xl font-bold text-gray-900">{selectedAd.price.toLocaleString()} <span className="text-2xl">XAF</span></p>
-                      <p className="text-sm text-gray-600 mt-1">🪙 {convertToZermCoins(selectedAd.price)} Zerm Coins</p>
+                      <p className="text-sm text-gray-600 mt-1">?? {convertToZermCoins(selectedAd.price)} Zerm Coins</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm pt-4 border-t">
                       <div><p className="text-gray-600">Campaign:</p><p className="font-semibold capitalize">{selectedAd.tier} - {selectedAd.duration}</p></div>
@@ -1100,7 +1100,7 @@ export default function Advertisements() {
                           <span className="text-sm font-bold">{calculateCTR(selectedAd).toFixed(2)}%</span>
                         </div>
                         <Progress value={calculateCTR(selectedAd) * 10} className="h-2" />
-                        <p className="text-xs text-gray-500 mt-1">{calculateCTR(selectedAd) >= 5 ? '✅ Excellent' : calculateCTR(selectedAd) >= 2 ? '⚠️ Good' : '❌ Needs improvement'}</p>
+                        <p className="text-xs text-gray-500 mt-1">{calculateCTR(selectedAd) >= 5 ? '? Excellent' : calculateCTR(selectedAd) >= 2 ? '?? Good' : '? Needs improvement'}</p>
                       </div>
                       <div>
                         <div className="flex justify-between items-center mb-2">
@@ -1108,7 +1108,7 @@ export default function Advertisements() {
                           <span className="text-sm font-bold">{calculateConversionRate(selectedAd).toFixed(2)}%</span>
                         </div>
                         <Progress value={calculateConversionRate(selectedAd) * 2} className="h-2" />
-                        <p className="text-xs text-gray-500 mt-1">{calculateConversionRate(selectedAd) >= 10 ? '✅ Excellent' : calculateConversionRate(selectedAd) >= 5 ? '⚠️ Good' : '❌ Needs improvement'}</p>
+                        <p className="text-xs text-gray-500 mt-1">{calculateConversionRate(selectedAd) >= 10 ? '? Excellent' : calculateConversionRate(selectedAd) >= 5 ? '?? Good' : '? Needs improvement'}</p>
                       </div>
                       <div>
                         <div className="flex justify-between items-center mb-2">
@@ -1135,7 +1135,7 @@ export default function Advertisements() {
                             <p className="text-sm text-purple-700">Clicks (45%)</p>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 mt-4">🏆 Variant A is performing 22% better. Consider using this version exclusively.</p>
+                        <p className="text-sm text-gray-600 mt-4">?? Variant A is performing 22% better. Consider using this version exclusively.</p>
                       </CardContent>
                     </Card>
                   )}
@@ -1247,7 +1247,7 @@ export default function Advertisements() {
   );
 }
 
-// ─── Stub helpers ─────────────────────────────────────────────────────────────
+// --- Stub helpers -------------------------------------------------------------
 async function getUserZermCoinsBalance(userId: string): Promise<number> {
   return 0; // TODO: implement via Supabase
 }

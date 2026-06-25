@@ -1,41 +1,41 @@
-﻿/**
+/**
  * src/services/properties.service.ts
- * Bambeh Marketplace — Properties / Rentals Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Properties / Rentals Service
+ * � 2026 Bambeh Marketplace. All rights reserved.
  *
- * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
- * Previous version queried a "properties" table — does NOT exist in Supabase.
+ * --- FIX (June 2026) ----------------------------------------------------------
+ * Previous version queried a "properties" table � does NOT exist in Supabase.
  * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
  * All functions now query: supabase.from("listings").eq("type", "rental")
  *
- * Column mapping (listings table → Property type):
- *   listings.id               → id
- *   listings.user_id          → landlordId       (NOT landlord_id — doesn't exist)
- *   listings.title            → title
- *   listings.description      → description
- *   listings.price            → priceXAF
- *   listings.location         → city
- *   listings.images           → images[]
- *   listings.extra.prop_type  → propertyType
- *   listings.extra.period     → rentalPeriod
- *   listings.extra.negotiable → isNegotiable
- *   listings.extra.bedrooms   → bedrooms
- *   listings.extra.bathrooms  → bathrooms
- *   listings.extra.surface    → surfaceM2
- *   listings.extra.region     → region
- *   listings.extra.address    → address
- *   listings.extra.amenities  → amenities[]
- *   listings.extra.available  → isAvailable
- *   listings.extra.avail_from → availableFrom
- *   listings.phone            → contactPhone
- *   listings.view_count       → viewCount
- *   listings.status           → status
+ * Column mapping (listings table ? Property type):
+ *   listings.id               ? id
+ *   listings.user_id          ? landlordId       (NOT landlord_id � doesn't exist)
+ *   listings.title            ? title
+ *   listings.description      ? description
+ *   listings.price            ? priceXAF
+ *   listings.location         ? city
+ *   listings.images           ? images[]
+ *   listings.extra.prop_type  ? propertyType
+ *   listings.extra.period     ? rentalPeriod
+ *   listings.extra.negotiable ? isNegotiable
+ *   listings.extra.bedrooms   ? bedrooms
+ *   listings.extra.bathrooms  ? bathrooms
+ *   listings.extra.surface    ? surfaceM2
+ *   listings.extra.region     ? region
+ *   listings.extra.address    ? address
+ *   listings.extra.amenities  ? amenities[]
+ *   listings.extra.available  ? isAvailable
+ *   listings.extra.avail_from ? availableFrom
+ *   listings.phone            ? contactPhone
+ *   listings.view_count       ? viewCount
+ *   listings.status           ? status
  */
 
 import { supabase } from "@/lib/supabase";
 import type { ItemFilters, PaginatedItemsResponse } from "@/types/src_types_items";
 
-// ─── Types (unchanged — callers don't need to update) ─────────────────────────
+// --- Types (unchanged � callers don't need to update) -------------------------
 export type PropertyType =
   | "apartment" | "house" | "studio" | "villa"
   | "office" | "land" | "commercial" | "warehouse" | "room";
@@ -89,7 +89,7 @@ export interface PropertyActionResponse {
   error: string | null;
 }
 
-// ─── Row mapper ────────────────────────────────────────────────────────────────
+// --- Row mapper ----------------------------------------------------------------
 function mapRow(row: Record<string, any>): Property {
   const extra  = row.extra ?? {};
   const images = Array.isArray(row.images) ? row.images : [];
@@ -129,7 +129,7 @@ function mapRow(row: Record<string, any>): Property {
   };
 }
 
-// ─── Get Properties (paginated + filtered) ────────────────────────────────────
+// --- Get Properties (paginated + filtered) ------------------------------------
 export async function getProperties(
   filters: Partial<ItemFilters> = {}
 ): Promise<PaginatedItemsResponse<Property>> {
@@ -178,7 +178,7 @@ export async function getProperties(
   }
 }
 
-// ─── Get Property by ID ───────────────────────────────────────────────────────
+// --- Get Property by ID -------------------------------------------------------
 export async function getPropertyById(id: string): Promise<PropertyResponse> {
   try {
     const { data, error } = await supabase
@@ -197,7 +197,7 @@ export async function getPropertyById(id: string): Promise<PropertyResponse> {
   }
 }
 
-// ─── Create Property ──────────────────────────────────────────────────────────
+// --- Create Property ----------------------------------------------------------
 export async function createProperty(
   landlordId: string,
   payload: Omit<Property, "id" | "landlordId" | "viewCount" | "createdAt" | "updatedAt">
@@ -249,7 +249,7 @@ export async function createProperty(
   }
 }
 
-// ─── Update Property ──────────────────────────────────────────────────────────
+// --- Update Property ----------------------------------------------------------
 export async function updateProperty(
   id: string,
   landlordId: string,
@@ -293,7 +293,7 @@ export async function updateProperty(
   }
 }
 
-// ─── Delete Property ──────────────────────────────────────────────────────────
+// --- Delete Property ----------------------------------------------------------
 export async function deleteProperty(
   id: string,
   landlordId: string
@@ -312,7 +312,7 @@ export async function deleteProperty(
   }
 }
 
-// ─── Get My Properties ────────────────────────────────────────────────────────
+// --- Get My Properties --------------------------------------------------------
 export async function getMyProperties(
   landlordId: string
 ): Promise<PaginatedItemsResponse<Property>> {
@@ -338,7 +338,7 @@ export async function getMyProperties(
   }
 }
 
-// ─── Increment View Count ─────────────────────────────────────────────────────
+// --- Increment View Count -----------------------------------------------------
 export async function incrementPropertyView(id: string): Promise<void> {
   try {
     await supabase.rpc("increment_view_count", {

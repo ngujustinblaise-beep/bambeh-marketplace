@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';

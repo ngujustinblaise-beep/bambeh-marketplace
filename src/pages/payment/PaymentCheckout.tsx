@@ -1,11 +1,11 @@
-﻿/**
- * PaymentCheckout.tsx  —  Bambeh Marketplace
+/**
+ * PaymentCheckout.tsx  �  Bambeh Marketplace
  * FILE LOCATION: src/pages/payment/PaymentCheckout.tsx
  *
- * Universal checkout page — handles:
- *  • Cart purchases (items from the marketplace)
- *  • Service bookings
- *  • Escrow initiation
+ * Universal checkout page � handles:
+ *  � Cart purchases (items from the marketplace)
+ *  � Service bookings
+ *  � Escrow initiation
  *
  * State is passed via React Router location.state:
  *  {
@@ -14,7 +14,7 @@
  *    deliveryFee: number,
  *    total: number,
  *    deliveryAddress: string,
- *    orderId: string,   (optional — generated here if not provided)
+ *    orderId: string,   (optional � generated here if not provided)
  *    context: 'cart' | 'service' | 'escrow'
  *  }
  */
@@ -72,7 +72,7 @@ export default function PaymentCheckout() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow p-8 text-center max-w-sm">
-          <div className="text-5xl mb-4">🛒</div>
+          <div className="text-5xl mb-4">??</div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">No items to pay for</h2>
           <p className="text-gray-500 mb-4">Please add items to your cart first.</p>
           <button
@@ -93,10 +93,10 @@ export default function PaymentCheckout() {
   const context     = state.context ?? 'cart';
   const description = state.description
     ?? (items.length > 0
-      ? `Bambeh Order #${orderId} — ${items.length} item(s)`
+      ? `Bambeh Order #${orderId} � ${items.length} item(s)`
       : `Bambeh Payment #${orderId}`);
 
-  // ── Called after CamPay confirms SUCCESSFUL ─────────────────────────────
+  // -- Called after CamPay confirms SUCCESSFUL -----------------------------
   async function handlePaymentSuccess(reference: string) {
     setOrderRef(reference);
 
@@ -128,12 +128,12 @@ export default function PaymentCheckout() {
     setSuccess(true);
   }
 
-  // ── Success screen ─────────────────────────────────────────────────────────
+  // -- Success screen ---------------------------------------------------------
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 p-6">
         <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm w-full">
-          <div className="text-6xl mb-4">🎉</div>
+          <div className="text-6xl mb-4">??</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Order Confirmed!</h2>
           <p className="text-gray-600 mb-1">Order ID: <span className="font-mono text-sm">{orderId}</span></p>
           <p className="text-gray-400 text-xs mb-6">Reference: {orderRef}</p>
@@ -222,7 +222,7 @@ export default function PaymentCheckout() {
 
               {state.deliveryAddress && (
                 <div className="mt-4 bg-teal-50 rounded-xl p-3">
-                  <p className="text-xs font-semibold text-gray-700 mb-1">📍 Delivery to:</p>
+                  <p className="text-xs font-semibold text-gray-700 mb-1">?? Delivery to:</p>
                   <p className="text-xs text-gray-600">{state.deliveryAddress}</p>
                 </div>
               )}

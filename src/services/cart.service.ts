@@ -1,12 +1,12 @@
-﻿/**
+/**
  * src/services/cart.service.ts
- * Bambeh Marketplace — Cart Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Cart Service
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// --- Types -------------------------------------------------------------------
 export interface CartItem {
   id: string;
   userId: string;
@@ -38,7 +38,7 @@ export interface CartActionResponse {
   error: string | null;
 }
 
-// ─── Get User Cart ───────────────────────────────────────────────────────────
+// --- Get User Cart -----------------------------------------------------------
 export async function getCart(userId: string): Promise<CartResponse> {
   try {
     const { data, error } = await supabase
@@ -73,7 +73,7 @@ export async function getCart(userId: string): Promise<CartResponse> {
   }
 }
 
-// ─── Add to Cart ─────────────────────────────────────────────────────────────
+// --- Add to Cart -------------------------------------------------------------
 export async function addToCart(
   userId: string,
   item: Omit<CartItem, "id" | "userId" | "addedAt">
@@ -126,7 +126,7 @@ export async function addToCart(
   }
 }
 
-// ─── Remove from Cart ────────────────────────────────────────────────────────
+// --- Remove from Cart --------------------------------------------------------
 export async function removeFromCart(
   userId: string,
   cartItemId: string
@@ -149,7 +149,7 @@ export async function removeFromCart(
   }
 }
 
-// ─── Update Quantity ─────────────────────────────────────────────────────────
+// --- Update Quantity ---------------------------------------------------------
 export async function updateCartQuantity(
   userId: string,
   cartItemId: string,
@@ -177,7 +177,7 @@ export async function updateCartQuantity(
   }
 }
 
-// ─── Clear Cart ──────────────────────────────────────────────────────────────
+// --- Clear Cart --------------------------------------------------------------
 export async function clearCart(userId: string): Promise<CartActionResponse> {
   try {
     const { error } = await supabase
@@ -196,7 +196,7 @@ export async function clearCart(userId: string): Promise<CartActionResponse> {
   }
 }
 
-// ─── Get Cart Summary ────────────────────────────────────────────────────────
+// --- Get Cart Summary --------------------------------------------------------
 export function computeCartSummary(items: CartItem[]): Cart {
   const totalXAF = items.reduce(
     (sum, item) => sum + item.priceXAF * item.quantity,
@@ -207,7 +207,7 @@ export function computeCartSummary(items: CartItem[]): Cart {
   return { items, totalItems, totalXAF };
 }
 
-// ─── Cart Count (lightweight) ────────────────────────────────────────────────
+// --- Cart Count (lightweight) ------------------------------------------------
 export async function getCartCount(userId: string): Promise<number> {
   try {
     const { count, error } = await supabase

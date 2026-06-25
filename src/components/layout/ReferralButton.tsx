@@ -1,5 +1,5 @@
-﻿/**
- * ReferralButton.tsx — Bambeh Marketplace
+/**
+ * ReferralButton.tsx � Bambeh Marketplace
  * FILE LOCATION: src/components/ReferralButton.tsx  (or wherever you had it)
  *
  * FIX FROM ORIGINAL:
@@ -24,12 +24,12 @@ export default function ReferralButton() {
   );
   const referralLink = `https://bambeh.cm/register?ref=${referralCode}`;
 
-  // ── copyLink closes HERE with }; — NOT after the return below ────────────
+  // -- copyLink closes HERE with }; � NOT after the return below ------------
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };  // ← THIS is where copyLink ends. Original had this brace at the very bottom.
+  };  // ? THIS is where copyLink ends. Original had this brace at the very bottom.
 
   return (
     <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg p-4 shadow-lg">

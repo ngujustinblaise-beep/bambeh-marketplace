@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TYPE DEFINITIONS FOR Bambeh MARKETPLACE
  * 
  * Complete type system for:

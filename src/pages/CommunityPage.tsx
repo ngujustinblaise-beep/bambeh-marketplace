@@ -1,12 +1,12 @@
-﻿/**
- * src/pages/CommunityPage.tsx — Bambeh Marketplace
+/**
+ * src/pages/CommunityPage.tsx � Bambeh Marketplace
  *
  * FIXED:
- *  ✅ Create Group opens an INLINE MODAL — no page redirect
- *  ✅ Created groups immediately appear in the list
- *  ✅ Share button is compact icon, never blocks UI
- *  ✅ Beautiful Unsplash group cover images
- *  ✅ West & Central Africa country codes in create form
+ *  ? Create Group opens an INLINE MODAL � no page redirect
+ *  ? Created groups immediately appear in the list
+ *  ? Share button is compact icon, never blocks UI
+ *  ? Beautiful Unsplash group cover images
+ *  ? West & Central Africa country codes in create form
  */
 
 import React, { useState } from 'react';
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 interface Group {
   id: string;
@@ -32,15 +32,15 @@ interface Group {
   isUserCreated?: boolean;
 }
 
-// ─── Demo groups with Unsplash covers ─────────────────────────────────────────
+// --- Demo groups with Unsplash covers -----------------------------------------
 
 const INITIAL_GROUPS: Group[] = [
   {
     id: '1',
-    name: 'Yaoundé Tech Entrepreneurs',
-    description: 'A community for tech founders and developers in Yaoundé to share resources and opportunities.',
+    name: 'Yaound� Tech Entrepreneurs',
+    description: 'A community for tech founders and developers in Yaound� to share resources and opportunities.',
     category: 'Technology',
-    emoji: '💻',
+    emoji: '??',
     coverUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&q=80',
     members: 1240,
     isJoined: false,
@@ -51,7 +51,7 @@ const INITIAL_GROUPS: Group[] = [
     name: 'Women in Business Cameroon',
     description: 'Supporting and empowering women entrepreneurs across all 10 regions of Cameroon.',
     category: 'Business',
-    emoji: '👩‍💼',
+    emoji: '?????',
     coverUrl: 'https://images.unsplash.com/photo-1573164574572-cb89e39749b4?w=400&q=80',
     members: 3456,
     isJoined: true,
@@ -62,7 +62,7 @@ const INITIAL_GROUPS: Group[] = [
     name: 'Douala Marketplace Buyers',
     description: 'Connect with trusted buyers and sellers in Douala. Share deals and offers daily.',
     category: 'Commerce',
-    emoji: '🛒',
+    emoji: '??',
     coverUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&q=80',
     members: 892,
     isJoined: false,
@@ -73,7 +73,7 @@ const INITIAL_GROUPS: Group[] = [
     name: 'Agriculture & Farming Network',
     description: 'For farmers, agro-processors, and agricultural entrepreneurs across Cameroon.',
     category: 'Agriculture',
-    emoji: '🌾',
+    emoji: '??',
     coverUrl: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400&q=80',
     members: 567,
     isJoined: false,
@@ -84,7 +84,7 @@ const INITIAL_GROUPS: Group[] = [
     name: 'Bambeh Flash Deal Hunters',
     description: 'Get notified first about flash deals, bulk buys, and exclusive offers on Bambeh.',
     category: 'Deals',
-    emoji: '⚡',
+    emoji: '?',
     coverUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400&q=80',
     members: 2103,
     isJoined: true,
@@ -95,7 +95,7 @@ const INITIAL_GROUPS: Group[] = [
     name: 'Bamenda Buyers & Sellers',
     description: 'Local trade community for Bamenda and the North-West Region. Post items, find deals.',
     category: 'Commerce',
-    emoji: '🏪',
+    emoji: '??',
     coverUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=400&q=80',
     members: 740,
     isJoined: false,
@@ -106,17 +106,17 @@ const INITIAL_GROUPS: Group[] = [
 const CATEGORIES = ['All', 'Technology', 'Business', 'Commerce', 'Agriculture', 'Deals', 'Education', 'Health'];
 
 const DIAL_CODES = [
-  { code: '+237', flag: '🇨🇲', name: 'Cameroun' },
-  { code: '+234', flag: '🇳🇬', name: 'Nigeria' },
-  { code: '+233', flag: '🇬🇭', name: 'Ghana' },
-  { code: '+221', flag: '🇸🇳', name: 'Sénégal' },
-  { code: '+225', flag: '🇨🇮', name: "Côte d'Ivoire" },
-  { code: '+241', flag: '🇬🇦', name: 'Gabon' },
-  { code: '+242', flag: '🇨🇬', name: 'Congo' },
-  { code: '+243', flag: '🇨🇩', name: 'RD Congo' },
+  { code: '+237', flag: '????', name: 'Cameroun' },
+  { code: '+234', flag: '????', name: 'Nigeria' },
+  { code: '+233', flag: '????', name: 'Ghana' },
+  { code: '+221', flag: '????', name: 'S�n�gal' },
+  { code: '+225', flag: '????', name: "C�te d'Ivoire" },
+  { code: '+241', flag: '????', name: 'Gabon' },
+  { code: '+242', flag: '????', name: 'Congo' },
+  { code: '+243', flag: '????', name: 'RD Congo' },
 ];
 
-// ─── Share Modal ──────────────────────────────────────────────────────────────
+// --- Share Modal --------------------------------------------------------------
 
 function ShareModal({ group, onClose }: { group: Group; onClose: () => void }) {
   const lang = useLang();
@@ -130,7 +130,7 @@ function ShareModal({ group, onClose }: { group: Group; onClose: () => void }) {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const waText = `Join "${group.name}" on Bambeh Community!\n\n${group.description}\n\n👇 Join here:\n${url}`;
+  const waText = `Join "${group.name}" on Bambeh Community!\n\n${group.description}\n\n?? Join here:\n${url}`;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
@@ -162,7 +162,7 @@ function ShareModal({ group, onClose }: { group: Group; onClose: () => void }) {
   );
 }
 
-// ─── Create Group Modal ───────────────────────────────────────────────────────
+// --- Create Group Modal -------------------------------------------------------
 
 function CreateGroupModal({ onClose, onCreated }: {
   onClose: () => void;
@@ -179,8 +179,8 @@ function CreateGroupModal({ onClose, onCreated }: {
 
   const CAT_OPTIONS = ['Business', 'Technology', 'Commerce', 'Agriculture', 'Education', 'Health', 'Arts', 'Sports', 'Finance', 'Other'];
   const CAT_EMOJIS: Record<string, string> = {
-    Business: '💼', Technology: '💻', Commerce: '🛒', Agriculture: '🌾',
-    Education: '📚', Health: '🏥', Arts: '🎨', Sports: '⚽', Finance: '💰', Other: '🌍',
+    Business: '??', Technology: '??', Commerce: '??', Agriculture: '??',
+    Education: '??', Health: '??', Arts: '??', Sports: '?', Finance: '??', Other: '??',
   };
 
   const COVER_URLS: Record<string, string> = {
@@ -206,7 +206,7 @@ function CreateGroupModal({ onClose, onCreated }: {
       name: name.trim(),
       description: description.trim(),
       category,
-      emoji: CAT_EMOJIS[category] || '🌍',
+      emoji: CAT_EMOJIS[category] || '??',
       coverUrl: COVER_URLS[category],
       members: 1,
       isJoined: true,
@@ -354,7 +354,7 @@ function CreateGroupModal({ onClose, onCreated }: {
                 <div className="absolute inset-0 bg-black/30"/>
                 <div className="absolute bottom-2 left-3 text-white">
                   <p className="font-bold text-sm">{CAT_EMOJIS[category]} {name || 'Group Name'}</p>
-                  <p className="text-xs text-white/80">{category} · {isPublic ? 'Public' : 'Private'}</p>
+                  <p className="text-xs text-white/80">{category} � {isPublic ? 'Public' : 'Private'}</p>
                 </div>
               </div>
             </div>
@@ -378,7 +378,7 @@ function CreateGroupModal({ onClose, onCreated }: {
   );
 }
 
-// ─── GroupCard ────────────────────────────────────────────────────────────────
+// --- GroupCard ----------------------------------------------------------------
 
 function GroupCard({ group, onShare }: { group: Group; onShare: (g: Group) => void }) {
   const navigate = useNavigate();
@@ -447,7 +447,7 @@ function GroupCard({ group, onShare }: { group: Group; onShare: (g: Group) => vo
                 : 'bg-gradient-to-r from-teal-500 to-teal-700 text-white shadow-sm shadow-teal-500/20'
             }`}
           >
-            {joined ? '✓ Joined' : 'Join'}
+            {joined ? '? Joined' : 'Join'}
           </button>
         </div>
       </div>
@@ -455,7 +455,7 @@ function GroupCard({ group, onShare }: { group: Group; onShare: (g: Group) => vo
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// --- Main Page ----------------------------------------------------------------
 
 export default function CommunityPage() {
   const [groups,       setGroups]       = useState<Group[]>(INITIAL_GROUPS);
@@ -474,7 +474,7 @@ export default function CommunityPage() {
   const handleGroupCreated = (newGroup: Group) => {
     setGroups(prev => [newGroup, ...prev]);
     setShowCreate(false);
-    setToast(`"${newGroup.name}" created successfully! 🎉`);
+    setToast(`"${newGroup.name}" created successfully! ??`);
     setTimeout(() => setToast(''), 4000);
   };
 
@@ -492,7 +492,7 @@ export default function CommunityPage() {
       <div className="bg-gradient-to-br from-teal-600 to-teal-800 px-4 pt-5 pb-7">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="text-white font-bold text-2xl">Community 👥</h1>
+            <h1 className="text-white font-bold text-2xl">Community ??</h1>
             <p className="text-teal-100 text-sm mt-0.5">Connect, trade, and grow together</p>
           </div>
         </div>
@@ -539,13 +539,13 @@ export default function CommunityPage() {
           ))}
         </div>
 
-        {/* ✅ CREATE GROUP BUTTON — opens modal, never redirects */}
+        {/* ? CREATE GROUP BUTTON � opens modal, never redirects */}
         <button
           onClick={() => setShowCreate(true)}
           className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">➕</div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">?</div>
             <div className="text-left">
               <p className="font-bold text-sm">Create a Group</p>
               <p className="text-teal-100 text-xs">Build your own community on Bambeh</p>
@@ -557,7 +557,7 @@ export default function CommunityPage() {
         {/* Group list */}
         {filtered.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-4xl mb-3">🔍</p>
+            <p className="text-4xl mb-3">??</p>
             <p className="font-semibold text-gray-600 dark:text-gray-400">No groups found</p>
             <button onClick={() => { setSearch(''); setActiveCategory('All'); }}
               className="mt-3 text-sm text-teal-600 font-semibold">
@@ -575,7 +575,7 @@ export default function CommunityPage() {
           className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🛒</span>
+            <span className="text-2xl">??</span>
             <div>
               <p className="font-bold text-sm text-gray-900 dark:text-white">Group Buying</p>
               <p className="text-xs text-gray-500">Buy together, save more</p>

@@ -1,5 +1,5 @@
-﻿/**
- * src/pages/ShareMyVoice.tsx — Bambeh Marketplace
+/**
+ * src/pages/ShareMyVoice.tsx � Bambeh Marketplace
  *
  * NEW PAGE: User experience feedback form.
  * Accessible from the "Share My Voice" menu item.
@@ -25,10 +25,10 @@ const CATEGORIES: { value: Category; label: string }[] = [
 ];
 
 const MOOD_CONFIG = [
-  { value: "love" as Mood, emoji: "😍", label: "Love it!",  color: "bg-green-100 border-green-400 text-green-700" },
-  { value: "good" as Mood, emoji: "😊", label: "Good",      color: "bg-teal-100 border-teal-400 text-teal-700" },
-  { value: "okay" as Mood, emoji: "😐", label: "Okay",      color: "bg-amber-100 border-amber-400 text-amber-700" },
-  { value: "bad"  as Mood, emoji: "😞", label: "Needs work",color: "bg-red-100 border-red-400 text-red-700" },
+  { value: "love" as Mood, emoji: "??", label: "Love it!",  color: "bg-green-100 border-green-400 text-green-700" },
+  { value: "good" as Mood, emoji: "??", label: "Good",      color: "bg-teal-100 border-teal-400 text-teal-700" },
+  { value: "okay" as Mood, emoji: "??", label: "Okay",      color: "bg-amber-100 border-amber-400 text-amber-700" },
+  { value: "bad"  as Mood, emoji: "??", label: "Needs work",color: "bg-red-100 border-red-400 text-red-700" },
 ];
 
 export default function ShareMyVoice() {
@@ -89,7 +89,7 @@ export default function ShareMyVoice() {
         submitted_at: feedback.submitted_at,
       });
     } catch {
-      // Silent — localStorage backup is enough for now
+      // Silent � localStorage backup is enough for now
     }
 
     setSubmitting(false);
@@ -102,11 +102,11 @@ export default function ShareMyVoice() {
         <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6">
           <CheckCircle className="w-14 h-14 text-green-500" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Thank You! 🎉</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Thank You! ??</h2>
         <p className="text-gray-500 mb-2 max-w-xs">
           Your feedback has been received. We read every single message and use it to make Bambeh better for everyone in Cameroon.
         </p>
-        <p className="text-sm text-teal-600 font-semibold mb-8">— The Bambeh Team 💚</p>
+        <p className="text-sm text-teal-600 font-semibold mb-8">� The Bambeh Team ??</p>
         <button onClick={() => navigate(-1)}
           className="bg-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-teal-700 transition">
           Go Back
@@ -242,7 +242,7 @@ export default function ShareMyVoice() {
           {/* Name + Email (optional) */}
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
             <p className="font-semibold text-gray-800 text-sm">
-              Contact <span className="text-gray-400 font-normal">(optional — for follow-up only)</span>
+              Contact <span className="text-gray-400 font-normal">(optional � for follow-up only)</span>
             </p>
             <input
               value={name}

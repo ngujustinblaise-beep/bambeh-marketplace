@@ -1,4 +1,4 @@
-﻿// Bambeh Marketplace - Shared Types v6 (Final)
+// Bambeh Marketplace - Shared Types v6 (Final)
 
 export type UserRole         = 'buyer' | 'seller' | 'admin' | 'user' | 'vendor' | string;
 export type OrderStatus      = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
@@ -144,7 +144,7 @@ export interface Product {
   type?: string;
 }
 
-// FIX: was `extends Product  | string;` — restored opening brace
+// FIX: was `extends Product  | string;` � restored opening brace
 export interface MarketplaceItem extends Product {
   quantity?: number;
   condition?: ItemCondition;

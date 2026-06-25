@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/pages/vendor/PrioritySupport.tsx
- * Bambeh Marketplace â€” Priority Support Page
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Priority Support Page
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -52,8 +52,8 @@ const PrioritySupport: React.FC = () => {
   if (submitted) return (
     <div className="max-w-lg mx-auto p-4 text-center py-16">
       <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Ticket envoyÃ©!</h2>
-      <p className="text-sm text-gray-500 mb-6">Notre Ã©quipe Premium vous rÃ©pondra dans les 2 heures ouvrables.</p>
+      <h2 className="text-xl font-bold text-gray-900 mb-2">Ticket envoyé!</h2>
+      <p className="text-sm text-gray-500 mb-6">Notre équipe Premium vous répondra dans les 2 heures ouvrables.</p>
       <button type="button" onClick={() => navigate(-1)} className="px-6 py-3 bg-teal-600 text-white rounded-xl font-medium">Retour</button>
     </div>
   );
@@ -69,9 +69,9 @@ const PrioritySupport: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        {[{ icon: Clock, label: "RÃ©ponse < 2h", color: "text-blue-600 bg-blue-50" },
-          { icon: Headphones, label: "Agent dÃ©diÃ©", color: "text-teal-600 bg-teal-50" },
-          { icon: CheckCircle, label: "RÃ©solution garantie", color: "text-green-600 bg-green-50" }
+        {[{ icon: Clock, label: "Réponse < 2h", color: "text-blue-600 bg-blue-50" },
+          { icon: Headphones, label: "Agent dédié", color: "text-teal-600 bg-teal-50" },
+          { icon: CheckCircle, label: "Résolution garantie", color: "text-green-600 bg-green-50" }
         ].map((item) => (
           <div key={item.label} className={`rounded-xl p-3 text-center ${item.color.split(" ")[1]}`}>
             <item.icon className={`w-5 h-5 mx-auto mb-1 ${item.color.split(" ")[0]}`} />
@@ -82,19 +82,19 @@ const PrioritySupport: React.FC = () => {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">CatÃ©gorie</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
           <select value={category} onChange={(e) => setCategory(e.target.value as TicketCategory)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500 bg-white">
             <option value="payment">Paiement & Revenus</option>
-            <option value="account">Compte & VÃ©rification</option>
+            <option value="account">Compte & Vérification</option>
             <option value="listing">Annonces</option>
             <option value="order">Commandes</option>
-            <option value="technical">ProblÃ¨me technique</option>
+            <option value="technical">Problème technique</option>
             <option value="other">Autre</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">PrioritÃ©</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Priorité</label>
           <div className="grid grid-cols-4 gap-2">
             {(["low", "medium", "high", "urgent"] as TicketPriority[]).map((p) => (
               <button key={p} type="button" onClick={() => setPriority(p)}
@@ -106,7 +106,7 @@ const PrioritySupport: React.FC = () => {
                       "bg-gray-500 border-gray-500 text-white"
                     : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
                 }`}>
-                {p === "low" ? "Faible" : p === "medium" ? "Moyen" : p === "high" ? "Ã‰levÃ©" : "Urgent"}
+                {p === "low" ? "Faible" : p === "medium" ? "Moyen" : p === "high" ? "Élevé" : "Urgent"}
               </button>
             ))}
           </div>
@@ -114,12 +114,12 @@ const PrioritySupport: React.FC = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Sujet *</label>
-          <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="DÃ©crivez briÃ¨vement votre problÃ¨me" className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500" maxLength={100} />
+          <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Décrivez brièvement votre problème" className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500" maxLength={100} />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Message dÃ©taillÃ© *</label>
-          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={5} placeholder="DÃ©crivez votre problÃ¨me en dÃ©tail. Incluez les IDs de commande ou d'annonce si pertinent." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500 resize-none" maxLength={2000} />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Message détaillé *</label>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={5} placeholder="Décrivez votre problème en détail. Incluez les IDs de commande ou d'annonce si pertinent." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500 resize-none" maxLength={2000} />
           <p className="text-xs text-gray-400 text-right mt-0.5">{message.length}/2000</p>
         </div>
 

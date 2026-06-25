@@ -1,13 +1,13 @@
-﻿/**
- * src/pages/Cart.tsx — Bambeh Marketplace
+/**
+ * src/pages/Cart.tsx � Bambeh Marketplace
  *
  * FIXED:
- *  ✅ Uses unified useCamPay hook (initPayment / status / reset)
- *  ✅ "Pay with Mobile Money" button works directly from the cart
- *  ✅ "Pay via Escrow" navigates to /payment/checkout with escrow context
- *  ✅ "More Payment Options" navigates to /payment/checkout with cart context
- *  ✅ Coins credited / order saved only AFTER CamPay confirms SUCCESSFUL
- *  ✅ All cart state preserved during payment
+ *  ? Uses unified useCamPay hook (initPayment / status / reset)
+ *  ? "Pay with Mobile Money" button works directly from the cart
+ *  ? "Pay via Escrow" navigates to /payment/checkout with escrow context
+ *  ? "More Payment Options" navigates to /payment/checkout with cart context
+ *  ? Coins credited / order saved only AFTER CamPay confirms SUCCESSFUL
+ *  ? All cart state preserved during payment
  */
 
 import { useState, useCallback } from 'react';
@@ -22,7 +22,7 @@ import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from '@/h
 import { supabase } from '@/lib/supabase';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ------------------------------------------------------------------
 
 const BAMBEH_FEE_RATE = 0.01;
 const GOV_TAX_RATE    = 0.00002;
@@ -37,7 +37,7 @@ function calcFees(subtotal: number) {
 
 const fmt = (n: number) => n.toLocaleString('fr-CM');
 
-// ─── Section icon map ──────────────────────────────────────────────────────────
+// --- Section icon map ----------------------------------------------------------
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   'farm-fresh':   <Leaf  className="w-3 h-3 text-green-600" />,
@@ -46,7 +46,7 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
   'marketplace':  <Tag   className="w-3 h-3 text-teal-600" />,
 };
 
-// ─── FeeRow ────────────────────────────────────────────────────────────────────
+// --- FeeRow --------------------------------------------------------------------
 
 function FeeRow({
   label, amount, muted = false, bold = false, tooltip,
@@ -77,7 +77,7 @@ function FeeRow({
   );
 }
 
-// ─── Mobile Money Modal ────────────────────────────────────────────────────────
+// --- Mobile Money Modal --------------------------------------------------------
 
 function MobileMoneyModal({
   total,
@@ -138,7 +138,7 @@ function MobileMoneyModal({
           {status === 'success' && (
             <div className="flex flex-col items-center gap-2 py-4">
               <CheckCircle2 className="w-12 h-12 text-green-500" />
-              <p className="font-semibold text-gray-800">Payment Confirmed! 🎉</p>
+              <p className="font-semibold text-gray-800">Payment Confirmed! ??</p>
               <p className="text-xs text-gray-500 text-center">Your order has been placed.</p>
               {payRef && (
                 <p className="text-xs bg-gray-100 px-3 py-1 rounded-full font-mono text-gray-600">
@@ -159,8 +159,8 @@ function MobileMoneyModal({
               <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-3 py-2 text-xs font-semibold">
                 <Clock className="w-3.5 h-3.5" />
                 {countdown > 0
-                  ? `Waiting… ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')}`
-                  : 'Processing…'}
+                  ? `Waiting� ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')}`
+                  : 'Processing�'}
               </div>
             </div>
           )}
@@ -169,7 +169,7 @@ function MobileMoneyModal({
           {status === 'submitting' && (
             <div className="flex flex-col items-center gap-3 py-6">
               <Loader2 className="w-10 h-10 text-teal-600 animate-spin" />
-              <p className="text-sm text-gray-600 text-center">Sending payment request to your phone…</p>
+              <p className="text-sm text-gray-600 text-center">Sending payment request to your phone�</p>
             </div>
           )}
 
@@ -188,7 +188,7 @@ function MobileMoneyModal({
             </div>
           )}
 
-          {/* IDLE / ERROR — show phone input */}
+          {/* IDLE / ERROR � show phone input */}
           {(status === 'idle' || status === 'failed' || status === 'timeout') && (
             <>
               {/* Phone input */}
@@ -222,7 +222,7 @@ function MobileMoneyModal({
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-orange-100 text-orange-800'
                     }`}>
-                      {operator === 'mtn' ? '📶 MTN' : '🟠 Orange'}
+                      {operator === 'mtn' ? '?? MTN' : '?? Orange'}
                     </span>
                   )}
                 </div>
@@ -258,7 +258,7 @@ function MobileMoneyModal({
   );
 }
 
-// ─── EscrowModal ──────────────────────────────────────────────────────────────
+// --- EscrowModal --------------------------------------------------------------
 
 function EscrowModal({ total, onClose, onConfirm }: {
   total: number; onClose: () => void; onConfirm: () => void;
@@ -277,7 +277,7 @@ function EscrowModal({ total, onClose, onConfirm }: {
 
         <div className="px-6 py-5 space-y-4">
           <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-2 text-sm text-blue-800">
-            <p className="font-semibold">🔒 How Escrow Works:</p>
+            <p className="font-semibold">?? How Escrow Works:</p>
             <p>1. Your payment of <strong>{fmt(total)} XAF</strong> is held securely by Bambeh.</p>
             <p>2. The vendor prepares and ships your order.</p>
             <p>3. You confirm receipt. Only then is payment released to the vendor.</p>
@@ -298,7 +298,7 @@ function EscrowModal({ total, onClose, onConfirm }: {
   );
 }
 
-// ─── Main Cart Component ───────────────────────────────────────────────────────
+// --- Main Cart Component -------------------------------------------------------
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -313,10 +313,10 @@ export default function Cart() {
 
   // Build a description of what's in the cart
   const cartDescription = items.length === 1
-    ? `Bambeh — ${items[0].title}`
-    : `Bambeh Order — ${items.length} items`;
+    ? `Bambeh � ${items[0].title}`
+    : `Bambeh Order � ${items.length} items`;
 
-  // ── useCamPay hook ───────────────────────────────────────────────────────────
+  // -- useCamPay hook -----------------------------------------------------------
   const { status, errorMsg, reference, countdown, initPayment, reset } = useCamPay({
     onSuccess: async (ref) => {
       // Save order to Supabase after confirmed payment
@@ -335,14 +335,15 @@ export default function Cart() {
           paid_at:      new Date().toISOString(),
         });
       } catch (e) {
-        // Non-critical — payment succeeded even if order record fails
+        // Non-critical � payment succeeded even if order record fails
         console.error('Order save error:', e);
       }
       clearCart();
+      setShowMobileMoney(false);
     },
   });
 
-  // ── Initiate mobile money payment ────────────────────────────────────────────
+  // -- Initiate mobile money payment --------------------------------------------
   const handlePay = useCallback(async (phone: string) => {
     await initPayment({
       amount:      total,
@@ -357,7 +358,7 @@ export default function Cart() {
     setShowMobileMoney(true);
   }
 
-  // ── Escrow: navigate to checkout page with escrow context ────────────────────
+  // -- Escrow: navigate to checkout page with escrow context --------------------
   const handleEscrowConfirm = () => {
     setShowEscrow(false);
     navigate('/payment/checkout', {
@@ -372,7 +373,7 @@ export default function Cart() {
     });
   };
 
-  // ── "More Payment Options" → full checkout page ──────────────────────────────
+  // -- "More Payment Options" ? full checkout page ------------------------------
   function goToCheckout() {
     navigate('/payment/checkout', {
       state: {
@@ -389,10 +390,10 @@ export default function Cart() {
   // Close modal if payment succeeded
   const isSuccess = status === 'success';
   if (isSuccess && showMobileMoney && items.length === 0) {
-    // cart was cleared by onSuccess — close modal and show success state
+    // cart was cleared by onSuccess � close modal and show success state
   }
 
-  // ── Empty state ───────────────────────────────────────────────────────────────
+  // -- Empty state ---------------------------------------------------------------
   if (items.length === 0 && !isSuccess && !escrowDone) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
@@ -403,10 +404,10 @@ export default function Cart() {
         </p>
         <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
           {[
-            { label: '🛒 Marketplace', path: '/marketplace' },
-            { label: '🌿 Farm Fresh',  path: '/farm-fresh' },
-            { label: '👥 Group Deals', path: '/group-buying' },
-            { label: '⚡ Flash Deals', path: '/deals' },
+            { label: '?? Marketplace', path: '/marketplace' },
+            { label: '?? Farm Fresh',  path: '/farm-fresh' },
+            { label: '?? Group Deals', path: '/group-buying' },
+            { label: '? Flash Deals', path: '/deals' },
           ].map(({ label, path }) => (
             <button key={path} onClick={() => navigate(path)}
               className="py-2.5 text-sm border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition">
@@ -418,12 +419,12 @@ export default function Cart() {
     );
   }
 
-  // ── Order success ──────────────────────────────────────────────────────────────
+  // -- Order success --------------------------------------------------------------
   if ((isSuccess && items.length === 0) || escrowDone) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
         <CheckCircle2 className="w-20 h-20 text-green-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Placed! 🎉</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Placed! ??</h2>
         <p className="text-gray-500 mb-1 text-sm text-center">
           {escrowDone
             ? 'Your payment is safely held in escrow. The vendor has been notified.'
@@ -448,7 +449,7 @@ export default function Cart() {
     );
   }
 
-  // ── Main render ────────────────────────────────────────────────────────────────
+  // -- Main render ----------------------------------------------------------------
   return (
     <>
       <div className="min-h-screen bg-gray-50 p-4 pb-8">
@@ -469,7 +470,7 @@ export default function Cart() {
                     ? <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                     : (
                       <div className="w-full h-full flex items-center justify-center text-2xl">
-                        {item.listingType === 'farm-fresh' ? '🌿' : item.listingType === 'vehicle' ? '🚗' : '🛍️'}
+                        {item.listingType === 'farm-fresh' ? '??' : item.listingType === 'vehicle' ? '??' : '???'}
                       </div>
                     )
                   }
@@ -534,14 +535,14 @@ export default function Cart() {
 
           {/* Payment options */}
           <div className="space-y-3">
-            {/* Mobile Money — direct from cart */}
+            {/* Mobile Money � direct from cart */}
             <button
               onClick={openMobileMoney}
               disabled={status === 'submitting' || status === 'waiting'}
               className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-md shadow-teal-100 transition"
             >
               {(status === 'submitting' || status === 'waiting')
-                ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing…</>
+                ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing�</>
                 : <><Smartphone className="w-5 h-5" /> Pay with Mobile Money</>}
             </button>
 
@@ -594,6 +595,7 @@ export default function Cart() {
     </>
   );
 }
+
 
 
 

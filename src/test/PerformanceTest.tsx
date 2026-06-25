@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/test/PerformanceTest.tsx
- * Bambeh Marketplace — Performance Test Component (Dev Only)
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Performance Test Component (Dev Only)
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -107,7 +107,7 @@ const PerformanceTest: React.FC = () => {
             <div key={result.name} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className={result.passed ? "text-green-400" : "text-red-400"}>
-                  {result.passed ? "✓" : "✗"}
+                  {result.passed ? "?" : "?"}
                 </span>
                 <span className="text-gray-300">{result.name}</span>
               </div>
@@ -121,7 +121,7 @@ const PerformanceTest: React.FC = () => {
             {allPassed ? (
               <>
                 <CheckCircle className="w-4 h-4 text-green-400" />
-                <span className="text-green-400 font-bold">All tests passed ✦</span>
+                <span className="text-green-400 font-bold">All tests passed ?</span>
               </>
             ) : (
               <span className="text-red-400 font-bold">Some tests failed</span>

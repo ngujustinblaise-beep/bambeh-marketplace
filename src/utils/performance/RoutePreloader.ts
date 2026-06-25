@@ -1,12 +1,12 @@
-﻿/**
+/**
  * src/utils/performance/RoutePreloader.ts
- * Bambeh Marketplace — Route Preloading for Low-Latency Navigation
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Route Preloading for Low-Latency Navigation
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 export interface RouteModule {
   path: string;
   loader: () => Promise<unknown>;
@@ -20,12 +20,12 @@ export interface PreloadResult {
   error?: string;
 }
 
-// ─── Internal State ───────────────────────────────────────────────────────────
+// --- Internal State -----------------------------------------------------------
 const preloaded = new Set<string>();
 const preloadQueue: RouteModule[] = [];
 let isRunning = false;
 
-// ─── Preload a Single Route ───────────────────────────────────────────────────
+// --- Preload a Single Route ---------------------------------------------------
 export async function preloadRoute(route: RouteModule): Promise<PreloadResult> {
   if (preloaded.has(route.path)) {
     return { path: route.path, success: true, durationMs: 0 };
@@ -45,13 +45,13 @@ export async function preloadRoute(route: RouteModule): Promise<PreloadResult> {
     const durationMs = performance.now() - start;
     const error = err instanceof Error ? err.message : String(err);
 
-    logger.warn(`[RoutePreloader] Failed: ${route.path} — ${error}`);
+    logger.warn(`[RoutePreloader] Failed: ${route.path} � ${error}`);
 
     return { path: route.path, success: false, durationMs, error };
   }
 }
 
-// ─── Queue-Based Preloading ───────────────────────────────────────────────────
+// --- Queue-Based Preloading ---------------------------------------------------
 export function queueRoutePreload(route: RouteModule): void {
   if (preloaded.has(route.path)) return;
 
@@ -61,7 +61,7 @@ export function queueRoutePreload(route: RouteModule): void {
   }
 }
 
-// ─── Process Queue ────────────────────────────────────────────────────────────
+// --- Process Queue ------------------------------------------------------------
 async function processQueue(): Promise<void> {
   if (isRunning || preloadQueue.length === 0) return;
   isRunning = true;
@@ -84,7 +84,7 @@ async function processQueue(): Promise<void> {
   isRunning = false;
 }
 
-// ─── Start Idle Preloading ────────────────────────────────────────────────────
+// --- Start Idle Preloading ----------------------------------------------------
 export function startIdlePreloading(routes: RouteModule[]): void {
   for (const route of routes) {
     queueRoutePreload(route);
@@ -107,7 +107,7 @@ export function startIdlePreloading(routes: RouteModule[]): void {
   }
 }
 
-// ─── Preload on Hover ─────────────────────────────────────────────────────────
+// --- Preload on Hover ---------------------------------------------------------
 export function preloadOnHover(
   element: HTMLElement,
   loader: () => Promise<unknown>,
@@ -128,18 +128,18 @@ export function preloadOnHover(
   };
 }
 
-// ─── Check if Preloaded ───────────────────────────────────────────────────────
+// --- Check if Preloaded -------------------------------------------------------
 export function isRoutePreloaded(path: string): boolean {
   return preloaded.has(path);
 }
 
-// ─── Clear Preload Cache ──────────────────────────────────────────────────────
+// --- Clear Preload Cache ------------------------------------------------------
 export function clearPreloadCache(): void {
   preloaded.clear();
   preloadQueue.length = 0;
 }
 
-// ─── Bambeh Core Routes ───────────────────────────────────────────────────────
+// --- Bambeh Core Routes -------------------------------------------------------
 export const BAMBEH_CORE_ROUTES: RouteModule[] = [
   {
     path: "/",

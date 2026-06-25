@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/pages/admin/ResolveDisputePage.tsx
- * Bambeh Marketplace â€” Admin Dispute Resolution
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Admin Dispute Resolution
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -29,10 +29,10 @@ interface Dispute {
 
 const STATUS_CFG: Record<DisputeStatus, { label: string; color: string; icon: React.ElementType }> = {
   open:             { label: "Ouvert",               color: "text-red-600 bg-red-50 border-red-200",      icon: AlertTriangle },
-  under_review:     { label: "En rÃ©vision",          color: "text-yellow-600 bg-yellow-50 border-yellow-200", icon: Clock },
-  resolved_buyer:   { label: "RÃ©solu â†’ Acheteur",    color: "text-blue-600 bg-blue-50 border-blue-200",   icon: CheckCircle },
-  resolved_seller:  { label: "RÃ©solu â†’ Vendeur",     color: "text-teal-600 bg-teal-50 border-teal-200",   icon: CheckCircle },
-  closed:           { label: "FermÃ©",                color: "text-gray-500 bg-gray-100 border-gray-200",  icon: XCircle },
+  under_review:     { label: "En révision",          color: "text-yellow-600 bg-yellow-50 border-yellow-200", icon: Clock },
+  resolved_buyer:   { label: "Résolu ? Acheteur",    color: "text-blue-600 bg-blue-50 border-blue-200",   icon: CheckCircle },
+  resolved_seller:  { label: "Résolu ? Vendeur",     color: "text-teal-600 bg-teal-50 border-teal-200",   icon: CheckCircle },
+  closed:           { label: "Fermé",                color: "text-gray-500 bg-gray-100 border-gray-200",  icon: XCircle },
 };
 
 function DisputeBadge({ status }: { status: DisputeStatus }) {
@@ -72,8 +72,8 @@ const ResolveDisputePage: React.FC = () => {
           orderId: row.order_id as string,
           buyerId: row.buyer_id as string,
           sellerId: row.seller_id as string,
-          buyerName: (row.buyer_name as string) ?? "â€”",
-          sellerName: (row.seller_name as string) ?? "â€”",
+          buyerName: (row.buyer_name as string) ?? "—",
+          sellerName: (row.seller_name as string) ?? "—",
           reason: row.reason as string,
           description: row.description as string,
           amountXAF: row.amount_xaf as number,
@@ -130,7 +130,7 @@ const ResolveDisputePage: React.FC = () => {
     <div className="space-y-4 p-4">
       <div className="flex items-center gap-2">
         <Scale className="w-5 h-5 text-teal-600" />
-        <h1 className="text-lg font-bold text-gray-900">RÃ©solution des Litiges</h1>
+        <h1 className="text-lg font-bold text-gray-900">Résolution des Litiges</h1>
         <span className="text-sm text-gray-400">({filtered.length})</span>
         <button type="button" onClick={load} className="ml-auto p-1.5 hover:bg-gray-100 rounded-lg">
           <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? "animate-spin" : ""}`} />
@@ -155,7 +155,7 @@ const ResolveDisputePage: React.FC = () => {
         {loading ? (
           <div className="py-12 text-center"><RefreshCw className="w-5 h-5 text-gray-300 animate-spin mx-auto mb-2" /><p className="text-sm text-gray-400">Chargement...</p></div>
         ) : filtered.length === 0 ? (
-          <div className="py-12 text-center"><Scale className="w-8 h-8 text-gray-200 mx-auto mb-2" /><p className="text-sm text-gray-400">Aucun litige trouvÃ©</p></div>
+          <div className="py-12 text-center"><Scale className="w-8 h-8 text-gray-200 mx-auto mb-2" /><p className="text-sm text-gray-400">Aucun litige trouvé</p></div>
         ) : (
           <div className="divide-y divide-gray-50">
             {filtered.map((d) => (
@@ -181,8 +181,8 @@ const ResolveDisputePage: React.FC = () => {
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSelected(null)} />
           <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl z-50 p-5 max-w-lg mx-auto space-y-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-gray-900">DÃ©tail du litige</h3>
-              <button type="button" onClick={() => setSelected(null)} className="text-gray-400">âœ•</button>
+              <h3 className="font-bold text-gray-900">Détail du litige</h3>
+              <button type="button" onClick={() => setSelected(null)} className="text-gray-400">?</button>
             </div>
             <div className="space-y-2 text-sm bg-gray-50 rounded-xl p-3">
               <div className="flex justify-between"><span className="text-gray-500">Statut</span><DisputeBadge status={selected.status} /></div>
@@ -195,8 +195,8 @@ const ResolveDisputePage: React.FC = () => {
             {selected.status !== "closed" && selected.status !== "resolved_buyer" && selected.status !== "resolved_seller" && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">DÃ©cision & Notes</label>
-                  <textarea value={resolution} onChange={(e) => setResolution(e.target.value)} placeholder="Expliquez la dÃ©cision prise..." rows={3} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500 resize-none" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Décision & Notes</label>
+                  <textarea value={resolution} onChange={(e) => setResolution(e.target.value)} placeholder="Expliquez la décision prise..." rows={3} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500 resize-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button type="button" onClick={() => resolve("resolved_buyer")} disabled={submitting} className="py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-1 disabled:opacity-60">
@@ -209,7 +209,7 @@ const ResolveDisputePage: React.FC = () => {
                   </button>
                 </div>
                 <button type="button" onClick={() => resolve("closed")} disabled={submitting} className="w-full py-2 border border-gray-300 text-gray-600 rounded-xl text-sm hover:bg-gray-50 transition-colors">
-                  Fermer sans dÃ©cision
+                  Fermer sans décision
                 </button>
               </div>
             )}

@@ -1,4 +1,4 @@
-﻿export interface LocationDetails {
+export interface LocationDetails {
   region?: string;
   city?: string;
   area?: string;

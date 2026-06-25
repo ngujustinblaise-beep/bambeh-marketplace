@@ -1,33 +1,33 @@
-﻿/**
+/**
  * src/services/services.service.ts
- * Bambeh Marketplace — Service Listings Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Service Listings Service
+ * � 2026 Bambeh Marketplace. All rights reserved.
  *
- * ─── FIX (June 2026) ──────────────────────────────────────────────────────────
- * Previous version queried "service_listings" table — does NOT exist in Supabase.
+ * --- FIX (June 2026) ----------------------------------------------------------
+ * Previous version queried "service_listings" table � does NOT exist in Supabase.
  * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
  * All functions now query: supabase.from("listings").eq("type", "service")
  *
- * Column mapping (listings table → ServiceListing type):
- *   listings.id              → id
- *   listings.user_id         → providerId
- *   listings.title           → title
- *   listings.description     → description
- *   listings.category        → category
- *   listings.price           → priceFromXAF
- *   listings.location        → location.city
- *   listings.images          → images[]
- *   listings.extra.price_to  → priceToXAF
- *   listings.extra.negotiable→ isPriceNegotiable
- *   listings.extra.online    → isOnlineService
- *   listings.extra.delivery  → deliveryDays
- *   listings.extra.region    → location.region
- *   listings.extra.rating    → rating
- *   listings.extra.reviews   → reviewCount
- *   listings.extra.completed → completedJobs
- *   listings.status          → status
- *   listings.created_at      → createdAt
- *   listings.updated_at      → updatedAt
+ * Column mapping (listings table ? ServiceListing type):
+ *   listings.id              ? id
+ *   listings.user_id         ? providerId
+ *   listings.title           ? title
+ *   listings.description     ? description
+ *   listings.category        ? category
+ *   listings.price           ? priceFromXAF
+ *   listings.location        ? location.city
+ *   listings.images          ? images[]
+ *   listings.extra.price_to  ? priceToXAF
+ *   listings.extra.negotiable? isPriceNegotiable
+ *   listings.extra.online    ? isOnlineService
+ *   listings.extra.delivery  ? deliveryDays
+ *   listings.extra.region    ? location.region
+ *   listings.extra.rating    ? rating
+ *   listings.extra.reviews   ? reviewCount
+ *   listings.extra.completed ? completedJobs
+ *   listings.status          ? status
+ *   listings.created_at      ? createdAt
+ *   listings.updated_at      ? updatedAt
  */
 
 import { supabase } from "@/lib/supabase";
@@ -37,7 +37,7 @@ import type {
   PaginatedItemsResponse,
 } from "@/types/src_types_items";
 
-// ─── Response Types ────────────────────────────────────────────────────────────
+// --- Response Types ------------------------------------------------------------
 export interface ServiceResponse {
   data: ServiceListing | null;
   error: string | null;
@@ -49,7 +49,7 @@ export interface ServiceActionResponse {
   error: string | null;
 }
 
-// ─── Row → ServiceListing mapper ──────────────────────────────────────────────
+// --- Row ? ServiceListing mapper ----------------------------------------------
 function mapRow(row: Record<string, any>): ServiceListing {
   const extra  = row.extra ?? {};
   const images = Array.isArray(row.images) ? row.images : [];
@@ -88,7 +88,7 @@ function mapRow(row: Record<string, any>): ServiceListing {
   };
 }
 
-// ─── Get Services (paginated + filtered) ──────────────────────────────────────
+// --- Get Services (paginated + filtered) --------------------------------------
 export async function getServices(
   filters: Partial<ItemFilters> = {}
 ): Promise<PaginatedItemsResponse<ServiceListing>> {
@@ -137,7 +137,7 @@ export async function getServices(
   }
 }
 
-// ─── Get Service by ID ─────────────────────────────────────────────────────────
+// --- Get Service by ID ---------------------------------------------------------
 export async function getServiceById(id: string): Promise<ServiceResponse> {
   try {
     const { data, error } = await supabase
@@ -156,7 +156,7 @@ export async function getServiceById(id: string): Promise<ServiceResponse> {
   }
 }
 
-// ─── Create Service ────────────────────────────────────────────────────────────
+// --- Create Service ------------------------------------------------------------
 export async function createService(
   providerId: string,
   payload: Omit<ServiceListing, "id" | "providerId" | "rating" | "reviewCount" | "completedJobs" | "createdAt" | "updatedAt">
@@ -205,7 +205,7 @@ export async function createService(
   }
 }
 
-// ─── Update Service ────────────────────────────────────────────────────────────
+// --- Update Service ------------------------------------------------------------
 export async function updateService(
   id: string,
   providerId: string,
@@ -245,7 +245,7 @@ export async function updateService(
   }
 }
 
-// ─── Delete Service ────────────────────────────────────────────────────────────
+// --- Delete Service ------------------------------------------------------------
 export async function deleteService(
   id: string,
   providerId: string
@@ -264,7 +264,7 @@ export async function deleteService(
   }
 }
 
-// ─── Get My Services ───────────────────────────────────────────────────────────
+// --- Get My Services -----------------------------------------------------------
 export async function getMyServices(
   providerId: string
 ): Promise<PaginatedItemsResponse<ServiceListing>> {
@@ -290,7 +290,7 @@ export async function getMyServices(
   }
 }
 
-// ─── Increment View ────────────────────────────────────────────────────────────
+// --- Increment View ------------------------------------------------------------
 export async function incrementServiceView(id: string): Promise<void> {
   try {
     await supabase.rpc("increment_view_count", {

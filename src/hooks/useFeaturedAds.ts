@@ -1,25 +1,25 @@
-﻿/**
- * src/hooks/useFeaturedAds.ts — Bambeh Marketplace
- * © 2026 BAMBEH SARL. All rights reserved.
+/**
+ * src/hooks/useFeaturedAds.ts � Bambeh Marketplace
+ * � 2026 BAMBEH SARL. All rights reserved.
  *
  * Provides featured ads data to FeaturedAdsStrip with:
- *  ✅ Correct realtime: .on() BEFORE .subscribe() — no "after subscribe()" crash
- *  ✅ Unique channel name per mount — no channel collision across page re-renders
- *  ✅ Full cleanup on unmount
- *  ✅ Pagination + auto-rotation every rotationMs
- *  ✅ Search filtering
- *  ✅ resolveLocalizedText for multilingual ad titles/descriptions
+ *  ? Correct realtime: .on() BEFORE .subscribe() � no "after subscribe()" crash
+ *  ? Unique channel name per mount � no channel collision across page re-renders
+ *  ? Full cleanup on unmount
+ *  ? Pagination + auto-rotation every rotationMs
+ *  ? Search filtering
+ *  ? resolveLocalizedText for multilingual ad titles/descriptions
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 export type AdCategory =
   | "marketplace" | "jobs" | "services" | "rentals" | "vehicles"
   | "exchange" | "flash-deals" | "group-buying" | "farm-fresh" | "general";
 
-/** A localized string can be either a plain string or a lang→text map */
+/** A localized string can be either a plain string or a lang?text map */
 type LocalizedString = string | Record<string, string>;
 
 export interface FeaturedAd {
@@ -56,7 +56,7 @@ interface UseFeaturedAdsReturn {
   refetch:       () => void;
 }
 
-// ─── resolveLocalizedText ─────────────────────────────────────────────────────
+// --- resolveLocalizedText -----------------------------------------------------
 /**
  * If the value is a plain string, return it.
  * If it's a lang-map (e.g. { en: "Job", fr: "Emploi" }), return the right one.
@@ -70,11 +70,11 @@ export function resolveLocalizedText(
   return value[lang] ?? value["en"] ?? Object.values(value)[0] ?? "";
 }
 
-// ─── Row → FeaturedAd mapper ──────────────────────────────────────────────────
+// --- Row ? FeaturedAd mapper --------------------------------------------------
 function mapRow(row: Record<string, any>): FeaturedAd {
   const extra = (row.extra ?? {}) as Record<string, any>;
 
-  // Resolve category — map from listings.type if needed
+  // Resolve category � map from listings.type if needed
   let cat: AdCategory = "general";
   const rawCat = (row.category ?? row.type ?? "general") as string;
   const catMap: Record<string, AdCategory> = {
@@ -114,24 +114,24 @@ function mapRow(row: Record<string, any>): FeaturedAd {
   };
 }
 
-// ─── timeAgoLabel ─────────────────────────────────────────────────────────────
+// --- timeAgoLabel -------------------------------------------------------------
 function makeTimeAgoLabel(lang: string) {
   return function timeAgoLabel(dateStr: string): string {
     const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60_000); // minutes
-    if (diff < 1)  return lang === "fr" ? "À l'instant" : lang === "ar" ? "الآن" : "Just now";
-    if (diff < 60) return lang === "fr" ? `Il y a ${diff}min` : lang === "ar" ? `منذ ${diff} دقيقة` : `${diff}m ago`;
+    if (diff < 1)  return lang === "fr" ? "� l'instant" : lang === "ar" ? "????" : "Just now";
+    if (diff < 60) return lang === "fr" ? `Il y a ${diff}min` : lang === "ar" ? `??? ${diff} ?????` : `${diff}m ago`;
     const h = Math.floor(diff / 60);
-    if (h < 24)    return lang === "fr" ? `Il y a ${h}h` : lang === "ar" ? `منذ ${h} ساعة` : `${h}h ago`;
+    if (h < 24)    return lang === "fr" ? `Il y a ${h}h` : lang === "ar" ? `??? ${h} ????` : `${h}h ago`;
     const d = Math.floor(h / 24);
-    if (d < 7)     return lang === "fr" ? `Il y a ${d}j` : lang === "ar" ? `منذ ${d} أيام` : `${d}d ago`;
+    if (d < 7)     return lang === "fr" ? `Il y a ${d}j` : lang === "ar" ? `??? ${d} ????` : `${d}d ago`;
     const w = Math.floor(d / 7);
-    if (w < 5)     return lang === "fr" ? `Il y a ${w}sem` : lang === "ar" ? `منذ ${w} أسابيع` : `${w}w ago`;
+    if (w < 5)     return lang === "fr" ? `Il y a ${w}sem` : lang === "ar" ? `??? ${w} ??????` : `${w}w ago`;
     const m = Math.floor(d / 30);
-    return lang === "fr" ? `Il y a ${m} mois` : lang === "ar" ? `منذ ${m} أشهر` : `${m}mo ago`;
+    return lang === "fr" ? `Il y a ${m} mois` : lang === "ar" ? `??? ${m} ????` : `${m}mo ago`;
   };
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// --- Hook ---------------------------------------------------------------------
 export function useFeaturedAds({
   category,
   pageSize   = 20,
@@ -196,16 +196,16 @@ export function useFeaturedAds({
     }
   }, [category]);
 
-  // ── Initial fetch + realtime ───────────────────────────────────────────────
+  // -- Initial fetch + realtime -----------------------------------------------
   useEffect(() => {
     mountedRef.current = true;
     void fetchAds();
 
-    // Unique channel name per mount — prevents "after subscribe()" crash
+    // Unique channel name per mount � prevents "after subscribe()" crash
     const channelName = `featured_ads_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const ch = supabase.channel(channelName);
 
-    // ✅ .on() BEFORE .subscribe() — this is the rule Supabase enforces
+    // ? .on() BEFORE .subscribe() � this is the rule Supabase enforces
     ch.on(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       "postgres_changes" as any,
@@ -217,7 +217,7 @@ export function useFeaturedAds({
 
     ch.subscribe((status) => {
       if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-        console.warn("[useFeaturedAds] Realtime:", status, "— will retry on next fetch");
+        console.warn("[useFeaturedAds] Realtime:", status, "� will retry on next fetch");
       }
     });
 
@@ -232,7 +232,7 @@ export function useFeaturedAds({
     };
   }, [fetchAds]);
 
-  // ── Auto-rotation ─────────────────────────────────────────────────────────
+  // -- Auto-rotation ---------------------------------------------------------
   useEffect(() => {
     if (rotationMs <= 0) return;
     const timer = setInterval(() => {
@@ -246,7 +246,7 @@ export function useFeaturedAds({
     return () => clearInterval(timer);
   }, [rotationMs, allAds, pageSize, searchQuery]);
 
-  // ── Derived state ─────────────────────────────────────────────────────────
+  // -- Derived state ---------------------------------------------------------
   function applySearch(ads: FeaturedAd[], q: string): FeaturedAd[] {
     if (!q.trim()) return ads;
     const lower = q.toLowerCase();

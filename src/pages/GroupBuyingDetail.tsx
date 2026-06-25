@@ -1,5 +1,5 @@
-ï»¿/**
- * src/pages/GroupBuyingDetail.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/GroupBuyingDetail.tsx — Bambeh Marketplace
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -228,7 +228,7 @@ export default function GroupBuyingDetail() {
             <div className="text-right flex-shrink-0">
               <p className="text-white/60 text-xs line-through">{deal.originalPrice.toLocaleString()} XAF</p>
               <p className="text-2xl font-bold">{deal.groupPrice.toLocaleString()}</p>
-              <p className="text-xs text-teal-100">XAF Â· Save {savingsPct}%</p>
+              <p className="text-xs text-teal-100">XAF · Save {savingsPct}%</p>
             </div>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
@@ -240,7 +240,7 @@ export default function GroupBuyingDetail() {
               <div className="bg-white h-2.5 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
             </div>
             <p className="text-xs text-teal-100 mt-2">
-              {spotsLeft > 0 ? `${spotsLeft} more ${spotsLeft === 1 ? 'person' : 'people'} needed to activate deal` : 'ðŸŽ‰ Deal activated!'}
+              {spotsLeft > 0 ? `${spotsLeft} more ${spotsLeft === 1 ? 'person' : 'people'} needed to activate deal` : '?? Deal activated!'}
             </p>
           </div>
         </div>
@@ -309,7 +309,7 @@ export default function GroupBuyingDetail() {
             disabled={joining}
             className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-teal-700 transition"
           >
-            {joining ? <><Loader2 className="w-5 h-5 animate-spin" />Joiningâ€¦</> : <><Users className="w-5 h-5" />Join Group Deal Â· Save {savingsPct}%</>}
+            {joining ? <><Loader2 className="w-5 h-5 animate-spin" />Joining…</> : <><Users className="w-5 h-5" />Join Group Deal · Save {savingsPct}%</>}
           </button>
         </div>
       )}

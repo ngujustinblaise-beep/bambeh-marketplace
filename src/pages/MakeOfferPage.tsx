@@ -1,13 +1,13 @@
-﻿/**
- * MakeOfferPage.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+/**
+ * MakeOfferPage.tsx � Bambeh Marketplace
+ * � 2026 Bambeh Marketplace. All rights reserved.
  *
  * UPGRADED: Full counter-offer negotiation trail.
  *
  * Supports the full offer lifecycle:
- *   Buyer → Initial offer
- *   Seller → Counter-offer (or Accept/Decline)
- *   Buyer → Accept counter / New counter / Decline
+ *   Buyer ? Initial offer
+ *   Seller ? Counter-offer (or Accept/Decline)
+ *   Buyer ? Accept counter / New counter / Decline
  *
  * All offer state is persisted in Supabase (offers table).
  * The trail renders each step like a timeline with status badges.
@@ -38,7 +38,7 @@ import { logger } from "@/utils/logger";
 import { BambehImage } from "@/components/ui/BambehImage";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
+// --- TYPES --------------------------------------------------------------------
 
 type OfferStatus =
   | "pending"
@@ -86,18 +86,18 @@ interface Listing {
   category: string;
 }
 
-// ─── STATUS CONFIG ─────────────────────────────────────────────────────────────
+// --- STATUS CONFIG -------------------------------------------------------------
 
 const STATUS_CONFIG: Record<OfferStatus, { label: string; color: string; bg: string }> = {
   pending:   { label: "Awaiting Response",  color: "text-amber-700",  bg: "bg-amber-50 border-amber-200"  },
   countered: { label: "Counter-Offer Sent", color: "text-blue-700",   bg: "bg-blue-50 border-blue-200"    },
-  accepted:  { label: "Deal Accepted! 🎉",  color: "text-green-700",  bg: "bg-green-50 border-green-200"  },
+  accepted:  { label: "Deal Accepted! ??",  color: "text-green-700",  bg: "bg-green-50 border-green-200"  },
   declined:  { label: "Offer Declined",     color: "text-red-700",    bg: "bg-red-50 border-red-200"      },
   expired:   { label: "Offer Expired",      color: "text-gray-600",   bg: "bg-gray-50 border-gray-200"    },
   withdrawn: { label: "Offer Withdrawn",    color: "text-gray-600",   bg: "bg-gray-50 border-gray-200"    },
 };
 
-// ─── OFFER TRAIL STEP ─────────────────────────────────────────────────────────
+// --- OFFER TRAIL STEP ---------------------------------------------------------
 
 const TrailStep: React.FC<{
   step: OfferStep;
@@ -222,7 +222,7 @@ const TrailStep: React.FC<{
   );
 };
 
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+// --- MAIN COMPONENT -----------------------------------------------------------
 
 export default function MakeOfferPage() {
   const lang = useLang();
@@ -241,7 +241,7 @@ export default function MakeOfferPage() {
   const [error, setError] = useState("");
   const [trailExpanded, setTrailExpanded] = useState(true);
 
-  // ── Load listing ───────────────────────────────────────────────────────────
+  // -- Load listing -----------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -341,7 +341,7 @@ export default function MakeOfferPage() {
     fetchData();
   }, [listingId, user?.id]);
 
-  // ── Submit new offer ───────────────────────────────────────────────────────
+  // -- Submit new offer -------------------------------------------------------
   const handleSubmitOffer = useCallback(async () => {
     const amount = Number(offerAmount);
     if (!amount || amount <= 0) return setError("Enter a valid offer amount");
@@ -461,7 +461,7 @@ export default function MakeOfferPage() {
     }
   }, [offerAmount, phone, message, listing, user, profile, listingId]);
 
-  // ── Accept counter-offer ───────────────────────────────────────────────────
+  // -- Accept counter-offer ---------------------------------------------------
   const handleAcceptCounter = useCallback(async () => {
     if (!existingOffer) return;
     setIsSubmitting(true);
@@ -481,7 +481,7 @@ export default function MakeOfferPage() {
     finally { setIsSubmitting(false); }
   }, [existingOffer, user, profile]);
 
-  // ── Withdraw offer ─────────────────────────────────────────────────────────
+  // -- Withdraw offer ---------------------------------------------------------
   const handleWithdraw = useCallback(async () => {
     if (!existingOffer) return;
     setIsSubmitting(true);
@@ -500,14 +500,14 @@ export default function MakeOfferPage() {
     finally { setIsSubmitting(false); }
   }, [existingOffer, user, profile]);
 
-  // ─── RENDER ───────────────────────────────────────────────────────────────
+  // --- RENDER ---------------------------------------------------------------
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-9 h-9 rounded-full border-3 border-teal-600 border-t-transparent animate-spin" style={{ borderWidth: 3 }}/>
-          <p className="text-sm text-gray-400">Loading offer details…</p>
+          <p className="text-sm text-gray-400">Loading offer details�</p>
         </div>
       </div>
     );
@@ -520,7 +520,7 @@ export default function MakeOfferPage() {
           <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500 font-medium">Listing not found</p>
           <button onClick={() => navigate(-1)} className="mt-4 text-teal-600 text-sm font-semibold">
-            ← Go Back
+            ? Go Back
           </button>
         </div>
       </div>
@@ -582,7 +582,7 @@ export default function MakeOfferPage() {
                 <p className={`font-bold text-sm ${statusCfg.color}`}>{statusCfg.label}</p>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Current: <span className="font-bold text-gray-800">{existingOffer.currentAmount.toLocaleString()} XAF</span>
-                  {" · "}
+                  {" � "}
                   {Math.round(((listing.price - existingOffer.currentAmount) / listing.price) * 100)}% off
                 </p>
               </div>
@@ -661,7 +661,7 @@ export default function MakeOfferPage() {
           </div>
         )}
 
-        {/* New offer form — only show if no open offer or if closed */}
+        {/* New offer form � only show if no open offer or if closed */}
         {(!existingOffer || isOfferClosed) && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-4">
             <h3 className="font-bold text-gray-900 text-sm">
@@ -718,7 +718,7 @@ export default function MakeOfferPage() {
                 value={message}
                 onChange={e => setMessage(e.target.value)}
                 rows={3}
-                placeholder="Explain your offer or ask a question…"
+                placeholder="Explain your offer or ask a question�"
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none transition"
               />
             </div>
@@ -732,7 +732,7 @@ export default function MakeOfferPage() {
             )}
 
             <div className="bg-amber-50 rounded-xl p-3 text-xs text-amber-700 border border-amber-100">
-              ⚡ The seller will be notified and can accept, decline, or counter your offer.
+              ? The seller will be notified and can accept, decline, or counter your offer.
             </div>
 
             {/* CTA buttons */}
@@ -749,7 +749,7 @@ export default function MakeOfferPage() {
                 className="flex-1 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors shadow-md shadow-teal-100"
               >
                 {isSubmitting ? (
-                  <><RefreshCw className="w-4 h-4 animate-spin" /> Sending…</>
+                  <><RefreshCw className="w-4 h-4 animate-spin" /> Sending�</>
                 ) : (
                   <><Send className="w-4 h-4" /> Send Offer</>
                 )}

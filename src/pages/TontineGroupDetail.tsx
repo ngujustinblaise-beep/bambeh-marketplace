@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/pages/TontineGroupDetail.tsx
- * Bambeh Marketplace â€” Tontine/Njangi Group Detail
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Tontine/Njangi Group Detail
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -72,7 +72,7 @@ const TontineGroupDetail: React.FC = () => {
         name: data.name as string,
         description: data.description as string,
         adminId: data.admin_id as string,
-        adminName: (admin?.display_name as string) ?? "â€”",
+        adminName: (admin?.display_name as string) ?? "—",
         contributionXAF: data.contribution_xaf as number,
         frequency: data.frequency as TontineGroup["frequency"],
         maxMembers: data.max_members as number,
@@ -95,7 +95,7 @@ const TontineGroupDetail: React.FC = () => {
           const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
           return {
             userId: row.user_id as string,
-            displayName: (profile?.display_name as string) ?? "â€”",
+            displayName: (profile?.display_name as string) ?? "—",
             avatarUrl: profile?.avatar_url as string | undefined,
             joinedAt: row.joined_at as string,
             hasPaidCurrentRound: Boolean(row.has_paid_current_round),
@@ -193,7 +193,7 @@ const TontineGroupDetail: React.FC = () => {
 
       {/* Description */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="text-sm font-bold text-gray-900 mb-1">Ã€ propos</h3>
+        <h3 className="text-sm font-bold text-gray-900 mb-1">À propos</h3>
         <p className="text-sm text-gray-600 leading-relaxed">{group.description}</p>
         <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
           <Shield className="w-3.5 h-3.5" />
@@ -242,14 +242,14 @@ const TontineGroupDetail: React.FC = () => {
           <button type="button" onClick={handleJoin} disabled={joining}
             className="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60">
             {joining ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            {joining ? "Rejoindre..." : `Rejoindre â€” ${formatXAF(group.contributionXAF)}`}
+            {joining ? "Rejoindre..." : `Rejoindre — ${formatXAF(group.contributionXAF)}`}
           </button>
         </div>
       )}
       {isMember && (
         <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
           <CheckCircle className="w-4 h-4 text-green-600" />
-          <p className="text-sm text-green-700 font-medium">Vous Ãªtes membre de ce groupe</p>
+          <p className="text-sm text-green-700 font-medium">Vous êtes membre de ce groupe</p>
         </div>
       )}
     </div>

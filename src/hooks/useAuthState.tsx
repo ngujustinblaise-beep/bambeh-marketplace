@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBEH - AUTH STATE HOOK
  * Custom hook for managing authentication state
  */

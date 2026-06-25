@@ -1,12 +1,13 @@
-﻿import { createClient } from '@supabase/supabase-js'
+// src/lib/supabase.ts
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+import { createClient } from "@supabase/supabase-js";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
-  }
-})
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+// Prevent multiple instances in development (HMR safe)
+let supabaseInstance: ReturnType<typeof createClient>;
+
+export const supabase =
+  supabaseInstance ??
+  (supabaseInstance = createClient(supabaseUrl, supabaseAnonKey));

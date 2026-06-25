@@ -468,7 +468,7 @@ const SellVehicle: React.FC = () => {
           category:     form.category,
           images:       imageUrls,
           contact_phone:form.phone.trim(),
-          contact_name: user?.user_metadata?.full_name || user?.email || "",
+          contact_name: (user as any)?.user_metadata?.full_name || user?.email || "",
           user_id:      user!.id,
           description:  form.description.trim(),
           expires_at:   expiresAt,
@@ -806,5 +806,6 @@ const SellVehicle: React.FC = () => {
 };
 
 export default SellVehicle;
+
 
 

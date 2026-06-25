@@ -1,4 +1,4 @@
-ï»¿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Car, Upload, X, MapPin, DollarSign, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -326,7 +326,7 @@ const PostVehicle: React.FC = () => {
 
       toast({
         title: 'Vehicle posted successfully!',
-        description: 'Your vehicle is now listed on BambÃ©',
+        description: 'Your vehicle is now listed on Bambé',
       });
 
       navigate('/products?category=vehicles');
@@ -357,7 +357,7 @@ const PostVehicle: React.FC = () => {
             </Button>
             <div>
               <h1 className="text-xl font-bold">Post Vehicle</h1>
-              <p className="text-sm text-gray-600">Sell your vehicle on BambÃ©</p>
+              <p className="text-sm text-gray-600">Sell your vehicle on Bambé</p>
             </div>
           </div>
         </div>
@@ -776,7 +776,7 @@ const PostVehicle: React.FC = () => {
                 <Input
                   id="location"
                   name="location"
-                  placeholder="e.g., YaoundÃ©, "
+                  placeholder="e.g., Yaoundé, "
                   value={formData.location}
                   onChange={handleInputChange}
                   required

@@ -1,13 +1,13 @@
-﻿/**
+/**
  * src/types/src_types_ads.ts
- * Bambeh Marketplace — Advertisement & Promotion Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Advertisement & Promotion Types
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// ─── Ad Status ────────────────────────────────────────────────────────────────
+// --- Ad Status ----------------------------------------------------------------
 export type AdStatus = "active" | "paused" | "expired" | "pending" | "rejected";
 
-// ─── Ad Placement ────────────────────────────────────────────────────────────
+// --- Ad Placement ------------------------------------------------------------
 export type AdPlacement =
   | "banner_top"
   | "banner_bottom"
@@ -16,29 +16,29 @@ export type AdPlacement =
   | "splash"
   | "category_header";
 
-// ─── Ad Type ─────────────────────────────────────────────────────────────────
+// --- Ad Type -----------------------------------------------------------------
 export type AdType = "image" | "video" | "text" | "sponsored_listing";
 
-// ─── Ad Target Audience ──────────────────────────────────────────────────────
+// --- Ad Target Audience ------------------------------------------------------
 export interface AdTargetAudience {
-  regions?: string[];          // e.g. ["Yaoundé", "Douala"]
+  regions?: string[];          // e.g. ["Yaound�", "Douala"]
   languages?: string[];        // e.g. ["fr", "en"]
   categories?: string[];
   minAge?: number;
   maxAge?: number;
 }
 
-// ─── Ad Metrics ──────────────────────────────────────────────────────────────
+// --- Ad Metrics --------------------------------------------------------------
 export interface AdMetrics {
   impressions: number;
   clicks: number;
-  ctr: number;                 // click-through rate (0–1)
+  ctr: number;                 // click-through rate (0�1)
   conversions: number;
   spend: number;               // XAF
   reach: number;
 }
 
-// ─── Ad Creative ─────────────────────────────────────────────────────────────
+// --- Ad Creative -------------------------------------------------------------
 export interface AdCreative {
   imageUrl?: string;
   videoUrl?: string;
@@ -48,7 +48,7 @@ export interface AdCreative {
   destinationUrl: string;
 }
 
-// ─── Ad Campaign ─────────────────────────────────────────────────────────────
+// --- Ad Campaign -------------------------------------------------------------
 export interface AdCampaign {
   id: string;
   vendorId: string;
@@ -67,7 +67,7 @@ export interface AdCampaign {
   updatedAt: string;
 }
 
-// ─── Sponsored Listing ────────────────────────────────────────────────────────
+// --- Sponsored Listing --------------------------------------------------------
 export interface SponsoredListing {
   id: string;
   listingId: string;
@@ -83,7 +83,7 @@ export interface SponsoredListing {
   createdAt: string;
 }
 
-// ─── Flash Deal Ad ────────────────────────────────────────────────────────────
+// --- Flash Deal Ad ------------------------------------------------------------
 export interface FlashDealAd {
   id: string;
   listingId: string;
@@ -98,7 +98,7 @@ export interface FlashDealAd {
   createdAt: string;
 }
 
-// ─── Banner Ad ────────────────────────────────────────────────────────────────
+// --- Banner Ad ----------------------------------------------------------------
 export interface BannerAd {
   id: string;
   imageUrl: string;
@@ -111,7 +111,7 @@ export interface BannerAd {
   endDate?: string;
 }
 
-// ─── Ad Request ──────────────────────────────────────────────────────────────
+// --- Ad Request --------------------------------------------------------------
 export interface CreateAdCampaignRequest {
   name: string;
   type: AdType;
@@ -124,7 +124,7 @@ export interface CreateAdCampaignRequest {
   endDate?: string;
 }
 
-// ─── Ad Response ─────────────────────────────────────────────────────────────
+// --- Ad Response -------------------------------------------------------------
 export interface AdCampaignResponse {
   data: AdCampaign | null;
   error: string | null;
@@ -136,7 +136,7 @@ export interface AdCampaignListResponse {
   error: string | null;
 }
 
-// ─── Notification Ad ─────────────────────────────────────────────────────────
+// --- Notification Ad ---------------------------------------------------------
 export interface PromotionNotification {
   id: string;
   title: string;
@@ -148,7 +148,7 @@ export interface PromotionNotification {
   isRead: boolean;
 }
 
-// ─── Ad Slot Config ──────────────────────────────────────────────────────────
+// --- Ad Slot Config ----------------------------------------------------------
 export interface AdSlotConfig {
   placement: AdPlacement;
   maxAdsPerPage: number;

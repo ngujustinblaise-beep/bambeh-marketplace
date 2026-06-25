@@ -1,8 +1,8 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
- * VendorPayments.tsx — BAMBEH VENDOR PORTAL
+/**
+ * ---------------------------------------------------------------------------
+ * VendorPayments.tsx � BAMBEH VENDOR PORTAL
  * Earnings tracker, withdrawal requests, payment history
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -25,12 +25,12 @@ interface Transaction {
 }
 
 const mockTransactions: Transaction[] = [
-  { id: 'TXN-001', type: 'sale',       description: 'Samsung Galaxy A54 — Order ORD-001', amount: 185000, status: 'completed', date: '2026-02-20', method: 'MTN Mobile Money' },
+  { id: 'TXN-001', type: 'sale',       description: 'Samsung Galaxy A54 � Order ORD-001', amount: 185000, status: 'completed', date: '2026-02-20', method: 'MTN Mobile Money' },
   { id: 'TXN-002', type: 'commission', description: 'Bambeh platform fee (5%)',           amount: -9250,  status: 'completed', date: '2026-02-20' },
-  { id: 'TXN-003', type: 'sale',       description: 'Wireless Headphones × 2 — ORD-002', amount: 50000,  status: 'completed', date: '2026-02-19', method: 'Orange Money' },
+  { id: 'TXN-003', type: 'sale',       description: 'Wireless Headphones � 2 � ORD-002', amount: 50000,  status: 'completed', date: '2026-02-19', method: 'Orange Money' },
   { id: 'TXN-004', type: 'withdrawal', description: 'Withdrawal to MTN Mobile Money',      amount: -100000, status: 'completed', date: '2026-02-18', method: 'MTN Mobile Money' },
-  { id: 'TXN-005', type: 'sale',       description: 'Traditional Boubou × 3 — ORD-004',  amount: 54000,  status: 'pending',   date: '2026-02-20', method: 'MTN Mobile Money' },
-  { id: 'TXN-006', type: 'refund',     description: 'Refund — Order ORD-005',             amount: -28000, status: 'completed', date: '2026-02-17' },
+  { id: 'TXN-005', type: 'sale',       description: 'Traditional Boubou � 3 � ORD-004',  amount: 54000,  status: 'pending',   date: '2026-02-20', method: 'MTN Mobile Money' },
+  { id: 'TXN-006', type: 'refund',     description: 'Refund � Order ORD-005',             amount: -28000, status: 'completed', date: '2026-02-17' },
 ];
 
 const formatXAF = (amount: number) => {
@@ -168,7 +168,7 @@ const VendorPayments: React.FC = () => {
                     <p className="text-xs text-gray-400">{txn.date}</p>
                     {txn.method && (
                       <>
-                        <span className="text-gray-200">·</span>
+                        <span className="text-gray-200">�</span>
                         <p className="text-xs text-gray-400">{txn.method}</p>
                       </>
                     )}
@@ -190,10 +190,10 @@ const VendorPayments: React.FC = () => {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════════════════════════════════
-          BACK TO TOP BUTTON — centred below transaction list
+      {/* --------------------------------------------------------------------
+          BACK TO TOP BUTTON � centred below transaction list
           Visible and easy to tap on mobile and desktop
-          ════════════════════════════════════════════════════════════════════ */}
+          -------------------------------------------------------------------- */}
       <div className="flex justify-center py-8">
         <button
           onClick={scrollToTop}

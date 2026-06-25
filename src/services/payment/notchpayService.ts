@@ -1,4 +1,4 @@
-﻿export interface PaymentInitPayload {
+export interface PaymentInitPayload {
   amount: number;
   currency?: string;
   reference: string;

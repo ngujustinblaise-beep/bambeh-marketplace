@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/analytics/AnalyticsManager.ts
- * Bambeh Marketplace — Analytics Manager + singleton
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Analytics Manager + singleton
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -31,7 +31,7 @@ export interface AnalyticsProvider {
   reset(): void;
 }
 
-// ─── Manager Class ────────────────────────────────────────────────────────────
+// --- Manager Class ------------------------------------------------------------
 class AnalyticsManagerClass {
   private providers: AnalyticsProvider[] = [];
   private eventQueue: AnalyticsEvent[] = [];
@@ -119,10 +119,10 @@ class AnalyticsManagerClass {
   getCurrentUserId(): string | null { return this.currentUserId; }
 }
 
-// ─── Singleton instance expected by useAnalytics.ts ──────────────────────────
+// --- Singleton instance expected by useAnalytics.ts --------------------------
 export const analyticsManager = new AnalyticsManagerClass();
 
-// ─── Standalone function aliases (used by AnalyticsInit.ts) ──────────────────
+// --- Standalone function aliases (used by AnalyticsInit.ts) ------------------
 export function initializeAnalyticsManager(providers: AnalyticsProvider[] = []): void {
   analyticsManager.initialize(providers);
 }

@@ -1,6 +1,6 @@
-ï»¿/**
- * VendorLayout.tsx â€” PREMIUM REDESIGN
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+/**
+ * VendorLayout.tsx — PREMIUM REDESIGN
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect } from "react";
@@ -318,7 +318,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        {/* ROW 2 â€” Desktop nav */}
+        {/* ROW 2 — Desktop nav */}
         <div className="hidden lg:block bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center h-10 overflow-x-auto scrollbar-hide">
@@ -531,7 +531,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
               className="px-4 py-3"
               style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
               <p className="font-bold text-white text-sm truncate">{vendorName}</p>
-              <p className="text-xs text-purple-200 mt-0.5">âœ¦ Vendor Account</p>
+              <p className="text-xs text-purple-200 mt-0.5">? Vendor Account</p>
             </div>
             <div className="bg-white p-1.5 space-y-0.5">
               {[

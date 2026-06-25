@@ -1,23 +1,23 @@
-﻿/**
- * src/pages/MarketplaceItemDetails.tsx â€” Bambeh Marketplace
+/**
+ * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
  *
- * FIXES â€” June 2026
- *  âœ… FIX 1: readCart() is a pure function â€” no illegal hook call
- *  âœ… FIX 2: Full i18n â€” English / French / Hausa / Arabic / Pidgin / Fulfulde
- *  âœ… FIX 3: Language switches INSTANTLY via "langChange" event (useLangState hook)
- *  âœ… FIX 4: increment_view_count RPC passes correct params (table_name + record_id)
- *  âœ… FIX 5: phone / whatsappText declared BEFORE JSX
- *  âœ… FIX 6: Queries `listings` table only
- *  âœ… FIX 7: Voice control aria-labels on all interactive elements
- *  âœ… Cart mini-panel â€” inline, connected to /cart
- *  âœ… "Add to Cart" persists to localStorage
- *  âœ… "Buy Now" â†’ /payment/checkout with CamPay data
- *  âœ… WhatsApp + Call + Chat contact options
- *  âœ… Share (Web Share API + clipboard fallback)
- *  âœ… Safety tip + Report link
- *  âœ… Safe-area bottom padding
+ * FIXES — June 2026
+ *  ✅ FIX 1: readCart() is a pure function — no illegal hook call
+ *  ✅ FIX 2: Full i18n — English / French / Hausa / Arabic / Pidgin / Fulfulde
+ *  ✅ FIX 3: Language switches INSTANTLY via "langChange" event (useLangState hook)
+ *  ✅ FIX 4: increment_view_count RPC passes correct params (table_name + record_id)
+ *  ✅ FIX 5: phone / whatsappText declared BEFORE JSX
+ *  ✅ FIX 6: Queries `listings` table only
+ *  ✅ FIX 7: Voice control aria-labels on all interactive elements
+ *  ✅ Cart mini-panel — inline, connected to /cart
+ *  ✅ "Add to Cart" persists to localStorage
+ *  ✅ "Buy Now" → /payment/checkout with CamPay data
+ *  ✅ WhatsApp + Call + Chat contact options
+ *  ✅ Share (Web Share API + clipboard fallback)
+ *  ✅ Safety tip + Report link
+ *  ✅ Safe-area bottom padding
  *
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -30,48 +30,48 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-// â”€â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── i18n ─────────────────────────────────────────────────────────────────────
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 
 const TR: Record<string, Record<Lang, string>> = {
-  loading:         { en: "Loading listingâ€¦",        fr: "Chargementâ€¦",                ha: "Ana lodawaâ€¦",            ar: "Ø¬Ø§Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦",                pcm: "Loadingâ€¦",               ff: "Naatirdeâ€¦" },
-  not_found:       { en: "Listing not found",       fr: "Annonce introuvable",        ha: "Ba a samu ba",           ar: "Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯",            pcm: "Listing no dey",          ff: "Alaa" },
-  removed:         { en: "This item may have been sold or removed.", fr: "Cet article a peut-Ãªtre Ã©tÃ© vendu ou supprimÃ©.", ha: "An sayar ko an cire.", ar: "Ø±Ø¨Ù…Ø§ ØªÙ… Ø¨ÙŠØ¹ Ø§Ù„Ø¹Ù†ØµØ± Ø£Ùˆ Ø¥Ø²Ø§Ù„ØªÙ‡.", pcm: "Dis item don sell or remove.", ff: "Ko nde dawnii ko nde É“ennii." },
-  browse:          { en: "Browse Marketplace",      fr: "Parcourir le marchÃ©",        ha: "Duba kasuwa",            ar: "ØªØµÃ™ÂØ­ Ø§Ù„Ø³ÙˆÙ‚",                   pcm: "Browse Market",           ff: "Yiyto Suudu" },
-  description:     { en: "Description",             fr: "Description",                ha: "Bayanai",                ar: "Ø§Ù„ÙˆØµÃ™Â",                        pcm: "Description",             ff: "Pijirde" },
-  no_description:  { en: "No description provided.", fr: "Aucune description.",       ha: "Babu bayanai.",          ar: "Ù„Ø§ ÙŠÙˆØ¬Ø¯ ÙˆØµÃ™Â.",                 pcm: "No description.",         ff: "Alaa pijirde." },
-  contact_seller:  { en: "Contact Seller",          fr: "Contacter le vendeur",       ha: "TuntuÉ“i mai siyarwa",   ar: "ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¨Ø§Ø¦Ø¹",              pcm: "Contact Seller",          ff: "Newnin YoÉ“oowo" },
-  view_profile:    { en: "View Profile",            fr: "Voir le profil",             ha: "Duba profile",           ar: "Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù„Ã™Â Ø§Ù„Ø´Ø®ØµÙŠ",             pcm: "See Profile",             ff: "Yiy Profil" },
-  whatsapp:        { en: "WhatsApp",                fr: "WhatsApp",                   ha: "WhatsApp",               ar: "ÙˆØ§ØªØ³Ø§Ø¨",                       pcm: "WhatsApp",                ff: "WhatsApp" },
-  call:            { en: "Call",                    fr: "Appeler",                    ha: "Kira",                   ar: "Ø§ØªØµÙ„",                         pcm: "Call",                    ff: "Ewnu" },
-  chat:            { en: "Chat",                    fr: "Chat",                       ha: "Zanta",                  ar: "Ø¯Ø±Ø¯Ø´Ø©",                        pcm: "Chat",                    ff: "HaÉ“É“u" },
-  safety_tip:      { en: "Safety tip:",             fr: "Conseil de sÃ©curitÃ© :",      ha: "Tip na aminci:",         ar: "Ù†ØµÙŠØ­Ø© Ø£Ù…Ø§Ù†:",                  pcm: "Safety tip:",             ff: "Miijo sehilal:" },
-  safety_msg:      { en: "Use Bambeh Escrow to protect your purchase. Never send money before inspecting the item.", fr: "Utilisez l'Escrow Bambeh pour protÃ©ger votre achat. N'envoyez jamais d'argent avant d'inspecter l'article.", ha: "Yi amfani da Bambeh Escrow. Kada ka aika kudi kafin bincika kaya.", ar: "Ø§Ø³ØªØ®Ø¯Ù… Ø¶Ù…Ø§Ù† Bambeh. Ù„Ø§ ØªØ±Ø³Ù„ Ø§Ù„Ù…Ø§Ù„ Ù‚Ø¨Ù„ Ø§Ù„Ã™ÂØ­Øµ.", pcm: "Use Bambeh Escrow protect your buy. No send money before you see item.", ff: "HuÉ“É“in Bambeh Escrow. Taa aawa mbaydi tawi anndaaki kala ngoo." },
-  meet_safely:     { en: "How to meet safely â†’",   fr: "Comment se rencontrer en sÃ©curitÃ© â†’", ha: "Yadda za a gana lafiya â†’", ar: "ÙƒÙŠÃ™ÂÙŠØ© Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ Ø¨Ø£Ù…Ø§Ù† â†’",  pcm: "How to meet safe â†’",      ff: "No rewata sehilal â†’" },
-  report:          { en: "Report this listing",     fr: "Signaler cette annonce",     ha: "Rahoton wannan jeri",    ar: "Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†",       pcm: "Report dis listing",      ff: "Tiindirgo nde" },
-  your_cart:       { en: "Your Cart",               fr: "Votre panier",               ha: "Katonku",                ar: "Ø³Ù„ØªÙƒ",                         pcm: "Your Cart",               ff: "Cart maa" },
-  items_in_cart:   { en: "items",                   fr: "articles",                   ha: "kaya",                   ar: "Ø¹Ù†Ø§ØµØ±",                        pcm: "items",                   ff: "kala" },
-  view_cart:       { en: "View Cart",               fr: "Voir le panier",             ha: "Duba kato",              ar: "Ø¹Ø±Ø¶ Ø§Ù„Ø³Ù„Ø©",                    pcm: "See Cart",                ff: "Yiy Cart" },
-  checkout:        { en: "Checkout Now",            fr: "Payer maintenant",           ha: "Biya yanzu",             ar: "Ø§Ù„Ø¯Ã™ÂØ¹ Ø§Ù„Ø¢Ù†",                   pcm: "Pay now",                 ff: "HaaÉ“tu hannde" },
-  add_to_cart:     { en: "Add to Cart",             fr: "Ajouter au panier",          ha: "Æ˜ara zuwa kato",         ar: "Ø£Ø¶Ã™Â Ø¥Ù„Ù‰ Ø§Ù„Ø³Ù„Ø©",                pcm: "Add to Cart",             ff: "Æeydu e Cart" },
-  added:           { en: "Added!",                  fr: "AjoutÃ©!",                    ha: "An Æ™ara!",               ar: "ØªÙ…Øª Ø§Ù„Ø¥Ø¶Ø§Ã™ÂØ©!",                 pcm: "Added!",                  ff: "Æeydaama!" },
-  in_cart:         { en: "In Cart",                 fr: "Dans le panier",             ha: "A cikin kato",           ar: "Ã™ÂÙŠ Ø§Ù„Ø³Ù„Ø©",                     pcm: "In Cart",                 ff: "E nder Cart" },
-  buy_now:         { en: "Buy Now",                 fr: "Acheter",                    ha: "Saya yanzu",             ar: "Ø§Ø´ØªØ± Ø§Ù„Ø¢Ù†",                    pcm: "Buy Now",                 ff: "Soo Hannde" },
-  views:           { en: "views",                   fr: "vues",                       ha: "kallon",                 ar: "Ù…Ø´Ø§Ù‡Ø¯Ø§Øª",                      pcm: "view",                    ff: "yiytatii" },
-  featured:        { en: "Featured",                fr: "En vedette",                 ha: "Babban zaÉ“i",            ar: "Ù…Ù…ÙŠØ²",                         pcm: "Featured",                ff: "YiÉ—aaÉ—o" },
-  negotiable:      { en: "Price negotiable",        fr: "Prix nÃ©gociable",            ha: "Ana tattaunawa",         ar: "Ø§Ù„Ø³Ø¹Ø± Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÃ™ÂØ§ÙˆØ¶",           pcm: "Price nego",              ff: "Njaru hewtii" },
-  expires_today:   { en: "This listing expires today!", fr: "Cette annonce expire aujourd'hui!", ha: "Wannan jeri na Æ™arewa yau!", ar: "ÙŠÙ†ØªÙ‡ÙŠ Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ø§Ù„ÙŠÙˆÙ…!", pcm: "Dis listing expire today!", ff: "Nde É—owroo hande!" },
-  expires_in:      { en: "This listing expires in", fr: "Cette annonce expire dans",  ha: "Wannan jeri na Æ™arewa a cikin", ar: "ÙŠÙ†ØªÙ‡ÙŠ Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ø®Ù„Ø§Ù„", pcm: "Dis listing expire for",  ff: "Nde É—owroo e nder" },
-  days:            { en: "day(s)",                  fr: "jour(s)",                    ha: "kwana",                  ar: "ÙŠÙˆÙ…/Ø£ÙŠØ§Ù…",                     pcm: "day(s)",                  ff: "Ã±alnde(É—e)" },
-  no_image:        { en: "No image",                fr: "Pas d'image",                ha: "Babu hoto",              ar: "Ù„Ø§ ØªÙˆØ¬Ø¯ ØµÙˆØ±Ø©",                 pcm: "No picture",              ff: "Alaa foto" },
-  seller:          { en: "Bambeh Seller",           fr: "Vendeur Bambeh",             ha: "Mai siyarwa Bambeh",     ar: "Ø¨Ø§Ø¦Ø¹ Bambeh",                  pcm: "Bambeh Seller",           ff: "YoÉ“oowo Bambeh" },
-  qty_each:        { en: "XAF each",                fr: "XAF l'unitÃ©",                ha: "XAF kowanne",            ar: "Ã™ÂØ±Ù†Ùƒ Ø¥Ã™ÂØ±ÙŠÙ‚ÙŠ Ù„Ù„Ù‚Ø·Ø¹Ø©",           pcm: "XAF each one",            ff: "XAF É“e kala" },
-  retry:           { en: "Retry",                   fr: "RÃ©essayer",                  ha: "Sake",                   ar: "Ø£Ø¹Ø¯ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©",                 pcm: "Try again",               ff: "Artu jeer" },
-  go_back:         { en: "Go back",                 fr: "Retour",                     ha: "Koma baya",              ar: "Ø§Ù„Ø±Ø¬ÙˆØ¹",                       pcm: "Go back",                 ff: "Yah artu" },
-  shared:          { en: "Link copied!",            fr: "Lien copiÃ©!",                ha: "An kwafi hanyar!",       ar: "ØªÙ… Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·!",               pcm: "Link don copy!",          ff: "Lien nanngi!" },
-  condition:       { en: "Condition",               fr: "Ã‰tat",                       ha: "Yanayi",                 ar: "Ø§Ù„Ø­Ø§Ù„Ø©",                       pcm: "Condition",               ff: "Damal" },
-  posted:          { en: "Posted",                  fr: "PubliÃ©",                     ha: "An buga",                ar: "Ù†Ã™ÂØ´Ø±",                         pcm: "Posted",                  ff: "Yeesaama" },
-  qty:             { en: "Qty",                     fr: "QtÃ©",                        ha: "Adadi",                  ar: "Ø§Ù„ÙƒÙ…ÙŠØ©",                       pcm: "Qty",                     ff: "Tonngol" },
+  loading:         { en: "Loading listing…",        fr: "Chargement…",                ha: "Ana lodawa…",            ar: "جار التحميل…",                pcm: "Loading…",               ff: "Naatirde…" },
+  not_found:       { en: "Listing not found",       fr: "Annonce introuvable",        ha: "Ba a samu ba",           ar: "الإعلان غير موجود",            pcm: "Listing no dey",          ff: "Alaa" },
+  removed:         { en: "This item may have been sold or removed.", fr: "Cet article a peut-être été vendu ou supprimé.", ha: "An sayar ko an cire.", ar: "ربما تم بيع العنصر أو إزالته.", pcm: "Dis item don sell or remove.", ff: "Ko nde dawnii ko nde ɓennii." },
+  browse:          { en: "Browse Marketplace",      fr: "Parcourir le marché",        ha: "Duba kasuwa",            ar: "تصÙح السوق",                   pcm: "Browse Market",           ff: "Yiyto Suudu" },
+  description:     { en: "Description",             fr: "Description",                ha: "Bayanai",                ar: "الوصÙ",                        pcm: "Description",             ff: "Pijirde" },
+  no_description:  { en: "No description provided.", fr: "Aucune description.",       ha: "Babu bayanai.",          ar: "لا يوجد وصÙ.",                 pcm: "No description.",         ff: "Alaa pijirde." },
+  contact_seller:  { en: "Contact Seller",          fr: "Contacter le vendeur",       ha: "Tuntuɓi mai siyarwa",   ar: "تواصل مع البائع",              pcm: "Contact Seller",          ff: "Newnin Yoɓoowo" },
+  view_profile:    { en: "View Profile",            fr: "Voir le profil",             ha: "Duba profile",           ar: "عرض الملÙ الشخصي",             pcm: "See Profile",             ff: "Yiy Profil" },
+  whatsapp:        { en: "WhatsApp",                fr: "WhatsApp",                   ha: "WhatsApp",               ar: "واتساب",                       pcm: "WhatsApp",                ff: "WhatsApp" },
+  call:            { en: "Call",                    fr: "Appeler",                    ha: "Kira",                   ar: "اتصل",                         pcm: "Call",                    ff: "Ewnu" },
+  chat:            { en: "Chat",                    fr: "Chat",                       ha: "Zanta",                  ar: "دردشة",                        pcm: "Chat",                    ff: "Haɓɓu" },
+  safety_tip:      { en: "Safety tip:",             fr: "Conseil de sécurité :",      ha: "Tip na aminci:",         ar: "نصيحة أمان:",                  pcm: "Safety tip:",             ff: "Miijo sehilal:" },
+  safety_msg:      { en: "Use Bambeh Escrow to protect your purchase. Never send money before inspecting the item.", fr: "Utilisez l'Escrow Bambeh pour protéger votre achat. N'envoyez jamais d'argent avant d'inspecter l'article.", ha: "Yi amfani da Bambeh Escrow. Kada ka aika kudi kafin bincika kaya.", ar: "استخدم ضمان Bambeh. لا ترسل المال قبل الÙحص.", pcm: "Use Bambeh Escrow protect your buy. No send money before you see item.", ff: "Huɓɓin Bambeh Escrow. Taa aawa mbaydi tawi anndaaki kala ngoo." },
+  meet_safely:     { en: "How to meet safely →",   fr: "Comment se rencontrer en sécurité →", ha: "Yadda za a gana lafiya →", ar: "كيÙية الاجتماع بأمان →",  pcm: "How to meet safe →",      ff: "No rewata sehilal →" },
+  report:          { en: "Report this listing",     fr: "Signaler cette annonce",     ha: "Rahoton wannan jeri",    ar: "الإبلاغ عن هذا الإعلان",       pcm: "Report dis listing",      ff: "Tiindirgo nde" },
+  your_cart:       { en: "Your Cart",               fr: "Votre panier",               ha: "Katonku",                ar: "سلتك",                         pcm: "Your Cart",               ff: "Cart maa" },
+  items_in_cart:   { en: "items",                   fr: "articles",                   ha: "kaya",                   ar: "عناصر",                        pcm: "items",                   ff: "kala" },
+  view_cart:       { en: "View Cart",               fr: "Voir le panier",             ha: "Duba kato",              ar: "عرض السلة",                    pcm: "See Cart",                ff: "Yiy Cart" },
+  checkout:        { en: "Checkout Now",            fr: "Payer maintenant",           ha: "Biya yanzu",             ar: "الدÙع الآن",                   pcm: "Pay now",                 ff: "Haaɓtu hannde" },
+  add_to_cart:     { en: "Add to Cart",             fr: "Ajouter au panier",          ha: "Ƙara zuwa kato",         ar: "أضÙ إلى السلة",                pcm: "Add to Cart",             ff: "Ɓeydu e Cart" },
+  added:           { en: "Added!",                  fr: "Ajouté!",                    ha: "An ƙara!",               ar: "تمت الإضاÙة!",                 pcm: "Added!",                  ff: "Ɓeydaama!" },
+  in_cart:         { en: "In Cart",                 fr: "Dans le panier",             ha: "A cikin kato",           ar: "Ùي السلة",                     pcm: "In Cart",                 ff: "E nder Cart" },
+  buy_now:         { en: "Buy Now",                 fr: "Acheter",                    ha: "Saya yanzu",             ar: "اشتر الآن",                    pcm: "Buy Now",                 ff: "Soo Hannde" },
+  views:           { en: "views",                   fr: "vues",                       ha: "kallon",                 ar: "مشاهدات",                      pcm: "view",                    ff: "yiytatii" },
+  featured:        { en: "Featured",                fr: "En vedette",                 ha: "Babban zaɓi",            ar: "مميز",                         pcm: "Featured",                ff: "Yiɗaaɗo" },
+  negotiable:      { en: "Price negotiable",        fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتÙاوض",           pcm: "Price nego",              ff: "Njaru hewtii" },
+  expires_today:   { en: "This listing expires today!", fr: "Cette annonce expire aujourd'hui!", ha: "Wannan jeri na ƙarewa yau!", ar: "ينتهي هذا الإعلان اليوم!", pcm: "Dis listing expire today!", ff: "Nde ɗowroo hande!" },
+  expires_in:      { en: "This listing expires in", fr: "Cette annonce expire dans",  ha: "Wannan jeri na ƙarewa a cikin", ar: "ينتهي هذا الإعلان خلال", pcm: "Dis listing expire for",  ff: "Nde ɗowroo e nder" },
+  days:            { en: "day(s)",                  fr: "jour(s)",                    ha: "kwana",                  ar: "يوم/أيام",                     pcm: "day(s)",                  ff: "ñalnde(ɗe)" },
+  no_image:        { en: "No image",                fr: "Pas d'image",                ha: "Babu hoto",              ar: "لا توجد صورة",                 pcm: "No picture",              ff: "Alaa foto" },
+  seller:          { en: "Bambeh Seller",           fr: "Vendeur Bambeh",             ha: "Mai siyarwa Bambeh",     ar: "بائع Bambeh",                  pcm: "Bambeh Seller",           ff: "Yoɓoowo Bambeh" },
+  qty_each:        { en: "XAF each",                fr: "XAF l'unité",                ha: "XAF kowanne",            ar: "Ùرنك إÙريقي للقطعة",           pcm: "XAF each one",            ff: "XAF ɓe kala" },
+  retry:           { en: "Retry",                   fr: "Réessayer",                  ha: "Sake",                   ar: "أعد المحاولة",                 pcm: "Try again",               ff: "Artu jeer" },
+  go_back:         { en: "Go back",                 fr: "Retour",                     ha: "Koma baya",              ar: "الرجوع",                       pcm: "Go back",                 ff: "Yah artu" },
+  shared:          { en: "Link copied!",            fr: "Lien copié!",                ha: "An kwafi hanyar!",       ar: "تم نسخ الرابط!",               pcm: "Link don copy!",          ff: "Lien nanngi!" },
+  condition:       { en: "Condition",               fr: "État",                       ha: "Yanayi",                 ar: "الحالة",                       pcm: "Condition",               ff: "Damal" },
+  posted:          { en: "Posted",                  fr: "Publié",                     ha: "An buga",                ar: "نÙشر",                         pcm: "Posted",                  ff: "Yeesaama" },
+  qty:             { en: "Qty",                     fr: "Qté",                        ha: "Adadi",                  ar: "الكمية",                       pcm: "Qty",                     ff: "Tonngol" },
 };
 
 function getLang(): Lang {
@@ -83,7 +83,7 @@ function getLang(): Lang {
   return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
 }
 
-// â”€â”€â”€ Hook: reactive language â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hook: reactive language ───────────────────────────────────────────────────
 function useLangState(): Lang {
   const [lang, setLang] = useState<Lang>(getLang);
   useEffect(() => {
@@ -98,7 +98,7 @@ function useLangState(): Lang {
   return lang;
 }
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface ListingDetail {
   id: string;
   title: string;
@@ -128,7 +128,7 @@ interface CartItem {
   sellerId: string;
 }
 
-// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Constants ────────────────────────────────────────────────────────────────
 const CART_KEY = "bambeh_cart";
 const FAV_KEY  = "bambeh_favorites";
 
@@ -142,7 +142,7 @@ const CONDITION_COLOR: Record<string, string> = {
   Used:        "bg-gray-100 text-gray-600 border-gray-200",
 };
 
-// â”€â”€â”€ Cart Helpers â€” PURE FUNCTIONS, NO HOOKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Cart Helpers — PURE FUNCTIONS, NO HOOKS ──────────────────────────────────
 function readCart(): CartItem[] {
   try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
   catch { return []; }
@@ -181,7 +181,7 @@ function cartTotal(cart: CartItem[]): number {
   return cart.reduce((sum, c) => sum + c.price * c.quantity, 0);
 }
 
-// â”€â”€â”€ Fav Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Fav Helpers ──────────────────────────────────────────────────────────────
 function isFavourited(id: string): boolean {
   try { return JSON.parse(localStorage.getItem(FAV_KEY) || "[]").some((f: any) => f.id === id); }
   catch { return false; }
@@ -201,18 +201,18 @@ function toggleFavStorage(item: ListingDetail): boolean {
   } catch { return false; }
 }
 
-// â”€â”€â”€ Other Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Other Helpers ─────────────────────────────────────────────────────────────
 const fmt = (n: number) => n.toLocaleString("fr-CM");
 
 function isUUID(s: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function MarketplaceItemDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const lang = useLangState();   // âœ… hook at top level â€” lang switches instantly
+  const lang = useLangState();   // ✅ hook at top level — lang switches instantly
   const t = (key: string) => TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
   const isRtl = lang === "ar";
 
@@ -221,7 +221,7 @@ export default function MarketplaceItemDetails() {
   const [error,     setError]     = useState<string | null>(null);
   const [imgIdx,    setImgIdx]    = useState(0);
   const [qty,       setQty]       = useState(1);
-  const [cart,      setCart]      = useState<CartItem[]>(readCart);   // âœ… pure fn initialiser
+  const [cart,      setCart]      = useState<CartItem[]>(readCart);   // ✅ pure fn initialiser
   const [justAdded, setJustAdded] = useState(false);
   const [showCart,  setShowCart]  = useState(false);
   const [fav,       setFav]       = useState(false);
@@ -237,7 +237,7 @@ export default function MarketplaceItemDetails() {
     setError(null);
 
     try {
-      // Build query â€” accept UUID or slug
+      // Build query — accept UUID or slug
       let query = supabase
         .from("listings")
         .select("id, title, description, price, category, condition, location, phone, negotiable, images, extra, seller_id, created_at, view_count, expires_at, is_featured, status, type")
@@ -374,10 +374,10 @@ export default function MarketplaceItemDetails() {
   const conditionColor = CONDITION_COLOR[listing?.condition ?? ""] ?? CONDITION_COLOR["Used"];
   const phone = listing?.phone;
   const whatsappText = encodeURIComponent(
-    `Hi! I'm interested in your listing on Bambeh: ${listing?.title} â€” ${fmt(listing?.price ?? 0)} XAF`
+    `Hi! I'm interested in your listing on Bambeh: ${listing?.title} — ${fmt(listing?.price ?? 0)} XAF`
   );
 
-  // â”€â”€â”€ Loading state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Loading state ───────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4 pb-24">
@@ -387,7 +387,7 @@ export default function MarketplaceItemDetails() {
     );
   }
 
-  // â”€â”€â”€ Error / Not found â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Error / Not found ───────────────────────────────────────────────────
   if (error || !listing) {
     const isNotFound = error === "not_found" || error === "no-id";
     return (
@@ -421,7 +421,7 @@ export default function MarketplaceItemDetails() {
     );
   }
 
-  // â”€â”€â”€ Main render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Main render ─────────────────────────────────────────────────────────
   return (
     <div
       className="min-h-screen bg-gray-50 pb-36"
@@ -490,7 +490,7 @@ export default function MarketplaceItemDetails() {
           <>
             <img
               src={listing.images[imgIdx]}
-              alt={`${listing.title} â€” photo ${imgIdx + 1}`}
+              alt={`${listing.title} — photo ${imgIdx + 1}`}
               className="w-full h-full object-contain bg-white"
               loading="lazy"
               onError={(e) => { (e.target as HTMLImageElement).src = ""; }}
@@ -604,17 +604,17 @@ export default function MarketplaceItemDetails() {
                     <p className="text-xs text-teal-600 font-semibold">{fmt(c.price)} XAF</p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setCart(updateCartQty(c.id, c.quantity - 1))} className="w-5 h-5 bg-white rounded border text-xs flex items-center justify-center hover:bg-gray-50">âˆ’</button>
+                    <button onClick={() => setCart(updateCartQty(c.id, c.quantity - 1))} className="w-5 h-5 bg-white rounded border text-xs flex items-center justify-center hover:bg-gray-50">−</button>
                     <span className="text-xs w-4 text-center">{c.quantity}</span>
                     <button onClick={() => setCart(updateCartQty(c.id, c.quantity + 1))} className="w-5 h-5 bg-white rounded border text-xs flex items-center justify-center hover:bg-gray-50">+</button>
-                    <button onClick={() => setCart(removeFromCart(c.id))} className="ml-1 text-red-400 text-xs hover:text-red-600">Ã—</button>
+                    <button onClick={() => setCart(removeFromCart(c.id))} className="ml-1 text-red-400 text-xs hover:text-red-600">×</button>
                   </div>
                 </div>
               ))}
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-teal-200">
               <p className="text-xs font-bold text-gray-700">{fmt(cartTotal(cart))} XAF</p>
-              <button onClick={() => navigate("/cart")} className="text-xs font-bold text-teal-600 hover:text-teal-800">{t("view_cart")} â†’</button>
+              <button onClick={() => navigate("/cart")} className="text-xs font-bold text-teal-600 hover:text-teal-800">{t("view_cart")} →</button>
             </div>
           </div>
         )}
@@ -623,7 +623,7 @@ export default function MarketplaceItemDetails() {
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-600 font-medium">{t("qty")}:</span>
           <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
-            <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-7 h-7 bg-white rounded-lg text-lg font-bold flex items-center justify-center hover:bg-gray-50" aria-label="Decrease quantity">âˆ’</button>
+            <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-7 h-7 bg-white rounded-lg text-lg font-bold flex items-center justify-center hover:bg-gray-50" aria-label="Decrease quantity">−</button>
             <span className="w-6 text-center text-sm font-bold">{qty}</span>
             <button onClick={() => setQty((q) => q + 1)} className="w-7 h-7 bg-white rounded-lg text-lg font-bold flex items-center justify-center hover:bg-gray-50" aria-label="Increase quantity">+</button>
           </div>
@@ -747,9 +747,9 @@ export default function MarketplaceItemDetails() {
         <button
           onClick={handleBuyNow}
           className="flex-1 py-3 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 active:scale-95 transition shadow-sm"
-          aria-label={`${t("buy_now")} â€” ${fmt(listing.price * qty)} XAF`}
+          aria-label={`${t("buy_now")} — ${fmt(listing.price * qty)} XAF`}
         >
-          {t("buy_now")} â€” {fmt(listing.price * qty)} XAF
+          {t("buy_now")} — {fmt(listing.price * qty)} XAF
         </button>
       </div>
     </div>

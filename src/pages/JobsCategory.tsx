@@ -120,7 +120,7 @@ const JobsCategory: React.FC = () => {
     if (pageNum === 1) { setLoading(true); setError(null); }
     else setLoadingMore(true);
 
-    const result = await getJobs({ category: dbCategory, pageSize: PAGE_SIZE, page: pageNum });
+    const result = await getJobs({ category: dbCategory as any, pageSize: PAGE_SIZE, page: pageNum });
 
     if (result.error) {
       setError(result.error);
@@ -323,5 +323,6 @@ const JobsCategory: React.FC = () => {
 };
 
 export default JobsCategory;
+
 
 

@@ -1,12 +1,12 @@
-﻿/**
+/**
  * src/services/profile.service.ts
- * Bambeh Marketplace — User Profile Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � User Profile Service
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 export interface UserProfile {
   id: string;
   email: string;
@@ -41,7 +41,7 @@ export interface ProfileUpdateResponse {
   error: string | null;
 }
 
-// ─── Map Row ──────────────────────────────────────────────────────────────────
+// --- Map Row ------------------------------------------------------------------
 function mapProfileRow(row: Record<string, unknown>): UserProfile {
   return {
     id: row.id as string,
@@ -68,7 +68,7 @@ function mapProfileRow(row: Record<string, unknown>): UserProfile {
   };
 }
 
-// ─── Get Profile ──────────────────────────────────────────────────────────────
+// --- Get Profile --------------------------------------------------------------
 export async function getProfile(userId: string): Promise<ProfileResponse> {
   try {
     const { data, error } = await supabase
@@ -88,7 +88,7 @@ export async function getProfile(userId: string): Promise<ProfileResponse> {
   }
 }
 
-// ─── Update Profile ───────────────────────────────────────────────────────────
+// --- Update Profile -----------------------------------------------------------
 export async function updateProfile(
   userId: string,
   updates: Partial<Omit<UserProfile, "id" | "email" | "createdAt" | "updatedAt">>
@@ -123,7 +123,7 @@ export async function updateProfile(
   }
 }
 
-// ─── Upload Avatar ────────────────────────────────────────────────────────────
+// --- Upload Avatar ------------------------------------------------------------
 export async function uploadAvatar(
   userId: string,
   file: File
@@ -152,7 +152,7 @@ export async function uploadAvatar(
   }
 }
 
-// ─── Get Public Profile ───────────────────────────────────────────────────────
+// --- Get Public Profile -------------------------------------------------------
 export async function getPublicProfile(userId: string): Promise<ProfileResponse> {
   try {
     const { data, error } = await supabase

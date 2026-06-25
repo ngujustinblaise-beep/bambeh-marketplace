@@ -1,5 +1,5 @@
-﻿/**
- * BAMBÉ MARKETPLACE - i18n CONFIGURATION
+/**
+ * BAMB� MARKETPLACE - i18n CONFIGURATION
  * Multi-language support: French + English
  * Version: 1.0.0
  */
@@ -17,7 +17,7 @@ i18n
     supportedLngs: ["en", "fr"],
     debug: false,
 
-    // ✅ returnEmptyString appears only ONCE (was duplicated before — caused build error)
+    // ? returnEmptyString appears only ONCE (was duplicated before � caused build error)
     returnEmptyString: false,
     returnNull: false,
 

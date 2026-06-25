@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * BAMBÉ MARKETPLACE - ADMIN SERVICE
+ * BAMB� MARKETPLACE - ADMIN SERVICE
  * Complete backend integration for admin operations
  * Order, User, Dispute, and Analytics Management
  * Version: 1.0.0
@@ -34,7 +34,7 @@ class AdminService {
     });
   }
 
-  // ── DASHBOARD STATISTICS ─────────────────────────────────────────────────
+  // -- DASHBOARD STATISTICS -------------------------------------------------
 
   async getDashboardStats(): Promise<AdminDashboardStats> {
     try {
@@ -67,7 +67,7 @@ class AdminService {
     }
   }
 
-  // ── ORDER MANAGEMENT ─────────────────────────────────────────────────────
+  // -- ORDER MANAGEMENT -----------------------------------------------------
 
   async getOrders(filters?: {
     status?: OrderStatus;
@@ -160,7 +160,7 @@ class AdminService {
     }
   }
 
-  // ── DISPUTE MANAGEMENT ───────────────────────────────────────────────────
+  // -- DISPUTE MANAGEMENT ---------------------------------------------------
 
   async getDisputes(filters?: {
     status?: 'open' | 'investigating' | 'resolved' | 'closed';
@@ -226,7 +226,7 @@ class AdminService {
     }
   }
 
-  // ── USER MANAGEMENT ──────────────────────────────────────────────────────
+  // -- USER MANAGEMENT ------------------------------------------------------
 
   async getUsers(filters?: {
     role?: 'customer' | 'driver' | 'vendor' | 'admin';
@@ -294,7 +294,7 @@ class AdminService {
     }
   }
 
-  // ── REPORTS & ANALYTICS ──────────────────────────────────────────────────
+  // -- REPORTS & ANALYTICS --------------------------------------------------
 
   async generateSalesReport(startDate: string, endDate: string, format: 'pdf' | 'csv' = 'pdf'): Promise<string> {
     try {
@@ -347,7 +347,7 @@ class AdminService {
     }
   }
 
-  // ── NOTIFICATIONS & BROADCASTS ───────────────────────────────────────────
+  // -- NOTIFICATIONS & BROADCASTS -------------------------------------------
 
   async sendBroadcast(title: string, message: string, targetAudience: 'all' | 'customers' | 'drivers' | 'vendors', channels: string[]): Promise<boolean> {
     try {
@@ -359,7 +359,7 @@ class AdminService {
     }
   }
 
-  // ── SYSTEM SETTINGS ──────────────────────────────────────────────────────
+  // -- SYSTEM SETTINGS ------------------------------------------------------
 
   async getSystemSettings(): Promise<any> {
     try {
@@ -381,7 +381,7 @@ class AdminService {
     }
   }
 
-  // ── UTILITY ──────────────────────────────────────────────────────────────
+  // -- UTILITY --------------------------------------------------------------
 
   async globalSearch(query: string): Promise<any> {
     try {

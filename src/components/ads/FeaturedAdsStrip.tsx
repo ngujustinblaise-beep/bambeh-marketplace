@@ -1,5 +1,5 @@
-﻿/**
- * FeaturedAdsStrip.tsx — Bambeh Marketplace
+/**
+ * FeaturedAdsStrip.tsx � Bambeh Marketplace
  * FILE LOCATION: src/components/ads/FeaturedAdsStrip.tsx
  *
  * RESPONSIBILITIES:
@@ -13,12 +13,12 @@
  *  - Each card links to the original listing (listing_path) or the category page
  *
  * PROPS:
- *  category?    — limit to a single ad category
- *  searchQuery? — live search string from the parent page
- *  maxVisible?  — override the 20-ad page size
- *  showHeader?  — whether to show the "Featured Ads" section header (default: true)
+ *  category?    � limit to a single ad category
+ *  searchQuery? � live search string from the parent page
+ *  maxVisible?  � override the 20-ad page size
+ *  showHeader?  � whether to show the "Featured Ads" section header (default: true)
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * � 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useEffect,  useState, useCallback } from "react";
@@ -49,7 +49,7 @@ import {
 } from "@/hooks/useFeaturedAds";
 import { useLang } from '@/hooks/useAppLang';
 
-// ─── Category icon + colour map ───────────────────────────────────────────────4
+// --- Category icon + colour map -----------------------------------------------4
 const CATEGORY_META: Record<
   AdCategory,
   {
@@ -71,7 +71,7 @@ const CATEGORY_META: Record<
   general:      { icon: Tag,            colour: "bg-gray-100",   textColour: "text-gray-700",   path: "/"             },
 };
 
-// ─── UI string translations ───────────────────────────────────────────────────
+// --- UI string translations ---------------------------------------------------
 
 const UI_STRINGS: Record<
   string,
@@ -94,17 +94,17 @@ const UI_STRINGS: Record<
     of:                "of",
     loadError:         "Couldn't load ads.",
     retry:             "Retry",
-    searchPlaceholder: "Search ads…",
+    searchPlaceholder: "Search ads�",
   },
   fr: {
     featuredAds:       "Annonces en vedette",
     noAds:             "Aucune annonce pour le moment.",
-    promoted:          "Sponsorisé",
+    promoted:          "Sponsoris�",
     viewAll:           "Voir tout",
     of:                "sur",
     loadError:         "Impossible de charger les annonces.",
-    retry:             "Réessayer",
-    searchPlaceholder: "Rechercher des annonces…",
+    retry:             "R�essayer",
+    searchPlaceholder: "Rechercher des annonces�",
   },
   ha: {
     featuredAds:       "Tallace-tallace na musamman",
@@ -114,17 +114,17 @@ const UI_STRINGS: Record<
     of:                "daga",
     loadError:         "Ba a iya loda tallace-tallace.",
     retry:             "Sake gwadawa",
-    searchPlaceholder: "Nemo tallace-tallace…",
+    searchPlaceholder: "Nemo tallace-tallace�",
   },
   ar: {
-    featuredAds:       "الإعلانات المميزة",
-    noAds:             "لا توجد إعلانات Ùي الوقت الحالي.",
-    promoted:          "ممول",
-    viewAll:           "عرض الكل",
-    of:                "من",
-    loadError:         "تعذّر تحميل الإعلانات.",
-    retry:             "إعادة المحاولة",
-    searchPlaceholder: "بحث Ùي الإعلانات…",
+    featuredAds:       "????????? ???????",
+    noAds:             "?? ???? ??????? ف? ????? ??????.",
+    promoted:          "????",
+    viewAll:           "??? ????",
+    of:                "??",
+    loadError:         "????? ????? ?????????.",
+    retry:             "????? ????????",
+    searchPlaceholder: "??? ف? ?????????�",
   },
   pcm: {
     featuredAds:       "Featured Ads",
@@ -134,17 +134,17 @@ const UI_STRINGS: Record<
     of:                "for",
     loadError:         "E no fit load ads.",
     retry:             "Try again",
-    searchPlaceholder: "Search ads…",
+    searchPlaceholder: "Search ads�",
   },
   ful: {
-    featuredAds:       "Koonɗe Jaɓɓaaɗe",
-    noAds:             "Alaa koonɗe hannde.",
-    promoted:          "Nannginaaɗo",
+    featuredAds:       "Koon?e Ja??aa?e",
+    noAds:             "Alaa koon?e hannde.",
+    promoted:          "Nannginaa?o",
     viewAll:           "Yiy'on fow",
     of:                "e dow",
-    loadError:         "Waawaa heɓtude koonɗe.",
-    retry:             "Taa fuɗɗo",
-    searchPlaceholder: "Ɗaɓɓu koonɗe…",
+    loadError:         "Waawaa he?tude koon?e.",
+    retry:             "Taa fu??o",
+    searchPlaceholder: "?a??u koon?e�",
   },
 };
 
@@ -152,7 +152,7 @@ function useUiStrings(lang: string) {
   return UI_STRINGS[lang] ?? UI_STRINGS["en"];
 }
 
-// ─── Single ad card ───────────────────────────────────────────────────────────
+// --- Single ad card -----------------------------------------------------------
 
 interface AdCardProps {
   ad: FeaturedAd;
@@ -231,7 +231,7 @@ const AdCard: React.FC<AdCardProps> = ({ ad, lang, timeAgo, onNavigate }) => {
   );
 };
 
-// ─── FeaturedAdsStrip ─────────────────────────────────────────────────────────
+// --- FeaturedAdsStrip ---------------------------------------------------------
 
 interface FeaturedAdsStripProps {
   category?: AdCategory;
@@ -281,7 +281,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
     [navigate]
   );
 
-  // ── Loading skeleton ─────────────────────────────────────────────────────
+  // -- Loading skeleton -----------------------------------------------------
   if (isLoading) {
     return (
       <div className={`px-4 py-3 ${className}`}>
@@ -302,7 +302,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
     );
   }
 
-  // ── Error state ──────────────────────────────────────────────────────────
+  // -- Error state ----------------------------------------------------------
   if (error) {
     return (
       <div className={`px-4 py-2 ${className}`}>
@@ -316,12 +316,12 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
     );
   }
 
-  // ── Empty state ──────────────────────────────────────────────────────────
+  // -- Empty state ----------------------------------------------------------
   if (allAds.length === 0 && !effectiveSearch) {
     return null;   // silently hide strip when there are no ads to show
   }
 
-  // ───────────────────────────────────────────────────────────────────────
+  // -----------------------------------------------------------------------
   return (
     <section
       className={`bg-white border-b border-gray-100 ${className}`}
@@ -341,7 +341,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* Inline search — only shown if parent hasn't supplied searchQuery */}
+            {/* Inline search � only shown if parent hasn't supplied searchQuery */}
             {!searchQuery && (
               <div className="relative hidden sm:block">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
@@ -378,7 +378,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
               </>
             )}
 
-            {/* View-all link — leads to /search or category page */}
+            {/* View-all link � leads to /search or category page */}
             {allAds.length > 0 && (
               <button
                 onClick={() => handleNav(category ? (CATEGORY_META[category]?.path ?? "/") : "/marketplace")}
@@ -431,7 +431,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
         </div>
       )}
 
-      {/* Dot indicators (only shown when >1 page and ≤10 pages for readability) */}
+      {/* Dot indicators (only shown when >1 page and =10 pages for readability) */}
       {totalPages > 1 && totalPages <= 10 && (
         <div className="flex justify-center gap-1.5 pb-2">
           {Array.from({ length: totalPages }).map((_, i) => (
@@ -440,7 +440,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
               onClick={() => {
                 /* goToPage is available from the hook; here we use the exported
                    nextPage/prevPage only. For dot-click we just set the page
-                   by clicking through — or you can expose goToPage as needed. */
+                   by clicking through � or you can expose goToPage as needed. */
               }}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 i === currentPage

@@ -1,18 +1,18 @@
-﻿/**
- * src/pages/TontineDetail.tsx — Bambeh Marketplace
+/**
+ * src/pages/TontineDetail.tsx � Bambeh Marketplace
  *
  * FIXES applied:
- *  ✅ supabase .single() replaced with .maybeSingle() to avoid PGRST116 error
- *     when no row exists — was throwing uncaught exception.
- *  ✅ handleJoin: navigate('/login') has explicit return — no supabase call without user.
- *  ✅ handleJoin: supabase.from('tontine_groups').update() now uses RPC increment
+ *  ? supabase .single() replaced with .maybeSingle() to avoid PGRST116 error
+ *     when no row exists � was throwing uncaught exception.
+ *  ? handleJoin: navigate('/login') has explicit return � no supabase call without user.
+ *  ? handleJoin: supabase.from('tontine_groups').update() now uses RPC increment
  *     or a safe +1 strategy to avoid overwriting concurrent joins.
- *  ✅ loadGroup called with correct id (group.id not stale) after join.
- *  ✅ Demo group shown when ID is non-UUID (dev/preview mode).
- *  ✅ Date formatting: toLocaleDateString with explicit locale to avoid hydration mismatch.
- *  ✅ Member list: profiles join uses correct syntax; full_name fallback is 'Member'.
- *  ✅ Loader2 replaced with consistent spinner style.
- *  ✅ "Back to Tontine" link uses navigate() not window.location.
+ *  ? loadGroup called with correct id (group.id not stale) after join.
+ *  ? Demo group shown when ID is non-UUID (dev/preview mode).
+ *  ? Date formatting: toLocaleDateString with explicit locale to avoid hydration mismatch.
+ *  ? Member list: profiles join uses correct syntax; full_name fallback is 'Member'.
+ *  ? Loader2 replaced with consistent spinner style.
+ *  ? "Back to Tontine" link uses navigate() not window.location.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -92,7 +92,7 @@ export default function TontineDetail() {
         return;
       }
 
-      // FIX: maybeSingle() instead of single() — no error when row missing
+      // FIX: maybeSingle() instead of single() � no error when row missing
       const { data, error: dbErr } = await supabase
         .from('tontine_groups')
         .select('*')
@@ -126,7 +126,7 @@ export default function TontineDetail() {
       if (memberData) {
         setMembers(memberData.map(m => ({
           userId:         m.user_id,
-          displayName:    (m.profiles as Record<string, string> | null)?.full_name || 'Member',
+          displayName:    (m.profiles as any)?.full_name || 'Member',
           payoutPosition: m.payout_position,
           hasPaid:        m.has_paid_current_round,
           joinedAt:       m.joined_at,
@@ -160,7 +160,7 @@ export default function TontineDetail() {
 
       // FIX: try RPC increment; fallback to direct update
       await supabase.rpc('increment_tontine_members', { group_id: group.id })
-        .catch(() =>
+        .then(() => {}, () =>
           supabase
             .from('tontine_groups')
             .update({ current_members: group.currentMembers + 1 })
@@ -170,7 +170,7 @@ export default function TontineDetail() {
       setIsMember(true);
       loadGroup(group.id);
     } catch {
-      // silent — user can try again
+      // silent � user can try again
     } finally {
       setJoining(false);
     }
@@ -306,14 +306,16 @@ export default function TontineDetail() {
             className="w-full bg-purple-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-purple-800 transition"
           >
             {joining
-              ? <><Loader2 className="w-4 h-4 animate-spin" />Joining…</>
-              : <><Plus className="w-4 h-4" />Join — {fmt(group.contributionXaf)}/{group.frequency}</>}
+              ? <><Loader2 className="w-4 h-4 animate-spin" />Joining�</>
+              : <><Plus className="w-4 h-4" />Join � {fmt(group.contributionXaf)}/{group.frequency}</>}
           </button>
         </div>
       )}
     </div>
   );
 }
+
+
 
 
 

@@ -1,5 +1,5 @@
-﻿/**
- * src/pages/EditJobListing.tsx — Bambeh Marketplace
+/**
+ * src/pages/EditJobListing.tsx � Bambeh Marketplace
  * FIXED: Real job edit form reading from and saving to Supabase.
  * Was a stub (just showed a pencil emoji).
  */

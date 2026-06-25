@@ -1,14 +1,14 @@
-﻿/**
- * SubscriptionPlans.tsx  —  Bambeh Marketplace
+/**
+ * SubscriptionPlans.tsx  �  Bambeh Marketplace
  * FILE LOCATION: src/pages/subscription.tsx
  *
  * FIXED (this version):
- *  ✅ Uses unified useCamPay hook (no more Render payment server)
- *  ✅ Payment goes directly: Frontend → Supabase Edge Function → CamPay
- *  ✅ No cold-start problem (Supabase Edge Functions are always warm)
- *  ✅ Subscription activation only happens after CamPay confirms SUCCESSFUL
- *  ✅ Removed handleManualUnlock bypass loophole
- *  ✅ Proper error messages with retry
+ *  ? Uses unified useCamPay hook (no more Render payment server)
+ *  ? Payment goes directly: Frontend ? Supabase Edge Function ? CamPay
+ *  ? No cold-start problem (Supabase Edge Functions are always warm)
+ *  ? Subscription activation only happens after CamPay confirms SUCCESSFUL
+ *  ? Removed handleManualUnlock bypass loophole
+ *  ? Proper error messages with retry
  */
 
 import React, { useState, useEffect } from 'react';
@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase';
 import CamPayWidget from '@/components/payment/CamPayWidget';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ── Plan definitions ──────────────────────────────────────────────────────────
+// -- Plan definitions ----------------------------------------------------------
 const PLANS = [
   {
     id: 'daily',
@@ -76,7 +76,7 @@ const PLANS = [
   },
 ];
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// -- Component -----------------------------------------------------------------
 const SubscriptionPlans: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -87,7 +87,7 @@ const SubscriptionPlans: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // ── Activate subscription in Supabase after CamPay confirms ──────────────
+  // -- Activate subscription in Supabase after CamPay confirms --------------
   async function handlePaymentSuccess(reference: string) {
     if (!selectedPlan || !userId) return;
 
@@ -124,7 +124,7 @@ const SubscriptionPlans: React.FC = () => {
     setTimeout(() => navigate('/marketplace'), 2500);
   }
 
-  // ── Already subscribed ─────────────────────────────────────────────────────
+  // -- Already subscribed -----------------------------------------------------
   if (isActive) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -143,20 +143,20 @@ const SubscriptionPlans: React.FC = () => {
     );
   }
 
-  // ── Success screen ─────────────────────────────────────────────────────────
+  // -- Success screen ---------------------------------------------------------
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center max-w-sm w-full">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-green-700 mb-2">Access Unlocked! 🎉</h2>
-          <p className="text-gray-600">Your {selectedPlan?.name} is active. Redirecting…</p>
+          <h2 className="text-2xl font-bold text-green-700 mb-2">Access Unlocked! ??</h2>
+          <p className="text-gray-600">Your {selectedPlan?.name} is active. Redirecting�</p>
         </div>
       </div>
     );
   }
 
-  // ── Checkout: one plan selected ────────────────────────────────────────────
+  // -- Checkout: one plan selected --------------------------------------------
   if (selectedPlan) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -171,7 +171,7 @@ const SubscriptionPlans: React.FC = () => {
             <div className="bg-white/20 p-3 rounded-full">{selectedPlan.icon}</div>
             <div>
               <h1 className="text-xl font-bold">{selectedPlan.name}</h1>
-              <p className="text-sm opacity-80">{selectedPlan.duration} · {selectedPlan.price.toLocaleString()} XAF</p>
+              <p className="text-sm opacity-80">{selectedPlan.duration} � {selectedPlan.price.toLocaleString()} XAF</p>
             </div>
           </div>
         </div>
@@ -194,11 +194,11 @@ const SubscriptionPlans: React.FC = () => {
             <h3 className="font-semibold text-gray-800 mb-4">Pay with Mobile Money</h3>
             <CamPayWidget
               amount={selectedPlan.price}
-              description={`Bambeh ${selectedPlan.name} — ${selectedPlan.duration}`}
+              description={`Bambeh ${selectedPlan.name} � ${selectedPlan.duration}`}
               externalRef={`sub_${selectedPlan.id}_${userId}_${Date.now()}`}
               metadata={{ user_id: userId, plan_id: selectedPlan.id }}
               onSuccess={handlePaymentSuccess}
-              buttonLabel={`Subscribe — ${selectedPlan.price.toLocaleString()} XAF`}
+              buttonLabel={`Subscribe � ${selectedPlan.price.toLocaleString()} XAF`}
             />
           </div>
         </div>
@@ -206,7 +206,7 @@ const SubscriptionPlans: React.FC = () => {
     );
   }
 
-  // ── Plan picker ────────────────────────────────────────────────────────────
+  // -- Plan picker ------------------------------------------------------------
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-6">
@@ -224,7 +224,7 @@ const SubscriptionPlans: React.FC = () => {
           <div key={plan.id} className="bg-white rounded-xl shadow overflow-hidden">
             {plan.popular && (
               <div className="bg-teal-600 text-white text-xs font-bold text-center py-1.5 tracking-wide">
-                ✦ MOST POPULAR
+                ? MOST POPULAR
               </div>
             )}
             <div className={`bg-gradient-to-r ${plan.gradient} p-4 flex items-center justify-between`}>
@@ -255,14 +255,14 @@ const SubscriptionPlans: React.FC = () => {
                 }}
                 className={`w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r ${plan.gradient} hover:opacity-90 transition-opacity`}
               >
-                Select — {plan.price.toLocaleString()} XAF
+                Select � {plan.price.toLocaleString()} XAF
               </button>
             </div>
           </div>
         ))}
 
         <p className="text-xs text-gray-400 text-center">
-          Secured by CamPay · BAMBEH SARL · support@bambeh.com
+          Secured by CamPay � BAMBEH SARL � support@bambeh.com
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
-ï»¿// @ts-nocheck
+// @ts-nocheck
 /**
- * BAMBÃ‰ MARKETPLACE - GPS TRACKING SERVICE
+ * BAMBÉ MARKETPLACE - GPS TRACKING SERVICE
  * Real-time location tracking and route calculation
  * Version: 1.0.0
  */
@@ -137,7 +137,7 @@ class GPSTrackingService {
     distanceInMeters: number,
     speedInMetersPerSecond: number = 8.33,
   ): string {
-    // Default speed: 8.33 m/s (â‰ˆ30 km/h for city traffic)
+    // Default speed: 8.33 m/s (˜30 km/h for city traffic)
     const timeInSeconds = distanceInMeters / speedInMetersPerSecond;
     const minutes = Math.round(timeInSeconds / 60);
 

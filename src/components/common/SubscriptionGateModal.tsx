@@ -1,13 +1,13 @@
-﻿// FILE: src/components/common/SubscriptionGateModal.tsx
+// FILE: src/components/common/SubscriptionGateModal.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Star, Zap, Lock } from 'lucide-react';
 
 const TRANSLATIONS: Record<string, Record<string, string>> = {
-  en: { title: 'Unlock This Feature', sub: 'Subscribe and let us take the load from here.', body: 'This feature is available to subscribed members. Join Bambeh today — all for as little as 100 XAF.', cta: 'View Subscription Plans', cancel: 'Maybe Later' },
-  fr: { title: 'Débloquez cette fonctionnalité', sub: 'Abonnez-vous et laissez-nous gérer le reste.', body: 'Rejoignez Bambeh — dès 100 XAF.', cta: 'Voir les forfaits', cancel: 'Peut-être plus tard' },
-  ha: { title: 'Buɗe wannan fasalin', sub: 'Yi rajista mana mu ɗauki nauyi daga nan.', body: 'Ku shiga Bambeh yau.', cta: 'Duba Tsare-tsare', cancel: 'Wataƙila daga baya' },
-  ar: { title: 'اÙتح هذه الميزة', sub: 'اشترك ودعنا نتحمل العبء من هنا.', body: 'انضم إلى Bambeh اليوم.', cta: 'عرض خطط الاشتراك', cancel: 'ربما لاحقاً' },
+  en: { title: 'Unlock This Feature', sub: 'Subscribe and let us take the load from here.', body: 'This feature is available to subscribed members. Join Bambeh today � all for as little as 100 XAF.', cta: 'View Subscription Plans', cancel: 'Maybe Later' },
+  fr: { title: 'D�bloquez cette fonctionnalit�', sub: 'Abonnez-vous et laissez-nous g�rer le reste.', body: 'Rejoignez Bambeh � d�s 100 XAF.', cta: 'Voir les forfaits', cancel: 'Peut-�tre plus tard' },
+  ha: { title: 'Bu?e wannan fasalin', sub: 'Yi rajista mana mu ?auki nauyi daga nan.', body: 'Ku shiga Bambeh yau.', cta: 'Duba Tsare-tsare', cancel: 'Wata?ila daga baya' },
+  ar: { title: '?ف?? ??? ??????', sub: '????? ????? ????? ????? ?? ???.', body: '???? ??? Bambeh ?????.', cta: '??? ??? ????????', cancel: '???? ??????' },
 };
 
 function getLang(): string { try { return localStorage.getItem('Bambeh_language') || 'en'; } catch { return 'en'; } }

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import type { SubscriptionTier } from "../types/subscription";
 import { SUBSCRIPTION_PLANS } from "../config/subscriptionPlans";
 export type { SubscriptionTier };

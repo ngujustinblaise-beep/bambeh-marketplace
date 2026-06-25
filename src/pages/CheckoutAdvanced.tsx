@@ -1,21 +1,21 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * CHECKOUT ADVANCED - PAYMENT GATEWAY INTEGRATION EXAMPLE
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * 
  * This page demonstrates how to integrate the Payment Gateway
  * for processing MTN Mobile Money and Orange Money payments.
  * 
  * FEATURES:
- * ✅ MTN Mobile Money integration
- * ✅ Orange Money integration
- * ✅ Secure payment processing
- * ✅ Transaction receipts
- * ✅ Order confirmation
+ * ? MTN Mobile Money integration
+ * ? Orange Money integration
+ * ? Secure payment processing
+ * ? Transaction receipts
+ * ? Order confirmation
  * 
- * © 2025 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { useState, useEffect } from 'react';
@@ -86,7 +86,7 @@ export default function CheckoutAdvanced() {
         subtotal: subtotal,
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
-        deliveryAddress: 'Bastos, Yaoundé, '
+        deliveryAddress: 'Bastos, Yaound�, '
       };
 
       setCheckoutData(mockCheckoutData);
@@ -103,7 +103,7 @@ export default function CheckoutAdvanced() {
   };
 
   const handlePaymentSuccess = async (transaction: any) => {
-    console.log('✅ Payment successful:', transaction);
+    console.log('? Payment successful:', transaction);
 
     try {
       // 1. Create order in your backend
@@ -119,7 +119,7 @@ export default function CheckoutAdvanced() {
       // await clearCart();
 
       // 3. Show success message
-      alert(`🎉 Payment Successful!\n\nOrder ID: ${orderId}\nTransaction ID: ${transaction.transactionId}\n\nYour order has been confirmed and will be delivered soon!`);
+      alert(`?? Payment Successful!\n\nOrder ID: ${orderId}\nTransaction ID: ${transaction.transactionId}\n\nYour order has been confirmed and will be delivered soon!`);
 
       // 4. Navigate to order tracking page
       navigate(`/track-order/${orderId}`, { state: { fromCheckout: true, transaction } });
@@ -130,14 +130,14 @@ export default function CheckoutAdvanced() {
   };
 
   const handlePaymentError = (error: any) => {
-    console.error('❌ Payment failed:', error);
+    console.error('? Payment failed:', error);
 
     // Show error message to user
     alert(`Payment Failed\n\n${error.message || 'An error occurred during payment processing. Please try again.'}`);
 
     // Optional: Log error to analytics
     // logPaymentError(error);
-  }; // ← FIXED: was missing this closing brace (caused parse error on import)
+  }; // ? FIXED: was missing this closing brace (caused parse error on import)
 
   const handlePaymentCancel = () => {
     console.log('Payment cancelled by user');
@@ -165,7 +165,7 @@ export default function CheckoutAdvanced() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
-          <div className="text-6xl mb-4">🛒</div>
+          <div className="text-6xl mb-4">??</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Cart is Empty</h2>
           <p className="text-gray-600 mb-6">
             Add items to your cart before proceeding to checkout.
@@ -190,7 +190,7 @@ export default function CheckoutAdvanced() {
             onClick={() => navigate('/cart')}
             className="flex items-center text-teal-600 hover:text-teal-700 font-semibold mb-4 transition-colors"
           >
-            <span className="text-2xl mr-2">←</span>
+            <span className="text-2xl mr-2">?</span>
             Back to Cart
           </button>
 
@@ -252,7 +252,7 @@ export default function CheckoutAdvanced() {
               {/* Delivery Address */}
               <div className="bg-teal-50 rounded-lg p-4">
                 <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
-                  <span className="mr-2">📍</span>
+                  <span className="mr-2">??</span>
                   Delivery Address
                 </h3>
                 <p className="text-gray-700 text-sm">{checkoutData.deliveryAddress}</p>
@@ -280,15 +280,15 @@ export default function CheckoutAdvanced() {
               {/* Security Badge */}
               <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-600">
                 <div className="flex items-center">
-                  <span className="mr-2">🔒</span>
+                  <span className="mr-2">??</span>
                   <span>Secure Payment</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="mr-2">✅</span>
+                  <span className="mr-2">?</span>
                   <span>Verified</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="mr-2">🇨🇲</span>
+                  <span className="mr-2">????</span>
                   <span></span>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function CheckoutAdvanced() {
                 onClick={() => navigate('/help/contact-support')}
                 className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
               >
-                Contact Support →
+                Contact Support ?
               </button>
             </div>
           </div>

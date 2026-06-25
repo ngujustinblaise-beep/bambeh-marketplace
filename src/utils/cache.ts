@@ -1,4 +1,4 @@
-﻿interface CacheItem<T> {
+interface CacheItem<T> {
   data: T;
   timestamp: number;
   ttl: number;

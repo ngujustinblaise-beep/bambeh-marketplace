@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/payment/PaymentSuccess.tsx
  * Shown after a successful payment verification.
  */
@@ -11,7 +11,7 @@ import { useLang, t } from "@/hooks/useAppLang";
 
 const PaymentSuccess: React.FC = () => {
   const { state } = useLocation();
-  const reference = (state as any)?.reference || '—';
+  const reference = (state as any)?.reference || '�';
   const amount    = (state as any)?.amount    || 0;
   const paidAt    = (state as any)?.paidAt    || new Date().toISOString();
 
@@ -31,7 +31,7 @@ const PaymentSuccess: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Successful! 🎉</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Successful! ??</h1>
         <p className="text-gray-500 mb-8">
           Your payment has been confirmed. The seller has been notified.
         </p>

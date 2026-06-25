@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -8,10 +8,10 @@ type Period = typeof PERIODS[number];
 const VendorAnalytics: React.FC = () => {
   const [period, setPeriod] = useState<Period>("30d");
   const metrics = [
-    { label: "Views",       value: 0, icon: "👁", color: "text-blue-600"   },
-    { label: "Clicks",      value: 0, icon: "🖱", color: "text-purple-600" },
-    { label: "Sales",       value: 0, icon: "💰", color: "text-green-600"  },
-    { label: "Revenue XAF", value: 0, icon: "📈", color: "text-teal-600"   },
+    { label: "Views",       value: 0, icon: "??", color: "text-blue-600"   },
+    { label: "Clicks",      value: 0, icon: "??", color: "text-purple-600" },
+    { label: "Sales",       value: 0, icon: "??", color: "text-green-600"  },
+    { label: "Revenue XAF", value: 0, icon: "??", color: "text-teal-600"   },
   ];
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -35,7 +35,7 @@ const VendorAnalytics: React.FC = () => {
           ))}
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm text-center text-gray-400">
-          <p className="text-4xl mb-2">📊</p>
+          <p className="text-4xl mb-2">??</p>
           <p className="text-sm">Charts appear once you have sales data.</p>
         </div>
       </div>

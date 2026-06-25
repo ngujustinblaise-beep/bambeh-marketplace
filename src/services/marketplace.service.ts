@@ -1,22 +1,22 @@
-﻿/**
- * src/services/marketplace.service.ts — Bambeh Marketplace
+/**
+ * src/services/marketplace.service.ts � Bambeh Marketplace
  *
- * REWRITE — June 2026
+ * REWRITE � June 2026
  *
  * FIXES:
- *  ✅ Uses `listings` table (canonical — consistent with Marketplace.tsx and MarketplaceItemDetails.tsx)
- *  ✅ increment_view_count RPC passes table_name + record_id
- *  ✅ All CRUD operations use seller_id (not user_id / vendor_id)
- *  ✅ No reference to removed marketplace_items table
- *  ✅ Expiry: listings expire 30 days after creation (stored in expires_at)
- *  ✅ Expiry reminders: getExpiringListings() helper for push notification service
+ *  ? Uses `listings` table (canonical � consistent with Marketplace.tsx and MarketplaceItemDetails.tsx)
+ *  ? increment_view_count RPC passes table_name + record_id
+ *  ? All CRUD operations use seller_id (not user_id / vendor_id)
+ *  ? No reference to removed marketplace_items table
+ *  ? Expiry: listings expire 30 days after creation (stored in expires_at)
+ *  ? Expiry reminders: getExpiringListings() helper for push notification service
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * � 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// --- Types ---------------------------------------------------------------------
 export interface MarketplaceListingRow {
   id: string;
   seller_id: string;
@@ -90,12 +90,12 @@ export interface ListingFilters {
   pageSize?: number;
 }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+// --- Helpers -------------------------------------------------------------------
 function expiryDate(): string {
   return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 }
 
-// ─── Read ──────────────────────────────────────────────────────────────────────
+// --- Read ----------------------------------------------------------------------
 
 /**
  * Get paginated, filtered marketplace listings from the `listings` table.
@@ -194,7 +194,7 @@ export async function getSellerListings(sellerId: string): Promise<PaginatedResp
 }
 
 /**
- * Get listings that expire within `withinDays` days — used to send expiry reminders.
+ * Get listings that expire within `withinDays` days � used to send expiry reminders.
  */
 export async function getExpiringListings(
   sellerId: string,
@@ -218,7 +218,7 @@ export async function getExpiringListings(
   }
 }
 
-// ─── Write ─────────────────────────────────────────────────────────────────────
+// --- Write ---------------------------------------------------------------------
 
 /**
  * Create a new marketplace listing in the `listings` table.
@@ -356,13 +356,13 @@ export async function renewListing(id: string, sellerId: string): Promise<Servic
   }
 }
 
-// ─── View counter ──────────────────────────────────────────────────────────────
+// --- View counter --------------------------------------------------------------
 
 /**
  * Increment view_count for a listing.
  *
  * IMPORTANT: The RPC must receive BOTH `table_name` and `record_id`.
- * The previous version only passed `record_id` — this caused the RPC to fail
+ * The previous version only passed `record_id` � this caused the RPC to fail
  * silently on some Supabase configurations (and loudly crash on others).
  *
  * Required Supabase SQL function:
@@ -381,10 +381,10 @@ export async function incrementViewCount(id: string): Promise<void> {
       table_name: "listings",
       record_id: id,
     });
-  } catch { /* non-critical — view counts are best-effort */ }
+  } catch { /* non-critical � view counts are best-effort */ }
 }
 
-// ─── Re-export for backwards compatibility ─────────────────────────────────────
+// --- Re-export for backwards compatibility -------------------------------------
 // Some files import from marketplace.service.ts using the old MarketplaceItem type.
 // These shims prevent import errors during migration.
 export type { MarketplaceListingRow as MarketplaceItem };

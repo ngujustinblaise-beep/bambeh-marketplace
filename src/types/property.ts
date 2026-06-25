@@ -1,4 +1,4 @@
-ï»¿export interface Property {
+export interface Property {
   id: string;
   title: string;
   description: string;
@@ -65,7 +65,7 @@ const sampleProperty: Property = {
   description: 'Beautiful 3-bedroom apartment with modern amenities',
   price: 250000,
   location: {
-    city: 'YaoundÃ©',
+    city: 'Yaoundé',
     area: 'Bastos',
     address: '123 Bastos Street'
   },
@@ -86,6 +86,6 @@ const sampleProperty: Property = {
   views: 0,
   favorites: 0,
   status: 'available',
-  keywords: ['apartment', 'bastos', 'modern', 'yaoundÃ©']
+  keywords: ['apartment', 'bastos', 'modern', 'yaoundé']
 };
 */

@@ -1,7 +1,7 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { X, Share2, Copy, CheckCircle, MessageCircle, Send } from 'lucide-react';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 interface SocialShareModalProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ interface ShareOption {
   action: (url: string, title: string, description: string) => void;
 }
 
-// ─── Share options ────────────────────────────────────────────────────────────
+// --- Share options ------------------------------------------------------------
 
 const buildShareOptions = (): ShareOption[] => [
   {
@@ -88,7 +88,7 @@ const buildShareOptions = (): ShareOption[] => [
   },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ----------------------------------------------------------------
 
 export default function SocialShareModal({
   isOpen,
@@ -130,7 +130,7 @@ export default function SocialShareModal({
           url: shareUrl,
         });
       } catch (e) {
-        // User cancelled or share failed — ignore
+        // User cancelled or share failed � ignore
       }
     }
   };

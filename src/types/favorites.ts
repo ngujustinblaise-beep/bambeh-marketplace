@@ -1,4 +1,4 @@
-﻿export interface FavoriteItem {
+export interface FavoriteItem {
   id: string;
   itemId: string;
   itemTitle: string;

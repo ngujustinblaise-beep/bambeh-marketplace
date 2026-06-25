@@ -1,20 +1,20 @@
-﻿/**
- * src/pages/FlashDealDetail.tsx — Bambeh Marketplace
+/**
+ * src/pages/FlashDealDetail.tsx � Bambeh Marketplace
  *
  * FIXES applied:
- *  ✅ useCountdown: timer ref leaked on hot-reload — cleanup now uses returned
+ *  ? useCountdown: timer ref leaked on hot-reload � cleanup now uses returned
  *     timerRef correctly; added guard for endsAt being invalid date string.
- *  ✅ handleClaim: session check destructured incorrectly (data.session vs
- *     data?.session) — fixed with safe optional chaining.
- *  ✅ handleClaim: duplicate claims guarded (unique constraint on deal_id+user_id).
- *  ✅ setDeal optimistic update: used updater function to avoid stale closure.
- *  ✅ formatXAF: added null guard — never crashes on undefined price.
- *  ✅ Share button now opens CompactShareModal instead of doing nothing.
- *  ✅ BambehImage import: added try/catch — falls back to plain <img> if custom
+ *  ? handleClaim: session check destructured incorrectly (data.session vs
+ *     data?.session) � fixed with safe optional chaining.
+ *  ? handleClaim: duplicate claims guarded (unique constraint on deal_id+user_id).
+ *  ? setDeal optimistic update: used updater function to avoid stale closure.
+ *  ? formatXAF: added null guard � never crashes on undefined price.
+ *  ? Share button now opens CompactShareModal instead of doing nothing.
+ *  ? BambehImage import: added try/catch � falls back to plain <img> if custom
  *     component is unavailable in current build.
- *  ✅ Countdown display: negative hours now clamped to 0.
- *  ✅ Back button inside image area: used navigate(-1) correctly.
- *  ✅ Missing aria-labels added to icon-only buttons.
+ *  ? Countdown display: negative hours now clamped to 0.
+ *  ? Back button inside image area: used navigate(-1) correctly.
+ *  ? Missing aria-labels added to icon-only buttons.
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -27,7 +27,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Safe BambehImage wrapper ──────────────────────────────────────────────
+// --- Safe BambehImage wrapper ----------------------------------------------
 // Falls back to plain <img> if the custom component is not available
 
 let BambehImageComponent: React.ComponentType<{
@@ -44,7 +44,7 @@ try {
   );
 }
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+// --- Types -----------------------------------------------------------------
 
 interface FlashDeal {
   id: string;
@@ -64,7 +64,7 @@ interface FlashDeal {
   status: 'active' | 'sold_out' | 'expired';
 }
 
-// ─── Countdown hook ─────────────────────────────────────────────────────────
+// --- Countdown hook ---------------------------------------------------------
 
 function useCountdown(endsAt: string) {
   const lang = useLang();
@@ -97,7 +97,7 @@ function useCountdown(endsAt: string) {
   return remaining;
 }
 
-// ─── Share bottom sheet ────────────────────────────────────────────────────
+// --- Share bottom sheet ----------------------------------------------------
 
 function ShareSheet({ url, title, onClose }: { url: string; title: string; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
@@ -122,7 +122,7 @@ function ShareSheet({ url, title, onClose }: { url: string; title: string; onClo
     document.body.removeChild(el);
   }
 
-  const waText = encodeURIComponent(`⚡ Flash Deal: ${title}\n${url}`);
+  const waText = encodeURIComponent(`? Flash Deal: ${title}\n${url}`);
 
   return (
     <div
@@ -166,7 +166,7 @@ function ShareSheet({ url, title, onClose }: { url: string; title: string; onClo
   );
 }
 
-// ─── Main Component ────────────────────────────────────────────────────────
+// --- Main Component --------------------------------------------------------
 
 const FlashDealDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -200,7 +200,7 @@ const FlashDealDetail: React.FC = () => {
         id: data.id as string,
         listingId: data.listing_id as string,
         vendorId: data.vendor_id as string,
-        vendorName: (vendor?.store_name as string) ?? '—',
+        vendorName: (vendor?.store_name as string) ?? '�',
         title: data.title as string,
         description: data.description as string,
         imageUrl: (data.images as string[])?.[0],
@@ -242,7 +242,7 @@ const FlashDealDetail: React.FC = () => {
           claimed_at: new Date().toISOString(),
         });
 
-      // FIX: 23505 = already claimed — treat as success
+      // FIX: 23505 = already claimed � treat as success
       if (!dbErr || dbErr.code === '23505') {
         setClaimed(true);
         // FIX: updater function to avoid stale closure
@@ -257,13 +257,13 @@ const FlashDealDetail: React.FC = () => {
 
   // FIX: null-safe price formatter
   const formatXAF = (n: number | null | undefined) => {
-    if (n == null || Number.isNaN(n)) return '—';
+    if (n == null || Number.isNaN(n)) return '�';
     return new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
   };
 
   const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
 
-  // ── Loading ──
+  // -- Loading --
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -272,7 +272,7 @@ const FlashDealDetail: React.FC = () => {
     );
   }
 
-  // ── Error ──
+  // -- Error --
   if (error || !deal) {
     return (
       <div className="p-4 space-y-3">
@@ -328,7 +328,7 @@ const FlashDealDetail: React.FC = () => {
             priority
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300 text-5xl">⚡</div>
+          <div className="w-full h-full flex items-center justify-center text-gray-300 text-5xl">?</div>
         )}
 
         {/* Discount badge */}
@@ -342,7 +342,7 @@ const FlashDealDetail: React.FC = () => {
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-yellow-500 fill-yellow-500" />
           <span className="text-sm font-bold text-yellow-600 uppercase tracking-wide">
-            Flash Deal · {deal.vendorName}
+            Flash Deal � {deal.vendorName}
           </span>
         </div>
 
@@ -354,7 +354,7 @@ const FlashDealDetail: React.FC = () => {
           <p className="text-2xl font-bold text-red-600">{formatXAF(deal.discountedPriceXAF)}</p>
           <p className="text-base text-gray-400 line-through">{formatXAF(deal.originalPriceXAF)}</p>
           <span className="bg-red-100 text-red-600 text-sm font-bold px-2 py-0.5 rounded-lg">
-            Économie: {formatXAF(deal.originalPriceXAF - deal.discountedPriceXAF)}
+            �conomie: {formatXAF(deal.originalPriceXAF - deal.discountedPriceXAF)}
           </span>
         </div>
 
@@ -388,7 +388,7 @@ const FlashDealDetail: React.FC = () => {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-1.5 text-sm text-gray-600">
               <Users className="w-4 h-4" />
-              <span>{deal.claimedSlots} réclamés sur {deal.totalSlots}</span>
+              <span>{deal.claimedSlots} r�clam�s sur {deal.totalSlots}</span>
             </div>
             <span className="text-sm font-bold text-gray-700">{slotsLeft} restants</span>
           </div>
@@ -400,7 +400,7 @@ const FlashDealDetail: React.FC = () => {
               style={{ width: `${fillPercent}%` }}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-1">{fillPercent}% réclamé</p>
+          <p className="text-xs text-gray-400 mt-1">{fillPercent}% r�clam�</p>
         </div>
 
         {/* Description */}
@@ -421,11 +421,11 @@ const FlashDealDetail: React.FC = () => {
         {claimed ? (
           <div className="flex-1 py-3 bg-green-100 border border-green-300 rounded-xl flex items-center justify-center gap-2 text-green-700 font-semibold">
             <CheckCircle className="w-5 h-5" />
-            Deal réclamé !
+            Deal r�clam� !
           </div>
         ) : isSoldOut || isExpired ? (
           <div className="flex-1 py-3 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 font-medium">
-            {isSoldOut ? 'Épuisé' : 'Offre expirée'}
+            {isSoldOut ? '�puis�' : 'Offre expir�e'}
           </div>
         ) : (
           <button
@@ -437,7 +437,7 @@ const FlashDealDetail: React.FC = () => {
             {claiming
               ? <RefreshCw className="w-4 h-4 animate-spin" />
               : <ShoppingCart className="w-4 h-4" />}
-            {claiming ? 'Réclamation…' : `Réclamer — ${formatXAF(deal.discountedPriceXAF)}`}
+            {claiming ? 'R�clamation�' : `R�clamer � ${formatXAF(deal.discountedPriceXAF)}`}
           </button>
         )}
       </div>

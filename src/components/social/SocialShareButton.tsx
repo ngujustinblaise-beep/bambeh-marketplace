@@ -1,7 +1,7 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Share2, Copy, CheckCircle, MessageCircle, Send, X } from 'lucide-react';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 interface SocialShareButtonProps {
   title: string;
@@ -13,7 +13,7 @@ interface SocialShareButtonProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-// ─── Share helpers ────────────────────────────────────────────────────────────
+// --- Share helpers ------------------------------------------------------------
 
 const openShare = (shareUrl: string, title: string, description: string) => ({
   whatsapp: () =>
@@ -28,7 +28,7 @@ const openShare = (shareUrl: string, title: string, description: string) => ({
     window.open(`sms:?body=${encodeURIComponent(`${title}\n${shareUrl}`)}`, '_blank'),
 });
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ----------------------------------------------------------------
 
 export default function SocialShareButton({
   title,
@@ -84,7 +84,7 @@ export default function SocialShareButton({
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // ── Trigger button ──────────────────────────────────────────────────────────
+  // -- Trigger button ----------------------------------------------------------
 
   const TriggerButton = () => {
     if (variant === 'text') {
@@ -122,7 +122,7 @@ export default function SocialShareButton({
     );
   };
 
-  // ── Share sheet modal ───────────────────────────────────────────────────────
+  // -- Share sheet modal -------------------------------------------------------
 
   const SHARE_OPTIONS = [
     {

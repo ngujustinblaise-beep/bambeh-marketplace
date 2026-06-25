@@ -1,8 +1,8 @@
-﻿/**
- * ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ---------------------------------------------------------------------------
  * VENDOR SETTINGS PAGE - COMPREHENSIVE VENDOR SETTINGS
  * FILE LOCATION: src/pages/vendor/VendorSettings.tsx
- * © 2025 Bambeh. All rights reserved.
+ * � 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -206,14 +206,14 @@ export default function VendorSettings() {
   const renderPaymentSettings = () => (
     <div className="space-y-6">
       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-        <h4 className="font-semibold text-yellow-800 mb-2">💰 MTN Mobile Money</h4>
+        <h4 className="font-semibold text-yellow-800 mb-2">?? MTN Mobile Money</h4>
         <input type="tel" value={paymentSettings.mtnMomoNumber}
           onChange={(e) => setPaymentSettings({ ...paymentSettings, mtnMomoNumber: e.target.value })}
           placeholder="+237 6XX XXX XXX"
           className="w-full px-4 py-3 border border-yellow-300 rounded-xl bg-white" />
       </div>
       <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
-        <h4 className="font-semibold text-orange-800 mb-2">🍊 Orange Money</h4>
+        <h4 className="font-semibold text-orange-800 mb-2">?? Orange Money</h4>
         <input type="tel" value={paymentSettings.orangeMoneyNumber}
           onChange={(e) => setPaymentSettings({ ...paymentSettings, orangeMoneyNumber: e.target.value })}
           placeholder="+237 6XX XXX XXX"
@@ -300,8 +300,8 @@ export default function VendorSettings() {
           onChange={(e) => setLanguageSettings({ ...languageSettings, language: e.target.value })}
           className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
           <option value="en">English</option>
-          <option value="fr">Français</option>
-          <option value="ar">العربية</option>
+          <option value="fr">Fran�ais</option>
+          <option value="ar">???????</option>
           <option value="ha">Hausa</option>
         </select>
       </div>

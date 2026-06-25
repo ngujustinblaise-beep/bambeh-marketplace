@@ -1,13 +1,13 @@
-﻿/**
- * src/pages/CoinsPage.tsx — Bambeh Marketplace
+/**
+ * src/pages/CoinsPage.tsx � Bambeh Marketplace
  *
  * FIXED (this version):
- *  ✅ Full i18n via useLang / t() — EN, FR, Pidgin, Arabic, Fulfulde
- *  ✅ Buy Coins navigates to /coins/buy (aligned with router fix below)
- *  ✅ maybeSingle() so no crash when row doesn't exist yet
- *  ✅ Manual refresh button + auto-refresh on ?purchased=1
- *  ✅ Zero-balance row upserted on first visit
- *  ✅ RTL support for Arabic
+ *  ? Full i18n via useLang / t() � EN, FR, Pidgin, Arabic, Fulfulde
+ *  ? Buy Coins navigates to /coins/buy (aligned with router fix below)
+ *  ? maybeSingle() so no crash when row doesn't exist yet
+ *  ? Manual refresh button + auto-refresh on ?purchased=1
+ *  ? Zero-balance row upserted on first visit
+ *  ? RTL support for Arabic
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -19,7 +19,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang, t } from '@/hooks/useAppLang';
 
-// ── i18n strings ──────────────────────────────────────────────────────────────
+// -- i18n strings --------------------------------------------------------------
 const strings = {
   en: {
     title:         'Zerm Coins',
@@ -39,27 +39,27 @@ const strings = {
     purchased:     'Purchase received!',
     purchasedSub:  'Your coins may take a moment to appear. Tap Refresh if needed.',
     refresh:       'Refresh',
-    refreshing:    'Refreshing…',
+    refreshing:    'Refreshing�',
   },
   fr: {
-    title:         'Pièces Zerm',
+    title:         'Pi�ces Zerm',
     balance:       'Votre Solde',
     available:     'Disponible',
-    earned:        'Gagné',
-    spent:         'Dépensé',
+    earned:        'Gagn�',
+    spent:         'D�pens�',
     buyCoins:      'Acheter',
-    transfer:      'Transférer',
-    tipTitle:      'Gagnez plus de pièces Zerm',
-    tipBody:       'Parrainez des amis, complétez votre profil et restez actif pour gagner des bonus.',
+    transfer:      'Transf�rer',
+    tipTitle:      'Gagnez plus de pi�ces Zerm',
+    tipBody:       'Parrainez des amis, compl�tez votre profil et restez actif pour gagner des bonus.',
     historyTitle:  'Historique des transactions',
     all:           'Tout',
-    earnedTab:     'Gagné',
-    spentTab:      'Dépensé',
+    earnedTab:     'Gagn�',
+    spentTab:      'D�pens�',
     noTx:          'Aucune transaction',
-    purchased:     'Achat reçu !',
-    purchasedSub:  "Vos pièces peuvent prendre un moment. Appuyez sur Actualiser si nécessaire.",
+    purchased:     'Achat re�u !',
+    purchasedSub:  "Vos pi�ces peuvent prendre un moment. Appuyez sur Actualiser si n�cessaire.",
     refresh:       'Actualiser',
-    refreshing:    'Actualisation…',
+    refreshing:    'Actualisation�',
   },
   pidgin: {
     title:         'Zerm Coins',
@@ -70,7 +70,7 @@ const strings = {
     buyCoins:      'Buy Coins',
     transfer:      'Send',
     tipTitle:      'Get more Zerm Coins',
-    tipBody:       'Bring your padis, complete your profile, stay active — na so bonus dey come.',
+    tipBody:       'Bring your padis, complete your profile, stay active � na so bonus dey come.',
     historyTitle:  'Transaction History',
     all:           'All',
     earnedTab:     'You Get',
@@ -79,47 +79,47 @@ const strings = {
     purchased:     'Purchase done!',
     purchasedSub:  'Your coins fit take small time appear. Press Refresh if e no show.',
     refresh:       'Refresh',
-    refreshing:    'Refreshing…',
+    refreshing:    'Refreshing�',
   },
   ar: {
-    title:         'عملات زرم',
-    balance:       'رصيدك',
-    available:     'متاح',
-    earned:        'مكتسب',
-    spent:         'مÙنÙَق',
-    buyCoins:      'شراء',
-    transfer:      'تحويل',
-    tipTitle:      'اكسب المزيد من عملات زرم',
-    tipBody:       'ادعÙ أصدقاءك، أكمل ملÙك الشخصي، وابقَ نشطاً للحصول على مكاÙآت.',
-    historyTitle:  'سجل المعاملات',
-    all:           'الكل',
-    earnedTab:     'مكتسب',
-    spentTab:      'مÙنÙَق',
-    noTx:          'لا توجد معاملات بعد',
-    purchased:     'تم استلام طلب الشراء!',
-    purchasedSub:  'قد تستغرق عملاتك لحظة للظهور. اضغط تحديث عند الحاجة.',
-    refresh:       'تحديث',
-    refreshing:    'جارÙ التحديث…',
+    title:         '????? ???',
+    balance:       '?????',
+    available:     '????',
+    earned:        '?????',
+    spent:         '?ُ?ف??',
+    buyCoins:      '????',
+    transfer:      '?????',
+    tipTitle:      '???? ?????? ?? ????? ???',
+    tipBody:       '???ُ ???????? ???? ??ف? ??????? ????? ????? ?????? ??? ???ف??.',
+    historyTitle:  '??? ?????????',
+    all:           '????',
+    earnedTab:     '?????',
+    spentTab:      '?ُ?ف??',
+    noTx:          '?? ???? ??????? ???',
+    purchased:     '?? ?????? ??? ??????!',
+    purchasedSub:  '?? ?????? ?????? ???? ??????. ???? ????? ??? ??????.',
+    refresh:       '?????',
+    refreshing:    '???ٍ ???????�',
   },
   fulfulde: {
-    title:         'Zerm Coinɗe',
+    title:         'Zerm Coin?e',
     balance:       'Soodaande maa',
     available:     'Woni',
-    earned:        'Heɓiino',
+    earned:        'He?iino',
     spent:         'Faalanaa',
     buyCoins:      'Sood',
     transfer:      'Neldu',
-    tipTitle:      'Heɓ coinɗe Zerm keewɗe',
-    tipBody:       'Naatnu yimɓe, heɓ profil maa, yahugol aktif — so hono nii mbaɗaten bonus.',
-    historyTitle:  'Laamu Liɓɓitol',
+    tipTitle:      'He? coin?e Zerm keew?e',
+    tipBody:       'Naatnu yim?e, he? profil maa, yahugol aktif � so hono nii mba?aten bonus.',
+    historyTitle:  'Laamu Li??itol',
     all:           'Fof',
-    earnedTab:     'Heɓiino',
+    earnedTab:     'He?iino',
     spentTab:      'Faalanaa',
-    noTx:          'Alaa liɓɓitol',
+    noTx:          'Alaa li??itol',
     purchased:     'Soodaande accii!',
-    purchasedSub:  'Coinɗe maa mbaawa waaɓude. Taaɓ Refresh so wonaa haa.',
+    purchasedSub:  'Coin?e maa mbaawa waa?ude. Taa? Refresh so wonaa haa.',
     refresh:       'Refresh',
-    refreshing:    'Dawnugol…',
+    refreshing:    'Dawnugol�',
   },
 } as const;
 
@@ -162,7 +162,7 @@ export default function CoinsPage() {
       if (!session?.user) { navigate('/login'); return; }
       const userId = session.user.id;
 
-      // Fetch balance — maybeSingle() never throws on missing row
+      // Fetch balance � maybeSingle() never throws on missing row
       const { data: coinData } = await supabase
         .from('zerm_coins')
         .select('balance')
@@ -172,7 +172,7 @@ export default function CoinsPage() {
       if (coinData) {
         setBalance(coinData.balance ?? 0);
       } else {
-        // First-time user — create wallet row
+        // First-time user � create wallet row
         const { data: newRow } = await supabase
           .from('zerm_coins')
           .upsert({ user_id: userId, balance: 0 }, { onConflict: 'user_id' })
@@ -248,7 +248,7 @@ export default function CoinsPage() {
         <div className="text-center">
           <p className="text-teal-100 text-sm mb-1">{s.balance}</p>
           <div className="text-white text-6xl font-black mb-1">
-            {loading ? '…' : (balance ?? 0).toLocaleString()}
+            {loading ? '�' : (balance ?? 0).toLocaleString()}
           </div>
           <p className="text-teal-100 text-sm flex items-center justify-center gap-1">
             <Zap className="w-4 h-4 text-yellow-300" /> Zerm Coins
@@ -256,7 +256,7 @@ export default function CoinsPage() {
         </div>
       </div>
 
-      {/* Stats card — overlaps hero */}
+      {/* Stats card � overlaps hero */}
       <div className="px-4 -mt-14 mb-4 relative z-10">
         <div className="bg-white rounded-2xl shadow-md border p-4 grid grid-cols-3 gap-3">
           <div className="text-center">

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SUBSCRIPTION GATE
  * FILE LOCATION: src/components/security/SubscriptionGate.tsx
  */
@@ -106,7 +106,7 @@ const SubscriptionRequiredPage = ({ category = 'listing', returnUrl }: Subscript
           </div>
         </div>
         <div className="text-center mt-6">
-          <button onClick={() => window.history.back()} className="text-gray-600 hover:text-gray-800 font-medium">â† Go Back to Browsing</button>
+          <button onClick={() => window.history.back()} className="text-gray-600 hover:text-gray-800 font-medium">← Go Back to Browsing</button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ADD MARKETPLACE ITEM FORM COMPONENT
  * FILE LOCATION: src/components/marketplace/AddMarketplaceItemForm.tsx
@@ -194,7 +194,7 @@ export default function AddMarketplaceItemForm({ onSuccess, onCancel }: AddMarke
         <div className="flex flex-wrap gap-2">
           {keywords.map((kw, i) => (
             <span key={i} className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm flex items-center gap-2">
-              {kw}<button type="button" onClick={() => removeKeyword(i)} className="hover:text-teal-600">×</button>
+              {kw}<button type="button" onClick={() => removeKeyword(i)} className="hover:text-teal-600">�</button>
             </span>
           ))}
         </div>

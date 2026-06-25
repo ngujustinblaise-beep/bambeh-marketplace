@@ -1,25 +1,25 @@
-﻿/**
+/**
  * src/contexts/SearchContext.tsx
- * Bambeh Marketplace — Search Context & Provider
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Search Context & Provider
+ * � 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES:
- * — CRITICAL: setFilters, saveSearch, deleteSavedSearch, applySavedSearch, clearFilters
- *   were ALL nested inside each other (missing closing braces) — catastrophic compile error.
+ * � CRITICAL: setFilters, saveSearch, deleteSavedSearch, applySavedSearch, clearFilters
+ *   were ALL nested inside each other (missing closing braces) � catastrophic compile error.
  *   All are now proper sibling functions.
- * — useSearch() hook had a mismatched extra closing brace — fixed.
- * — localStorage.getItem had no try/catch — could crash in SSR or storage-restricted envs.
+ * � useSearch() hook had a mismatched extra closing brace � fixed.
+ * � localStorage.getItem had no try/catch � could crash in SSR or storage-restricted envs.
  *   Now uses a safe loadSavedSearches() helper with try/catch.
- * — All localStorage.setItem calls now wrapped in try/catch.
+ * � All localStorage.setItem calls now wrapped in try/catch.
  *
  * NEW:
- * — SearchFilters now includes `scope?: SearchScope` for region-aware search.
+ * � SearchFilters now includes `scope?: SearchScope` for region-aware search.
  */
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import type { SearchScope } from "@/services/searchService";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 export interface SearchFilters {
   keywords:       string;
@@ -62,7 +62,7 @@ interface SearchContextType {
   clearFilters:         () => void;
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+// --- Context ------------------------------------------------------------------
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
@@ -74,7 +74,7 @@ const defaultFilters: SearchFilters = {
 
 const STORAGE_KEY = "Bambeh_saved_searches";
 
-// FIX: safe localStorage read — was previously a bare JSON.parse without try/catch
+// FIX: safe localStorage read � was previously a bare JSON.parse without try/catch
 function loadSavedSearches(): SavedSearch[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -85,16 +85,16 @@ function loadSavedSearches(): SavedSearch[] {
   }
 }
 
-// FIX: safe localStorage write — all writes now use this helper
+// FIX: safe localStorage write � all writes now use this helper
 function persistSavedSearches(searches: SavedSearch[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
   } catch {
-    // Storage blocked or quota exceeded — fail silently
+    // Storage blocked or quota exceeded � fail silently
   }
 }
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// --- Provider -----------------------------------------------------------------
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [currentFilters, setCurrentFilters] = useState<SearchFilters>(defaultFilters);
@@ -106,7 +106,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     setCurrentFilters(filters);
   };
 
-  // FIX: was nested inside setFilters — now a proper sibling.
+  // FIX: was nested inside setFilters � now a proper sibling.
   const saveSearch = (name: string, filters: SearchFilters): void => {
     const newSearch: SavedSearch = {
       id:        `search_${Date.now()}`,
@@ -119,14 +119,14 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     persistSavedSearches(updated);
   };
 
-  // FIX: was nested inside saveSearch — now a proper sibling.
+  // FIX: was nested inside saveSearch � now a proper sibling.
   const deleteSavedSearch = (id: string): void => {
     const updated = savedSearches.filter(s => s.id !== id);
     setSavedSearches(updated);
     persistSavedSearches(updated);
   };
 
-  // FIX: was nested inside deleteSavedSearch — now a proper sibling.
+  // FIX: was nested inside deleteSavedSearch � now a proper sibling.
   const applySavedSearch = (id: string): void => {
     const found = savedSearches.find(s => s.id === id);
     if (found) {
@@ -134,7 +134,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // FIX: was nested inside applySavedSearch — now a proper sibling.
+  // FIX: was nested inside applySavedSearch � now a proper sibling.
   const clearFilters = (): void => {
     setCurrentFilters(defaultFilters);
   };
@@ -156,7 +156,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// --- Hook ---------------------------------------------------------------------
 // FIX: had a mismatched extra closing brace that broke the export entirely.
 
 export function useSearch(): SearchContextType {

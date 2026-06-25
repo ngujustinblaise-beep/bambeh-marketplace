@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/analytics/MixpanelManager.ts
- * Bambeh Marketplace — Mixpanel Analytics + singleton
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Mixpanel Analytics + singleton
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -89,14 +89,14 @@ class MixpanelManagerClass implements AnalyticsProvider {
   }
 }
 
-// ─── Singleton instance expected by useAnalytics.ts ──────────────────────────
+// --- Singleton instance expected by useAnalytics.ts --------------------------
 export const mixpanelManager = new MixpanelManagerClass({
   token: import.meta.env.VITE_MIXPANEL_TOKEN ?? "",
   debug: import.meta.env.DEV,
   trackPageViews: true,
 });
 
-// ─── Factory for AnalyticsInit.ts ─────────────────────────────────────────────
+// --- Factory for AnalyticsInit.ts ---------------------------------------------
 export function createMixpanelProvider(config?: Partial<MixpanelConfig>): AnalyticsProvider {
   return new MixpanelManagerClass({
     token: import.meta.env.VITE_MIXPANEL_TOKEN ?? "",

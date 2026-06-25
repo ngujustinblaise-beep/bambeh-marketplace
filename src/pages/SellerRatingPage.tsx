@@ -1,11 +1,11 @@
-Ôªøimport { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Loader2, Star } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";
-import { supabase } from "@/context/supabase";
+import { supabase } from "@/lib/supabase";
 
 /**
- * src/pages/SellerRatingPage.tsx ‚Äî Bambeh Marketplace
+ * src/pages/SellerRatingPage.tsx ó Bambeh Marketplace
  * FIXED: Was a stub. Now a real star rating form that saves reviews.
  */
 
@@ -32,7 +32,7 @@ export default function SellerRatingPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Save review to localStorage (simple approach ‚Äî can be moved to DB later)
+      // Save review to localStorage (simple approach ó can be moved to DB later)
       const reviews = JSON.parse(localStorage.getItem('bambeh_seller_reviews') || '[]');
       reviews.unshift({
         id:         Date.now().toString(),
@@ -62,7 +62,7 @@ export default function SellerRatingPage() {
               .eq('user_id', sellerId);
           }
         } catch {
-          // Non-critical ‚Äî rating saved locally even if DB update fails
+          // Non-critical ó rating saved locally even if DB update fails
         }
       }
 
@@ -79,7 +79,7 @@ export default function SellerRatingPage() {
       <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
         <div className="bg-white rounded-2xl p-8 text-center shadow max-w-sm w-full">
           <CheckCircle className="w-14 h-14 text-teal-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Thank You! ‚≠ê</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Thank You! ?</h2>
           <p className="text-gray-500 text-sm mb-6">Your review helps other buyers make better decisions.</p>
           <button onClick={() => navigate(-1)}
             className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold">
@@ -143,7 +143,7 @@ export default function SellerRatingPage() {
             value={comment}
             onChange={e => setComment(e.target.value)}
             rows={4}
-            placeholder="Tell others about your experience ‚Äî was the item as described? Was the seller responsive? Would you buy from them again?"
+            placeholder="Tell others about your experience ó was the item as described? Was the seller responsive? Would you buy from them again?"
             className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none"
           />
           <p className="text-xs text-gray-400 mt-1">{comment.length}/500 characters</p>

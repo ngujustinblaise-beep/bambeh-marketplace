@@ -1,4 +1,4 @@
-﻿import { useLang, t } from "@/hooks/useAppLang";
+import { useLang, t } from "@/hooks/useAppLang";
 
 export default function AdminLiveChat() {
   const lang = useLang();

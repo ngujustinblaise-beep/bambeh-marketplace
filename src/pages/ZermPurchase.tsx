@@ -1,15 +1,15 @@
-﻿/**
- * src/pages/ZermPurchase.tsx  —  Bambeh Marketplace
+/**
+ * src/pages/ZermPurchase.tsx  �  Bambeh Marketplace
  * FILE LOCATION: src/pages/ZermPurchase.tsx
  *
  * FIXED (this version):
- *  ✅ Route is /coins/buy (matches router fix)
- *  ✅ Full i18n — EN, FR, Pidgin, Arabic, Fulfulde
- *  ✅ RTL layout for Arabic
- *  ✅ Redirects to /coins?purchased=1 after success so CoinsPage auto-refreshes
- *  ✅ Uses CamPayWidget — all CamPay logic lives there
- *  ✅ Coins credited only AFTER CamPay confirms SUCCESSFUL payment
- *  ✅ Records purchase in zerm_purchases + updates zerm_coins balance + logs zerm_transactions
+ *  ? Route is /coins/buy (matches router fix)
+ *  ? Full i18n � EN, FR, Pidgin, Arabic, Fulfulde
+ *  ? RTL layout for Arabic
+ *  ? Redirects to /coins?purchased=1 after success so CoinsPage auto-refreshes
+ *  ? Uses CamPayWidget � all CamPay logic lives there
+ *  ? Coins credited only AFTER CamPay confirms SUCCESSFUL payment
+ *  ? Records purchase in zerm_purchases + updates zerm_coins balance + logs zerm_transactions
  */
 
 import { useState, useEffect } from 'react';
@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabase';
 import CamPayWidget from '@/components/payment/CamPayWidget';
 import { useLang } from '@/hooks/useAppLang';
 
-// ── i18n ──────────────────────────────────────────────────────────────────────
+// -- i18n ----------------------------------------------------------------------
 const strings = {
   en: {
     pageTitle:      'Buy Zerm Coins',
@@ -32,28 +32,28 @@ const strings = {
     total:          'total',
     mostPopular:    'Most Popular',
     payWith:        'Pay with Mobile Money',
-    buyBtn:         (n: number, price: number) => `Buy ${n} Zerm Coins — ${price.toLocaleString()} XAF`,
-    successTitle:   'Purchase Successful! ⚡',
+    buyBtn:         (n: number, price: number) => `Buy ${n} Zerm Coins � ${price.toLocaleString()} XAF`,
+    successTitle:   'Purchase Successful! ?',
     addedTo:        'added to your wallet',
     viewWallet:     'View Wallet',
     backHome:       'Back to Home',
   },
   fr: {
-    pageTitle:      'Acheter des Pièces Zerm',
+    pageTitle:      'Acheter des Pi�ces Zerm',
     currentBalance: 'Solde Actuel',
-    infoLine1:      '1 pièce Zerm = 100 FCFA',
-    infoLine2:      "Utilisez les pièces pour booster vos annonces, envoyer des cadeaux ou payer sur la plateforme.",
+    infoLine1:      '1 pi�ce Zerm = 100 FCFA',
+    infoLine2:      "Utilisez les pi�ces pour booster vos annonces, envoyer des cadeaux ou payer sur la plateforme.",
     choosePackage:  'Choisir un forfait',
-    coins:          'pièces',
+    coins:          'pi�ces',
     bonus:          'bonus',
     total:          'total',
     mostPopular:    'Le plus populaire',
     payWith:        'Payer avec Mobile Money',
-    buyBtn:         (n: number, price: number) => `Acheter ${n} pièces — ${price.toLocaleString()} FCFA`,
-    successTitle:   'Achat réussi ! ⚡',
-    addedTo:        'ajoutées à votre portefeuille',
+    buyBtn:         (n: number, price: number) => `Acheter ${n} pi�ces � ${price.toLocaleString()} FCFA`,
+    successTitle:   'Achat r�ussi ! ?',
+    addedTo:        'ajout�es � votre portefeuille',
     viewWallet:     'Voir le portefeuille',
-    backHome:       "Retour à l'accueil",
+    backHome:       "Retour � l'accueil",
   },
   pidgin: {
     pageTitle:      'Buy Zerm Coins',
@@ -66,42 +66,42 @@ const strings = {
     total:          'total',
     mostPopular:    'People Like Am',
     payWith:        'Pay with Mobile Money',
-    buyBtn:         (n: number, price: number) => `Buy ${n} Coins — ${price.toLocaleString()} XAF`,
-    successTitle:   'You don buy! ⚡',
+    buyBtn:         (n: number, price: number) => `Buy ${n} Coins � ${price.toLocaleString()} XAF`,
+    successTitle:   'You don buy! ?',
     addedTo:        'don enter your wallet',
     viewWallet:     'See Wallet',
     backHome:       'Go Home',
   },
   ar: {
-    pageTitle:      'شراء عملات زرم',
-    currentBalance: 'الرصيد الحالي',
-    infoLine1:      '1 عملة زرم = 100 Ùرنك CFA',
-    infoLine2:      'استخدم العملات لتعزيز إعلاناتك أو إرسال هدايا أو الدÙع على المنصة.',
-    choosePackage:  'اختر حزمة',
-    coins:          'عملات',
-    bonus:          'مكاÙأة',
-    total:          'المجموع',
-    mostPopular:    'الأكثر شعبية',
-    payWith:        'الدÙع بالهاتÙ المحمول',
-    buyBtn:         (n: number, price: number) => `شراء ${n} عملة — ${price.toLocaleString()} Ùرنك`,
-    successTitle:   'تم الشراء بنجاح! ⚡',
-    addedTo:        'تمت الإضاÙة إلى محÙظتك',
-    viewWallet:     'عرض المحÙظة',
-    backHome:       'العودة للرئيسية',
+    pageTitle:      '???? ????? ???',
+    currentBalance: '?????? ??????',
+    infoLine1:      '1 ???? ??? = 100 ف??? CFA',
+    infoLine2:      '?????? ??????? ?????? ???????? ?? ????? ????? ?? ???ف? ??? ??????.',
+    choosePackage:  '???? ????',
+    coins:          '?????',
+    bonus:          '???ف??',
+    total:          '???????',
+    mostPopular:    '?????? ?????',
+    payWith:        '???ف? ??????ف ???????',
+    buyBtn:         (n: number, price: number) => `???? ${n} ???? � ${price.toLocaleString()} ف???`,
+    successTitle:   '?? ?????? ?????! ?',
+    addedTo:        '??? ?????ف? ??? ??ف???',
+    viewWallet:     '??? ????ف??',
+    backHome:       '?????? ????????',
   },
   fulfulde: {
-    pageTitle:      'Sood Zerm Coinɗe',
+    pageTitle:      'Sood Zerm Coin?e',
     currentBalance: 'Soodaande maa',
     infoLine1:      '1 Zerm Coin = 100 XAF',
-    infoLine2:      'Huɓɓin coinɗe ngam boost, neldugol hadiyaaɗo, walla faalugol.',
-    choosePackage:  'Suɓ Paaketo',
-    coins:          'coinɗe',
+    infoLine2:      'Hu??in coin?e ngam boost, neldugol hadiyaa?o, walla faalugol.',
+    choosePackage:  'Su? Paaketo',
+    coins:          'coin?e',
     bonus:          'bonus',
     total:          'fof',
-    mostPopular:    'Fijirtaaɗo',
+    mostPopular:    'Fijirtaa?o',
     payWith:        'Faal to Mobile Money',
-    buyBtn:         (n: number, price: number) => `Sood ${n} Coinɗe — ${price.toLocaleString()} XAF`,
-    successTitle:   'Soodaande woni! ⚡',
+    buyBtn:         (n: number, price: number) => `Sood ${n} Coin?e � ${price.toLocaleString()} XAF`,
+    successTitle:   'Soodaande woni! ?',
     addedTo:        'sosaa e jaaborgal maa',
     viewWallet:     'Yiy Jaaborgal',
     backHome:       'Rutto Galle',
@@ -110,7 +110,7 @@ const strings = {
 
 type Lang = keyof typeof strings;
 
-// ── Packages ───────────────────────────────────────────────────────────────────
+// -- Packages -------------------------------------------------------------------
 const PACKAGES = [
   { id: 'starter',  name: 'Starter',      amount: 5,   bonus: 0,  priceXAF: 500,   popular: false },
   { id: 'basic',    name: 'Basic',         amount: 10,  bonus: 1,  priceXAF: 1000,  popular: false },
@@ -188,13 +188,13 @@ export default function ZermPurchase() {
       setDone(true);
     } catch (err) {
       console.error('ZermPurchase handlePaymentSuccess error:', err);
-      // Still mark as done — coins were bought; balance will sync on next refresh
+      // Still mark as done � coins were bought; balance will sync on next refresh
       setCoinsAdded(total);
       setDone(true);
     }
   }
 
-  // ── Success screen ─────────────────────────────────────────────────────────
+  // -- Success screen ---------------------------------------------------------
   if (done) {
     return (
       <div
@@ -229,7 +229,7 @@ export default function ZermPurchase() {
     );
   }
 
-  // ── Main screen ────────────────────────────────────────────────────────────
+  // -- Main screen ------------------------------------------------------------
   return (
     <div className="min-h-screen bg-gray-50 pb-12" dir={isRtl ? 'rtl' : 'ltr'}>
 
@@ -255,7 +255,7 @@ export default function ZermPurchase() {
 
         {/* Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-800">
-          <p>💡 <strong>{s.infoLine1}</strong></p>
+          <p>?? <strong>{s.infoLine1}</strong></p>
           <p className="text-xs text-blue-600 mt-0.5">{s.infoLine2}</p>
         </div>
 
@@ -307,7 +307,7 @@ export default function ZermPurchase() {
           {userId ? (
             <CamPayWidget
               amount={pkg.priceXAF}
-              description={`Bambeh Zerm Coins — ${pkg.name} (${totalCoins} coins)`}
+              description={`Bambeh Zerm Coins � ${pkg.name} (${totalCoins} coins)`}
               externalRef={`zerm_${pkg.id}_${userId}_${Date.now()}`}
               metadata={{ user_id: userId, package_id: pkg.id, total_coins: totalCoins }}
               onSuccess={handlePaymentSuccess}

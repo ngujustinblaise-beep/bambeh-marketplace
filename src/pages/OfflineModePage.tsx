@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -109,7 +109,7 @@ const OfflineModePage: React.FC = () => {
       </div>
       {cache.listings.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
-          <p className="text-4xl mb-3">📦</p>
+          <p className="text-4xl mb-3">??</p>
           <p className="font-medium text-gray-600 text-sm">
             No cached listings
           </p>

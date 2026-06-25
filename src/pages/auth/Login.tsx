@@ -65,19 +65,19 @@ const STRINGS = {
     hide: "Hide password",
     logoAlt: "Bambeh logo",
   },
-  ff: {
+    ff: {
     title: "Jam tan",
-    subtitle: "Seŋo e barne.',
+    subtitle: "Se?o e barne.",
     email: "Njiital email",
-    password: "Moƴƴere moƴƴi",
-    signIn: "Seŋo",
-    signingIn: "Ko seŋoto...",
+    password: "Moo?ere moo?i",
+    signIn: "Se?o",
+    signingIn: "Ko se?oto...",
     noAccount: "A adi a waawi fotaade?",
     createOne: "Sos njiya",
-    forgotPassword: "Nodii moƴƴere?",
-    invalid: "Tiiɗno naatnude email e moƴƴere moƴƴi.",
-    show: "Waɗtude moƴƴere",
-    hide: "Ưittude moƴƴere",
+    forgotPassword: "Nodii moo?ere?",
+    invalid: "Tii?no naatnude email e moo?ere moo?i.",
+    show: "Wa?tude moo?ere",
+    hide: "?ittude moo?ere",
     logoAlt: "Bambeh logo",
   },
 } as const;
@@ -216,3 +216,5 @@ export default function Login() {
     </main>
   );
 }
+
+

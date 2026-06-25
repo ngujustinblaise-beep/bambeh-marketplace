@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -6,18 +6,18 @@ import { useLang, t } from "@/hooks/useAppLang";
 const VendorDashboard: React.FC = () => {
   const navigate = useNavigate();
   const stats = [
-    { label: "Total Sales",     value: "0 XAF", icon: "💰", color: "text-green-600"  },
-    { label: "Active Listings", value: "0",     icon: "📦", color: "text-blue-600"   },
-    { label: "Pending Orders",  value: "0",     icon: "⏳", color: "text-yellow-600" },
-    { label: "Rating",          value: "—",     icon: "⭐", color: "text-teal-600"   },
+    { label: "Total Sales",     value: "0 XAF", icon: "??", color: "text-green-600"  },
+    { label: "Active Listings", value: "0",     icon: "??", color: "text-blue-600"   },
+    { label: "Pending Orders",  value: "0",     icon: "?", color: "text-yellow-600" },
+    { label: "Rating",          value: "�",     icon: "?", color: "text-teal-600"   },
   ];
   const links = [
-    { label: "Add Listing",  path: "/marketplace/sell",        icon: "➕" },
-    { label: "My Listings",  path: "/vendor/listings",         icon: "📋" },
-    { label: "Orders",       path: "/vendor/orders",           icon: "📦" },
-    { label: "Analytics",    path: "/vendor/analytics",        icon: "📊" },
-    { label: "Reviews",      path: "/vendor/reviews",          icon: "⭐" },
-    { label: "Settings",     path: "/vendor/settings/profile", icon: "⚙️" },
+    { label: "Add Listing",  path: "/marketplace/sell",        icon: "?" },
+    { label: "My Listings",  path: "/vendor/listings",         icon: "??" },
+    { label: "Orders",       path: "/vendor/orders",           icon: "??" },
+    { label: "Analytics",    path: "/vendor/analytics",        icon: "??" },
+    { label: "Reviews",      path: "/vendor/reviews",          icon: "?" },
+    { label: "Settings",     path: "/vendor/settings/profile", icon: "??" },
   ];
   return (
     <div className="min-h-screen bg-gray-50 p-4">

@@ -1,13 +1,13 @@
-﻿/**
- * src/pages/CoinsTransfer.tsx — Bambeh Marketplace
+/**
+ * src/pages/CoinsTransfer.tsx � Bambeh Marketplace
  *
  * FIXED (this version):
- *  ✅ Full i18n — EN, FR, Pidgin, Arabic, Fulfulde
- *  ✅ RTL layout for Arabic
- *  ✅ Properly credits recipient wallet (not just debits sender)
- *  ✅ Tries transfer_zerm_coins RPC first; clean manual fallback that ALSO credits recipient
- *  ✅ Logs debit for sender + credit for recipient in zerm_transactions
- *  ✅ Route /coins/transfer (matches router fix)
+ *  ? Full i18n � EN, FR, Pidgin, Arabic, Fulfulde
+ *  ? RTL layout for Arabic
+ *  ? Properly credits recipient wallet (not just debits sender)
+ *  ? Tries transfer_zerm_coins RPC first; clean manual fallback that ALSO credits recipient
+ *  ? Logs debit for sender + credit for recipient in zerm_transactions
+ *  ? Route /coins/transfer (matches router fix)
  */
 
 import { useState, useEffect } from 'react';
@@ -18,7 +18,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 
-// ── i18n ──────────────────────────────────────────────────────────────────────
+// -- i18n ----------------------------------------------------------------------
 const strings = {
   en: {
     pageTitle:    'Transfer Zerm Coins',
@@ -31,7 +31,7 @@ const strings = {
     noteLabel:    'Note (optional)',
     notePH:       "What's this for?",
     sendBtn:      (n: string) => `Send ${n || '0'} Coins`,
-    sending:      'Sending…',
+    sending:      'Sending�',
     disclaimer:   'Transfers are instant and cannot be reversed.',
     errRecipient: 'Please enter recipient email.',
     errMinAmount: 'Minimum transfer is 10 coins.',
@@ -39,32 +39,32 @@ const strings = {
     errNotFound:  'No user found with that email. Ask them to register on Bambeh first.',
     errFailed:    'Transfer failed. Please try again.',
     errInsufficient: 'Insufficient coins balance.',
-    successTitle: 'Transfer Sent! 🎉',
+    successTitle: 'Transfer Sent! ??',
     successCoins: (n: string, email: string) => `${n} Zerm Coins sent to ${email}`,
     notePrefix:   'Note: ',
     backWallet:   'Back to Wallet',
   },
   fr: {
-    pageTitle:    'Transférer des Pièces Zerm',
+    pageTitle:    'Transf�rer des Pi�ces Zerm',
     yourBalance:  'Votre Solde',
     recipientLabel: 'Email du destinataire *',
     recipientPH:  'ami@email.com',
     recipientHint:'Il doit avoir un compte Bambeh',
     amountLabel:  'Montant *',
-    customPH:     'Ou entrez un montant personnalisé',
+    customPH:     'Ou entrez un montant personnalis�',
     noteLabel:    'Note (facultatif)',
     notePH:       'Pour quoi ?',
-    sendBtn:      (n: string) => `Envoyer ${n || '0'} pièces`,
-    sending:      'Envoi…',
-    disclaimer:   'Les transferts sont instantanés et irréversibles.',
+    sendBtn:      (n: string) => `Envoyer ${n || '0'} pi�ces`,
+    sending:      'Envoi�',
+    disclaimer:   'Les transferts sont instantan�s et irr�versibles.',
     errRecipient: `Veuillez entrer l'email du destinataire.`,
-    errMinAmount: 'Le minimum est 10 pièces.',
-    errBalance:   (b: number) => `Vous n'avez que ${b} pièces.`,
+    errMinAmount: 'Le minimum est 10 pi�ces.',
+    errBalance:   (b: number) => `Vous n'avez que ${b} pi�ces.`,
     errNotFound:  "Aucun utilisateur avec cet email. Demandez-lui de s'inscrire sur Bambeh.",
-    errFailed:    'Échec du transfert. Veuillez réessayer.',
+    errFailed:    '�chec du transfert. Veuillez r�essayer.',
     errInsufficient: 'Solde insuffisant.',
-    successTitle: 'Transfert envoyé ! 🎉',
-    successCoins: (n: string, email: string) => `${n} pièces envoyées à ${email}`,
+    successTitle: 'Transfert envoy� ! ??',
+    successCoins: (n: string, email: string) => `${n} pi�ces envoy�es � ${email}`,
     notePrefix:   'Note : ',
     backWallet:   'Retour au portefeuille',
   },
@@ -79,7 +79,7 @@ const strings = {
     noteLabel:    'Note (if you want)',
     notePH:       'Why you dey send?',
     sendBtn:      (n: string) => `Send ${n || '0'} Coins`,
-    sending:      'Dey send…',
+    sending:      'Dey send�',
     disclaimer:   'Transfer no fit reverse.',
     errRecipient: 'Enter padi email.',
     errMinAmount: 'Minimum na 10 coins.',
@@ -87,56 +87,56 @@ const strings = {
     errNotFound:  'No Bambeh user with that email. Make dem register first.',
     errFailed:    'Transfer fail. Try again.',
     errInsufficient: 'Coins no reach.',
-    successTitle: 'Transfer Done! 🎉',
+    successTitle: 'Transfer Done! ??',
     successCoins: (n: string, email: string) => `${n} Zerm Coins reach ${email}`,
     notePrefix:   'Note: ',
     backWallet:   'Go back Wallet',
   },
   ar: {
-    pageTitle:    'تحويل عملات زرم',
-    yourBalance:  'رصيدك',
-    recipientLabel: 'بريد المستلم *',
+    pageTitle:    '????? ????? ???',
+    yourBalance:  '?????',
+    recipientLabel: '???? ??????? *',
     recipientPH:  'friend@email.com',
-    recipientHint:'يجب أن يكون لديه حساب على Bambeh',
-    amountLabel:  'المبلغ *',
-    customPH:     'أو أدخل مبلغاً مخصصاً',
-    noteLabel:    'ملاحظة (اختياري)',
-    notePH:       'لماذا تÙرسل؟',
-    sendBtn:      (n: string) => `إرسال ${n || '0'} عملة`,
-    sending:      'جارÙ الإرسال…',
-    disclaimer:   'التحويلات Ùورية ولا يمكن التراجع عنها.',
-    errRecipient: 'أدخل بريد المستلم.',
-    errMinAmount: 'الحد الأدنى هو 10 عملات.',
-    errBalance:   (b: number) => `لديك Ùقط ${b} عملة.`,
-    errNotFound:  'لا يوجد مستخدم بهذا البريد. اطلب منه التسجيل Ùي Bambeh أولاً.',
-    errFailed:    'Ùشل التحويل. حاول مجدداً.',
-    errInsufficient: 'رصيد غير كاÙÙ.',
-    successTitle: 'تم التحويل! 🎉',
-    successCoins: (n: string, email: string) => `تم إرسال ${n} عملة إلى ${email}`,
-    notePrefix:   'ملاحظة: ',
-    backWallet:   'العودة للمحÙظة',
+    recipientHint:'??? ?? ???? ???? ???? ??? Bambeh',
+    amountLabel:  '?????? *',
+    customPH:     '?? ???? ?????? ??????',
+    noteLabel:    '?????? (???????)',
+    notePH:       '????? ?ُ????',
+    sendBtn:      (n: string) => `????? ${n || '0'} ????`,
+    sending:      '???ٍ ???????�',
+    disclaimer:   '????????? ف???? ??? ???? ??????? ????.',
+    errRecipient: '???? ???? ???????.',
+    errMinAmount: '???? ?????? ?? 10 ?????.',
+    errBalance:   (b: number) => `???? ف?? ${b} ????.`,
+    errNotFound:  '?? ???? ?????? ???? ??????. ???? ??? ??????? ف? Bambeh ?????.',
+    errFailed:    'ف?? ???????. ???? ??????.',
+    errInsufficient: '???? ??? ??فٍ.',
+    successTitle: '?? ???????! ??',
+    successCoins: (n: string, email: string) => `?? ????? ${n} ???? ??? ${email}`,
+    notePrefix:   '??????: ',
+    backWallet:   '?????? ????ف??',
   },
   fulfulde: {
-    pageTitle:    'Neldu Zerm Coinɗe',
+    pageTitle:    'Neldu Zerm Coin?e',
     yourBalance:  'Soodaande maa',
-    recipientLabel: 'Iimeel Heɓante *',
+    recipientLabel: 'Iimeel He?ante *',
     recipientPH:  'tawto@iimeel.com',
-    recipientHint:'Nde waawi heɓde, na waɗi akonto Bambeh',
+    recipientHint:'Nde waawi he?de, na wa?i akonto Bambeh',
     amountLabel:  'Yonta *',
     customPH:     'Sifa yonta maa',
-    noteLabel:    'Takko (so waɗii)',
+    noteLabel:    'Takko (so wa?ii)',
     notePH:       'Ndeen woni ko?',
-    sendBtn:      (n: string) => `Neldu ${n || '0'} Coinɗe`,
-    sending:      'Dawnugol…',
-    disclaimer:   'Neldugol ɓeto laawol, waawaa wurtude.',
-    errRecipient: 'Sifa iimeel heɓante.',
-    errMinAmount: 'Keewu ɓurtii 10 coinɗe.',
-    errBalance:   (b: number) => `A heɓii kan ${b} coinɗe.`,
+    sendBtn:      (n: string) => `Neldu ${n || '0'} Coin?e`,
+    sending:      'Dawnugol�',
+    disclaimer:   'Neldugol ?eto laawol, waawaa wurtude.',
+    errRecipient: 'Sifa iimeel he?ante.',
+    errMinAmount: 'Keewu ?urtii 10 coin?e.',
+    errBalance:   (b: number) => `A he?ii kan ${b} coin?e.`,
     errNotFound:  'Alaa jannginoowo Bambeh e iimeel oo. Woy nde ari jannginoo.',
-    errFailed:    'Neldugol tinaaki. Taaɓ kadi.',
-    errInsufficient: 'Coinɗe alaa.',
-    successTitle: 'Neldugol woni! 🎉',
-    successCoins: (n: string, email: string) => `${n} coinɗe neldaa e ${email}`,
+    errFailed:    'Neldugol tinaaki. Taa? kadi.',
+    errInsufficient: 'Coin?e alaa.',
+    successTitle: 'Neldugol woni! ??',
+    successCoins: (n: string, email: string) => `${n} coin?e neldaa e ${email}`,
     notePrefix:   'Takko: ',
     backWallet:   'Rutto Jaaborgal',
   },
@@ -216,10 +216,10 @@ export default function CoinsTransfer() {
           p_note:         noteText,
         });
         if (!rpcErr) rpcSuccess = true;
-      } catch (_) { /* RPC not deployed yet — fall through */ }
+      } catch (_) { /* RPC not deployed yet � fall through */ }
 
       if (!rpcSuccess) {
-        // Manual fallback — debit sender, credit recipient, log both
+        // Manual fallback � debit sender, credit recipient, log both
         const { data: senderWallet } = await supabase
           .from('zerm_coins')
           .select('balance')
@@ -257,7 +257,7 @@ export default function CoinsTransfer() {
           user_id:     senderId,
           type:        'debit',
           amount:      coins,
-          description: `Transfer to ${recipientEmail}${note.trim() ? ` — ${note.trim()}` : ''}`,
+          description: `Transfer to ${recipientEmail}${note.trim() ? ` � ${note.trim()}` : ''}`,
         });
 
         // Log credit for recipient
@@ -265,7 +265,7 @@ export default function CoinsTransfer() {
           user_id:     recipientId,
           type:        'credit',
           amount:      coins,
-          description: `Received from ${session.user.email}${note.trim() ? ` — ${note.trim()}` : ''}`,
+          description: `Received from ${session.user.email}${note.trim() ? ` � ${note.trim()}` : ''}`,
         });
       }
 
@@ -278,7 +278,7 @@ export default function CoinsTransfer() {
     }
   }
 
-  // ── Success screen ─────────────────────────────────────────────────────────
+  // -- Success screen ---------------------------------------------------------
   if (done) {
     return (
       <div
@@ -303,7 +303,7 @@ export default function CoinsTransfer() {
     );
   }
 
-  // ── Main screen ────────────────────────────────────────────────────────────
+  // -- Main screen ------------------------------------------------------------
   return (
     <div className="min-h-screen bg-gray-50 pb-12" dir={isRtl ? 'rtl' : 'ltr'}>
 
@@ -322,7 +322,7 @@ export default function CoinsTransfer() {
         <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-5 text-white text-center">
           <p className="text-teal-100 text-sm mb-1">{s.yourBalance}</p>
           <p className="text-4xl font-bold">
-            {myBalance !== null ? myBalance.toLocaleString() : '…'}
+            {myBalance !== null ? myBalance.toLocaleString() : '�'}
           </p>
           <p className="text-teal-100 text-sm">Zerm Coins</p>
         </div>

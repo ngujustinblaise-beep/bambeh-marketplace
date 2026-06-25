@@ -1,4 +1,4 @@
-﻿/**
+/**
  * THEME PROVIDER
  * FILE LOCATION: src/components/theme-provider.tsx
  */

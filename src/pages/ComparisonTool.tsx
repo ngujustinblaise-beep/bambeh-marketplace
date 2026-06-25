@@ -1,18 +1,18 @@
-﻿/**
- * src/pages/ComparisonTool.tsx — Bambeh Marketplace
+/**
+ * src/pages/ComparisonTool.tsx � Bambeh Marketplace
  *
  * FIXES applied:
- *  ✅ Real internet search via Anthropic API (web_search tool) — shows live prices & specs
- *  ✅ localStorage read uses try/catch; malformed JSON never crashes the page
- *  ✅ "Add Product" picker now has a "Search Online" mode that queries real market data
- *  ✅ Score bars normalised correctly (sellerRating is /5, others are /100)
- *  ✅ bestPrice / bestRating / bestValue return null when < 2 products (was already ok, kept)
- *  ✅ Table header width fixed — no longer overflows on 3-product view
- *  ✅ Source attribution shown for AI-fetched data (verifiable link)
- *  ✅ Loading skeleton while AI search is running
- *  ✅ Error boundary around AI call — fallback to manual entry on failure
- *  ✅ "Clear all" button added
- *  ✅ Accessible: buttons have aria-labels, table has proper scope attributes
+ *  ? Real internet search via Anthropic API (web_search tool) � shows live prices & specs
+ *  ? localStorage read uses try/catch; malformed JSON never crashes the page
+ *  ? "Add Product" picker now has a "Search Online" mode that queries real market data
+ *  ? Score bars normalised correctly (sellerRating is /5, others are /100)
+ *  ? bestPrice / bestRating / bestValue return null when < 2 products (was already ok, kept)
+ *  ? Table header width fixed � no longer overflows on 3-product view
+ *  ? Source attribution shown for AI-fetched data (verifiable link)
+ *  ? Loading skeleton while AI search is running
+ *  ? Error boundary around AI call � fallback to manual entry on failure
+ *  ? "Clear all" button added
+ *  ? Accessible: buttons have aria-labels, table has proper scope attributes
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+// --- Types -----------------------------------------------------------------
 
 interface Product {
   id: string;
@@ -46,7 +46,7 @@ interface Product {
   fetchedAt?: number;   // timestamp for cache busting
 }
 
-// ─── Sample local products ─────────────────────────────────────────────────
+// --- Sample local products -------------------------------------------------
 
 const SAMPLE: Product[] = [
   {
@@ -67,7 +67,7 @@ const SAMPLE: Product[] = [
   },
 ];
 
-// ─── Anthropic-powered search ──────────────────────────────────────────────
+// --- Anthropic-powered search ----------------------------------------------
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
   || 'https://bambeh-backend-production-6bca.up.railway.app';
@@ -100,7 +100,7 @@ async function searchProductOnline(query: string): Promise<{
   }
 }
 
-// ─── Source Badge ──────────────────────────────────────────────────────────
+// --- Source Badge ----------------------------------------------------------
 
 function SourceBadge({ product }: { product: Product }) {
   const lang = useLang();
@@ -120,7 +120,7 @@ function SourceBadge({ product }: { product: Product }) {
   );
 }
 
-// ─── Skeleton loader ───────────────────────────────────────────────────────
+// --- Skeleton loader -------------------------------------------------------
 
 function ProductSkeleton() {
   return (
@@ -132,7 +132,7 @@ function ProductSkeleton() {
   );
 }
 
-// ─── Online Search Panel ───────────────────────────────────────────────────
+// --- Online Search Panel ---------------------------------------------------
 
 interface OnlineSearchPanelProps {
   onAdd: (p: Product) => void;
@@ -205,7 +205,7 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
         <div className="space-y-2">
           {[1, 2].map(i => <ProductSkeleton key={i} />)}
           <p className="text-xs text-gray-400 text-center animate-pulse">
-            🌐 Searching the web for live prices…
+            ?? Searching the web for live prices�
           </p>
         </div>
       )}
@@ -270,7 +270,7 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
   );
 }
 
-// ─── Manual Add Panel ──────────────────────────────────────────────────────
+// --- Manual Add Panel ------------------------------------------------------
 
 interface ManualPickerProps {
   available: Product[];
@@ -337,7 +337,7 @@ function ManualPicker({ available, onAdd, onClose, onOpenOnline }: ManualPickerP
   }
 }
 
-// ─── Main Component ────────────────────────────────────────────────────────
+// --- Main Component --------------------------------------------------------
 
 export default function ComparisonTool() {
   const navigate = useNavigate();
@@ -374,7 +374,7 @@ export default function ComparisonTool() {
       }));
       setLocalProducts(mapped);
     } catch {
-      // localStorage malformed — silently ignore
+      // localStorage malformed � silently ignore
     }
   }, []);
 
@@ -395,7 +395,7 @@ export default function ComparisonTool() {
   // All unique spec keys across all compared products
   const allSpecs = Array.from(new Set(products.flatMap(p => Object.keys(p.specs))));
 
-  // ── Winner detection ──
+  // -- Winner detection --
   const bestPrice = products.length >= 2
     ? products.reduce((b, p) => p.price < b.price ? p : b).id
     : null;
@@ -573,7 +573,7 @@ export default function ComparisonTool() {
                           {products.map(p => (
                             <td key={p.id} className="py-2 pr-3 text-gray-900 font-medium">
                               {p.specs[spec] || (
-                                <span className="text-gray-300">—</span>
+                                <span className="text-gray-300">�</span>
                               )}
                             </td>
                           ))}

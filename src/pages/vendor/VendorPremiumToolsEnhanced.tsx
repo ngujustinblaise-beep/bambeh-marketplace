@@ -1,4 +1,4 @@
-﻿/**
+/**
  * VENDOR PREMIUM TOOLS - REBUILT Feb 17, 2026
  * Clean rebuild. No broken imports. All tiers supported.
  * VendorLayout provides the header - this page is content only.
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";
 
-/* ── Tier configuration (supports ALL possible tier values) ── */
+/* -- Tier configuration (supports ALL possible tier values) -- */
 const TIERS: Record<string, { name: string; level: number; color: string; bg: string }> = {
   starter:      { name: 'Starter',      level: 1, color: 'text-gray-400',   bg: 'bg-gray-500/20' },
   basic:        { name: 'Basic',        level: 1, color: 'text-gray-400',   bg: 'bg-gray-500/20' },
@@ -39,7 +39,7 @@ function getTierLevel(key: string | undefined): number {
   return getTier(key).level;
 }
 
-/* ── Premium tools definitions ── */
+/* -- Premium tools definitions -- */
 const premiumTools = [
   {
     id: 'analytics-pro', name: 'Analytics Pro',
@@ -97,7 +97,7 @@ const premiumTools = [
   }
 ];
 
-/* ── Component ── */
+/* -- Component -- */
 export default function VendorPremiumToolsEnhanced() {
   const navigate = useNavigate();
   const [vendorTier, setVendorTier] = useState('starter');

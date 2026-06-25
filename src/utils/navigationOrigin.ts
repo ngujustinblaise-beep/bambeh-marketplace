@@ -1,4 +1,4 @@
-﻿let _mainOrigin = "/";
+let _mainOrigin = "/";
 
 const setMainOrigin = (path: string): void => {
   _mainOrigin = path;

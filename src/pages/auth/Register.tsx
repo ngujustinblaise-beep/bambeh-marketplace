@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,27 +28,27 @@ const STRINGS = {
     signIn: "Se connecter",
     signingIn: "Connexion...",
     noAccount: "Pas encore de compte ?",
-    createOne: "CrÃ©er un compte",
-    forgotPassword: "Mot de passe oubliÃ© ?",
+    createOne: "Créer un compte",
+    forgotPassword: "Mot de passe oublié ?",
     invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
     show: "Afficher le mot de passe",
     hide: "Masquer le mot de passe",
     logoAlt: "Logo Bambeh",
   },
   ar: {
-    title: "Ù…Ø±Ø­Ø¨Ù‹Ø§ Ø¨Ø¹ÙˆØ¯ØªÙƒ",
-    subtitle: "Ø³Ø¬Ù‘Ù„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù„Ù…ØªØ§Ø¨Ø¹Ø©.",
-    email: "Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
-    password: "ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
-    signIn: "ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„",
-    signingIn: "Ø¬Ø§Ø±Ù ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„...",
-    noAccount: "Ù„ÙŠØ³ Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ØŸ",
-    createOne: "Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨",
-    forgotPassword: "Ù†Ø³ÙŠØª ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±ØŸ",
-    invalid: "ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ÙˆÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± ØµØ§Ù„Ø­ÙŠÙ†.",
-    show: "Ø¥Ø¸Ù‡Ø§Ø± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
-    hide: "Ø¥Ø®ÙØ§Ø¡ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
-    logoAlt: "Ø´Ø¹Ø§Ø± Bambeh",
+    title: "مرحبًا بعودتك",
+    subtitle: "سجّل الدخول للمتابعة.",
+    email: "البريد الإلكتروني",
+    password: "كلمة المرور",
+    signIn: "تسجيل الدخول",
+    signingIn: "جارٍ تسجيل الدخول...",
+    noAccount: "ليس لديك حساب؟",
+    createOne: "إنشاء حساب",
+    forgotPassword: "نسيت كلمة المرور؟",
+    invalid: "يرجى إدخال بريد إلكتروني وكلمة مرور صالحين.",
+    show: "إظهار كلمة المرور",
+    hide: "إخفاء كلمة المرور",
+    logoAlt: "شعار Bambeh",
   },
   pidgin: {
     title: "Welcome back",
@@ -67,17 +67,17 @@ const STRINGS = {
   },
   ff: {
     title: "Jam tan",
-    subtitle: "Seŋo e barne.",
+    subtitle: "Se?o e barne.",
     email: "Njiital email",
-    password: "MoÆ´Æ´ere moÆ´Æ´i",
-    signIn: "SeÅ‹o",
-    signingIn: "Ko seÅ‹oto...",
+    password: "Moƴƴere moƴƴi",
+    signIn: "Seŋo",
+    signingIn: "Ko seŋoto...",
     noAccount: "A adi a waawi fotaade?",
     createOne: "Sos njiya",
-    forgotPassword: "Nodii moÆ´Æ´ere?",
-    invalid: "TiiÉ—no naatnude email e moÆ´Æ´ere moÆ´Æ´i.",
-    show: "WaÉ—tude moÆ´Æ´ere",
-    hide: "Æ¯ittude moÆ´Æ´ere",
+    forgotPassword: "Nodii moƴƴere?",
+    invalid: "Tiiɗno naatnude email e moƴƴere moƴƴi.",
+    show: "Waɗtude moƴƴere",
+    hide: "Ưittude moƴƴere",
     logoAlt: "Bambeh logo",
   },
 } as const;
@@ -166,7 +166,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"

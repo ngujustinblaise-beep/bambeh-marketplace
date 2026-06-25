@@ -363,11 +363,11 @@ const UserSettings: React.FC = () => {
 
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {currentUser?.photoURL ? (
-                  <img src={currentUser.photoURL} alt="Avatar" className="w-full h-full object-cover" />
+                {(currentUser as any)?.photoURL ? (
+                  <img src={(currentUser as any).photoURL} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-teal-600 text-2xl font-bold">
-                    {(currentUser?.displayName || currentUser?.email || "U")[0].toUpperCase()}
+                    {((currentUser as any)?.displayName || currentUser?.email || "U")[0].toUpperCase()}
                   </span>
                 )}
               </div>
@@ -595,5 +595,6 @@ const UserSettings: React.FC = () => {
 };
 
 export default UserSettings;
+
 
 

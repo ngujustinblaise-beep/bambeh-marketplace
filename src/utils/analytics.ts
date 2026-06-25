@@ -1,4 +1,4 @@
-﻿// File: src/utils/analytics.ts
+// File: src/utils/analytics.ts
 
 export interface UserMetrics {
   // Engagement

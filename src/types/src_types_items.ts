@@ -1,10 +1,10 @@
-﻿/**
+/**
  * src/types/src_types_items.ts
- * Bambeh Marketplace — Marketplace Item & Listing Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace � Marketplace Item & Listing Types
+ * � 2026 Bambeh Marketplace. All rights reserved.
  */
 
-// ─── Listing Status ──────────────────────────────────────────────────────────
+// --- Listing Status ----------------------------------------------------------
 export type ListingStatus =
   | "active"
   | "sold"
@@ -14,7 +14,7 @@ export type ListingStatus =
   | "pending_review"
   | "rejected";
 
-// ─── Listing Category ────────────────────────────────────────────────────────
+// --- Listing Category --------------------------------------------------------
 export type ListingCategory =
   | "electronics"
   | "fashion"
@@ -32,13 +32,13 @@ export type ListingCategory =
   | "beauty"
   | "other";
 
-// ─── Item Condition ──────────────────────────────────────────────────────────
+// --- Item Condition ----------------------------------------------------------
 export type ItemCondition = "new" | "like_new" | "good" | "fair" | "poor";
 
-// ─── Delivery Option ─────────────────────────────────────────────────────────
+// --- Delivery Option ---------------------------------------------------------
 export type DeliveryOption = "pickup" | "delivery" | "both";
 
-// ─── Payment Method ──────────────────────────────────────────────────────────
+// --- Payment Method ----------------------------------------------------------
 export type PaymentMethod =
   | "mtn_momo"
   | "orange_money"
@@ -47,7 +47,7 @@ export type PaymentMethod =
   | "notchpay"
   | "escrow";
 
-// ─── Location ────────────────────────────────────────────────────────────────
+// --- Location ----------------------------------------------------------------
 export interface ItemLocation {
   city: string;
   region: string;
@@ -57,7 +57,7 @@ export interface ItemLocation {
   address?: string;
 }
 
-// ─── Item Image ──────────────────────────────────────────────────────────────
+// --- Item Image --------------------------------------------------------------
 export interface ItemImage {
   id: string;
   url: string;
@@ -66,7 +66,7 @@ export interface ItemImage {
   isMain: boolean;
 }
 
-// ─── Seller Info (embedded) ──────────────────────────────────────────────────
+// --- Seller Info (embedded) --------------------------------------------------
 export interface SellerInfo {
   id: string;
   displayName: string;
@@ -79,7 +79,7 @@ export interface SellerInfo {
   location?: string;
 }
 
-// ─── Marketplace Item ────────────────────────────────────────────────────────
+// --- Marketplace Item --------------------------------------------------------
 export interface MarketplaceItem {
   id: string;
   sellerId: string;
@@ -107,7 +107,7 @@ export interface MarketplaceItem {
   updatedAt: string;
 }
 
-// ─── Job Listing ─────────────────────────────────────────────────────────────
+// --- Job Listing -------------------------------------------------------------
 export type JobType =
   | "full_time"
   | "part_time"
@@ -151,7 +151,7 @@ export interface JobListing {
   updatedAt: string;
 }
 
-// ─── Service Listing ─────────────────────────────────────────────────────────
+// --- Service Listing ---------------------------------------------------------
 export interface ServiceListing {
   id: string;
   providerId: string;
@@ -177,7 +177,7 @@ export interface ServiceListing {
   updatedAt: string;
 }
 
-// ─── Exchange Item ────────────────────────────────────────────────────────────
+// --- Exchange Item ------------------------------------------------------------
 export interface ExchangeItem {
   id: string;
   ownerId: string;
@@ -199,7 +199,7 @@ export interface ExchangeItem {
   updatedAt: string;
 }
 
-// ─── Create/Update Requests ──────────────────────────────────────────────────
+// --- Create/Update Requests --------------------------------------------------
 export interface CreateMarketplaceItemRequest {
   title: string;
   description: string;
@@ -220,7 +220,7 @@ export interface UpdateMarketplaceItemRequest extends Partial<CreateMarketplaceI
   status?: ListingStatus;
 }
 
-// ─── Paginated Response ──────────────────────────────────────────────────────
+// --- Paginated Response ------------------------------------------------------
 export interface PaginatedItemsResponse<T> {
   data: T[];
   total: number;
@@ -230,7 +230,7 @@ export interface PaginatedItemsResponse<T> {
   error: string | null;
 }
 
-// ─── Filter Options ──────────────────────────────────────────────────────────
+// --- Filter Options ----------------------------------------------------------
 export interface ItemFilters {
   category?: ListingCategory;
   subcategory?: string;

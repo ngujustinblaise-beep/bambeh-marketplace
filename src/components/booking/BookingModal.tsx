@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * BOOKING MODAL - REUSABLE FOR SERVICES, RENTALS, VEHICLES
  * FILE LOCATION: src/components/booking/BookingModal.tsx
  */
@@ -72,9 +72,9 @@ export default function BookingModal({ isOpen, onClose, type, itemTitle, provide
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
               <p className="text-sm text-blue-800"><strong>Next Steps:</strong></p>
               <ul className="text-sm text-blue-700 space-y-1 mt-2">
-                <li>â€¢ Provider will review your request</li>
-                <li>â€¢ You'll be notified when approved</li>
-                <li>â€¢ Messaging will unlock after approval</li>
+                <li>• Provider will review your request</li>
+                <li>• You'll be notified when approved</li>
+                <li>• Messaging will unlock after approval</li>
               </ul>
             </div>
           </div>

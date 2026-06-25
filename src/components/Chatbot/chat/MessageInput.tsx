@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * src/components/Chatbot/chat/MessageInput.tsx
- * Bambeh Marketplace â€” Chat Message Input Bar
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace — Chat Message Input Bar
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useRef, useCallback } from "react";
@@ -17,14 +17,14 @@ interface MessageInputProps {
 const QUICK_REPLIES = [
   "Bonjour, est-ce encore disponible?",
   "Quel est votre meilleur prix?",
-  "OÃ¹ Ãªtes-vous situÃ©?",
-  "Je suis intÃ©ressÃ©(e)",
+  "Où êtes-vous situé?",
+  "Je suis intéressé(e)",
 ];
 
 const MessageInput: React.FC<MessageInputProps> = ({
   onSend,
   disabled = false,
-  placeholder = "Ã‰crire un message...",
+  placeholder = "Écrire un message...",
   className = "",
 }) => {
   const [text, setText] = useState("");
@@ -64,7 +64,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         textareaRef.current.style.height = "auto";
       }
     } catch {
-      // silent â€” parent handles error
+      // silent — parent handles error
     } finally {
       setSending(false);
       textareaRef.current?.focus();
@@ -86,7 +86,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Image trop lourde â€” max 5 MB");
+      alert("Image trop lourde — max 5 MB");
       return;
     }
 
@@ -147,7 +147,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <div className="relative inline-block">
           <img
             src={imagePreview}
-            alt="AperÃ§u"
+            alt="Aperçu"
             className="h-20 w-20 object-cover rounded-xl border border-gray-200"
           />
           <button
@@ -171,7 +171,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           className={`flex-shrink-0 p-2.5 rounded-xl transition-colors ${
             showQuickReplies ? "bg-teal-100 text-teal-600" : "hover:bg-gray-100 text-gray-500"
           }`}
-          aria-label="RÃ©ponses rapides"
+          aria-label="Réponses rapides"
         >
           <Smile className="w-5 h-5" />
         </button>

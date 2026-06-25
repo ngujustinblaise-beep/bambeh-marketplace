@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Globe, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -22,12 +22,12 @@ const defaultSettings: LangSettings = {
 };
 
 const LANGUAGES = [
-  { code: "fr",  label: "Français", flag: "🇫🇷" },
-  { code: "en",  label: "English",  flag: "🇬🇧" },
-  { code: "fuf", label: "Fulfulde", flag: "🇨🇲" },
-  { code: "ewo", label: "Ewondo",   flag: "🇨🇲" },
-  { code: "bum", label: "Bulu",     flag: "🇨🇲" },
-  { code: "ybb", label: "Yemba",    flag: "🇨🇲" },
+  { code: "fr",  label: "Fran�ais", flag: "????" },
+  { code: "en",  label: "English",  flag: "????" },
+  { code: "fuf", label: "Fulfulde", flag: "????" },
+  { code: "ewo", label: "Ewondo",   flag: "????" },
+  { code: "bum", label: "Bulu",     flag: "????" },
+  { code: "ybb", label: "Yemba",    flag: "????" },
 ];
 
 const CURRENCIES = [
