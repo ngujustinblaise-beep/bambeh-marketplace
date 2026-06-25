@@ -1,172 +1,131 @@
-﻿/**
- * src/contexts/AuthContext.tsx
- * Bambeh Marketplace — Auth Context with complete AuthContextValue interface
- * © 2026 Bambeh Marketplace. All rights reserved.
- *
- * This file patches the AuthContextValue to include all properties
- * that legacy components expect: currentUser, loading, login, register, logout
- */
-
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import type { User, Session } from "@supabase/supabase-js";
+import { useSupabaseAuth } from "@/providers/SupabaseAuthProvider";
 
-// ─── AuthUser — superset of Supabase User with Bambeh extras ─────────────────
-export interface AuthUser {
+export type AuthUser = {
   id: string;
-  email?: string;
-  name?: string;
-  displayName?: string;
-  avatar_url?: string;
-  avatarUrl?: string;
-  phone?: string;
-  role?: string;
-  isVendor?: boolean;
-  isAdmin?: boolean;
-  subscriptionTier?: string;
-  app_metadata?: Record<string, unknown>;
-  user_metadata?: Record<string, unknown>;
-}
+  email?: string | null;
+  name?: string | null;
+  role?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
+};
 
-// ─── AuthContextValue — COMPLETE interface including legacy props ─────────────
 export interface AuthContextValue {
-  // Current session state
   user: AuthUser | null;
-  session: Session | null;
-
-  // Legacy alias — many components use currentUser
   currentUser: AuthUser | null;
-
-  // Loading state
   loading: boolean;
-  isLoading: boolean;
-
-  // Auth actions
+  isAdmin: boolean;
+  isVendor: boolean;
   login: (email: string, password: string) => Promise<{ error: string | null }>;
   register: (email: string, password: string, name?: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
-  signOut: () => Promise<void>;
-
-  // Profile
-  updateProfile: (updates: Partial<AuthUser>) => Promise<{ error: string | null }>;
-
-  // Convenience flags
-  isAuthenticated: boolean;
-  isVendor: boolean;
-  isAdmin: boolean;
+  refreshUser: () => Promise<void>;
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+function mapUser(sessionUser: any): AuthUser | null {
+  if (!sessionUser) return null;
+
+  const metadata = sessionUser.user_metadata ?? {};
+  return {
+    id: sessionUser.id,
+    email: sessionUser.email ?? null,
+    name: metadata.full_name ?? metadata.name ?? metadata.display_name ?? null,
+    role: metadata.role ?? null,
+    phone: metadata.phone ?? null,
+    avatarUrl: metadata.avatar_url ?? null,
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user: supabaseUser, loading: supabaseLoading, refreshSession } = useSupabaseAuth();
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const mapUser = useCallback((supabaseUser: User | null): AuthUser | null => {
-    if (!supabaseUser) return null;
-    return {
-      id: supabaseUser.id,
-      email: supabaseUser.email,
-      name: supabaseUser.user_metadata?.name as string | undefined,
-      displayName: supabaseUser.user_metadata?.display_name as string | undefined,
-      avatar_url: supabaseUser.user_metadata?.avatar_url as string | undefined,
-      avatarUrl: supabaseUser.user_metadata?.avatar_url as string | undefined,
-      phone: supabaseUser.phone,
-      role: supabaseUser.role,
-      app_metadata: supabaseUser.app_metadata as Record<string, unknown>,
-      user_metadata: supabaseUser.user_metadata as Record<string, unknown>,
+  const refreshUser = useCallback(async () => {
+    setLoading(true);
+    try {
+      await refreshSession();
+      const { data } = await supabase.auth.getSession();
+      const sessionUser = data.session?.user ?? null;
+      setUser(mapUser(sessionUser));
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshSession]);
+
+  useEffect(() => {
+    setUser(mapUser(supabaseUser));
+    setLoading(supabaseLoading);
+  }, [supabaseUser, supabaseLoading]);
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(mapUser(session?.user ?? null));
+      setLoading(false);
+    });
+
+    return () => {
+      data.subscription.unsubscribe();
     };
   }, []);
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+  const login = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error) {
+      const { data } = await supabase.auth.getSession();
       setUser(mapUser(data.session?.user ?? null));
-      setLoading(false);
-    }).catch(() => setLoading(false));
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        setSession(newSession);
-        setUser(mapUser(newSession?.user ?? null));
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [mapUser]);
-
-  const login = useCallback(async (
-    email: string, password: string
-  ): Promise<{ error: string | null }> => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      return { error: error?.message ?? null };
-    } catch (e) {
-      return { error: e instanceof Error ? e.message : "Login failed" };
     }
+    return { error: error?.message ?? null };
   }, []);
 
-  const register = useCallback(async (
-    email: string, password: string, name?: string
-  ): Promise<{ error: string | null }> => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name } },
-      });
-      return { error: error?.message ?? null };
-    } catch (e) {
-      return { error: e instanceof Error ? e.message : "Registration failed" };
+  const register = useCallback(async (email: string, password: string, name?: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name ?? "",
+          name: name ?? "",
+        },
+      },
+    });
+
+    if (!error) {
+      const { data } = await supabase.auth.getSession();
+      setUser(mapUser(data.session?.user ?? null));
     }
+
+    return { error: error?.message ?? null };
   }, []);
 
-  const logout = useCallback(async (): Promise<void> => {
+  const logout = useCallback(async () => {
     await supabase.auth.signOut();
+    setUser(null);
   }, []);
 
-  const updateProfile = useCallback(async (
-    updates: Partial<AuthUser>
-  ): Promise<{ error: string | null }> => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        data: updates,
-      });
-      if (!error && user) {
-        setUser({ ...user, ...updates });
-      }
-      return { error: error?.message ?? null };
-    } catch (e) {
-      return { error: e instanceof Error ? e.message : "Update failed" };
-    }
-  }, [user]);
+  const value = useMemo<AuthContextValue>(() => {
+    const isAdmin = (user?.role ?? "").toLowerCase() === "admin";
+    const isVendor = (user?.role ?? "").toLowerCase() === "vendor";
 
-  const value: AuthContextValue = {
-    user,
-    session,
-    currentUser: user,   // legacy alias
-    loading,
-    isLoading: loading,
-    login,
-    register,
-    logout,
-    signOut: logout,
-    updateProfile,
-    isAuthenticated: Boolean(user),
-    isVendor: Boolean(user?.isVendor),
-    isAdmin: Boolean(user?.isAdmin || user?.role === "admin"),
-  };
+    return {
+      user,
+      currentUser: user,
+      loading,
+      isAdmin,
+      isVendor,
+      login,
+      register,
+      logout,
+      refreshUser,
+    };
+  }, [user, loading, login, register, logout, refreshUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
@@ -174,8 +133,3 @@ export function useAuth(): AuthContextValue {
 }
 
 export default AuthContext;
-
-
-
-
-

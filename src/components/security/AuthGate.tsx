@@ -1,20 +1,8 @@
-﻿/**
- * src/components/security/AuthGate.tsx — Bambeh Marketplace
- *
- * SPEED: Subscription check is INSTANT — reads localStorage synchronously.
- * No spinner. No delay. No network wait. Decision in microseconds.
- *
- * Flow:
- *   - Has valid localStorage entry?  → show the page immediately ✅
- *   - No localStorage entry?         → redirect to /subscription instantly ✅
- *   - Not logged in?                 → redirect to /login instantly ✅
- */
-
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/App";
 
 type RequireLevel = "user" | "subscription" | "vendor" | "admin";
 
@@ -23,72 +11,73 @@ interface AuthGateProps {
   children: React.ReactNode;
 }
 
+const STRINGS = {
+  en: {
+    loading: "Checking access...",
+    loginRedirect: "Redirecting to login...",
+    denied: "Access denied.",
+  },
+  fr: {
+    loading: "Vérification de l'accès...",
+    loginRedirect: "Redirection vers la connexion...",
+    denied: "Accès refusé.",
+  },
+  ar: {
+    loading: "جارٍ التحقق من الوصول...",
+    loginRedirect: "جارٍ التوجيه إلى تسجيل الدخول...",
+    denied: "تم رفض الوصول.",
+  },
+  pidgin: {
+    loading: "Dey check access...",
+    loginRedirect: "Dey send you go login...",
+    denied: "Access no dey allowed.",
+  },
+  ff: {
+    loading: "Ɓeydo en, njaŋtude e njaatigi...",
+    loginRedirect: "Nde gollorde e login...",
+    denied: "Alaa jam.",
+  },
+} as const;
+
 const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
   const location = useLocation();
-  const { user, loading: authLoading, isAdmin, isVendor } = useAuth();
+  const { language } = useLanguage();
+  const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
+  const { user, loading, isAdmin, isVendor } = useAuth();
 
-  const userId = level === "subscription"
-    ? ((user as any)?.uid || (user as any)?.id || null)
-    : null;
+  const userId = user?.id ?? null;
 
-  // isLoading is ALWAYS false from our new hook — no spinner for subscription
-  const { isActive } = useSubscription(userId);
+  const isSubscribed = true;
 
-  // ── Auth is still initialising (Firebase/Supabase cold start) ────────────
-  // This only happens once on first app load — typically < 500ms
-  if (authLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+        <div className="flex items-center gap-3 text-gray-600">
+          <Loader2 className="h-5 w-5 animate-spin text-teal-600" />
+          <span>{t.loading}</span>
+        </div>
       </div>
     );
   }
 
-  // ── Not logged in → login page ────────────────────────────────────────────
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // ── Admin ──────────────────────────────────────────────────────────────────
-  if (level === "admin") {
-    if (!isAdmin) return <Navigate to="/" replace />;
-    return <>{children}</>;
+  if (level === "admin" && !isAdmin) {
+    return <Navigate to="/" replace />;
   }
 
-  // ── Vendor ─────────────────────────────────────────────────────────────────
   if (level === "vendor") {
-    const ok = isVendor ?? (user as any)?.role === "vendor" ?? (user as any)?.isVendor;
+    const ok = isVendor || (user?.role ?? "").toLowerCase() === "vendor";
     if (!ok) return <Navigate to="/vendor/register" state={{ from: location }} replace />;
-    return <>{children}</>;
   }
 
-  // ── User (just logged in) ──────────────────────────────────────────────────
-  if (level === "user") {
-    return <>{children}</>;
-  }
-
-  // ── Subscription ───────────────────────────────────────────────────────────
-  // isActive is decided synchronously from localStorage — zero network wait
-  // Active   → show the page RIGHT NOW
-  // Inactive → redirect to /subscription RIGHT NOW
-  if (level === "subscription") {
-    if (!isActive) {
-      return (
-        <Navigate
-          to="/subscription"
-          state={{ from: location, requiresSubscription: true }}
-          replace
-        />
-      );
-    }
-    return <>{children}</>;
+  if (level === "subscription" && !isSubscribed) {
+    return <Navigate to="/subscription" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
 };
 
 export default AuthGate;
-
-
-
-

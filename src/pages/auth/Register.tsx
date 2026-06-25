@@ -1,522 +1,218 @@
-// @ts-nocheck
-/**
- * Register.tsx — Bambeh Marketplace
- * FILE LOCATION: src/pages/auth/Register.tsx
- *
- * © 2026 Bambeh Marketplace. All rights reserved.
- *
- * ✅ ADDED: Welcome message + notification sent on every new account creation
- */
+﻿import React, { useMemo, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Eye, EyeOff, ArrowRight, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/App";
 
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import {
-  Eye, EyeOff, Mail, User, Lock, Phone,
-  AtSign, ArrowRight, CheckCircle, AlertCircle, Info
-} from "lucide-react";
-import { useLang, t } from "@/hooks/useAppLang";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ BAMBEH WELCOME MESSAGE CONFIG
-// Fill in the correct values for your Supabase tables below.
-// ─────────────────────────────────────────────────────────────────────────────
-const BAMBEH_CONFIG = {
-  // The UUID of the Bambeh system/admin account that sends the welcome message.
-  // Get it from: Supabase → Authentication → Users → find "Bambeh Team" or admin user
-  // Then paste the UUID here:
-  SYSTEM_USER_ID: "00000000-0000-0000-0000-000000000001", // ← REPLACE with real admin UUID
-
-  // Your messages table name (check Supabase → Table Editor)
-  MESSAGES_TABLE: "messages",         // common options: "messages", "chats", "direct_messages"
-
-  // Your notifications table name
-  NOTIFICATIONS_TABLE: "notifications", // common options: "notifications", "alerts"
-
-  // Column names in your messages table
-  MSG_COLUMNS: {
-    sender_id:   "sender_id",         // who sent it
-    receiver_id: "receiver_id",       // who receives it (new user)
-    content:     "content",           // message body column name — may be "body", "text", "message"
-    created_at:  "created_at",
+const STRINGS = {
+  en: {
+    title: "Welcome back",
+    subtitle: "Sign in to continue.",
+    email: "Email address",
+    password: "Password",
+    signIn: "Sign in",
+    signingIn: "Signing in...",
+    noAccount: "Don't have an account?",
+    createOne: "Create account",
+    forgotPassword: "Forgot password?",
+    invalid: "Please enter a valid email and password.",
+    show: "Show password",
+    hide: "Hide password",
+    logoAlt: "Bambeh logo",
   },
-
-  // Column names in your notifications table
-  NOTIF_COLUMNS: {
-    user_id:     "user_id",           // who the notification is for
-    title:       "title",
-    body:        "body",              // may be "message", "content", "description"
-    type:        "type",              // notification category
-    is_read:     "is_read",
-    created_at:  "created_at",
+  fr: {
+    title: "Bon retour",
+    subtitle: "Connectez-vous pour continuer.",
+    email: "Adresse e-mail",
+    password: "Mot de passe",
+    signIn: "Se connecter",
+    signingIn: "Connexion...",
+    noAccount: "Pas encore de compte ?",
+    createOne: "CrÃ©er un compte",
+    forgotPassword: "Mot de passe oubliÃ© ?",
+    invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
+    show: "Afficher le mot de passe",
+    hide: "Masquer le mot de passe",
+    logoAlt: "Logo Bambeh",
   },
-};
-// ─────────────────────────────────────────────────────────────────────────────
+  ar: {
+    title: "Ù…Ø±Ø­Ø¨Ù‹Ø§ Ø¨Ø¹ÙˆØ¯ØªÙƒ",
+    subtitle: "Ø³Ø¬Ù‘Ù„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù„Ù…ØªØ§Ø¨Ø¹Ø©.",
+    email: "Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
+    password: "ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
+    signIn: "ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„",
+    signingIn: "Ø¬Ø§Ø±Ù ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„...",
+    noAccount: "Ù„ÙŠØ³ Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ØŸ",
+    createOne: "Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨",
+    forgotPassword: "Ù†Ø³ÙŠØª ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±ØŸ",
+    invalid: "ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ÙˆÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± ØµØ§Ù„Ø­ÙŠÙ†.",
+    show: "Ø¥Ø¸Ù‡Ø§Ø± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
+    hide: "Ø¥Ø®ÙØ§Ø¡ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±",
+    logoAlt: "Ø´Ø¹Ø§Ø± Bambeh",
+  },
+  pidgin: {
+    title: "Welcome back",
+    subtitle: "Sign in make you continue.",
+    email: "Email address",
+    password: "Password",
+    signIn: "Sign in",
+    signingIn: "Dey sign in...",
+    noAccount: "You no get account?",
+    createOne: "Create account",
+    forgotPassword: "Forget password?",
+    invalid: "Please enter correct email and password.",
+    show: "Show password",
+    hide: "Hide password",
+    logoAlt: "Bambeh logo",
+  },
+  ff: {
+    title: "Jam tan",
+    subtitle: "Seŋo e barne.",
+    email: "Njiital email",
+    password: "MoÆ´Æ´ere moÆ´Æ´i",
+    signIn: "SeÅ‹o",
+    signingIn: "Ko seÅ‹oto...",
+    noAccount: "A adi a waawi fotaade?",
+    createOne: "Sos njiya",
+    forgotPassword: "Nodii moÆ´Æ´ere?",
+    invalid: "TiiÉ—no naatnude email e moÆ´Æ´ere moÆ´Æ´i.",
+    show: "WaÉ—tude moÆ´Æ´ere",
+    hide: "Æ¯ittude moÆ´Æ´ere",
+    logoAlt: "Bambeh logo",
+  },
+} as const;
 
-/** Send a welcome message + notification to the newly registered user. Non-fatal. */
-async function sendWelcomeMessageAndNotification(
-  userId: string,
-  fullName: string,
-): Promise<void> {
-  const firstName = fullName.trim().split(" ")[0] || "there";
-
-  const welcomeText =
-    `🎉 Welcome to Bambeh, ${firstName}! ` +
-    `We're so glad you're here.\n\n` +
-    `Bambeh is the pulse of African commerce — you can buy and sell anything, ` +
-    `discover Farm Fresh produce, join Group Buying deals, and much more.\n\n` +
-    `Here's how to get started:\n` +
-    `• 🛍️ Browse listings on the home page\n` +
-    `• 📦 Post your first listing — it takes 2 minutes\n` +
-    `• 🌿 Check out Farm Fresh for fresh produce\n` +
-    `• 🤝 Join a Group Buy and save more\n\n` +
-    `If you ever need help, tap the chat bubble or visit our Help Centre.\n\n` +
-    `Happy trading! 🌍\n— The Bambeh Team`;
-
-  const now = new Date().toISOString();
-
-  // ── 1. Insert welcome message into the chat/messages table ─────────────────
-  try {
-    const { MESSAGES_TABLE, SYSTEM_USER_ID, MSG_COLUMNS: c } = BAMBEH_CONFIG;
-
-    await supabase.from(MESSAGES_TABLE).insert({
-      [c.sender_id]:   SYSTEM_USER_ID,
-      [c.receiver_id]: userId,
-      [c.content]:     welcomeText,
-      [c.created_at]:  now,
-      // Extra columns your table may have — safe to leave if they have defaults:
-      is_read:         false,
-      message_type:    "welcome",
-    });
-  } catch (msgErr) {
-    // Non-fatal — log and continue
-    console.warn("[Register] Welcome message insert failed:", msgErr);
-  }
-
-  // ── 2. Insert welcome notification ─────────────────────────────────────────
-  try {
-    const { NOTIFICATIONS_TABLE, NOTIF_COLUMNS: c } = BAMBEH_CONFIG;
-
-    await supabase.from(NOTIFICATIONS_TABLE).insert({
-      [c.user_id]:    userId,
-      [c.title]:      "Welcome to Bambeh! 🎉",
-      [c.body]:       `Hi ${firstName}! Your account is ready. Tap to see your welcome message.`,
-      [c.type]:       "welcome",
-      [c.is_read]:    false,
-      [c.created_at]: now,
-      // Extra fields your table may have:
-      link:           "/chat",        // where tapping the notification goes
-      icon:           "🎉",
-    });
-  } catch (notifErr) {
-    console.warn("[Register] Welcome notification insert failed:", notifErr);
-  }
-}
-
-// ── Friendly error messages for common Supabase errors ───────────────────────
-function friendlyError(msg: string): string {
-  const m = msg.toLowerCase();
-  if (m.includes("user already registered") || m.includes("already been registered"))
-    return "An account with this email already exists. Try signing in instead.";
-  if (m.includes("duplicate") && m.includes("username"))
-    return "That username is already taken. Please choose a different one.";
-  if (m.includes("duplicate") && m.includes("phone"))
-    return "That phone number is already linked to an account. Try signing in instead.";
-  if (m.includes("password should be at least"))
-    return "Your password must be at least 8 characters long.";
-  if (m.includes("unable to validate email"))
-    return "Please enter a valid email address.";
-  if (m.includes("email rate limit") || m.includes("too many requests"))
-    return "Too many attempts. Please wait a few minutes and try again.";
-  if (m.includes("database error") || m.includes("saving new user"))
-    return "We had trouble saving your account. Please try again — if this keeps happening, contact support.";
-  return msg;
-}
-
-export default function Register() {
+export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { language } = useLanguage();
+  const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
+  const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
-    fullName:        "",
-    username:        "",
-    phone:           "",
-    email:           "",
-    password:        "",
-    confirmPassword: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const [showPassword,  setShowPassword]  = useState(false);
-  const [showConfirm,   setShowConfirm]   = useState(false);
-  const [isLoading,     setIsLoading]     = useState(false);
-  const [error,         setError]         = useState("");
-  const [success,       setSuccess]       = useState(false);
-  const [emailSent,     setEmailSent]     = useState(false);
+  const emailValid = useMemo(() => /^\S+@\S+\.\S+$/.test(email), [email]);
+  const passwordValid = password.length >= 8;
 
-  const autoUsername = (name: string) =>
-    name.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "").slice(0, 20);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailValid || !passwordValid) {
+      setError(t.invalid);
+      return;
+    }
 
-  const handleFullNameChange = (e) => {
-    const name = e.target.value;
-    setFormData(prev => ({
-      ...prev,
-      fullName: name,
-      username: prev.username === "" || prev.username === autoUsername(prev.fullName)
-        ? autoUsername(name)
-        : prev.username,
-    }));
+    setLoading(true);
     setError("");
-  };
-
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    setError("");
-  };
-
-  // ── Validation ──────────────────────────────────────────────────────────────
-  const validate = () => {
-    if (!formData.fullName.trim())          return "Full name is required.";
-    if (!formData.username.trim())          return "Username is required.";
-    if (formData.username.length < 3)       return "Username must be at least 3 characters.";
-    if (!/^[a-zA-Z0-9_]+$/.test(formData.username))
-      return "Username can only contain letters, numbers, and underscores — no spaces.";
-    if (!formData.phone.trim())             return "Phone number is required.";
-    if (!/^\+?[0-9]{8,15}$/.test(formData.phone.replace(/\s/g, "")))
-      return "Enter a valid phone number (e.g. +237612345678).";
-    if (!formData.email.includes("@"))      return "A valid email address is required.";
-    if (formData.password.length < 8)       return "Password must be at least 8 characters.";
-    if (formData.password !== formData.confirmPassword) return "Passwords do not match.";
-    return null;
-  };
-
-  // ── Submit ───────────────────────────────────────────────────────────────────
-  const handleSubmit = async () => {
-    setError("");
-    const validationError = validate();
-    if (validationError) return setError(validationError);
-
-    setIsLoading(true);
     try {
-      // Step 1: Create the auth user
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email:    formData.email.trim().toLowerCase(),
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName.trim(),
-            username:  formData.username.trim().toLowerCase(),
-            phone:     formData.phone.trim(),
-          },
-        },
-      });
-
-      if (signUpError) throw new Error(friendlyError(signUpError.message));
-
-      const user = data?.user;
-      if (!user) throw new Error("Account could not be created. Please try again.");
-
-      // Step 2: Belt-and-suspenders profile upsert
-      try {
-        await supabase.from("profiles").upsert({
-          id:         user.id,
-          full_name:  formData.fullName.trim(),
-          username:   formData.username.trim().toLowerCase(),
-          phone:      formData.phone.trim(),
-          email:      formData.email.trim().toLowerCase(),
-          created_at: new Date().toISOString(),
-          avatar_url: null,
-        }, { onConflict: "id" });
-      } catch (profileErr) {
-        console.warn("[Register] Profile upsert skipped:", profileErr);
+      const result = await login(email, password);
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
-
-      // ✅ Step 3: Send welcome message + notification (non-fatal)
-      // Fire-and-forget — we don't await or block on this
-      sendWelcomeMessageAndNotification(user.id, formData.fullName.trim())
-        .catch(e => console.warn("[Register] Welcome send failed silently:", e));
-
-      const needsConfirmation = !data.session && data.user?.identities?.length === 0;
-      setEmailSent(needsConfirmation);
-      setSuccess(true);
-
-      if (!needsConfirmation) {
-        setTimeout(() => navigate("/"), 2500);
-      }
-    } catch (err) {
-      setError(err.message || "Registration failed. Please try again.");
+      const from = (location.state as any)?.from?.pathname || "/";
+      navigate(from, { replace: true });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // ── Success screen ────────────────────────────────────────────────────────────
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-blue-800 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center">
-          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-10 h-10 text-green-500" />
-          </div>
-          <h2 className="text-2xl font-black text-gray-900 mb-2">
-            {emailSent ? "Check your email!" : "Welcome to Bambeh!"}
-          </h2>
-          {emailSent ? (
-            <>
-              <p className="text-gray-500 mb-2">
-                We sent a confirmation link to <strong>{formData.email}</strong>.
-              </p>
-              <p className="text-gray-400 text-sm mb-4">
-                Click the link in the email to activate your account, then come back to sign in.
-              </p>
-              <button
-                onClick={() => navigate("/login")}
-                className="w-full bg-teal-600 text-white font-bold py-3 rounded-2xl"
-              >
-                Go to Login
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="text-gray-500 mb-2">Account created successfully.</p>
-              <p className="text-gray-400 text-sm">
-                Check your <strong>Messages</strong> for a welcome note from the Bambeh Team! 🎉
-              </p>
-              <p className="text-gray-400 text-sm mt-1">Taking you to the marketplace…</p>
-            </>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // ── Password strength indicator ───────────────────────────────────────────────
-  const pwStrength = (() => {
-    const p = formData.password;
-    if (!p) return null;
-    let score = 0;
-    if (p.length >= 8)  score++;
-    if (p.length >= 12) score++;
-    if (/[A-Z]/.test(p)) score++;
-    if (/[0-9]/.test(p)) score++;
-    if (/[^a-zA-Z0-9]/.test(p)) score++;
-    if (score <= 1) return { label: "Weak",   color: "bg-red-400",    width: "w-1/4" };
-    if (score <= 3) return { label: "Fair",   color: "bg-yellow-400", width: "w-2/4" };
-    if (score === 4) return { label: "Good",  color: "bg-blue-400",   width: "w-3/4" };
-    return              { label: "Strong", color: "bg-green-500",  width: "w-full" };
-  })();
-
-  // ── Form ─────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-blue-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div className="h-1.5 bg-gradient-to-r from-teal-400 to-blue-500"/>
-
-        <div className="p-7">
-          {/* Branding */}
-          <div className="text-center mb-7">
-            <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-teal-200">
-              <span className="text-white text-2xl font-black">B</span>
-            </div>
-            <h1 className="text-2xl font-black text-gray-900">Join Bambeh</h1>
-            <p className="text-gray-500 text-sm mt-1">Bambeh Marketplace — The Pulse of African Commerce</p>
-          </div>
-
-          {/* Error banner */}
-          {error && (
-            <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-xl p-3.5 mb-5">
-              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-
-          <div className="space-y-4">
-
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Full Name <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleFullNameChange}
-                  placeholder="e.g. Jean Paul Mbarga"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-            </div>
-
-            {/* Username */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Username <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="e.g. jean_mbarga"
-                  autoComplete="username"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                <Info className="w-3 h-3" />
-                Letters, numbers, underscores only. Used to log in.
-              </p>
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Phone Number <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+237 6XX XXX XXX"
-                  autoComplete="tel"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                <Info className="w-3 h-3" />
-                You can also use this to log in.
-              </p>
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Email Address <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Password <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Minimum 8 characters"
-                  autoComplete="new-password"
-                  className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-gray-50 focus:bg-white"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {pwStrength && (
-                <div className="mt-2">
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${pwStrength.color} ${pwStrength.width}`}/>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    Password strength: <span className="font-semibold">{pwStrength.label}</span>
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Confirm Password <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Repeat your password"
-                  autoComplete="new-password"
-                  className={`w-full pl-10 pr-10 py-3 border-2 rounded-xl text-sm focus:outline-none focus:ring-2 transition-all bg-gray-50 focus:bg-white ${
-                    formData.confirmPassword && formData.confirmPassword !== formData.password
-                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                      : formData.confirmPassword && formData.confirmPassword === formData.password
-                      ? "border-green-400 focus:border-green-500 focus:ring-green-100"
-                      : "border-gray-200 focus:border-teal-500 focus:ring-teal-100"
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {formData.confirmPassword && formData.confirmPassword !== formData.password && (
-                <p className="text-xs text-red-500 mt-1">Passwords do not match.</p>
-              )}
-            </div>
-
-            {/* Submit */}
-            <button
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-500 hover:to-teal-600 disabled:opacity-50 text-white font-bold rounded-2xl py-3.5 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-teal-200 mt-2"
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"/>
-                  Creating Account…
-                </>
-              ) : (
-                <>
-                  Create Account <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-
-          </div>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-slate-50 px-4 py-10">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <img
+            src="/logo.png"
+            alt={t.logoAlt}
+            className="mx-auto h-20 w-auto object-contain mb-4"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+          <h1 className="text-3xl font-bold text-gray-900">{t.title}</h1>
+          <p className="mt-2 text-sm text-gray-600">{t.subtitle}</p>
         </div>
 
-        {/* Bottom link */}
-        <div className="border-t border-gray-100 px-7 py-4 bg-gray-50 rounded-b-3xl">
-          <p className="text-center text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link to="/login" className="text-teal-600 font-bold hover:underline">
-              Sign In
+        <div className="rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                {t.email}
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                inputMode="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                placeholder="name@example.com"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                {t.password}
+              </label>
+              <div className="relative mt-1">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 px-3 text-gray-500 hover:text-gray-700"
+                  aria-label={showPassword ? t.hide : t.show}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3 font-semibold text-white transition-colors hover:bg-teal-700 disabled:bg-gray-300"
+            >
+              {loading ? t.signingIn : t.signIn}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </form>
+
+          <div className="mt-6 flex items-center justify-between text-sm">
+            <Link to="/forgot-password" className="text-teal-700 hover:underline">
+              {t.forgotPassword}
+            </Link>
+            <Link to="/register" className="text-teal-700 hover:underline">
+              {t.createOne}
+            </Link>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-gray-600">
+            {t.noAccount}{" "}
+            <Link to="/register" className="font-semibold text-teal-700 hover:underline">
+              {t.createOne}
             </Link>
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
-
-
