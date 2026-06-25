@@ -1,12 +1,12 @@
-/**
- * supabaseAuthGuard.ts — Bambeh Marketplace
+ï»¿/**
+ * supabaseAuthGuard.ts ï¿½ Bambeh Marketplace
  * ============================================================
  * REPLACES: isAdminAuthenticated(), isUserLoggedIn(),
  *           isVendorAuthenticated(), isUserSubscribed()
  *
  * WHY: Those functions read from localStorage which any user
  * can manipulate in 5 seconds with browser DevTools.
- * These functions call Supabase's server — the JWT is
+ * These functions call Supabase's server ï¿½ the JWT is
  * cryptographically signed and CANNOT be faked client-side.
  * ============================================================
  */
@@ -35,7 +35,7 @@ export interface VendorStatus {
   verified?: boolean;
 }
 
-// --- 1. USER AUTH — Calls Supabase server, cannot be faked ------------------
+// --- 1. USER AUTH ï¿½ Calls Supabase server, cannot be faked ------------------
 
 /**
  * Returns the currently authenticated user, verified by Supabase JWT.
@@ -58,11 +58,11 @@ export async function getVerifiedUser(): Promise<AuthUser | null> {
   }
 }
 
-// --- 2. SUBSCRIPTION CHECK — Reads Supabase DB, not localStorage -------------
+// --- 2. SUBSCRIPTION CHECK ï¿½ Reads Supabase DB, not localStorage -------------
 
 /**
  * Returns subscription status for a verified user.
- * Reads from the 'profiles' table in Supabase — server-enforced.
+ * Reads from the 'profiles' table in Supabase ï¿½ server-enforced.
  * RLS policies ensure a user can ONLY read their own row.
  *
  * @example
@@ -98,7 +98,7 @@ export async function getVerifiedSubscription(
   }
 }
 
-// --- 3. ADMIN ROLE CHECK — Reads user_roles table, not localStorage ----------
+// --- 3. ADMIN ROLE CHECK ï¿½ Reads user_roles table, not localStorage ----------
 
 /**
  * Returns true ONLY if user has role='admin' in the user_roles table.
@@ -124,7 +124,7 @@ export async function getVerifiedAdmin(userId: string): Promise<boolean> {
   }
 }
 
-// --- 4. VENDOR ROLE CHECK — Reads user_roles table ---------------------------
+// --- 4. VENDOR ROLE CHECK ï¿½ Reads user_roles table ---------------------------
 
 /**
  * Returns vendor status for a verified user.
@@ -163,7 +163,7 @@ export async function getVerifiedVendor(
   }
 }
 
-// --- 5. SIGN OUT — Clears Supabase session (not just localStorage) -----------
+// --- 5. SIGN OUT ï¿½ Clears Supabase session (not just localStorage) -----------
 
 /**
  * Signs out the user from Supabase Auth.
@@ -180,6 +180,7 @@ export async function signOut(): Promise<void> {
   ];
   legacyKeys.forEach((k) => localStorage.removeItem(k));
 }
+
 
 
 

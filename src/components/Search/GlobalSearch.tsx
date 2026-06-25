@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * GLOBAL SEARCH PANEL
  * FILE LOCATION: src/components/search/GlobalSearch.tsx
  */
@@ -50,7 +50,7 @@ const allPages: SearchResult[] = [
   { id: 'verification', title: 'Verification',   description: 'Get verified badge',         path: '/vendor/verification',  icon: BadgeCheck,   category: 'Vendor',  keywords: ['verification','verified','badge','trust'] },
 ];
 
-const trendingSearches = ['iPhone','Apartments in Douala','Electronics','Jobs Yaoundé','Car rental','Services'];
+const trendingSearches = ['iPhone','Apartments in Douala','Electronics','Jobs Yaoundï¿½','Car rental','Services'];
 
 interface GlobalSearchProps { isOpen: boolean; onClose: () => void; }
 
@@ -209,13 +209,14 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
           </div>
 
           <div className="px-5 py-3 bg-gray-50 border-t text-xs text-gray-500">
-            <kbd className="px-1.5 py-0.5 bg-white border rounded">??</kbd> navigate · <kbd className="px-1.5 py-0.5 bg-white border rounded">?</kbd> select · <kbd className="px-1.5 py-0.5 bg-white border rounded">Esc</kbd> close
+            <kbd className="px-1.5 py-0.5 bg-white border rounded">??</kbd> navigate ï¿½ <kbd className="px-1.5 py-0.5 bg-white border rounded">?</kbd> select ï¿½ <kbd className="px-1.5 py-0.5 bg-white border rounded">Esc</kbd> close
           </div>
         </div>
       </div>
     </>
   );
 }
+
 
 
 

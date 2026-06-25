@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/vendor/FeaturedListings.tsx
- * Bambeh Marketplace — Featured Listings Manager
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Featured Listings Manager
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -50,7 +50,7 @@ const FeaturedListings: React.FC = () => {
           return {
             id: row.id as string,
             listingId: row.listing_id as string,
-            listingTitle: (listing?.title as string) ?? "—",
+            listingTitle: (listing?.title as string) ?? "ï¿½",
             listingImage: imgs[0]?.url,
             priceXAF: row.price_xaf as number,
             startDate: row.start_date as string,
@@ -86,8 +86,8 @@ const FeaturedListings: React.FC = () => {
       <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3">
         <Zap className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-semibold text-yellow-800">Boostez votre visibilité</p>
-          <p className="text-xs text-yellow-700 mt-0.5">Les annonces en vedette reçoivent 5× plus de vues que les annonces standard.</p>
+          <p className="text-sm font-semibold text-yellow-800">Boostez votre visibilitï¿½</p>
+          <p className="text-xs text-yellow-700 mt-0.5">Les annonces en vedette reï¿½oivent 5ï¿½ plus de vues que les annonces standard.</p>
         </div>
       </div>
 
@@ -123,9 +123,9 @@ const FeaturedListings: React.FC = () => {
                     slot.status === "pending" ? "text-yellow-600" : "text-gray-400"
                   }`}>
                     {slot.status === "active" ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                    {slot.status === "active" ? "Actif" : slot.status === "pending" ? "En attente" : "Expiré"}
+                    {slot.status === "active" ? "Actif" : slot.status === "pending" ? "En attente" : "Expirï¿½"}
                   </span>
-                  <span className="text-xs text-gray-400">·</span>
+                  <span className="text-xs text-gray-400">ï¿½</span>
                   <span className="text-xs text-teal-700 font-medium">{formatXAF(slot.priceXAF)}</span>
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">
@@ -141,6 +141,7 @@ const FeaturedListings: React.FC = () => {
 };
 
 export default FeaturedListings;
+
 
 
 

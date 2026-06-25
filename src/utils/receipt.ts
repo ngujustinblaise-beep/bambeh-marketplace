@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+﻿import jsPDF from 'jspdf';
 
 export interface ReceiptData {
   reference: string;
@@ -33,4 +33,5 @@ export function generateReceipt(data: ReceiptData) {
 
   doc.save("Bambeh_Receipt_" + data.reference + ".pdf");
 }
+
 

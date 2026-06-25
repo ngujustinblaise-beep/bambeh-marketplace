@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/vendor/components/DashboardOverview.tsx
- * Bambeh Marketplace — Vendor Dashboard Overview
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Dashboard Overview
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -108,7 +108,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
     { value: "today", label: "Aujourd'hui" },
     { value: "week", label: "Cette semaine" },
     { value: "month", label: "Ce mois" },
-    { value: "year", label: "Cette année" },
+    { value: "year", label: "Cette annï¿½e" },
   ];
 
   return (
@@ -151,7 +151,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             className="flex items-center gap-1 text-red-600 text-sm"
           >
             <RefreshCw className="w-4 h-4" />
-            Réessayer
+            Rï¿½essayer
           </button>
         </div>
       )}
@@ -169,7 +169,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             label="Commandes"
             value={String(snapshot.ordersPlaced)}
             icon={ShoppingBag}
-            subValue={`${snapshot.ordersCompleted} livrées`}
+            subValue={`${snapshot.ordersCompleted} livrï¿½es`}
             colorClass="bg-blue-50 text-blue-600"
           />
           <KpiCard
@@ -187,7 +187,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             colorClass="bg-yellow-50 text-yellow-600"
           />
           <KpiCard
-            label="Nouveaux abonnés"
+            label="Nouveaux abonnï¿½s"
             value={String(snapshot.newFollowers)}
             icon={Users}
             colorClass="bg-teal-50 text-teal-600"
@@ -206,6 +206,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 };
 
 export default DashboardOverview;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PRIVACY POLICY CONTENT COMPONENT
  * Official Bambeh Privacy Policy
  * Used in: Privacy.tsx
@@ -516,6 +516,7 @@ export const PrivacyContent: React.FC = () => {
 
 }
 export default PrivacyContent;
+
 
 
 

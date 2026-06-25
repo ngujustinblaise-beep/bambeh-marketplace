@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useRef, useState } from "react";
 
 interface VideoThumbnailProps {
@@ -70,6 +70,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 export default VideoPlayer;
 export { VideoThumbnail };
 export type { VideoThumbnailProps };
+
 
 
 

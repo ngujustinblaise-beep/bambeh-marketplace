@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - IMAGE PREVIEW COMPONENT
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - IMAGE PREVIEW COMPONENT
  * Version: 1.0.0
  */
 
@@ -84,6 +84,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ file, onSend, onCancel }) =
 };
 
 export default ImagePreview;
+
 
 
 

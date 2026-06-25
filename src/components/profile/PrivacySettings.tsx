@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/profile/PrivacySettings.tsx
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -231,3 +231,4 @@ const PrivacySettings: React.FC = () => {
 };
 
 export default PrivacySettings;
+

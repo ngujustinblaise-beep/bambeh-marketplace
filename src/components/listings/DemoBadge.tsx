@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/listings/DemoBadge.tsx
  * Shared yellow DEMO badge used on all sample/placeholder listing cards.
  *
@@ -30,6 +30,7 @@ export function DemoBadge({ label = "DEMO" }: DemoBadgeProps) {
 }
 
 export default DemoBadge;
+
 
 
 

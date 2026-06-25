@@ -1,4 +1,4 @@
-class RateLimiter {
+﻿class RateLimiter {
   private attempts: Map<string, number[]> = new Map();
 
   checkLimit(key: string, maxAttempts: number, windowMs: number): boolean {
@@ -25,3 +25,4 @@ export const rateLimiter = new RateLimiter();
 //   alert('Too many attempts. Please wait 1 minute.');
 //   return;
 // }
+

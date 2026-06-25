@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SOCIAL SHARE COMPONENT - COMPACT DROPDOWN VERSION
  * FILE LOCATION: src/components/common/SocialShare.tsx
  */
@@ -138,5 +138,6 @@ export default function SocialShare({ url, title, description = '', className = 
     </div>
   );
 }
+
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -163,6 +163,7 @@ const OfflineModePage: React.FC = () => {
 
 }
 export default OfflineModePage;
+
 
 
 

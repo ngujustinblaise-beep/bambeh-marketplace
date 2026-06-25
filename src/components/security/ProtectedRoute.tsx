@@ -1,5 +1,5 @@
-/**
- * PROTECTED ROUTE — Fixed to use currentUser from AuthContext
+ï»¿/**
+ * PROTECTED ROUTE ï¿½ Fixed to use currentUser from AuthContext
  * FILE LOCATION: src/components/security/ProtectedRoute.tsx
  */
 import { Navigate, useLocation } from 'react-router-dom';
@@ -37,6 +37,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 };
 
 export default ProtectedRoute;
+
 
 
 

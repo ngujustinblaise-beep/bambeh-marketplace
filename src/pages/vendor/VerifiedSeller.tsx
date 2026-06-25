@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/vendor/VerifiedSeller.tsx
  * Bambeh Marketplace — Verified Seller Application Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -230,6 +230,7 @@ const VerifiedSeller: React.FC = () => {
 };
 
 export default VerifiedSeller;
+
 
 
 

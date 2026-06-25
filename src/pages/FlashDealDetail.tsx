@@ -1,16 +1,16 @@
-/**
- * src/pages/FlashDealDetail.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/FlashDealDetail.tsx ï¿½ Bambeh Marketplace
  *
  * FIXES applied:
- *  ? useCountdown: timer ref leaked on hot-reload — cleanup now uses returned
+ *  ? useCountdown: timer ref leaked on hot-reload ï¿½ cleanup now uses returned
  *     timerRef correctly; added guard for endsAt being invalid date string.
  *  ? handleClaim: session check destructured incorrectly (data.session vs
- *     data?.session) — fixed with safe optional chaining.
+ *     data?.session) ï¿½ fixed with safe optional chaining.
  *  ? handleClaim: duplicate claims guarded (unique constraint on deal_id+user_id).
  *  ? setDeal optimistic update: used updater function to avoid stale closure.
- *  ? formatXAF: added null guard — never crashes on undefined price.
+ *  ? formatXAF: added null guard ï¿½ never crashes on undefined price.
  *  ? Share button now opens CompactShareModal instead of doing nothing.
- *  ? BambehImage import: added try/catch — falls back to plain <img> if custom
+ *  ? BambehImage import: added try/catch ï¿½ falls back to plain <img> if custom
  *     component is unavailable in current build.
  *  ? Countdown display: negative hours now clamped to 0.
  *  ? Back button inside image area: used navigate(-1) correctly.
@@ -200,7 +200,7 @@ const FlashDealDetail: React.FC = () => {
         id: data.id as string,
         listingId: data.listing_id as string,
         vendorId: data.vendor_id as string,
-        vendorName: (vendor?.store_name as string) ?? '—',
+        vendorName: (vendor?.store_name as string) ?? 'ï¿½',
         title: data.title as string,
         description: data.description as string,
         imageUrl: (data.images as string[])?.[0],
@@ -242,7 +242,7 @@ const FlashDealDetail: React.FC = () => {
           claimed_at: new Date().toISOString(),
         });
 
-      // FIX: 23505 = already claimed — treat as success
+      // FIX: 23505 = already claimed ï¿½ treat as success
       if (!dbErr || dbErr.code === '23505') {
         setClaimed(true);
         // FIX: updater function to avoid stale closure
@@ -257,7 +257,7 @@ const FlashDealDetail: React.FC = () => {
 
   // FIX: null-safe price formatter
   const formatXAF = (n: number | null | undefined) => {
-    if (n == null || Number.isNaN(n)) return '—';
+    if (n == null || Number.isNaN(n)) return 'ï¿½';
     return new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
   };
 
@@ -342,7 +342,7 @@ const FlashDealDetail: React.FC = () => {
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-yellow-500 fill-yellow-500" />
           <span className="text-sm font-bold text-yellow-600 uppercase tracking-wide">
-            Flash Deal · {deal.vendorName}
+            Flash Deal ï¿½ {deal.vendorName}
           </span>
         </div>
 
@@ -354,7 +354,7 @@ const FlashDealDetail: React.FC = () => {
           <p className="text-2xl font-bold text-red-600">{formatXAF(deal.discountedPriceXAF)}</p>
           <p className="text-base text-gray-400 line-through">{formatXAF(deal.originalPriceXAF)}</p>
           <span className="bg-red-100 text-red-600 text-sm font-bold px-2 py-0.5 rounded-lg">
-            Économie: {formatXAF(deal.originalPriceXAF - deal.discountedPriceXAF)}
+            ï¿½conomie: {formatXAF(deal.originalPriceXAF - deal.discountedPriceXAF)}
           </span>
         </div>
 
@@ -388,7 +388,7 @@ const FlashDealDetail: React.FC = () => {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-1.5 text-sm text-gray-600">
               <Users className="w-4 h-4" />
-              <span>{deal.claimedSlots} réclamés sur {deal.totalSlots}</span>
+              <span>{deal.claimedSlots} rï¿½clamï¿½s sur {deal.totalSlots}</span>
             </div>
             <span className="text-sm font-bold text-gray-700">{slotsLeft} restants</span>
           </div>
@@ -400,7 +400,7 @@ const FlashDealDetail: React.FC = () => {
               style={{ width: `${fillPercent}%` }}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-1">{fillPercent}% réclamé</p>
+          <p className="text-xs text-gray-400 mt-1">{fillPercent}% rï¿½clamï¿½</p>
         </div>
 
         {/* Description */}
@@ -421,11 +421,11 @@ const FlashDealDetail: React.FC = () => {
         {claimed ? (
           <div className="flex-1 py-3 bg-green-100 border border-green-300 rounded-xl flex items-center justify-center gap-2 text-green-700 font-semibold">
             <CheckCircle className="w-5 h-5" />
-            Deal réclamé !
+            Deal rï¿½clamï¿½ !
           </div>
         ) : isSoldOut || isExpired ? (
           <div className="flex-1 py-3 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 font-medium">
-            {isSoldOut ? 'Épuisé' : 'Offre expirée'}
+            {isSoldOut ? 'ï¿½puisï¿½' : 'Offre expirï¿½e'}
           </div>
         ) : (
           <button
@@ -437,7 +437,7 @@ const FlashDealDetail: React.FC = () => {
             {claiming
               ? <RefreshCw className="w-4 h-4 animate-spin" />
               : <ShoppingCart className="w-4 h-4" />}
-            {claiming ? 'Réclamation…' : `Réclamer — ${formatXAF(deal.discountedPriceXAF)}`}
+            {claiming ? 'Rï¿½clamationï¿½' : `Rï¿½clamer ï¿½ ${formatXAF(deal.discountedPriceXAF)}`}
           </button>
         )}
       </div>
@@ -455,6 +455,7 @@ const FlashDealDetail: React.FC = () => {
 };
 
 export default FlashDealDetail;
+
 
 
 

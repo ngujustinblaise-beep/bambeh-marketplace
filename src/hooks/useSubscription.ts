@@ -1,11 +1,11 @@
-/**
+ï»¿/**
  * src/hooks/useSubscription.ts  -  Bambeh Marketplace
  *
  * SPEED GUARANTEE:
  * - isLoading is ALWAYS false on first render
  * - isActive decision is made in microseconds from localStorage
  * - Backend check happens silently in background, never blocks UI
- * - Payment  -   -  activateSubscription()  -   -  instant access, zero wait
+ * - Payment  - ï¿½ -  activateSubscription()  - ï¿½ -  instant access, zero wait
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -134,7 +134,7 @@ export function useSubscription(_userId?: string | null): SubscriptionStatus {
     isActive:  sub !== null,
     planType:  sub?.planType  ?? null,
     expiresAt: sub?.expiresAt ?? null,
-    isLoading: false,   //  -   -  NEVER true
+    isLoading: false,   //  - ï¿½ -  NEVER true
     error:     null,
   };
 }
@@ -206,3 +206,4 @@ export async function initiateSubscription(
   }
   return r.json();
 }	
+

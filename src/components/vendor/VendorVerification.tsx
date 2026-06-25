@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/vendor/VendorVerification.tsx
  * Bambeh Marketplace — Vendor Verification Workflow
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -315,6 +315,7 @@ const VendorVerification: React.FC<VendorVerificationProps> = ({
 };
 
 export default VendorVerification;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/layout/Footer.tsx - Bambeh Marketplace
  * (c) 2026 BAMBEH SARL. All rights reserved.
  *
@@ -130,3 +130,4 @@ export default function Footer() {
     </footer>
   );
 }
+

@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * DARK MODE TOGGLE - THEME SWITCHER COMPONENT
  * FILE LOCATION: src/components/theme/DarkModeToggle.tsx
  */
@@ -40,7 +40,7 @@ const DarkModeToggle: React.FC<DarkModeToggleProps> = ({ showBrightness = false,
             <h3 className="font-semibold text-gray-900 dark:text-white">Display Settings</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {theme === 'system' ? 'System' : isDarkMode ? 'Dark Mode' : 'Light Mode'}
-              {brightness < 100 && ` • ${brightness}% brightness`}
+              {brightness < 100 && ` ï¿½ ${brightness}% brightness`}
             </p>
           </div>
         </div>
@@ -135,6 +135,7 @@ export const BrightnessControl: React.FC = () => {
 };
 
 export default DarkModeToggle;
+
 
 
 

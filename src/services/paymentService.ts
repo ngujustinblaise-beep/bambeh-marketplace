@@ -1,8 +1,8 @@
-/**
+ï»¿/**
  * PaymentService.ts
- * Military Grade Payment Processing for Bambé Marketplace
+ * Military Grade Payment Processing for Bambï¿½ Marketplace
  * Handles MTN Mobile Money, Orange Money, and Zerm Coins
- * Copyright © 2026 BAMBEH SARL. All rights reserved.
+ * Copyright ï¿½ 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { firestore } from "@/utils/firebase/firebaseConfig";
@@ -153,7 +153,7 @@ class PaymentService {
           externalId: transactionRef.id,
           payer: { partyIdType: "MSISDN", partyId: formattedPhone },
           payerMessage: intent.description,
-          payeeNote: `Bambé Marketplace - ${intent.description}`,
+          payeeNote: `Bambï¿½ Marketplace - ${intent.description}`,
         }),
       });
 
@@ -338,7 +338,7 @@ class PaymentService {
 
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #2563eb;">Bambé Marketplace Receipt</h2>
+        <h2 style="color: #2563eb;">Bambï¿½ Marketplace Receipt</h2>
         <p><strong>Transaction ID:</strong> ${transactionId}</p>
         <p><strong>Reference:</strong> ${transaction.reference}</p>
         <p><strong>Amount:</strong> ${transaction.amount.toLocaleString()} ${transaction.currency}</p>
@@ -385,3 +385,4 @@ class PaymentService {
 
 export const paymentService = new PaymentService();
 export default paymentService;
+

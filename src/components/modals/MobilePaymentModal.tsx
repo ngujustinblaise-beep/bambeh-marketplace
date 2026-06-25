@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * MOBILE PAYMENT MODAL - MTN MoMo & Orange Money Integration
  * ═══════════════════════════════════════════════════════════════════════════
@@ -452,5 +452,6 @@ export default function MobilePaymentModal({
     </div>
   );
 }
+
 
 

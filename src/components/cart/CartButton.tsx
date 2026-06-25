@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CART BUTTON COMPONENT
  */
 
@@ -39,6 +39,7 @@ export function HeaderCartButton({ onClick }: HeaderCartButtonProps) {
     </button>
   );
 }
+
 
 
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
  * ADVERTISEMENTS PAGE - ENHANCED VERSION 2.0
  * FILE LOCATION: src/pages/Advertisements.tsx
@@ -858,9 +858,9 @@ export default function Advertisements() {
                   <Select value={selectedDuration} onValueChange={(v) => setSelectedDuration(v as AdDuration)}>
                     <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">?? {t('ads.daily', 'Daily (1 day)')} — {calculatePrice(selectedTier, 'daily').toLocaleString()} XAF</SelectItem>
-                      <SelectItem value="weekly">?? {t('ads.weekly', 'Weekly (7 days)')} — {calculatePrice(selectedTier, 'weekly').toLocaleString()} XAF</SelectItem>
-                      <SelectItem value="monthly">?? {t('ads.monthly', 'Monthly (30 days)')} — {calculatePrice(selectedTier, 'monthly').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="daily">?? {t('ads.daily', 'Daily (1 day)')} ï¿½ {calculatePrice(selectedTier, 'daily').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="weekly">?? {t('ads.weekly', 'Weekly (7 days)')} ï¿½ {calculatePrice(selectedTier, 'weekly').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="monthly">?? {t('ads.monthly', 'Monthly (30 days)')} ï¿½ {calculatePrice(selectedTier, 'monthly').toLocaleString()} XAF</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1255,6 +1255,7 @@ async function getUserZermCoinsBalance(userId: string): Promise<number> {
 async function deductZermCoins(userId: string, amount: number): Promise<void> {
   console.log(`Deducted ${amount} Zerm Coins from user ${userId}`);
 }
+
 
 
 

@@ -1,14 +1,14 @@
-/**
- * src/pages/FarmFreshOrderPage.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/FarmFreshOrderPage.tsx ï¿½ Bambeh Marketplace
  *
  * FIXED:
  *  ? BOM character removed
- *  ? isUUID is a plain function — no useLang() hook called inside it (was crashing)
+ *  ? isUUID is a plain function ï¿½ no useLang() hook called inside it (was crashing)
  *  ? Uses shared @/lib/supabase
- *  ? Handles both UUID product IDs (from DB) and sample string IDs (s1–s8)
+ *  ? Handles both UUID product IDs (from DB) and sample string IDs (s1ï¿½s8)
  *  ? Saves orders to Supabase farm_orders table (if user is logged in)
  *  ? Falls back to localStorage for guest/sample-item orders
- *  ? Full i18n — reacts instantly when user changes language
+ *  ? Full i18n ï¿½ reacts instantly when user changes language
  */
 
 import { useState, useEffect } from "react";
@@ -21,7 +21,7 @@ import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// ? FIX: isUUID is a plain function — no hook calls inside it
+// ? FIX: isUUID is a plain function ï¿½ no hook calls inside it
 function isUUID(s: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
@@ -41,11 +41,11 @@ interface Product {
 
 const SAMPLE_PRODUCTS: Record<string, Product> = {
   s1: { id: "s1", name: "Fresh Tomatoes",      price: 500,  unit: "kg",    location: "Bafoussam",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80" },
-  s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "Yaoundé",    is_organic: false, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" },
+  s2: { id: "s2", name: "Plantains (1 bunch)",  price: 1500, unit: "bunch", location: "Yaoundï¿½",    is_organic: false, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" },
   s3: { id: "s3", name: "Cocoyams (Macabo)",    price: 800,  unit: "kg",    location: "Douala",     is_organic: true,  image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80" },
   s4: { id: "s4", name: "Fresh Maize (Corn)",   price: 300,  unit: "cob",   location: "Bamenda",    is_organic: false, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80" },
-  s5: { id: "s5", name: "Groundnuts (1kg bag)", price: 1200, unit: "kg",    location: "Ngaoundéré", is_organic: false, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80" },
-  s6: { id: "s6", name: "Bitter Leaf (Ndolé)",  price: 200,  unit: "bunch", location: "Yaoundé",    is_organic: true,  image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" },
+  s5: { id: "s5", name: "Groundnuts (1kg bag)", price: 1200, unit: "kg",    location: "Ngaoundï¿½rï¿½", is_organic: false, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80" },
+  s6: { id: "s6", name: "Bitter Leaf (Ndolï¿½)",  price: 200,  unit: "bunch", location: "Yaoundï¿½",    is_organic: true,  image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" },
   s7: { id: "s7", name: "Fresh Avocados",        price: 800,  unit: "kg",    location: "Dschang, West",   is_organic: true,  image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80" },
   s8: { id: "s8", name: "Pineapples (Large)",    price: 600,  unit: "piece", location: "Edea, Littoral",  is_organic: false, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80" },
 };
@@ -355,7 +355,7 @@ export default function FarmFreshOrderPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 shadow-xl">
         <div className="max-w-lg mx-auto">
           <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>{qty} × {fmtXAF(product.price)}</span>
+            <span>{qty} ï¿½ {fmtXAF(product.price)}</span>
             <span className="font-bold text-green-700 text-base">{fmtXAF(total)}</span>
           </div>
           <button
@@ -364,7 +364,7 @@ export default function FarmFreshOrderPage() {
             className="w-full bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
             {submitting
               ? <><Loader2 className="w-4 h-4 animate-spin" />{t("placingOrder", lang)}</>
-              : <><ShoppingCart className="w-5 h-5" />{t("placeOrder", lang)} — {fmtXAF(total)}</>
+              : <><ShoppingCart className="w-5 h-5" />{t("placeOrder", lang)} ï¿½ {fmtXAF(total)}</>
             }
           </button>
         </div>
@@ -372,6 +372,7 @@ export default function FarmFreshOrderPage() {
     </div>
   );
 }
+
 
 
 

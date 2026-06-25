@@ -1,5 +1,5 @@
-// src/services/notchpayService.ts
-// Notchpay payment integration — MTN MoMo & Orange Money
+ï»¿// src/services/notchpayService.ts
+// Notchpay payment integration ï¿½ MTN MoMo & Orange Money
 // Docs: https://developer.notchpay.co
 
 import { supabase } from "@/lib/supabase";
@@ -215,3 +215,4 @@ class NotchpayService {
 
 export const notchpayService = new NotchpayService();
 export default notchpayService;
+

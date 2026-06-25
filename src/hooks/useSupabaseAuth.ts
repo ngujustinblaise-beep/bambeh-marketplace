@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════
  * src/hooks/useSupabaseAuth.ts
  * Server-Side JWT Validation Hook — Bambeh Marketplace
@@ -162,3 +162,4 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
 export function useAuth(): SupabaseAuthState {
   return useContext(SupabaseAuthContext);
 }
+

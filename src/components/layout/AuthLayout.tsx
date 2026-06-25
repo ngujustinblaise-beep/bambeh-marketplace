@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AuthLayout.tsx
  * FILE LOCATION: src/components/layout/AuthLayout.tsx
  *
@@ -46,6 +46,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     </div>
   );
 }
+
 
 
 

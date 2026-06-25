@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type {
   CommissionRate, CommissionCalculation, CommissionRecord,
   CommissionableTransactionType, VendorCommissionSummary,
@@ -50,3 +50,4 @@ export class CommissionService {
 }
 
 export const commissionService = new CommissionService();
+

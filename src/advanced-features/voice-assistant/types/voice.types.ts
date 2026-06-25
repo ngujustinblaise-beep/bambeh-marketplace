@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VOICE ASSISTANT TYPES
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VOICE ASSISTANT TYPES
  * TypeScript interfaces for Mama voice assistant
  * Version: 1.0.0
  */
@@ -119,3 +119,4 @@ export interface VoiceStats {
   mostUsedCommands: { [key: string]: number };
   lastUsed: string;
 }
+

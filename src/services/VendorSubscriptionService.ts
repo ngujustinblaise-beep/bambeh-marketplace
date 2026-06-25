@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/services/VendorSubscriptionService.ts
- * Bambeh Marketplace — Vendor Subscription Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Subscription Service
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES APPLIED:
  * - endDate / startDate / listingsUsed / lastPaymentAmount are now optional on VendorSubscription
@@ -241,7 +241,7 @@ export class VendorSubscriptionService {
   async checkListingLimit(vendorId: string, maxAllowed: number): Promise<boolean> {
     try {
       const sub = await this.getActiveSubscription(vendorId);
-      if (!sub) return true; // free tier — allow default
+      if (!sub) return true; // free tier ï¿½ allow default
       return (sub.listingsUsed ?? 0) < maxAllowed;            // FIX: uses optional field
     } catch { return true; }
   }
@@ -284,3 +284,4 @@ export class VendorSubscriptionService {
 
 export const vendorSubscriptionService = new VendorSubscriptionService();
 export default vendorSubscriptionService;
+

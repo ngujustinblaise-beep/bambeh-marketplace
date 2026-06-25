@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * TERMS ACCEPTANCE — BAMBEH MARKETPLACE
  * FILE: src/pages/TermsAcceptance.tsx
@@ -256,3 +256,4 @@ export default function TermsAcceptance() {
     </main>
   );
 }
+

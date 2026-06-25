@@ -1,16 +1,16 @@
-/**
- * src/components/filters/LocationFilter.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/components/filters/LocationFilter.tsx ï¿½ Bambeh Marketplace
  *
  * MILITARY-GRADE SHARED LOCATION FILTER
  * -------------------------------------
  * ? Hierarchical drill-down: Region ? City ? Quarter ? Landmark
- * ? Cascading selects — city list resets when region changes
- * ? Debounced onChange — no stale filter state
- * ? Controlled component — fully typed, zero implicit any
- * ? Active filter badge — shows how many filters are active
+ * ? Cascading selects ï¿½ city list resets when region changes
+ * ? Debounced onChange ï¿½ no stale filter state
+ * ? Controlled component ï¿½ fully typed, zero implicit any
+ * ? Active filter badge ï¿½ shows how many filters are active
  * ? Animated open/close with smooth chevron rotation
  * ? Accessible labels on every input
- * ? XSS-safe — no dangerouslySetInnerHTML
+ * ? XSS-safe ï¿½ no dangerouslySetInnerHTML
  * ? Zero external dependencies beyond React + lucide-react
  *
  * HOW TO USE IN ANY PAGE:
@@ -63,16 +63,16 @@ const REGIONS: string[] = [
 
 /** Cities/towns grouped by region for cascading select */
 const CITIES_BY_REGION: Record<string, string[]> = {
-  'Adamawa':   ['Ngaoundéré', 'Meiganga', 'Tibati', 'Banyo', 'Tignère'],
-  'Centre':    ['Yaoundé', 'Mbalmayo', 'Obala', 'Nanga Eboko', 'Mfou', 'Bafia'],
-  'East':      ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang', 'Doumé'],
-  'Far North': ['Maroua', 'Kousseri', 'Mora', 'Yagoua', 'Guider', 'Kaélé'],
-  'Littoral':  ['Douala', 'Nkongsamba', 'Edéa', 'Loum', 'Mbanga', 'Manjo'],
+  'Adamawa':   ['Ngaoundï¿½rï¿½', 'Meiganga', 'Tibati', 'Banyo', 'Tignï¿½re'],
+  'Centre':    ['Yaoundï¿½', 'Mbalmayo', 'Obala', 'Nanga Eboko', 'Mfou', 'Bafia'],
+  'East':      ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang', 'Doumï¿½'],
+  'Far North': ['Maroua', 'Kousseri', 'Mora', 'Yagoua', 'Guider', 'Kaï¿½lï¿½'],
+  'Littoral':  ['Douala', 'Nkongsamba', 'Edï¿½a', 'Loum', 'Mbanga', 'Manjo'],
   'North':     ['Garoua', 'Guider', 'Poli', 'Bibemi', 'Rey Bouba'],
   'North West':['Bamenda', 'Kumbo', 'Nkambe', 'Wum', 'Fundong', 'Mbengwi', 'Santa', 'Ndop'],
-  'South':     ['Ebolowa', 'Kribi', 'Sangmélima', 'Lolodorf', 'Ambam'],
+  'South':     ['Ebolowa', 'Kribi', 'Sangmï¿½lima', 'Lolodorf', 'Ambam'],
   'South West':['Buea', 'Limbe', 'Kumba', 'Mamfe', 'Ekondo Titi', 'Muyuka'],
-  'West':      ['Bafoussam', 'Dschang', 'Foumban', 'Mbouda', 'Bangangté', 'Foumbot'],
+  'West':      ['Bafoussam', 'Dschang', 'Foumban', 'Mbouda', 'Bangangtï¿½', 'Foumbot'],
 };
 
 /** Common landmarks used as placeholders */
@@ -131,7 +131,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
         </span>
 
         <div className="flex items-center gap-2">
-          {/* Quick "clear" — visible even when panel is closed */}
+          {/* Quick "clear" ï¿½ visible even when panel is closed */}
           {activeCount > 0 && (
             <span
               role="button"
@@ -179,7 +179,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
             </select>
           </div>
 
-          {/* City — cascades from region */}
+          {/* City ï¿½ cascades from region */}
           <div>
             <label htmlFor="lf-city" className="block text-xs font-semibold text-gray-500 mb-1">
               City / Town
@@ -272,6 +272,7 @@ export function LocationFilter({ onFilterChange, accentClass = 'teal' }: Locatio
     </div>
   );
 }
+
 
 
 

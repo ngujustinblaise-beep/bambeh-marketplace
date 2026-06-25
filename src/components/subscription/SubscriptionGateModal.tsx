@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SUBSCRIPTION GATE MODAL
  * FILE LOCATION: src/components/subscription/SubscriptionGateModal.tsx
  */
@@ -127,6 +127,7 @@ const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({ isOpen, o
 };
 
 export default SubscriptionGateModal;
+
 
 
 

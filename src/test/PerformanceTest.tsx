@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/test/PerformanceTest.tsx
- * Bambeh Marketplace — Performance Test Component (Dev Only)
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Performance Test Component (Dev Only)
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -134,6 +134,7 @@ const PerformanceTest: React.FC = () => {
 };
 
 export default PerformanceTest;
+
 
 
 

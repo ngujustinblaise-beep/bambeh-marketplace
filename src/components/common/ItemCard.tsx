@@ -1,6 +1,6 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
- * ItemCard.tsx — Military Grade Item Display Component
+ * ItemCard.tsx ï¿½ Military Grade Item Display Component
  * FILE LOCATION: src/components/common/ItemCard.tsx
  */
 
@@ -256,6 +256,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
 };
 
 export default ItemCard;
+
 
 
 

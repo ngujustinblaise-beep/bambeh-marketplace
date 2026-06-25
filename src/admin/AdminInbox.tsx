@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * ADMIN INBOX - MESSAGING SYSTEM FOR ADMIN PORTAL
@@ -553,6 +553,7 @@ export default function AdminInbox() {
     </div>
   );
 }
+
 
 
 

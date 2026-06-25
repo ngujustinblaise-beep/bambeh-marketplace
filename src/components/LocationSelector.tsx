@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Globe, Check } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -86,4 +86,5 @@ const LanguageSelector = () => {
 };
 
 export default LanguageSelector;
+
 

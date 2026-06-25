@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import type { Chat } from "@/types/chat";
 
@@ -54,6 +54,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats, activeId, onSelect }) => {
 };
 
 export default ChatList;
+
 
 
 

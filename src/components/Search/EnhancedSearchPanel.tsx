@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ENHANCED SEARCH PANEL
  * FILE LOCATION: src/components/search/EnhancedSearchPanel.tsx
  */
@@ -179,6 +179,7 @@ export default function EnhancedSearchPanel({ isOpen, onClose }: EnhancedSearchP
     </>
   );
 }
+
 
 
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+ï»¿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -86,13 +86,14 @@ export default function AdminLogin() {
             disabled={loading}
             className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold rounded-lg py-3 transition-colors"
           >
-            {loading ? "Signing in…" : "Sign In to Admin"}
+            {loading ? "Signing inï¿½" : "Sign In to Admin"}
           </button>
         </form>
       </div>
     </div>
   );
 }
+
 
 
 

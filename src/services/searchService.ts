@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/services/searchService.ts
  * Bambeh Marketplace — Universal Search Service
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -339,3 +339,4 @@ export async function recordSearchAnalytics(
     // Non-critical
   }
 }
+

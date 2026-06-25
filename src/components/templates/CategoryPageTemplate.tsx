@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CATEGORY PAGE TEMPLATE
  * FILE LOCATION: src/components/templates/CategoryPageTemplate.tsx
  */
@@ -140,6 +140,7 @@ export default function CategoryPageTemplate({
     </div>
   );
 }
+
 
 
 

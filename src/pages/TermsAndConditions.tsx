@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS AND CONDITIONS
  * FILE LOCATION: src/pages/TermsAndConditions.tsx
  */
@@ -215,3 +215,4 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
 };
 
 export default TermsAndConditions;
+

@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React, { useState } from "react";
 import type { PaymentMethod } from "../../types/subscription";
 import { PAYMENT_METHODS } from "../../types/subscription";
@@ -40,7 +40,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Pay {amount.toLocaleString()} {currency}</h2>
           {onClose && (
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">ï¿½</button>
           )}
         </div>
 
@@ -62,7 +62,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <button onClick={handlePay} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl">
-          {loading ? "Processing…" : "Confirm Payment"}
+          {loading ? "Processingï¿½" : "Confirm Payment"}
         </button>
       </div>
     </div>
@@ -70,6 +70,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
 
 

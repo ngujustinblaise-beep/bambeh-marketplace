@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
  * ---------------------------------------------------------------------------
  * CHECKOUT ADVANCED - PAYMENT GATEWAY INTEGRATION EXAMPLE
@@ -14,7 +14,7 @@
  * ? Transaction receipts
  * ? Order confirmation
  * 
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -86,7 +86,7 @@ export default function CheckoutAdvanced() {
         subtotal: subtotal,
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
-        deliveryAddress: 'Bastos, Yaoundé, '
+        deliveryAddress: 'Bastos, Yaoundï¿½, '
       };
 
       setCheckoutData(mockCheckoutData);
@@ -313,6 +313,7 @@ export default function CheckoutAdvanced() {
     </div>
   );
 }
+
 
 
 

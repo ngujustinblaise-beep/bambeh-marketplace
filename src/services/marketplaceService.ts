@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * MARKETPLACE SERVICE - Mock Data with LocalStorage
  */
 
@@ -26,8 +26,8 @@ const MOCK_MARKETPLACE_ITEMS: MarketplaceItem[] = [
     description: "Brand new iPhone 15 Pro Max in Titanium Blue. Never used, still in original packaging.",
     price: 850000, currency: "XAF", category: "Electronics",
     images: ["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500"],
-    seller: { id: "seller1", name: "Tech Store Yaoundé", rating: 4.8 },
-    location: "Yaoundé, Centre", condition: "new",
+    seller: { id: "seller1", name: "Tech Store Yaoundï¿½", rating: 4.8 },
+    location: "Yaoundï¿½, Centre", condition: "new",
     createdAt: new Date().toISOString(),
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     status: "active", views: 245, favorites: 18,
@@ -49,7 +49,7 @@ const MOCK_MARKETPLACE_ITEMS: MarketplaceItem[] = [
     price: 2500000, currency: "XAF", category: "Electronics",
     images: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500"],
     seller: { id: "seller3", name: "Apple Premium Store", rating: 4.9 },
-    location: "Yaoundé, Centre", condition: "new",
+    location: "Yaoundï¿½, Centre", condition: "new",
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     expiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
     status: "active", views: 456, favorites: 34,
@@ -71,7 +71,7 @@ const MOCK_MARKETPLACE_ITEMS: MarketplaceItem[] = [
     price: 350000, currency: "XAF", category: "Real Estate",
     images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500"],
     seller: { id: "seller5", name: "Bastos Properties", rating: 4.5 },
-    location: "Yaoundé, Centre", condition: "new",
+    location: "Yaoundï¿½, Centre", condition: "new",
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     expiresAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000).toISOString(),
     status: "active", views: 234, favorites: 19,
@@ -157,3 +157,4 @@ class MarketplaceService {
 }
 
 export const marketplaceService = new MarketplaceService();
+

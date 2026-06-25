@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/SearchPanel.tsx
  * Bambeh Marketplace — Full-Screen Search Panel
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -336,6 +336,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose, initialQuery
 };
 
 export default SearchPanel;
+
 
 
 

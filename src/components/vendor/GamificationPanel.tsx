@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GAMIFICATION PANEL - VENDOR REWARDS & PROGRESS
  * FILE LOCATION: src/components/vendor/GamificationPanel.tsx
  */
@@ -296,6 +296,7 @@ export default function GamificationPanel({ vendorId, compact = false }: Gamific
     </div>
   );
 }
+
 
 
 

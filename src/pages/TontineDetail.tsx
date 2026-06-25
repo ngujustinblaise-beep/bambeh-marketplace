@@ -1,10 +1,10 @@
-/**
- * src/pages/TontineDetail.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/TontineDetail.tsx ï¿½ Bambeh Marketplace
  *
  * FIXES applied:
  *  ? supabase .single() replaced with .maybeSingle() to avoid PGRST116 error
- *     when no row exists — was throwing uncaught exception.
- *  ? handleJoin: navigate('/login') has explicit return — no supabase call without user.
+ *     when no row exists ï¿½ was throwing uncaught exception.
+ *  ? handleJoin: navigate('/login') has explicit return ï¿½ no supabase call without user.
  *  ? handleJoin: supabase.from('tontine_groups').update() now uses RPC increment
  *     or a safe +1 strategy to avoid overwriting concurrent joins.
  *  ? loadGroup called with correct id (group.id not stale) after join.
@@ -92,7 +92,7 @@ export default function TontineDetail() {
         return;
       }
 
-      // FIX: maybeSingle() instead of single() — no error when row missing
+      // FIX: maybeSingle() instead of single() ï¿½ no error when row missing
       const { data, error: dbErr } = await supabase
         .from('tontine_groups')
         .select('*')
@@ -170,7 +170,7 @@ export default function TontineDetail() {
       setIsMember(true);
       loadGroup(group.id);
     } catch {
-      // silent — user can try again
+      // silent ï¿½ user can try again
     } finally {
       setJoining(false);
     }
@@ -306,14 +306,15 @@ export default function TontineDetail() {
             className="w-full bg-purple-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-purple-800 transition"
           >
             {joining
-              ? <><Loader2 className="w-4 h-4 animate-spin" />Joining…</>
-              : <><Plus className="w-4 h-4" />Join — {fmt(group.contributionXaf)}/{group.frequency}</>}
+              ? <><Loader2 className="w-4 h-4 animate-spin" />Joiningï¿½</>
+              : <><Plus className="w-4 h-4" />Join ï¿½ {fmt(group.contributionXaf)}/{group.frequency}</>}
           </button>
         </div>
       )}
     </div>
   );
 }
+
 
 
 

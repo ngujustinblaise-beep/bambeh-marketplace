@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SupabaseAuthProvider.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -143,6 +143,7 @@ export function useSupabaseAuth(): SupabaseAuthContextType {
 }
 
 export default SupabaseAuthProvider;
+
 
 
 

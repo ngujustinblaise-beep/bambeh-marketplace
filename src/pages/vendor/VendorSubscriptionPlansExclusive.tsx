@@ -1,9 +1,9 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR SUBSCRIPTION PLANS EXCLUSIVE - VENDOR-ONLY PAGE
  * ROUTE: /vendor/manage-plan
  * FILE LOCATION: src/pages/vendor/VendorSubscriptionPlansExclusive.tsx
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -955,6 +955,7 @@ export default function VendorSubscriptionPlansExclusive() {
     </div>
   );
 }
+
 
 
 

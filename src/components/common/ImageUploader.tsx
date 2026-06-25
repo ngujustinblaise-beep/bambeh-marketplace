@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * IMAGE UPLOADER COMPONENT - FULLY FUNCTIONAL
  * FILE LOCATION: src/components/common/ImageUploader.tsx
  */
@@ -227,7 +227,7 @@ export default function ImageUploader({
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-800 font-medium mb-2">?? Image Upload Tips:</p>
           <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
-            <li>Use high-quality images (minimum 1600×1600 pixels)</li>
+            <li>Use high-quality images (minimum 1600ï¿½1600 pixels)</li>
             <li>First image will be the main/cover image</li>
             <li>White or light background works best</li>
             <li>Show your item from multiple angles</li>
@@ -238,6 +238,7 @@ export default function ImageUploader({
     </div>
   );
 }
+
 
 
 

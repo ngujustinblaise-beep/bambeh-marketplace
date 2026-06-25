@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -19,6 +19,7 @@ export const useSearch = (): SearchContextValue => {
   if (!ctx) throw new Error("useSearch must be inside SearchProvider");
   return ctx;
 };
+
 
 
 

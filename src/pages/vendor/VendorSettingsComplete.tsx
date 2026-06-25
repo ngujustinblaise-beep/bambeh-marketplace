@@ -1,8 +1,8 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR SETTINGS COMPLETE - ENTERPRISE-GRADE SETTINGS PAGE
  * FILE LOCATION: src/pages/vendor/VendorSettingsComplete.tsx
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -548,7 +548,7 @@ export default function VendorSettingsComplete() {
             <label className="block text-sm font-medium text-white/80 mb-2">Current Password</label>
             <input type="password" value={securitySettings.currentPassword}
               onChange={(e) => setSecuritySettings({ ...securitySettings, currentPassword: e.target.value })}
-              placeholder="••••••••"
+              placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-teal-500/50" />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -556,14 +556,14 @@ export default function VendorSettingsComplete() {
               <label className="block text-sm font-medium text-white/80 mb-2">New Password</label>
               <input type="password" value={securitySettings.newPassword}
                 onChange={(e) => setSecuritySettings({ ...securitySettings, newPassword: e.target.value })}
-                placeholder="••••••••"
+                placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-teal-500/50" />
             </div>
             <div>
               <label className="block text-sm font-medium text-white/80 mb-2">Confirm Password</label>
               <input type="password" value={securitySettings.confirmPassword}
                 onChange={(e) => setSecuritySettings({ ...securitySettings, confirmPassword: e.target.value })}
-                placeholder="••••••••"
+                placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-teal-500/50" />
             </div>
           </div>
@@ -764,7 +764,7 @@ export default function VendorSettingsComplete() {
     <div className="space-y-6">
       <div className="grid sm:grid-cols-2 gap-6">
         {[
-          { label: 'Language', key: 'language', options: [['en','English'],['fr','Français'],['ar','???????'],['ha','Hausa']] },
+          { label: 'Language', key: 'language', options: [['en','English'],['fr','Franï¿½ais'],['ar','???????'],['ha','Hausa']] },
           { label: 'Currency', key: 'currency', options: [['XAF','XAF (CFA Franc)'],['USD','USD (US Dollar)'],['EUR','EUR (Euro)'],['NGN','NGN (Naira)']] },
           { label: 'Timezone', key: 'timezone', options: [['Africa/Douala','Africa/Douala (GMT+1)'],['Africa/Lagos','Africa/Lagos (GMT+1)'],['Europe/Paris','Europe/Paris'],['UTC','UTC']] },
           { label: 'Date Format', key: 'dateFormat', options: [['DD/MM/YYYY','DD/MM/YYYY'],['MM/DD/YYYY','MM/DD/YYYY'],['YYYY-MM-DD','YYYY-MM-DD']] },
@@ -1059,6 +1059,7 @@ export default function VendorSettingsComplete() {
     </div>
   );
 }
+
 
 
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+ï»¿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Globe, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -22,7 +22,7 @@ const defaultSettings: LangSettings = {
 };
 
 const LANGUAGES = [
-  { code: "fr",  label: "Français", flag: "????" },
+  { code: "fr",  label: "Franï¿½ais", flag: "????" },
   { code: "en",  label: "English",  flag: "????" },
   { code: "fuf", label: "Fulfulde", flag: "????" },
   { code: "ewo", label: "Ewondo",   flag: "????" },
@@ -271,6 +271,7 @@ export default function VendorSettingsLanguage() {
     </div>
   );
 }
+
 
 
 

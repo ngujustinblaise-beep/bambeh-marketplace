@@ -1,16 +1,16 @@
-/**
- * src/pages/ComparisonTool.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/ComparisonTool.tsx ï¿½ Bambeh Marketplace
  *
  * FIXES applied:
- *  ? Real internet search via Anthropic API (web_search tool) — shows live prices & specs
+ *  ? Real internet search via Anthropic API (web_search tool) ï¿½ shows live prices & specs
  *  ? localStorage read uses try/catch; malformed JSON never crashes the page
  *  ? "Add Product" picker now has a "Search Online" mode that queries real market data
  *  ? Score bars normalised correctly (sellerRating is /5, others are /100)
  *  ? bestPrice / bestRating / bestValue return null when < 2 products (was already ok, kept)
- *  ? Table header width fixed — no longer overflows on 3-product view
+ *  ? Table header width fixed ï¿½ no longer overflows on 3-product view
  *  ? Source attribution shown for AI-fetched data (verifiable link)
  *  ? Loading skeleton while AI search is running
- *  ? Error boundary around AI call — fallback to manual entry on failure
+ *  ? Error boundary around AI call ï¿½ fallback to manual entry on failure
  *  ? "Clear all" button added
  *  ? Accessible: buttons have aria-labels, table has proper scope attributes
  */
@@ -205,7 +205,7 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
         <div className="space-y-2">
           {[1, 2].map(i => <ProductSkeleton key={i} />)}
           <p className="text-xs text-gray-400 text-center animate-pulse">
-            ?? Searching the web for live prices…
+            ?? Searching the web for live pricesï¿½
           </p>
         </div>
       )}
@@ -374,7 +374,7 @@ export default function ComparisonTool() {
       }));
       setLocalProducts(mapped);
     } catch {
-      // localStorage malformed — silently ignore
+      // localStorage malformed ï¿½ silently ignore
     }
   }, []);
 
@@ -573,7 +573,7 @@ export default function ComparisonTool() {
                           {products.map(p => (
                             <td key={p.id} className="py-2 pr-3 text-gray-900 font-medium">
                               {p.specs[spec] || (
-                                <span className="text-gray-300">—</span>
+                                <span className="text-gray-300">ï¿½</span>
                               )}
                             </td>
                           ))}
@@ -631,6 +631,7 @@ export default function ComparisonTool() {
     </div>
   );
 }
+
 
 
 

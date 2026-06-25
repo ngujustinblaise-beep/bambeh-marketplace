@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Bell, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -100,6 +100,7 @@ export default function VendorSettingsNotification() {
     </div>
   );
 }
+
 
 
 

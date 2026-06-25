@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BAMBÉ MARKETPLACE - VOICE RECORDER COMPONENT
  * Version: 1.0.0
  */
@@ -136,5 +136,6 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
 };
 
 export default VoiceRecorder;
+
 
 

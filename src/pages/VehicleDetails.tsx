@@ -1,8 +1,8 @@
-/**
- * src/pages/VehicleDetails.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/VehicleDetails.tsx ï¿½ Bambeh Marketplace
  * Full vehicle detail page: multilingual, Supabase, image gallery,
  * Call / WhatsApp CTA, expiry warning, view count, share.
- * © 2026 BAMBEH SARL. All rights reserved.
+ * ï¿½ 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -23,7 +23,7 @@ import { useLang } from "@/hooks/useAppLang";
 const I18N: Record<string, Record<string, string>> = {
   en: {
     back: "Vehicles",
-    loading: "Loading vehicle details…",
+    loading: "Loading vehicle detailsï¿½",
     unavailable: "Vehicle unavailable",
     notFound: "This listing could not be found.",
     browseOther: "Browse other vehicles",
@@ -52,44 +52,44 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "Seller",
     saved: "Saved",
     save: "Save",
-    whatsappMsg: "Hi, I'm interested in your vehicle listing on Bambeh: \"{title}\" — {location}. Is it still available?",
+    whatsappMsg: "Hi, I'm interested in your vehicle listing on Bambeh: \"{title}\" ï¿½ {location}. Is it still available?",
   },
   fr: {
-    back: "Véhicules",
-    loading: "Chargement des détails…",
-    unavailable: "Véhicule indisponible",
-    notFound: "Cette annonce n'a pas pu être trouvée.",
-    browseOther: "Parcourir d'autres véhicules",
-    vehicleSpecs: "Caractéristiques",
-    aboutVehicle: "À propos de ce véhicule",
+    back: "Vï¿½hicules",
+    loading: "Chargement des dï¿½tailsï¿½",
+    unavailable: "Vï¿½hicule indisponible",
+    notFound: "Cette annonce n'a pas pu ï¿½tre trouvï¿½e.",
+    browseOther: "Parcourir d'autres vï¿½hicules",
+    vehicleSpecs: "Caractï¿½ristiques",
+    aboutVehicle: "ï¿½ propos de ce vï¿½hicule",
     noDesc: "Aucune description fournie.",
-    safetyNote: "Inspectez toujours le véhicule en personne et vérifiez les documents de propriété avant tout paiement. Bambeh ne gère pas les paiements.",
+    safetyNote: "Inspectez toujours le vï¿½hicule en personne et vï¿½rifiez les documents de propriï¿½tï¿½ avant tout paiement. Bambeh ne gï¿½re pas les paiements.",
     noReviews: "(Aucun avis pour l'instant)",
     callSeller: "Appeler le vendeur",
     whatsapp: "WhatsApp",
-    demoNote: "Ceci est une annonce de démonstration. Listez votre propre véhicule pour apparaître ici.",
-    sellVehicle: "Vendre un véhicule",
+    demoNote: "Ceci est une annonce de dï¿½monstration. Listez votre propre vï¿½hicule pour apparaï¿½tre ici.",
+    sellVehicle: "Vendre un vï¿½hicule",
     expiringSoon: "Votre annonce expire dans",
     day: "jour",
     days: "jours",
-    renewHint: "Renouvelez-la pour continuer à recevoir des demandes.",
+    renewHint: "Renouvelez-la pour continuer ï¿½ recevoir des demandes.",
     renewNow: "Renouveler maintenant",
     views: "vues",
-    mileage: "Kilométrage",
+    mileage: "Kilomï¿½trage",
     fuel: "Carburant",
     transmission: "Transmission",
-    year: "Année",
-    seats: "Sièges",
+    year: "Annï¿½e",
+    seats: "Siï¿½ges",
     colour: "Couleur",
-    shareSuccess: "Lien copié dans le presse-papier!",
+    shareSuccess: "Lien copiï¿½ dans le presse-papier!",
     sellerInfo: "Vendeur",
-    saved: "Enregistré",
+    saved: "Enregistrï¿½",
     save: "Enregistrer",
-    whatsappMsg: "Bonjour, je suis intéressé(e) par votre véhicule sur Bambeh: \"{title}\" — {location}. Est-il encore disponible?",
+    whatsappMsg: "Bonjour, je suis intï¿½ressï¿½(e) par votre vï¿½hicule sur Bambeh: \"{title}\" ï¿½ {location}. Est-il encore disponible?",
   },
   ha: {
     back: "Ababen Hawa",
-    loading: "Ana loda bayanan abin hawa…",
+    loading: "Ana loda bayanan abin hawaï¿½",
     unavailable: "Babu abin hawa",
     notFound: "Ba a sami wannan lissafin ba.",
     browseOther: "Nemo sauran ababen hawa",
@@ -118,11 +118,11 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "Mai Sayarwa",
     saved: "An Ajiye",
     save: "Ajiye",
-    whatsappMsg: "Sannu, ina sha'awar abin hawanku akan Bambeh: \"{title}\" — {location}. Yana nan?",
+    whatsappMsg: "Sannu, ina sha'awar abin hawanku akan Bambeh: \"{title}\" ï¿½ {location}. Yana nan?",
   },
   ar: {
     back: "????????",
-    loading: "???Ù ????? ?Ù???? ???????…",
+    loading: "???Ù ????? ?Ù???? ???????ï¿½",
     unavailable: "??????? ??? ?????",
     notFound: "?? ??? ?????? ??? ??? ???????.",
     browseOther: "??Ù? ?????? ????",
@@ -151,11 +151,11 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "??????",
     saved: "??Ù??",
     save: "?Ù?",
-    whatsappMsg: "??????? ??? ???? ??????? ??? Bambeh: \"{title}\" — {location}. ?? ?? ???? ??????",
+    whatsappMsg: "??????? ??? ???? ??????? ??? Bambeh: \"{title}\" ï¿½ {location}. ?? ?? ???? ??????",
   },
   pcm: {
     back: "Motors",
-    loading: "Motor dey load…",
+    loading: "Motor dey loadï¿½",
     unavailable: "Motor no dey",
     notFound: "We no find dis post.",
     browseOther: "Look other motors",
@@ -184,11 +184,11 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "Seller",
     saved: "Saved",
     save: "Save",
-    whatsappMsg: "How far, I dey look your motor for Bambeh: \"{title}\" — {location}. E still dey?",
+    whatsappMsg: "How far, I dey look your motor for Bambeh: \"{title}\" ï¿½ {location}. E still dey?",
   },
   ff: {
     back: "Laa?e",
-    loading: "Laa?al njilloyinee…",
+    loading: "Laa?al njilloyineeï¿½",
     unavailable: "Laa?al he?aaki",
     notFound: "Ja?tere nde he?aaki.",
     browseOther: "Yiyt laa?e go??e",
@@ -217,7 +217,7 @@ const I18N: Record<string, Record<string, string>> = {
     sellerInfo: "Soodotoo?o",
     saved: "?ow?aa",
     save: "?ow",
-    whatsappMsg: "Jam, mi anndinorii laa?al maa e Bambeh: \"{title}\" — {location}. ?um ?ii?",
+    whatsappMsg: "Jam, mi anndinorii laa?al maa e Bambeh: \"{title}\" ï¿½ {location}. ?um ?ii?",
   },
 };
 
@@ -225,9 +225,9 @@ const I18N: Record<string, Record<string, string>> = {
 // Demo vehicle data
 // -------------------------------------------------------------
 const DEMO_VEHICLES: Record<string, any> = {
-  "demo-v1": { id:"demo-v1", title:"Toyota Camry 2020", price:8_500_000, location:"Yaoundé", category:"Sedan", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Petrol",transmission:"Automatic",mileage:"45,000 km",year:2020,color:"Silver",seats:5}, description:"Well-maintained Toyota Camry 2020, single owner, full service history. Leather seats, reversing camera, push-start. No accident history.", contact_phone:"", contact_name:"Bambeh Demo" },
+  "demo-v1": { id:"demo-v1", title:"Toyota Camry 2020", price:8_500_000, location:"Yaoundï¿½", category:"Sedan", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Petrol",transmission:"Automatic",mileage:"45,000 km",year:2020,color:"Silver",seats:5}, description:"Well-maintained Toyota Camry 2020, single owner, full service history. Leather seats, reversing camera, push-start. No accident history.", contact_phone:"", contact_name:"Bambeh Demo" },
   "demo-v2": { id:"demo-v2", title:"Honda Activa Motorcycle", price:850_000, location:"Douala", category:"Motorcycle", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Petrol",transmission:"Manual",mileage:"12,000 km",year:2021,color:"Red",seats:2}, description:"Honda Activa in excellent condition, used mainly for city commute. New tyres, recent oil change. Ideal for students and professionals.", contact_phone:"", contact_name:"Bambeh Demo" },
-  "demo-v3": { id:"demo-v3", title:"Toyota Land Cruiser V8 2019", price:35_000_000, location:"Yaoundé", category:"SUV", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Diesel",transmission:"Automatic",mileage:"78,000 km",year:2019,color:"Black",seats:7}, description:"Iconic Land Cruiser V8, fully loaded with leather interior, sunroof, and advanced 4WD. Perfect for Cameroon's diverse terrain.", contact_phone:"", contact_name:"Bambeh Demo" },
+  "demo-v3": { id:"demo-v3", title:"Toyota Land Cruiser V8 2019", price:35_000_000, location:"Yaoundï¿½", category:"SUV", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Diesel",transmission:"Automatic",mileage:"78,000 km",year:2019,color:"Black",seats:7}, description:"Iconic Land Cruiser V8, fully loaded with leather interior, sunroof, and advanced 4WD. Perfect for Cameroon's diverse terrain.", contact_phone:"", contact_name:"Bambeh Demo" },
   "demo-v4": { id:"demo-v4", title:"Nissan Pickup 4x4", price:12_000_000, location:"Bamenda", category:"Pickup", images:[], created_at:new Date().toISOString(), status:"demo", view_count:0, extra:{fuel:"Diesel",transmission:"Manual",mileage:"95,000 km",year:2018,color:"White",seats:5}, description:"Robust Nissan Pickup 4x4 with hardtop canopy. Great load capacity, ideal for business and off-road use. Bull bar and tow hitch included.", contact_phone:"", contact_name:"Bambeh Demo" },
 };
 
@@ -561,7 +561,7 @@ const VehicleDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* -- Bottom CTA bar — real listing -- */}
+        {/* -- Bottom CTA bar ï¿½ real listing -- */}
         {vehicle.status !== "demo" && vehicle.contact_phone && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-lg px-4 pt-3 pb-6">
             <div className={`max-w-2xl mx-auto grid grid-cols-2 gap-3 ${isRtl ? "dir-rtl" : ""}`}>
@@ -585,7 +585,7 @@ const VehicleDetails: React.FC = () => {
           </div>
         )}
 
-        {/* -- Bottom CTA bar — demo -- */}
+        {/* -- Bottom CTA bar ï¿½ demo -- */}
         {vehicle.status === "demo" && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-yellow-50 border-t border-yellow-200 px-4 pt-3 pb-6">
             <div className="max-w-2xl mx-auto text-center">
@@ -606,6 +606,7 @@ const VehicleDetails: React.FC = () => {
 };
 
 export default VehicleDetails;
+
 
 
 

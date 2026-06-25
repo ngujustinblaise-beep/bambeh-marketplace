@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
  * POST MARKETPLACE ITEM - MILITARY GRADE VERSION
  * FILE LOCATION: src/pages/PostMarketplaceItem.tsx
@@ -49,7 +49,7 @@ const PostMarketplaceItem = () => {
     { value: 'for-parts',  label: 'For Parts',  description: 'Not fully functional' },
   ];
 
-  const majorCities = ['Yaoundé', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
+  const majorCities = ['Yaoundï¿½', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -254,6 +254,7 @@ const PostMarketplaceItem = () => {
 };
 
 export default PostMarketplaceItem;
+
 
 
 

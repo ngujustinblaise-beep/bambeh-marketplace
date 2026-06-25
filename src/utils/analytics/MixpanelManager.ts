@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/analytics/MixpanelManager.ts
- * Bambeh Marketplace — Mixpanel Analytics + singleton
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Mixpanel Analytics + singleton
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -109,4 +109,5 @@ export function createMixpanelProvider(config?: Partial<MixpanelConfig>): Analyt
 export function isMixpanelAvailable(): boolean {
   return Boolean(window.mixpanel && typeof window.mixpanel.track === "function");
 }
+
 

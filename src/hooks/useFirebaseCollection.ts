@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import {
   collection,
   getDocs,
@@ -52,3 +52,4 @@ export function useFirebaseCollection<T = DocumentData>(
 
   return { data, loading, error, refetch: fetchCollection };
 }
+

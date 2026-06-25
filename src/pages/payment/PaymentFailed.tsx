@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/payment/PaymentFailed.tsx
  * Shown when payment fails or is canceled.
  */
@@ -77,6 +77,7 @@ const PaymentFailed: React.FC = () => {
 
 }
 export default PaymentFailed;
+
 
 
 

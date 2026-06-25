@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -14,6 +14,7 @@ const VerificationStatus: React.FC = () => (
   </div>
 );
 export default VerificationStatus;
+
 
 
 

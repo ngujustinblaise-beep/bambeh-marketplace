@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * useSubscriptionGate.ts
  * ----------------------------------------------------------------------------
  * Central hook that determines whether the current user can access
@@ -7,11 +7,11 @@
  * FILE LOCATION: src/hooks/useSubscriptionGate.ts
  *
  * Returns:
- *   isLoggedIn      — user has a valid session
- *   isSubscribed    — user has an active paid plan
- *   plan            — 'basic' | 'standard' | 'premium' | null
- *   showGate(msg?)  — call this to trigger the subscription modal
- *   GateModal       — render this anywhere; it self-manages visibility
+ *   isLoggedIn      ï¿½ user has a valid session
+ *   isSubscribed    ï¿½ user has an active paid plan
+ *   plan            ï¿½ 'basic' | 'standard' | 'premium' | null
+ *   showGate(msg?)  ï¿½ call this to trigger the subscription modal
+ *   GateModal       ï¿½ render this anywhere; it self-manages visibility
  * ----------------------------------------------------------------------------
  */
 
@@ -122,3 +122,4 @@ export function useSubscriptionGate() {
     requireSubscription
   };
 }
+

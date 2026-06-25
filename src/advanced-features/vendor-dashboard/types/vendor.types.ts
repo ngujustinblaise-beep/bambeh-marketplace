@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VENDOR TYPES
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VENDOR TYPES
  * TypeScript interfaces for vendor dashboard
  * Version: 1.0.0
  */
@@ -275,3 +275,4 @@ export interface CustomerInsight {
   lastOrderDate: string;
   favoriteProducts: string[];
 }
+

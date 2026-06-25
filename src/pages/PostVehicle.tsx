@@ -1,5 +1,5 @@
-/**
- * src/pages/PostVehicle.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/PostVehicle.tsx ï¿½ Bambeh Marketplace
  *
  * PHONE INPUT CHANGE:
  *  ? contactPhone field replaced with AfricanPhoneInput
@@ -12,7 +12,7 @@
  *  The active production posting form is SellVehicle.tsx (saves to Supabase).
  *  This file is kept and fixed so it is ready if you wire it to Supabase later.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState } from 'react';
@@ -211,7 +211,7 @@ const PostVehicle: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // NOTE: This is a localStorage demo — contactPhone now contains the full
+      // NOTE: This is a localStorage demo ï¿½ contactPhone now contains the full
       // international number from AfricanPhoneInput e.g. "+237671234567"
       await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -499,7 +499,7 @@ const PostVehicle: React.FC = () => {
 
               <div>
                 <Label htmlFor="location">Location *</Label>
-                <Input id="location" name="location" placeholder="e.g., Yaoundé, Centre"
+                <Input id="location" name="location" placeholder="e.g., Yaoundï¿½, Centre"
                   value={formData.location} onChange={handleInputChange} required />
               </div>
             </CardContent>
@@ -564,6 +564,7 @@ const PostVehicle: React.FC = () => {
 };
 
 export default PostVehicle;
+
 
 
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type { ItemFilters, PaginatedItemsResponse, JobItem, MarketplaceItem } from "../types/items";
 /** @deprecated use JobItem */ export type JobListing = JobItem;
 
@@ -20,3 +20,4 @@ export const testAllServices = async (): Promise<{ jobs: boolean; market: boolea
   try { await testJobsApi(); await testMarketApi(); return { jobs: true, market: true }; }
   catch { return { jobs: false, market: false }; }
 };
+

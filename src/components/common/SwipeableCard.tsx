@@ -1,4 +1,4 @@
-import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
+﻿import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Heart, X, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 
@@ -52,6 +52,7 @@ const SwipeableCard = ({ id, image, title, price, onLike, onSkip, onAddToCart }:
 };
 
 export default SwipeableCard;
+
 
 
 

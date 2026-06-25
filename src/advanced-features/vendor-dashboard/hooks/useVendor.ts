@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VENDOR CUSTOM HOOKS
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VENDOR CUSTOM HOOKS
  * Version: 1.0.0
  */
 
@@ -255,3 +255,4 @@ export const useVendorNotifications = (vendorId: string) => {
 
   return { notifications, unreadCount, isLoading, markAsRead, refreshNotifications: loadNotifications };
 };
+

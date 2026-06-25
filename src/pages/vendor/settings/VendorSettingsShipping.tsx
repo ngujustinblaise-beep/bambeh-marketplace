@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+ï»¿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Truck, CheckCircle, AlertCircle, Plus, Trash2, MapPin } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ interface ShippingZone { id:string; name:string; enabled:boolean; price:number; 
 interface ShippingSettings { offersDelivery:boolean; offersPickup:boolean; pickupAddress:string; processingDays:number; zones:ShippingZone[]; }
 
 const DEFAULT_ZONES: ShippingZone[] = [
-  { id:"yaounde",      name:"Yaoundé",     enabled:true,  price:500,  freeAbove:10000, estimatedDays:"1-2" },
+  { id:"yaounde",      name:"Yaoundï¿½",     enabled:true,  price:500,  freeAbove:10000, estimatedDays:"1-2" },
   { id:"douala",       name:"Douala",       enabled:true,  price:1500, freeAbove:20000, estimatedDays:"2-3" },
   { id:"other_cities", name:"Other Cities", enabled:false, price:3000, freeAbove:null,  estimatedDays:"3-5" },
   { id:"nationwide",   name:"Nationwide",   enabled:false, price:5000, freeAbove:null,  estimatedDays:"5-7" },
@@ -132,6 +132,7 @@ export default function VendorSettingsShipping() {
     </div>
   );
 }
+
 
 
 

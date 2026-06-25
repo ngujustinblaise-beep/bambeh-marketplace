@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -52,7 +52,7 @@ const AccountRestrictionBanner: React.FC<AccountRestrictionBannerProps> = ({
         <p className="text-yellow-700 text-xs mt-0.5">{reason ?? "Some features may be unavailable."}</p>
       </div>
       {onDismiss && (
-        <button onClick={onDismiss} className="text-yellow-500 hover:text-yellow-700 text-lg">×</button>
+        <button onClick={onDismiss} className="text-yellow-500 hover:text-yellow-700 text-lg">ï¿½</button>
       )}
     </div>
   );
@@ -61,6 +61,7 @@ const AccountRestrictionBanner: React.FC<AccountRestrictionBannerProps> = ({
 export default AccountRestrictionBanner;
 export { AccountBlockedPage };
 export type { AccountBlockedPageProps };
+
 
 
 

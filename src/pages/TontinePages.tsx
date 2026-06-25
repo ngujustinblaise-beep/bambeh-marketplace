@@ -1,5 +1,5 @@
-/**
- * src/pages/TontinePages.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/TontinePages.tsx ï¿½ Bambeh Marketplace
  * FIXED: Was a stub (emoji + title). Now redirects to /tontine.
  * The real tontine listing is in TontinePage.tsx.
  */
@@ -27,6 +27,7 @@ export default function TontinePages() {
     </div>
   );
 }
+
 
 
 

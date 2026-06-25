@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
  *
  * REBUILT & FIXED:
@@ -494,6 +494,7 @@ function CartFloater({ lang }: { lang: string }) {
     </button>
   );
 }
+
 
 
 

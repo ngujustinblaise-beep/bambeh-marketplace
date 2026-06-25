@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BAMBÉ MARKETPLACE - CHAT WINDOW COMPONENT
  * Version: 1.0.0
  */
@@ -304,5 +304,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
 };
 
 export default ChatWindow;
+
 
 

@@ -1,4 +1,4 @@
-// globals.d.ts - Bambeh Marketplace
+﻿// globals.d.ts - Bambeh Marketplace
 // Stubs for React Native APIs used in web code
 
 declare const __DEV__: boolean;
@@ -43,3 +43,4 @@ declare const Store: unknown;
 interface Window {
   gtag?: (...args: unknown[]) => void;
 }
+

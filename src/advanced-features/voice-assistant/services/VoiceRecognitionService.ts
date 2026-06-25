@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VOICE RECOGNITION SERVICE
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VOICE RECOGNITION SERVICE
  * Speech recognition and synthesis using Web Speech API
  * Version: 1.0.0
  */
@@ -389,3 +389,4 @@ class VoiceRecognitionService {
 }
 
 export default new VoiceRecognitionService();
+

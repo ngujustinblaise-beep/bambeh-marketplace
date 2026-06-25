@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ADVANCED SEARCH COMPONENT
  * FILE LOCATION: src/components/search/AdvancedSearch.tsx
  */
@@ -49,7 +49,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     all:        ['All Categories'],
   };
 
-  const locations = ['All Locations','Yaoundé','Douala','Bamenda','Bafoussam','Garoua','Maroua','Ngaoundéré','Bertoua','Buea','Kribi','Limbe','Ebolowa','Kumba','Edéa','Loum'];
+  const locations = ['All Locations','Yaoundï¿½','Douala','Bamenda','Bafoussam','Garoua','Maroua','Ngaoundï¿½rï¿½','Bertoua','Buea','Kribi','Limbe','Ebolowa','Kumba','Edï¿½a','Loum'];
 
   useEffect(() => {
     let count = 0;
@@ -221,6 +221,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 };
 
 export default AdvancedSearch;
+
 
 
 

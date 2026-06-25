@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REFERRAL BUTTON COMPONENT
  * FILE LOCATION: src/components/common/ReferralButton.tsx
  */
@@ -163,6 +163,7 @@ export default function ReferralButton() {
     </>
   );
 }
+
 
 
 

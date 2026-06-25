@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { CreditCard, Coins, Smartphone, DollarSign } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -174,6 +174,7 @@ export default function PaymentMethods() {
     </div>
   );
 }
+
 
 
 

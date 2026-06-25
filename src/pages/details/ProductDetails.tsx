@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -55,6 +55,7 @@ const ProductDetails: React.FC = () => {
 };
 
 export default ProductDetails;
+
 
 
 

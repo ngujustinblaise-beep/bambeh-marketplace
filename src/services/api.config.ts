@@ -1,8 +1,8 @@
-// src/services/api.config.ts
+ï»¿// src/services/api.config.ts
 
 /**
  * ============================================
- * BAMBÉ MARKETPLACE - API CONFIGURATION
+ * BAMBï¿½ MARKETPLACE - API CONFIGURATION
  * ============================================
  * Central configuration for all Firebase Cloud Functions
  * Deployed on: January 29, 2026
@@ -87,3 +87,4 @@ export const checkAPIHealth = async (): Promise<boolean> => {
     return false;
   }
 };
+

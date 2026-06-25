@@ -1,4 +1,4 @@
-export interface AppNotification {
+﻿export interface AppNotification {
   id: string;
   userId: string;
   title: string;
@@ -34,3 +34,4 @@ export class NotificationService {
 
 export const notificationService = new NotificationService();
 export default notificationService;
+

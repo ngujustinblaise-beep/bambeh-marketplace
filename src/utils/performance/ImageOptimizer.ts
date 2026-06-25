@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/performance/ImageOptimizer.ts
- * Bambeh Marketplace — Image Optimization Utilities
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Image Optimization Utilities
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 export interface ResizeOptions {
@@ -156,3 +156,4 @@ export function getOptimizedImageUrl(
   const separator = baseUrl.includes("?") ? "&" : "?";
   return `${baseUrl}${separator}${queryString}`;
 }
+

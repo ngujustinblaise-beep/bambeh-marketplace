@@ -1,4 +1,4 @@
-/**
+﻿/**
  * COMPACT SHARE MODAL
  * FILE LOCATION: src/components/common/CompactShareModal.tsx
  */
@@ -159,6 +159,7 @@ export default function CompactShareModal({
     </div>
   );
 }
+
 
 
 

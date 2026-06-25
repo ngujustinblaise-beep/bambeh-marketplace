@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/NotificationDropdown.tsx
- * Bambeh Marketplace — Notification Dropdown
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Notification Dropdown
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -116,6 +116,7 @@ const NotificationDropdown: React.FC = () => {
 };
 
 export default NotificationDropdown;
+
 
 
 

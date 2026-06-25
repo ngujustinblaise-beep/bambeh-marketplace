@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+ï»¿import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Globe } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -23,7 +23,7 @@ const LANGUAGE_SELECTED_KEY = "Bambeh_language_selected";
 
 const LANGUAGES: LangOption[] = [
   { code: "en", label: "English", native: "English" },
-  { code: "fr", label: "French", native: "Français" },
+  { code: "fr", label: "French", native: "Franï¿½ais" },
   { code: "pcm", label: "Pidgin", native: "Pidgin English" },
   { code: "ar", label: "Arabic", native: "???????" },
   { code: "ful", label: "Fulfulde", native: "Pulaar" },
@@ -32,7 +32,7 @@ const LANGUAGES: LangOption[] = [
 
 const STRINGS: Record<LangCode, Strings> = {
   en: { title: "Select Language", subtitle: "Choose your preferred language", btn: "Continue", promo: "Only 1% Fee" },
-  fr: { title: "Choisir la langue", subtitle: "Choisissez votre langue préférée", btn: "Continuer", promo: "Seulement 1% de frais" },
+  fr: { title: "Choisir la langue", subtitle: "Choisissez votre langue prï¿½fï¿½rï¿½e", btn: "Continuer", promo: "Seulement 1% de frais" },
   pcm: { title: "Chus Language", subtitle: "Pick the language weh you want", btn: "Waka Di Go", promo: "Only 1% Charge" },
   ar: { title: "????? ?????", subtitle: "???? ???? ???????", btn: "??????", promo: "???? 1% ???" },
   ful: { title: "Su?o ?emngal", subtitle: "Su?o ?emngal ngal nji?-?aa", btn: "Yeeso", promo: "Alasme 1% tan" },
@@ -118,3 +118,4 @@ export default function LanguageSelection() {
     </div>
   );
 }
+

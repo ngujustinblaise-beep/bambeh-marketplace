@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/contexts/CartContext.tsx
  * Bambeh Marketplace — Cart Context
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -289,3 +289,4 @@ export function createTransaction(
 }
 
 export default CartContext;
+

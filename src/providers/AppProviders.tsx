@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AppProviders.tsx â€â€ Bambeh Marketplace
  * Wraps the entire app in all required context providers.
  * Order matters: providers that depend on others must be nested inside them.
@@ -79,5 +79,6 @@ export default function AppProviders({ children }: AppProvidersProps) {
     </SupabaseAuthProvider>
   );
 }
+
 
 

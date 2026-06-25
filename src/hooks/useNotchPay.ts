@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { useState, useCallback } from "react";
 import {
   initializePayment,
@@ -46,3 +46,4 @@ export const useNotchPay = () => {
 
   return { initiate, withdraw, isLoading, error, generateReference };
 };
+

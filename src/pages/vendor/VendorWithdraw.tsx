@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
- * VendorWithdraw.tsx — BAMBEH VENDOR PORTAL
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * VendorWithdraw.tsx ï¿½ BAMBEH VENDOR PORTAL
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState } from 'react';
@@ -38,33 +38,33 @@ const METHODS: MethodConfig[] = [
     color: 'border-yellow-400 text-yellow-700', bg: 'bg-yellow-50',
     gradient: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
     description: 'Instant transfer to your MTN MoMo wallet',
-    fee: 'Free', time: 'Instant – 5 min', minAmount: 1000, maxAmount: 500000, popular: true,
+    fee: 'Free', time: 'Instant ï¿½ 5 min', minAmount: 1000, maxAmount: 500000, popular: true,
   },
   {
     id: 'orange', label: 'Orange Money', shortLabel: 'Orange Money', logo: '??',
     color: 'border-orange-400 text-orange-700', bg: 'bg-orange-50',
     gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
     description: 'Transfer to your Orange Money account',
-    fee: 'Free', time: 'Instant – 10 min', minAmount: 1000, maxAmount: 300000, popular: true,
+    fee: 'Free', time: 'Instant ï¿½ 10 min', minAmount: 1000, maxAmount: 300000, popular: true,
   },
   {
     id: 'card', label: 'Visa / Mastercard', shortLabel: 'Card', logo: '??',
     color: 'border-blue-400 text-blue-700', bg: 'bg-blue-50',
     gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
     description: 'Withdraw directly to your debit or credit card',
-    fee: '1.5%', time: '1 – 3 business days', minAmount: 5000, maxAmount: 2000000,
+    fee: '1.5%', time: '1 ï¿½ 3 business days', minAmount: 5000, maxAmount: 2000000,
   },
   {
     id: 'bank', label: 'Bank Transfer', shortLabel: 'Bank', logo: '??',
     color: 'border-emerald-400 text-emerald-700', bg: 'bg-emerald-50',
     gradient: 'linear-gradient(135deg, #10b981, #059669)',
     description: 'Direct transfer to your bank account in ',
-    fee: '500 XAF flat', time: '24 – 48 hours', minAmount: 10000, maxAmount: 5000000,
+    fee: '500 XAF flat', time: '24 ï¿½ 48 hours', minAmount: 10000, maxAmount: 5000000,
   },
 ];
 
 const _BANKS = [
-  'Afriland First Bank', 'Société Générale Cameroun (SGC)',
+  'Afriland First Bank', 'Sociï¿½tï¿½ Gï¿½nï¿½rale Cameroun (SGC)',
   'Standard Chartered Bank ', 'UBA ',
   'Ecobank ', 'BICEC (Banque Internationale du Cameroun)',
   'CCA Bank', 'CBC Bank', 'Atlantic Bank ',
@@ -121,9 +121,9 @@ const VendorWithdraw: React.FC = () => {
   const cfg = METHODS.find(m => m.id === selectedMethod);
 
   const computeFee = (): string => {
-    if (!cfg || !amount) return '—';
+    if (!cfg || !amount) return 'ï¿½';
     const amt = parseInt(amount);
-    if (isNaN(amt)) return '—';
+    if (isNaN(amt)) return 'ï¿½';
     if (cfg.id === 'card') return formatXAF(Math.round(amt * 0.015));
     if (cfg.id === 'bank') return '500 XAF';
     return 'Free';
@@ -216,7 +216,7 @@ const VendorWithdraw: React.FC = () => {
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5 pb-20">
 
-        {/* STEP 1 — SELECT METHOD */}
+        {/* STEP 1 ï¿½ SELECT METHOD */}
         {step === 'method' && (
           <>
             <div className="rounded-2xl p-5 text-white relative overflow-hidden"
@@ -301,7 +301,7 @@ const VendorWithdraw: React.FC = () => {
               <div className={`${cfg.bg} rounded-xl p-3 flex items-start gap-2`}>
                 <Info className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-gray-600">
-                  Limits for {cfg.label}: min <strong>{formatXAF(cfg.minAmount)}</strong> — max <strong>{formatXAF(cfg.maxAmount)}</strong>
+                  Limits for {cfg.label}: min <strong>{formatXAF(cfg.minAmount)}</strong> ï¿½ max <strong>{formatXAF(cfg.maxAmount)}</strong>
                 </p>
               </div>
             )}
@@ -325,7 +325,7 @@ const VendorWithdraw: React.FC = () => {
           </>
         )}
 
-        {/* STEP 2 — ENTER DETAILS */}
+        {/* STEP 2 ï¿½ ENTER DETAILS */}
         {step === 'details' && cfg && (
           <>
             <div className="rounded-2xl p-4 text-white flex items-center gap-3" style={{ background: cfg.gradient }}>
@@ -410,7 +410,7 @@ const VendorWithdraw: React.FC = () => {
                         }}
                         placeholder="0000 0000 0000 0000"
                         className={`w-full px-4 py-3 pr-20 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm tracking-widest ${errors.cardNumber ? 'border-red-400 bg-red-50' : 'border-gray-200'}`} />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">VISA · MC</div>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">VISA ï¿½ MC</div>
                     </div>
                     {errors.cardNumber && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.cardNumber}</p>}
                   </div>
@@ -432,7 +432,7 @@ const VendorWithdraw: React.FC = () => {
                       <div className="relative">
                         <input type={showCVV ? 'text' : 'password'} value={fields.cvv || ''}
                           onChange={e => setField('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
-                          placeholder="•••"
+                          placeholder="ï¿½ï¿½ï¿½"
                           className={`w-full px-4 py-3 pr-10 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm ${errors.cvv ? 'border-red-400 bg-red-50' : 'border-gray-200'}`} />
                         <button type="button" onClick={() => setShowCVV(!showCVV)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -492,7 +492,7 @@ const VendorWithdraw: React.FC = () => {
                   </div>
                   <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-start gap-2">
                     <Building2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-emerald-800">Bank transfers process in 24–48 hours. A flat fee of <strong>500 XAF</strong> applies.</p>
+                    <p className="text-xs text-emerald-800">Bank transfers process in 24ï¿½48 hours. A flat fee of <strong>500 XAF</strong> applies.</p>
                   </div>
                 </>
               )}
@@ -506,7 +506,7 @@ const VendorWithdraw: React.FC = () => {
           </>
         )}
 
-        {/* STEP 3 — CONFIRM */}
+        {/* STEP 3 ï¿½ CONFIRM */}
         {step === 'confirm' && cfg && (
           <>
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -523,7 +523,7 @@ const VendorWithdraw: React.FC = () => {
                   { label: 'Processing Fee', value: computeFee(), color: 'text-orange-600' },
                   { label: 'You Will Receive', value: formatXAF(computeReceive()), bold: true, color: 'text-green-700 text-lg' },
                   { label: 'Payment Method', value: cfg.label },
-                  { label: 'To', value: fields.phone ? `+237 ${fields.phone}` : fields.accountName || fields.cardName || '—' },
+                  { label: 'To', value: fields.phone ? `+237 ${fields.phone}` : fields.accountName || fields.cardName || 'ï¿½' },
                   ...(fields.bankName ? [{ label: 'Bank', value: fields.bankName }] : []),
                   { label: 'Processing Time', value: cfg.time, color: 'text-teal-600' },
                 ].map((row, i) => (
@@ -554,7 +554,7 @@ const VendorWithdraw: React.FC = () => {
           </>
         )}
 
-        {/* STEP 4 — SUCCESS */}
+        {/* STEP 4 ï¿½ SUCCESS */}
         {step === 'success' && cfg && (
           <div className="text-center py-8">
             <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
@@ -607,6 +607,7 @@ const VendorWithdraw: React.FC = () => {
 };
 
 export default VendorWithdraw;
+
 
 
 

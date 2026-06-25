@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/vendor/AnalyticsPro.tsx
- * Bambeh Marketplace — Vendor Analytics Pro Page
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Analytics Pro Page
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
@@ -54,6 +54,7 @@ const AnalyticsPro: React.FC = () => {
 };
 
 export default AnalyticsPro;
+
 
 
 

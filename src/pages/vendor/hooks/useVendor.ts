@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/vendor/hooks/useVendor.ts
- * Bambeh Marketplace — Vendor Data Hook
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Data Hook
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -119,3 +119,4 @@ export function useVendor(userId: string): UseVendorState & UseVendorActions {
 }
 
 export default useVendor;
+

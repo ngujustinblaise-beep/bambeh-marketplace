@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
  * WORLD-CLASS REWRITE — Production Grade, Military Security, Full i18n
@@ -697,5 +697,6 @@ export default function ServiceDetails() {
     </div>
   );
 }
+
 
 

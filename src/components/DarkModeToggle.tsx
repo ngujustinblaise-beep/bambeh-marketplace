@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * DARK MODE TOGGLE - THEME SWITCHER COMPONENT
  * ═══════════════════════════════════════════════════════════════════════════
@@ -275,5 +275,6 @@ export const BrightnessControl: React.FC = () => {
 };
 
 export default DarkModeToggle;
+
 
 

@@ -1,4 +1,4 @@
-import React from 'react';
+ï»¿import React from 'react';
 import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -119,7 +119,7 @@ export default function Notifications() {
       {/* Content */}
       {loading ? (
         <div style={{ padding: 60, textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.7)' }}>Loading notifications…</div>
+          <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.7)' }}>Loading notificationsï¿½</div>
         </div>
       ) : notifications.length === 0 ? (
         <div style={{ padding: 80, textAlign: 'center' }}>
@@ -139,6 +139,7 @@ export default function Notifications() {
     </div>
   );
 }
+
 
 
 

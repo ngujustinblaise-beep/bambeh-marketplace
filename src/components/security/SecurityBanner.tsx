@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SECURITY BANNER COMPONENT
  * FILE LOCATION: src/components/security/SecurityBanner.tsx
  */
@@ -51,6 +51,7 @@ const SecurityBanner = () => {
 };
 
 export default SecurityBanner;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/PhoneInput.tsx
  * Bambeh Marketplace — Phone Number Input
  *
@@ -280,5 +280,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 };
 
 export default PhoneInput;
+
 
 

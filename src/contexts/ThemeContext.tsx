@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * THEME CONTEXT - DARK MODE & BRIGHTNESS CONTROL
  * ═══════════════════════════════════════════════════════════════════════════
@@ -249,6 +249,7 @@ export const useTheme = (): ThemeContextType => {
 };
 
 export default ThemeContext;
+
 
 
 

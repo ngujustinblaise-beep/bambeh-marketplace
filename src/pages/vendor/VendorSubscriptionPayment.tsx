@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR SUBSCRIPTION PAYMENT PAGE
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -485,6 +485,7 @@ Support: support@bambeh.cm
 };
 
 export default VendorSubscriptionPayment;
+
 
 
 

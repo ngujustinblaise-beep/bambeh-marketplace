@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VOICE ASSISTANT CUSTOM HOOKS
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VOICE ASSISTANT CUSTOM HOOKS
  * Version: 1.0.0
  */
 
@@ -165,3 +165,4 @@ export const useVoiceStats = () => {
 
   return { stats, isLoading, refreshStats: loadStats };
 };
+

@@ -1,4 +1,4 @@
-export interface AuthUser {
+﻿export interface AuthUser {
   id: string;
   email: string;
   username?: string;
@@ -12,3 +12,4 @@ export interface AuthUser {
   phoneNumber?: string;
   createdAt?: string;
 }
+

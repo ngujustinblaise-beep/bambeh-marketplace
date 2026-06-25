@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NOTIFICATIONS CONTEXT
  * Manages notifications throughout the app
  */
@@ -110,6 +110,7 @@ export function useNotifications() {
 }
 
 export default NotificationsContext;
+
 
 
 

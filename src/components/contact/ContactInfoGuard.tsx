@@ -1,5 +1,5 @@
-/**
- * CONTACT INFO GUARD — Hide phone/email until 2 chats exchanged.
+ï»¿/**
+ * CONTACT INFO GUARD ï¿½ Hide phone/email until 2 chats exchanged.
  * FILE LOCATION: src/components/contact/ContactInfoGuard.tsx
  */
 
@@ -141,6 +141,7 @@ export function getChatCount(userId1: string, userId2: string): number {
   const chat = JSON.parse(chatHistoryStr).find((c: ChatHistory) => (c.userId1 === userId1 && c.userId2 === userId2) || (c.userId2 === userId1 && c.userId1 === userId2));
   return chat ? chat.messageCount : 0;
 }
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BAMBÉ MARKETPLACE - CONVERSATION LIST COMPONENT
  * Version: 1.0.0
  */
@@ -152,5 +152,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
 };
 
 export default ConversationList;
+
 
 

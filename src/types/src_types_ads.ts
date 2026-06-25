@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/types/src_types_ads.ts
- * Bambeh Marketplace — Advertisement & Promotion Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Advertisement & Promotion Types
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // --- Ad Status ----------------------------------------------------------------
@@ -21,7 +21,7 @@ export type AdType = "image" | "video" | "text" | "sponsored_listing";
 
 // --- Ad Target Audience ------------------------------------------------------
 export interface AdTargetAudience {
-  regions?: string[];          // e.g. ["Yaoundé", "Douala"]
+  regions?: string[];          // e.g. ["Yaoundï¿½", "Douala"]
   languages?: string[];        // e.g. ["fr", "en"]
   categories?: string[];
   minAge?: number;
@@ -32,7 +32,7 @@ export interface AdTargetAudience {
 export interface AdMetrics {
   impressions: number;
   clicks: number;
-  ctr: number;                 // click-through rate (0–1)
+  ctr: number;                 // click-through rate (0ï¿½1)
   conversions: number;
   spend: number;               // XAF
   reach: number;
@@ -156,3 +156,4 @@ export interface AdSlotConfig {
   supportedTypes: AdType[];
   isActive: boolean;
 }
+

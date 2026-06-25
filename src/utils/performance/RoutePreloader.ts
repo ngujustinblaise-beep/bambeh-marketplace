@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/performance/RoutePreloader.ts
- * Bambeh Marketplace — Route Preloading for Low-Latency Navigation
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Route Preloading for Low-Latency Navigation
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -45,7 +45,7 @@ export async function preloadRoute(route: RouteModule): Promise<PreloadResult> {
     const durationMs = performance.now() - start;
     const error = err instanceof Error ? err.message : String(err);
 
-    logger.warn(`[RoutePreloader] Failed: ${route.path} — ${error}`);
+    logger.warn(`[RoutePreloader] Failed: ${route.path} ï¿½ ${error}`);
 
     return { path: route.path, success: false, durationMs, error };
   }
@@ -172,3 +172,4 @@ export const BAMBEH_CORE_ROUTES: RouteModule[] = [
     priority: "low",
   },
 ];
+

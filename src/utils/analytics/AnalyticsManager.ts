@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/analytics/AnalyticsManager.ts
- * Bambeh Marketplace — Analytics Manager + singleton
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Analytics Manager + singleton
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -165,3 +165,4 @@ export function trackPurchase(orderId: string, amountXAF: number, items: Array<{
 
 export function getCurrentSessionId(): string { return analyticsManager.getCurrentSessionId(); }
 export function getCurrentUserId(): string | null { return analyticsManager.getCurrentUserId(); }
+

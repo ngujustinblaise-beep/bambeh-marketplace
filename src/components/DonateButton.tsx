@@ -1,10 +1,10 @@
-/**
+ï»¿/**
  * src/components/DonateButton.tsx
- * Bambeh Marketplace — Donate / Support Button
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Donate / Support Button
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * Export:
- *   DonateButton — a floating or inline button that navigates to /donate
+ *   DonateButton ï¿½ a floating or inline button that navigates to /donate
  *
  * Usage:
  *   import { DonateButton } from "@/components/DonateButton";
@@ -60,6 +60,7 @@ export function DonateButton({
 }
 
 export default DonateButton;
+
 
 
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+﻿import { supabase } from '@/lib/supabase';
 import { startChat } from '@/pages/Chat';
 
 export type BookingType = 'visit' | 'test_ride' | 'service';

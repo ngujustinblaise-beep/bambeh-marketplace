@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
  * ADD RENTAL FORM COMPONENT
  *
@@ -289,7 +289,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
             <Input id="bathrooms" type="number" {...register('bathrooms', { valueAsNumber: true })} placeholder="0" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="squareMeters"><Maximize className="w-4 h-4 inline mr-2" />Size (m²)</Label>
+            <Label htmlFor="squareMeters"><Maximize className="w-4 h-4 inline mr-2" />Size (mï¿½)</Label>
             <Input id="squareMeters" type="number" {...register('squareMeters', { valueAsNumber: true })} placeholder="0" />
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
           {keywords.map((keyword, index) => (
             <span key={index} className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm flex items-center gap-2">
               {keyword}
-              <button type="button" onClick={() => removeKeyword(index)} className="hover:text-teal-600">×</button>
+              <button type="button" onClick={() => removeKeyword(index)} className="hover:text-teal-600">ï¿½</button>
             </span>
           ))}
         </div>
@@ -393,6 +393,7 @@ export default function AddRentalForm({ onSuccess, onCancel }: AddRentalFormProp
     </form>
   );
 }
+
 
 
 

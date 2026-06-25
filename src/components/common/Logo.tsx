@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * LOGO COMPONENT
  * FILE LOCATION: src/components/common/Logo.tsx
  */
@@ -35,7 +35,7 @@ const Logo: React.FC<LogoProps> = ({
       <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent" />
       <div className="relative w-full h-full flex items-center justify-center">
         <span className={`${s.logoText} font-black text-white drop-shadow-lg`} style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
-          Bambé
+          Bambï¿½
         </span>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent" />
@@ -54,7 +54,7 @@ const Logo: React.FC<LogoProps> = ({
     return (
       <Link to={linkTo} className={`flex flex-col ${className}`}>
         <span className={`${s.text} font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent`} style={{ fontFamily: 'system-ui,-apple-system,sans-serif' }}>
-          Bambé
+          Bambï¿½
         </span>
         {showTagline && <span className={`${s.tagline} text-gray-600 dark:text-gray-400 -mt-1`}>Marketplace & Services</span>}
       </Link>
@@ -66,7 +66,7 @@ const Logo: React.FC<LogoProps> = ({
       <GlossyTurquoiseLogo />
       <div className="flex flex-col">
         <span className={`${s.text} font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent leading-tight`} style={{ fontFamily: 'system-ui,-apple-system,sans-serif' }}>
-          Bambé
+          Bambï¿½
         </span>
         {showTagline && <span className={`${s.tagline} text-gray-600 dark:text-gray-400 -mt-0.5`}>Marketplace & Services</span>}
       </div>
@@ -75,6 +75,7 @@ const Logo: React.FC<LogoProps> = ({
 };
 
 export default Logo;
+
 
 
 

@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/BambehStore.ts
- * Bambeh Marketplace — Global Zustand Store + Missing Exports
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Global Zustand Store + Missing Exports
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { create } from "zustand";
@@ -28,7 +28,7 @@ export interface NotificationItem {
 
 export type AppTheme = "light" | "dark" | "system";
 
-// --- UnifiedListing — used by useAllListings ----------------------------------
+// --- UnifiedListing ï¿½ used by useAllListings ----------------------------------
 export interface UnifiedListing {
   id: string;
   type: "marketplace" | "job" | "service" | "rental" | "vehicle" | "exchange";
@@ -43,7 +43,7 @@ export interface UnifiedListing {
   status: string;
 }
 
-// --- SearchResult — used by GlobalSearchBar / useAllListings -----------------
+// --- SearchResult ï¿½ used by GlobalSearchBar / useAllListings -----------------
 export interface SearchResult {
   id: string;
   type: string;
@@ -229,7 +229,7 @@ export const useIsAdmin = () => useBambehStore((s) => s.isAdmin);
 
 // --- Standalone utility functions expected by consumer files -----------------
 
-/** Load all listings into store — used by useAllListings.ts */
+/** Load all listings into store ï¿½ used by useAllListings.ts */
 export async function loadAllListings(): Promise<UnifiedListing[]> {
   try {
     const { supabase } = await import("@/lib/supabase");
@@ -258,7 +258,7 @@ export async function loadAllListings(): Promise<UnifiedListing[]> {
   }
 }
 
-/** Search listings — used by useAllListings.ts */
+/** Search listings ï¿½ used by useAllListings.ts */
 export function searchListings(query: string, listings?: UnifiedListing[]): SearchResult[] {
   const source = listings ?? useBambehStore.getState().allListings;
   if (!query.trim()) return source.map((l) => ({ ...l, relevanceScore: 1 }));
@@ -272,7 +272,7 @@ export function searchListings(query: string, listings?: UnifiedListing[]): Sear
     .sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
 }
 
-/** Record ad view — used by GlobalSearchBar */
+/** Record ad view ï¿½ used by GlobalSearchBar */
 export async function recordAdView(adId: string, userId?: string): Promise<void> {
   try {
     const { supabase } = await import("@/lib/supabase");
@@ -286,8 +286,9 @@ export async function recordAdView(adId: string, userId?: string): Promise<void>
   }
 }
 
-/** Check if current user is subscribed — used by SubscriptionGate */
+/** Check if current user is subscribed ï¿½ used by SubscriptionGate */
 export function isCurrentUserSubscribed(): boolean {
   const tier = useBambehStore.getState().subscriptionTier;
   return tier !== "free" && tier !== "";
 }
+

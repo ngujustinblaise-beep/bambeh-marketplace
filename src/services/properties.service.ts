@@ -1,16 +1,16 @@
-/**
+ï»¿/**
  * src/services/properties.service.ts
- * Bambeh Marketplace — Properties / Rentals Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Properties / Rentals Service
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * --- FIX (June 2026) ----------------------------------------------------------
- * Previous version queried a "properties" table — does NOT exist in Supabase.
+ * Previous version queried a "properties" table ï¿½ does NOT exist in Supabase.
  * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
  * All functions now query: supabase.from("listings").eq("type", "rental")
  *
  * Column mapping (listings table ? Property type):
  *   listings.id               ? id
- *   listings.user_id          ? landlordId       (NOT landlord_id — doesn't exist)
+ *   listings.user_id          ? landlordId       (NOT landlord_id ï¿½ doesn't exist)
  *   listings.title            ? title
  *   listings.description      ? description
  *   listings.price            ? priceXAF
@@ -35,7 +35,7 @@
 import { supabase } from "@/lib/supabase";
 import type { ItemFilters, PaginatedItemsResponse } from "@/types/src_types_items";
 
-// --- Types (unchanged — callers don't need to update) -------------------------
+// --- Types (unchanged ï¿½ callers don't need to update) -------------------------
 export type PropertyType =
   | "apartment" | "house" | "studio" | "villa"
   | "office" | "land" | "commercial" | "warehouse" | "room";
@@ -349,3 +349,4 @@ export async function incrementPropertyView(id: string): Promise<void> {
     // Non-critical
   }
 }
+

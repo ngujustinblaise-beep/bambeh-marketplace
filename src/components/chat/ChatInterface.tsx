@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import type { Chat, ChatMessage } from "@/types/chat";
 import type { AuthUser } from "@/types/auth";
@@ -68,6 +68,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ chat, currentUser, onSend
 };
 
 export default ChatInterface;
+
 
 
 

@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/services/cart.service.ts
- * Bambeh Marketplace — Cart Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Cart Service
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
@@ -221,3 +221,4 @@ export async function getCartCount(userId: string): Promise<number> {
     return 0;
   }
 }
+

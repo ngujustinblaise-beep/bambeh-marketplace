@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { User } from "lucide-react";
 import { useLang } from "@/hooks/useAppLang";
 
@@ -133,3 +133,4 @@ export default function ProfileSetup() {
     </div>
   );
 }
+

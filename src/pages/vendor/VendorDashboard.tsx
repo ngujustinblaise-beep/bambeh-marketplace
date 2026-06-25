@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -9,7 +9,7 @@ const VendorDashboard: React.FC = () => {
     { label: "Total Sales",     value: "0 XAF", icon: "??", color: "text-green-600"  },
     { label: "Active Listings", value: "0",     icon: "??", color: "text-blue-600"   },
     { label: "Pending Orders",  value: "0",     icon: "?", color: "text-yellow-600" },
-    { label: "Rating",          value: "—",     icon: "?", color: "text-teal-600"   },
+    { label: "Rating",          value: "ï¿½",     icon: "?", color: "text-teal-600"   },
   ];
   const links = [
     { label: "Add Listing",  path: "/marketplace/sell",        icon: "?" },
@@ -49,6 +49,7 @@ const VendorDashboard: React.FC = () => {
   );
 };
 export default VendorDashboard;
+
 
 
 

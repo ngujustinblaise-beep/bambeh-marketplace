@@ -1,8 +1,8 @@
-/**
+ï»¿/**
  * RouteErrorBoundary.tsx
  * Path: src/components/app/RouteErrorBoundary.tsx
  * ---------------------------------------------------------------------------
- * Per-route error boundary — catches JS crashes in a single page/route
+ * Per-route error boundary ï¿½ catches JS crashes in a single page/route
  * and shows a friendly "Something went wrong" UI instead of a blank screen.
  *
  * Already referenced in App.tsx:
@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 
 // --- Types -------------------------------------------------------------------
 interface Props {
-  /** Human-readable name for this route — shown in the error UI */
+  /** Human-readable name for this route ï¿½ shown in the error UI */
   routeName?: string;
   children: React.ReactNode;
 }
@@ -136,6 +136,7 @@ export class RouteErrorBoundary extends React.Component<Props, State> {
 }
 
 export default RouteErrorBoundary;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VENDOR SETTINGS - STORE SETTINGS
  * Sub-page for managing store branding, categories, and SEO
  * FILE LOCATION: src/pages/vendor/settings/VendorSettingsStore.tsx
@@ -463,6 +463,7 @@ export default function VendorSettingsStore() {
     </div>
   );
 }
+
 
 
 

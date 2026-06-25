@@ -1,10 +1,10 @@
-/**
+ï»¿/**
  * src/services/services.service.ts
- * Bambeh Marketplace — Service Listings Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Service Listings Service
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * --- FIX (June 2026) ----------------------------------------------------------
- * Previous version queried "service_listings" table — does NOT exist in Supabase.
+ * Previous version queried "service_listings" table ï¿½ does NOT exist in Supabase.
  * Bambeh uses ONE "listings" table for ALL content types, with a "type" column.
  * All functions now query: supabase.from("listings").eq("type", "service")
  *
@@ -301,3 +301,4 @@ export async function incrementServiceView(id: string): Promise<void> {
     // Non-critical
   }
 }
+

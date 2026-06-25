@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PrivacyPolicy.tsx — Bambeh Marketplace
  * ---------------------------------------------------------------------------
  * Play Store / App Store compliant — June 2026
@@ -404,3 +404,4 @@ const PrivacyPolicy: React.FC = () => {
 };
 
 export default PrivacyPolicy;
+

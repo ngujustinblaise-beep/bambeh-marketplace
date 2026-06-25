@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BAMBÉ MARKETPLACE - PRODUCT MANAGEMENT COMPONENT
  * Version: 1.0.0
  */
@@ -387,5 +387,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ vendorId, product, onClose,
 };
 
 export default ProductManagement;
+
 
 

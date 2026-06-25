@@ -1,17 +1,17 @@
-/**
- * src/services/marketplace.service.ts — Bambeh Marketplace
+ï»¿/**
+ * src/services/marketplace.service.ts ï¿½ Bambeh Marketplace
  *
- * REWRITE — June 2026
+ * REWRITE ï¿½ June 2026
  *
  * FIXES:
- *  ? Uses `listings` table (canonical — consistent with Marketplace.tsx and MarketplaceItemDetails.tsx)
+ *  ? Uses `listings` table (canonical ï¿½ consistent with Marketplace.tsx and MarketplaceItemDetails.tsx)
  *  ? increment_view_count RPC passes table_name + record_id
  *  ? All CRUD operations use seller_id (not user_id / vendor_id)
  *  ? No reference to removed marketplace_items table
  *  ? Expiry: listings expire 30 days after creation (stored in expires_at)
  *  ? Expiry reminders: getExpiringListings() helper for push notification service
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * ï¿½ 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
@@ -194,7 +194,7 @@ export async function getSellerListings(sellerId: string): Promise<PaginatedResp
 }
 
 /**
- * Get listings that expire within `withinDays` days — used to send expiry reminders.
+ * Get listings that expire within `withinDays` days ï¿½ used to send expiry reminders.
  */
 export async function getExpiringListings(
   sellerId: string,
@@ -362,7 +362,7 @@ export async function renewListing(id: string, sellerId: string): Promise<Servic
  * Increment view_count for a listing.
  *
  * IMPORTANT: The RPC must receive BOTH `table_name` and `record_id`.
- * The previous version only passed `record_id` — this caused the RPC to fail
+ * The previous version only passed `record_id` ï¿½ this caused the RPC to fail
  * silently on some Supabase configurations (and loudly crash on others).
  *
  * Required Supabase SQL function:
@@ -381,7 +381,7 @@ export async function incrementViewCount(id: string): Promise<void> {
       table_name: "listings",
       record_id: id,
     });
-  } catch { /* non-critical — view counts are best-effort */ }
+  } catch { /* non-critical ï¿½ view counts are best-effort */ }
 }
 
 // --- Re-export for backwards compatibility -------------------------------------
@@ -395,3 +395,4 @@ export const createMarketplaceItem = createListing;
 export const updateMarketplaceItem = updateListing;
 export const deleteMarketplaceItem = deleteListing;
 export const markItemAsSold = markAsSold;
+

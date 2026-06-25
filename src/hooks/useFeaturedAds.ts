@@ -1,10 +1,10 @@
-/**
- * src/hooks/useFeaturedAds.ts — Bambeh Marketplace
- * © 2026 BAMBEH SARL. All rights reserved.
+ï»¿/**
+ * src/hooks/useFeaturedAds.ts ï¿½ Bambeh Marketplace
+ * ï¿½ 2026 BAMBEH SARL. All rights reserved.
  *
  * Provides featured ads data to FeaturedAdsStrip with:
- *  ? Correct realtime: .on() BEFORE .subscribe() — no "after subscribe()" crash
- *  ? Unique channel name per mount — no channel collision across page re-renders
+ *  ? Correct realtime: .on() BEFORE .subscribe() ï¿½ no "after subscribe()" crash
+ *  ? Unique channel name per mount ï¿½ no channel collision across page re-renders
  *  ? Full cleanup on unmount
  *  ? Pagination + auto-rotation every rotationMs
  *  ? Search filtering
@@ -74,7 +74,7 @@ export function resolveLocalizedText(
 function mapRow(row: Record<string, any>): FeaturedAd {
   const extra = (row.extra ?? {}) as Record<string, any>;
 
-  // Resolve category — map from listings.type if needed
+  // Resolve category ï¿½ map from listings.type if needed
   let cat: AdCategory = "general";
   const rawCat = (row.category ?? row.type ?? "general") as string;
   const catMap: Record<string, AdCategory> = {
@@ -118,7 +118,7 @@ function mapRow(row: Record<string, any>): FeaturedAd {
 function makeTimeAgoLabel(lang: string) {
   return function timeAgoLabel(dateStr: string): string {
     const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60_000); // minutes
-    if (diff < 1)  return lang === "fr" ? "À l'instant" : lang === "ar" ? "????" : "Just now";
+    if (diff < 1)  return lang === "fr" ? "ï¿½ l'instant" : lang === "ar" ? "????" : "Just now";
     if (diff < 60) return lang === "fr" ? `Il y a ${diff}min` : lang === "ar" ? `??? ${diff} ?????` : `${diff}m ago`;
     const h = Math.floor(diff / 60);
     if (h < 24)    return lang === "fr" ? `Il y a ${h}h` : lang === "ar" ? `??? ${h} ????` : `${h}h ago`;
@@ -201,11 +201,11 @@ export function useFeaturedAds({
     mountedRef.current = true;
     void fetchAds();
 
-    // Unique channel name per mount — prevents "after subscribe()" crash
+    // Unique channel name per mount ï¿½ prevents "after subscribe()" crash
     const channelName = `featured_ads_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const ch = supabase.channel(channelName);
 
-    // ? .on() BEFORE .subscribe() — this is the rule Supabase enforces
+    // ? .on() BEFORE .subscribe() ï¿½ this is the rule Supabase enforces
     ch.on(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       "postgres_changes" as any,
@@ -217,7 +217,7 @@ export function useFeaturedAds({
 
     ch.subscribe((status) => {
       if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-        console.warn("[useFeaturedAds] Realtime:", status, "— will retry on next fetch");
+        console.warn("[useFeaturedAds] Realtime:", status, "ï¿½ will retry on next fetch");
       }
     });
 
@@ -275,3 +275,4 @@ export function useFeaturedAds({
     refetch:      () => void fetchAds(),
   };
 }
+

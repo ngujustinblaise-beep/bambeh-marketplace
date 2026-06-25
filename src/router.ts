@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * BAMBEH ROUTER — Singleton Navigation Module
  * ═══════════════════════════════════════════════════════════════════════════
@@ -161,3 +161,4 @@ export function goToSubscription(): void {
 //   const { default: navigate } = await import('@/router')
 // The default export must therefore be the navigate function itself.
 export default navigate;
+

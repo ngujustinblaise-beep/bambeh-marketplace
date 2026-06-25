@@ -1,4 +1,4 @@
-// src/services/favorites.service.ts
+﻿// src/services/favorites.service.ts
 import axios from "axios";
 import {
   API_CONFIG,
@@ -180,3 +180,4 @@ export const toggleFavorite = async (
     throw new Error(formatErrorMessage(error, "Failed to toggle favorite"));
   }
 };
+

@@ -1,5 +1,5 @@
-/**
- * src/data/sampleData.ts — Bambeh Marketplace
+ï»¿/**
+ * src/data/sampleData.ts ï¿½ Bambeh Marketplace
  *
  * UPGRADED:
  *  ? All items have real Unsplash images (free to use)
@@ -16,7 +16,7 @@ export const SAMPLE_MARKETPLACE = [
     title: 'Samsung Galaxy S23 Ultra 256GB',
     price: 450000,
     priceXAF: 450000,
-    location: 'Bastos, Yaoundé',
+    location: 'Bastos, Yaoundï¿½',
     condition: 'Like New',
     category: 'Electronics',
     sellerName: 'TechZone CM',
@@ -43,7 +43,7 @@ export const SAMPLE_MARKETPLACE = [
   },
   {
     id: 'market3',
-    title: 'MacBook Pro 14" M2 — 16GB RAM',
+    title: 'MacBook Pro 14" M2 ï¿½ 16GB RAM',
     price: 950000,
     priceXAF: 950000,
     location: 'Bonanjo, Douala',
@@ -61,22 +61,22 @@ export const SAMPLE_MARKETPLACE = [
     title: 'Leather Executive Sofa Set (3+1+1)',
     price: 380000,
     priceXAF: 380000,
-    location: 'Nkolndongo, Yaoundé',
+    location: 'Nkolndongo, Yaoundï¿½',
     condition: 'Good',
     category: 'Furniture',
     sellerName: 'LuxHome CM',
     sellerId: 'demo-seller-4',
     images: ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80'],
-    description: 'Premium brown leather sofa set (3-seater + 2 armchairs). Minor wear on armrests. Moving abroad — must sell. Can arrange delivery in Yaoundé.',
+    description: 'Premium brown leather sofa set (3-seater + 2 armchairs). Minor wear on armrests. Moving abroad ï¿½ must sell. Can arrange delivery in Yaoundï¿½.',
     posted: '5 days ago',
     negotiable: true,
   },
   {
     id: 'market5',
-    title: 'Adidas Ultraboost 23 — Size 43',
+    title: 'Adidas Ultraboost 23 ï¿½ Size 43',
     price: 65000,
     priceXAF: 65000,
-    location: 'Biyem-Assi, Yaoundé',
+    location: 'Biyem-Assi, Yaoundï¿½',
     condition: 'New',
     category: 'Fashion',
     sellerName: 'SneakerHub CM',
@@ -106,7 +106,7 @@ export const SAMPLE_MARKETPLACE = [
     title: 'DJI Mini 3 Pro Drone',
     price: 420000,
     priceXAF: 420000,
-    location: 'Centre, Yaoundé',
+    location: 'Centre, Yaoundï¿½',
     condition: 'Good',
     category: 'Electronics',
     sellerName: 'DroneZone CM',
@@ -140,7 +140,7 @@ export const SAMPLE_JOBS = [
     id: 'job1',
     title: 'Senior Android Developer',
     company: 'Tech Cameroon Ltd',
-    location: 'Yaoundé, Centre',
+    location: 'Yaoundï¿½, Centre',
     salary: '800,000 XAF/month',
     type: 'Full-time',
     description: 'Looking for experienced Android developer to build and maintain mobile applications. Kotlin required, 3+ years experience.',
@@ -149,10 +149,10 @@ export const SAMPLE_JOBS = [
   },
   {
     id: 'job2',
-    title: 'Sales Manager — West Region',
+    title: 'Sales Manager ï¿½ West Region',
     company: 'BAMBEH SARL',
     location: 'Bafoussam, West',
-    salary: '500,000 – 700,000 XAF/month',
+    salary: '500,000 ï¿½ 700,000 XAF/month',
     type: 'Full-time',
     description: 'Lead a team of 8 sales reps across the West Region. Proven sales track record required. Company car included.',
     posted: '1 week ago',
@@ -182,7 +182,7 @@ export const SAMPLE_JOBS = [
   },
   {
     id: 'job5',
-    title: 'Head Chef — French Cuisine',
+    title: 'Head Chef ï¿½ French Cuisine',
     company: 'Restaurant Saveur',
     location: 'Bonapriso, Douala',
     salary: '350,000 XAF/month',
@@ -193,7 +193,7 @@ export const SAMPLE_JOBS = [
   },
   {
     id: 'job6',
-    title: 'Civil Engineer — Road Construction',
+    title: 'Civil Engineer ï¿½ Road Construction',
     company: 'Build Cameroun SA',
     location: 'Bertoua, East',
     salary: '750,000 XAF/month',
@@ -212,11 +212,11 @@ export const SAMPLE_SERVICES = [
     title: 'Professional Garden & Landscaping',
     provider: 'GreenThumb CM',
     price: '50,000 XAF/session',
-    location: 'Yaoundé',
+    location: 'Yaoundï¿½',
     rating: 4.8,
     reviews: 24,
     image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80',
-    description: 'Complete garden maintenance, pruning, lawn care, and landscape design. Serving all Yaoundé neighbourhoods.',
+    description: 'Complete garden maintenance, pruning, lawn care, and landscape design. Serving all Yaoundï¿½ neighbourhoods.',
   },
   {
     id: 'service2',
@@ -234,7 +234,7 @@ export const SAMPLE_SERVICES = [
     title: 'Professional Event Photography',
     provider: 'LensArt Cameroon',
     price: '150,000 XAF/day',
-    location: 'Yaoundé & Douala',
+    location: 'Yaoundï¿½ & Douala',
     rating: 5.0,
     reviews: 38,
     image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=400&q=80',
@@ -253,10 +253,10 @@ export const SAMPLE_SERVICES = [
   },
   {
     id: 'service5',
-    title: 'Legal Consultation — Business Law',
+    title: 'Legal Consultation ï¿½ Business Law',
     provider: 'Me. Nguele Law',
     price: '35,000 XAF/hr',
-    location: 'Yaoundé',
+    location: 'Yaoundï¿½',
     rating: 4.9,
     reviews: 17,
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80',
@@ -264,14 +264,14 @@ export const SAMPLE_SERVICES = [
   },
   {
     id: 'service6',
-    title: 'Catering — African & Continental',
+    title: 'Catering ï¿½ African & Continental',
     provider: 'Saveur Cameroun',
     price: 'From 80,000 XAF',
-    location: 'Yaoundé & Douala',
+    location: 'Yaoundï¿½ & Douala',
     rating: 4.8,
     reviews: 29,
     image: 'https://images.unsplash.com/photo-1555244162-803834f70033?w=400&q=80',
-    description: 'Full-service catering for weddings, corporate events, and private parties. Ndolé, Koki, Continental, and fusion menus.',
+    description: 'Full-service catering for weddings, corporate events, and private parties. Ndolï¿½, Koki, Continental, and fusion menus.',
   },
 ];
 
@@ -283,7 +283,7 @@ export const SAMPLE_RENTALS = [
     title: 'Modern 3-Bedroom Apartment',
     price: 150000,
     priceXAF: 150000,
-    location: 'Bastos, Yaoundé',
+    location: 'Bastos, Yaoundï¿½',
     bedrooms: 3,
     bathrooms: 2,
     area: 120,
@@ -306,10 +306,10 @@ export const SAMPLE_RENTALS = [
   },
   {
     id: 'rental3',
-    title: 'Studio Apartment — Central Location',
+    title: 'Studio Apartment ï¿½ Central Location',
     price: 60000,
     priceXAF: 60000,
-    location: 'Ngousso, Yaoundé',
+    location: 'Ngousso, Yaoundï¿½',
     bedrooms: 1,
     bathrooms: 1,
     area: 35,
@@ -319,7 +319,7 @@ export const SAMPLE_RENTALS = [
   },
   {
     id: 'rental4',
-    title: 'Commercial Office Space 200m²',
+    title: 'Commercial Office Space 200mï¿½',
     price: 350000,
     priceXAF: 350000,
     location: 'Akwa, Douala',
@@ -340,7 +340,7 @@ export const SAMPLE_VEHICLES = [
     title: 'Toyota Corolla 2018 Automatic',
     price: 5500000,
     priceXAF: 5500000,
-    location: 'Yaoundé',
+    location: 'Yaoundï¿½',
     mileage: '45,000 km',
     transmission: 'Automatic',
     fuelType: 'Petrol',
@@ -385,7 +385,7 @@ export const SAMPLE_VEHICLES = [
     title: 'Mitsubishi L200 Pickup 4x4 2020',
     price: 12000000,
     priceXAF: 12000000,
-    location: 'Ngaoundéré, Adamaoua',
+    location: 'Ngaoundï¿½rï¿½, Adamaoua',
     mileage: '38,000 km',
     transmission: 'Manual',
     fuelType: 'Diesel',
@@ -402,7 +402,7 @@ export const SAMPLE_VEHICLES = [
 export const SAMPLE_FLASH_DEALS = [
   {
     id: 'deal1',
-    title: 'iPhone 15 Pro 128GB — Open Box',
+    title: 'iPhone 15 Pro 128GB ï¿½ Open Box',
     originalPrice: 750000,
     dealPrice: 480000,
     image: 'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&q=80',
@@ -435,7 +435,7 @@ export const SAMPLE_FLASH_DEALS = [
   },
 ];
 
-// --- Farm Fresh (supplementary — FarmFreshPage has its own) ------------------
+// --- Farm Fresh (supplementary ï¿½ FarmFreshPage has its own) ------------------
 
 export const SAMPLE_FARM_FRESH = [
   {
@@ -456,7 +456,7 @@ export const SAMPLE_FARM_FRESH = [
     priceXAF: 1500,
     unit: 'bunch',
     category: 'Fruits',
-    location: 'Yaoundé',
+    location: 'Yaoundï¿½',
     is_organic: false,
     image_url: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80',
   },
@@ -478,7 +478,7 @@ export const SAMPLE_FARM_FRESH = [
     priceXAF: 1200,
     unit: 'kg',
     category: 'Legumes',
-    location: 'Ngaoundéré',
+    location: 'Ngaoundï¿½rï¿½',
     is_organic: false,
     image_url: 'https://images.unsplash.com/photo-1573236739261-8bae1a8ber1c?w=400&q=80',
   },
@@ -495,7 +495,7 @@ export const SAMPLE_FARM_FRESH = [
   },
   {
     id: 'farm6',
-    name: 'Pineapples — Farm Fresh',
+    name: 'Pineapples ï¿½ Farm Fresh',
     price: 600,
     priceXAF: 600,
     unit: 'piece',
@@ -505,3 +505,4 @@ export const SAMPLE_FARM_FRESH = [
     image_url: 'https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80',
   },
 ];
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * TEST DATA SEEDER - POPULATE SAMPLE DATA FOR SEARCH
  * ═══════════════════════════════════════════════════════════════════════════
@@ -512,4 +512,5 @@ export const hasTestData = (): boolean => {
 
 }
 export default { seedTestData, clearTestData, hasTestData };
+
 

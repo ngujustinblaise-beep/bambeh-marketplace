@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BAMBÉ MARKETPLACE - MESSAGE BUBBLE COMPONENT
  * Version: 1.0.0
  */
@@ -182,5 +182,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 };
 
 export default MessageBubble;
+
 
 

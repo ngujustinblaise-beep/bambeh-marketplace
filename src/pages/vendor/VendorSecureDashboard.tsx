@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR SECURE DASHBOARD - ENHANCED VERSION
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -297,6 +297,7 @@ export default function VendorSecureDashboard() {
     </div>
   );
 }
+
 
 
 

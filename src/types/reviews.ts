@@ -1,4 +1,4 @@
-export type StarRating = 1 | 2 | 3 | 4 | 5;
+﻿export type StarRating = 1 | 2 | 3 | 4 | 5;
 
 export interface ReviewFormData {
   rating: StarRating;
@@ -55,3 +55,4 @@ export interface ReviewWithResponse extends Review {
 }
 
 export type ReviewStatus = "all" | "replied" | "pending" | "flagged";
+

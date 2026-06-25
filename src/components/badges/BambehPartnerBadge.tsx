@@ -1,5 +1,5 @@
-/**
- * BambehPartnerBadge.tsx — Reusable partner badge display component.
+ï»¿/**
+ * BambehPartnerBadge.tsx ï¿½ Reusable partner badge display component.
  * Determines tier from transaction count + rating, renders the badge.
  */
 
@@ -169,6 +169,7 @@ export default function BambehPartnerBadge({
     </div>
   );
 }
+
 
 
 

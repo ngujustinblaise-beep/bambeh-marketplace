@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ï»¿import React, { useState } from "react";
 import { useNotchPay } from "@/hooks/useNotchPay";
 
 interface PaymentButtonProps {
@@ -41,13 +41,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         className={`bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white
           font-semibold px-5 py-2 rounded-xl transition-colors ${className}`}
       >
-        {isLoading ? "Processing…" : label}
+        {isLoading ? "Processingï¿½" : label}
       </button>
     </div>
   );
 };
 
 export default PaymentButton;
+
 
 
 

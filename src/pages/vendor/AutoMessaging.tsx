@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/vendor/AutoMessaging.tsx
- * Bambeh Marketplace — Vendor Auto-Messaging
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Auto-Messaging
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -19,15 +19,15 @@ interface AutoMessage {
 const TRIGGER_LABELS: Record<AutoMessage["trigger"], string> = {
   new_inquiry: "Nouvelle demande de contact",
   new_order: "Nouvelle commande",
-  order_shipped: "Commande expédiée",
-  order_delivered: "Commande livrée",
-  review_received: "Avis reçu",
+  order_shipped: "Commande expï¿½diï¿½e",
+  order_delivered: "Commande livrï¿½e",
+  review_received: "Avis reï¿½u",
 };
 
 const DEFAULT_MESSAGES: Omit<AutoMessage, "id">[] = [
-  { trigger: "new_inquiry", message: "Bonjour! Merci pour votre intérêt. Je vous réponds dans les plus brefs délais. — {{store_name}}", isActive: true },
-  { trigger: "new_order", message: "Bonjour {{customer_name}}, votre commande #{{order_id}} a bien été reçue. Nous la préparons dès maintenant!", isActive: true },
-  { trigger: "order_shipped", message: "Bonne nouvelle! Votre commande #{{order_id}} a été expédiée. Vous la recevrez bientôt.", isActive: true },
+  { trigger: "new_inquiry", message: "Bonjour! Merci pour votre intï¿½rï¿½t. Je vous rï¿½ponds dans les plus brefs dï¿½lais. ï¿½ {{store_name}}", isActive: true },
+  { trigger: "new_order", message: "Bonjour {{customer_name}}, votre commande #{{order_id}} a bien ï¿½tï¿½ reï¿½ue. Nous la prï¿½parons dï¿½s maintenant!", isActive: true },
+  { trigger: "order_shipped", message: "Bonne nouvelle! Votre commande #{{order_id}} a ï¿½tï¿½ expï¿½diï¿½e. Vous la recevrez bientï¿½t.", isActive: true },
 ];
 
 const AutoMessaging: React.FC = () => {
@@ -88,7 +88,7 @@ const AutoMessaging: React.FC = () => {
       {saved && (
         <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
           <CheckCircle className="w-4 h-4 text-green-500" />
-          <p className="text-sm text-green-700">Sauvegardé!</p>
+          <p className="text-sm text-green-700">Sauvegardï¿½!</p>
         </div>
       )}
 
@@ -124,7 +124,7 @@ const AutoMessaging: React.FC = () => {
               {messages.some((m) => m.id === editing.id) ? "Modifier" : "Nouveau"} message automatique
             </h3>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Déclencheur</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dï¿½clencheur</label>
               <select
                 value={editing.trigger}
                 onChange={(e) => setEditing({ ...editing, trigger: e.target.value as AutoMessage["trigger"] })}
@@ -160,6 +160,7 @@ const AutoMessaging: React.FC = () => {
 };
 
 export default AutoMessaging;
+
 
 
 

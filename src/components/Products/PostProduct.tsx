@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+ï»¿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Package, Upload, X, DollarSign, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -209,7 +209,7 @@ const PostProduct: React.FC = () => {
             const existingProducts = JSON.parse(localStorage.getItem('bambe-products') || '[]');
             localStorage.setItem('bambe-products', JSON.stringify([productListing, ...existingProducts]));
 
-            toast({ title: 'Product posted successfully!', description: 'Your product is now listed on Bambé' });
+            toast({ title: 'Product posted successfully!', description: 'Your product is now listed on Bambï¿½' });
             navigate('/products');
         } catch (error) {
             console.error('Error posting product:', error);
@@ -233,7 +233,7 @@ const PostProduct: React.FC = () => {
                         </Button>
                         <div>
                             <h1 className="text-xl font-bold">Post Product</h1>
-                            <p className="text-sm text-gray-600">Sell your products on Bambé</p>
+                            <p className="text-sm text-gray-600">Sell your products on Bambï¿½</p>
                         </div>
                     </div>
                 </div>
@@ -439,7 +439,7 @@ const PostProduct: React.FC = () => {
                         <CardContent className="space-y-4">
                             <div>
                                 <Label htmlFor="location">Your Location</Label>
-                                <Input id="location" name="location" placeholder="e.g., Yaoundé, " value={formData.location} onChange={handleInputChange} />
+                                <Input id="location" name="location" placeholder="e.g., Yaoundï¿½, " value={formData.location} onChange={handleInputChange} />
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="shippingAvailable" checked={formData.shippingAvailable} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, shippingAvailable: checked as boolean }))} />
@@ -496,6 +496,7 @@ const PostProduct: React.FC = () => {
 };
 
 export default PostProduct;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/profile/EmailPreferences.tsx
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -164,3 +164,4 @@ const EmailPreferences: React.FC = () => {
 };
 
 export default EmailPreferences;
+

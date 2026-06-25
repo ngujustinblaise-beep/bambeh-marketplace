@@ -1,4 +1,4 @@
-export type { PaymentIntent, PaymentResult, PaymentProvider } from "../payment-gateway/PaymentService";
+﻿export type { PaymentIntent, PaymentResult, PaymentProvider } from "../payment-gateway/PaymentService";
 
 export interface Order {
   id: string;
@@ -88,3 +88,4 @@ export interface TrackingSession {
   startedAt: string;
   locations: Location[];
 }
+

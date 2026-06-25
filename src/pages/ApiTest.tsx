@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React, { useState } from "react";
 import type {
   PaginatedItemsResponse,
@@ -8,7 +8,7 @@ import type {
 } from "../types/items";
 import { useLang, t } from "@/hooks/useAppLang";
 
-// Use a named function — avoids the <T> jsx-ambiguity in .tsx files
+// Use a named function ï¿½ avoids the <T> jsx-ambiguity in .tsx files
 function emptyPage<T extends object>(): PaginatedItemsResponse<T> {
   const lang = useLang();
   const isRtl = lang === "ar";
@@ -20,7 +20,7 @@ const ApiTest: React.FC = () => {
   const [market,  setMarket]  = useState<MarketplaceItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Filters use pageSize (not limit) — matches ItemFilters interface
+  // Filters use pageSize (not limit) ï¿½ matches ItemFilters interface
   const filters: Partial<ItemFilters> = { page: 1, pageSize: 3 };
 
   const testJobs = async () => {
@@ -72,6 +72,7 @@ const ApiTest: React.FC = () => {
 };
 
 export default ApiTest;
+
 
 
 

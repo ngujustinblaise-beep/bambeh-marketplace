@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin } from 'lucide-react';
 
@@ -51,6 +51,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
 }
 export default PropertyMap;
+
 
 
 

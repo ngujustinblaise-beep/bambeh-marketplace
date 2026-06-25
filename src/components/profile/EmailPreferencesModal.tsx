@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EMAIL PREFERENCES MODAL - Notification Management
  * FILE LOCATION: src/components/profile/EmailPreferencesModal.tsx
  */
@@ -182,6 +182,7 @@ export default function EmailPreferencesModal({ onClose }: EmailPreferencesModal
     </div>
   );
 }
+
 
 
 

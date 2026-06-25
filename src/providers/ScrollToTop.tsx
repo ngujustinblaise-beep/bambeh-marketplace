@@ -1,9 +1,9 @@
-/**
+ï»¿/**
  * ScrollToTop.tsx
  * Scrolls to the top of the page on every route change.
  * Used directly in App.tsx inside <BrowserRouter>.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useEffect } from "react";
@@ -20,6 +20,7 @@ export function ScrollToTop() {
 }
 
 export default ScrollToTop;
+
 
 
 

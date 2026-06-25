@@ -1,4 +1,4 @@
-import type { SubscriptionPlan, SubscriptionTier } from "../types/subscription";
+﻿import type { SubscriptionPlan, SubscriptionTier } from "../types/subscription";
 
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   { id: "free",       name: "Free",       nameEn: "Free",       nameFr: "Gratuit",    tier: "free",       priceXAF: 0,     durationDays: 0,  features: ["Browse listings", "5 messages/day"] },
@@ -13,3 +13,4 @@ export const getSubscriptionPlan = (tier: SubscriptionTier): SubscriptionPlan | 
 export const SUBSCRIPTION_PLANS_MAP = Object.fromEntries(
   SUBSCRIPTION_PLANS.map(p => [p.tier, p]),
 ) as Record<SubscriptionTier, SubscriptionPlan>;
+

@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - MAIN CHAT APP COMPONENT
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - MAIN CHAT APP COMPONENT
  * Version: 1.0.0
  */
 
@@ -131,6 +131,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ userId, userName }) => {
 };
 
 export default ChatApp;
+
 
 
 

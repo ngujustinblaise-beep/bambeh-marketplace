@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * src/utils/security/auditLogger.ts
  * FIXES: exports auditLogger singleton (TS2304)
  */
@@ -80,7 +80,8 @@ class AuditLoggerClass {
   }
 }
 
-// --- Singleton — fixes TS2304 -------------------------------------------------
+// --- Singleton ï¿½ fixes TS2304 -------------------------------------------------
 export const auditLogger = new AuditLoggerClass();
 
 export default auditLogger;
+

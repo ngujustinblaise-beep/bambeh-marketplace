@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REPORT ISSUE BUTTON - UNIVERSAL REPORT COMPONENT
  * FILE LOCATION: src/components/report/ReportIssueButton.tsx
  */
@@ -242,6 +242,7 @@ const ReportIssueButton: React.FC<ReportIssueButtonProps> = ({
 };
 
 export default ReportIssueButton;
+
 
 
 

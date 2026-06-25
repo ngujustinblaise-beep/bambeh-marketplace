@@ -1,5 +1,5 @@
-/**
- * MINIMIZABLE CHAT WIDGET — Floating chat support widget.
+ï»¿/**
+ * MINIMIZABLE CHAT WIDGET ï¿½ Floating chat support widget.
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -111,6 +111,7 @@ const MinimizableChatWidget = () => {
 };
 
 export default MinimizableChatWidget;
+
 
 
 

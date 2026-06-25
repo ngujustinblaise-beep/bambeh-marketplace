@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BambehSuccessAnimation.tsx — Bambeh figure sets down load, thumbs up.
  * USAGE: <BambehSuccessAnimation visible={showSuccess} onComplete={() => setShowSuccess(false)} message="Load delivered!" />
  */
@@ -269,5 +269,6 @@ export function useBambehSuccess() {
   );
   return { triggerSuccess, SuccessAnimation };
 }
+
 
 

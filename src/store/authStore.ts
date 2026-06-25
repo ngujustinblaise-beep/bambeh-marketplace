@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AUTH STORE
  * Zustand store for Supabase Auth state
  * FILE LOCATION: src/store/authStore.ts
@@ -82,3 +82,4 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+

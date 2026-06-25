@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+﻿import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -77,3 +77,4 @@ export function useNotifications() {
 
   return { notifications, unreadCount, loading, markRead, markAllRead, refetch: fetchNotifications };
 }
+

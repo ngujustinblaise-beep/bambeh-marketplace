@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * COMMISSION TRACKER COMPONENT
  * ═══════════════════════════════════════════════════════════════════════════
@@ -488,5 +488,6 @@ export default function CommissionTracker({ vendorId, compact = false }: Commiss
     </div>
   );
 }
+
 
 

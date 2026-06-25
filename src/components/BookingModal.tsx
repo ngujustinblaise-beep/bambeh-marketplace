@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/BookingModal.tsx
- * Bambeh Marketplace — Booking Modal
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Booking Modal
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 
@@ -77,7 +77,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Réserver</h2>
+            <h2 className="text-lg font-bold text-gray-900">Rï¿½server</h2>
             <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{itemTitle}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
@@ -94,7 +94,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date de début <span className="text-red-500">*</span>
+                Date de dï¿½but <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -121,7 +121,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
           {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Téléphone <span className="text-red-500">*</span>
+              Tï¿½lï¿½phone <span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
@@ -138,7 +138,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Précisez vos besoins..."
+              placeholder="Prï¿½cisez vos besoins..."
               rows={3}
               className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none"
             />
@@ -148,7 +148,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
           <div className="bg-teal-50 rounded-xl p-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">
-                {itemType === "rental" ? `${priceXAF.toLocaleString("fr-CM")} FCFA × ${days} jour(s)` : "Prix"}
+                {itemType === "rental" ? `${priceXAF.toLocaleString("fr-CM")} FCFA ï¿½ ${days} jour(s)` : "Prix"}
               </span>
               <span className="font-bold text-teal-700 text-lg">
                 {total.toLocaleString("fr-CM")} FCFA
@@ -183,6 +183,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 };
 
 export default BookingModal;
+
 
 
 

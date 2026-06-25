@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/ads/AdCard.tsx
  * FIXES: title/description/type properties now exist on ad item type
  */
@@ -83,6 +83,7 @@ const AdCard: React.FC<AdCardProps> = ({ item, onView, onContact, className = ""
 };
 
 export default AdCard;
+
 
 
 

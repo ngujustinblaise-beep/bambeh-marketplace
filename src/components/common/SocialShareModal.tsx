@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SOCIAL SHARE MODAL
  * FILE LOCATION: src/components/common/SocialShareModal.tsx
  */
@@ -132,5 +132,6 @@ export default function SocialShareModal({ shareOptions, onClose }: SocialShareM
     </>
   );
 }
+
 
 

@@ -1,4 +1,4 @@
-import {
+﻿import {
   collection,
   doc,
   getDoc,
@@ -437,3 +437,4 @@ export const searchAll = async (searchTerm: string) => {
     throw error;
   }
 };
+

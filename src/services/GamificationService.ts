@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type {
   GamificationActionType,
   GamificationReward,
@@ -102,3 +102,4 @@ export class GamificationService {
 }
 
 export const gamificationService = new GamificationService();
+

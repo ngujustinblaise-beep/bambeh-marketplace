@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * TERMS AND CONDITIONS
  * FILE LOCATION: src/pages/TermsAndConditions.tsx
  */
@@ -116,13 +116,13 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">VII. Termination and Dispute Resolution</h2>
                 <p>Bambeh may suspend or terminate accounts for breaches <strong>immediately and without refund.</strong></p>
-                <p>Disputes are governed by ian law and resolved in <strong>Yaoundé courts</strong>.</p>
+                <p>Disputes are governed by ian law and resolved in <strong>Yaoundï¿½ courts</strong>.</p>
               </div>
 
               <div className="border-t pt-4 mt-6">
                 <h2 className="text-xl font-bold text-indigo-900 mb-3">Copyright and Contact</h2>
                 <p>Bambeh's code, design, and content are protected by ian and international copyright laws.</p>
-                <p className="font-semibold"><strong>Contact:</strong> Yaoundé,  | +237 670757326 | Bambehtheapp@gmail.com</p>
+                <p className="font-semibold"><strong>Contact:</strong> Yaoundï¿½,  | +237 670757326 | Bambehtheapp@gmail.com</p>
               </div>
 
               <div className="border-t-2 pt-6 mt-6 bg-indigo-50 p-6 rounded-lg">
@@ -165,6 +165,7 @@ const TermsAndConditions = ({ onAccepted }: TermsAndConditionsProps) => {
 };
 
 export default TermsAndConditions;
+
 
 
 

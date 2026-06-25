@@ -1,5 +1,5 @@
-/**
- * src/pages/ShareMyVoice.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/ShareMyVoice.tsx ï¿½ Bambeh Marketplace
  *
  * NEW PAGE: User experience feedback form.
  * Accessible from the "Share My Voice" menu item.
@@ -89,7 +89,7 @@ export default function ShareMyVoice() {
         submitted_at: feedback.submitted_at,
       });
     } catch {
-      // Silent — localStorage backup is enough for now
+      // Silent ï¿½ localStorage backup is enough for now
     }
 
     setSubmitting(false);
@@ -106,7 +106,7 @@ export default function ShareMyVoice() {
         <p className="text-gray-500 mb-2 max-w-xs">
           Your feedback has been received. We read every single message and use it to make Bambeh better for everyone in Cameroon.
         </p>
-        <p className="text-sm text-teal-600 font-semibold mb-8">— The Bambeh Team ??</p>
+        <p className="text-sm text-teal-600 font-semibold mb-8">ï¿½ The Bambeh Team ??</p>
         <button onClick={() => navigate(-1)}
           className="bg-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-teal-700 transition">
           Go Back
@@ -242,7 +242,7 @@ export default function ShareMyVoice() {
           {/* Name + Email (optional) */}
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
             <p className="font-semibold text-gray-800 text-sm">
-              Contact <span className="text-gray-400 font-normal">(optional — for follow-up only)</span>
+              Contact <span className="text-gray-400 font-normal">(optional ï¿½ for follow-up only)</span>
             </p>
             <input
               value={name}
@@ -291,6 +291,7 @@ export default function ShareMyVoice() {
     </div>
   );
 }
+
 
 
 

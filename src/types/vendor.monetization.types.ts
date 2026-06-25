@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/types/vendor.monetization.types.ts
- * Bambeh Marketplace — Vendor Monetization & Subscription Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Monetization & Subscription Types
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // --- Subscription Tier -------------------------------------------------------
@@ -342,3 +342,4 @@ export interface AnalyticsResponse {
   data: VendorAnalyticsSnapshot | null;
   error: string | null;
 }
+

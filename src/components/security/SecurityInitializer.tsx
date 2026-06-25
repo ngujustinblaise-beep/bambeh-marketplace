@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SECURITY INITIALIZER
  * FILE LOCATION: src/components/security/SecurityInitializer.tsx
  */
@@ -69,5 +69,6 @@ const SecurityInitializer: React.FC = () => {
 };
 
 export default SecurityInitializer;
+
 
 

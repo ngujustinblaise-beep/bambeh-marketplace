@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  *
@@ -595,6 +595,7 @@ const UserSettings: React.FC = () => {
 };
 
 export default UserSettings;
+
 
 
 

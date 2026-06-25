@@ -1,15 +1,15 @@
-/**
- * src/components/services/ServiceLikeButton.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/components/services/ServiceLikeButton.tsx ï¿½ Bambeh Marketplace
  *
  * SECURITY & BUG FIXES:
- * ? SEC: Uses getUser() not getSession() — getSession() can be spoofed via localStorage;
+ * ? SEC: Uses getUser() not getSession() ï¿½ getSession() can be spoofed via localStorage;
  *         getUser() validates the JWT against Supabase Auth server.
- * ? FIX: Race condition on rapid clicks — disabled button while any request in flight.
- * ? FIX: Optimistic update was permanent on error — now rolls back on failure.
+ * ? FIX: Race condition on rapid clicks ï¿½ disabled button while any request in flight.
+ * ? FIX: Optimistic update was permanent on error ï¿½ now rolls back on failure.
  * ? FIX: Count fetched from service_like_counts view on mount (was missing ? always 0).
- * ? FIX: Duplicate like possible if user clicked before first getUser() resolved —
+ * ? FIX: Duplicate like possible if user clicked before first getUser() resolved ï¿½
  *         now guarded by `loading` flag and early-return if unauthenticated.
- * ? UX: Accessible — aria-pressed, aria-label, role=button.
+ * ? UX: Accessible ï¿½ aria-pressed, aria-label, role=button.
  * ? UX: Animated heart fill on like/unlike.
  */
 
@@ -148,6 +148,7 @@ export default function ServiceLikeButton({
     </button>
   );
 }
+
 
 
 

@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - USE CHAT HOOK
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - USE CHAT HOOK
  * Version: 1.0.0
  */
 
@@ -225,3 +225,4 @@ export const useConversation = (conversationId: string) => {
     loadMore,
   };
 };
+

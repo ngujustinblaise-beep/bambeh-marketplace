@@ -1,10 +1,10 @@
-/**
- * src/services/exchange-expiry-reminder.ts — Bambeh Marketplace
+ï»¿/**
+ * src/services/exchange-expiry-reminder.ts ï¿½ Bambeh Marketplace
  *
  * Call scheduleExpiryReminders() once at app start (App.tsx useEffect).
  * Call renewExchangeListing(itemId) from the detail page "Renew" button.
  *
- * ? Idempotent upsert — safe to call on every app open
+ * ? Idempotent upsert ï¿½ safe to call on every app open
  * ? In-app notification row per expiring item
  * ? renewExchangeListing resets expires_at + clears the notification
  */
@@ -60,7 +60,7 @@ export async function scheduleExpiryReminders(): Promise<void> {
         );
     }
   } catch {
-    // Best-effort — never crash the app
+    // Best-effort ï¿½ never crash the app
   }
 }
 
@@ -92,3 +92,4 @@ export async function renewExchangeListing(itemId: string): Promise<{ error: str
     return { error: e.message || 'Failed to renew listing.' };
   }
 }
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -44,6 +44,7 @@ const PaymentPending: React.FC = () => {
 
 }
 export default PaymentPending;
+
 
 
 

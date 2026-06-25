@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * src/data/Locations.ts
  * All 10 regions, major cities, and common quarters/kwatas of Cameroon.
  * This file is imported by LocationCascade and all posting forms.
@@ -18,21 +18,21 @@ export const REGIONS: string[] = [
 ];
 
 export const CITIES_BY_REGION: Record<string, string[]> = {
-  Centre:        ["Yaoundé", "Obala", "Mbalmayo", "Bafia", "Nanga-Eboko", "Monatélé", "Akonolinga", "Eseka"],
-  Littoral:      ["Douala", "Nkongsamba", "Mbanga", "Edéa", "Loum", "Manjo", "Ndoungué"],
-  West:          ["Bafoussam", "Dschang", "Foumban", "Mbouda", "Bafang", "Baham", "Bangangté", "Foumbot"],
+  Centre:        ["Yaoundï¿½", "Obala", "Mbalmayo", "Bafia", "Nanga-Eboko", "Monatï¿½lï¿½", "Akonolinga", "Eseka"],
+  Littoral:      ["Douala", "Nkongsamba", "Mbanga", "Edï¿½a", "Loum", "Manjo", "Ndounguï¿½"],
+  West:          ["Bafoussam", "Dschang", "Foumban", "Mbouda", "Bafang", "Baham", "Bangangtï¿½", "Foumbot"],
   "South West":  ["Buea", "Limbe", "Kumba", "Mamfe", "Tiko", "Muyuka", "Mundemba", "Ekondo Titi"],
   "North West":  ["Bamenda", "Kumbo", "Wum", "Ndop", "Mbengwi", "Fundong", "Nkambe", "Batibo"],
-  Adamawa:       ["Ngaoundéré", "Meiganga", "Tibati", "Tignère", "Banyo", "Vina"],
-  South:         ["Ebolowa", "Kribi", "Sangmélima", "Ambam", "Lolodorf", "Meyomessala"],
-  East:          ["Bertoua", "Batouri", "Yokadouma", "Abong-Mbang", "Belabo", "Lomié"],
+  Adamawa:       ["Ngaoundï¿½rï¿½", "Meiganga", "Tibati", "Tignï¿½re", "Banyo", "Vina"],
+  South:         ["Ebolowa", "Kribi", "Sangmï¿½lima", "Ambam", "Lolodorf", "Meyomessala"],
+  East:          ["Bertoua", "Batouri", "Yokadouma", "Abong-Mbang", "Belabo", "Lomiï¿½"],
   North:         ["Garoua", "Guider", "Pitoa", "Figuil", "Lagdo", "Rey-Bouba"],
-  "Far North":   ["Maroua", "Kousseri", "Mora", "Yagoua", "Moulvoudaye", "Kaélé", "Meri"],
+  "Far North":   ["Maroua", "Kousseri", "Mora", "Yagoua", "Moulvoudaye", "Kaï¿½lï¿½", "Meri"],
 };
 
 export const QUARTIERS_BY_CITY: Record<string, string[]> = {
-  // Yaoundé
-  Yaoundé: [
+  // Yaoundï¿½
+  Yaoundï¿½: [
     "Mvan", "Mimboman", "Mimboman - Entree Bombas", "Biyem-Assi", "Ngoa-Ekele", "Bastos",
     "Emombo", "Essos", "Mendong", "Nkolbisson", "Simbock",
     "Mvog-Mbi", "Elig-Essono", "Nlongkak", "Ekoudou", "Melen",
@@ -59,16 +59,16 @@ export const QUARTIERS_BY_CITY: Record<string, string[]> = {
   Limbe: ["Bota", "Down Beach", "Mile 4", "Bousoumbu", "New Town", "Clerks Quarter", "GRA", "Half Mile", "Mile 16"],
   // Kumba
   Kumba: ["Fiango", "Konye", "Titi", "Mile 6", "Mbonge Road"],
-  // Ngaoundéré
-  Ngaoundéré: ["Ngaoundal", "Dang", "Baladji", "Socaret", "Burkina", "Mbideng"],
+  // Ngaoundï¿½rï¿½
+  Ngaoundï¿½rï¿½: ["Ngaoundal", "Dang", "Baladji", "Socaret", "Burkina", "Mbideng"],
   // Garoua
-  Garoua: ["Lopéré", "Bibémi", "Ngong", "Roumdé Adjia", "Poumpoumré"],
+  Garoua: ["Lopï¿½rï¿½", "Bibï¿½mi", "Ngong", "Roumdï¿½ Adjia", "Poumpoumrï¿½"],
   // Maroua
-  Maroua: ["Domayo", "Kakataré", "Dougoi", "Hardé", "Founangué"],
+  Maroua: ["Domayo", "Kakatarï¿½", "Dougoi", "Hardï¿½", "Founanguï¿½"],
   // Ebolowa
-  Ebolowa: ["Nkol-Etet", "Angalé", "Ntom", "Mbida-Mbi"],
+  Ebolowa: ["Nkol-Etet", "Angalï¿½", "Ntom", "Mbida-Mbi"],
   // Kribi
-  Kribi: ["Centre", "Mbangue", "Afan Mabe", "Lolabé"],
+  Kribi: ["Centre", "Mbangue", "Afan Mabe", "Lolabï¿½"],
   // Bertoua
   Bertoua: ["Centre-ville", "Haoussa", "Mokolo", "Nkolbikon", "Dangoh"],
   // Dschang
@@ -76,3 +76,4 @@ export const QUARTIERS_BY_CITY: Record<string, string[]> = {
   // Foumban
   Foumban: ["Centre", "Nkoumadjap", "Njimom"],
 };
+

@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VENDOR SERVICE
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VENDOR SERVICE
  * Complete backend integration for vendor operations
  * Version: 1.0.0
  */
@@ -732,3 +732,4 @@ class VendorService {
 }
 
 export default new VendorService();
+

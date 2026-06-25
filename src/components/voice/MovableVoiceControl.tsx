@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * src/components/voice/MovableVoiceControl.tsx
  * FIXES: Removes duplicate isFinal/length/transcript/confidence declarations (TS2687)
  * Rebuilt clean with proper interface merging
@@ -171,7 +171,7 @@ const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
               ? "bg-red-500 hover:bg-red-600 animate-pulse"
               : "bg-teal-600 hover:bg-teal-700"
           }`}
-          title={isListening ? "Arrêter" : "Parler"}
+          title={isListening ? "Arrï¿½ter" : "Parler"}
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             {isListening ? (
@@ -184,7 +184,7 @@ const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
 
         {transcript && (
           <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded max-w-[200px] text-center whitespace-nowrap overflow-hidden text-ellipsis">
-            {transcript.slice(0, 60)}{transcript.length > 60 ? "…" : ""}
+            {transcript.slice(0, 60)}{transcript.length > 60 ? "ï¿½" : ""}
           </div>
         )}
 
@@ -199,6 +199,7 @@ const MovableVoiceControl: React.FC<MovableVoiceControlProps> = ({
 };
 
 export default MovableVoiceControl;
+
 
 
 

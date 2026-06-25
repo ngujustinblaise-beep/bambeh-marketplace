@@ -1,4 +1,4 @@
-export const sanitizeInput = (input: string): string => {
+﻿export const sanitizeInput = (input: string): string => {
   return input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/javascript:/gi, "")
@@ -19,3 +19,4 @@ export const validatePhone = (phone: string): boolean => {
 export const validatePrice = (price: number): boolean => {
   return price > 0 && price < 999999999999;
 };
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VENDOR PREMIUM TOOLS - REBUILT Feb 17, 2026
  * Clean rebuild. No broken imports. All tiers supported.
  * VendorLayout provides the header - this page is content only.
@@ -268,6 +268,7 @@ export default function VendorPremiumToolsEnhanced() {
     </div>
   );
 }
+
 
 
 

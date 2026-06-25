@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * ZERM PURCHASE PAGE
- * © 2025 Bambé. All rights reserved.
+ * ï¿½ 2025 Bambï¿½. All rights reserved.
  */
 
 import { useState } from 'react';
@@ -194,7 +194,7 @@ export default function ZermPurchase() {
             <Coins className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Buy Zerm Coins</h1>
-          <p className="text-gray-600 mb-4">1 Zerm = 100 XAF • Use coins for purchases, ads, and premium features</p>
+          <p className="text-gray-600 mb-4">1 Zerm = 100 XAF ï¿½ Use coins for purchases, ads, and premium features</p>
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white rounded-xl shadow-lg">
             <Wallet className="w-6 h-6 text-yellow-600" />
             <div className="text-left">
@@ -332,7 +332,7 @@ export default function ZermPurchase() {
           {showFAQ && (
             <div className="px-6 pb-6 space-y-4">
               {[
-                { q: 'What are Zerm coins?', a: "Zerm coins are Bambé's digital currency. 1 Zerm = 100 XAF. Use them for purchases, promoting listings, and premium features." },
+                { q: 'What are Zerm coins?', a: "Zerm coins are Bambï¿½'s digital currency. 1 Zerm = 100 XAF. Use them for purchases, promoting listings, and premium features." },
                 { q: 'Do I get free coins with my subscription?', a: 'No. Zerm coins are not included in any subscription tier. All coins must be purchased separately. However, larger packages include bonus coins.' },
                 { q: 'How do I receive my coins?', a: "Once your payment is confirmed, coins are instantly added to your wallet. You'll receive a confirmation notification." },
                 { q: 'Do Zerm coins expire?', a: 'No, your Zerm coins never expire. Use them whenever you want!' },
@@ -350,6 +350,7 @@ export default function ZermPurchase() {
     </div>
   );
 }
+
 
 
 

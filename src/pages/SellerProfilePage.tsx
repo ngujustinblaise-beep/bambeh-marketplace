@@ -1,7 +1,7 @@
-/**
- * SellerProfilePage.tsx — BAMBEH MARKETPLACE
+ï»¿/**
+ * SellerProfilePage.tsx ï¿½ BAMBEH MARKETPLACE
  * Route: /seller/:id
- * © 2026 Bambeh Marketplace
+ * ï¿½ 2026 Bambeh Marketplace
  */
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -24,10 +24,10 @@ interface SellerData {
 const normKey = (s: string) => decodeURIComponent(s).toLowerCase().replace(/\s+/g, '-');
 
 const MOCK_SELLERS: Record<string, SellerData> = {
-  'techshop-yaoundé': {
-    id: 'techshop-yaoundé', name: 'TechShop Yaoundé', avatar: '???', coverEmoji: '??',
-    bio: "Yaoundé's most trusted electronics retailer since 2018. Authorised reseller for Samsung, HP, and Sony. All products come with genuine manufacturer warranties.",
-    location: 'Centre-ville, Yaoundé', memberSince: 'March 2018',
+  'techshop-yaoundï¿½': {
+    id: 'techshop-yaoundï¿½', name: 'TechShop Yaoundï¿½', avatar: '???', coverEmoji: '??',
+    bio: "Yaoundï¿½'s most trusted electronics retailer since 2018. Authorised reseller for Samsung, HP, and Sony. All products come with genuine manufacturer warranties.",
+    location: 'Centre-ville, Yaoundï¿½', memberSince: 'March 2018',
     verified: true, responseRate: 98, avgResponseTime: '< 1 hour',
     totalSales: 1243, rating: 4.9, reviewCount: 312,
     ratingDistribution: [89, 8, 2, 1, 0],
@@ -293,6 +293,7 @@ const SellerProfilePage: React.FC = () => {
 };
 
 export default SellerProfilePage;
+
 
 
 

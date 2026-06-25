@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Shield, AlertTriangle, Users, Flag } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -126,6 +126,7 @@ export default function SafetySecurity() {
     </div>
   );
 }
+
 
 
 

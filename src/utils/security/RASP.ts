@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/security/RASP.ts
- * Bambeh Marketplace — Runtime Application Self-Protection
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Runtime Application Self-Protection
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -39,7 +39,7 @@ function recordThreat(type: string, level: ThreatLevel, detail: string): void {
   }
 
   if (level === "high" || level === "critical") {
-    logger.warn(`[RASP] ${level.toUpperCase()} threat detected: ${type} — ${detail}`);
+    logger.warn(`[RASP] ${level.toUpperCase()} threat detected: ${type} ï¿½ ${detail}`);
   }
 }
 
@@ -154,7 +154,7 @@ function setupConsoleTamperDetection(): void {
       configurable: true,
     });
   } catch {
-    // Property definition may fail in some environments — ignore
+    // Property definition may fail in some environments ï¿½ ignore
   }
 
   // Restore original in case it was tampered with
@@ -262,3 +262,4 @@ export function getThreatSummary(): Record<ThreatLevel, number> {
     { low: 0, medium: 0, high: 0, critical: 0 }
   );
 }
+

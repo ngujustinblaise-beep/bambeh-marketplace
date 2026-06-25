@@ -1,12 +1,12 @@
-/**
- * src/pages/FarmFreshDetail.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/FarmFreshDetail.tsx ï¿½ Bambeh Marketplace
  *
  * FIXED & REWRITTEN:
  *  ? Loads real product from Supabase (was only showing hardcoded mock data)
  *  ? Falls back gracefully to demo products if no DB match
- *  ? i18n — reacts instantly when user changes language (useLang / t)
+ *  ? i18n ï¿½ reacts instantly when user changes language (useLang / t)
  *  ? "Buy via app" ? navigates to /farm-fresh/order/:id
- *  ? "Contact Seller via WhatsApp" — if seller_phone is available
+ *  ? "Contact Seller via WhatsApp" ï¿½ if seller_phone is available
  *  ? Add to cart uses CartContext
  *  ? Increments view_count in Supabase on mount
  *  ? Handles s1-s8 demo IDs as well as UUID real products
@@ -49,11 +49,11 @@ interface RealProduct {
 // -- Demo products (s1-s8 fallback) --------------------------------------------
 const DEMO_PRODUCTS: Record<string, RealProduct> = {
   s1: { id: "s1", title: "Fresh Tomatoes",      description: "Sun-ripened organic tomatoes from highland farms.", price_per_unit_xaf: 500,  unit: "kg",    category: "Vegetables", location: "Bafoussam, West",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80", seller_name: "Fon's Farm",           seller_phone: "+237671234567" },
-  s2: { id: "s2", title: "Plantains (1 bunch)",  description: "Fresh ripe plantains, 12–15 fingers per bunch.",    price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaoundé, Centre",      is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", seller_name: "Mama Ngo's Produce",   seller_phone: "+237682345678" },
-  s3: { id: "s3", title: "Cocoyams (Macabo)",    description: "Fresh macabo cocoyams for Eru and Ndolé.",          price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", seller_name: "Douala Fresh",         seller_phone: "+237693456789" },
+  s2: { id: "s2", title: "Plantains (1 bunch)",  description: "Fresh ripe plantains, 12ï¿½15 fingers per bunch.",    price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaoundï¿½, Centre",      is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", seller_name: "Mama Ngo's Produce",   seller_phone: "+237682345678" },
+  s3: { id: "s3", title: "Cocoyams (Macabo)",    description: "Fresh macabo cocoyams for Eru and Ndolï¿½.",          price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", seller_name: "Douala Fresh",         seller_phone: "+237693456789" },
   s4: { id: "s4", title: "Fresh Maize (Corn)",   description: "Sweet, juicy corn on the cob from Bamenda.",        price_per_unit_xaf: 300,  unit: "cob",   category: "Grains",     location: "Bamenda, NW Region",   is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80", seller_name: "NW Farm Co-op",        seller_phone: "+237654567890" },
-  s5: { id: "s5", title: "Groundnuts (1kg bag)", description: "Premium shelled groundnuts from the Adamaoua.",     price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaoundéré, Adamaoua", is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", seller_name: "Adamaoua Nuts",        seller_phone: "+237665678901" },
-  s6: { id: "s6", title: "Bitter Leaf (Ndolé)",  description: "Fresh bitter leaf for authentic Ndolé.",            price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaoundé, Centre",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", seller_name: "Centre Fresh Greens",  seller_phone: "+237676789012" },
+  s5: { id: "s5", title: "Groundnuts (1kg bag)", description: "Premium shelled groundnuts from the Adamaoua.",     price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaoundï¿½rï¿½, Adamaoua", is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", seller_name: "Adamaoua Nuts",        seller_phone: "+237665678901" },
+  s6: { id: "s6", title: "Bitter Leaf (Ndolï¿½)",  description: "Fresh bitter leaf for authentic Ndolï¿½.",            price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaoundï¿½, Centre",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", seller_name: "Centre Fresh Greens",  seller_phone: "+237676789012" },
   s7: { id: "s7", title: "Fresh Avocados",        description: "Hand-picked highland avocados, creamy and nutritious.", price_per_unit_xaf: 800, unit: "kg", category: "Fruits",     location: "Dschang, West",        is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80", seller_name: "Highlands Harvest",    seller_phone: "+237687890123" },
   s8: { id: "s8", title: "Pineapples (Large)",    description: "Sweet, extra-large pineapples from coastal farms.", price_per_unit_xaf: 600, unit: "piece", category: "Fruits",     location: "Edea, Littoral",       is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", seller_name: "Littoral Tropicals",   seller_phone: "+237698901234" },
 };
@@ -91,7 +91,7 @@ const FarmFreshDetail: React.FC = () => {
   async function loadProduct(pid: string) {
     setLoading(true);
 
-    // 1. Check demo map first (s1–s8)
+    // 1. Check demo map first (s1ï¿½s8)
     if (DEMO_PRODUCTS[pid]) {
       setProduct(DEMO_PRODUCTS[pid]);
       setIsDemo(true);
@@ -424,7 +424,7 @@ const FarmFreshDetail: React.FC = () => {
             </div>
             <div className="text-right">
               <div className="text-lg font-black text-gray-900">{fmtXAF(totalPrice)}</div>
-              <div className="text-xs text-gray-400">{qty} × {product.unit}</div>
+              <div className="text-xs text-gray-400">{qty} ï¿½ {product.unit}</div>
             </div>
           </div>
           <div className="flex gap-3">
@@ -450,7 +450,7 @@ const FarmFreshDetail: React.FC = () => {
           <div className="bg-white rounded-3xl w-full max-w-md mx-auto p-5" onClick={e => e.stopPropagation()}>
             <h3 className="font-bold text-gray-900 text-lg mb-4">{t("shareProduct", lang) || "Share This Product"}</h3>
             <div className="space-y-3">
-              <a href={`https://wa.me/?text=${encodeURIComponent(`?? Check this on Bambeh FarmFresh! ${product.title} — ${fmtXAF(product.price_per_unit_xaf)}/${product.unit}. Fresh from Cameroon! ${shareUrl}`)}`}
+              <a href={`https://wa.me/?text=${encodeURIComponent(`?? Check this on Bambeh FarmFresh! ${product.title} ï¿½ ${fmtXAF(product.price_per_unit_xaf)}/${product.unit}. Fresh from Cameroon! ${shareUrl}`)}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-2xl text-[#128C7E] font-semibold">
                 <MessageCircle className="w-5 h-5" />{t("shareWhatsApp", lang) || "Share on WhatsApp"}
@@ -469,6 +469,7 @@ const FarmFreshDetail: React.FC = () => {
 };
 
 export default FarmFreshDetail;
+
 
 
 

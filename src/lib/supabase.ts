@@ -1,4 +1,4 @@
-// src/lib/supabase.ts
+﻿// src/lib/supabase.ts
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -11,3 +11,4 @@ let supabaseInstance: ReturnType<typeof createClient>;
 export const supabase =
   supabaseInstance ??
   (supabaseInstance = createClient(supabaseUrl, supabaseAnonKey));
+

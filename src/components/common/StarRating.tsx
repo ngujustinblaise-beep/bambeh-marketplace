@@ -1,4 +1,4 @@
-/**
+﻿/**
  * STAR RATING (RatingStars variant)
  * FILE LOCATION: src/components/common/StarRating.tsx
  */
@@ -129,6 +129,7 @@ export const CategoryRatings: React.FC<CategoryRatingsProps> = ({ categories, ra
     ))}
   </div>
 );
+
 
 
 

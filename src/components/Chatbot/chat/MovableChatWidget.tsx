@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/Chatbot/chat/MovableChatWidget.tsx
- * Bambeh Marketplace — Floating Movable Chat Widget
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Floating Movable Chat Widget
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
@@ -143,7 +143,7 @@ const MovableChatWidget: React.FC<MovableChatWidgetProps> = ({
               type="button"
               onClick={minimize}
               className="p-1.5 rounded-full hover:bg-teal-500 transition-colors"
-              aria-label="Réduire"
+              aria-label="Rï¿½duire"
             >
               <ChevronDown className="w-4 h-4 text-white" />
             </button>
@@ -194,7 +194,7 @@ const MovableChatWidget: React.FC<MovableChatWidgetProps> = ({
             type="button"
             onClick={toPreview}
             className="p-1.5 rounded-full hover:bg-teal-500 transition-colors"
-            aria-label="Réduire"
+            aria-label="Rï¿½duire"
           >
             <Minus className="w-4 h-4 text-white" />
           </button>
@@ -223,7 +223,7 @@ const MovableChatWidget: React.FC<MovableChatWidgetProps> = ({
         />
       ) : (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-sm text-gray-400">Aucune conversation sélectionnée</p>
+          <p className="text-sm text-gray-400">Aucune conversation sï¿½lectionnï¿½e</p>
         </div>
       )}
     </div>
@@ -231,6 +231,7 @@ const MovableChatWidget: React.FC<MovableChatWidgetProps> = ({
 };
 
 export default MovableChatWidget;
+
 
 
 

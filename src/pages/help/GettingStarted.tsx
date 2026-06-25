@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+ï»¿import { Link } from "react-router-dom";
 import { Rocket } from "lucide-react";
 import { useLang } from '@/hooks/useAppLang';
 
@@ -16,8 +16,8 @@ const T: Record<string, Record<string, string>> = {
     "title": "Pour commencer",
     "subtitle": "Bienvenue sur Bambeh !",
     "welcome": "Bienvenue !",
-    "intro": "Commençons sur Bambeh en 3 étapes simples.",
-    "step1": "1. Créez votre compte",
+    "intro": "Commenï¿½ons sur Bambeh en 3 ï¿½tapes simples.",
+    "step1": "1. Crï¿½ez votre compte",
     "step2": "2. Configurez votre profil",
     "step3": "3. Comprenez les Zerm Coins"
   },
@@ -88,6 +88,7 @@ export default function GettingStarted() {
     </div>
   );
 }
+
 
 
 

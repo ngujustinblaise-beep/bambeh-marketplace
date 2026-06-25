@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REPORT BUTTON - Quick report submission from any page
  * FILE LOCATION: src/components/report/ReportButton.tsx
  */
@@ -229,6 +229,7 @@ const ReportButton: React.FC<ReportButtonProps> = ({
 };
 
 export default ReportButton;
+
 
 
 

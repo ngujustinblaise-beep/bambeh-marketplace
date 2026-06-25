@@ -1,6 +1,6 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
- * BAMBÉ MARKETPLACE - ADMIN SERVICE
+ * BAMBï¿½ MARKETPLACE - ADMIN SERVICE
  * Complete backend integration for admin operations
  * Order, User, Dispute, and Analytics Management
  * Version: 1.0.0
@@ -415,3 +415,4 @@ class AdminService {
 }
 
 export default new AdminService();
+

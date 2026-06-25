@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * APP ERROR BOUNDARY - MILITARY-GRADE ERROR HANDLING
  * ═══════════════════════════════════════════════════════════════════════════
@@ -215,5 +215,6 @@ Time: ${new Date().toISOString()}
 }
 
 export default AppErrorBoundary;
+
 
 

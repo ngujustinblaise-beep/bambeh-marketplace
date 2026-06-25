@@ -1,5 +1,5 @@
-/**
- * src/utils/sendBookingMessage.ts — Bambeh Marketplace
+ï»¿/**
+ * src/utils/sendBookingMessage.ts ï¿½ Bambeh Marketplace
  *
  * Shared helper called by all three booking modals:
  *   - BookVisitModal    (Rentals)   ? bookingType: 'visit'
@@ -10,9 +10,9 @@
  *   1. Creates or finds an existing conversation between the visitor and the ad creator.
  *   2. Inserts one message flagged `is_booking_message = true`.
  *   3. The ad creator sees a formatted notification card in Chat.
- *   4. The reply input is hidden for that message — the conversation is one-way.
+ *   4. The reply input is hidden for that message ï¿½ the conversation is one-way.
  *
- * The visitor never needs to see or dial the host's contact number —
+ * The visitor never needs to see or dial the host's contact number ï¿½
  * the form data (date, time, note, callback number) is bundled into the message.
  *
  * Prerequisites:
@@ -50,7 +50,7 @@ const LABEL: Record<BookingType, string> = {
 
 /**
  * Sends a one-way in-app booking notification to the ad creator.
- * Safe to call even if the user is not logged in — returns silently.
+ * Safe to call even if the user is not logged in ï¿½ returns silently.
  */
 export async function sendBookingMessage(params: BookingMessageParams): Promise<void> {
   const {
@@ -86,7 +86,7 @@ export async function sendBookingMessage(params: BookingMessageParams): Promise<
     }
   })();
 
-  // Build the message body — the host sees everything they need
+  // Build the message body ï¿½ the host sees everything they need
   const lines: string[] = [
     LABEL[bookingType],
     `Listing: ${adTitle}`,
@@ -106,7 +106,7 @@ export async function sendBookingMessage(params: BookingMessageParams): Promise<
       adTitle,
     );
 
-    // Insert the booking message — flagged so Chat.tsx renders it as a card
+    // Insert the booking message ï¿½ flagged so Chat.tsx renders it as a card
     // and hides the reply input
     await supabase.from('messages').insert({
       conversation_id:    conversationId,
@@ -117,7 +117,8 @@ export async function sendBookingMessage(params: BookingMessageParams): Promise<
       read_by:            [visitorId],
     });
   } catch (err) {
-    // Log but don't crash the booking flow — the visit_request row was already saved
+    // Log but don't crash the booking flow ï¿½ the visit_request row was already saved
     console.warn('[sendBookingMessage] failed to send in-app message:', err);
   }
 }
+

@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * ADMIN DASHBOARD - ADMIN PANEL INTEGRATION EXAMPLE
  * ---------------------------------------------------------------------------
@@ -16,7 +16,7 @@
  * SECURITY:
  * ?? This page should be protected with admin-only access
  * 
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             <div className="flex items-center space-x-4">
               <div className="text-3xl">?</div>
               <div>
-                <h1 className="text-2xl font-bold">Bambé Admin Panel</h1>
+                <h1 className="text-2xl font-bold">Bambï¿½ Admin Panel</h1>
                 <p className="text-teal-100 text-sm">
                   Welcome back, {adminUser.name}
                 </p>
@@ -237,6 +237,7 @@ export default function AdminDashboard() {
   );
 }
 }
+
 
 
 

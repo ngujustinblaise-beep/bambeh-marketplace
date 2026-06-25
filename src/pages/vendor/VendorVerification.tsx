@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -16,6 +16,7 @@ const VendorVerification: React.FC = () => (
 );
 
 export default VendorVerification;
+
 
 
 

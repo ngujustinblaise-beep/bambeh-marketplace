@@ -1,7 +1,7 @@
-/**
- * src/pages/VerificationCenter.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/VerificationCenter.tsx ï¿½ Bambeh Marketplace
  * FIXED: Saves verification requests to Supabase verification_requests table.
- * Was only calling alert() — no data was being saved anywhere.
+ * Was only calling alert() ï¿½ no data was being saved anywhere.
  */
 
 import { useState, useEffect } from 'react';
@@ -80,7 +80,7 @@ export default function VerificationCenter() {
       }
 
       const requestData: any = {
-        user_id: userId,   // UUID — not text
+        user_id: userId,   // UUID ï¿½ not text
         level,
         status: 'pending',
       };
@@ -276,14 +276,15 @@ export default function VerificationCenter() {
         {/* Info */}
         <div className="bg-white rounded-2xl p-4 border text-sm text-gray-600 space-y-2">
           <p className="font-semibold text-gray-800">? Review Times</p>
-          <p>• Email & Phone: Instant</p>
-          <p>• ID & Address: 24-48 hours</p>
-          <p>• Business: 2-5 business days</p>
+          <p>ï¿½ Email & Phone: Instant</p>
+          <p>ï¿½ ID & Address: 24-48 hours</p>
+          <p>ï¿½ Business: 2-5 business days</p>
         </div>
       </div>
     </div>
   );
 }
+
 
 
 

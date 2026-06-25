@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/services/BookServiceModal.tsx — Bambeh Marketplace
  *
  * CHANGES IN THIS VERSION:
@@ -319,5 +319,6 @@ export default function BookServiceModal({
     </div>
   );
 }
+
 
 

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+﻿import { useState, useCallback } from "react";
 export function useFavorites() {
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
@@ -38,3 +38,4 @@ export function useFavorites() {
   return { favorites, toggleFavorite, addFavorite, removeFavorite, isFavorite };
 }
 export default useFavorites;
+

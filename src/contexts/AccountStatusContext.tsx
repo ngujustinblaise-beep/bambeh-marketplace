@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ACCOUNT STATUS CONTEXT - USER ACCOUNT STATE MANAGEMENT
  * FILE LOCATION: src/contexts/AccountStatusContext.tsx
  * © 2025 Bambeh. All rights reserved.
@@ -139,7 +139,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     message:
       "Your account is pending verification. Some features may be limited until verification is complete.",
     contactInfo:
-      "Complete your verification at /profile/verify or contact support for assistance.",
+      "Complete your verification at /verify or contact support for assistance.",
     canAppeal: false,
   },
 };
@@ -534,6 +534,7 @@ export const useAccountStatus = (): AccountStatusContextType => {
 };
 
 export default AccountStatusContext;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════
  * src/services/analyticsService.ts
  * Analytics Service — Bambeh Marketplace
@@ -251,3 +251,4 @@ export function resetTableCache(): void {
   tableVerified = null;
   isInitialized = false;
 }
+

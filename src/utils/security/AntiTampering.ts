@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ?? ANTI-TAMPERING - Detect App Modifications
  * Prevents code injection and unauthorized modifications
  */
@@ -34,3 +34,4 @@ initializeAntiTampering();
 }
 }
 export default initializeAntiTampering;
+

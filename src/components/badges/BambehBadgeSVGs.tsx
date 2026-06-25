@@ -1,5 +1,5 @@
-/**
- * BambehBadgeSVGs.tsx — All 5 Bambeh badge tier SVG assets.
+ï»¿/**
+ * BambehBadgeSVGs.tsx ï¿½ All 5 Bambeh badge tier SVG assets.
  * USAGE: import { GoldenBambehBadge, BadgeDisplay } from '@/components/badges/BambehBadgeSVGs';
  */
 
@@ -195,6 +195,7 @@ export function BadgeDisplay({ tier, size = 56, showLabel = false, showTooltip =
     </div>
   );
 }
+
 
 
 

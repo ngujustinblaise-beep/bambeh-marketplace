@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -24,6 +24,7 @@ const VendorReviews: React.FC = () => {
   );
 };
 export default VendorReviews;
+
 
 
 

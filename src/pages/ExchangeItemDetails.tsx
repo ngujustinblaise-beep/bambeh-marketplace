@@ -1,8 +1,9 @@
-/**
- * src/pages/ExchangeItemDetails.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/ExchangeItemDetails.tsx ï¿½ Bambeh Marketplace
  * Route: /exchange/:id  ?  ExchangeItem component
  */
 export { default } from './ExchangeItem';
+
 
 
 

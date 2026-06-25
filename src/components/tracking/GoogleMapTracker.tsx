@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * GOOGLE MAP TRACKER - ORDER TRACKING WITH MAPS
  * ---------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * 
  * FILE LOCATION: src/components/tracking/GoogleMapTracker.tsx
  * 
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -385,9 +385,9 @@ export default function GoogleMapTracker() {
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                       <span>{tracking.driver.rating}</span>
-                      <span>•</span>
+                      <span>ï¿½</span>
                       <span>{tracking.driver.vehicleType}</span>
-                      <span>•</span>
+                      <span>ï¿½</span>
                       <span className="font-mono">{tracking.driver.vehiclePlate}</span>
                     </div>
                   </div>
@@ -512,6 +512,7 @@ export default function GoogleMapTracker() {
   );
 }
 }
+
 
 
 

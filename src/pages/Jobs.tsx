@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Jobs.tsx
  * Bambeh Marketplace — Find Jobs Page
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -528,6 +528,7 @@ export default function Jobs() {
     </div>
   );
 }
+
 
 
 

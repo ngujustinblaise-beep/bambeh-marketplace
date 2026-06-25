@@ -1,4 +1,4 @@
-import { useLang, t } from "@/hooks/useAppLang";
+﻿import { useLang, t } from "@/hooks/useAppLang";
 
 export default function AdminSettings() {
   const lang = useLang();
@@ -10,6 +10,7 @@ export default function AdminSettings() {
     </div>
   );
 }
+
 
 
 

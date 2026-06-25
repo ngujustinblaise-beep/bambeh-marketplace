@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/AnalyticsInit.ts
- * Bambeh Marketplace — Analytics Bootstrap
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Analytics Bootstrap
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -17,7 +17,7 @@ export async function initializeAnalytics(): Promise<void> {
   try {
     const providers = [];
 
-    // Mixpanel — only in production or when token is configured
+    // Mixpanel ï¿½ only in production or when token is configured
     const mixpanelToken = import.meta.env.VITE_MIXPANEL_TOKEN;
     if (mixpanelToken) {
       try {
@@ -34,7 +34,7 @@ export async function initializeAnalytics(): Promise<void> {
     logger.log("[Analytics] Initialized successfully");
   } catch (err) {
     logger.warn("[Analytics] Initialization error:", err);
-    // Non-fatal — app continues without analytics
+    // Non-fatal ï¿½ app continues without analytics
   }
 }
 
@@ -47,3 +47,4 @@ export function isAnalyticsReady(): boolean {
 export function resetAnalyticsInit(): void {
   analyticsInitialized = false;
 }
+

@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -97,6 +97,7 @@ const BulkUpload: React.FC = () => {
 };
 
 export default BulkUpload;
+
 
 
 

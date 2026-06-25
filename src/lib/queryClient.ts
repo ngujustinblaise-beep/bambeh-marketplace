@@ -1,6 +1,6 @@
-/**
- * queryClient.ts — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+ï»¿/**
+ * queryClient.ts ï¿½ Bambeh Marketplace
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * TanStack Query (React Query v5) global client configuration.
  *
@@ -39,11 +39,11 @@ export const queryClient = new QueryClient({
       // These defaults are tuned for  3G:
       // - 5min stale time prevents constant re-fetching on every tab switch
       // - 10min cache keeps listings available offline briefly
-      staleTime: 5 * 60 * 1000,   // 5 minutes — critical for  3G
+      staleTime: 5 * 60 * 1000,   // 5 minutes ï¿½ critical for  3G
       gcTime: 10 * 60_000,        // 10 minutes
 
       // -- Refetch Policy ----------------------------------------------------
-      // Prevent refetch on app resume — staleTime handles freshness instead
+      // Prevent refetch on app resume ï¿½ staleTime handles freshness instead
       refetchOnWindowFocus: false,
       // DO refetch when internet returns after an offline period
       refetchOnReconnect: true,
@@ -51,7 +51,7 @@ export const queryClient = new QueryClient({
       refetchOnMount: true,
 
       // -- Retry Policy ------------------------------------------------------
-      // Retry up to 2 times with exponential backoff — handles 3G packet loss
+      // Retry up to 2 times with exponential backoff ï¿½ handles 3G packet loss
       retry: 2,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
 
@@ -60,7 +60,7 @@ export const queryClient = new QueryClient({
       networkMode: "offlineFirst",
     },
     mutations: {
-      // Retry once — handles transient 3G drops without risking duplicate writes
+      // Retry once ï¿½ handles transient 3G drops without risking duplicate writes
       retry: 1,
       networkMode: "offlineFirst",
     },
@@ -141,28 +141,29 @@ export const queryKeys = {
 // --- INVALIDATION HELPERS -----------------------------------------------------
 
 /**
- * Call after posting a new listing — refreshes all listing lists
+ * Call after posting a new listing ï¿½ refreshes all listing lists
  */
 export const invalidateListings = () =>
   queryClient.invalidateQueries({ queryKey: queryKeys.listings.all });
 
 /**
- * Call after accepting/declining an offer — refreshes offer state
+ * Call after accepting/declining an offer ï¿½ refreshes offer state
  */
 export const invalidateOffers = (listingId: string) =>
   queryClient.invalidateQueries({ queryKey: queryKeys.offers.forListing(listingId) });
 
 /**
- * Call after subscription purchase — refreshes profile + subscription status
+ * Call after subscription purchase ï¿½ refreshes profile + subscription status
  */
 export const invalidateProfile = () =>
   queryClient.invalidateQueries({ queryKey: queryKeys.profile.current });
 
 /**
- * Call after vendor action — refreshes dashboard and analytics
+ * Call after vendor action ï¿½ refreshes dashboard and analytics
  */
 export const invalidateVendorDashboard = (vendorId: string) =>
   queryClient.invalidateQueries({ queryKey: queryKeys.vendor.dashboard(vendorId) });
 
 export default queryClient;
+
 

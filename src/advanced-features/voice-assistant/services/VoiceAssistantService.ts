@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VOICE ASSISTANT SERVICE
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VOICE ASSISTANT SERVICE
  * Version: 1.0.0
  */
 
@@ -106,13 +106,13 @@ class VoiceAssistantService {
       if (results.length === 0) {
         return {
           text: this.context?.language === "fr"
-            ? `Désolé, je n'ai pas trouvé de ${productEntity.value}. Voulez-vous chercher autre chose?`
+            ? `Dï¿½solï¿½, je n'ai pas trouvï¿½ de ${productEntity.value}. Voulez-vous chercher autre chose?`
             : `Sorry, I couldn't find any ${productEntity.value}. Would you like to search for something else?`,
           suggestions: NLPService.generateSuggestions(command, this.context!.language),
         };
       }
       const responseText = this.context?.language === "fr"
-        ? `J'ai trouvé ${results.length} produit${results.length > 1 ? "s" : ""} pour ${productEntity.value}. Le premier coûte ${results[0].price} XAF. Voulez-vous voir les résultats?`
+        ? `J'ai trouvï¿½ ${results.length} produit${results.length > 1 ? "s" : ""} pour ${productEntity.value}. Le premier coï¿½te ${results[0].price} XAF. Voulez-vous voir les rï¿½sultats?`
         : `I found ${results.length} product${results.length > 1 ? "s" : ""} for ${productEntity.value}. The first one costs ${results[0].price} XAF. Would you like to see the results?`;
       return {
         text: responseText,
@@ -133,16 +133,16 @@ class VoiceAssistantService {
     const categoryEntity = command.entities.find((e) => e.type === "category");
     if (!categoryEntity) {
       return {
-        text: this.context?.language === "fr" ? "Quelle catégorie voulez-vous explorer?" : "Which category would you like to explore?",
+        text: this.context?.language === "fr" ? "Quelle catï¿½gorie voulez-vous explorer?" : "Which category would you like to explore?",
         suggestions: [
           this.context?.language === "fr" ? "Nourriture" : "Food",
-          this.context?.language === "fr" ? "Électronique" : "Electronics",
+          this.context?.language === "fr" ? "ï¿½lectronique" : "Electronics",
           this.context?.language === "fr" ? "Mode" : "Fashion",
         ],
       };
     }
     const responseText = this.context?.language === "fr"
-      ? `D'accord, je vais vous montrer la catégorie ${categoryEntity.value}.`
+      ? `D'accord, je vais vous montrer la catï¿½gorie ${categoryEntity.value}.`
       : `Okay, I'll show you the ${categoryEntity.value} category.`;
     return {
       text: responseText,
@@ -172,7 +172,7 @@ class VoiceAssistantService {
       suggestions: [
         this.context?.language === "fr" ? "Oui, confirme" : "Yes, confirm",
         this.context?.language === "fr" ? "Non, annule" : "No, cancel",
-        this.context?.language === "fr" ? "Change la quantité" : "Change quantity",
+        this.context?.language === "fr" ? "Change la quantitï¿½" : "Change quantity",
       ],
       requiresConfirmation: true,
     };
@@ -189,7 +189,7 @@ class VoiceAssistantService {
         if (!recentOrder) {
           return {
             text: this.context?.language === "fr"
-              ? "Je n'ai pas trouvé de commande récente. Pouvez-vous me donner le numéro de commande?"
+              ? "Je n'ai pas trouvï¿½ de commande rï¿½cente. Pouvez-vous me donner le numï¿½ro de commande?"
               : "I couldn't find a recent order. Can you provide the order number?",
             suggestions: [],
           };
@@ -198,13 +198,13 @@ class VoiceAssistantService {
       }
       const orderStatus = await this.getOrderStatus(orderId);
       const responseText = this.context?.language === "fr"
-        ? `Votre commande ${orderId} est ${orderStatus}. Voulez-vous voir plus de détails?`
+        ? `Votre commande ${orderId} est ${orderStatus}. Voulez-vous voir plus de dï¿½tails?`
         : `Your order ${orderId} is ${orderStatus}. Would you like to see more details?`;
       return {
         text: responseText,
         action: { type: "navigate", data: { page: "order-tracking", orderId } },
         suggestions: [
-          this.context?.language === "fr" ? "Oui, montre les détails" : "Yes, show details",
+          this.context?.language === "fr" ? "Oui, montre les dï¿½tails" : "Yes, show details",
           this.context?.language === "fr" ? "Contacter le vendeur" : "Contact vendor",
         ],
       };
@@ -215,8 +215,8 @@ class VoiceAssistantService {
 
   private handleHelp(): VoiceResponse {
     const helpText = this.context?.language === "fr"
-      ? "Je suis Mama, votre assistante vocale Bambé. Je peux vous aider à chercher des produits, passer des commandes, suivre vos livraisons et bien plus. Essayez de dire 'cherche des tomates' ou 'où est ma commande'."
-      : "I'm Mama, your Bambé voice assistant. I can help you search for products, place orders, track deliveries and more. Try saying 'search for tomatoes' or 'where is my order'.";
+      ? "Je suis Mama, votre assistante vocale Bambï¿½. Je peux vous aider ï¿½ chercher des produits, passer des commandes, suivre vos livraisons et bien plus. Essayez de dire 'cherche des tomates' ou 'oï¿½ est ma commande'."
+      : "I'm Mama, your Bambï¿½ voice assistant. I can help you search for products, place orders, track deliveries and more. Try saying 'search for tomatoes' or 'where is my order'.";
     return {
       text: helpText,
       suggestions: [
@@ -235,13 +235,13 @@ class VoiceAssistantService {
     for (const [keyword, page] of Object.entries(pages)) {
       if (command.rawText.toLowerCase().includes(keyword)) {
         return {
-          text: this.context?.language === "fr" ? `D'accord, je vous emmène à la page ${page}.` : `Okay, taking you to the ${page} page.`,
+          text: this.context?.language === "fr" ? `D'accord, je vous emmï¿½ne ï¿½ la page ${page}.` : `Okay, taking you to the ${page} page.`,
           action: { type: "navigate", data: { page } },
         };
       }
     }
     return {
-      text: this.context?.language === "fr" ? "Où voulez-vous aller?" : "Where would you like to go?",
+      text: this.context?.language === "fr" ? "Oï¿½ voulez-vous aller?" : "Where would you like to go?",
       suggestions: [
         this.context?.language === "fr" ? "Accueil" : "Home",
         this.context?.language === "fr" ? "Panier" : "Cart",
@@ -253,7 +253,7 @@ class VoiceAssistantService {
   private async handleConfirmation(): Promise<VoiceResponse> {
     if (!this.context?.awaitingConfirmation) {
       return {
-        text: this.context?.language === "fr" ? "Il n'y a rien à confirmer pour le moment." : "There's nothing to confirm right now.",
+        text: this.context?.language === "fr" ? "Il n'y a rien ï¿½ confirmer pour le moment." : "There's nothing to confirm right now.",
         suggestions: NLPService.generateSuggestions({ command: "unknown", intent: "", entities: [], confidence: 0, rawText: "" }, this.context!.language),
       };
     }
@@ -265,7 +265,7 @@ class VoiceAssistantService {
         delete this.context.entities["pendingOrder"];
         return {
           text: this.context.language === "fr"
-            ? `Parfait! Votre commande de ${order.quantity} ${order.product} a été confirmée. Vous recevrez une notification quand elle sera prête.`
+            ? `Parfait! Votre commande de ${order.quantity} ${order.product} a ï¿½tï¿½ confirmï¿½e. Vous recevrez une notification quand elle sera prï¿½te.`
             : `Perfect! Your order for ${order.quantity} ${order.product} has been confirmed. You'll receive a notification when it's ready.`,
           action: { type: "navigate", data: { page: "orders" } },
         };
@@ -273,7 +273,7 @@ class VoiceAssistantService {
         return this.getErrorResponse(this.context.language);
       }
     }
-    return { text: this.context.language === "fr" ? "Action confirmée!" : "Action confirmed!", suggestions: [] };
+    return { text: this.context.language === "fr" ? "Action confirmï¿½e!" : "Action confirmed!", suggestions: [] };
   }
 
   private handleCancellation(): VoiceResponse {
@@ -282,14 +282,14 @@ class VoiceAssistantService {
       this.context.entities = {};
     }
     return {
-      text: this.context?.language === "fr" ? "D'accord, annulé. Comment puis-je vous aider?" : "Okay, cancelled. How can I help you?",
+      text: this.context?.language === "fr" ? "D'accord, annulï¿½. Comment puis-je vous aider?" : "Okay, cancelled. How can I help you?",
       suggestions: NLPService.generateSuggestions({ command: "unknown", intent: "", entities: [], confidence: 0, rawText: "" }, this.context!.language),
     };
   }
 
   private handleRepeat(): VoiceResponse {
     if (!this.context || this.context.history.length === 0) {
-      return { text: this.context?.language === "fr" ? "Il n'y a rien à répéter." : "There's nothing to repeat.", suggestions: [] };
+      return { text: this.context?.language === "fr" ? "Il n'y a rien ï¿½ rï¿½pï¿½ter." : "There's nothing to repeat.", suggestions: [] };
     }
     const lastTurn = this.context.history[this.context.history.length - 1];
     return lastTurn.response;
@@ -297,7 +297,7 @@ class VoiceAssistantService {
 
   private handleUnknownCommand(command: ParsedCommand): VoiceResponse {
     return {
-      text: this.context?.language === "fr" ? "Désolé, je n'ai pas compris. Pouvez-vous reformuler?" : "Sorry, I didn't understand. Could you rephrase that?",
+      text: this.context?.language === "fr" ? "Dï¿½solï¿½, je n'ai pas compris. Pouvez-vous reformuler?" : "Sorry, I didn't understand. Could you rephrase that?",
       suggestions: NLPService.generateSuggestions(command, this.context!.language),
     };
   }
@@ -366,7 +366,7 @@ class VoiceAssistantService {
   private getErrorResponse(language: Language): VoiceResponse {
     return {
       text: language === "fr"
-        ? "Désolé, une erreur s'est produite. Pouvez-vous réessayer?"
+        ? "Dï¿½solï¿½, une erreur s'est produite. Pouvez-vous rï¿½essayer?"
         : "Sorry, an error occurred. Can you try again?",
       suggestions: [],
     };
@@ -377,3 +377,4 @@ class VoiceAssistantService {
 }
 
 export default new VoiceAssistantService();
+

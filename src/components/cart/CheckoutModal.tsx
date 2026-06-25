@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React, { useState } from "react";
 import type { CartItem } from "@/types/cart";
 import { PAYMENT_METHODS } from "@/types/subscription";
@@ -30,7 +30,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ items, onClose, onSuccess
       <div className="bg-white rounded-2xl w-full max-w-sm p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Checkout</h2>
-          <button onClick={onClose} className="text-2xl text-gray-400">×</button>
+          <button onClick={onClose} className="text-2xl text-gray-400">ï¿½</button>
         </div>
 
         <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
@@ -74,6 +74,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ items, onClose, onSuccess
 };
 
 export default CheckoutModal;
+
 
 
 

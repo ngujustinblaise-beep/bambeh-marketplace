@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { useState, useEffect } from "react";
 
 export interface UnifiedListing {
@@ -50,3 +50,4 @@ export const useSearch = () => {
 
   return { query, results, search };
 };
+

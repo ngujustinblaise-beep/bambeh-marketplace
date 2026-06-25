@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/LanguageSwitcher.tsx — Bambeh Marketplace
  *
  * ✅ Actually calls setLanguage() from LanguageContext (was a no-op before)
@@ -63,6 +63,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 };
 
 export default LanguageSwitcher;
+
 
 
 

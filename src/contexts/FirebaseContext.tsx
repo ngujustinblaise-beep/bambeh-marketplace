@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/contexts/FirebaseContext.tsx
  * Firebase FCM Context — Bambeh Marketplace
  *
@@ -132,6 +132,7 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export function useFirebase(): FirebaseContextValue {
   return useContext(FirebaseContext);
 }
+
 
 
 

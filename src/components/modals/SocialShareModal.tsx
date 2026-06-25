@@ -1,4 +1,4 @@
-import { useState } from 'react';
+ï»¿import { useState } from 'react';
 import { X, Share2, Copy, CheckCircle, MessageCircle, Send } from 'lucide-react';
 
 // --- Types --------------------------------------------------------------------
@@ -130,7 +130,7 @@ export default function SocialShareModal({
           url: shareUrl,
         });
       } catch (e) {
-        // User cancelled or share failed — ignore
+        // User cancelled or share failed ï¿½ ignore
       }
     }
   };
@@ -222,6 +222,7 @@ export default function SocialShareModal({
     </div>
   );
 }
+
 
 
 

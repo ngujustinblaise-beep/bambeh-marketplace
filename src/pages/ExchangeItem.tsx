@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ExchangeItem.tsx — Bambeh Marketplace
  *
  * ✅ Full i18n: en, fr, ha, ar, pcm, ff
@@ -637,5 +637,6 @@ const ExchangeItem: React.FC = () => {
 };
 
 export default ExchangeItem;
+
 
 

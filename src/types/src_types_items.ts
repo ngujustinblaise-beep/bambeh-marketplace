@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/types/src_types_items.ts
- * Bambeh Marketplace — Marketplace Item & Listing Types
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Marketplace Item & Listing Types
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // --- Listing Status ----------------------------------------------------------
@@ -246,4 +246,5 @@ export interface ItemFilters {
   page?: number;
   pageSize?: number;
 }
+
 

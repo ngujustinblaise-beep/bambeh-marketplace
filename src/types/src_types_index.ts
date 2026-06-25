@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TYPE DEFINITIONS FOR Bambeh MARKETPLACE
  * 
  * Complete type system for:
@@ -464,5 +464,6 @@ export const isJobItem = (item: AnyItem): item is JobItem => item.type === 'job'
 export const isMarketplaceItem = (item: AnyItem): item is MarketplaceItem => item.type === 'marketplace';
 export const isServiceItem = (item: AnyItem): item is ServiceItem => item.type === 'service';
 export const isRentalItem = (item: AnyItem): item is RentalItem => item.type === 'rental';
+
 
 

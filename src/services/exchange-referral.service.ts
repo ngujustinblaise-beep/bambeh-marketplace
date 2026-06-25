@@ -1,10 +1,10 @@
-/**
- * src/services/exchange-referral.service.ts — Bambeh Marketplace
+ï»¿/**
+ * src/services/exchange-referral.service.ts ï¿½ Bambeh Marketplace
  *
- * ? Pure Supabase — no axios, no localStorage, no Firebase URL calls
+ * ? Pure Supabase ï¿½ no axios, no localStorage, no Firebase URL calls
  * ? Exchange requests stored in "listings" table (type='exchange')
  * ? Referrals stored in "referrals" table (graceful fallback if absent)
- * ? All function signatures preserved — no caller changes needed
+ * ? All function signatures preserved ï¿½ no caller changes needed
  */
 
 import { supabase } from '@/lib/supabase';
@@ -243,7 +243,7 @@ class ReferralService {
       });
 
     if (error) console.warn('[ReferralService] sendReferralInvite:', error.message);
-    // Don't throw — referrals table may not exist yet
+    // Don't throw ï¿½ referrals table may not exist yet
   }
 
   async claimReferralReward(referralId: string): Promise<void> {
@@ -262,3 +262,4 @@ class ReferralService {
 
 export const exchangeService = new ExchangeService();
 export const referralService = new ReferralService();
+

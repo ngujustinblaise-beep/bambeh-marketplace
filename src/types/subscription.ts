@@ -1,4 +1,4 @@
-export type SubscriptionTier   = "free" | "basic" | "premium" | "enterprise";
+﻿export type SubscriptionTier   = "free" | "basic" | "premium" | "enterprise";
 export type SubscriptionTierUI = SubscriptionTier;
 export type SubscriptionStatus = "active" | "inactive" | "cancelled" | "expired" | "trial";
 export type SubscriptionFeatures = Record<string, boolean | number | string>;
@@ -46,3 +46,4 @@ export interface UserSubscription {
   expiresAt: string;
   autoRenew?: boolean;
 }
+

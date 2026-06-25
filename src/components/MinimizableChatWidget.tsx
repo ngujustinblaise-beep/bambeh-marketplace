@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/MinimizableChatWidget.tsx
- * Bambeh Marketplace — Minimizable Chat Widget
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Minimizable Chat Widget
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -167,6 +167,7 @@ const MinimizableChatWidget: React.FC = () => {
 };
 
 export default MinimizableChatWidget;
+
 
 
 

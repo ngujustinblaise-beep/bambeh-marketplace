@@ -1,4 +1,4 @@
-import type { SubscriptionTier } from "../types/subscription";
+﻿import type { SubscriptionTier } from "../types/subscription";
 export type { SubscriptionTier };
 
 export const tierRank: Record<SubscriptionTier, number> = {
@@ -25,3 +25,4 @@ export const canContactSeller = (tier: SubscriptionTier | undefined): boolean =>
 
 export const getUpgradeMessage = (feature: string): string =>
   `Upgrade your plan to access ${feature}.`;
+

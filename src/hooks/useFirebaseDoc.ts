@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { doc, getDoc, DocumentData } from "firebase/firestore";
 import { db } from "@/utils/firebase/firebaseConfig";
 
@@ -52,3 +52,4 @@ export function useFirebaseDoc<T = DocumentData>(
 
   return { data, loading, error, refetch: fetchDoc };
 }
+

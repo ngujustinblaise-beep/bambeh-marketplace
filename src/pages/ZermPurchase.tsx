@@ -1,13 +1,13 @@
-/**
- * src/pages/ZermPurchase.tsx  —  Bambeh Marketplace
+ï»¿/**
+ * src/pages/ZermPurchase.tsx  ï¿½  Bambeh Marketplace
  * FILE LOCATION: src/pages/ZermPurchase.tsx
  *
  * FIXED (this version):
  *  ? Route is /coins/buy (matches router fix)
- *  ? Full i18n — EN, FR, Pidgin, Arabic, Fulfulde
+ *  ? Full i18n ï¿½ EN, FR, Pidgin, Arabic, Fulfulde
  *  ? RTL layout for Arabic
  *  ? Redirects to /coins?purchased=1 after success so CoinsPage auto-refreshes
- *  ? Uses CamPayWidget — all CamPay logic lives there
+ *  ? Uses CamPayWidget ï¿½ all CamPay logic lives there
  *  ? Coins credited only AFTER CamPay confirms SUCCESSFUL payment
  *  ? Records purchase in zerm_purchases + updates zerm_coins balance + logs zerm_transactions
  */
@@ -32,28 +32,28 @@ const strings = {
     total:          'total',
     mostPopular:    'Most Popular',
     payWith:        'Pay with Mobile Money',
-    buyBtn:         (n: number, price: number) => `Buy ${n} Zerm Coins — ${price.toLocaleString()} XAF`,
+    buyBtn:         (n: number, price: number) => `Buy ${n} Zerm Coins ï¿½ ${price.toLocaleString()} XAF`,
     successTitle:   'Purchase Successful! ?',
     addedTo:        'added to your wallet',
     viewWallet:     'View Wallet',
     backHome:       'Back to Home',
   },
   fr: {
-    pageTitle:      'Acheter des Pièces Zerm',
+    pageTitle:      'Acheter des Piï¿½ces Zerm',
     currentBalance: 'Solde Actuel',
-    infoLine1:      '1 pièce Zerm = 100 FCFA',
-    infoLine2:      "Utilisez les pièces pour booster vos annonces, envoyer des cadeaux ou payer sur la plateforme.",
+    infoLine1:      '1 piï¿½ce Zerm = 100 FCFA',
+    infoLine2:      "Utilisez les piï¿½ces pour booster vos annonces, envoyer des cadeaux ou payer sur la plateforme.",
     choosePackage:  'Choisir un forfait',
-    coins:          'pièces',
+    coins:          'piï¿½ces',
     bonus:          'bonus',
     total:          'total',
     mostPopular:    'Le plus populaire',
     payWith:        'Payer avec Mobile Money',
-    buyBtn:         (n: number, price: number) => `Acheter ${n} pièces — ${price.toLocaleString()} FCFA`,
-    successTitle:   'Achat réussi ! ?',
-    addedTo:        'ajoutées à votre portefeuille',
+    buyBtn:         (n: number, price: number) => `Acheter ${n} piï¿½ces ï¿½ ${price.toLocaleString()} FCFA`,
+    successTitle:   'Achat rï¿½ussi ! ?',
+    addedTo:        'ajoutï¿½es ï¿½ votre portefeuille',
     viewWallet:     'Voir le portefeuille',
-    backHome:       "Retour à l'accueil",
+    backHome:       "Retour ï¿½ l'accueil",
   },
   pidgin: {
     pageTitle:      'Buy Zerm Coins',
@@ -66,7 +66,7 @@ const strings = {
     total:          'total',
     mostPopular:    'People Like Am',
     payWith:        'Pay with Mobile Money',
-    buyBtn:         (n: number, price: number) => `Buy ${n} Coins — ${price.toLocaleString()} XAF`,
+    buyBtn:         (n: number, price: number) => `Buy ${n} Coins ï¿½ ${price.toLocaleString()} XAF`,
     successTitle:   'You don buy! ?',
     addedTo:        'don enter your wallet',
     viewWallet:     'See Wallet',
@@ -83,7 +83,7 @@ const strings = {
     total:          '???????',
     mostPopular:    '?????? ?????',
     payWith:        '???Ù? ??????Ù ???????',
-    buyBtn:         (n: number, price: number) => `???? ${n} ???? — ${price.toLocaleString()} Ù???`,
+    buyBtn:         (n: number, price: number) => `???? ${n} ???? ï¿½ ${price.toLocaleString()} Ù???`,
     successTitle:   '?? ?????? ?????! ?',
     addedTo:        '??? ?????Ù? ??? ??Ù???',
     viewWallet:     '??? ????Ù??',
@@ -100,7 +100,7 @@ const strings = {
     total:          'fof',
     mostPopular:    'Fijirtaa?o',
     payWith:        'Faal to Mobile Money',
-    buyBtn:         (n: number, price: number) => `Sood ${n} Coin?e — ${price.toLocaleString()} XAF`,
+    buyBtn:         (n: number, price: number) => `Sood ${n} Coin?e ï¿½ ${price.toLocaleString()} XAF`,
     successTitle:   'Soodaande woni! ?',
     addedTo:        'sosaa e jaaborgal maa',
     viewWallet:     'Yiy Jaaborgal',
@@ -188,7 +188,7 @@ export default function ZermPurchase() {
       setDone(true);
     } catch (err) {
       console.error('ZermPurchase handlePaymentSuccess error:', err);
-      // Still mark as done — coins were bought; balance will sync on next refresh
+      // Still mark as done ï¿½ coins were bought; balance will sync on next refresh
       setCoinsAdded(total);
       setDone(true);
     }
@@ -307,7 +307,7 @@ export default function ZermPurchase() {
           {userId ? (
             <CamPayWidget
               amount={pkg.priceXAF}
-              description={`Bambeh Zerm Coins — ${pkg.name} (${totalCoins} coins)`}
+              description={`Bambeh Zerm Coins ï¿½ ${pkg.name} (${totalCoins} coins)`}
               externalRef={`zerm_${pkg.id}_${userId}_${Date.now()}`}
               metadata={{ user_id: userId, package_id: pkg.id, total_coins: totalCoins }}
               onSuccess={handlePaymentSuccess}
@@ -322,6 +322,7 @@ export default function ZermPurchase() {
     </div>
   );
 }
+
 
 
 

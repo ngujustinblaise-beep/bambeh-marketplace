@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 
 interface PostAdButtonProps {
@@ -30,6 +30,7 @@ const PostAdButton: React.FC<PostAdButtonProps> = ({
 );
 
 export default PostAdButton;
+
 
 
 

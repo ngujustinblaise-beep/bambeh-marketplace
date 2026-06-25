@@ -1,5 +1,5 @@
-/**
- * TontinePage.tsx — Bambeh Marketplace
+ï»¿/**
+ * TontinePage.tsx ï¿½ Bambeh Marketplace
  * FILE LOCATION: src/pages/TontinePage.tsx
  *
  * i18n FIX (this version):
@@ -7,7 +7,7 @@
  *    "@/App" (same source the live language selector uses).
  *  - All visible text now translates live: EN / FR / Pidgin / Arabic / Fulfulde (ff).
  *  - Arabic gets dir="rtl" on the page root.
- *  - Icons (lucide + emoji) are LEFT EXACTLY AS-IS — only human text is translated.
+ *  - Icons (lucide + emoji) are LEFT EXACTLY AS-IS ï¿½ only human text is translated.
  *  - Status badges translated via a pure statusLabel(status, s) map.
  *  - Demo group NAMES are fixtures (shown only when there is no real data) and
  *    are intentionally left as-is, like other DB/seed data.
@@ -15,7 +15,7 @@
  * Everything else (Supabase reads, real-time channel, create buttons) is kept
  * exactly as it was.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect } from "react";
@@ -56,23 +56,23 @@ const T: Record<Lang, {
     secureBody: "All tontine transactions are recorded and visible to all group members on all devices.",
     createFab: "Create",
     stOpen: "open", stActive: "active", stCompleted: "completed", stPaused: "paused",
-    spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} left — Join Now!`,
+    spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} left ï¿½ Join Now!`,
   },
   fr: {
     title: "Tontine / Njangi", newGroup: "Nouveau groupe", refresh: "Actualiser",
     statMyGroups: "Mes groupes", statPool: "Cagnotte (XAF)", statActive: "Actifs",
-    tabMy: "Mes groupes", tabDiscover: "Découvrir",
+    tabMy: "Mes groupes", tabDiscover: "Dï¿½couvrir",
     emptyMyTitle: "Vous n'avez rejoint aucun groupe",
     emptyDiscoverTitle: "Aucun groupe ouvert pour le moment",
-    emptyMyBody: "Créez votre propre groupe Njangi et invitez vos amis et votre famille.",
-    emptyDiscoverBody: "Revenez plus tard ou créez votre propre groupe.",
-    createBtn: "Créer un groupe Njangi", viewMine: "Voir plutôt mes groupes",
+    emptyMyBody: "Crï¿½ez votre propre groupe Njangi et invitez vos amis et votre famille.",
+    emptyDiscoverBody: "Revenez plus tard ou crï¿½ez votre propre groupe.",
+    createBtn: "Crï¿½er un groupe Njangi", viewMine: "Voir plutï¿½t mes groupes",
     members: "membres", perMonth: "mois", perWeek: "sem",
-    secureTitle: "Sécurisé et transparent",
-    secureBody: "Toutes les transactions de la tontine sont enregistrées et visibles par tous les membres du groupe, sur tous les appareils.",
-    createFab: "Créer",
-    stOpen: "ouvert", stActive: "actif", stCompleted: "terminé", stPaused: "en pause",
-    spotsLeft: (n) => `${n} place${n !== 1 ? "s" : ""} restante${n !== 1 ? "s" : ""} — Rejoignez !`,
+    secureTitle: "Sï¿½curisï¿½ et transparent",
+    secureBody: "Toutes les transactions de la tontine sont enregistrï¿½es et visibles par tous les membres du groupe, sur tous les appareils.",
+    createFab: "Crï¿½er",
+    stOpen: "ouvert", stActive: "actif", stCompleted: "terminï¿½", stPaused: "en pause",
+    spotsLeft: (n) => `${n} place${n !== 1 ? "s" : ""} restante${n !== 1 ? "s" : ""} ï¿½ Rejoignez !`,
   },
   pidgin: {
     title: "Tontine / Njangi", newGroup: "New Group", refresh: "Refresh",
@@ -88,7 +88,7 @@ const T: Record<Lang, {
     secureBody: "All tontine transaction dem dey recorded and all group members fit see am for any phone.",
     createFab: "Create",
     stOpen: "open", stActive: "active", stCompleted: "done", stPaused: "pause",
-    spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} remain — Join Now!`,
+    spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} remain ï¿½ Join Now!`,
   },
   ar: {
     title: "Tontine / Njangi", newGroup: "?????? ?????", refresh: "?????",
@@ -104,7 +104,7 @@ const T: Record<Lang, {
     secureBody: "?Ù????? ???? ??????? ???????? ????? ????? ????? ????? ???????? ??? ?? ???????.",
     createFab: "?????",
     stOpen: "?Ù????", stActive: "??Ù??", stCompleted: "??????", stPaused: "?????Ù?",
-    spotsLeft: (n) => `??? ${n} ???? — ???? ????!`,
+    spotsLeft: (n) => `??? ${n} ???? ï¿½ ???? ????!`,
   },
   ff: {
     title: "Tontine / Njangi", newGroup: "Fedde hesere", refresh: "Hes?itin",
@@ -120,7 +120,7 @@ const T: Record<Lang, {
     secureBody: "Li??ite tontine fof ina winndaa, ina njiyee e yim?e fedde fof e ka?ir?e fof.",
     createFab: "Sosu",
     stOpen: "udditii", stActive: "gollii", stCompleted: "gasii", stPaused: "dartii",
-    spotsLeft: (n) => `Heddii nokkuuje ${n} — Naatu jooni!`,
+    spotsLeft: (n) => `Heddii nokkuuje ${n} ï¿½ Naatu jooni!`,
   },
 };
 
@@ -133,7 +133,7 @@ interface TontineGroup {
 const DEMO_GROUPS: TontineGroup[] = [
   { id:"demo1", name:"Tech Workers Njangi",    contributionXaf:25000, frequency:"monthly", currentMembers:10, maxMembers:10, totalPoolXaf:250000, nextPayoutDate:"2026-06-15", status:"active", isMine:true,  adminId:"demo" },
   { id:"demo2", name:"Market Women Group",     contributionXaf:10000, frequency:"weekly",  currentMembers:6,  maxMembers:8,  totalPoolXaf:60000,  nextPayoutDate:"2026-05-28", status:"active", isMine:true,  adminId:"demo" },
-  { id:"demo3", name:"Yaoundé Professionals",  contributionXaf:50000, frequency:"monthly", currentMembers:3,  maxMembers:12, totalPoolXaf:150000, nextPayoutDate:null,          status:"open",   isMine:false, adminId:"demo" },
+  { id:"demo3", name:"Yaoundï¿½ Professionals",  contributionXaf:50000, frequency:"monthly", currentMembers:3,  maxMembers:12, totalPoolXaf:150000, nextPayoutDate:null,          status:"open",   isMine:false, adminId:"demo" },
 ];
 
 export default function TontinePage() {
@@ -287,7 +287,7 @@ export default function TontinePage() {
           </div>
         )}
 
-        {/* Empty state — with a big obvious CREATE button */}
+        {/* Empty state ï¿½ with a big obvious CREATE button */}
         {!loading && display.length === 0 && (
           <div className="text-center py-10">
             <Users className="w-14 h-14 mx-auto mb-4 text-gray-200" />
@@ -333,7 +333,7 @@ export default function TontinePage() {
                     <div>
                       <h3 className="font-bold text-gray-900">{group.name}</h3>
                       <p className="text-sm text-gray-500 capitalize">
-                        {group.frequency} · {group.currentMembers}/{group.maxMembers} {s.members}
+                        {group.frequency} ï¿½ {group.currentMembers}/{group.maxMembers} {s.members}
                       </p>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
@@ -406,6 +406,7 @@ export default function TontinePage() {
     </div>
   );
 }
+
 
 
 

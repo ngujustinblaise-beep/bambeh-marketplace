@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS PAGE
  * Accessible from footer and menu
  * Uses official TermsContent component
@@ -76,3 +76,4 @@ export default function Terms() {
     </div>
   );
 }	
+

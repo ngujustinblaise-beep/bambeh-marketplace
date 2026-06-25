@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/Verification/VerificationBadge.tsx
- * Bambeh Marketplace — Seller / Vendor Verification Badge
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Seller / Vendor Verification Badge
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -47,44 +47,44 @@ interface BadgeConfig {
 
 const BADGE_CONFIGS: Record<VerificationLevel, BadgeConfig> = {
   unverified: {
-    label: "Non vérifié",
+    label: "Non vï¿½rifiï¿½",
     color: "text-gray-500",
     bgColor: "bg-gray-100",
     borderColor: "border-gray-200",
     icon: Shield,
-    description: "Ce compte n'a pas encore été vérifié.",
+    description: "Ce compte n'a pas encore ï¿½tï¿½ vï¿½rifiï¿½.",
   },
   email_verified: {
-    label: "Email vérifié",
+    label: "Email vï¿½rifiï¿½",
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     icon: Check,
-    description: "L'adresse e-mail de ce compte a été vérifiée.",
+    description: "L'adresse e-mail de ce compte a ï¿½tï¿½ vï¿½rifiï¿½e.",
   },
   phone_verified: {
-    label: "Téléphone vérifié",
+    label: "Tï¿½lï¿½phone vï¿½rifiï¿½",
     color: "text-teal-600",
     bgColor: "bg-teal-50",
     borderColor: "border-teal-200",
     icon: BadgeCheck,
-    description: "Le numéro de téléphone de ce compte a été vérifié.",
+    description: "Le numï¿½ro de tï¿½lï¿½phone de ce compte a ï¿½tï¿½ vï¿½rifiï¿½.",
   },
   id_verified: {
-    label: "Identité vérifiée",
+    label: "Identitï¿½ vï¿½rifiï¿½e",
     color: "text-green-700",
     bgColor: "bg-green-50",
     borderColor: "border-green-300",
     icon: ShieldCheck,
-    description: "L'identité de ce membre a été vérifiée par Bambeh.",
+    description: "L'identitï¿½ de ce membre a ï¿½tï¿½ vï¿½rifiï¿½e par Bambeh.",
   },
   business_verified: {
-    label: "Entreprise vérifiée",
+    label: "Entreprise vï¿½rifiï¿½e",
     color: "text-purple-700",
     bgColor: "bg-purple-50",
     borderColor: "border-purple-300",
     icon: Award,
-    description: "Cette entreprise a été vérifiée et enregistrée par Bambeh.",
+    description: "Cette entreprise a ï¿½tï¿½ vï¿½rifiï¿½e et enregistrï¿½e par Bambeh.",
   },
   premium_verified: {
     label: "Vendeur Premium ?",
@@ -92,7 +92,7 @@ const BADGE_CONFIGS: Record<VerificationLevel, BadgeConfig> = {
     bgColor: "bg-yellow-50",
     borderColor: "border-yellow-400",
     icon: Star,
-    description: "Vendeur Premium Bambeh — identité, entreprise et excellence de service vérifiées.",
+    description: "Vendeur Premium Bambeh ï¿½ identitï¿½, entreprise et excellence de service vï¿½rifiï¿½es.",
   },
 };
 
@@ -139,7 +139,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
         type="button"
         onClick={() => showTooltip && setTooltipOpen((v) => !v)}
         className={`inline-flex items-center border rounded-full font-medium transition-colors ${sizes.padding} ${sizes.gap} ${config.bgColor} ${config.borderColor} ${config.color} ${showTooltip ? "cursor-pointer hover:opacity-80" : "cursor-default"}`}
-        aria-label={`Vérification: ${config.label}`}
+        aria-label={`Vï¿½rification: ${config.label}`}
       >
         <Icon className={sizes.icon} />
         {showLabel && <span className={sizes.text}>{config.label}</span>}
@@ -173,19 +173,19 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
             {status && (
               <div className="mt-3 space-y-1.5">
                 <VerificationCheck
-                  label="Email vérifié"
+                  label="Email vï¿½rifiï¿½"
                   done={status.emailVerified ?? false}
                 />
                 <VerificationCheck
-                  label="Téléphone vérifié"
+                  label="Tï¿½lï¿½phone vï¿½rifiï¿½"
                   done={status.phoneVerified ?? false}
                 />
                 <VerificationCheck
-                  label="Identité vérifiée"
+                  label="Identitï¿½ vï¿½rifiï¿½e"
                   done={status.idVerified ?? false}
                 />
                 <VerificationCheck
-                  label="Entreprise vérifiée"
+                  label="Entreprise vï¿½rifiï¿½e"
                   done={status.businessVerified ?? false}
                 />
               </div>
@@ -193,7 +193,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
 
             {status?.verifiedAt && (
               <p className="mt-2 text-xs text-gray-400">
-                Vérifié le {new Date(status.verifiedAt).toLocaleDateString("fr-CM")}
+                Vï¿½rifiï¿½ le {new Date(status.verifiedAt).toLocaleDateString("fr-CM")}
               </p>
             )}
           </div>
@@ -233,25 +233,25 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
   const steps = [
     {
       id: "email",
-      label: "Vérification email",
+      label: "Vï¿½rification email",
       done: status.emailVerified ?? false,
       required: true,
     },
     {
       id: "phone",
-      label: "Vérification téléphone",
+      label: "Vï¿½rification tï¿½lï¿½phone",
       done: status.phoneVerified ?? false,
       required: true,
     },
     {
       id: "id",
-      label: "Vérification identité",
+      label: "Vï¿½rification identitï¿½",
       done: status.idVerified ?? false,
       required: false,
     },
     {
       id: "business",
-      label: "Vérification entreprise",
+      label: "Vï¿½rification entreprise",
       done: status.businessVerified ?? false,
       required: false,
     },
@@ -264,9 +264,9 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
   return (
     <div className={`bg-white border border-gray-200 rounded-2xl p-4 space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Niveau de vérification</h3>
+        <h3 className="font-semibold text-gray-900">Niveau de vï¿½rification</h3>
         <span className="text-sm text-gray-500">
-          {completedCount}/{totalCount} étapes
+          {completedCount}/{totalCount} ï¿½tapes
         </span>
       </div>
 
@@ -322,6 +322,7 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
 };
 
 export default VerificationBadge;
+
 
 
 

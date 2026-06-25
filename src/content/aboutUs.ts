@@ -1,4 +1,4 @@
-export const aboutUsContent = {
+﻿export const aboutUsContent = {
   en: {
     title: "The Bambeh Chronicle: A Royal Invitation",
     sections: [
@@ -42,3 +42,4 @@ Here, you are not a number; you are the **Supreme King and Queen** whose prosper
       "Avec un amour et un engagement sans limites pour votre voyage royal,\n\nNgu J. Blaise,\nFondateur de Bambeh\n\n� 2025 Bambeh. Tous droits r�serv�s.",
   },
 };
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EDIT PROFILE MODAL - Enhanced with scrollable content
  * FILE LOCATION: src/components/profile/EditProfileModal.tsx
  *
@@ -363,3 +363,4 @@ export default function EditProfileModal({ onClose }: EditProfileModalProps) {
     </div>
   );
 }
+

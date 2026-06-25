@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/vendor/VendorAnalytics.tsx
- * Bambeh Marketplace — Vendor Analytics Summary Card
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Analytics Summary Card
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -126,14 +126,14 @@ const VendorAnalytics: React.FC<VendorAnalyticsProps> = ({
   if (error || !snapshot) {
     return (
       <div className={`bg-red-50 border border-red-200 rounded-xl p-4 flex items-center justify-between ${className}`}>
-        <p className="text-sm text-red-600">{error ?? "Données non disponibles"}</p>
+        <p className="text-sm text-red-600">{error ?? "Donnï¿½es non disponibles"}</p>
         <button
           type="button"
           onClick={load}
           className="flex items-center gap-1 text-sm text-red-600 hover:text-red-800"
         >
           <RefreshCw className="w-4 h-4" />
-          Réessayer
+          Rï¿½essayer
         </button>
       </div>
     );
@@ -162,6 +162,7 @@ const VendorAnalytics: React.FC<VendorAnalyticsProps> = ({
 };
 
 export default VendorAnalytics;
+
 
 
 

@@ -1,4 +1,4 @@
-export type CommissionableTransactionType =
+﻿export type CommissionableTransactionType =
   | "marketplace_sale" | "service_booking" | "rental_booking"
   | "vehicle_rental"   | "escrow_release";
 
@@ -36,3 +36,4 @@ export interface VendorCommissionSummary {
   pendingCommissionXAF: number;
   paidCommissionXAF: number;
 }
+

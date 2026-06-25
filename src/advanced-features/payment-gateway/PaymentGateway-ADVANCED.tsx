@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React, { useState } from "react";
 import { PaymentService } from "./PaymentService";
 import type { PaymentIntent, PaymentResult } from "./PaymentService";
@@ -69,7 +69,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
         <button onClick={handlePay} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl transition-colors">
-          {loading ? "Processing…" : "Pay Now"}
+          {loading ? "Processingï¿½" : "Pay Now"}
         </button>
       )}
     </div>
@@ -77,6 +77,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
 };
 
 export default PaymentGateway;
+
 
 
 

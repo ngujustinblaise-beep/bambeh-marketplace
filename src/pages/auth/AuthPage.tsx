@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { ShieldCheck, Fingerprint, LockKeyhole, Sparkles } from "lucide-react";
 
 export default function AuthPage() {
@@ -90,3 +90,4 @@ export default function AuthPage() {
     </main>
   );
 }
+

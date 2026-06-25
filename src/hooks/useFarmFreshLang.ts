@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/hooks/useFarmFreshLang.ts — Bambeh Marketplace
  *
  * Shared translation hook for all FarmFresh pages.
@@ -319,4 +319,5 @@ export function t<K extends keyof typeof T>(
 ): (typeof T)[K][Lang] {
   return (T as any)[key]?.[lang] ?? (T as any)[key]?.["en"];
 }
+
 

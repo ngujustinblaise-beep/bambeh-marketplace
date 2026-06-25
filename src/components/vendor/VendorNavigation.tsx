@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR NAVIGATION COMPONENT
  * ---------------------------------------------------------------------------
@@ -6,7 +6,7 @@
  * Quick navigation for vendors to access dashboard features
  * Used in Profile page and other vendor-related areas
  *
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -158,6 +158,7 @@ const VendorNavigation: React.FC<VendorNavigationProps> = ({
 }
 }
 export default VendorNavigation;
+
 
 
 

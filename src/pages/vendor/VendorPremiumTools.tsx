@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/vendor/VendorPremiumTools.tsx
- * Bambeh Marketplace — Vendor Premium Tools Dashboard
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Premium Tools Dashboard
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
@@ -20,12 +20,12 @@ interface PremiumTool {
 }
 
 const TOOLS: PremiumTool[] = [
-  { id: "analytics", title: "Analytics Pro", description: "Vues, conversions, revenus en temps réel", icon: BarChart2, color: "bg-blue-50 text-blue-600", route: "/vendor/analytics-pro" },
-  { id: "featured", title: "Annonces en Vedette", description: "5× plus de vues sur vos meilleures annonces", icon: Star, color: "bg-yellow-50 text-yellow-600", route: "/vendor/featured", badge: "HOT" },
-  { id: "bulk", title: "Import en Masse", description: "Publiez jusqu'à 500 annonces via CSV", icon: Upload, color: "bg-teal-50 text-teal-600", route: "/vendor/bulk-upload" },
-  { id: "auto-msg", title: "Messages Automatiques", description: "Répondez 24/7 sans lever le doigt", icon: MessageCircle, color: "bg-purple-50 text-purple-600", route: "/vendor/auto-messaging" },
-  { id: "verified", title: "Vendeur Vérifié", description: "Badge de confiance pour plus de ventes", icon: ShieldCheck, color: "bg-green-50 text-green-600", route: "/vendor/verified-seller" },
-  { id: "support", title: "Support Prioritaire", description: "Agent dédié, réponse sous 2h", icon: Headphones, color: "bg-red-50 text-red-600", route: "/vendor/priority-support" },
+  { id: "analytics", title: "Analytics Pro", description: "Vues, conversions, revenus en temps rï¿½el", icon: BarChart2, color: "bg-blue-50 text-blue-600", route: "/vendor/analytics-pro" },
+  { id: "featured", title: "Annonces en Vedette", description: "5ï¿½ plus de vues sur vos meilleures annonces", icon: Star, color: "bg-yellow-50 text-yellow-600", route: "/vendor/featured", badge: "HOT" },
+  { id: "bulk", title: "Import en Masse", description: "Publiez jusqu'ï¿½ 500 annonces via CSV", icon: Upload, color: "bg-teal-50 text-teal-600", route: "/vendor/bulk-upload" },
+  { id: "auto-msg", title: "Messages Automatiques", description: "Rï¿½pondez 24/7 sans lever le doigt", icon: MessageCircle, color: "bg-purple-50 text-purple-600", route: "/vendor/auto-messaging" },
+  { id: "verified", title: "Vendeur Vï¿½rifiï¿½", description: "Badge de confiance pour plus de ventes", icon: ShieldCheck, color: "bg-green-50 text-green-600", route: "/vendor/verified-seller" },
+  { id: "support", title: "Support Prioritaire", description: "Agent dï¿½diï¿½, rï¿½ponse sous 2h", icon: Headphones, color: "bg-red-50 text-red-600", route: "/vendor/priority-support" },
 ];
 
 const VendorPremiumTools: React.FC = () => {
@@ -46,7 +46,7 @@ const VendorPremiumTools: React.FC = () => {
           <Zap className="w-5 h-5 fill-white" />
           <span className="font-bold">Pack Premium Bambeh</span>
         </div>
-        <p className="text-sm text-teal-100 mb-3">Débloquez tous les outils pour dominer le marché camerounais.</p>
+        <p className="text-sm text-teal-100 mb-3">Dï¿½bloquez tous les outils pour dominer le marchï¿½ camerounais.</p>
         <button type="button" onClick={() => navigate("/vendor/subscription")}
           className="px-4 py-2 bg-white text-teal-700 rounded-xl text-sm font-bold hover:bg-teal-50 transition-colors">
           Voir les offres ?
@@ -78,6 +78,7 @@ const VendorPremiumTools: React.FC = () => {
 };
 
 export default VendorPremiumTools;
+
 
 
 

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Video } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -44,4 +44,5 @@ export default function VideoTutorials() {
     </div>
   );
 }
+
 

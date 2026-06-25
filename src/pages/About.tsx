@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ABOUT US PAGE - COMPLETE & BEAUTIFUL
  * The Bambeh Chronicle with Professional Stats
  */
@@ -349,6 +349,7 @@ export default function About() {
     </div>
   );
 }
+
 
 
 

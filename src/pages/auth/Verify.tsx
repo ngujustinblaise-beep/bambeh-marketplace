@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+﻿import React, { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
@@ -194,3 +194,4 @@ export default function Verify() {
     </AuthShell>
   );
 }
+

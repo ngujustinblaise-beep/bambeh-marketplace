@@ -1,4 +1,4 @@
-export const contactInfo = {
+﻿export const contactInfo = {
   en: {
     title: "Contact Us",
     categories: [
@@ -47,4 +47,5 @@ export const contactInfo = {
     footer: "� 2025 Bambeh. Tous droits r�serv�s.",
   },
 };
+
 

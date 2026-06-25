@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -94,6 +94,7 @@ export default function SplashScreen() {
     </div>
   );
 }
+
 
 
 

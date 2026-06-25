@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PROFILE ORDERS COMPONENT
  * FILE LOCATION: src/components/profile/ProfileOrders.tsx
  *
@@ -309,3 +309,4 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
     </div>
   );
 }
+

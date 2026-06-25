@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/services/vendor.service.ts
- * Bambeh Marketplace — Vendor Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Service
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
@@ -376,4 +376,5 @@ export async function getVendorSubscription(
     return { data: null, error: message };
   }
 }
+
 

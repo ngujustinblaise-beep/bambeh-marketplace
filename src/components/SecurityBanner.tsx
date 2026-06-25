@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/SecurityBanner.tsx
- * Bambeh Marketplace — Security / Trust Banner
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Security / Trust Banner
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
@@ -17,16 +17,16 @@ const SecurityBanner: React.FC<SecurityBannerProps> = ({
   className = "",
 }) => {
   const features = [
-    { icon: ShieldCheck, label: "Transactions sécurisées" },
-    { icon: Lock, label: "Données protégées" },
-    { icon: CheckCircle, label: "Vendeurs vérifiés" },
+    { icon: ShieldCheck, label: "Transactions sï¿½curisï¿½es" },
+    { icon: Lock, label: "Donnï¿½es protï¿½gï¿½es" },
+    { icon: CheckCircle, label: "Vendeurs vï¿½rifiï¿½s" },
   ];
 
   if (variant === "inline") {
     return (
       <div className={`flex items-center gap-1 text-xs text-green-700 ${className}`}>
         <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
-        <span>Paiement sécurisé</span>
+        <span>Paiement sï¿½curisï¿½</span>
       </div>
     );
   }
@@ -52,7 +52,7 @@ const SecurityBanner: React.FC<SecurityBannerProps> = ({
     >
       <div className="flex items-center gap-2 mb-3">
         <ShieldCheck className="w-5 h-5 text-green-600" />
-        <h3 className="text-sm font-semibold text-green-800">Bambeh — Achetez en toute confiance</h3>
+        <h3 className="text-sm font-semibold text-green-800">Bambeh ï¿½ Achetez en toute confiance</h3>
       </div>
       <div className="grid grid-cols-3 gap-3">
         {features.map(({ icon: Icon, label }) => (
@@ -69,6 +69,7 @@ const SecurityBanner: React.FC<SecurityBannerProps> = ({
 };
 
 export default SecurityBanner;
+
 
 
 

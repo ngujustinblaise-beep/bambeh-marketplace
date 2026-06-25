@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/hooks/useAppLang.ts — Bambeh Marketplace
  *
  * SAFE VERSION — zero external file dependencies. Never crashes regardless of
@@ -121,3 +121,4 @@ function wireGlobalLang(): void {
   } catch { /* ignore */ }
 }
 if (typeof window !== "undefined") wireGlobalLang();
+

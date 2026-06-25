@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type {
   SubscriptionTier, SubscriptionStatus, PaymentMethod,
   SubscriptionPayment, UserSubscription,
@@ -29,3 +29,4 @@ export const createTrialSubscription = (userId: string): UserSubscription => {
   exp.setDate(exp.getDate() + 7);
   return { id: `trial_${userId}`, userId, tier: "basic", status: "trial", startedAt: now.toISOString(), expiresAt: exp.toISOString(), autoRenew: false };
 };
+

@@ -1,5 +1,5 @@
-/**
- * src/hooks/useCamPay.ts — Bambeh Marketplace
+ï»¿/**
+ * src/hooks/useCamPay.ts ï¿½ Bambeh Marketplace
  * FILE LOCATION: src/hooks/useCamPay.ts
  */
 
@@ -196,3 +196,4 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
 
   return { status, errorMsg, reference, countdown, initPayment, reset };
 }
+

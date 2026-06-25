@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Star, TrendingUp, Eye, Clock, Plus, AlertCircle, CheckCircle, Package, Zap } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -69,6 +69,7 @@ export default function FeaturedListings(){
     </div>
   );
 }
+
 
 
 

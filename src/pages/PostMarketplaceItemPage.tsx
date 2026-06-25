@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
  *
  * FIXES — June 2026
@@ -611,5 +611,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const inputCls =
   "w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white transition";
+
 
 

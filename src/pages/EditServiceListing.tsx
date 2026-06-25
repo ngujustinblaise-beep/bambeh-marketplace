@@ -1,13 +1,13 @@
-/**
- * src/pages/EditServiceListing.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/EditServiceListing.tsx ï¿½ Bambeh Marketplace
  *
  * BUG FIX v2:
  * ? Previous version updated ONLY the services table, then fell back to listings
- *    on error — meaning if services update succeeded, listings table was never updated.
+ *    on error ï¿½ meaning if services update succeeded, listings table was never updated.
  *    Since OfferService inserts into BOTH tables, an edit must update BOTH tables.
  *    Fixed: now updates services AND listings independently (errors logged, not thrown).
- * ? price_type not a column in listings table — stored in extra JSONB. Preserved.
- * ? updated_at sent as ISO string — correct for both tables.
+ * ? price_type not a column in listings table ï¿½ stored in extra JSONB. Preserved.
+ * ? updated_at sent as ISO string ï¿½ correct for both tables.
  */
 
 import { useState, useEffect } from 'react';
@@ -131,14 +131,14 @@ export default function EditServiceListing() {
         updated_at:  now,
       };
 
-      // ? FIX: Update BOTH tables independently — not one OR the other.
+      // ? FIX: Update BOTH tables independently ï¿½ not one OR the other.
       // OfferService inserts to both, so both must stay in sync on edit.
       const [svcResult, lstResult] = await Promise.allSettled([
         supabase.from('services').update(serviceUpdates).eq('id', id),
         supabase.from('farm-images').update(listingUpdates).eq('id', id),
       ]);
 
-      // Log any errors (non-fatal — at least one table likely succeeded)
+      // Log any errors (non-fatal ï¿½ at least one table likely succeeded)
       if (svcResult.status === 'rejected') console.warn('services update failed:', svcResult.reason);
       if (lstResult.status === 'rejected') console.warn('listings update failed:', lstResult.reason);
 
@@ -290,6 +290,7 @@ export default function EditServiceListing() {
     </div>
   );
 }
+
 
 
 

@@ -1,13 +1,13 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * ScrollToTop.tsx - Auto scroll to top on route change
  * ---------------------------------------------------------------------------
  *
  * Fixes: When navigating between pages (e.g., Home ? Product Details),
  * the page stays scrolled to the bottom. This component resets scroll
- * position to top on every route change — both regular side and vendor side.
+ * position to top on every route change ï¿½ both regular side and vendor side.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -25,6 +25,7 @@ export const ScrollToTop = () => {
 };
 
 export default ScrollToTop;
+
 
 
 

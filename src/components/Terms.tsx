@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TERMS OF SERVICE PAGE
  * Complete legal terms for Bambeh Marketplace
  */
@@ -417,6 +417,7 @@ export default function Terms() {
     </div>
   );
 }
+
 
 
 

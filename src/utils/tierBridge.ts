@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import type { SubscriptionTier } from "../types/subscription";
 import { SUBSCRIPTION_PLANS } from "../config/subscriptionPlans";
 export type { SubscriptionTier };
@@ -51,3 +51,4 @@ export const ZERM_COIN_PACKAGES: ZermCoinPackage[] = [
 ];
 
 export const getTotalZermCoins = (pkg: ZermCoinPackage): number => pkg.amount + pkg.bonus;
+

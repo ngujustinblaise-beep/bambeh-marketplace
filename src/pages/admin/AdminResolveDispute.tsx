@@ -1,4 +1,4 @@
-import { useLang, t } from "@/hooks/useAppLang";
+﻿import { useLang, t } from "@/hooks/useAppLang";
 
 export default function AdminResolveDispute() {
   const lang = useLang();
@@ -12,6 +12,7 @@ export default function AdminResolveDispute() {
     </div>
   );
 }
+
 
 
 

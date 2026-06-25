@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/i18n/config.ts
- * Bambeh Marketplace — i18n Language Configuration
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ i18n Language Configuration
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // --- Supported Languages ------------------------------------------------------
@@ -18,7 +18,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
   {
     code: "fr",
     name: "French",
-    nativeName: "Français",
+    nativeName: "Franï¿½ais",
     flag: "????",
     rtl: false,
     region: "",
@@ -42,7 +42,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
   {
     code: "bassa",
     name: "Bassa",
-    nativeName: "Bàsàa",
+    nativeName: "Bï¿½sï¿½a",
     flag: "????",
     rtl: false,
     region: "Littoral",
@@ -149,4 +149,5 @@ export const I18N_NAMESPACES = [
 ] as const;
 
 export type I18nNamespace = (typeof I18N_NAMESPACES)[number];
+
 

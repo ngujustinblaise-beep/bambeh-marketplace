@@ -1,11 +1,11 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * PRODUCT MANAGEMENT COMPONENT
  * ---------------------------------------------------------------------------
  * 
  * Manage vendor products - view, edit, delete, toggle availability
  * 
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -260,6 +260,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({ vendorId }) => {
 }
 
 export default ProductManagement;
+
 
 
 

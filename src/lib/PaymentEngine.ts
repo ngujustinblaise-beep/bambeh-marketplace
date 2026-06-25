@@ -1,4 +1,4 @@
-export type PaymentSource = "cart" | "zerm" | "farmfresh" | "subscription" | "donation";
+﻿export type PaymentSource = "cart" | "zerm" | "farmfresh" | "subscription" | "donation";
 
 export interface PaymentPayload {
   amountXAF: number;
@@ -18,3 +18,4 @@ export function normalizePayment(payload: PaymentPayload) {
     timestamp: new Date().toISOString(),
   };
 }
+

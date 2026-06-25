@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CHAT & MESSAGING TYPE DEFINITIONS
  *
  * Type definitions for the real-time chat and messaging system
@@ -479,3 +479,4 @@ export interface DeliveryReceipt {
   deliveredAt: Date;
   readAt?: Date;
 }
+

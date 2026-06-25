@@ -1,4 +1,4 @@
-interface CacheItem<T> {
+﻿interface CacheItem<T> {
   data: T;
   timestamp: number;
   ttl: number;
@@ -35,3 +35,4 @@ class CacheManager {
 } // FIX: was missing closing brace for CacheManager class
 
 export const cacheManager = new CacheManager();
+

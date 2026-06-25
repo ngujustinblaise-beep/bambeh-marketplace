@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Verify from "./pages/auth/Verify";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -16,3 +16,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+

@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - CHAT SERVICE
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - CHAT SERVICE
  * Real-time messaging with Socket.io
  * Version: 1.0.0
  */
@@ -316,3 +316,4 @@ class ChatService {
 }
 
 export default new ChatService();
+

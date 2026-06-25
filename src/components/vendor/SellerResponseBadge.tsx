@@ -1,6 +1,6 @@
-/**
- * SellerResponseBadge.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+ï»¿/**
+ * SellerResponseBadge.tsx ï¿½ Bambeh Marketplace
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * Displays seller response time badge like Jiji.cm's "Responds in 2 hours".
  * Builds buyer trust and increases conversion rates.
@@ -28,7 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface ResponseStats {
   avgResponseMinutes: number | null;
-  responseRate: number; // 0–100 percentage
+  responseRate: number; // 0ï¿½100 percentage
   totalResponses: number;
   label: string;
   tier: "fast" | "normal" | "slow" | "new";
@@ -158,7 +158,7 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
   const { data: stats, isLoading } = useQuery({
     queryKey: ["seller-response", vendorId],
     queryFn: () => fetchResponseStats(vendorId),
-    staleTime: 10 * 60 * 1000, // 10 minutes — response stats don't change fast
+    staleTime: 10 * 60 * 1000, // 10 minutes ï¿½ response stats don't change fast
     gcTime: 30 * 60 * 1000,
     enabled: !!vendorId,
   });
@@ -257,6 +257,7 @@ export const SellerResponseBadge: React.FC<SellerResponseBadgeProps> = ({
 };
 
 export default SellerResponseBadge;
+
 
 
 

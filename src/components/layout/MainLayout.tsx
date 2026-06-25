@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  *
@@ -319,6 +319,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 };
 
 export default MainLayout;
+
 
 
 

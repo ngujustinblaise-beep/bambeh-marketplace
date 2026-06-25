@@ -1,5 +1,5 @@
-/**
- * src/pages/SearchWithSuggestions.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/SearchWithSuggestions.tsx ï¿½ Bambeh Marketplace
  * FIXED: Was a stub with wrong Firebase AuthContext.
  * Now redirects to /search (SearchResults.tsx) which reads from Supabase.
  * Any deep link or direct nav to /search-suggestions goes to the real search.
@@ -40,6 +40,7 @@ export default function SearchWithSuggestions() {
     </div>
   );
 }
+
 
 
 

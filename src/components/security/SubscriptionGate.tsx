@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SUBSCRIPTION GATE
  * FILE LOCATION: src/components/security/SubscriptionGate.tsx
  */
@@ -152,6 +152,7 @@ export const useSubscription = () => {
 };
 
 export { checkSubscription, SubscriptionRequiredPage };
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/ui/ReferralButton.tsx
  * Bambeh Marketplace — Referral Share Button
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -174,5 +174,6 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
 };
 
 export default ReferralButton;
+
 
 

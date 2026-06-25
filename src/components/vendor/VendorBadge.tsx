@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import type { VendorStatus, VendorVerificationLevel } from "@/types/vendor";
 
@@ -77,5 +77,6 @@ const VendorBadge: React.FC<VendorBadgeProps> = ({ status, verificationLevel, sh
 export default VendorBadge;
 export { VendorIcon, VendorCardBadge, BecomeVendorButton };
 export type { VendorIconProps, VendorCardBadgeProps, BecomeVendorButtonProps };
+
 
 

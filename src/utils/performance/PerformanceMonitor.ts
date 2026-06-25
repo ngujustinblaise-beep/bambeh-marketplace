@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/utils/performance/PerformanceMonitor.ts
- * Bambeh Marketplace — Performance Monitor + singleton + formatBytes
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Performance Monitor + singleton + formatBytes
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";
@@ -22,7 +22,7 @@ export interface PerformanceReport {
   generatedAt: string;
 }
 
-// --- formatBytes — exported for PerformanceTest.tsx --------------------------
+// --- formatBytes ï¿½ exported for PerformanceTest.tsx --------------------------
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   const k = 1024;
@@ -132,3 +132,4 @@ export function requestIdleOrTimeout(callback: () => void, timeoutMs = 2000): vo
     setTimeout(callback, 0);
   }
 }
+

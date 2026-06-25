@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - ENVIRONMENT CONFIGURATION
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - ENVIRONMENT CONFIGURATION
  * Advanced Features Configuration
  * Version: 1.0.0
  */
@@ -10,7 +10,7 @@ export const ENV_CONFIG = {
     API_KEY: "YOUR_GOOGLE_MAPS_API_KEY_HERE", // Get from Google Cloud Console,
     LIBRARIES: ["places", "geometry", "directions"] as const,
     DEFAULT_CENTER: {
-      lat: 3.848, // Yaoundé, ,
+      lat: 3.848, // Yaoundï¿½, ,
       lng: 11.5021,
     },
     DEFAULT_ZOOM: 13,
@@ -62,7 +62,7 @@ export const ENV_CONFIG = {
     SMTP_USER: "apikey",
     SMTP_PASSWORD: "YOUR_SENDGRID_API_KEY_HERE",
     FROM_EMAIL: "noreply@bambe.cm",
-    FROM_NAME: "Bambé Marketplace",
+    FROM_NAME: "Bambï¿½ Marketplace",
   },
 
   // Backend API Configuration
@@ -85,4 +85,5 @@ export const ENV_CONFIG = {
 };
 
 export default ENV_CONFIG;
+
 

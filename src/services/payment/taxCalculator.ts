@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ════════════════════════════════════════════════════════════════
  * src/services/payment/taxCalculator.ts
  * Government Tax Calculator for Bambeh Marketplace
@@ -75,3 +75,4 @@ export function formatTaxAmount(amount: number): string {
   const tax = Math.max(1, Math.ceil(amount * GOV_TAX_RATE));
   return formatXAF(tax);
 }
+

@@ -1,11 +1,11 @@
-// FILE: src/components/common/SubscriptionGateModal.tsx
+Ôªø// FILE: src/components/common/SubscriptionGateModal.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Star, Zap, Lock } from 'lucide-react';
 
 const TRANSLATIONS: Record<string, Record<string, string>> = {
-  en: { title: 'Unlock This Feature', sub: 'Subscribe and let us take the load from here.', body: 'This feature is available to subscribed members. Join Bambeh today ó all for as little as 100 XAF.', cta: 'View Subscription Plans', cancel: 'Maybe Later' },
-  fr: { title: 'DÈbloquez cette fonctionnalitÈ', sub: 'Abonnez-vous et laissez-nous gÈrer le reste.', body: 'Rejoignez Bambeh ó dËs 100 XAF.', cta: 'Voir les forfaits', cancel: 'Peut-Ítre plus tard' },
+  en: { title: 'Unlock This Feature', sub: 'Subscribe and let us take the load from here.', body: 'This feature is available to subscribed members. Join Bambeh today ÔøΩ all for as little as 100 XAF.', cta: 'View Subscription Plans', cancel: 'Maybe Later' },
+  fr: { title: 'DÔøΩbloquez cette fonctionnalitÔøΩ', sub: 'Abonnez-vous et laissez-nous gÔøΩrer le reste.', body: 'Rejoignez Bambeh ÔøΩ dÔøΩs 100 XAF.', cta: 'Voir les forfaits', cancel: 'Peut-ÔøΩtre plus tard' },
   ha: { title: 'Bu?e wannan fasalin', sub: 'Yi rajista mana mu ?auki nauyi daga nan.', body: 'Ku shiga Bambeh yau.', cta: 'Duba Tsare-tsare', cancel: 'Wata?ila daga baya' },
   ar: { title: '?ŸÅ?? ??? ??????', sub: '????? ????? ????? ????? ?? ???.', body: '???? ??? Bambeh ?????.', cta: '??? ??? ????????', cancel: '???? ??????' },
 };
@@ -53,6 +53,7 @@ export default function SubscriptionGateModal({ open, onClose, message }: Props)
     </div>
   );
 }
+
 
 
 

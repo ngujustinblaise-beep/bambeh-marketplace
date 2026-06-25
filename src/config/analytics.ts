@@ -1,4 +1,4 @@
-// src/config/analytics.ts
+﻿// src/config/analytics.ts
 import ReactGA from "react-ga4";
 
 export const initGA = () => {
@@ -17,3 +17,4 @@ export const logEvent = (category: string, action: string, label?: string) => {
     label
   });
 }
+

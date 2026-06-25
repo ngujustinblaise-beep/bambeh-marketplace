@@ -1,8 +1,8 @@
-/**
- * src/pages/ProductDetails.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/ProductDetails.tsx ï¿½ Bambeh Marketplace
  *
  * FIXED:
- *  ? Was showing "Product #id" with 0 XAF — now resolves from SAMPLE_MARKETPLACE
+ *  ? Was showing "Product #id" with 0 XAF ï¿½ now resolves from SAMPLE_MARKETPLACE
  *  ? Shows beautiful Unsplash product image
  *  ? Add to Cart wired to CartContext (useCart)
  *  ? Favorite button wired to CartContext (toggleFavorite)
@@ -72,7 +72,7 @@ export default function ProductDetails() {
     if (!product) return;
     const shareData = {
       title: product.title,
-      text:  `${product.title} — ${fmt(product.priceXAF)} XAF on Bambeh`,
+      text:  `${product.title} ï¿½ ${fmt(product.priceXAF)} XAF on Bambeh`,
       url:   `https://bambeh.com/#/marketplace/${product.id}`,
     };
     if (navigator.share) {
@@ -127,7 +127,7 @@ export default function ProductDetails() {
 
         {/* DEMO badge */}
         <div className="absolute top-3 left-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full shadow">
-          DEMO — Sample Item
+          DEMO ï¿½ Sample Item
         </div>
 
         {/* Favourite button */}
@@ -197,14 +197,14 @@ export default function ProductDetails() {
             </div>
             <div className="flex-1">
               <p className="font-semibold text-gray-900 dark:text-white text-sm">{product.sellerName}</p>
-              <p className="text-xs text-gray-400">Verified Bambeh Seller · {product.location}</p>
+              <p className="text-xs text-gray-400">Verified Bambeh Seller ï¿½ {product.location}</p>
             </div>
           </div>
 
           {/* Contact buttons */}
           <div className="flex gap-2 mt-3">
             <a
-              href={`https://wa.me/237600000000?text=${encodeURIComponent(`Hi, I'm interested in your listing: ${product.title} — ${fmt(product.priceXAF)} XAF on Bambeh`)}`}
+              href={`https://wa.me/237600000000?text=${encodeURIComponent(`Hi, I'm interested in your listing: ${product.title} ï¿½ ${fmt(product.priceXAF)} XAF on Bambeh`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 transition"
@@ -252,13 +252,14 @@ export default function ProductDetails() {
           {added ? (
             <><CheckCircle className="w-5 h-5" /> Added to Cart!</>
           ) : (
-            <><ShoppingCart className="w-5 h-5" /> Add to Cart — {fmt(product.priceXAF * qty)} XAF</>
+            <><ShoppingCart className="w-5 h-5" /> Add to Cart ï¿½ {fmt(product.priceXAF * qty)} XAF</>
           )}
         </button>
       </div>
     </div>
   );
 }
+
 
 
 

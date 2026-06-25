@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+ï»¿import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw, Eye, AlertCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -12,7 +12,7 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Rentals",
     "rentals.listProperty": "List Property",
     "rentals.refresh": "Refresh",
-    "rentals.search": "Search by name or neighbourhood…",
+    "rentals.search": "Search by name or neighbourhoodï¿½",
     "rentals.maxRent": "Max Rent",
     "rentals.allCities": "All Cities",
     "rentals.allTypes": "All Types",
@@ -20,10 +20,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "Furnished",
     "rentals.views": "views",
     "rentals.view": "view",
-    "rentals.sampleListing": "Sample — not a real listing",
+    "rentals.sampleListing": "Sample ï¿½ not a real listing",
     "rentals.expiringSoon": "Expiring soon",
     "rentals.propertiesFound": "{{count}} propert{{suffix}} found",
-    "rentals.loading": "Loading properties…",
+    "rentals.loading": "Loading propertiesï¿½",
     "rentals.error": "Could not load listings. Showing demo data.",
     "rentals.noPropertiesTitle": "No properties found",
     "rentals.noPropertiesHint": "Try widening your filters or list your own property."
@@ -32,27 +32,27 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Locations",
     "rentals.listProperty": "Publier une location",
     "rentals.refresh": "Actualiser",
-    "rentals.search": "Rechercher par nom ou quartier…",
+    "rentals.search": "Rechercher par nom ou quartierï¿½",
     "rentals.maxRent": "Loyer max",
     "rentals.allCities": "Toutes les villes",
     "rentals.allTypes": "Tous les types",
     "rentals.perMonth": "XAF/mois",
-    "rentals.furnished": "Meublé",
+    "rentals.furnished": "Meublï¿½",
     "rentals.views": "vues",
     "rentals.view": "vue",
-    "rentals.sampleListing": "Exemple — annonce fictive",
-    "rentals.expiringSoon": "Bientôt expiré",
-    "rentals.propertiesFound": "{{count}} propriété{{suffix}} trouvée{{suffix}}",
-    "rentals.loading": "Chargement des propriétés…",
-    "rentals.error": "Impossible de charger les annonces. Affichage des données de démonstration.",
-    "rentals.noPropertiesTitle": "Aucune propriété trouvée",
-    "rentals.noPropertiesHint": "Élargissez vos filtres ou publiez votre propriété."
+    "rentals.sampleListing": "Exemple ï¿½ annonce fictive",
+    "rentals.expiringSoon": "Bientï¿½t expirï¿½",
+    "rentals.propertiesFound": "{{count}} propriï¿½tï¿½{{suffix}} trouvï¿½e{{suffix}}",
+    "rentals.loading": "Chargement des propriï¿½tï¿½sï¿½",
+    "rentals.error": "Impossible de charger les annonces. Affichage des donnï¿½es de dï¿½monstration.",
+    "rentals.noPropertiesTitle": "Aucune propriï¿½tï¿½ trouvï¿½e",
+    "rentals.noPropertiesHint": "ï¿½largissez vos filtres ou publiez votre propriï¿½tï¿½."
   },
   ar: {
     "rentals.title": "?????????",
     "rentals.listProperty": "??? ??????",
     "rentals.refresh": "?????",
-    "rentals.search": "???? ?????? ?? ????…",
+    "rentals.search": "???? ?????? ?? ????ï¿½",
     "rentals.maxRent": "???? ?????",
     "rentals.allCities": "?? ?????",
     "rentals.allTypes": "?? ???????",
@@ -60,10 +60,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "?????",
     "rentals.views": "???????",
     "rentals.view": "??????",
-    "rentals.sampleListing": "???? — ??? ??????? ???????",
+    "rentals.sampleListing": "???? ï¿½ ??? ??????? ???????",
     "rentals.expiringSoon": "????? ??????",
     "rentals.propertiesFound": "?? ?????? ??? {{count}} ????",
-    "rentals.loading": "???? ????? ????????…",
+    "rentals.loading": "???? ????? ????????ï¿½",
     "rentals.error": "???? ????? ?????????. ??? ??? ?????? ???????.",
     "rentals.noPropertiesTitle": "?? ???? ??????",
     "rentals.noPropertiesHint": "???? ???? ????? ??????? ?? ???? ?????."
@@ -72,7 +72,7 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Luwaaji",
     "rentals.listProperty": "Windude suudu",
     "rentals.refresh": "Hes?itin",
-    "rentals.search": "Yiilo innde wala wuro…",
+    "rentals.search": "Yiilo innde wala wuroï¿½",
     "rentals.maxRent": "Coggu ?urtu?o",
     "rentals.allCities": "Gure fof",
     "rentals.allTypes": "Sifaaji fof",
@@ -80,10 +80,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "Hee?aa?o",
     "rentals.views": "njiyaali",
     "rentals.view": "njiyaa",
-    "rentals.sampleListing": "Misal — wonaa bayyinaango goonga",
+    "rentals.sampleListing": "Misal ï¿½ wonaa bayyinaango goonga",
     "rentals.expiringSoon": "Aray timmude",
     "rentals.propertiesFound": "{{count}} cuu?i ke?aama",
-    "rentals.loading": "Loowugol cuu?i…",
+    "rentals.loading": "Loowugol cuu?iï¿½",
     "rentals.error": "Ro?ki loowude bayyinaali. Hollirde ke?e ndaar?e.",
     "rentals.noPropertiesTitle": "Cuu?i alaa",
     "rentals.noPropertiesHint": "Yaaju filtaaji maa, walla windu suudu maa."
@@ -92,7 +92,7 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Rentals",
     "rentals.listProperty": "Post House",
     "rentals.refresh": "Refresh",
-    "rentals.search": "Find by name or quarter…",
+    "rentals.search": "Find by name or quarterï¿½",
     "rentals.maxRent": "Max Rent",
     "rentals.allCities": "All Towns",
     "rentals.allTypes": "All Types",
@@ -100,10 +100,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "Get furniture",
     "rentals.views": "views",
     "rentals.view": "view",
-    "rentals.sampleListing": "Sample — no be real listing",
+    "rentals.sampleListing": "Sample ï¿½ no be real listing",
     "rentals.expiringSoon": "E go soon finish",
     "rentals.propertiesFound": "{{count}} house dem dey",
-    "rentals.loading": "E dey load houses…",
+    "rentals.loading": "E dey load housesï¿½",
     "rentals.error": "E no fit load listings. We dey show demo.",
     "rentals.noPropertiesTitle": "No house dey",
     "rentals.noPropertiesHint": "Open your filter small, or post your own house."
@@ -138,13 +138,13 @@ interface Property {
 }
 
 const SAMPLE: Property[] = [
-  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaoundé", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
+  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaoundï¿½", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
   { id: "demo-2", title: "Spacious villa in Bonamoussadi", type: "Villa", price: 350000, location: "Douala", quartier: "Bonamoussadi", bedrooms: "4", bathrooms: "3", description: "4-bedroom villa with garden and parking.", postedAt: new Date().toISOString(), isDemo: true },
-  { id: "demo-3", title: "Studio near University of Yaoundé", type: "Studio", price: 60000, location: "Yaoundé", quartier: "Ngoa-Ekélé", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
+  { id: "demo-3", title: "Studio near University of Yaoundï¿½", type: "Studio", price: 60000, location: "Yaoundï¿½", quartier: "Ngoa-Ekï¿½lï¿½", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
   { id: "demo-4", title: "Professional office space in Akwa", type: "Office", price: 200000, location: "Douala", quartier: "Akwa", bedrooms: "N/A", bathrooms: "1", description: "Professional office space in prime location.", postedAt: new Date().toISOString(), isDemo: true },
 ];
 
-const CITIES = ["allCities", "Yaoundé", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaoundéré", "Bertoua", "Ebolowa", "Kumba"];
+const CITIES = ["allCities", "Yaoundï¿½", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaoundï¿½rï¿½", "Bertoua", "Ebolowa", "Kumba"];
 const TYPES = ["allTypes", "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop"];
 
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
@@ -393,4 +393,5 @@ export default function Rentals() {
     </div>
   );
 }
+
 

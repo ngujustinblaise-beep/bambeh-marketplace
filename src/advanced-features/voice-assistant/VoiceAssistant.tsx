@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+﻿import React, { useState, useCallback } from "react";
 import TranscriptDisplay from "./components/TranscriptDisplay";
 
 interface ConversationEntry {
@@ -61,5 +61,6 @@ const VoiceAssistant: React.FC = () => {
 };
 
 export default VoiceAssistant;
+
 
 

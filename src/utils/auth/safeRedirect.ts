@@ -1,9 +1,9 @@
-/**
- * safeRedirect.ts — Bambeh Marketplace
+ï»¿/**
+ * safeRedirect.ts ï¿½ Bambeh Marketplace
  * ============================================================
  * FIXES:
- *   1. Open redirect vulnerability — sanitizes all stored redirect paths
- *   2. window.location.href in backButton — provides a React Router
+ *   1. Open redirect vulnerability ï¿½ sanitizes all stored redirect paths
+ *   2. window.location.href in backButton ï¿½ provides a React Router
  *      compatible navigation service for use outside React components
  * ============================================================
  */
@@ -136,3 +136,4 @@ class _NavigationService {
 }
 
 export const NavigationService = new _NavigationService();
+

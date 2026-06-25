@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * SecurityHeaders.ts
  * -----------------------------------------------------------------------------
  * WHAT CHANGED:
@@ -60,17 +60,17 @@ const devExtras = isDev
 // CONTENT SECURITY POLICY
 // -----------------------------------------------------------------------------
 export const contentSecurityPolicy = [
-  // default fallback — deny everything not explicitly listed
+  // default fallback ï¿½ deny everything not explicitly listed
   `default-src 'self' ${CAPACITOR_DOMAINS}`,
 
-  // Scripts — NO unsafe-inline, NO unsafe-eval in production
+  // Scripts ï¿½ NO unsafe-inline, NO unsafe-eval in production
   // Note: React itself does not require unsafe-inline for its runtime JS.
   // If you have inline <script> tags, move them to .js files.
   isProd
     ? `script-src 'self' ${GA_DOMAINS} ${CAPACITOR_DOMAINS}`
     : `script-src 'self' 'unsafe-eval' ${devExtras}`, // eval needed for Vite HMR in dev
 
-  // Styles — NO unsafe-inline in production
+  // Styles ï¿½ NO unsafe-inline in production
   // Note: Tailwind CSS is compiled at build time so it does NOT need unsafe-inline.
   // If you have any style={{ }} JSX props that generate <style> tags, they will
   // be blocked in production. Use className instead.
@@ -81,10 +81,10 @@ export const contentSecurityPolicy = [
   // Fonts
   `font-src 'self' https://fonts.gstatic.com data:`,
 
-  // Images — allow Firebase Storage, data URIs, blob for image previews
+  // Images ï¿½ allow Firebase Storage, data URIs, blob for image previews
   `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.googleusercontent.com`,
 
-  // API connections — NO http: in production
+  // API connections ï¿½ NO http: in production
 [
     `connect-src 'self'`,
     FIREBASE_DOMAINS,
@@ -104,13 +104,13 @@ export const contentSecurityPolicy = [
   // Workers (Sentry uses a worker for performance monitoring)
   `worker-src 'self' blob:`,
 
-  // Frames — block all iframes (prevents clickjacking)
+  // Frames ï¿½ block all iframes (prevents clickjacking)
   `frame-src 'none'`,
 
-  // Frame ancestors — block embedding in other sites
+  // Frame ancestors ï¿½ block embedding in other sites
   `frame-ancestors 'none'`,
 
-  // Forms — only submit to our own origin
+  // Forms ï¿½ only submit to our own origin
   `form-action 'self' ${NOTCHPAY_DOMAINS}`,
 
   // Block mixed content (http resources on https pages),
@@ -137,7 +137,7 @@ export const securityHeaders: Record<string, string> = {
   "X-XSS-Protection": "1; mode=block",
 
   // Force HTTPS for 2 years (includes subdomains)
-  // Only apply in production — Capacitor local dev uses http,
+  // Only apply in production ï¿½ Capacitor local dev uses http,
   ...(isProd
     ? {
         "Strict-Transport-Security":
@@ -163,7 +163,7 @@ export const securityHeaders: Record<string, string> = {
 };
 
 // -----------------------------------------------------------------------------
-// FIREBASE HOSTING — firebase.json
+// FIREBASE HOSTING ï¿½ firebase.json
 // -----------------------------------------------------------------------------
 /**
  * Add this to your firebase.json hosting section to apply security headers:
@@ -208,3 +208,4 @@ export function injectCSPMetaTag(): void {
 // -- Export default for easy import --------------------------------------------
 }
 export default securityHeaders;
+

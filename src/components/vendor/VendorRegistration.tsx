@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/vendor/VendorRegistration.tsx
- * Bambeh Marketplace — Vendor Registration Form
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Registration Form
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -27,14 +27,14 @@ interface FormState {
 }
 
 const CATEGORIES = [
-  "Électronique", "Mode & Vêtements", "Alimentation", "Agriculture",
-  "Meubles", "Santé & Beauté", "Sports", "Livres", "Services",
-  "Véhicules", "Immobilier", "Autre",
+  "ï¿½lectronique", "Mode & Vï¿½tements", "Alimentation", "Agriculture",
+  "Meubles", "Santï¿½ & Beautï¿½", "Sports", "Livres", "Services",
+  "Vï¿½hicules", "Immobilier", "Autre",
 ];
 
 const _CITIES = [
-  "Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua",
-  "Bafoussam", "Ngaoundéré", "Kumba", "Nkongsamba", "Limbe",
+  "Yaoundï¿½", "Douala", "Garoua", "Bamenda", "Maroua",
+  "Bafoussam", "Ngaoundï¿½rï¿½", "Kumba", "Nkongsamba", "Limbe",
 ];
 
 const VendorRegistration: React.FC<VendorRegistrationProps> = ({
@@ -70,14 +70,14 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
 
   const validateStep1 = (): string | null => {
     if (!form.storeName.trim()) return "Le nom de la boutique est obligatoire";
-    if (form.storeName.trim().length < 3) return "Le nom doit contenir au moins 3 caractères";
-    if (!form.category) return "Veuillez sélectionner une catégorie";
+    if (form.storeName.trim().length < 3) return "Le nom doit contenir au moins 3 caractï¿½res";
+    if (!form.category) return "Veuillez sï¿½lectionner une catï¿½gorie";
     return null;
   };
 
   const validateStep2 = (): string | null => {
-    if (!form.city) return "Veuillez sélectionner votre ville";
-    if (!form.phone.trim()) return "Le numéro de téléphone est obligatoire";
+    if (!form.city) return "Veuillez sï¿½lectionner votre ville";
+    if (!form.phone.trim()) return "Le numï¿½ro de tï¿½lï¿½phone est obligatoire";
     if (!form.email.trim()) return "L'email est obligatoire";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) return "Email invalide";
@@ -117,7 +117,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
       });
 
       if (!ok || apiError) {
-        setError(apiError ?? "Erreur lors de la création de la boutique");
+        setError(apiError ?? "Erreur lors de la crï¿½ation de la boutique");
         return;
       }
 
@@ -136,9 +136,9 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Boutique créée avec succès!</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Boutique crï¿½ï¿½e avec succï¿½s!</h2>
         <p className="text-sm text-gray-500">
-          Votre boutique Bambeh est maintenant active. Commencez à ajouter vos produits!
+          Votre boutique Bambeh est maintenant active. Commencez ï¿½ ajouter vos produits!
         </p>
       </div>
     );
@@ -168,8 +168,8 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
       {step === 1 && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Créer votre boutique</h2>
-            <p className="text-sm text-gray-500">Étape 1: Informations de la boutique</p>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Crï¿½er votre boutique</h2>
+            <p className="text-sm text-gray-500">ï¿½tape 1: Informations de la boutique</p>
           </div>
 
           <div>
@@ -193,7 +193,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Catégorie *
+              Catï¿½gorie *
             </label>
             <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden focus-within:border-teal-500">
               <div className="px-3 py-2.5 bg-gray-50 border-r border-gray-300">
@@ -204,7 +204,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
                 onChange={updateField("category")}
                 className="flex-1 px-3 py-2.5 outline-none text-sm bg-white"
               >
-                <option value="">Sélectionner une catégorie</option>
+                <option value="">Sï¿½lectionner une catï¿½gorie</option>
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -223,7 +223,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
               <textarea
                 value={form.storeDescription}
                 onChange={updateField("storeDescription")}
-                placeholder="Décrivez votre boutique, vos produits et services..."
+                placeholder="Dï¿½crivez votre boutique, vos produits et services..."
                 rows={3}
                 className="w-full px-3 py-2.5 outline-none text-sm resize-none"
                 maxLength={300}
@@ -241,7 +241,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
         <div className="space-y-4">
           <div>
             <h2 className="text-lg font-bold text-gray-900 mb-1">Informations de contact</h2>
-            <p className="text-sm text-gray-500">Étape 2: Localisation et contact</p>
+            <p className="text-sm text-gray-500">ï¿½tape 2: Localisation et contact</p>
           </div>
 
           <div>
@@ -255,7 +255,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
                 onChange={updateField("city")}
                 className="flex-1 px-3 py-2.5 outline-none text-sm bg-white"
               >
-                <option value="">Sélectionner votre ville</option>
+                <option value="">Sï¿½lectionner votre ville</option>
                 {_CITIES.map((city) => (
                   <option key={city} value={city}>{city}</option>
                 ))}
@@ -264,7 +264,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tï¿½lï¿½phone *</label>
             <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden focus-within:border-teal-500">
               <div className="px-3 py-2.5 bg-gray-50 border-r border-gray-300">
                 <Phone className="w-4 h-4 text-gray-400" />
@@ -334,7 +334,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
             className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {loading ? "Création..." : "Créer ma boutique"}
+            {loading ? "Crï¿½ation..." : "Crï¿½er ma boutique"}
           </button>
         )}
       </div>
@@ -353,6 +353,7 @@ const VendorRegistration: React.FC<VendorRegistrationProps> = ({
 };
 
 export default VendorRegistration;
+
 
 
 

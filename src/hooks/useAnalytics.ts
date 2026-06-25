@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import { useCallback } from "react";
 
 export const useAnalytics = () => {
@@ -15,7 +15,7 @@ export const useAnalytics = () => {
   const captureError     = trackError;
   const setUserProperties = useCallback((props: Record<string, unknown>): void => trackEvent("user_properties", props), [trackEvent]);
 
-  // Stubbed sub-trackers — components may destructure these
+  // Stubbed sub-trackers ï¿½ components may destructure these
   const ga       = { trackEvent };
   const mixpanel = { trackEvent };
   const sentry   = { captureException: trackError };
@@ -26,3 +26,4 @@ export const useAnalytics = () => {
     setUserProperties, ga, mixpanel, sentry,
   };
 };
+

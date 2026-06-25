@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/i18n/rentals.ts — Bambeh Marketplace
  * Rental-module translation keys for all 6 supported languages:
  *   en | fr | ha | ar | pcm (Pidgin) | ff (Fulfulde)
@@ -612,3 +612,4 @@ export const rentalsFF = {
   "rentals.bookError":          "Rokkitaako. Toppito.",
   "rentals.bookLoginRequired":  "Naatir ngam naat yiyeede.",
 };
+

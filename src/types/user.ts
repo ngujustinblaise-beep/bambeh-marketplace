@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // USER TYPE DEFINITIONS - FIXED VERSION
 // File: src/types/user.ts
 // ============================================
@@ -41,3 +41,4 @@ export interface AuthResponse {
   token?: string;
   message?: string;
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * APP ENHANCERS - Performance & Security Wrappers
  */
 
@@ -98,6 +98,7 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
 };
 
 export default { AppErrorBoundary, RouteTracker, PerformanceMonitor };
+
 
 
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+ï»¿import { useState, useEffect } from "react";
 import { Mic, MicOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -15,9 +15,9 @@ const voiceCommands: Record<string, Record<string, string>> = {
     "my favorites": "/favorites",
   },
   fr: {
-    "aller à l'accueil": "/home",
+    "aller ï¿½ l'accueil": "/home",
     "afficher les emplois": "/jobs",
-    "ouvrir le marché": "/marketplace",
+    "ouvrir le marchï¿½": "/marketplace",
     rechercher: "/search?q=",
     "mon profil": "/profile",
     "afficher le panier": "/cart",
@@ -201,6 +201,7 @@ const VoiceControl = ({ enabled }: VoiceControlProps) => {
 };
 
 export default VoiceControl;
+
 
 
 

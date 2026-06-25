@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * ADMIN PORTAL TYPE DEFINITIONS
  * ---------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  *
  * FILE LOCATION: src/types/admin.ts
  *
- * © 2025 Bambé. All rights reserved.
+ * ï¿½ 2025 Bambï¿½. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -543,3 +543,4 @@ export interface AdminContextActions {
 }
 
 export type AdminContextType = AdminContextState & AdminContextActions;
+

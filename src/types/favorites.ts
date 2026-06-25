@@ -1,4 +1,4 @@
-export interface FavoriteItem {
+﻿export interface FavoriteItem {
   id: string;
   itemId: string;
   itemTitle: string;
@@ -8,3 +8,4 @@ export interface FavoriteItem {
   currency?: string;
   addedAt: string;
 }
+

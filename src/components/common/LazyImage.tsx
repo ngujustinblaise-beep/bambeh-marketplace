@@ -1,4 +1,4 @@
-// FILE: src/components/common/LazyImage.tsx
+﻿// FILE: src/components/common/LazyImage.tsx
 import { useState, useEffect, useRef } from 'react';
 
 interface LazyImageProps {
@@ -48,6 +48,7 @@ export default function LazyImage({
     />
   );
 }
+
 
 
 

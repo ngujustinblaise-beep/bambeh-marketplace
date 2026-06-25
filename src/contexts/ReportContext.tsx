@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REPORT CONTEXT - CENTRALIZED REPORT MANAGEMENT
  * FILE LOCATION: src/contexts/ReportContext.tsx
  * © 2025 Bambeh. All rights reserved.
@@ -467,6 +467,7 @@ export const useReports = (): ReportContextType => {
 };
 
 export default ReportContext;
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * ADMIN REPORTS PANEL
  * FILE LOCATION: src/components/admin/AdminReportsPanel.tsx
@@ -451,5 +451,6 @@ const AdminReportsPanel: React.FC<AdminReportsPanelProps> = ({
 };
 
 export default AdminReportsPanel;
+
 
 

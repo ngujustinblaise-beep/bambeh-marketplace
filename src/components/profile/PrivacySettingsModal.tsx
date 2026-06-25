@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PRIVACY SETTINGS MODAL - Comprehensive Privacy Controls
  * FILE LOCATION: src/components/profile/PrivacySettingsModal.tsx
  */
@@ -212,6 +212,7 @@ export default function PrivacySettingsModal({ onClose }: PrivacySettingsModalPr
     </div>
   );
 }
+
 
 
 

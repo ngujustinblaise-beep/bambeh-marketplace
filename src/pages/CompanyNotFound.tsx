@@ -1,8 +1,8 @@
-/**
- * src/pages/CompanyNotFound.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/CompanyNotFound.tsx ï¿½ Bambeh Marketplace
  *
  * FIXES applied:
- *  ? CRITICAL: Removed usage-example comments placed AFTER the closing brace — they
+ *  ? CRITICAL: Removed usage-example comments placed AFTER the closing brace ï¿½ they
  *     were inside the function body in the original, which caused a TypeScript parse
  *     error: "Unreachable code detected" / code after return statement.
  *  ? Stray comma after the conditional paragraph block removed (JSX syntax error).
@@ -59,9 +59,9 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
               <div className="text-left">
                 <p className="text-sm font-semibold text-blue-900 mb-1">What happened?</p>
                 <ul className="text-xs text-blue-700 space-y-1">
-                  <li>• The company may not have created a profile yet</li>
-                  <li>• The profile link may be incorrect</li>
-                  <li>• The company may have removed their profile</li>
+                  <li>ï¿½ The company may not have created a profile yet</li>
+                  <li>ï¿½ The profile link may be incorrect</li>
+                  <li>ï¿½ The company may have removed their profile</li>
                 </ul>
               </div>
             </div>
@@ -111,6 +111,7 @@ export default function CompanyNotFound({ companyName, onClose }: CompanyNotFoun
     </div>
   );
 }
+
 
 
 

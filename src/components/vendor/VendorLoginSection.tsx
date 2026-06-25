@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR LOGIN SECTION COMPONENT
  * ---------------------------------------------------------------------------
@@ -13,7 +13,7 @@
  * 
  * FILE LOCATION: src/components/vendor/VendorLoginSection.tsx
  * 
- * © 2025 Bambé. All rights reserved.
+ * ï¿½ 2025 Bambï¿½. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -164,6 +164,7 @@ export function VendorPortalLink() {
     </div>
   );
 }
+
 
 
 

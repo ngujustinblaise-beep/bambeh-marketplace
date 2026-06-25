@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/Search/SearchBar.tsx
- * Bambeh Marketplace — Search Bar Component
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Search Bar Component
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useRef, useCallback } from "react";
@@ -184,7 +184,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           {recentSearches.length > 0 && !query && (
             <div className="py-2 border-t border-gray-100">
               <div className="flex items-center justify-between px-4 py-1">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Récents</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Rï¿½cents</p>
                 <button
                   type="button"
                   onMouseDown={clearRecentSearches}
@@ -227,7 +227,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 <TrendingUp className="w-4 h-4 text-teal-500" />
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tendances</p>
               </div>
-              {["Téléphones", "Emplois Yaoundé", "Appartements", "Motos"].map((t) => (
+              {["Tï¿½lï¿½phones", "Emplois Yaoundï¿½", "Appartements", "Motos"].map((t) => (
                 <button
                   key={t}
                   type="button"
@@ -247,6 +247,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 };
 
 export default SearchBar;
+
 
 
 

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ListingCard, Listing } from './ListingCard';
 
 interface ListingGridProps {
@@ -42,6 +42,7 @@ export function ListingGrid({ listings }: ListingGridProps) {
     </div>
   );
 }
+
 
 
 

@@ -1,5 +1,5 @@
-/**
- * src/pages/vendor/VendorPublicProfile.tsx — Bambeh Marketplace
+ï»¿/**
+ * src/pages/vendor/VendorPublicProfile.tsx ï¿½ Bambeh Marketplace
  * FIXED: Reads real vendor data from Supabase vendor_profiles table.
  * Also loads vendor's active listings from the listings table.
  */
@@ -202,11 +202,11 @@ const VendorPublicProfile: React.FC = () => {
               <span className="font-bold text-gray-900">{vendor.rating.toFixed(1)}</span>
               <span className="text-gray-500 text-xs">({vendor.total_reviews} reviews)</span>
             </div>
-            <span className="text-gray-400 text-xs">·</span>
+            <span className="text-gray-400 text-xs">ï¿½</span>
             <span className="text-xs text-gray-500">
               <strong className="text-gray-700">{vendor.total_sales}</strong> sales
             </span>
-            <span className="text-gray-400 text-xs">·</span>
+            <span className="text-gray-400 text-xs">ï¿½</span>
             <span className="text-xs text-gray-500">Member since {memberYear}</span>
           </div>
 
@@ -288,6 +288,7 @@ const VendorPublicProfile: React.FC = () => {
 };
 
 export default VendorPublicProfile;
+
 
 
 

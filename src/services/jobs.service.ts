@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/services/jobs.service.ts
  * Bambeh Marketplace — Jobs Service
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -346,3 +346,4 @@ export async function applyForJob(
     return { success: false, error: err instanceof Error ? err.message : "Failed to apply" };
   }
 }
+

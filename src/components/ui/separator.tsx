@@ -1,4 +1,4 @@
-import * as React from "react";
+﻿import * as React from "react";
 
 export interface SeparatorProps {
   className?: string;
@@ -11,6 +11,7 @@ export const Separator: React.FC<SeparatorProps> = ({
 }) => {
   return <hr className={className} />;
 };
+
 
 
 

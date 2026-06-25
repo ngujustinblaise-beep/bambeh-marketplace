@@ -1,4 +1,4 @@
-/**
+﻿/**
  * subscription.tsx - Bambeh regular-user subscription plans (daily/weekly/monthly)
  * Mounted at /subscription via App.tsx. Payment via CamPay.
  */
@@ -233,4 +233,5 @@ const Subscription: React.FC = () => {
 };
 
 export default Subscription;
+
 

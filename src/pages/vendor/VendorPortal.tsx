@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR PORTAL - ENTRY PAGE FOR VENDORS
  * ---------------------------------------------------------------------------
@@ -9,7 +9,7 @@
  * 
  * FILE LOCATION: src/pages/vendor/VendorPortal.tsx
  * 
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -181,6 +181,7 @@ export default function VendorPortal() {
     </div>
   );
 }
+
 
 
 

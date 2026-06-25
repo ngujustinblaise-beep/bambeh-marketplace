@@ -1,12 +1,12 @@
-/**
+ï»¿/**
  * src/pages/FlashDeals.tsx
- * Bambeh Marketplace — Flash Deals page
+ * Bambeh Marketplace ï¿½ Flash Deals page
  *
  * Features:
- * • Notify Me banner at top
- * • Deal cards with countdown timer, Add to Cart, WhatsApp Chat
- * • CamPay Mobile Money payment modal
- * • Become a Vendor CTA at bottom
+ * ï¿½ Notify Me banner at top
+ * ï¿½ Deal cards with countdown timer, Add to Cart, WhatsApp Chat
+ * ï¿½ CamPay Mobile Money payment modal
+ * ï¿½ Become a Vendor CTA at bottom
  */
 
 import React, { useState, useEffect } from "react";
@@ -34,7 +34,7 @@ interface Deal {
 const DEMO_DEALS: Deal[] = [
   {
     id: "1",
-    title: "iPhone 15 Pro — Open Box 128GB",
+    title: "iPhone 15 Pro ï¿½ Open Box 128GB",
     description: "Barely used, Space Grey. Original accessories included. Battery 98%. No scratches.",
     image: "??",
     originalPrice: 750000,
@@ -64,7 +64,7 @@ const DEMO_DEALS: Deal[] = [
   },
   {
     id: "3",
-    title: "Nike Air Max 270 — Size 42",
+    title: "Nike Air Max 270 ï¿½ Size 42",
     description: "100% original imported from France. Comes with box and receipt.",
     image: "??",
     originalPrice: 95000,
@@ -79,7 +79,7 @@ const DEMO_DEALS: Deal[] = [
   },
   {
     id: "4",
-    title: "HP Laptop 15\" — i5 12th Gen",
+    title: "HP Laptop 15\" ï¿½ i5 12th Gen",
     description: "New, 16GB RAM, 512GB SSD, Windows 11 Pro. Full warranty from HP .",
     image: "??",
     originalPrice: 380000,
@@ -149,7 +149,7 @@ function PaymentModal({ deal, onClose }: { deal: Deal; onClose: () => void }) {
       setError("Enter a valid  phone number"); return;
     }
     setError(""); setStep("processing");
-    // Simulate payment — replace with real CamPay call
+    // Simulate payment ï¿½ replace with real CamPay call
     await new Promise(r => setTimeout(r, 2000));
     setStep("done");
   }
@@ -343,7 +343,7 @@ export default function FlashDeals() {
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1 className="text-white font-bold text-2xl">? Flash Deals</h1>
-            <p className="text-orange-100 text-sm mt-0.5">Limited time · Limited stock</p>
+            <p className="text-orange-100 text-sm mt-0.5">Limited time ï¿½ Limited stock</p>
           </div>
           <Link to="/cart"
             className="bg-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1">
@@ -419,6 +419,7 @@ export default function FlashDeals() {
     </div>
   );
 }
+
 
 
 

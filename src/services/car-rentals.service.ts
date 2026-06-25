@@ -1,22 +1,22 @@
-/**
- * src/services/carRentals.service.ts — Bambeh Marketplace
+ï»¿/**
+ * src/services/carRentals.service.ts ï¿½ Bambeh Marketplace
  *
  * SECURITY REWRITE (original had critical issues):
- *  ?? REMOVED — axios calls to `https://your-backend-api.com/api` (placeholder, broke prod)
- *  ?? REMOVED — localStorage.getItem('authToken') for auth header (XSS attack vector;
+ *  ?? REMOVED ï¿½ axios calls to `https://your-backend-api.com/api` (placeholder, broke prod)
+ *  ?? REMOVED ï¿½ localStorage.getItem('authToken') for auth header (XSS attack vector;
  *               any JS on page could steal the token from localStorage)
- *  ?? REMOVED — Manual redirect to /login on 401 (bypasses React Router, loses state)
- *  ? REPLACED — All calls use Supabase client (session managed via httpOnly cookie /
+ *  ?? REMOVED ï¿½ Manual redirect to /login on 401 (bypasses React Router, loses state)
+ *  ? REPLACED ï¿½ All calls use Supabase client (session managed via httpOnly cookie /
  *               in-memory token; Supabase SDK handles auth transparently)
- *  ? SECURITY — Row Level Security (RLS) enforced server-side; client never sees other
+ *  ? SECURITY ï¿½ Row Level Security (RLS) enforced server-side; client never sees other
  *               users' private data even if they call these functions directly
- *  ? SECURITY — No secret keys or tokens in client code
- *  ? PRESERVED — All function signatures unchanged so callers don't need updates
- *  ? NOTE     — "car rentals" in Bambeh maps to the `listings` table with type='vehicle'
+ *  ? SECURITY ï¿½ No secret keys or tokens in client code
+ *  ? PRESERVED ï¿½ All function signatures unchanged so callers don't need updates
+ *  ? NOTE     ï¿½ "car rentals" in Bambeh maps to the `listings` table with type='vehicle'
  *               AND the `rentals` table for property rentals. This service targets
  *               listings (vehicles for hire/sale). Adjust table name if your schema differs.
  *
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
@@ -117,7 +117,7 @@ function rowToCarRental(d: any): CarRental {
 }
 
 // -----------------------------------------------------------------------------
-// Public API — same signatures as original; implementations now use Supabase
+// Public API ï¿½ same signatures as original; implementations now use Supabase
 // -----------------------------------------------------------------------------
 
 /**
@@ -296,7 +296,7 @@ export const bookCarRental = async (
     `Drop-off: ${bookingData.dropoffLocation}`,
     `Driver: ${bookingData.driverDetails.name} | ${bookingData.driverDetails.phone}`,
     `Licence: ${bookingData.driverDetails.licenseNumber}`,
-    `— via Bambeh Marketplace`,
+    `ï¿½ via Bambeh Marketplace`,
   ].join("\n");
 
   const { data: msg, error } = await supabase
@@ -353,3 +353,4 @@ export const getMyCarBookings = async (): Promise<any[]> => {
   if (error) throw new Error(error.message);
   return data || [];
 };
+

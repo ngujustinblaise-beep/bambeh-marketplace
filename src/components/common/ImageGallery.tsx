@@ -1,4 +1,4 @@
-/**
+﻿/**
  * IMAGE GALLERY
  * FILE LOCATION: src/components/common/ImageGallery.tsx
  */
@@ -94,6 +94,7 @@ const ImageGallery = ({ images, initialSlide = 0, onClose }: ImageGalleryProps) 
 };
 
 export default ImageGallery;
+
 
 
 

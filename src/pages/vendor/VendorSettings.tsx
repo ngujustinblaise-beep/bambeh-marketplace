@@ -1,8 +1,8 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * VENDOR SETTINGS PAGE - COMPREHENSIVE VENDOR SETTINGS
  * FILE LOCATION: src/pages/vendor/VendorSettings.tsx
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  */
 
 import { useState, useEffect } from 'react';
@@ -300,7 +300,7 @@ export default function VendorSettings() {
           onChange={(e) => setLanguageSettings({ ...languageSettings, language: e.target.value })}
           className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
           <option value="en">English</option>
-          <option value="fr">Français</option>
+          <option value="fr">Franï¿½ais</option>
           <option value="ar">???????</option>
           <option value="ha">Hausa</option>
         </select>
@@ -416,6 +416,7 @@ export default function VendorSettings() {
     </div>
   );
 }
+
 
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * VendorLayout.tsx - REDESIGNED v2 (February 14, 2026)
  * ═══════════════════════════════════════════════════════════════════════════
@@ -253,5 +253,6 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
 };
 
 export default VendorLayout;
+
 
 

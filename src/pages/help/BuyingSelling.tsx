@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { ShoppingCart, PlusCircle, DollarSign, CreditCard } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -111,6 +111,7 @@ export default function BuyingSelling() {
     </div>
   );
 }
+
 
 
 

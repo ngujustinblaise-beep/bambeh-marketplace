@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+﻿import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/providers/SupabaseAuthProvider";
 
@@ -133,3 +133,4 @@ export function useAuth(): AuthContextValue {
 }
 
 export default AuthContext;
+

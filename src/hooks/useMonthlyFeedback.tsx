@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useMonthlyFeedback.tsx
  * Fires the monthly feedback notification once per calendar month.
  */
@@ -257,5 +257,6 @@ export function useFeedbackBanner() {
 
   return { triggerFeedbackBanner, resetFeedbackMonth };
 }
+
 
 

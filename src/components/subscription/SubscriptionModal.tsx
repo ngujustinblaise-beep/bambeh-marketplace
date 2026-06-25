@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React, { useState } from "react";
 import { SUBSCRIPTION_PLANS, getSubscriptionPlan } from "../../config/subscription";
 import type { SubscriptionTier } from "../../types/subscription";
@@ -39,7 +39,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">Choose a Plan</h2>
           {onClose && (
-            <button onClick={onClose} className="text-gray-400 text-2xl">×</button>
+            <button onClick={onClose} className="text-gray-400 text-2xl">ï¿½</button>
           )}
         </div>
 
@@ -83,7 +83,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         <button onClick={handleSubscribe} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl">
-          {loading ? "Processing…" : `Subscribe · ${plan?.priceXAF.toLocaleString() ?? "—"} XAF/mo`}
+          {loading ? "Processingï¿½" : `Subscribe ï¿½ ${plan?.priceXAF.toLocaleString() ?? "ï¿½"} XAF/mo`}
         </button>
       </div>
     </div>
@@ -91,6 +91,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 };
 
 export default SubscriptionModal;
+
 
 
 

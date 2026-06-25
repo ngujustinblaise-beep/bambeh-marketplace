@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
  * ADD JOB FORM COMPONENT
  * FILE LOCATION: src/components/jobs/AddJobForm.tsx
@@ -164,7 +164,7 @@ export default function AddJobForm({ onSuccess, onCancel }: AddJobFormProps) {
         <div className="flex flex-wrap gap-2">
           {keywords.map((kw, i) => (
             <span key={i} className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm flex items-center gap-2">
-              {kw}<button type="button" onClick={() => removeKeyword(i)} className="hover:text-teal-600">×</button>
+              {kw}<button type="button" onClick={() => removeKeyword(i)} className="hover:text-teal-600">ï¿½</button>
             </span>
           ))}
         </div>
@@ -178,6 +178,7 @@ export default function AddJobForm({ onSuccess, onCancel }: AddJobFormProps) {
     </form>
   );
 }
+
 
 
 

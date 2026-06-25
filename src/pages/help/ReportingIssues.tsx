@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Flag, AlertCircle, Mail, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -102,4 +102,5 @@ export default function ReportingIssues() {
     </div>
   );
 }
+
 

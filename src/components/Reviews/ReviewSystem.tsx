@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REVIEW SYSTEM COMPONENT
  * FILE LOCATION: src/components/reviews/ReviewSystem.tsx
  */
@@ -308,6 +308,7 @@ export const ReviewSystem: React.FC<ReviewSystemProps> = ({
 };
 
 export default ReviewSystem;
+
 
 
 

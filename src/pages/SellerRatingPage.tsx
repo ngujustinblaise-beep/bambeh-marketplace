@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+ï»¿import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Loader2, Star } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";
 import { supabase } from "@/lib/supabase";
 
 /**
- * src/pages/SellerRatingPage.tsx — Bambeh Marketplace
+ * src/pages/SellerRatingPage.tsx ï¿½ Bambeh Marketplace
  * FIXED: Was a stub. Now a real star rating form that saves reviews.
  */
 
@@ -32,7 +32,7 @@ export default function SellerRatingPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Save review to localStorage (simple approach — can be moved to DB later)
+      // Save review to localStorage (simple approach ï¿½ can be moved to DB later)
       const reviews = JSON.parse(localStorage.getItem('bambeh_seller_reviews') || '[]');
       reviews.unshift({
         id:         Date.now().toString(),
@@ -62,7 +62,7 @@ export default function SellerRatingPage() {
               .eq('user_id', sellerId);
           }
         } catch {
-          // Non-critical — rating saved locally even if DB update fails
+          // Non-critical ï¿½ rating saved locally even if DB update fails
         }
       }
 
@@ -143,7 +143,7 @@ export default function SellerRatingPage() {
             value={comment}
             onChange={e => setComment(e.target.value)}
             rows={4}
-            placeholder="Tell others about your experience — was the item as described? Was the seller responsive? Would you buy from them again?"
+            placeholder="Tell others about your experience ï¿½ was the item as described? Was the seller responsive? Would you buy from them again?"
             className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none"
           />
           <p className="text-xs text-gray-400 mt-1">{comment.length}/500 characters</p>
@@ -163,6 +163,7 @@ export default function SellerRatingPage() {
     </div>
   );
 }
+
 
 
 

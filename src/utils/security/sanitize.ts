@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import DOMPurify from "dompurify";
 
 const CHAR_MAP: Record<string, string> = {
@@ -25,3 +25,4 @@ export const sanitizeRichText = (html: string): string =>
     ALLOWED_TAGS: ["b", "i", "u", "em", "strong", "p", "br", "ul", "ol", "li", "a"],
     ALLOWED_ATTR: ["href", "target", "rel"],
   });
+

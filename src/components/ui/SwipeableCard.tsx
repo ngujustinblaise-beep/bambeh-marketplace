@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/ui/SwipeableCard.tsx
- * Bambeh Marketplace — Swipeable Card with Action Reveal
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Swipeable Card with Action Reveal
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useRef, useState, useCallback } from "react";
@@ -169,6 +169,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({
 };
 
 export default SwipeableCard;
+
 
 
 

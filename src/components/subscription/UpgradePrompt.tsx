@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UPGRADE PROMPT
  * FILE LOCATION: src/components/subscription/UpgradePrompt.tsx
  */
@@ -174,5 +174,6 @@ export const UpgradeBanner: React.FC<{ onUpgrade?: () => void }> = ({ onUpgrade 
 };
 
 export default UpgradePrompt;
+
 
 

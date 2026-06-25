@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/SearchResults.tsx — Bambeh Marketplace
  * © 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -522,6 +522,7 @@ if (query.toLowerCase().includes('job') || query.toLowerCase().includes('work'))
     </div>
   );
 }
+
 
 
 

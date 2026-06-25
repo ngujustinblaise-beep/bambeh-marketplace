@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LIVE CHAT SUPPORT
  * FILE LOCATION: src/components/support/LiveChatSupport.tsx
  */
@@ -195,6 +195,7 @@ export default function LiveChatSupport({ buttonText = 'Start Live Chat', classN
     </>
   );
 }
+
 
 
 

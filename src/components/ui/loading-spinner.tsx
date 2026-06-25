@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -37,6 +37,7 @@ export const LoadingSpinner = ({ size = "md", className }: LoadingSpinnerProps) 
     </div>
   );
 }
+
 
 
 

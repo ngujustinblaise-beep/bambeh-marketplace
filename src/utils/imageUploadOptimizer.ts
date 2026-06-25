@@ -1,6 +1,6 @@
-/**
- * imageUploadOptimizer.ts — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+ï»¿/**
+ * imageUploadOptimizer.ts ï¿½ Bambeh Marketplace
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * Client-side image optimization before Supabase Storage upload.
  * Compresses and converts to WebP using the browser Canvas API.
@@ -27,7 +27,7 @@ export interface OptimizeOptions {
   maxWidth?: number;
   /** Max height in pixels. Default: 1280 */
   maxHeight?: number;
-  /** WebP quality 0–1. Default: 0.82 (excellent quality, small size) */
+  /** WebP quality 0ï¿½1. Default: 0.82 (excellent quality, small size) */
   quality?: number;
   /** Output format. Default: 'webp' (best compression) */
   format?: "webp" | "jpeg" | "png";
@@ -229,7 +229,7 @@ export async function uploadOptimizedImage(
   const { data, error } = await supabase.storage
     .from(bucket)
     .upload(storagePath, optimized.file, {
-      cacheControl: "31536000", // 1 year — images are immutable (content-addressed)
+      cacheControl: "31536000", // 1 year ï¿½ images are immutable (content-addressed)
       upsert: false,
       contentType: optimized.file.type,
     });
@@ -286,4 +286,5 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
 

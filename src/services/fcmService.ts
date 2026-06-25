@@ -1,4 +1,4 @@
-// FCM token service — stores device tokens in Supabase
+ï»¿// FCM token service ï¿½ stores device tokens in Supabase
 import { supabase } from "@/lib/supabase";
 
 export const saveFCMToken = async (userId: string, token: string): Promise<void> => {
@@ -16,3 +16,4 @@ export const getUserTokens = async (userId: string): Promise<string[]> => {
   const { data } = await supabase.from("fcm_tokens").select("token").eq("user_id", userId);
   return (data ?? []).map((r: { token: string }) => r.token);
 };
+

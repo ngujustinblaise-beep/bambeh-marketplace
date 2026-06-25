@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ════════════════════════════════════════════════════════════════
  * src/components/posting/ImageUploadStep.tsx
  * Universal image upload step — drop into any posting form.
@@ -259,5 +259,6 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
 };
 
 export default ImageUploadStep;
+
 
 

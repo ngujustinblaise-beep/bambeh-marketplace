@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 
 interface VerificationBadgeProps {
@@ -34,6 +34,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
 };
 
 export default VerificationBadge;
+
 
 
 

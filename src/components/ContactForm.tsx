@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 
 interface ContactFormProps {
@@ -34,6 +34,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ propertyTitle, onClose }) => 
 };
 
 export default ContactForm;
+
 
 
 

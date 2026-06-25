@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ════════════════════════════════════════════════════════════════
  * src/hooks/useAutoSaveProfile.ts
  * Auto-save Profile Hook — Issue 2 Fix
@@ -158,3 +158,4 @@ export function useAutoSaveProfile(
     lastSavedAt
   };
 }
+

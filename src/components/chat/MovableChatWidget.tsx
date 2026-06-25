@@ -1,9 +1,9 @@
-/**
+ï»¿/**
  * MOVABLE CHAT WIDGET - Android Optimized Version
  * FILE LOCATION: src/components/chat/MovableChatWidget.tsx
  *
  * ? FIXED: Always starts anchored to BOTTOM-RIGHT corner
- * ? Fully draggable — drag handle appears when chat is open
+ * ? Fully draggable ï¿½ drag handle appears when chat is open
  * ? Remembers dragged position via localStorage (new key _v2)
  * ? Unread badge, minimizable, touch + mouse optimized
  * ? Android-optimized smaller dimensions
@@ -135,7 +135,7 @@ export default function MovableChatWidget() {
       }}
       className="select-none"
     >
-      {/* -- Drag handle — only visible when chat is open ---------------------- */}
+      {/* -- Drag handle ï¿½ only visible when chat is open ---------------------- */}
       {isOpen && (
         <div
           onMouseDown={handleMouseDown}
@@ -209,7 +209,7 @@ export default function MovableChatWidget() {
             </div>
           </div>
 
-          {/* Body — hidden when minimized */}
+          {/* Body ï¿½ hidden when minimized */}
           {!isMinimized && (
             <>
               <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">
@@ -254,6 +254,7 @@ export default function MovableChatWidget() {
     </div>
   );
 }
+
 
 
 

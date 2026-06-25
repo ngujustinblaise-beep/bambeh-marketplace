@@ -1,4 +1,4 @@
-// src/services/auth.service.ts
+﻿// src/services/auth.service.ts
 import axios from "axios";
 import {
   API_CONFIG,
@@ -197,4 +197,5 @@ export const refreshToken = async (): Promise<string> => {
     throw new Error(formatErrorMessage(error, "Failed to refresh token"));
   }
 };
+
 

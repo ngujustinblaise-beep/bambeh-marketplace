@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/components/vendor/VendorHeader.tsx
- * Bambeh Marketplace — Vendor Store Header
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Vendor Store Header
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
@@ -64,7 +64,7 @@ const VendorHeader: React.FC<VendorHeaderProps> = ({
         <div className="flex items-center gap-2 mb-1">
           <h1 className="text-xl font-bold text-gray-900">{vendor.storeName}</h1>
           {vendor.isVerified && (
-            <ShieldCheck className="w-5 h-5 text-teal-600" aria-label="Vérifié" />
+            <ShieldCheck className="w-5 h-5 text-teal-600" aria-label="Vï¿½rifiï¿½" />
           )}
         </div>
 
@@ -115,6 +115,7 @@ const VendorHeader: React.FC<VendorHeaderProps> = ({
 };
 
 export default VendorHeader;
+
 
 
 

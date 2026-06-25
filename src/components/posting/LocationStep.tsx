@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ════════════════════════════════════════════════════════════════
  * src/components/posting/LocationStep.tsx
  *
@@ -298,6 +298,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
 
 }
 export default LocationStep;
+
 
 
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { useState, useCallback } from "react";
 import type { GamificationActionType } from "../types/gamification";
 
@@ -33,3 +33,4 @@ export const useVendorMonetization = () => {
 
   return { zermBalance, rewardAction, isLoading, validActions };
 };
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/Profile.tsx — Bambeh Marketplace
  *
  * i18n: all visible strings live in the local S table below, keyed by the live
@@ -636,3 +636,4 @@ export default function Profile() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 🔒 SECURITY PROVIDER - Centralized Security Context
  */
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -56,5 +56,6 @@ export const useSecurity = () => {
   return context;
 };
 }
+
 
 

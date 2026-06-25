@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 import React, { useState } from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -33,7 +33,7 @@ const AlertsPage: React.FC = () => {
                     <p className="font-semibold text-sm">{a.title}</p>
                     <p className="text-xs mt-0.5 text-gray-600">{a.message}</p>
                   </div>
-                  <button onClick={() => setAlerts(p => p.filter(x => x.id !== a.id))} className="text-gray-400 ml-3 text-lg">×</button>
+                  <button onClick={() => setAlerts(p => p.filter(x => x.id !== a.id))} className="text-gray-400 ml-3 text-lg">ï¿½</button>
                 </div>
               </div>
             ))}
@@ -44,6 +44,7 @@ const AlertsPage: React.FC = () => {
   );
 };
 export default AlertsPage;
+
 
 
 

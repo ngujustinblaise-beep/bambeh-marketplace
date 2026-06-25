@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+ï»¿import React, { useState } from 'react';
 import { Share2, Copy, Check, Gift, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -39,8 +39,8 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Join Bambé Marketplace',
-          text: `Use my referral code ${referralCode} to join Bambé and get bonus Zerm Coins!`,
+          title: 'Join Bambï¿½ Marketplace',
+          text: `Use my referral code ${referralCode} to join Bambï¿½ and get bonus Zerm Coins!`,
           url: referralLink,
         });
       } catch (err) {
@@ -299,6 +299,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({
 };
 
 export default ReferralButton;
+
 
 
 

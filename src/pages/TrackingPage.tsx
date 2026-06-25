@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/pages/TrackingPage.tsx
- * Bambeh Marketplace — Order Tracking Page
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ Order Tracking Page
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -31,12 +31,12 @@ interface TrackingInfo {
 }
 
 const STATUS_STEPS: { status: TrackingStatus; label: string }[] = [
-  { status: "pending",           label: "Commande reçue" },
-  { status: "confirmed",         label: "Confirmée" },
-  { status: "processing",        label: "En préparation" },
-  { status: "shipped",           label: "Expédiée" },
+  { status: "pending",           label: "Commande reï¿½ue" },
+  { status: "confirmed",         label: "Confirmï¿½e" },
+  { status: "processing",        label: "En prï¿½paration" },
+  { status: "shipped",           label: "Expï¿½diï¿½e" },
   { status: "out_for_delivery",  label: "En livraison" },
-  { status: "delivered",         label: "Livrée" },
+  { status: "delivered",         label: "Livrï¿½e" },
 ];
 
 const TrackingPage: React.FC = () => {
@@ -59,7 +59,7 @@ const TrackingPage: React.FC = () => {
         .single();
 
       if (dbErr || !data) {
-        setError("Numéro de suivi introuvable. Vérifiez le numéro et réessayez.");
+        setError("Numï¿½ro de suivi introuvable. Vï¿½rifiez le numï¿½ro et rï¿½essayez.");
         return;
       }
 
@@ -70,7 +70,7 @@ const TrackingPage: React.FC = () => {
       const steps: TrackingStep[] = STATUS_STEPS.map((step, idx) => ({
         status: step.status,
         label: step.label,
-        description: `Étape ${idx + 1}`,
+        description: `ï¿½tape ${idx + 1}`,
         done: idx < currentIdx,
         active: idx === currentIdx,
         timestamp: idx <= currentIdx ? data.updated_at as string : undefined,
@@ -112,7 +112,7 @@ const TrackingPage: React.FC = () => {
             value={trackingNumber}
             onChange={(e) => setTrackingNumber(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Numéro de commande ou référence..."
+            placeholder="Numï¿½ro de commande ou rï¿½fï¿½rence..."
             className="flex-1 outline-none text-sm"
           />
         </div>
@@ -155,17 +155,17 @@ const TrackingPage: React.FC = () => {
               )}
               <div>
                 <p className="font-bold text-gray-900">
-                  {tracking.status === "delivered" ? "Commande livrée ?" :
+                  {tracking.status === "delivered" ? "Commande livrï¿½e ?" :
                    tracking.status === "out_for_delivery" ? "En cours de livraison..." :
-                   tracking.status === "shipped" ? "Colis expédié" :
-                   tracking.status === "processing" ? "En préparation" :
-                   tracking.status === "confirmed" ? "Commande confirmée" :
-                   "Commande reçue"}
+                   tracking.status === "shipped" ? "Colis expï¿½diï¿½" :
+                   tracking.status === "processing" ? "En prï¿½paration" :
+                   tracking.status === "confirmed" ? "Commande confirmï¿½e" :
+                   "Commande reï¿½ue"}
                 </p>
-                <p className="text-sm text-gray-500">N° {tracking.trackingNumber}</p>
+                <p className="text-sm text-gray-500">Nï¿½ {tracking.trackingNumber}</p>
                 {tracking.estimatedDelivery && (
                   <p className="text-sm text-teal-700 font-medium mt-0.5">
-                    Livraison estimée: {new Date(tracking.estimatedDelivery).toLocaleDateString("fr-CM")}
+                    Livraison estimï¿½e: {new Date(tracking.estimatedDelivery).toLocaleDateString("fr-CM")}
                   </p>
                 )}
               </div>
@@ -220,6 +220,7 @@ const TrackingPage: React.FC = () => {
 };
 
 export default TrackingPage;
+
 
 
 

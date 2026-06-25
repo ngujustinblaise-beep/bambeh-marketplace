@@ -1,4 +1,4 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 export interface FileValidationResult {
   valid: boolean;
   error?: string;
@@ -33,7 +33,7 @@ export const validateFile = async (file: File): Promise<FileValidationResult> =>
   };
   const matched = Object.entries(signatures).find(([sig]) => hex.startsWith(sig));
   if (!matched) {
-    return { valid: false, error: "File signature mismatch — possible spoofed extension." };
+    return { valid: false, error: "File signature mismatch ï¿½ possible spoofed extension." };
   }
   return { valid: true };
 };
@@ -49,7 +49,7 @@ export const validateImageDimensions = (
     img.onload = () => {
       URL.revokeObjectURL(url);
       if (img.width > maxWidth || img.height > maxHeight) {
-        resolve({ valid: false, error: `Image exceeds ${maxWidth}×${maxHeight}px.` });
+        resolve({ valid: false, error: `Image exceeds ${maxWidth}ï¿½${maxHeight}px.` });
       } else {
         resolve({ valid: true });
       }
@@ -60,3 +60,4 @@ export const validateImageDimensions = (
     };
     img.src = url;
   });
+

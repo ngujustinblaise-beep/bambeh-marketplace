@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { DollarSign, TrendingUp } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -83,4 +83,5 @@ export default function SettingRightPrice() {
     </div>
   );
 }
+
 

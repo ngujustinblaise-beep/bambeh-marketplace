@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -27,6 +27,7 @@ const NotFoundPage: React.FC = () => (
 );
 
 export default NotFoundPage;
+
 
 
 

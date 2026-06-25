@@ -1,5 +1,5 @@
-/**
- * src/components/FeaturedAdsBar.tsx — Bambeh Featured Listings Strip
+ï»¿/**
+ * src/components/FeaturedAdsBar.tsx ï¿½ Bambeh Featured Listings Strip
  *
  * Drop this inside your MainLayout (above the tab bar or below the header).
  * It pulls is_featured=true listings from Supabase and scrolls horizontally.
@@ -115,6 +115,7 @@ export default function FeaturedAdsBar() {
     </div>
   );
 }
+
 
 
 

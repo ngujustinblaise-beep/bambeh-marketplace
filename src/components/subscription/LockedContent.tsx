@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+﻿import React, { ReactNode } from 'react';
 import { Lock, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -80,6 +80,7 @@ export const LockedContent: React.FC<LockedContentProps> = ({
     </div>
   );
 }
+
 
 
 

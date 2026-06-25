@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 📌 CERTIFICATE PINNING - Prevent Man-in-the-Middle Attacks
  * Ensures app only connects to legitimate servers
  */
@@ -28,3 +28,4 @@ initializeCertificatePinning();
 }
 }
 export default initializeCertificatePinning;
+

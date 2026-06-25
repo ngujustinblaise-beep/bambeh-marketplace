@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NOTIFICATION DROPDOWN
  * FILE LOCATION: src/components/notifications/NotificationDropdown.tsx
  */
@@ -112,6 +112,7 @@ export default function NotificationDropdown() {
     </div>
   );
 }
+
 
 
 

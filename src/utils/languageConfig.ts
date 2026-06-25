@@ -1,4 +1,4 @@
-/**
+﻿/**
  * languageConfig.ts
  * ────────────────────────────────────────────────────────────────────────────
  * Central language configuration for Bambeh Marketplace.
@@ -84,4 +84,5 @@ export function getCurrentWelcome() {
   const lang = getCurrentLanguage();
   return WELCOME_MESSAGES[lang.code] ?? WELCOME_MESSAGES['en'];
 }
+
 

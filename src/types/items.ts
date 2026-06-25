@@ -1,4 +1,4 @@
-import type { LocationDetails } from "./location";
+﻿import type { LocationDetails } from "./location";
 export type { LocationDetails };
 
 export type ItemCondition =
@@ -150,3 +150,4 @@ export interface PaginatedItemsResponse<T> {
   pageSize: number;
   hasMore: boolean;
 }
+

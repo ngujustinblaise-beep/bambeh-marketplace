@@ -1,4 +1,4 @@
-export interface CartItem {
+﻿export interface CartItem {
   id?: string;
   itemId: string;
   itemTitle: string;
@@ -19,3 +19,4 @@ export interface CartContextType {
   clearCart: () => void;
   total: number;
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * USE VOICE COMMANDS HOOK
  *
  * Custom hook for voice recognition and command processing
@@ -393,3 +393,4 @@ export const EXAMPLE_COMMANDS = [
   "Mama, help",
   "Mama, what can you do",
 ];
+

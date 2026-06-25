@@ -1,6 +1,6 @@
-/**
- * MakeOfferPage.tsx — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+ï»¿/**
+ * MakeOfferPage.tsx ï¿½ Bambeh Marketplace
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  *
  * UPGRADED: Full counter-offer negotiation trail.
  *
@@ -507,7 +507,7 @@ export default function MakeOfferPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-9 h-9 rounded-full border-3 border-teal-600 border-t-transparent animate-spin" style={{ borderWidth: 3 }}/>
-          <p className="text-sm text-gray-400">Loading offer details…</p>
+          <p className="text-sm text-gray-400">Loading offer detailsï¿½</p>
         </div>
       </div>
     );
@@ -582,7 +582,7 @@ export default function MakeOfferPage() {
                 <p className={`font-bold text-sm ${statusCfg.color}`}>{statusCfg.label}</p>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Current: <span className="font-bold text-gray-800">{existingOffer.currentAmount.toLocaleString()} XAF</span>
-                  {" · "}
+                  {" ï¿½ "}
                   {Math.round(((listing.price - existingOffer.currentAmount) / listing.price) * 100)}% off
                 </p>
               </div>
@@ -661,7 +661,7 @@ export default function MakeOfferPage() {
           </div>
         )}
 
-        {/* New offer form — only show if no open offer or if closed */}
+        {/* New offer form ï¿½ only show if no open offer or if closed */}
         {(!existingOffer || isOfferClosed) && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-4">
             <h3 className="font-bold text-gray-900 text-sm">
@@ -718,7 +718,7 @@ export default function MakeOfferPage() {
                 value={message}
                 onChange={e => setMessage(e.target.value)}
                 rows={3}
-                placeholder="Explain your offer or ask a question…"
+                placeholder="Explain your offer or ask a questionï¿½"
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none transition"
               />
             </div>
@@ -749,7 +749,7 @@ export default function MakeOfferPage() {
                 className="flex-1 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors shadow-md shadow-teal-100"
               >
                 {isSubmitting ? (
-                  <><RefreshCw className="w-4 h-4 animate-spin" /> Sending…</>
+                  <><RefreshCw className="w-4 h-4 animate-spin" /> Sendingï¿½</>
                 ) : (
                   <><Send className="w-4 h-4" /> Send Offer</>
                 )}
@@ -772,6 +772,7 @@ export default function MakeOfferPage() {
     </div>
   );
 }
+
 
 
 

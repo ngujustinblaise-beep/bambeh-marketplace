@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -24,6 +24,7 @@ const VendorProfile: React.FC = () => {
   );
 };
 export default VendorProfile;
+
 
 
 

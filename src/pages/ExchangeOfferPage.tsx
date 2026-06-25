@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/pages/ExchangeOfferPage.tsx — Bambeh Marketplace
  *
  * ✅ Full i18n: en, fr, ha, ar, pcm, ff
@@ -498,5 +498,6 @@ export default function ExchangeOfferPage() {
     </div>
   );
 }
+
 
 

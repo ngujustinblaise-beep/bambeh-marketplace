@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/components/SearchBar.tsx
  * Bambeh Marketplace — Simple Search Bar Component
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -107,5 +107,6 @@ export default function SearchBar({
     </div>
   );
 }
+
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SOCIAL SHARE BUTTON - COMPACT WITH FLOATING X
  * FILE LOCATION: src/components/common/SocialShareButton.tsx
  */
@@ -134,6 +134,7 @@ export default function SocialShareButton({ title, description, itemType, url, c
     </>
   );
 }
+
 
 
 

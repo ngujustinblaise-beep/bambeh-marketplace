@@ -1,11 +1,11 @@
-/**
- * PaymentCheckout.tsx  —  Bambeh Marketplace
+ï»¿/**
+ * PaymentCheckout.tsx  ï¿½  Bambeh Marketplace
  * FILE LOCATION: src/pages/payment/PaymentCheckout.tsx
  *
- * Universal checkout page — handles:
- *  • Cart purchases (items from the marketplace)
- *  • Service bookings
- *  • Escrow initiation
+ * Universal checkout page ï¿½ handles:
+ *  ï¿½ Cart purchases (items from the marketplace)
+ *  ï¿½ Service bookings
+ *  ï¿½ Escrow initiation
  *
  * State is passed via React Router location.state:
  *  {
@@ -14,7 +14,7 @@
  *    deliveryFee: number,
  *    total: number,
  *    deliveryAddress: string,
- *    orderId: string,   (optional — generated here if not provided)
+ *    orderId: string,   (optional ï¿½ generated here if not provided)
  *    context: 'cart' | 'service' | 'escrow'
  *  }
  */
@@ -93,7 +93,7 @@ export default function PaymentCheckout() {
   const context     = state.context ?? 'cart';
   const description = state.description
     ?? (items.length > 0
-      ? `Bambeh Order #${orderId} — ${items.length} item(s)`
+      ? `Bambeh Order #${orderId} ï¿½ ${items.length} item(s)`
       : `Bambeh Payment #${orderId}`);
 
   // -- Called after CamPay confirms SUCCESSFUL -----------------------------
@@ -251,6 +251,7 @@ export default function PaymentCheckout() {
     </div>
   );
 }
+
 
 
 

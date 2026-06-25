@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - NATURAL LANGUAGE PROCESSING SERVICE
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - NATURAL LANGUAGE PROCESSING SERVICE
  * Parse voice commands and extract intent
  * Version: 1.0.0
  */
@@ -84,12 +84,12 @@ class NLPService {
           /montre moi|affiche/i,
         ],
         order: [
-          /commande|commander|achète|acheter|prends|prendre/i,
+          /commande|commander|achï¿½te|acheter|prends|prendre/i,
           /je veux commander|je voudrais commander/i,
           /ajouter au panier|mettre dans le panier/i,
         ],
         track: [
-          /où est|suivre|traquer|localiser/i,
+          /oï¿½ est|suivre|traquer|localiser/i,
           /ma commande|mon colis/i,
           /statut de/i,
         ],
@@ -98,16 +98,16 @@ class NLPService {
           /peux-tu|pouvez-vous|est-ce que tu peux/i,
         ],
         navigate: [
-          /va à|aller à|ouvre|ouvrir|affiche|afficher/i,
-          /montre moi la page|emmène moi/i,
+          /va ï¿½|aller ï¿½|ouvre|ouvrir|affiche|afficher/i,
+          /montre moi la page|emmï¿½ne moi/i,
         ],
         cancel: [
-          /annule|annuler|arrête|arrêter|stop/i,
+          /annule|annuler|arrï¿½te|arrï¿½ter|stop/i,
           /non merci|laisse tomber/i,
         ],
         confirm: [/oui|d'accord|ok|confirme|confirmer/i, /vas-y|go|allez-y/i],
         repeat: [
-          /répète|répéter|redis|redire|encore/i,
+          /rï¿½pï¿½te|rï¿½pï¿½ter|redis|redire|encore/i,
           /je n'ai pas compris|pardon/i,
         ],
       };
@@ -182,7 +182,7 @@ class NLPService {
             "riz",
             "huile",
             "savon",
-            "téléphone",
+            "tï¿½lï¿½phone",
             "ordinateur",
             "chaussure",
             "robe",
@@ -224,10 +224,10 @@ class NLPService {
       language === "fr"
         ? {
             food: ["nourriture", "alimentation", "aliment", "manger"],
-            electronics: ["électronique", "appareil", "gadget"],
-            fashion: ["mode", "vêtement", "habit"],
-            beauty: ["beauté", "cosmétique", "maquillage"],
-            home: ["maison", "jardin", "décoration"],
+            electronics: ["ï¿½lectronique", "appareil", "gadget"],
+            fashion: ["mode", "vï¿½tement", "habit"],
+            beauty: ["beautï¿½", "cosmï¿½tique", "maquillage"],
+            home: ["maison", "jardin", "dï¿½coration"],
             services: ["service", "prestation"],
           }
         : {
@@ -262,7 +262,7 @@ class NLPService {
     const quantities: CommandEntity[] = [];
 
     // Match numbers
-    const numberPattern = /(\d+)\s*(kilo|kg|litre|l|pièce|piece|unit|unité)?/gi;
+    const numberPattern = /(\d+)\s*(kilo|kg|litre|l|piï¿½ce|piece|unit|unitï¿½)?/gi;
     const matches = text.matchAll(numberPattern);
 
     for (const match of matches) {
@@ -352,14 +352,14 @@ class NLPService {
 
     // Common  locations
     const locationKeywords = [
-      "yaoundé",
+      "yaoundï¿½",
       "yaounde",
       "douala",
       "bafoussam",
       "bamenda",
       "garoua",
       "maroua",
-      "ngaoundéré",
+      "ngaoundï¿½rï¿½",
       "bertoua",
       "ebolowa",
     ];
@@ -458,8 +458,8 @@ class NLPService {
         case "search":
           return [
             "Cherche des tomates",
-            "Trouve des téléphones",
-            "Montre moi des vêtements",
+            "Trouve des tï¿½lï¿½phones",
+            "Montre moi des vï¿½tements",
           ];
         case "order":
           return [
@@ -469,7 +469,7 @@ class NLPService {
           ];
         case "track":
           return [
-            "Où est ma commande?",
+            "Oï¿½ est ma commande?",
             "Suivre ma commande",
             "Statut de ma commande",
           ];
@@ -496,4 +496,5 @@ class NLPService {
 }
 
 export default new NLPService();
+
 

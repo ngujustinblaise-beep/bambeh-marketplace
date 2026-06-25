@@ -1,4 +1,4 @@
-interface RateEntry { count: number; resetAt: number; }
+﻿interface RateEntry { count: number; resetAt: number; }
 
 export class RateLimiter {
   private counts = new Map<string, RateEntry>();
@@ -22,3 +22,4 @@ export class RateLimiter {
 
 export const rateLimiter = new RateLimiter();
 export default rateLimiter;
+

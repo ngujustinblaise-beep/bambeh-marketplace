@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * src/services/profile.service.ts
- * Bambeh Marketplace — User Profile Service
- * © 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ï¿½ User Profile Service
+ * ï¿½ 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
@@ -171,4 +171,5 @@ export async function getPublicProfile(userId: string): Promise<ProfileResponse>
     return { data: null, error: message };
   }
 }
+
 

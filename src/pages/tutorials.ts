@@ -1,4 +1,4 @@
-export type Tutorial = {
+﻿export type Tutorial = {
   id: string;
   title: string;
   description: string;
@@ -37,3 +37,4 @@ export const tutorials: Tutorial[] = [
     tags: ["ads", "tutorial"],
   },
 ];
+

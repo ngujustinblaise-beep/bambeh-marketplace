@@ -1,4 +1,4 @@
-/**
+﻿/**
  * src/hooks/useViewTracker.ts — Bambeh Marketplace
  *
  * Call this hook inside ANY detail page to increment the view_count
@@ -53,3 +53,4 @@ export function useViewTracker(
     });
   }, [id, table]); // runs once per id+table combination
 }
+

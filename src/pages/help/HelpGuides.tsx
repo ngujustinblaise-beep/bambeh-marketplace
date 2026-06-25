@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -92,4 +92,5 @@ export default function HelpGuides() {
     </div>
   );
 }
+
 

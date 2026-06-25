@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════
  * SESSION MANAGER — BAMBEH MARKETPLACE
  * FILE: src/utils/auth/sessionManager.ts
@@ -262,3 +262,4 @@ export const clearSession = (type: SessionType): void =>
   sessionManager.clearSession(type);
 
 export default sessionManager;
+

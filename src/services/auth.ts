@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+﻿import { supabase } from "@/lib/supabase";
 
 export interface SignUpData {
   email: string;
@@ -156,3 +156,4 @@ class AuthService {
 
 export const authService = new AuthService();
 export default authService;
+

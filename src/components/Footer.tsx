@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ---------------------------------------------------------------------------
  * FOOTER - BAMBEH MARKETPLACE
  * ---------------------------------------------------------------------------
@@ -8,7 +8,7 @@
  * ? Company profile links to actual website
  * ? All navigation links working
  * 
- * © 2025 Bambeh. All rights reserved.
+ * ï¿½ 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -204,7 +204,7 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Yaoundé, </span>
+                <span>Yaoundï¿½, </span>
               </div>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-center md:text-left">
-              <p>© {currentYear} Bambeh. All rights reserved.</p>
+              <p>ï¿½ {currentYear} Bambeh. All rights reserved.</p>
               <p className="text-xs text-gray-500 mt-1">
                 Operated by BAMBEH SARL
               </p>
@@ -227,15 +227,15 @@ export default function Footer() {
               <Link to="/terms" className="hover:text-teal-400 transition-colors">
                 Terms
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">ï¿½</span>
               <Link to="/privacy" className="hover:text-teal-400 transition-colors">
                 Privacy
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">ï¿½</span>
               <Link to="/help/contact" className="hover:text-teal-400 transition-colors">
                 Contact
               </Link>
-              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">ï¿½</span>
               <Link to="/subscription" className="hover:text-teal-400 transition-colors">
                 Subscriptions
               </Link>
@@ -251,6 +251,7 @@ export default function Footer() {
     </footer>
   );
 }
+
 
 
 

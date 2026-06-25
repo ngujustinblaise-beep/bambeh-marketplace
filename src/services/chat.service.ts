@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
 const EP = {
@@ -27,3 +27,4 @@ export const markChatRead = async (chatId: string): Promise<unknown> => {
   const res = await fetch(`${EP.chat}/${chatId}/read`, { method: "PATCH" });
   return res.json();
 };
+

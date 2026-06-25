@@ -1,4 +1,4 @@
-// Adapted from shadcn/ui — https://ui.shadcn.com/docs/components/toast
+ï»¿// Adapted from shadcn/ui ï¿½ https://ui.shadcn.com/docs/components/toast
 import * as React from "react";
 
 const TOAST_LIMIT = 5;
@@ -176,3 +176,4 @@ function useToast() {
 }
 
 export { useToast, toast };
+

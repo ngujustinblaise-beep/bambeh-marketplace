@@ -1,5 +1,5 @@
-/**
- * BAMBÉ MARKETPLACE - VOICE BUTTON COMPONENT
+ï»¿/**
+ * BAMBï¿½ MARKETPLACE - VOICE BUTTON COMPONENT
  * Animated microphone button for voice input
  * Version: 1.0.0
  */
@@ -76,6 +76,7 @@ const VoiceButton: React.FC<VoiceButtonProps> = ({
 
 }
 export default VoiceButton;
+
 
 
 

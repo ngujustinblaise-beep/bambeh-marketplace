@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+ï»¿import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, KeyRound, Lock } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
@@ -32,15 +32,15 @@ const STRINGS: Record<
     mismatch: "Passwords must match and be at least 8 characters.",
   },
   fr: {
-    title: "Réinitialiser le mot de passe",
-    subtitle: "Utilisez le jeton envoyé à votre e-mail ou téléphone.",
-    token: "Jeton de réinitialisation",
+    title: "Rï¿½initialiser le mot de passe",
+    subtitle: "Utilisez le jeton envoyï¿½ ï¿½ votre e-mail ou tï¿½lï¿½phone.",
+    token: "Jeton de rï¿½initialisation",
     next: "Nouveau mot de passe",
     confirm: "Confirmer le nouveau mot de passe",
-    save: "Mettre à jour le mot de passe",
-    cancel: "Retour à la connexion",
+    save: "Mettre ï¿½ jour le mot de passe",
+    cancel: "Retour ï¿½ la connexion",
     invalid: "Saisissez le jeton et un nouveau mot de passe valide.",
-    mismatch: "Les mots de passe doivent correspondre et contenir au moins 8 caractères.",
+    mismatch: "Les mots de passe doivent correspondre et contenir au moins 8 caractï¿½res.",
   },
   pcm: {
     title: "Reset password",
@@ -188,4 +188,5 @@ export default function ResetPassword() {
     </AuthShell>
   );
 }
+
 

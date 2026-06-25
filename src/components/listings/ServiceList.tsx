@@ -1,6 +1,6 @@
-// @ts-nocheck
+ï»¿// @ts-nocheck
 /**
- * SERVICE LIST PAGE — BAMBEH MARKETPLACE
+ * SERVICE LIST PAGE ï¿½ BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/listings/ServiceList.tsx
  */
 import { useState, useEffect } from 'react';
@@ -152,6 +152,7 @@ const ServiceList = () => {
 };
 
 export default ServiceList;
+
 
 
 

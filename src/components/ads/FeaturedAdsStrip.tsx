@@ -1,5 +1,5 @@
-/**
- * FeaturedAdsStrip.tsx — Bambeh Marketplace
+ï»¿/**
+ * FeaturedAdsStrip.tsx ï¿½ Bambeh Marketplace
  * FILE LOCATION: src/components/ads/FeaturedAdsStrip.tsx
  *
  * RESPONSIBILITIES:
@@ -13,12 +13,12 @@
  *  - Each card links to the original listing (listing_path) or the category page
  *
  * PROPS:
- *  category?    — limit to a single ad category
- *  searchQuery? — live search string from the parent page
- *  maxVisible?  — override the 20-ad page size
- *  showHeader?  — whether to show the "Featured Ads" section header (default: true)
+ *  category?    ï¿½ limit to a single ad category
+ *  searchQuery? ï¿½ live search string from the parent page
+ *  maxVisible?  ï¿½ override the 20-ad page size
+ *  showHeader?  ï¿½ whether to show the "Featured Ads" section header (default: true)
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * ï¿½ 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useEffect,  useState, useCallback } from "react";
@@ -94,17 +94,17 @@ const UI_STRINGS: Record<
     of:                "of",
     loadError:         "Couldn't load ads.",
     retry:             "Retry",
-    searchPlaceholder: "Search ads…",
+    searchPlaceholder: "Search adsï¿½",
   },
   fr: {
     featuredAds:       "Annonces en vedette",
     noAds:             "Aucune annonce pour le moment.",
-    promoted:          "Sponsorisé",
+    promoted:          "Sponsorisï¿½",
     viewAll:           "Voir tout",
     of:                "sur",
     loadError:         "Impossible de charger les annonces.",
-    retry:             "Réessayer",
-    searchPlaceholder: "Rechercher des annonces…",
+    retry:             "Rï¿½essayer",
+    searchPlaceholder: "Rechercher des annoncesï¿½",
   },
   ha: {
     featuredAds:       "Tallace-tallace na musamman",
@@ -114,7 +114,7 @@ const UI_STRINGS: Record<
     of:                "daga",
     loadError:         "Ba a iya loda tallace-tallace.",
     retry:             "Sake gwadawa",
-    searchPlaceholder: "Nemo tallace-tallace…",
+    searchPlaceholder: "Nemo tallace-tallaceï¿½",
   },
   ar: {
     featuredAds:       "????????? ???????",
@@ -124,7 +124,7 @@ const UI_STRINGS: Record<
     of:                "??",
     loadError:         "????? ????? ?????????.",
     retry:             "????? ????????",
-    searchPlaceholder: "??? Ù? ?????????…",
+    searchPlaceholder: "??? Ù? ?????????ï¿½",
   },
   pcm: {
     featuredAds:       "Featured Ads",
@@ -134,7 +134,7 @@ const UI_STRINGS: Record<
     of:                "for",
     loadError:         "E no fit load ads.",
     retry:             "Try again",
-    searchPlaceholder: "Search ads…",
+    searchPlaceholder: "Search adsï¿½",
   },
   ful: {
     featuredAds:       "Koon?e Ja??aa?e",
@@ -144,7 +144,7 @@ const UI_STRINGS: Record<
     of:                "e dow",
     loadError:         "Waawaa he?tude koon?e.",
     retry:             "Taa fu??o",
-    searchPlaceholder: "?a??u koon?e…",
+    searchPlaceholder: "?a??u koon?eï¿½",
   },
 };
 
@@ -341,7 +341,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* Inline search — only shown if parent hasn't supplied searchQuery */}
+            {/* Inline search ï¿½ only shown if parent hasn't supplied searchQuery */}
             {!searchQuery && (
               <div className="relative hidden sm:block">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
@@ -378,7 +378,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
               </>
             )}
 
-            {/* View-all link — leads to /search or category page */}
+            {/* View-all link ï¿½ leads to /search or category page */}
             {allAds.length > 0 && (
               <button
                 onClick={() => handleNav(category ? (CATEGORY_META[category]?.path ?? "/") : "/marketplace")}
@@ -440,7 +440,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
               onClick={() => {
                 /* goToPage is available from the hook; here we use the exported
                    nextPage/prevPage only. For dot-click we just set the page
-                   by clicking through — or you can expose goToPage as needed. */
+                   by clicking through ï¿½ or you can expose goToPage as needed. */
               }}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 i === currentPage
@@ -457,6 +457,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
 };
 
 export default FeaturedAdsStrip;
+
 
 
 

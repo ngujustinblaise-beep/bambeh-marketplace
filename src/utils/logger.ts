@@ -1,4 +1,4 @@
-/**
+﻿/**
  * logger.ts — Bambeh Marketplace
  * ============================================================
  * REPLACES: All console.warn() / console.log() / console.error()
@@ -108,3 +108,4 @@ export function logDevBanner(): void {
 }
 
 export default logger;
+

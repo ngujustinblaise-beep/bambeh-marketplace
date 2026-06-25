@@ -1,4 +1,4 @@
-// src/services/carRentals.service.ts
+﻿// src/services/carRentals.service.ts
 import axios from "axios";
 import {
   API_CONFIG,
@@ -316,3 +316,4 @@ export const uploadCarImages = async (files: File[]): Promise<string[]> => {
     throw new Error(formatErrorMessage(error, "Failed to upload car images"));
   }
 };
+

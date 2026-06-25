@@ -1,4 +1,4 @@
-export interface ChatParticipant {
+﻿export interface ChatParticipant {
   id: string;
   name: string;
   image?: string;
@@ -44,3 +44,4 @@ export interface Chat {
 }
 
 export type Message = ChatMessage;
+

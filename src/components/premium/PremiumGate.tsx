@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "@/types/auth";
@@ -44,6 +44,7 @@ const PremiumGate: React.FC<PremiumGateProps> = ({
 };
 
 export default PremiumGate;
+
 
 
 

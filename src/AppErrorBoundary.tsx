@@ -26,7 +26,6 @@ export default class AppErrorBoundary extends React.Component<Props, State> {
         </div>
       );
     }
-
     return this.props.children;
   }
 }

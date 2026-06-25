@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { createContext, useContext, useRef } from "react";
 import type { ReactNode } from "react";
 
@@ -41,6 +41,7 @@ export const usePerformance = () => {
   if (!ctx) throw new Error("usePerformance must be inside PerformanceProvider");
   return ctx;
 };
+
 
 
 

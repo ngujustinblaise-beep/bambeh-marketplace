@@ -1,8 +1,8 @@
-/**
- * src/pages/VehicleRentals.tsx ó Bambeh Marketplace
+Ôªø/**
+ * src/pages/VehicleRentals.tsx ÔøΩ Bambeh Marketplace
  * Full vehicle listings page with multilingual support, Supabase realtime,
  * rich filters, and zero-error UX.
- * © 2026 BAMBEH SARL. All rights reserved.
+ * ÔøΩ 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -25,17 +25,17 @@ const I18N: Record<string, Record<string, string>> = {
   en: {
     title: "Cars & Vehicles",
     subtitle: "Buy and sell vehicles across Cameroon",
-    searchPlaceholder: "Search by make, model, or titleÖ",
+    searchPlaceholder: "Search by make, model, or titleÔøΩ",
     allCities: "All Cities",
     refresh: "Refresh",
     sell: "Sell",
     vehiclesFound: "vehicle found",
     vehiclesFoundPlural: "vehicles found",
-    loading: "Loading vehiclesÖ",
+    loading: "Loading vehiclesÔøΩ",
     noVehicles: "No vehicles found",
     noVehiclesHint: "Try clearing your filters or be the first to list!",
     listYourVehicle: "List Your Vehicle",
-    sample: "Sample ó not a real listing",
+    sample: "Sample ÔøΩ not a real listing",
     expiringLabel: "Expiring soon",
     errorBanner: "Could not load listings. Showing demo data.",
     allTypes: "All",
@@ -44,21 +44,21 @@ const I18N: Record<string, Record<string, string>> = {
     backToTop: "Back to top",
   },
   fr: {
-    title: "Voitures & VÈhicules",
-    subtitle: "Achetez et vendez des vÈhicules au Cameroun",
-    searchPlaceholder: "Rechercher par marque, modËle ou titreÖ",
+    title: "Voitures & VÔøΩhicules",
+    subtitle: "Achetez et vendez des vÔøΩhicules au Cameroun",
+    searchPlaceholder: "Rechercher par marque, modÔøΩle ou titreÔøΩ",
     allCities: "Toutes les villes",
     refresh: "Actualiser",
     sell: "Vendre",
-    vehiclesFound: "vÈhicule trouvÈ",
-    vehiclesFoundPlural: "vÈhicules trouvÈs",
-    loading: "Chargement des vÈhiculesÖ",
-    noVehicles: "Aucun vÈhicule trouvÈ",
-    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier ‡ lister!",
-    listYourVehicle: "Listez votre vÈhicule",
-    sample: "Exemple ó pas une vraie annonce",
-    expiringLabel: "Expire bientÙt",
-    errorBanner: "Impossible de charger les annonces. DonnÈes de dÈmonstration affichÈes.",
+    vehiclesFound: "vÔøΩhicule trouvÔøΩ",
+    vehiclesFoundPlural: "vÔøΩhicules trouvÔøΩs",
+    loading: "Chargement des vÔøΩhiculesÔøΩ",
+    noVehicles: "Aucun vÔøΩhicule trouvÔøΩ",
+    noVehiclesHint: "Essayez de supprimer vos filtres ou soyez le premier ÔøΩ lister!",
+    listYourVehicle: "Listez votre vÔøΩhicule",
+    sample: "Exemple ÔøΩ pas une vraie annonce",
+    expiringLabel: "Expire bientÔøΩt",
+    errorBanner: "Impossible de charger les annonces. DonnÔøΩes de dÔøΩmonstration affichÔøΩes.",
     allTypes: "Tous",
     views: "vue",
     viewsPlural: "vues",
@@ -67,17 +67,17 @@ const I18N: Record<string, Record<string, string>> = {
   ha: {
     title: "Motoci & Ababen Hawa",
     subtitle: "Saya da sayar da ababen hawa a Kamaru",
-    searchPlaceholder: "Nemo ta marka, model ko takeÖ",
+    searchPlaceholder: "Nemo ta marka, model ko takeÔøΩ",
     allCities: "Dukkan Biranen",
     refresh: "Sabunta",
     sell: "Sayar",
     vehiclesFound: "abin hawa an samu",
     vehiclesFoundPlural: "ababen hawa an samu",
-    loading: "Ana loda ababen hawaÖ",
+    loading: "Ana loda ababen hawaÔøΩ",
     noVehicles: "Ba a sami ababen hawa ba",
     noVehiclesHint: "Gwada share tace ko kasance na farko don lissafi!",
     listYourVehicle: "Lissafa Abin Hawanku",
-    sample: "Samfuri ó ba lissafi na gaske ba",
+    sample: "Samfuri ÔøΩ ba lissafi na gaske ba",
     expiringLabel: "Kusa ya kare",
     errorBanner: "Ba a iya loda lissafin. Ana nuna bayanin demo.",
     allTypes: "Duka",
@@ -88,17 +88,17 @@ const I18N: Record<string, Record<string, string>> = {
   ar: {
     title: "???????? ?????????",
     subtitle: "??? ????? ???????? ŸÅ? ?????????",
-    searchPlaceholder: "???? ???????? ?? ?????? ?? ???????Ö",
+    searchPlaceholder: "???? ???????? ?? ?????? ?? ???????ÔøΩ",
     allCities: "???? ?????",
     refresh: "?????",
     sell: "???",
     vehiclesFound: "????? ????",
     vehiclesFoundPlural: "?????? ????",
-    loading: "???Ÿç ????? ????????Ö",
+    loading: "???Ÿç ????? ????????ÔøΩ",
     noVehicles: "?? ???? ??????",
     noVehiclesHint: "???? ??? ??ŸÅ???? ?? ?? ??? ?? ???ŸÅ ???????!",
     listYourVehicle: "??ŸÅ ??????",
-    sample: "????? ó ??? ??????? ???????",
+    sample: "????? ÔøΩ ??? ??????? ???????",
     expiringLabel: "????? ??????",
     errorBanner: "????? ????? ?????????. ??? ??? ???????? ?????????.",
     allTypes: "????",
@@ -109,17 +109,17 @@ const I18N: Record<string, Record<string, string>> = {
   pcm: {
     title: "Cars & Motor",
     subtitle: "Buy and sell motor for all Cameroon",
-    searchPlaceholder: "Search by make, model or nameÖ",
+    searchPlaceholder: "Search by make, model or nameÔøΩ",
     allCities: "All Towns",
     refresh: "Refresh",
     sell: "Sell",
     vehiclesFound: "motor find",
     vehiclesFoundPlural: "motors find",
-    loading: "Motor dey loadÖ",
+    loading: "Motor dey loadÔøΩ",
     noVehicles: "No motor find",
     noVehiclesHint: "Try remove filter or be first person post!",
     listYourVehicle: "Post Your Motor",
-    sample: "Sample ó no be real post",
+    sample: "Sample ÔøΩ no be real post",
     expiringLabel: "Go expire soon",
     errorBanner: "We no fit load posts. We dey show demo data.",
     allTypes: "All",
@@ -130,17 +130,17 @@ const I18N: Record<string, Record<string, string>> = {
   ff: {
     title: "Jawdi & Laa?al",
     subtitle: "Soodde e yillitde laa?al e Kameruun",
-    searchPlaceholder: "Yiyto e innde, model walla tiitoondeÖ",
+    searchPlaceholder: "Yiyto e innde, model walla tiitoondeÔøΩ",
     allCities: "Telli Wuro",
     refresh: "Haa?tu",
     sell: "Yillitu",
     vehiclesFound: "laa?al he?aa",
     vehiclesFoundPlural: "laa?e he?aa",
-    loading: "Laa?e njilloyineeÖ",
+    loading: "Laa?e njilloyineeÔøΩ",
     noVehicles: "Laa?e he?aaki",
     noVehiclesHint: "Wi? siftooje maa ar tawa fowo!",
     listYourVehicle: "Haa?tu Laa?al Maa",
-    sample: "Misaali ó wo??aaki ja?tere goonga",
+    sample: "Misaali ÔøΩ wo??aaki ja?tere goonga",
     expiringLabel: "Timmata jooni",
     errorBanner: "Ja?tere nde nahataa. Yeeso misaali hannde.",
     allTypes: "Fof",
@@ -163,7 +163,7 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
 };
 
 const VEHICLE_TYPES = ["All", "Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck"];
-const CITIES        = ["All", "YaoundÈ", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
+const CITIES        = ["All", "YaoundÔøΩ", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
 
 // -------------------------------------------------------------
 // Types
@@ -186,9 +186,9 @@ interface Vehicle {
 // Demo data (ids start with demo- for VehicleDetails detection)
 // -------------------------------------------------------------
 const DEMO_VEHICLES: Vehicle[] = [
-  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"YaoundÈ", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
+  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"YaoundÔøΩ", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
   { id:"demo-v2", title:"Honda Activa Motorcycle",   price:850_000,    location:"Douala",  category:"Motorcycle", images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Manual",    mileage:"12,000 km", year:2021}, isDemo:true },
-  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"YaoundÈ", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
+  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"YaoundÔøΩ", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
   { id:"demo-v4", title:"Nissan Pickup 4x4",         price:12_000_000, location:"Bamenda", category:"Pickup",     images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Manual",    mileage:"95,000 km", year:2018}, isDemo:true },
 ];
 
@@ -476,6 +476,7 @@ export default function VehicleRentals() {
     </div>
   );
 }
+
 
 
 
