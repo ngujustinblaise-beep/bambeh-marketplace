@@ -1,22 +1,21 @@
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  MessageSquare,
-  Lock,
-  Send,
-  Image as ImageIcon,
   ArrowLeft,
-  Search,
-  MoreVertical,
   Check,
   CheckCheck,
-  Circle,
-  Mic,
-  Smile,
-  Phone,
-  Video,
   ChevronDown,
+  Circle,
+  Image as ImageIcon,
+  Lock,
+  MessageSquare,
+  Mic,
+  MoreVertical,
+  Phone,
+  Search,
+  Send,
+  Smile,
+  Video,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
@@ -56,21 +55,6 @@ interface ChatConversation {
   listingImage?: string;
 }
 
-const BOOKING_EMOJI: Record<string, string> = {
-  booking: '📅',
-  visit: '📍',
-  'test drive': '🚗',
-  service: '🛠️',
-};
-
-function getBookingEmoji(content: string): string {
-  const lower = content.toLowerCase();
-  for (const [key, emoji] of Object.entries(BOOKING_EMOJI)) {
-    if (lower.includes(key)) return emoji;
-  }
-  return '📩';
-}
-
 const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
   <div className="flex items-end gap-2 px-4 py-1">
     <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex-shrink-0 flex items-center justify-center">
@@ -91,8 +75,6 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
   const lines = message.content.split('\n').filter(Boolean);
   const title = lines[0] ?? 'Booking Request';
   const details = lines.slice(1);
-  const emoji = getBookingEmoji(title);
-  const label = title.replace(/^[^\w]+/, '').trim() || title;
   const time = new Date(message.createdAt).toLocaleTimeString('fr-CM', {
     hour: '2-digit',
     minute: '2-digit',
@@ -103,10 +85,10 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
       <div className="w-full max-w-sm bg-teal-50 border border-teal-200 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-lg flex-shrink-0">
-            {emoji}
+            📩
           </div>
           <div>
-            <p className="font-bold text-teal-800 text-sm leading-tight">{label}</p>
+            <p className="font-bold text-teal-800 text-sm leading-tight">{title}</p>
             <p className="text-[10px] text-teal-500">{time}</p>
           </div>
         </div>
@@ -186,11 +168,9 @@ const MessageBubble: React.FC<{
             {message.content}
           </div>
         )}
-
         <div className={`flex items-center gap-1 px-1 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
           <span className="text-[10px] text-gray-400">{time}</span>
-          {isMine &&
-            (isRead ? <CheckCheck className="w-3 h-3 text-teal-500" /> : <Check className="w-3 h-3 text-gray-400" />)}
+          {isMine && (isRead ? <CheckCheck className="w-3 h-3 text-teal-500" /> : <Check className="w-3 h-3 text-gray-400" />)}
         </div>
       </div>
     </div>
@@ -284,16 +264,19 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!user?.id) return;
+
     const fetchConversations = async () => {
       const { data, error } = await supabase
         .from('conversations')
         .select('id, participants, last_message, last_message_at, listing_title, listing_image, unread_counts, conversation_participants(user_id, profiles(id, full_name, avatar_url, last_seen))')
         .contains('participant_ids', [user.id])
         .order('last_message_at', { ascending: false });
+
       if (error) {
         logger.warn('Conversations fetch error:', error);
         return;
       }
+
       setConversations(
         (data ?? []).map((row: any) => ({
           id: row.id,
@@ -366,6 +349,7 @@ export default function ChatPage() {
           }))
         );
       }
+
       setIsLoadingMessages(false);
     };
 
@@ -413,6 +397,7 @@ export default function ChatPage() {
     channel.on('broadcast', { event: 'typing' }, (payload) => {
       const { userId, isTyping } = payload.payload as { userId: string; isTyping: boolean };
       if (userId === user.id) return;
+
       setTypingUsers(prev =>
         isTyping ? (prev.includes(userId) ? prev : [...prev, userId]) : prev.filter(u => u !== userId)
       );
@@ -508,6 +493,7 @@ export default function ChatPage() {
       createdAt: new Date().toISOString(),
       isBookingMessage: false,
     };
+
     setMessages(prev => [...prev, optimisticMsg]);
 
     const { error } = await supabase.from('messages').insert({
@@ -577,8 +563,10 @@ export default function ChatPage() {
   const filteredConvs = conversations.filter(c => {
     if (!searchQuery) return true;
     const other = c.participantDetails.find(p => p.id !== user.id);
-    return other?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.listingTitle?.toLowerCase().includes(searchQuery.toLowerCase());
+    return (
+      other?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.listingTitle?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   const ConversationList = (
@@ -679,11 +667,7 @@ export default function ChatPage() {
         </div>
       </div>
 
-      <div
-        ref={messagesContainerRef}
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto py-4 space-y-0.5"
-      >
+      <div ref={messagesContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto py-4 space-y-0.5 relative">
         {isLoadingMessages ? (
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
@@ -722,17 +706,18 @@ export default function ChatPage() {
             })}
           </>
         )}
-        <div ref={messagesEndRef} />
-      </div>
 
-      {showScrollDown && (
-        <button
-          onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
-          className="absolute bottom-24 right-6 w-9 h-9 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition border border-gray-200"
-        >
-          <ChevronDown className="w-4 h-4 text-gray-600" />
-        </button>
-      )}
+        <div ref={messagesEndRef} />
+
+        {showScrollDown && (
+          <button
+            onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
+            className="absolute bottom-24 right-6 w-9 h-9 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition border border-gray-200"
+          >
+            <ChevronDown className="w-4 h-4 text-gray-600" />
+          </button>
+        )}
+      </div>
 
       {isBookingOnlyThread ? (
         <div className="bg-teal-50 border-t border-teal-100 px-4 py-4 text-center">
@@ -806,11 +791,15 @@ export async function startChat(
   listingTitle?: string,
   listingImage?: string
 ): Promise<string> {
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from('conversations')
     .select('id')
     .contains('participant_ids', [currentUserId, otherUserId])
     .maybeSingle();
+
+  if (existingError) {
+    throw new Error(`Failed to find conversation: ${existingError.message}`);
+  }
 
   if (existing?.id) return existing.id;
 
@@ -827,7 +816,9 @@ export async function startChat(
     .select('id')
     .single();
 
-  if (error) throw new Error(`Failed to create conversation: ${error.message}`);
+  if (error) {
+    throw new Error(`Failed to create conversation: ${error.message}`);
+  }
 
   await supabase.from('conversation_participants').insert([
     { conversation_id: data.id, user_id: currentUserId },
@@ -835,4 +826,4 @@ export async function startChat(
   ]);
 
   return data.id;
-} 		
+}
