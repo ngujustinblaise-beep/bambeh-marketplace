@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Search, BookOpen, Video, MessageCircle, FileText, Shield, ShoppingBag } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 const T: Record<Lang, Record<string,string>> = {
@@ -100,3 +100,4 @@ export default function Help() {
     </div>
   );
 }
+

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Tab = "general" | "notifications" | "privacy" | "security";
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
@@ -595,6 +595,7 @@ const UserSettings: React.FC = () => {
 };
 
 export default UserSettings;
+
 
 
 

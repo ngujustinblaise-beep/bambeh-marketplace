@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { CreditCard, Coins, Smartphone, DollarSign } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 const T: Record<string, Record<string, string>> = {
   "en": {
@@ -174,5 +174,6 @@ export default function PaymentMethods() {
     </div>
   );
 }
+
 
 

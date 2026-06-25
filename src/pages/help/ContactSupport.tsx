@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Mail, Phone, Clock } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 const SUPPORT_EMAIL = "support@bambeh.com";
 const SUPPORT_PHONE = "+237652953607";
@@ -92,3 +92,4 @@ export default function ContactSupport() {
     </div>
   );
 }
+

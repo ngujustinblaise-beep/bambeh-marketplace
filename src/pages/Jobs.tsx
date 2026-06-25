@@ -19,7 +19,7 @@ import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/fi
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
 // ─── Static data (not translated — just identifiers) ──────────────────────────
@@ -528,5 +528,6 @@ export default function Jobs() {
     </div>
   );
 }
+
 
 

@@ -6,7 +6,7 @@
 
 import { Link } from "react-router-dom";
 import { Lock, Zap, Shield, Crown } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 type ActionKey = "location" | "contact" | "apply" | "buy" | "details" | "post";
@@ -140,3 +140,4 @@ export default function SubscriptionWall({ action, message, compact = false }: S
     </div>
   );
 }
+

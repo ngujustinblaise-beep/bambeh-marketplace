@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 // ─── Translation Table ─────────────────────────────────────────────────────
 const HOME_T: Record<string, Record<string, string>> = {
@@ -649,3 +649,4 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
+

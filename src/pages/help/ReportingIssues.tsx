@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Flag, AlertCircle, Mail, CheckCircle } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 const SUPPORT_EMAIL = "support@bambeh.com";
 
@@ -102,3 +102,4 @@ export default function ReportingIssues() {
     </div>
   );
 }
+

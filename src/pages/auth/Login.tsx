@@ -1,10 +1,24 @@
 import React, { useMemo, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Eye, EyeOff, ArrowRight, AlertTriangle } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ArrowRight, Eye, EyeOff, Fingerprint, UserPlus, LogIn, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
-const STRINGS = {
+type LangCode = "en" | "fr" | "pcm" | "ar" | "ful" | "ha";
+
+const STRINGS: Record<LangCode, {
+  title: string;
+  subtitle: string;
+  email: string;
+  password: string;
+  signIn: string;
+  signingIn: string;
+  register: string;
+  biometricLogin: string;
+  show: string;
+  hide: string;
+  invalid: string;
+}> = {
   en: {
     title: "Welcome back",
     subtitle: "Sign in to continue.",
@@ -12,13 +26,11 @@ const STRINGS = {
     password: "Password",
     signIn: "Sign in",
     signingIn: "Signing in...",
-    noAccount: "Don't have an account?",
-    createOne: "Create account",
-    forgotPassword: "Forgot password?",
-    invalid: "Please enter a valid email and password.",
+    register: "Sign up",
+    biometricLogin: "Biometric login",
     show: "Show password",
     hide: "Hide password",
-    logoAlt: "Bambeh logo",
+    invalid: "Please enter a valid email and password.",
   },
   fr: {
     title: "Bon retour",
@@ -27,13 +39,24 @@ const STRINGS = {
     password: "Mot de passe",
     signIn: "Se connecter",
     signingIn: "Connexion...",
-    noAccount: "Pas encore de compte ?",
-    createOne: "Créer un compte",
-    forgotPassword: "Mot de passe oublié ?",
-    invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
+    register: "Créer un compte",
+    biometricLogin: "Connexion biométrique",
     show: "Afficher le mot de passe",
     hide: "Masquer le mot de passe",
-    logoAlt: "Logo Bambeh",
+    invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
+  },
+  pcm: {
+    title: "Welcome back",
+    subtitle: "Sign in make you continue.",
+    email: "Email address",
+    password: "Password",
+    signIn: "Sign in",
+    signingIn: "Dey sign in...",
+    register: "Sign up",
+    biometricLogin: "Biometric login",
+    show: "Show password",
+    hide: "Hide password",
+    invalid: "Please enter a valid email and password.",
   },
   ar: {
     title: "مرحبًا بعودتك",
@@ -42,52 +65,48 @@ const STRINGS = {
     password: "كلمة المرور",
     signIn: "تسجيل الدخول",
     signingIn: "جارٍ تسجيل الدخول...",
-    noAccount: "ليس لديك حساب؟",
-    createOne: "إنشاء حساب",
-    forgotPassword: "نسيت كلمة المرور؟",
-    invalid: "يرجى إدخال بريد إلكتروني وكلمة مرور صالحين.",
+    register: "إنشاء حساب",
+    biometricLogin: "الدخول بالبصمة",
     show: "إظهار كلمة المرور",
     hide: "إخفاء كلمة المرور",
-    logoAlt: "شعار Bambeh",
+    invalid: "يرجى إدخال بريد إلكتروني وكلمة مرور صالحين.",
   },
-  pidgin: {
-    title: "Welcome back",
-    subtitle: "Sign in make you continue.",
-    email: "Email address",
-    password: "Password",
-    signIn: "Sign in",
-    signingIn: "Dey sign in...",
-    noAccount: "You no get account?",
-    createOne: "Create account",
-    forgotPassword: "Forget password?",
-    invalid: "Please enter correct email and password.",
-    show: "Show password",
-    hide: "Hide password",
-    logoAlt: "Bambeh logo",
-  },
-    ff: {
+  ful: {
     title: "Jam tan",
-    subtitle: "Se?o e barne.",
+    subtitle: "Seŋo e barne.",
     email: "Njiital email",
-    password: "Moo?ere moo?i",
-    signIn: "Se?o",
-    signingIn: "Ko se?oto...",
-    noAccount: "A adi a waawi fotaade?",
-    createOne: "Sos njiya",
-    forgotPassword: "Nodii moo?ere?",
-    invalid: "Tii?no naatnude email e moo?ere moo?i.",
-    show: "Wa?tude moo?ere",
-    hide: "?ittude moo?ere",
-    logoAlt: "Bambeh logo",
+    password: "Mooɗere mooɗi",
+    signIn: "Seŋo",
+    signingIn: "Ko seŋoto...",
+    register: "Sos njiya",
+    biometricLogin: "Seŋo e biometrics",
+    show: "Waɗtude mooɗere",
+    hide: "Hiddude mooɗere",
+    invalid: "Naatnude email e mooɗere mooɗi.",
   },
-} as const;
+  ha: {
+    title: "Barka da zuwa",
+    subtitle: "Shiga domin ci gaba.",
+    email: "Adireshin imel",
+    password: "Kalmar sirri",
+    signIn: "Shiga",
+    signingIn: "Ana shiga...",
+    register: "Yi rajista",
+    biometricLogin: "Shiga da biometrics",
+    show: "Nuna kalmar sirri",
+    hide: "Boye kalmar sirri",
+    invalid: "Don Allah shigar da ingantaccen imel da kalmar sirri.",
+  },
+};
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { language } = useLanguage();
-  const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
   const { login } = useAuth();
+  const { language } = useLanguage();
+
+  const lang = ((language as LangCode) in STRINGS ? (language as LangCode) : "en");
+  const t = STRINGS[lang];
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -113,35 +132,30 @@ export default function Login() {
         setError(result.error);
         return;
       }
-      const from = (location.state as any)?.from?.pathname || "/";
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/";
       navigate(from, { replace: true });
     } finally {
       setLoading(false);
     }
   };
 
+  const isRtl = lang === "ar";
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-slate-50 px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <img
-            src="/logo.png"
-            alt={t.logoAlt}
-            className="mx-auto h-20 w-auto object-contain mb-4"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
-          <h1 className="text-3xl font-bold text-gray-900">{t.title}</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-slate-50 px-4 py-8" dir={isRtl ? "rtl" : "ltr"}>
+      <section className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <div className="w-18 h-18 mx-auto mb-4 rounded-3xl bg-teal-600 flex items-center justify-center shadow-md">
+            <Globe className="w-9 h-9 text-white" />
+          </div>
+          <h1 className="text-2xl font-black text-gray-900">{t.title}</h1>
           <p className="mt-2 text-sm text-gray-600">{t.subtitle}</p>
         </div>
 
-        <div className="rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        <div className="rounded-3xl border border-gray-100 bg-white shadow-xl p-5 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                {t.email}
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">{t.email}</label>
               <input
                 id="email"
                 type="email"
@@ -155,9 +169,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                {t.password}
-              </label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">{t.password}</label>
               <div className="relative mt-1">
                 <input
                   id="password"
@@ -180,41 +192,33 @@ export default function Login() {
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>{error}</span>
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3 font-semibold text-white transition-colors hover:bg-teal-700 disabled:bg-gray-300"
+              className="w-full rounded-xl bg-teal-600 py-3 font-semibold text-white transition-colors hover:bg-teal-700 disabled:bg-gray-300 flex items-center justify-center gap-2"
             >
               {loading ? t.signingIn : t.signIn}
               <ArrowRight className="h-4 w-4" />
             </button>
           </form>
 
-          <div className="mt-6 flex items-center justify-between text-sm">
-            <Link to="/forgot-password" className="text-teal-700 hover:underline">
-              {t.forgotPassword}
+          <div className="mt-5 flex items-center justify-between gap-3 text-sm">
+            <Link to="/register" className="inline-flex items-center gap-2 text-teal-700 hover:underline">
+              <UserPlus className="h-4 w-4" />
+              {t.register}
             </Link>
-            <Link to="/register" className="text-teal-700 hover:underline">
-              {t.createOne}
+            <Link to="/biometric-login" className="inline-flex items-center gap-2 text-slate-700 hover:underline">
+              <Fingerprint className="h-4 w-4" />
+              {t.biometricLogin}
             </Link>
           </div>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            {t.noAccount}{" "}
-            <Link to="/register" className="font-semibold text-teal-700 hover:underline">
-              {t.createOne}
-            </Link>
-          </p>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
-
-

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 const T: Record<string, Record<string, string>> = {
   "en": {
@@ -108,5 +108,6 @@ export default function CreatingAccount() {
     </div>
   );
 }
+
 
 

@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 const RENT_T: Record<string, Record<string, string>> = {
   en: {
@@ -393,3 +393,4 @@ export default function Rentals() {
     </div>
   );
 }
+

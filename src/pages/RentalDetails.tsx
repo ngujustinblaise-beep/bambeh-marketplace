@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader2, ArrowLeft, Share2, Heart, Home, AlertTriangle, MapPin, Bed, Bath, Eye, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 const DETAIL_T: Record<string, Record<string, string>> = {
   en: {
@@ -316,3 +316,4 @@ export default function RentalDetails() {
     </div>
   );
 }
+

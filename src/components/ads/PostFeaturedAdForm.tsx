@@ -19,7 +19,7 @@
  */
 
 import React, { useState } from "react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { Check, AlertCircle, Loader2 } from "lucide-react";
@@ -277,6 +277,7 @@ export const PostFeaturedAdForm: React.FC<PostFeaturedAdFormProps> = ({
 };
 
 export default PostFeaturedAdForm;
+
 
 
 

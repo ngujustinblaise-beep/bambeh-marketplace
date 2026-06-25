@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Globe, Check } from "lucide-react";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface LanguageOption {
   code: string;
@@ -86,3 +86,4 @@ const LanguageSelector = () => {
 };
 
 export default LanguageSelector;
+

@@ -14,7 +14,7 @@
  */
 
 import { useState } from 'react';
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Menu, X, User, LogOut, LogIn, Search,
@@ -547,3 +547,4 @@ export default function Header() {
     </header>
   );
 }
+

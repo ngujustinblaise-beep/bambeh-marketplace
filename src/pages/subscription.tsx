@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/lib/supabase";
 import CamPayWidget from "@/components/payment/CamPayWidget";
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 
@@ -233,3 +233,4 @@ const Subscription: React.FC = () => {
 };
 
 export default Subscription;
+
