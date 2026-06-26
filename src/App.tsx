@@ -77,7 +77,7 @@ const BiometricLoginPage = lazy(() => import("@/pages/auth/BiometricLogin"));
 const BiometricSetupPage = lazy(() => import("@/pages/biometric-setup"));
 const SettingsPage = lazy(() => import("@/pages/settings"));
 
-const MarketplacePage = lazy(() => import("@/pages/marketplace"));
+const MarketplacePage = lazy(() => import("@/pages/marketplace.tsx"));
 const ProductDetailsPage = lazy(() => import("@/pages/details/ProductDetails"));
 const PostMarketplaceItemPage = lazy(() => import("@/pages/PostMarketplaceItemPage"));
 const AddItemPage = lazy(() => import("@/pages/AddItem"));
@@ -524,5 +524,6 @@ export default function App() {
     </LanguageProvider>
   );
 }
+
 
 
