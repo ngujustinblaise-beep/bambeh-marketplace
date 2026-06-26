@@ -82,7 +82,7 @@ const ProductDetailsPage = lazy(() => import("@/pages/details/ProductDetails"));
 const PostMarketplaceItemPage = lazy(() => import("@/pages/PostMarketplaceItemPage"));
 const AddItemPage = lazy(() => import("@/pages/AddItem"));
 
-const JobsPage = lazy(() => import("@/pages/jobs"));
+const JobsPage = lazy(() => import("@/pages/JobDetails"));
 const JobDetailsPage = lazy(() => import("@/pages/JobDetails"));
 const PostJobPage = lazy(() => import("@/pages/PostJobPage"));
 
@@ -524,6 +524,9 @@ export default function App() {
     </LanguageProvider>
   );
 }
+
+
+
 
 
 
