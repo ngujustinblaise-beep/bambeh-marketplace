@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 export default function TermsAcceptance() {
-  const navigate = usenavigate("/welcome");
+  const navigate = useNavigate();
   const [hasRead, setHasRead] = useState(false);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
