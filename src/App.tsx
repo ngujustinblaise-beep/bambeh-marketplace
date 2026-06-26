@@ -255,7 +255,7 @@ export default function App() {
                   <Suspense fallback={<Splash />}>
                     <Routes>
                       <Route element={<RootShell />}>
-                        <Route index element={<Navigate to="/home" replace />} />
+                        <Route index element={localStorage.getItem("Bambeh_onboarding_completed") === "true" ? <Navigate to="/home" replace /> : <Navigate to="/language" replace />} />
 
                                                                                                                         <Route path="/language" element={<LanguagePage />} />
                         <Route path="/terms-acceptance" element={<TermsPage />} />

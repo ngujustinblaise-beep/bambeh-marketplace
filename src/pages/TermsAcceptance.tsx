@@ -1,20 +1,20 @@
 /**
- * ---------------------------------------------------------------------------
- * TERMS ACCEPTANCE � BAMBEH MARKETPLACE
- * ---------------------------------------------------------------------------
+ * ═══════════════════════════════════════════════════════════════════════════
+ * TERMS ACCEPTANCE — BAMBEH MARKETPLACE
+ * ═══════════════════════════════════════════════════════════════════════════
  *
  * LEGAL COMPLIANCE:
- * ? OHADA e-consent checkbox � Cameroonian data protection law
+ * ✅ OHADA e-consent checkbox — Cameroonian data protection law
  *    (Law No. 2024/017 of 23 December 2024, Sections 13-16)
- * ? Standard Terms & Conditions acceptance checkbox
- * ? Scroll-to-bottom enforcement before acceptance is enabled
- * ? Explicit opt-in (not pre-checked) � required by Law 2024/017
- * ? Timestamps stored on acceptance
- * ? Returning users correctly bypass re-acceptance
+ * ✅ Standard Terms & Conditions acceptance checkbox
+ * ✅ Scroll-to-bottom enforcement before acceptance is enabled
+ * ✅ Explicit opt-in (not pre-checked) — required by Law 2024/017
+ * ✅ Timestamps stored on acceptance
+ * ✅ Returning users correctly bypass re-acceptance
  *
  * FILE: src/pages/TermsAcceptance.tsx
- * � 2026 BAMBEH SARL - CM -NSI-02-2026-B13-00179
- * ---------------------------------------------------------------------------
+ * © 2026 BAMBEH SARL - CM -NSI-02-2026-B13-00179
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import { useState, useEffect } from "react";
@@ -36,18 +36,18 @@ export default function TermsAcceptance() {
   const [isAccepted, setIsAccepted] = useState(false);
   const [isReturningUser, setIsReturningUser] = useState(false);
 
-  // -- Business identity for user verification ------------------------------
+  // ── Business identity for user verification ──────────────────────────────
   const legalName = "BAMBEH SARL";
   const registreDeCommerce = "CM -NSI-02-2026-B13-00179";
   const niu = "M022618405804C";
   const duns = "850379853";
   const emails = ["support@gmail.com", "bambetheapp@gmail.com"];
 
-  // -- OHADA / Law No. 2024/017 consent --------------------------------------
+  // ── OHADA / Law No. 2024/017 consent ──────────────────────────────────────
   // Cameroonian personal data protection law (enacted 23 December 2024)
   // requires explicit, informed, opt-in consent BEFORE any data is collected.
-  // This checkbox is separate from the Terms checkbox � it specifically covers
-  // personal data processing. It must NOT be pre-checked (Law 2024/017 �13�16).
+  // This checkbox is separate from the Terms checkbox — it specifically covers
+  // personal data processing. It must NOT be pre-checked (Law 2024/017 §13–16).
   const [ohadaConsented, setOhadaConsented] = useState(false);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function TermsAcceptance() {
     localStorage.setItem("Bambeh_terms_accepted_date", new Date().toISOString());
     localStorage.setItem("Bambeh_ohada_consent_date", new Date().toISOString());
 
-    navigate("/welcome", { replace: true });
+    navigate("/language", { replace: true });
   };
 
   const handleDecline = () => {
@@ -111,7 +111,7 @@ export default function TermsAcceptance() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 p-4">
       <div className="max-w-4xl mx-auto py-8">
 
-        {/* -- Header ------------------------------------------------------- */}
+        {/* ── Header ─────────────────────────────────────────────────────── */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full mb-4 shadow-xl">
             <span className="text-4xl font-bold text-white">B</span>
@@ -128,7 +128,7 @@ export default function TermsAcceptance() {
           </div>
         </div>
 
-        {/* -- Terms Container ----------------------------------------------- */}
+        {/* ── Terms Container ─────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
 
           {/* Scroll indicator banners */}
@@ -147,13 +147,13 @@ export default function TermsAcceptance() {
               <div className="flex items-center gap-2 text-green-800">
                 <CheckCircle className="w-5 h-5" />
                 <p className="text-sm font-medium">
-                  ? Thank you for reading! You may now accept the terms below.
+                  ✅ Thank you for reading! You may now accept the terms below.
                 </p>
               </div>
             </div>
           )}
 
-          {/* -- Scrollable Terms Content ---------------------------------- */}
+          {/* ── Scrollable Terms Content ────────────────────────────────── */}
           <div
             onScroll={handleScroll}
             className="h-96 overflow-y-auto px-8 py-6 prose prose-sm max-w-none"
@@ -179,7 +179,7 @@ export default function TermsAcceptance() {
                 1. DEFINITIONS AND INTERPRETATION
               </h3>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>"BAMBEH SARL"</strong> refers to the legal entity operating Bambeh, registered in Yaound�, Cameroon.</li>
+                <li><strong>"BAMBEH SARL"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé, Cameroon.</li>
                 <li><strong>"User"</strong> means any individual who creates an account and uses the App for buying, selling, or browsing.</li>
                 <li><strong>"Vendor"</strong> means a User who offers goods or services for sale on the platform.</li>
                 <li><strong>"Zerm Coins"</strong> are a proprietary in-app virtual currency with no real-world cash value outside the platform.</li>
@@ -206,7 +206,7 @@ export default function TermsAcceptance() {
                 <li>All listings must be accurate and lawful under Cameroonian law.</li>
                 <li>No counterfeit, stolen, or prohibited items are permitted.</li>
                 <li>Bambeh reserves the right to remove listings at its discretion.</li>
-                <li>A 1% transaction fee applies to all completed sales � the lowest you will find online.</li>
+                <li>A 1% transaction fee applies to all completed sales — the lowest you will find online.</li>
               </ul>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">4. ZERM COINS</h3>
@@ -238,7 +238,7 @@ export default function TermsAcceptance() {
               </h3>
               <p>
                 All disputes shall be resolved through binding arbitration in
-                Yaound�, Cameroon, under the laws of the Republic of Cameroon and
+                Yaoundé, Cameroon, under the laws of the Republic of Cameroon and
                 applicable OHADA Uniform Acts.
               </p>
 
@@ -263,7 +263,7 @@ export default function TermsAcceptance() {
               </p>
 
               <div className="bg-teal-50 border-l-4 border-teal-600 p-6 mt-8">
-                <h3 className="font-bold text-teal-900 mb-2">? ACKNOWLEDGMENT</h3>
+                <h3 className="font-bold text-teal-900 mb-2">✅ ACKNOWLEDGMENT</h3>
                 <p className="text-sm">
                   By checking the boxes below and clicking "Accept and Continue," you acknowledge:
                 </p>
@@ -288,12 +288,12 @@ export default function TermsAcceptance() {
                 <strong>NIU:</strong> M022618405804C
                 <br />
                 <strong>DUNS:</strong> 850379853
-                <br />� 2026 BAMBEH SARL
+                <br />© 2026 BAMBEH SARL
               </p>
             </div>
           </div>
 
-          {/* -- Acceptance Section -------------------------------------------- */}
+          {/* ── Acceptance Section ──────────────────────────────────────────── */}
           <div className="border-t-4 border-teal-500 bg-gradient-to-b from-gray-50 to-gray-100 px-8 py-8">
 
             {/* Warning if not scrolled */}
@@ -313,7 +313,7 @@ export default function TermsAcceptance() {
               </div>
             )}
 
-            {/* -- Checkbox 1: General Terms ----------------------------------- */}
+            {/* ── Checkbox 1: General Terms ─────────────────────────────────── */}
             <div
               onClick={() => hasRead && setIsAccepted(!isAccepted)}
               className={`
@@ -351,12 +351,12 @@ export default function TermsAcceptance() {
                   {isAccepted && (
                     <div className="mt-3 flex items-center gap-2 text-teal-600 font-bold">
                       <CheckCircle className="w-5 h-5" />
-                      <span>Terms Accepted ?</span>
+                      <span>Terms Accepted ✓</span>
                     </div>
                   )}
                   {hasRead && !isAccepted && (
                     <div className="mt-3 flex items-center gap-2 text-gray-500 text-sm">
-                      <span className="animate-bounce">??</span>
+                      <span className="animate-bounce">👆</span>
                       <span>Click here to accept Terms and Conditions</span>
                     </div>
                   )}
@@ -364,7 +364,7 @@ export default function TermsAcceptance() {
               </div>
             </div>
 
-            {/* -- Checkbox 2: OHADA / Law No. 2024/017 Data Consent ------------- */}
+            {/* ── Checkbox 2: OHADA / Law No. 2024/017 Data Consent ───────────── */}
             {hasRead && (
               <label
                 className={`flex items-start gap-4 cursor-pointer rounded-2xl border-4 p-5 mb-6 transition-all duration-300
@@ -386,7 +386,7 @@ export default function TermsAcceptance() {
                     checked={ohadaConsented}
                     onChange={(e) => setOhadaConsented(e.target.checked)}
                     className="sr-only"
-                    aria-label="OHADA data protection consent � Law No. 2024/017"
+                    aria-label="OHADA data protection consent — Law No. 2024/017"
                   />
                   {ohadaConsented ? (
                     <Check className="w-7 h-7 text-white" strokeWidth={4} />
@@ -399,14 +399,14 @@ export default function TermsAcceptance() {
                   <div className="flex items-center gap-2 mb-1">
                     <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
                     <p className="text-sm font-bold text-gray-900">
-                      Data Protection Consent � Law No. 2024/017 (Cameroon)
+                      Data Protection Consent — Law No. 2024/017 (Cameroon)
                     </p>
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
                     I consent to BAMBEH SARL collecting and processing my personal
                     data (name, email, phone number, location, device identifiers) solely
                     to operate my Bambeh account, process transactions, and improve the
-                    platform � in accordance with{" "}
+                    platform — in accordance with{" "}
                     <strong>Cameroon's Law No. 2024/017 of 23 December 2024</strong>{" "}
                     on Personal Data Protection and applicable OHADA Uniform Acts.
                   </p>
@@ -419,20 +419,20 @@ export default function TermsAcceptance() {
                   {ohadaConsented && (
                     <div className="mt-3 flex items-center gap-2 text-blue-600 font-semibold text-sm">
                       <CheckCircle className="w-4 h-4" />
-                      <span>Data processing consent confirmed ?</span>
+                      <span>Data processing consent confirmed ✓</span>
                     </div>
                   )}
                   {!ohadaConsented && (
                     <div className="mt-2 flex items-center gap-2 text-gray-500 text-xs">
-                      <span className="animate-bounce">??</span>
-                      <span>Required � click to give data processing consent</span>
+                      <span className="animate-bounce">👆</span>
+                      <span>Required — click to give data processing consent</span>
                     </div>
                   )}
                 </div>
               </label>
             )}
 
-            {/* -- Progress indicator ------------------------------------------- */}
+            {/* ── Progress indicator ─────────────────────────────────────────── */}
             {hasRead && (
               <div className="flex items-center gap-3 mb-6 px-2">
                 <div className={`flex items-center gap-1.5 text-xs font-medium ${hasRead ? "text-teal-600" : "text-gray-400"}`}>
@@ -456,7 +456,7 @@ export default function TermsAcceptance() {
               </div>
             )}
 
-            {/* -- Action Buttons ----------------------------------------------- */}
+            {/* ── Action Buttons ─────────────────────────────────────────────── */}
             <div className="flex gap-4">
               <button
                 onClick={handleDecline}
@@ -480,18 +480,18 @@ export default function TermsAcceptance() {
 
             {/* Compliance note */}
             <p className="text-center text-xs text-gray-400 mt-4">
-              Compliant with Cameroon Law No. 2024/017 � OHADA Uniform Acts �
+              Compliant with Cameroon Law No. 2024/017 · OHADA Uniform Acts ·
               Google Play Developer Policy
             </p>
           </div>
         </div>
 
-        {/* -- Footer ----------------------------------------------------------- */}
+        {/* ── Footer ─────────────────────────────────────────────────────────── */}
         <div className="text-center mt-8">
           <p className="text-sm text-gray-600">
-            ??{" "}
+            🎉{" "}
             <span className="font-bold text-green-600">Only 1% Transaction Fee</span>{" "}
-            � Lowest in Cameroon! ??
+            — Lowest in Cameroon! 💚
           </p>
           <p className="text-xs text-gray-500 mt-2">Next: Choose Your Language</p>
         </div>
@@ -499,6 +499,3 @@ export default function TermsAcceptance() {
     </div>
   );
 }
-
-
-
