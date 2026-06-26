@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 export default function TermsAcceptance() {
-  const navigate = useNavigate();
+  const navigate = usenavigate("/welcome");
   const [hasRead, setHasRead] = useState(false);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
@@ -90,7 +90,7 @@ export default function TermsAcceptance() {
     localStorage.setItem("Bambeh_terms_accepted_date", new Date().toISOString());
     localStorage.setItem("Bambeh_ohada_consent_date", new Date().toISOString());
 
-    navigate("/language", { replace: true });
+    navigate("/welcome");
   };
 
   const handleDecline = () => {
