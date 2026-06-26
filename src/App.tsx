@@ -257,8 +257,8 @@ export default function App() {
                       <Route element={<RootShell />}>
                         <Route index element={<Navigate to="/language" replace />} />
 
-                                                                                                                        <Route path="/language" element={<LanguageSelector />} />
-                        <Route path="/Terms-Acceptance" element={<TermsAcceptance />} />
+                                                                                                                        <Route path="/language" element={<LanguagePage />} />
+                        <Route path="/Terms-Acceptance" element={<TermsPage />} />
                         <Route path="/welcome" element={<WelcomePage />} />
                         <Route path="/terms" element={<TermsPage />} />
                         <Route path="/privacy" element={<PrivacyPage />} />
@@ -525,6 +525,7 @@ export default function App() {
     
   );
 }
+
 
 
 
