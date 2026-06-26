@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function post-ad() {
+export default function PostAd() {
   return <div>post-ad page</div>;
 }
