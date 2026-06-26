@@ -1,20 +1,20 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  * HOME PAGE - BAMBEH MARKETPLACE (FULLY INTERNATIONALIZED)
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---------------------------------------------------------------------------
  *
- * ✅ Featured ads from marketplace (subscription-based)
- * ✅ Posted items appear on home page (localStorage method)
- * ✅ View count tracker on listings
- * ✅ Social sharing integration
- * ✅ All categories with beautiful layout
- * ✅ Special Features Hub — links to all Bambeh-exclusive pages
- * ✅ Recent Listings section (from localStorage)
- * ✅ FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
+ * ? Featured ads from marketplace (subscription-based)
+ * ? Posted items appear on home page (localStorage method)
+ * ? View count tracker on listings
+ * ? Social sharing integration
+ * ? All categories with beautiful layout
+ * ? Special Features Hub � links to all Bambeh-exclusive pages
+ * ? Recent Listings section (from localStorage)
+ * ? FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
  *
- * © 2025–2026 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * � 2025�2026 Bambeh. All rights reserved.
+ * ---------------------------------------------------------------------------
  */
 
 import { useState, useEffect } from 'react';
@@ -35,13 +35,13 @@ import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
 
-// ─── Translation Table ─────────────────────────────────────────────────────
+// --- Translation Table -----------------------------------------------------
 const HOME_T: Record<string, Record<string, string>> = {
   en: {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% Transaction Fee! — The lowest you will see online.",
+    "home.feeMsg": "Only 1% Transaction Fee! � The lowest you will see online.",
     "home.shareBtn": "Share Bambeh with Friends",
     "home.jobsTitle": "Jobs",
     "home.jobsDesc": "Find your next opportunity",
@@ -67,7 +67,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "Meet Safely",
     "home.escrow": "Escrow",
     "home.recentPosted": "Recently Posted",
-    "home.seeAll": "See all →",
+    "home.seeAll": "See all ?",
     "home.badgeFeatured": "Featured",
     "home.badgeUrgent": "Urgent",
     "home.typeExchange": "Exchange / Trade",
@@ -94,51 +94,51 @@ const HOME_T: Record<string, Record<string, string>> = {
   fr: {
     "home.welcomePrefix": "Bienvenue sur ",
     "home.welcomeSuffix": "Bambeh",
-    "home.tagline": "Place de marché en ligne",
-    "home.feeMsg": "Seulement 1 % de frais de transaction ! — Les plus bas que vous trouverez en ligne.",
+    "home.tagline": "Place de march� en ligne",
+    "home.feeMsg": "Seulement 1 % de frais de transaction ! � Les plus bas que vous trouverez en ligne.",
     "home.shareBtn": "Partager Bambeh avec des amis",
     "home.jobsTitle": "Emplois",
-    "home.jobsDesc": "Trouvez votre prochaine opportunité",
-    "home.marketplaceTitle": "Marché",
+    "home.jobsDesc": "Trouvez votre prochaine opportunit�",
+    "home.marketplaceTitle": "March�",
     "home.marketplaceDesc": "Acheter et vendre des articles",
     "home.servicesTitle": "Services",
     "home.servicesDesc": "Embaucher des professionnels",
     "home.rentalsTitle": "Locations",
     "home.rentalsDesc": "Trouvez votre prochain logement",
-    "home.vehiclesTitle": "Véhicules",
+    "home.vehiclesTitle": "V�hicules",
     "home.vehiclesDesc": "Voitures et motos",
-    "home.exchangeTitle": "Échange",
+    "home.exchangeTitle": "�change",
     "home.exchangeDesc": "Troquer des articles",
-    "home.featuresHeading": "Fonctionnalités spéciales",
-    "home.zermCoins": "Pièces Zerm",
+    "home.featuresHeading": "Fonctionnalit�s sp�ciales",
+    "home.zermCoins": "Pi�ces Zerm",
     "home.farmFresh": "Produits frais",
-    "home.community": "Communauté",
+    "home.community": "Communaut�",
     "home.groupBuying": "Achat collectif",
     "home.compareItems": "Comparer les articles",
     "home.bambehAI": "IA Bambeh",
-    "home.flashDeals": "Offres éclair",
+    "home.flashDeals": "Offres �clair",
     "home.njangi": "Njangi/Tontine",
-    "home.meetSafely": "Rencontre sécurisée",
-    "home.escrow": "Séquestre",
-    "home.recentPosted": "Récemment publié",
-    "home.seeAll": "Voir tout →",
-    "home.badgeFeatured": "À la une",
+    "home.meetSafely": "Rencontre s�curis�e",
+    "home.escrow": "S�questre",
+    "home.recentPosted": "R�cemment publi�",
+    "home.seeAll": "Voir tout ?",
+    "home.badgeFeatured": "� la une",
     "home.badgeUrgent": "Urgent",
-    "home.typeExchange": "Échange / Troc",
-    "home.typeNegotiable": "Négociable",
+    "home.typeExchange": "�change / Troc",
+    "home.typeNegotiable": "N�gociable",
     "home.typeItem": "article",
     "home.whyChoose": "Pourquoi choisir Bambeh ?",
     "home.whyFee": "Frais de transaction de 1 %",
     "home.whyFeeDesc": "Les frais les plus bas partout ! Seulement 1 % par transaction.",
-    "home.whyEscrow": "Séquestre sécurisé",
-    "home.whyEscrowDesc": "Votre argent est protégé jusqu'à la confirmation de la livraison.",
-    "home.whyTracking": "Suivi en temps réel",
-    "home.whyTrackingDesc": "Suivez vos commandes de l'achat à la livraison.",
-    "home.ctaTitle": "Prêt à commencer ?",
+    "home.whyEscrow": "S�questre s�curis�",
+    "home.whyEscrowDesc": "Votre argent est prot�g� jusqu'� la confirmation de la livraison.",
+    "home.whyTracking": "Suivi en temps r�el",
+    "home.whyTrackingDesc": "Suivez vos commandes de l'achat � la livraison.",
+    "home.ctaTitle": "Pr�t � commencer ?",
     "home.ctaSubtitle": "Rejoignez des milliers d'utilisateurs achetant, vendant et troquant sur Bambeh !",
     "home.ctaShop": "Commencer les achats",
     "home.ctaSell": "Vendre un article",
-    "home.timeJustNow": "À l'instant",
+    "home.timeJustNow": "� l'instant",
     "home.timeMinAgo": "Il y a {{m}} min",
     "home.timeHourAgo": "Il y a {{h}}h",
     "home.timeDayAgo": "Il y a {{d}}j",
@@ -146,64 +146,64 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.viewPlural": "vues",
   },
   ar: {
-    "home.welcomePrefix": "أهلا وسهلا ب ",
+    "home.welcomePrefix": "???? ????? ? ",
     "home.welcomeSuffix": "Bambeh",
-    "home.tagline": "سوق إلكتروني",
-    "home.feeMsg": "فقط رسوم معاملة بنسبة 1 %! — الأقل الذي ستجده عبر الإنترنت.",
-    "home.shareBtn": "شارك Bambeh مع الأصدقاء",
-    "home.jobsTitle": "الوظائف",
-    "home.jobsDesc": "ابحث عن فرصتك التالية",
-    "home.marketplaceTitle": "السوق",
-    "home.marketplaceDesc": "شراء وبيع العناصر",
-    "home.servicesTitle": "الخدمات",
-    "home.servicesDesc": "استئجار المحترفين",
-    "home.rentalsTitle": "الإيجارات",
-    "home.rentalsDesc": "ابحث عن منزلك التالي",
-    "home.vehiclesTitle": "المركبات",
-    "home.vehiclesDesc": "السيارات والدراجات النارية",
-    "home.exchangeTitle": "المقايضة",
-    "home.exchangeDesc": "مبادلة العناصر",
-    "home.featuresHeading": "ميزات خاصة",
-    "home.zermCoins": "عملات Zerm",
-    "home.farmFresh": "منتجات طازة",
-    "home.community": "المجتمع",
-    "home.groupBuying": "الشراء الجماعي",
-    "home.compareItems": "مقارنة العناصر",
-    "home.bambehAI": "ذكاء Bambeh الصناعي",
-    "home.flashDeals": "صفقات سريعة",
+    "home.tagline": "??? ????????",
+    "home.feeMsg": "??? ???? ?????? ????? 1 %! � ????? ???? ????? ??? ????????.",
+    "home.shareBtn": "???? Bambeh ?? ????????",
+    "home.jobsTitle": "???????",
+    "home.jobsDesc": "???? ?? ????? ???????",
+    "home.marketplaceTitle": "?????",
+    "home.marketplaceDesc": "???? ???? ???????",
+    "home.servicesTitle": "???????",
+    "home.servicesDesc": "??????? ?????????",
+    "home.rentalsTitle": "?????????",
+    "home.rentalsDesc": "???? ?? ????? ??????",
+    "home.vehiclesTitle": "????????",
+    "home.vehiclesDesc": "???????? ????????? ???????",
+    "home.exchangeTitle": "????????",
+    "home.exchangeDesc": "?????? ???????",
+    "home.featuresHeading": "????? ????",
+    "home.zermCoins": "????? Zerm",
+    "home.farmFresh": "?????? ????",
+    "home.community": "???????",
+    "home.groupBuying": "?????? ???????",
+    "home.compareItems": "?????? ???????",
+    "home.bambehAI": "???? Bambeh ???????",
+    "home.flashDeals": "????? ?????",
     "home.njangi": "Njangi/Tontine",
-    "home.meetSafely": "لقاء آمن",
-    "home.escrow": "الضمان",
-    "home.recentPosted": "تم نشره مؤخرا",
-    "home.seeAll": "عرض الكل ←",
-    "home.badgeFeatured": "مميز",
-    "home.badgeUrgent": "عاجل",
-    "home.typeExchange": "مقايضة / تبديل",
-    "home.typeNegotiable": "قابل للتفاوض",
-    "home.typeItem": "عنصر",
-    "home.whyChoose": "لماذا اختيار Bambeh؟",
-    "home.whyFee": "رسوم معاملة بنسبة 1٪",
-    "home.whyFeeDesc": "أقل الرسوم في كل مكان! فقط 1٪ لكل معاملة.",
-    "home.whyEscrow": "ضمان آمن",
-    "home.whyEscrowDesc": "أموالك محمية حتى تأكيد التسليم.",
-    "home.whyTracking": "تتبع في الوقت الفعلي",
-    "home.whyTrackingDesc": "تابع طلباتك من الشراء إلى التسليم.",
-    "home.ctaTitle": "هل أنت مستعد للبدء؟",
-    "home.ctaSubtitle": "انضم إلى آلاف المستخدمين الذين يشترون ويبيعون ويتاجرون على Bambeh!",
-    "home.ctaShop": "ابدأ التسوق",
-    "home.ctaSell": "بيع عنصر",
-    "home.timeJustNow": "للتو",
-    "home.timeMinAgo": "منذ {{m}} دقيقة",
-    "home.timeHourAgo": "منذ {{h}} ساعة",
-    "home.timeDayAgo": "منذ {{d}} يوم",
-    "home.viewSingular": "عرض",
-    "home.viewPlural": "عروض",
+    "home.meetSafely": "???? ???",
+    "home.escrow": "??????",
+    "home.recentPosted": "?? ???? ?????",
+    "home.seeAll": "??? ???? ?",
+    "home.badgeFeatured": "????",
+    "home.badgeUrgent": "????",
+    "home.typeExchange": "?????? / ?????",
+    "home.typeNegotiable": "???? ???????",
+    "home.typeItem": "????",
+    "home.whyChoose": "????? ?????? Bambeh?",
+    "home.whyFee": "???? ?????? ????? 1%",
+    "home.whyFeeDesc": "??? ?????? ?? ?? ????! ??? 1% ??? ??????.",
+    "home.whyEscrow": "???? ???",
+    "home.whyEscrowDesc": "?????? ????? ??? ????? ???????.",
+    "home.whyTracking": "???? ?? ????? ??????",
+    "home.whyTrackingDesc": "???? ?????? ?? ?????? ??? ???????.",
+    "home.ctaTitle": "?? ??? ????? ??????",
+    "home.ctaSubtitle": "???? ??? ???? ?????????? ????? ?????? ??????? ???????? ??? Bambeh!",
+    "home.ctaShop": "???? ??????",
+    "home.ctaSell": "??? ????",
+    "home.timeJustNow": "????",
+    "home.timeMinAgo": "??? {{m}} ?????",
+    "home.timeHourAgo": "??? {{h}} ????",
+    "home.timeDayAgo": "??? {{d}} ???",
+    "home.viewSingular": "???",
+    "home.viewPlural": "????",
   },
   pidgin: {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% money charge! — The lowest wey you go see anywhere online.",
+    "home.feeMsg": "Only 1% money charge! � The lowest wey you go see anywhere online.",
     "home.shareBtn": "Share Bambeh with your friends dem",
     "home.jobsTitle": "Work",
     "home.jobsDesc": "Find your next work opportunity",
@@ -229,7 +229,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "Meet Safe",
     "home.escrow": "Escrow",
     "home.recentPosted": "Recently Posted",
-    "home.seeAll": "See all →",
+    "home.seeAll": "See all ?",
     "home.badgeFeatured": "Featured",
     "home.badgeUrgent": "Urgent",
     "home.typeExchange": "Exchange / Swap",
@@ -257,7 +257,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Salamaleekum ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Taako Janngo Online",
-    "home.feeMsg": "Soo 1% ndiyam! — Ndiyam gadaa wey a dee gonngol online.",
+    "home.feeMsg": "Soo 1% ndiyam! � Ndiyam gadaa wey a dee gonngol online.",
     "home.shareBtn": "Jedd Bambeh e woot\u0257u",
     "home.jobsTitle": "Suudu",
     "home.jobsDesc": "Yiylo suudu mawngal",
@@ -270,36 +270,36 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesTitle": "Mootorji",
     "home.vehiclesDesc": "Finniye e motobare",
     "home.exchangeTitle": "Jayndu",
-    "home.exchangeDesc": "Jayndu geɗiɗi",
+    "home.exchangeDesc": "Jayndu ge?i?i",
     "home.featuresHeading": "Dow\u0257e Sifa",
     "home.zermCoins": "Zerm Coins",
     "home.farmFresh": "Jeema Koli",
     "home.community": "Joyi",
     "home.groupBuying": "Windu\u0257e Golol",
-    "home.compareItems": "Danna Geɗiɗi",
+    "home.compareItems": "Danna Ge?i?i",
     "home.bambehAI": "Bambeh AI",
     "home.flashDeals": "Taggal Cinnde",
     "home.njangi": "Njangi/Tontine",
     "home.meetSafely": "Haaltu Jibintirde",
     "home.escrow": "Jalaani",
-    "home.recentPosted": "Winduɗi Gooto",
-    "home.seeAll": "Yiylo fof →",
+    "home.recentPosted": "Windu?i Gooto",
+    "home.seeAll": "Yiylo fof ?",
     "home.badgeFeatured": "Sifaa",
     "home.badgeUrgent": "Aray",
-    "home.typeExchange": "Jayndu / Roɓaa",
+    "home.typeExchange": "Jayndu / Ro?aa",
     "home.typeNegotiable": "E ko yaajanda",
-    "home.typeItem": "jeɗ",
+    "home.typeItem": "je?",
     "home.whyChoose": "Haa yidde Bambeh?",
     "home.whyFee": "1% Ndiyam",
-    "home.whyFeeDesc": "Ndiyam gadaa dellal! Soo 1% ko taggal keɗ.",
+    "home.whyFeeDesc": "Ndiyam gadaa dellal! Soo 1% ko taggal ke?.",
     "home.whyEscrow": "Jalaani Haaltu",
     "home.whyEscrowDesc": "Ndiyam\u0227a haaltu haa-to jam nde moto jiyaama.",
     "home.whyTracking": "Jibintirde Real-Time",
     "home.whyTrackingDesc": "Jib\u0257in taggal\u0227a haa-to jam jam nde moto jiyaama.",
     "home.ctaTitle": "A\u0259 jom hanwi?",
-    "home.ctaSubtitle": "Lur\u0257u joguwe loowingol, gummingol, e roɓaaingol ngon Bambeh!",
+    "home.ctaSubtitle": "Lur\u0257u joguwe loowingol, gummingol, e ro?aaingol ngon Bambeh!",
     "home.ctaShop": "Hanwi windu\u0257e",
-    "home.ctaSell": "Gummaa jeɗ",
+    "home.ctaSell": "Gummaa je?",
     "home.timeJustNow": "Gooto",
     "home.timeMinAgo": "Sekkere {{m}} ago",
     "home.timeHourAgo": "Lewru {{h}} ago",
@@ -309,7 +309,7 @@ const HOME_T: Record<string, Record<string, string>> = {
   },
 };
 
-// ─── Language Normalization ───────────────────────────────────────────────
+// --- Language Normalization -----------------------------------------------
 const homeNormLang = (l: string): string => {
   l = String(l || 'en').toLowerCase();
   if (l.indexOf('fr') === 0) return 'fr';
@@ -319,7 +319,7 @@ const homeNormLang = (l: string): string => {
   return 'en';
 };
 
-// ─── Types ────────────────────────────────────────────────────────────────
+// --- Types ----------------------------------------------------------------
 interface FeaturedAd {
   id: string;
   title: string;
@@ -365,7 +365,7 @@ export default function Home() {
   const [featuredAds, setFeaturedAds] = useState<FeaturedAd[]>([]);
   const [recentListings, setRecentListings] = useState<RecentListing[]>([]);
 
-  // ── Categories (translated names & descriptions) ───────────────────────
+  // -- Categories (translated names & descriptions) -----------------------
   const categories = [
     { nameKey: 'home.jobsTitle', descKey: 'home.jobsDesc', icon: Briefcase,  link: '/jobs',        color: 'bg-blue-500'   },
     { nameKey: 'home.marketplaceTitle', descKey: 'home.marketplaceDesc', icon: ShoppingBag, link: '/marketplace', color: 'bg-green-500'  },
@@ -375,29 +375,29 @@ export default function Home() {
     { nameKey: 'home.exchangeTitle', descKey: 'home.exchangeDesc', icon: TrendingUp,  link: '/exchange',    color: 'bg-teal-500'   },
   ];
 
-  // ── Special Features tiles (translated labels) ─────────────────────────
+  // -- Special Features tiles (translated labels) -------------------------
   const specialFeatures = [
-    { labelKey: 'home.zermCoins',    link: '/coins',        emoji: '⚡', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
-    { labelKey: 'home.farmFresh',    link: '/farm-fresh',   emoji: '🌿', bg: 'bg-green-50',   text: 'text-green-800'   },
-    { labelKey: 'home.community',     link: '/community',    emoji: '🏘️', bg: 'bg-teal-50',    text: 'text-teal-800'    },
-    { labelKey: 'home.groupBuying',  link: '/group-buying', emoji: '👥', bg: 'bg-blue-50',    text: 'text-blue-800'    },
-    { labelKey: 'home.compareItems', link: '/compare',      emoji: '⚖️', bg: 'bg-purple-50',  text: 'text-purple-800'  },
-    { labelKey: 'home.bambehAI',     link: '/ai-chat',      emoji: '🤖', bg: 'bg-indigo-50',  text: 'text-indigo-800'  },
-    { labelKey: 'home.flashDeals',   link: '/deals',        emoji: '⚡', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
-    { labelKey: 'home.njangi',link: '/tontine',      emoji: '💰', bg: 'bg-amber-50',   text: 'text-amber-800'   },
-    { labelKey: 'home.meetSafely',   link: '/meet-safely',  emoji: '🛡️', bg: 'bg-sky-50',     text: 'text-sky-800'     },
-    { labelKey: 'home.escrow',        link: '/escrow',       emoji: '🔒', bg: 'bg-emerald-50', text: 'text-emerald-800' },
+    { labelKey: 'home.zermCoins',    link: '/coins',        emoji: '?', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
+    { labelKey: 'home.farmFresh',    link: '/farm-fresh',   emoji: '??', bg: 'bg-green-50',   text: 'text-green-800'   },
+    { labelKey: 'home.community',     link: '/community',    emoji: '???', bg: 'bg-teal-50',    text: 'text-teal-800'    },
+    { labelKey: 'home.groupBuying',  link: '/group-buying', emoji: '??', bg: 'bg-blue-50',    text: 'text-blue-800'    },
+    { labelKey: 'home.compareItems', link: '/compare',      emoji: '??', bg: 'bg-purple-50',  text: 'text-purple-800'  },
+    { labelKey: 'home.bambehAI',     link: '/ai-chat',      emoji: '??', bg: 'bg-indigo-50',  text: 'text-indigo-800'  },
+    { labelKey: 'home.flashDeals',   link: '/deals',        emoji: '?', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
+    { labelKey: 'home.njangi',link: '/tontine',      emoji: '??', bg: 'bg-amber-50',   text: 'text-amber-800'   },
+    { labelKey: 'home.meetSafely',   link: '/meet-safely',  emoji: '???', bg: 'bg-sky-50',     text: 'text-sky-800'     },
+    { labelKey: 'home.escrow',        link: '/escrow',       emoji: '??', bg: 'bg-emerald-50', text: 'text-emerald-800' },
   ];
 
   useEffect(() => {
-    // ── Featured ads (mock — replace with Supabase in production) ──────────
+    // -- Featured ads (mock � replace with Supabase in production) ----------
     setFeaturedAds([
-      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, Yaoundé', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
+      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, Yaound�', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
       { id: '2', title: 'Toyota Camry 2020',           price: 15000000, location: 'Douala',          category: 'Vehicles',    subscriptionLevel: 'premium',  featured: true, posted: '5 hours ago' },
-      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, Yaoundé', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
+      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, Yaound�', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
     ]);
 
-    // ── Load recently posted listings from localStorage ─────────────────────
+    // -- Load recently posted listings from localStorage ---------------------
     try {
       const stored = localStorage.getItem('Bambeh_listings');
       if (stored) {
@@ -414,7 +414,7 @@ export default function Home() {
     }
   }, []);
 
-  // ── Helpers ────────────────────────────────────────────────────────────
+  // -- Helpers ------------------------------------------------------------
   const timeAgo = (iso: string): string => {
     const diff = Date.now() - new Date(iso).getTime();
     const m = Math.floor(diff / 60000);
@@ -430,14 +430,14 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50">
       <div className="container mx-auto px-4 py-16">
 
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        {/* -- Hero ------------------------------------------------------- */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
             {t('home.welcomePrefix')}<span className="text-teal-600">{t('home.welcomeSuffix')}</span>
           </h1>
           <p className="text-xl text-gray-600 mb-2">{t('home.tagline')}</p>
           <p className="text-lg text-gray-500">
-            🎉 <span className="font-bold text-green-600">{t('home.feeMsg')}</span> 💚
+            ?? <span className="font-bold text-green-600">{t('home.feeMsg')}</span> ??
           </p>
 
           <div className="mt-6">
@@ -453,9 +453,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Special Features ──────────────────────────────────────────── */}
+        {/* -- Special Features -------------------------------------------- */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">✨ {t('home.featuresHeading')}</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">? {t('home.featuresHeading')}</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {specialFeatures.map((feature) => (
               <Link
@@ -470,10 +470,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Featured Ads ──────────────────────────────────────────────── */}
+        {/* -- Featured Ads ------------------------------------------------ */}
         {featuredAds.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">⭐ Featured</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">? Featured</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredAds.map((ad) => (
                 <Link
@@ -483,7 +483,7 @@ export default function Home() {
                 >
                   <div className="relative h-48 bg-gradient-to-br from-teal-100 to-blue-100 flex items-center justify-center">
                     <ShoppingBag className="w-16 h-16 text-teal-200" />
-                    <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold">⭐ {t('home.badgeFeatured')}</div>
+                    <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold">? {t('home.badgeFeatured')}</div>
                   </div>
                   <div className="p-4">
                     <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{ad.title}</h3>
@@ -496,11 +496,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── Recently Posted ───────────────────────────────────────────── */}
+        {/* -- Recently Posted --------------------------------------------- */}
         {recentListings.length > 0 && (
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">🆕 {t('home.recentPosted')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">?? {t('home.recentPosted')}</h2>
               <Link to="/marketplace" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -525,10 +525,10 @@ export default function Home() {
                     )}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {listing.featured && (
-                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">⭐ {t('home.badgeFeatured')}</span>
+                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">? {t('home.badgeFeatured')}</span>
                       )}
                       {listing.urgent && (
-                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">🔥 {t('home.badgeUrgent')}</span>
+                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">?? {t('home.badgeUrgent')}</span>
                       )}
                     </div>
                     <div className="absolute bottom-2 right-2">
@@ -552,11 +552,11 @@ export default function Home() {
                     <div className="flex items-center justify-between mt-1">
                       <div>
                         {listing.type === 'exchange' ? (
-                          <span className="font-bold text-purple-600 text-sm">🔄 {t('home.typeExchange')}</span>
+                          <span className="font-bold text-purple-600 text-sm">?? {t('home.typeExchange')}</span>
                         ) : (
                           <>
                             <span className="font-bold text-teal-600 text-sm">{Number(listing.price).toLocaleString()} {listing.currency || 'XAF'}</span>
-                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">· {t('home.typeNegotiable')}</span>}
+                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">� {t('home.typeNegotiable')}</span>}
                           </>
                         )}
                       </div>
@@ -572,7 +572,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── Categories Grid ───────────────────────────────────────────── */}
+        {/* -- Categories Grid --------------------------------------------- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {categories.map((category) => (
             <Link
@@ -591,27 +591,27 @@ export default function Home() {
           ))}
         </div>
 
-        {/* ── Why Bambeh ────────────────────────────────────────────────── */}
+        {/* -- Why Bambeh -------------------------------------------------- */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">{t('home.whyChoose')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">💚</span>
+                <span className="text-3xl">??</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyFee')}</h3>
               <p className="text-gray-600">{t('home.whyFeeDesc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🔒</span>
+                <span className="text-3xl">??</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyEscrow')}</h3>
               <p className="text-gray-600">{t('home.whyEscrowDesc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">📦</span>
+                <span className="text-3xl">??</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyTracking')}</h3>
               <p className="text-gray-600">{t('home.whyTrackingDesc')}</p>
@@ -619,7 +619,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── CTA ──────────────────────────────────────────────────────── */}
+        {/* -- CTA -------------------------------------------------------- */}
         <div className="bg-gradient-to-r from-teal-600 to-blue-600 rounded-2xl shadow-2xl p-12 text-center text-white">
           <h2 className="text-4xl font-bold mb-4">{t('home.ctaTitle')}</h2>
           <p className="text-xl mb-8">{t('home.ctaSubtitle')}</p>
@@ -638,7 +638,7 @@ export default function Home() {
   );
 }
 
-// ── ViewCount Sub-Component ───────────────────────────────────────────────────
+// -- ViewCount Sub-Component ---------------------------------------------------
 function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => string }) {
   const key = `Bambeh_views_${listingId}`;
   const count = parseInt(localStorage.getItem(key) || '0');
@@ -649,5 +649,6 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
+
 
 

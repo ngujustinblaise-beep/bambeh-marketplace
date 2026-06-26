@@ -1,5 +1,5 @@
-﻿/**
- * src/pages/Cart.tsx � Bambeh Marketplace
+/**
+ * src/pages/Cart.tsx ? Bambeh Marketplace
  *
  * FIXED:
  *  ? Uses unified useCamPay hook (initPayment / status / reset)
@@ -159,8 +159,8 @@ function MobileMoneyModal({
               <div className="flex items-center gap-2 text-amber-600 bg-amber-50 rounded-xl px-3 py-2 text-xs font-semibold">
                 <Clock className="w-3.5 h-3.5" />
                 {countdown > 0
-                  ? `Waiting� ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')}`
-                  : 'Processing�'}
+                  ? `Waiting? ${Math.floor(countdown / 60)}:${String(countdown % 60).padStart(2, '0')}`
+                  : 'Processing?'}
               </div>
             </div>
           )}
@@ -169,7 +169,7 @@ function MobileMoneyModal({
           {status === 'submitting' && (
             <div className="flex flex-col items-center gap-3 py-6">
               <Loader2 className="w-10 h-10 text-teal-600 animate-spin" />
-              <p className="text-sm text-gray-600 text-center">Sending payment request to your phone�</p>
+              <p className="text-sm text-gray-600 text-center">Sending payment request to your phone?</p>
             </div>
           )}
 
@@ -188,7 +188,7 @@ function MobileMoneyModal({
             </div>
           )}
 
-          {/* IDLE / ERROR � show phone input */}
+          {/* IDLE / ERROR ? show phone input */}
           {(status === 'idle' || status === 'failed' || status === 'timeout') && (
             <>
               {/* Phone input */}
@@ -313,8 +313,8 @@ export default function Cart() {
 
   // Build a description of what's in the cart
   const cartDescription = items.length === 1
-    ? `Bambeh � ${items[0].title}`
-    : `Bambeh Order � ${items.length} items`;
+    ? `Bambeh ? ${items[0].title}`
+    : `Bambeh Order ? ${items.length} items`;
 
   // -- useCamPay hook -----------------------------------------------------------
   const { status, errorMsg, reference, countdown, initPayment, reset } = useCamPay({
@@ -335,7 +335,7 @@ export default function Cart() {
           paid_at:      new Date().toISOString(),
         });
       } catch (e) {
-        // Non-critical � payment succeeded even if order record fails
+        // Non-critical ? payment succeeded even if order record fails
         console.error('Order save error:', e);
       }
       clearCart();
@@ -390,7 +390,7 @@ export default function Cart() {
   // Close modal if payment succeeded
   const isSuccess = status === 'success';
   if (isSuccess && showMobileMoney && items.length === 0) {
-    // cart was cleared by onSuccess � close modal and show success state
+    // cart was cleared by onSuccess ? close modal and show success state
   }
 
   // -- Empty state ---------------------------------------------------------------
@@ -535,14 +535,14 @@ export default function Cart() {
 
           {/* Payment options */}
           <div className="space-y-3">
-            {/* Mobile Money � direct from cart */}
+            {/* Mobile Money ? direct from cart */}
             <button
               onClick={openMobileMoney}
               disabled={status === 'submitting' || status === 'waiting'}
               className="w-full bg-teal-600 disabled:bg-teal-300 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-md shadow-teal-100 transition"
             >
               {(status === 'submitting' || status === 'waiting')
-                ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing�</>
+                ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing?</>
                 : <><Smartphone className="w-5 h-5" /> Pay with Mobile Money</>}
             </button>
 
@@ -595,6 +595,7 @@ export default function Cart() {
     </>
   );
 }
+
 
 
 
