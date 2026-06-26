@@ -9,11 +9,11 @@
  * ? View count tracker on listings
  * ? Social sharing integration
  * ? All categories with beautiful layout
- * ? Special Features Hub — links to all Bambeh-exclusive pages
+ * ? Special Features Hub ï¿½ links to all Bambeh-exclusive pages
  * ? Recent Listings section (from localStorage)
  * ? FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
  *
- * © 2025–2026 Bambeh. All rights reserved.
+ * ï¿½ 2025ï¿½2026 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/App";
 
 // --- Translation Table -----------------------------------------------------
 const HOME_T: Record<string, Record<string, string>> = {
@@ -41,7 +41,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% Transaction Fee! — The lowest you will see online.",
+    "home.feeMsg": "Only 1% Transaction Fee! ï¿½ The lowest you will see online.",
     "home.shareBtn": "Share Bambeh with Friends",
     "home.jobsTitle": "Jobs",
     "home.jobsDesc": "Find your next opportunity",
@@ -94,51 +94,51 @@ const HOME_T: Record<string, Record<string, string>> = {
   fr: {
     "home.welcomePrefix": "Bienvenue sur ",
     "home.welcomeSuffix": "Bambeh",
-    "home.tagline": "Place de marché en ligne",
-    "home.feeMsg": "Seulement 1 % de frais de transaction ! — Les plus bas que vous trouverez en ligne.",
+    "home.tagline": "Place de marchï¿½ en ligne",
+    "home.feeMsg": "Seulement 1 % de frais de transaction ! ï¿½ Les plus bas que vous trouverez en ligne.",
     "home.shareBtn": "Partager Bambeh avec des amis",
     "home.jobsTitle": "Emplois",
-    "home.jobsDesc": "Trouvez votre prochaine opportunité",
-    "home.marketplaceTitle": "Marché",
+    "home.jobsDesc": "Trouvez votre prochaine opportunitï¿½",
+    "home.marketplaceTitle": "Marchï¿½",
     "home.marketplaceDesc": "Acheter et vendre des articles",
     "home.servicesTitle": "Services",
     "home.servicesDesc": "Embaucher des professionnels",
     "home.rentalsTitle": "Locations",
     "home.rentalsDesc": "Trouvez votre prochain logement",
-    "home.vehiclesTitle": "Véhicules",
+    "home.vehiclesTitle": "Vï¿½hicules",
     "home.vehiclesDesc": "Voitures et motos",
-    "home.exchangeTitle": "Échange",
+    "home.exchangeTitle": "ï¿½change",
     "home.exchangeDesc": "Troquer des articles",
-    "home.featuresHeading": "Fonctionnalités spéciales",
-    "home.zermCoins": "Pièces Zerm",
+    "home.featuresHeading": "Fonctionnalitï¿½s spï¿½ciales",
+    "home.zermCoins": "Piï¿½ces Zerm",
     "home.farmFresh": "Produits frais",
-    "home.community": "Communauté",
+    "home.community": "Communautï¿½",
     "home.groupBuying": "Achat collectif",
     "home.compareItems": "Comparer les articles",
     "home.bambehAI": "IA Bambeh",
-    "home.flashDeals": "Offres éclair",
+    "home.flashDeals": "Offres ï¿½clair",
     "home.njangi": "Njangi/Tontine",
-    "home.meetSafely": "Rencontre sécurisée",
-    "home.escrow": "Séquestre",
-    "home.recentPosted": "Récemment publié",
+    "home.meetSafely": "Rencontre sï¿½curisï¿½e",
+    "home.escrow": "Sï¿½questre",
+    "home.recentPosted": "Rï¿½cemment publiï¿½",
     "home.seeAll": "Voir tout ?",
-    "home.badgeFeatured": "À la une",
+    "home.badgeFeatured": "ï¿½ la une",
     "home.badgeUrgent": "Urgent",
-    "home.typeExchange": "Échange / Troc",
-    "home.typeNegotiable": "Négociable",
+    "home.typeExchange": "ï¿½change / Troc",
+    "home.typeNegotiable": "Nï¿½gociable",
     "home.typeItem": "article",
     "home.whyChoose": "Pourquoi choisir Bambeh ?",
     "home.whyFee": "Frais de transaction de 1 %",
     "home.whyFeeDesc": "Les frais les plus bas partout ! Seulement 1 % par transaction.",
-    "home.whyEscrow": "Séquestre sécurisé",
-    "home.whyEscrowDesc": "Votre argent est protégé jusqu'à la confirmation de la livraison.",
-    "home.whyTracking": "Suivi en temps réel",
-    "home.whyTrackingDesc": "Suivez vos commandes de l'achat à la livraison.",
-    "home.ctaTitle": "Prêt à commencer ?",
+    "home.whyEscrow": "Sï¿½questre sï¿½curisï¿½",
+    "home.whyEscrowDesc": "Votre argent est protï¿½gï¿½ jusqu'ï¿½ la confirmation de la livraison.",
+    "home.whyTracking": "Suivi en temps rï¿½el",
+    "home.whyTrackingDesc": "Suivez vos commandes de l'achat ï¿½ la livraison.",
+    "home.ctaTitle": "Prï¿½t ï¿½ commencer ?",
     "home.ctaSubtitle": "Rejoignez des milliers d'utilisateurs achetant, vendant et troquant sur Bambeh !",
     "home.ctaShop": "Commencer les achats",
     "home.ctaSell": "Vendre un article",
-    "home.timeJustNow": "À l'instant",
+    "home.timeJustNow": "ï¿½ l'instant",
     "home.timeMinAgo": "Il y a {{m}} min",
     "home.timeHourAgo": "Il y a {{h}}h",
     "home.timeDayAgo": "Il y a {{d}}j",
@@ -149,7 +149,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "???? ????? ? ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "??? ????????",
-    "home.feeMsg": "??? ???? ?????? ????? 1 %! — ????? ???? ????? ??? ????????.",
+    "home.feeMsg": "??? ???? ?????? ????? 1 %! ï¿½ ????? ???? ????? ??? ????????.",
     "home.shareBtn": "???? Bambeh ?? ????????",
     "home.jobsTitle": "???????",
     "home.jobsDesc": "???? ?? ????? ???????",
@@ -203,7 +203,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% money charge! — The lowest wey you go see anywhere online.",
+    "home.feeMsg": "Only 1% money charge! ï¿½ The lowest wey you go see anywhere online.",
     "home.shareBtn": "Share Bambeh with your friends dem",
     "home.jobsTitle": "Work",
     "home.jobsDesc": "Find your next work opportunity",
@@ -257,7 +257,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Salamaleekum ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Taako Janngo Online",
-    "home.feeMsg": "Soo 1% ndiyam! — Ndiyam gadaa wey a dee gonngol online.",
+    "home.feeMsg": "Soo 1% ndiyam! ï¿½ Ndiyam gadaa wey a dee gonngol online.",
     "home.shareBtn": "Jedd Bambeh e woot\u0257u",
     "home.jobsTitle": "Suudu",
     "home.jobsDesc": "Yiylo suudu mawngal",
@@ -390,11 +390,11 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    // -- Featured ads (mock — replace with Supabase in production) ----------
+    // -- Featured ads (mock ï¿½ replace with Supabase in production) ----------
     setFeaturedAds([
-      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, Yaoundé', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
+      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, Yaoundï¿½', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
       { id: '2', title: 'Toyota Camry 2020',           price: 15000000, location: 'Douala',          category: 'Vehicles',    subscriptionLevel: 'premium',  featured: true, posted: '5 hours ago' },
-      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, Yaoundé', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
+      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, Yaoundï¿½', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
     ]);
 
     // -- Load recently posted listings from localStorage ---------------------
@@ -556,7 +556,7 @@ export default function Home() {
                         ) : (
                           <>
                             <span className="font-bold text-teal-600 text-sm">{Number(listing.price).toLocaleString()} {listing.currency || 'XAF'}</span>
-                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">· {t('home.typeNegotiable')}</span>}
+                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">ï¿½ {t('home.typeNegotiable')}</span>}
                           </>
                         )}
                       </div>
