@@ -1,51 +1,56 @@
-﻿/**
- * BAMB� MARKETPLACE - i18n CONFIGURATION
- * Multi-language support: French + English
- * Version: 1.0.0
+/**
+ * BAMBEH MARKETPLACE - CAPACITOR HYBRID ANDROID i18n ENGINE
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
-import HttpBackend from "i18next-http-backend";
 
-i18n
-  .use(HttpBackend)
-  .use(LanguageDetector)
+import en from "./locales/en/translation.json";
+import fr from "./locales/fr/translation.json";
+import ar from "./locales/ar/translation.json";
+import ha from "./locales/ha/translation.json";
+import pcm from "./locales/pcm/translation.json";
+import ful from "./locales/ful/translation.json";
+
+const resources = {
+  en: { translation: en },
+  fr: { translation: fr },
+  ar: { translation: ar },
+  ha: { translation: ha },
+  pcm: { translation: pcm },
+  ful: { translation: ful },
+} as const;
+
+const SUPPORTED_LANGUAGES = ["en", "fr", "ar", "ha", "pcm", "ful"] as const;
+const LANG_STORAGE_KEY = "bambe_language";
+
+const getSavedLanguage = (): string => {
+  try {
+    const stored = localStorage.getItem(LANG_STORAGE_KEY);
+    if (stored && SUPPORTED_LANGUAGES.includes(stored as any)) {
+      return stored;
+    }
+    return "fr"; // Default corporate standard fallback
+  } catch {
+    return "fr";
+  }
+};
+
+void i18n
   .use(initReactI18next)
   .init({
+    resources,
     fallbackLng: "fr",
-    supportedLngs: ["en", "fr"],
-    debug: false,
-
-    // ? returnEmptyString appears only ONCE (was duplicated before � caused build error)
-    returnEmptyString: false,
-    returnNull: false,
-
-    saveMissing: true,
-    missingKeyHandler: (lng, ns, key) => {
-      if (typeof window !== "undefined") {
-        console.warn("[i18n] missing:", lng, ns, key);
-      }
-    },
-
-    detection: {
-      order: ["localStorage", "navigator", "htmlTag"],
-      caches: ["localStorage"],
-      lookupLocalStorage: "bambe_language",
-    },
-
-    backend: {
-      loadPath: "/locales/{{lng}}/translation.json",
-    },
-
-    react: {
-      useSuspense: true,
-    },
-
+    supportedLngs: [...SUPPORTED_LANGUAGES],
+    lng: getSavedLanguage(),
     interpolation: {
       escapeValue: false,
     },
+    react: {
+      useSuspense: false,
+    },
+    returnEmptyString: false,
+    returnNull: false,
   });
 
 export default i18n;
-

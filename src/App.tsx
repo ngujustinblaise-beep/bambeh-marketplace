@@ -1,7 +1,7 @@
 ﻿
 /**
- * App.tsx â€” Bambeh Online Marketplace
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * App.tsx Ã¢â‚¬â€ Bambeh Online Marketplace
+ * Ã‚Â© 2026 BAMBEH SARL. All rights reserved.
  * [support@bambeh.com](mailto:support@bambeh.com) | bambeh.com
  *
  * FIXED: Removed // @ts-nocheck directive.
@@ -66,9 +66,9 @@ import { logger, logDevBanner } from "@/utils/logger";
 const HomePage = lazy(() => import("@/pages/Home"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const RegisterPage = lazy(() => import("@/pages/login"));
-const LanguagePage = lazy(() => import("@/pages/language"));
-const WelcomePage = lazy(() => import("@/pages/welcome"));
-const TermsPage = lazy(() => import("@/pages/Terms"));
+const LanguagePage = lazy(() => import("@/pages/LanguageSelector/LanguageSelector"));
+const WelcomePage = lazy(() => import("@/pages/BambehWelcomeScreen"));
+const TermsPage = lazy(() => import("@/pages/TermsAcceptance"));
 const PrivacyPage = lazy(() => import("@/pages/privacy"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 
@@ -128,10 +128,10 @@ const ONBOARDING_KEY = "Bambeh_onboarding_completed";
 const TRANSLATIONS: Record<LangCode, Record<string, string>> = {
   en: { home: "Home" },
   fr: { home: "Accueil" },
-  ar: { home: "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©" },
+  ar: { home: "Ã˜Â§Ã™â€žÃ˜Â±Ã˜Â¦Ã™Å Ã˜Â³Ã™Å Ã˜Â©" },
   ha: { home: "Gida" },
   pcm: { home: "Dom" },
-  ful: { home: "JaÉ“É“orgo" },
+  ful: { home: "JaÃ‰â€œÃ‰â€œorgo" },
 };
 
 const LanguageContext = createContext<LangContextType>({
@@ -244,7 +244,7 @@ export default function App() {
   }
 
   return (
-    <LanguageProvider>
+    
       <QueryClientProvider client={queryClient}>
         <HashRouter>
           <AppErrorBoundary>
@@ -255,9 +255,10 @@ export default function App() {
                   <Suspense fallback={<Splash />}>
                     <Routes>
                       <Route element={<RootShell />}>
-                        <Route index element={<Navigate to="/home" replace />} />
+                        <Route index element={<Navigate to="/language" replace />} />
 
-                        <Route path="/language" element={<LanguagePage />} />
+                                                                                                                        <Route path="/language" element={<LanguageSelector />} />
+                        <Route path="/Terms-Acceptance" element={<TermsAcceptance />} />
                         <Route path="/welcome" element={<WelcomePage />} />
                         <Route path="/terms" element={<TermsPage />} />
                         <Route path="/privacy" element={<PrivacyPage />} />
@@ -521,7 +522,7 @@ export default function App() {
         </HashRouter>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
-    </LanguageProvider>
+    
   );
 }
 
