@@ -258,7 +258,7 @@ export default function App() {
                         <Route index element={<Navigate to="/language" replace />} />
 
                                                                                                                         <Route path="/language" element={<LanguagePage />} />
-                        <Route path="/Terms-Acceptance" element={<TermsPage />} />
+                        <Route path="/terms-acceptance" element={<TermsPage />} />
                         <Route path="/welcome" element={<WelcomePage />} />
                         <Route path="/terms" element={<TermsPage />} />
                         <Route path="/privacy" element={<PrivacyPage />} />
@@ -525,6 +525,8 @@ export default function App() {
     
   );
 }
+
+
 
 
 

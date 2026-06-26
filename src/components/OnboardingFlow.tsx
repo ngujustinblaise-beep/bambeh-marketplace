@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +40,7 @@ const OnboardingFlow: React.FC = () => {
   const handleAccept = () => {
     localStorage.setItem("Bambeh_terms_accepted", "true");
     setStep("done");
-    navigate("/Terms-Acceptance");
+    navigate("/terms-acceptance");
   };
 
   if (step === "terms") {
@@ -53,6 +53,7 @@ const OnboardingFlow: React.FC = () => {
 export default OnboardingFlow;
 export { TermsAndConditions };
 export type { TermsAndConditionsProps };
+
 
 
 
