@@ -207,7 +207,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   return localStorage.getItem(ONBOARDING_KEY) === "true" ? (
     <>{children}</>
   ) : (
-    <Navigate to="/home" replace />
+    <Navigate to="/language" replace />
   );
 }
 
@@ -255,7 +255,7 @@ export default function App() {
                   <Suspense fallback={<Splash />}>
                     <Routes>
                       <Route element={<RootShell />}>
-                        <Route index element={localStorage.getItem("Bambeh_onboarding_completed") === "true" ? <Navigate to="/home" replace /> : <Navigate to="/language" replace />} />
+                        <Route index element={localStorage.getItem("Bambeh_onboarding_completed") === "true" ? <Navigate to="/language" replace /> : <Navigate to="/language" replace />} />
 
                                                                                                                         <Route path="/language" element={<LanguagePage />} />
                         <Route path="/terms-acceptance" element={<TermsPage />} />

@@ -465,7 +465,7 @@ export default function TermsAcceptance() {
                 {isReturningUser ? "Close" : "Decline"}
               </button>
               <button
-                onClick={handleAccept}
+                onClick={() => { handleAccept(); navigate("/welcome"); }}
                 disabled={!canAccept}
                 className={`flex-1 px-6 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${
                   canAccept
