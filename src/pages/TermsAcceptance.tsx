@@ -13,7 +13,7 @@
  * ✅ Returning users correctly bypass re-acceptance
  *
  * FILE: src/pages/TermsAcceptance.tsx
- * © 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026
+ * © 2026 BAMBEH SARL - CM -NSI-02-2026-B13-00179
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -171,7 +171,7 @@ export default function TermsAcceptance() {
 
               <p className="mb-4 font-semibold">
                 Welcome to Bambeh ("the App"), a marketplace platform operated
-                by ETS BUSHENERGY (RC/YAO/2020/A/1026), connecting buyers and
+                by BAMBEH SARL, connecting buyers and
                 sellers digitally across Cameroon and beyond.
               </p>
 
@@ -179,7 +179,7 @@ export default function TermsAcceptance() {
                 1. DEFINITIONS AND INTERPRETATION
               </h3>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>"ETS BUSHENERGY"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé, Cameroon (RC/YAO/2020/A/1026).</li>
+                <li><strong>"BAMBEH SARL"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé, Cameroon.</li>
                 <li><strong>"User"</strong> means any individual who creates an account and uses the App for buying, selling, or browsing.</li>
                 <li><strong>"Vendor"</strong> means a User who offers goods or services for sale on the platform.</li>
                 <li><strong>"Zerm Coins"</strong> are a proprietary in-app virtual currency with no real-world cash value outside the platform.</li>
@@ -196,7 +196,7 @@ export default function TermsAcceptance() {
               <h4 className="text-lg font-semibold text-gray-800 mt-4">2.2 Account Security</h4>
               <ul className="list-disc pl-6 space-y-2">
                 <li>You are responsible for maintaining the confidentiality of your credentials.</li>
-                <li>Notify us immediately of any unauthorized access at [support@gmail.com](mailto:support@gmail.com) or [bambetheapp@gmail.com](mailto:bambetheapp@gmail.com).</li>
+                <li>Notify us immediately of any unauthorized access at : support@gmail.com or bambetheapp@gmail.com.</li>
               </ul>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">
@@ -206,14 +206,14 @@ export default function TermsAcceptance() {
                 <li>All listings must be accurate and lawful under Cameroonian law.</li>
                 <li>No counterfeit, stolen, or prohibited items are permitted.</li>
                 <li>Bambeh reserves the right to remove listings at its discretion.</li>
-                <li>A 1% transaction fee applies to all completed sales — the lowest in Cameroon.</li>
+                <li>A 1% transaction fee applies to all completed sales — the lowest you will find online.</li>
               </ul>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">4. ZERM COINS</h3>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Zerm Coins have no monetary value outside the platform.</li>
                 <li>They cannot be exchanged for cash.</li>
-                <li>ETS BUSHENERGY reserves the right to modify Zerm Coin policies with 30 days' notice.</li>
+                <li>BAMBEH SARL reserves the right to modify Zerm Coin policies with 30 days' notice.</li>
               </ul>
 
               <h3 className="text-xl font-bold text-gray-900 mt-6">5. DATA PROTECTION</h3>
@@ -221,7 +221,7 @@ export default function TermsAcceptance() {
                 The collection and processing of your personal data is governed by
                 Cameroon's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.
                 You have the right to access, rectify, and request deletion of your data at
-                any time by contacting [support@gmail.com](mailto:support@gmail.com) or [bambetheapp@gmail.com](mailto:bambetheapp@gmail.com). Full details are in our{" "}
+                any time by contacting : support@gmail.com or bambetheapp@gmail.com. Full details are in our{" "}
                 <strong>Privacy Policy</strong> available at bambeh.cm/privacy-policy.
               </p>
 
@@ -246,7 +246,7 @@ export default function TermsAcceptance() {
                 8. INTELLECTUAL PROPERTY
               </h3>
               <p>
-                All content, trademarks, and technology are owned by ETS BUSHENERGY.
+                All content, trademarks, and technology are owned by BAMBEH SARL.
                 You may not copy, modify, or distribute any part without written permission.
               </p>
 
@@ -279,7 +279,7 @@ export default function TermsAcceptance() {
               <p className="text-center text-sm text-gray-600 mt-8 pb-8">
                 <strong>Last Updated:</strong> January 1, 2026
                 <br />
-                <strong>Contact:</strong> [support@gmail.com](mailto:support@gmail.com) or [bambetheapp@gmail.com](mailto:bambetheapp@gmail.com)
+                <strong>Contact:</strong> support@gmail.com or bambetheapp@gmail.com
                 <br />
                 <strong>Legal Name:</strong> BAMBEH SARL
                 <br />
@@ -288,7 +288,7 @@ export default function TermsAcceptance() {
                 <strong>NIU:</strong> M022618405804C
                 <br />
                 <strong>DUNS:</strong> 850379853
-                <br />© 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026
+                <br />© 2026 BAMBEH SARL
               </p>
             </div>
           </div>
@@ -403,7 +403,7 @@ export default function TermsAcceptance() {
                     </p>
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    I consent to ETS BUSHENERGY collecting and processing my personal
+                    I consent to BAMBEH SARL collecting and processing my personal
                     data (name, email, phone number, location, device identifiers) solely
                     to operate my Bambeh account, process transactions, and improve the
                     platform — in accordance with{" "}

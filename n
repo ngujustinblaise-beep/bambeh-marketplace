@@ -1,0 +1,350 @@
+warning: in the working copy of 'src/pages/BambehWelcomeScreen.jsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/pages/TermsAcceptance.tsx', CRLF will be replaced by LF the next time Git touches it
+[1mdiff --git a/src/pages/BambehWelcomeScreen.jsx b/src/pages/BambehWelcomeScreen.jsx[m
+[1mindex b1866d4..2032f74 100644[m
+[1m--- a/src/pages/BambehWelcomeScreen.jsx[m
+[1m+++ b/src/pages/BambehWelcomeScreen.jsx[m
+[36m@@ -442,7 +442,7 @@[m [mexport default function BambehWelcomeScreen() {[m
+         {/* ── THE BIG NEXT BUTTON ── */}[m
+         <button[m
+           className="bambeh-next-btn"[m
+[31m-          onClick={() => navigate("/")}[m
+[32m+[m[32m          onClick={() => { localStorage.setItem("Bambeh_onboarding_completed", "true"); navigate("/home"); }}[m
+         >[m
+           {t.next} →[m
+         </button>[m
+[36m@@ -465,3 +465,4 @@[m [mexport default function BambehWelcomeScreen() {[m
+     </div>[m
+   );[m
+ }[m
+[41m+[m
+[1mdiff --git a/src/pages/TermsAcceptance.tsx b/src/pages/TermsAcceptance.tsx[m
+[1mindex 8d976e5..ebece27 100644[m
+[1m--- a/src/pages/TermsAcceptance.tsx[m
+[1m+++ b/src/pages/TermsAcceptance.tsx[m
+[36m@@ -1,20 +1,20 @@[m
+[31m-﻿/**[m
+[31m- * ═══════════════════════════════════════════════════════════════════════════[m
+[31m- * TERMS ACCEPTANCE — BAMBEH MARKETPLACE[m
+[31m- * ═══════════════════════════════════════════════════════════════════════════[m
+[32m+[m[32m/**[m
+[32m+[m[32m * ---------------------------------------------------------------------------[m
+[32m+[m[32m * TERMS ACCEPTANCE � BAMBEH MARKETPLACE[m
+[32m+[m[32m * ---------------------------------------------------------------------------[m
+  *[m
+  * LEGAL COMPLIANCE:[m
+[31m- * ✅ OHADA e-consent checkbox — Cameroonian data protection law[m
+[32m+[m[32m * ? OHADA e-consent checkbox � Cameroonian data protection law[m
+  *    (Law No. 2024/017 of 23 December 2024, Sections 13-16)[m
+[31m- * ✅ Standard Terms & Conditions acceptance checkbox[m
+[31m- * ✅ Scroll-to-bottom enforcement before acceptance is enabled[m
+[31m- * ✅ Explicit opt-in (not pre-checked) — required by Law 2024/017[m
+[31m- * ✅ Timestamps stored on acceptance[m
+[31m- * ✅ Returning users correctly bypass re-acceptance[m
+[32m+[m[32m * ? Standard Terms & Conditions acceptance checkbox[m
+[32m+[m[32m * ? Scroll-to-bottom enforcement before acceptance is enabled[m
+[32m+[m[32m * ? Explicit opt-in (not pre-checked) � required by Law 2024/017[m
+[32m+[m[32m * ? Timestamps stored on acceptance[m
+[32m+[m[32m * ? Returning users correctly bypass re-acceptance[m
+  *[m
+  * FILE: src/pages/TermsAcceptance.tsx[m
+[31m- * © 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026[m
+[31m- * ═══════════════════════════════════════════════════════════════════════════[m
+[32m+[m[32m * � 2026 BAMBEH SARL - CM -NSI-02-2026-B13-00179[m
+[32m+[m[32m * ---------------------------------------------------------------------------[m
+  */[m
+ [m
+ import { useState, useEffect } from "react";[m
+[36m@@ -36,18 +36,18 @@[m [mexport default function TermsAcceptance() {[m
+   const [isAccepted, setIsAccepted] = useState(false);[m
+   const [isReturningUser, setIsReturningUser] = useState(false);[m
+ [m
+[31m-  // ── Business identity for user verification ──────────────────────────────[m
+[32m+[m[32m  // -- Business identity for user verification ------------------------------[m
+   const legalName = "BAMBEH SARL";[m
+   const registreDeCommerce = "CM -NSI-02-2026-B13-00179";[m
+   const niu = "M022618405804C";[m
+   const duns = "850379853";[m
+   const emails = ["support@gmail.com", "bambetheapp@gmail.com"];[m
+ [m
+[31m-  // ── OHADA / Law No. 2024/017 consent ──────────────────────────────────────[m
+[32m+[m[32m  // -- OHADA / Law No. 2024/017 consent --------------------------------------[m
+   // Cameroonian personal data protection law (enacted 23 December 2024)[m
+   // requires explicit, informed, opt-in consent BEFORE any data is collected.[m
+[31m-  // This checkbox is separate from the Terms checkbox — it specifically covers[m
+[31m-  // personal data processing. It must NOT be pre-checked (Law 2024/017 §13–16).[m
+[32m+[m[32m  // This checkbox is separate from the Terms checkbox � it specifically covers[m
+[32m+[m[32m  // personal data processing. It must NOT be pre-checked (Law 2024/017 �13�16).[m
+   const [ohadaConsented, setOhadaConsented] = useState(false);[m
+ [m
+   useEffect(() => {[m
+[36m@@ -90,7 +90,7 @@[m [mexport default function TermsAcceptance() {[m
+     localStorage.setItem("Bambeh_terms_accepted_date", new Date().toISOString());[m
+     localStorage.setItem("Bambeh_ohada_consent_date", new Date().toISOString());[m
+ [m
+[31m-    navigate("/language", { replace: true });[m
+[32m+[m[32m    navigate("/welcome", { replace: true });[m
+   };[m
+ [m
+   const handleDecline = () => {[m
+[36m@@ -111,7 +111,7 @@[m [mexport default function TermsAcceptance() {[m
+     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 p-4">[m
+       <div className="max-w-4xl mx-auto py-8">[m
+ [m
+[31m-        {/* ── Header ─────────────────────────────────────────────────────── */}[m
+[32m+[m[32m        {/* -- Header ------------------------------------------------------- */}[m
+         <div className="text-center mb-8">[m
+           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full mb-4 shadow-xl">[m
+             <span className="text-4xl font-bold text-white">B</span>[m
+[36m@@ -128,7 +128,7 @@[m [mexport default function TermsAcceptance() {[m
+           </div>[m
+         </div>[m
+ [m
+[31m-        {/* ── Terms Container ─────────────────────────────────────────────── */}[m
+[32m+[m[32m        {/* -- Terms Container ----------------------------------------------- */}[m
+         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">[m
+ [m
+           {/* Scroll indicator banners */}[m
+[36m@@ -147,13 +147,13 @@[m [mexport default function TermsAcceptance() {[m
+               <div className="flex items-center gap-2 text-green-800">[m
+                 <CheckCircle className="w-5 h-5" />[m
+                 <p className="text-sm font-medium">[m
+[31m-                  ✅ Thank you for reading! You may now accept the terms below.[m
+[32m+[m[32m                  ? Thank you for reading! You may now accept the terms below.[m
+                 </p>[m
+               </div>[m
+             </div>[m
+           )}[m
+ [m
+[31m-          {/* ── Scrollable Terms Content ────────────────────────────────── */}[m
+[32m+[m[32m          {/* -- Scrollable Terms Content ---------------------------------- */}[m
+           <div[m
+             onScroll={handleScroll}[m
+             className="h-96 overflow-y-auto px-8 py-6 prose prose-sm max-w-none"[m
+[36m@@ -171,7 +171,7 @@[m [mexport default function TermsAcceptance() {[m
+ [m
+               <p className="mb-4 font-semibold">[m
+                 Welcome to Bambeh ("the App"), a marketplace platform operated[m
+[31m-                by ETS BUSHENERGY (RC/YAO/2020/A/1026), connecting buyers and[m
+[32m+[m[32m                by BAMBEH SARL, connecting buyers and[m
+                 sellers digitally across Cameroon and beyond.[m
+               </p>[m
+ [m
+[36m@@ -179,7 +179,7 @@[m [mexport default function TermsAcceptance() {[m
+                 1. DEFINITIONS AND INTERPRETATION[m
+               </h3>[m
+               <ul className="list-disc pl-6 space-y-2">[m
+[31m-                <li><strong>"ETS BUSHENERGY"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé, Cameroon (RC/YAO/2020/A/1026).</li>[m
+[32m+[m[32m                <li><strong>"BAMBEH SARL"</strong> refers to the legal entity operating Bambeh, registered in Yaound�, Cameroon.</li>[m
+                 <li><strong>"User"</strong> means any individual who creates an account and uses the App for buying, selling, or browsing.</li>[m
+                 <li><strong>"Vendor"</strong> means a User who offers goods or services for sale on the platform.</li>[m
+                 <li><strong>"Zerm Coins"</strong> are a proprietary in-app virtual currency with no real-world cash value outside the platform.</li>[m
+[36m@@ -196,7 +196,7 @@[m [mexport default function TermsAcceptance() {[m
+               <h4 className="text-lg font-semibold text-gray-800 mt-4">2.2 Account Security</h4>[m
+               <ul className="list-disc pl-6 space-y-2">[m
+                 <li>You are responsible for maintaining the confidentiality of your credentials.</li>[m
+[31m-                <li>Notify us immediately of any unauthorized access at [support@gmail.com](mailto:support@gmail.com) or [bambetheapp@gmail.com](mailto:bambetheapp@gmail.com).</li>[m
+[32m+[m[32m                <li>Notify us immediately of any unauthorized access at : support@gmail.com or bambetheapp@gmail.com.</li>[m
+               </ul>[m
+ [m
+               <h3 className="text-xl font-bold text-gray-900 mt-6">[m
+[36m@@ -206,14 +206,14 @@[m [mexport default function TermsAcceptance() {[m
+                 <li>All listings must be accurate and lawful under Cameroonian law.</li>[m
+                 <li>No counterfeit, stolen, or prohibited items are permitted.</li>[m
+                 <li>Bambeh reserves the right to remove listings at its discretion.</li>[m
+[31m-                <li>A 1% transaction fee applies to all completed sales — the lowest in Cameroon.</li>[m
+[32m+[m[32m                <li>A 1% transaction fee applies to all completed sales � the lowest you will find online.</li>[m
+               </ul>[m
+ [m
+               <h3 className="text-xl font-bold text-gray-900 mt-6">4. ZERM COINS</h3>[m
+               <ul className="list-disc pl-6 space-y-2">[m
+                 <li>Zerm Coins have no monetary value outside the platform.</li>[m
+                 <li>They cannot be exchanged for cash.</li>[m
+[31m-                <li>ETS BUSHENERGY reserves the right to modify Zerm Coin policies with 30 days' notice.</li>[m
+[32m+[m[32m                <li>BAMBEH SARL reserves the right to modify Zerm Coin policies with 30 days' notice.</li>[m
+               </ul>[m
+ [m
+               <h3 className="text-xl font-bold text-gray-900 mt-6">5. DATA PROTECTION</h3>[m
+[36m@@ -221,7 +221,7 @@[m [mexport default function TermsAcceptance() {[m
+                 The collection and processing of your personal data is governed by[m
+                 Cameroon's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.[m
+                 You have the right to access, rectify, and request deletion of your data at[m
+[31m-                any time by contacting [support@gmail.com](mailto:support@gmail.com) or [bambetheapp@gmail.com](mailto:bambetheapp@gmail.com). Full details are in our{" "}[m
+[32m+[m[32m                any time by contacting : support@gmail.com or bambetheapp@gmail.com. Full details are in our{" "}[m
+                 <strong>Privacy Policy</strong> available at bambeh.cm/privacy-policy.[m
+               </p>[m
+ [m
+[36m@@ -238,7 +238,7 @@[m [mexport default function TermsAcceptance() {[m
+               </h3>[m
+               <p>[m
+                 All disputes shall be resolved through binding arbitration in[m
+[31m-                Yaoundé, Cameroon, under the laws of the Republic of Cameroon and[m
+[32m+[m[32m                Yaound�, Cameroon, under the laws of the Republic of Cameroon and[m
+                 applicable OHADA Uniform Acts.[m
+               </p>[m
+ [m
+[36m@@ -246,7 +246,7 @@[m [mexport default function TermsAcceptance() {[m
+                 8. INTELLECTUAL PROPERTY[m
+               </h3>[m
+               <p>[m
+[31m-                All content, trademarks, and technology are owned by ETS BUSHENERGY.[m
+[32m+[m[32m                All content, trademarks, and technology are owned by BAMBEH SARL.[m
+                 You may not copy, modify, or distribute any part without written permission.[m
+               </p>[m
+ [m
+[36m@@ -263,7 +263,7 @@[m [mexport default function TermsAcceptance() {[m
+               </p>[m
+ [m
+               <div className="bg-teal-50 border-l-4 border-teal-600 p-6 mt-8">[m
+[31m-                <h3 className="font-bold text-teal-900 mb-2">✅ ACKNOWLEDGMENT</h3>[m
+[32m+[m[32m                <h3 className="font-bold text-teal-900 mb-2">? ACKNOWLEDGMENT</h3>[m
+                 <p className="text-sm">[m
+                   By checking the boxes below and clicking "Accept and Continue," you acknowledge:[m
+                 </p>[m
+[36m@@ -279,7 +279,7 @@[m [mexport default function TermsAcceptance() {[m
+               <p className="text-center text-sm text-gray-600 mt-8 pb-8">[m
+                 <strong>Last Updated:</strong> January 1, 2026[m
+                 <br />[m
+[31m-                <strong>Contact:</strong> [support@gmail.com](mailto:support@gmail.com) or [bambetheapp@gmail.com](mailto:bambetheapp@gmail.com)[m
+[32m+[m[32m                <strong>Contact:</strong> support@gmail.com or bambetheapp@gmail.com[m
+                 <br />[m
+                 <strong>Legal Name:</strong> BAMBEH SARL[m
+                 <br />[m
+[36m@@ -288,12 +288,12 @@[m [mexport default function TermsAcceptance() {[m
+                 <strong>NIU:</strong> M022618405804C[m
+                 <br />[m
+                 <strong>DUNS:</strong> 850379853[m
+[31m-                <br />© 2026 ETS BUSHENERGY — RC/YAO/2020/A/1026[m
+[32m+[m[32m                <br />� 2026 BAMBEH SARL[m
+               </p>[m
+             </div>[m
+           </div>[m
+ [m
+[31m-          {/* ── Acceptance Section ──────────────────────────────────────────── */}[m
+[32m+[m[32m          {/* -- Acceptance Section -------------------------------------------- */}[m
+           <div className="border-t-4 border-teal-500 bg-gradient-to-b from-gray-50 to-gray-100 px-8 py-8">[m
+ [m
+             {/* Warning if not scrolled */}[m
+[36m@@ -313,7 +313,7 @@[m [mexport default function TermsAcceptance() {[m
+               </div>[m
+             )}[m
+ [m
+[31m-            {/* ── Checkbox 1: General Terms ─────────────────────────────────── */}[m
+[32m+[m[32m            {/* -- Checkbox 1: General Terms ----------------------------------- */}[m
+             <div[m
+               onClick={() => hasRead && setIsAccepted(!isAccepted)}[m
+               className={`[m
+[36m@@ -351,12 +351,12 @@[m [mexport default function TermsAcceptance() {[m
+                   {isAccepted && ([m
+                     <div className="mt-3 flex items-center gap-2 text-teal-600 font-bold">[m
+                       <CheckCircle className="w-5 h-5" />[m
+[31m-                      <span>Terms Accepted ✓</span>[m
+[32m+[m[32m                      <span>Terms Accepted ?</span>[m
+                     </div>[m
+                   )}[m
+                   {hasRead && !isAccepted && ([m
+                     <div className="mt-3 flex items-center gap-2 text-gray-500 text-sm">[m
+[31m-                      <span className="animate-bounce">👆</span>[m
+[32m+[m[32m                      <span className="animate-bounce">??</span>[m
+                       <span>Click here to accept Terms and Conditions</span>[m
+                     </div>[m
+                   )}[m
+[36m@@ -364,7 +364,7 @@[m [mexport default function TermsAcceptance() {[m
+               </div>[m
+             </div>[m
+ [m
+[31m-            {/* ── Checkbox 2: OHADA / Law No. 2024/017 Data Consent ───────────── */}[m
+[32m+[m[32m            {/* -- Checkbox 2: OHADA / Law No. 2024/017 Data Consent ------------- */}[m
+             {hasRead && ([m
+               <label[m
+                 className={`flex items-start gap-4 cursor-pointer rounded-2xl border-4 p-5 mb-6 transition-all duration-300[m
+[36m@@ -386,7 +386,7 @@[m [mexport default function TermsAcceptance() {[m
+                     checked={ohadaConsented}[m
+                     onChange={(e) => setOhadaConsented(e.target.checked)}[m
+                     className="sr-only"[m
+[31m-                    aria-label="OHADA data protection consent — Law No. 2024/017"[m
+[32m+[m[32m                    aria-label="OHADA data protection consent � Law No. 2024/017"[m
+                   />[m
+                   {ohadaConsented ? ([m
+                     <Check className="w-7 h-7 text-white" strokeWidth={4} />[m
+[36m@@ -399,14 +399,14 @@[m [mexport default function TermsAcceptance() {[m
+                   <div className="flex items-center gap-2 mb-1">[m
+                     <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />[m
+                     <p className="text-sm font-bold text-gray-900">[m
+[31m-                      Data Protection Consent — Law No. 2024/017 (Cameroon)[m
+[32m+[m[32m                      Data Protection Consent � Law No. 2024/017 (Cameroon)[m
+                     </p>[m
+                   </div>[m
+                   <p className="text-sm text-gray-700 leading-relaxed">[m
+[31m-                    I consent to ETS BUSHENERGY collecting and processing my personal[m
+[32m+[m[32m                    I consent to BAMBEH SARL collecting and processing my personal[m
+                     data (name, email, phone number, location, device identifiers) solely[m
+                     to operate my Bambeh account, process transactions, and improve the[m
+[31m-                    platform — in accordance with{" "}[m
+[32m+[m[32m                    platform � in accordance with{" "}[m
+                     <strong>Cameroon's Law No. 2024/017 of 23 December 2024</strong>{" "}[m
+                     on Personal Data Protection and applicable OHADA Uniform Acts.[m
+                   </p>[m
+[36m@@ -419,20 +419,20 @@[m [mexport default function TermsAcceptance() {[m
+                   {ohadaConsented && ([m
+                     <div className="mt-3 flex items-center gap-2 text-blue-600 font-semibold text-sm">[m
+                       <CheckCircle className="w-4 h-4" />[m
+[31m-                      <span>Data processing consent confirmed ✓</span>[m
+[32m+[m[32m                      <span>Data processing consent confirmed ?</span>[m
+                     </div>[m
+                   )}[m
+                   {!ohadaConsented && ([m
+                     <div className="mt-2 flex items-center gap-2 text-gray-500 text-xs">[m
+[31m-                      <span className="animate-bounce">👆</span>[m
+[31m-                      <span>Required — click to give data processing consent</span>[m
+[32m+[m[32m                      <span className="animate-bounce">??</span>[m
+[32m+[m[32m                      <span>Required � click to give data processing consent</span>[m
+                     </div>[m
+                   )}[m
+                 </div>[m
+               </label>[m
+             )}[m
+ [m
+[31m-            {/* ── Progress indicator ─────────────────────────────────────────── */}[m
+[32m+[m[32m            {/* -- Progress indicator ------------------------------------------- */}[m
+             {hasRead && ([m
+               <div className="flex items-center gap-3 mb-6 px-2">[m
+                 <div className={`flex items-center gap-1.5 text-xs font-medium ${hasRead ? "text-teal-600" : "text-gray-400"}`}>[m
+[36m@@ -456,7 +456,7 @@[m [mexport default function TermsAcceptance() {[m
+               </div>[m
+             )}[m
+ [m
+[31m-            {/* ── Action Buttons ─────────────────────────────────────────────── */}[m
+[32m+[m[32m            {/* -- Action Buttons ----------------------------------------------- */}[m
+             <div className="flex gap-4">[m
+               <button[m
+                 onClick={handleDecline}[m
+[36m@@ -480,22 +480,22 @@[m [mexport default function TermsAcceptance() {[m
+ [m
+             {/* Compliance note */}[m
+             <p className="text-center text-xs text-gray-400 mt-4">[m
+[31m-              Compliant with Cameroon Law No. 2024/017 · OHADA Uniform Acts ·[m
+[32m+[m[32m              Compliant with Cameroon Law No. 2024/017 � OHADA Uniform Acts �[m
+               Google Play Developer Policy[m
+             </p>[m
+           </div>[m
+         </div>[m
+ [m
+[31m-        {/* ── Footer ─────────────────────────────────────────────────────────── */}[m
+[32m+[m[32m        {/* -- Footer ----------------------------------------------------------- */}[m
+         <div className="text-center mt-8">[m
+           <p className="text-sm text-gray-600">[m
+[31m-            🎉{" "}[m
+[32m+[m[32m            ??{" "}[m
+             <span className="font-bold text-green-600">Only 1% Transaction Fee</span>{" "}[m
+[31m-            — Lowest in Cameroon! 💚[m
+[32m+[m[32m            � Lowest in Cameroon! ??[m
+           </p>[m
+           <p className="text-xs text-gray-500 mt-2">Next: Choose Your Language</p>[m
+         </div>[m
+       </div>[m
+     </div>[m
+   );[m
+[31m-}[m
+\ No newline at end of file[m
+[32m+[m[32m}[m

@@ -1,7 +1,7 @@
-﻿
+
 /**
- * App.tsx Ã¢â‚¬â€ Bambeh Online Marketplace
- * Ã‚Â© 2026 BAMBEH SARL. All rights reserved.
+ * App.tsx â€” Bambeh Online Marketplace
+ * Â© 2026 BAMBEH SARL. All rights reserved.
  * [support@bambeh.com](mailto:support@bambeh.com) | bambeh.com
  *
  * FIXED: Removed // @ts-nocheck directive.
@@ -128,10 +128,10 @@ const ONBOARDING_KEY = "Bambeh_onboarding_completed";
 const TRANSLATIONS: Record<LangCode, Record<string, string>> = {
   en: { home: "Home" },
   fr: { home: "Accueil" },
-  ar: { home: "Ã˜Â§Ã™â€žÃ˜Â±Ã˜Â¦Ã™Å Ã˜Â³Ã™Å Ã˜Â©" },
+  ar: { home: "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©" },
   ha: { home: "Gida" },
   pcm: { home: "Dom" },
-  ful: { home: "JaÃ‰â€œÃ‰â€œorgo" },
+  ful: { home: "JaÉ“É“orgo" },
 };
 
 const LanguageContext = createContext<LangContextType>({
@@ -255,7 +255,7 @@ export default function App() {
                   <Suspense fallback={<Splash />}>
                     <Routes>
                       <Route element={<RootShell />}>
-                        <Route index element={<Navigate to="/language" replace />} />
+                        <Route index element={<Navigate to="/home" replace />} />
 
                                                                                                                         <Route path="/language" element={<LanguagePage />} />
                         <Route path="/terms-acceptance" element={<TermsPage />} />
@@ -525,6 +525,7 @@ export default function App() {
     
   );
 }
+
 
 
 
