@@ -69,3 +69,8 @@ export default LanguageSwitcher;
 
 
 
+
+
+// ✅ Ensure onboarding completion flag
+localStorage.setItem('Bambeh_onboarding_completed','true');
+

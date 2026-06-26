@@ -1,7 +1,7 @@
-
+﻿
 /**
- * App.tsx — Bambeh Online Marketplace
- * © 2026 BAMBEH SARL. All rights reserved.
+ * App.tsx â€” Bambeh Online Marketplace
+ * Â© 2026 BAMBEH SARL. All rights reserved.
  * [support@bambeh.com](mailto:support@bambeh.com) | bambeh.com
  *
  * FIXED: Removed // @ts-nocheck directive.
@@ -77,7 +77,7 @@ const BiometricLoginPage = lazy(() => import("@/pages/auth/BiometricLogin"));
 const BiometricSetupPage = lazy(() => import("@/pages/biometric-setup"));
 const SettingsPage = lazy(() => import("@/pages/settings"));
 
-const MarketplacePage = lazy(() => import("@/pages/marketplace.tsx"));
+const MarketplacePage = lazy(() => import("@/pages/marketplace"));
 const ProductDetailsPage = lazy(() => import("@/pages/details/ProductDetails"));
 const PostMarketplaceItemPage = lazy(() => import("@/pages/PostMarketplaceItemPage"));
 const AddItemPage = lazy(() => import("@/pages/AddItem"));
@@ -99,7 +99,7 @@ const VehicleDetailsPage = lazy(() => import("@/pages/details/VehicleDetails"));
 const PostVehiclePage = lazy(() => import("@/pages/PostVehicle"));
 
 const CommunityPage = lazy(() => import("@/pages/community"));
-const CommunityPostPage = lazy(() => import("@/pages/community.tsx"));
+const CommunityPostPage = lazy(() => import("@/pages/community"));
 const CreatePostPage = lazy(() => import("@/pages/post-ad"));
 
 const VendorPage = lazy(() => import("@/pages/vendor"));
@@ -128,10 +128,10 @@ const ONBOARDING_KEY = "Bambeh_onboarding_completed";
 const TRANSLATIONS: Record<LangCode, Record<string, string>> = {
   en: { home: "Home" },
   fr: { home: "Accueil" },
-  ar: { home: "الرئيسية" },
+  ar: { home: "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©" },
   ha: { home: "Gida" },
   pcm: { home: "Dom" },
-  ful: { home: "Jaɓɓorgo" },
+  ful: { home: "JaÉ“É“orgo" },
 };
 
 const LanguageContext = createContext<LangContextType>({
@@ -524,6 +524,16 @@ export default function App() {
     </LanguageProvider>
   );
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
