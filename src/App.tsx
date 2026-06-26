@@ -207,7 +207,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   return localStorage.getItem(ONBOARDING_KEY) === "true" ? (
     <>{children}</>
   ) : (
-    <Navigate to="/language" replace />
+    <Navigate to="/home" replace />
   );
 }
 
@@ -525,6 +525,8 @@ export default function App() {
     
   );
 }
+
+
 
 
 

@@ -442,7 +442,7 @@ export default function BambehWelcomeScreen() {
         {/* ── THE BIG NEXT BUTTON ── */}
         <button
           className="bambeh-next-btn"
-          onClick={() => navigate("/")}
+          onClick={() => { localStorage.setItem("Bambeh_onboarding_completed", "true"); navigate("/home", { replace: true }); }}
         >
           {t.next} →
         </button>
@@ -465,3 +465,5 @@ export default function BambehWelcomeScreen() {
     </div>
   );
 }
+
+
