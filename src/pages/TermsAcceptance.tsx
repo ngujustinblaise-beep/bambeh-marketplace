@@ -493,7 +493,7 @@ export default function TermsAcceptance() {
             <span className="font-bold text-green-600">Only 1% Transaction Fee</span>{" "}
             — Lowest in Cameroon! 💚
           </p>
-          <p className="text-xs text-gray-500 mt-2">Next: Choose Your Language</p>
+          <p className="text-xs text-gray-500 mt-2">Next: Welcome Screen</p>
         </div>
       </div>
     </div>
