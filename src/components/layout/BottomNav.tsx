@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BottomNav.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/BottomNav.tsx
  *
@@ -53,7 +53,6 @@ const BottomNav = () => {
 };
 
 export default BottomNav;
-
 
 
 

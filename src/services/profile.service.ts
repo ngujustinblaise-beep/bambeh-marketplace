@@ -1,12 +1,12 @@
 ﻿/**
- * src/services/profile.service.ts
- * Bambeh Marketplace � User Profile Service
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * profile.service.ts
+ * Bambeh Marketplace — User Profile Service
+ * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";
 
-// --- Types --------------------------------------------------------------------
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface UserProfile {
   id: string;
   email: string;
@@ -41,11 +41,11 @@ export interface ProfileUpdateResponse {
   error: string | null;
 }
 
-// --- Map Row ------------------------------------------------------------------
+// ─── Map Row ──────────────────────────────────────────────────────────────────
 function mapProfileRow(row: Record<string, unknown>): UserProfile {
   return {
-    id: row.id as string,
-    email: row.email as string,
+    id: (row.id as string) ?? "",
+    email: (row.email as string) ?? "",
     displayName: (row.display_name as string) ?? (row.full_name as string) ?? "User",
     avatarUrl: row.avatar_url as string | undefined,
     phone: row.phone as string | undefined,
@@ -61,14 +61,14 @@ function mapProfileRow(row: Record<string, unknown>): UserProfile {
     reviewCount: (row.review_count as number) ?? 0,
     totalListings: (row.total_listings as number) ?? 0,
     totalSales: (row.total_sales as number) ?? 0,
-    preferredLanguage: (row.preferred_language as string) ?? "fr",
+    preferredLanguage: (row.preferred_language as string) ?? "en",
     notificationsEnabled: row.notifications_enabled !== false,
-    createdAt: row.created_at as string,
-    updatedAt: row.updated_at as string,
+    createdAt: (row.created_at as string) ?? "",
+    updatedAt: (row.updated_at as string) ?? "",
   };
 }
 
-// --- Get Profile --------------------------------------------------------------
+// ─── Get Profile ──────────────────────────────────────────────────────────────
 export async function getProfile(userId: string): Promise<ProfileResponse> {
   try {
     const { data, error } = await supabase
@@ -88,7 +88,7 @@ export async function getProfile(userId: string): Promise<ProfileResponse> {
   }
 }
 
-// --- Update Profile -----------------------------------------------------------
+// ─── Update Profile ───────────────────────────────────────────────────────────
 export async function updateProfile(
   userId: string,
   updates: Partial<Omit<UserProfile, "id" | "email" | "createdAt" | "updatedAt">>
@@ -123,7 +123,7 @@ export async function updateProfile(
   }
 }
 
-// --- Upload Avatar ------------------------------------------------------------
+// ─── Upload Avatar ────────────────────────────────────────────────────────────
 export async function uploadAvatar(
   userId: string,
   file: File
@@ -152,7 +152,7 @@ export async function uploadAvatar(
   }
 }
 
-// --- Get Public Profile -------------------------------------------------------
+// ─── Get Public Profile ───────────────────────────────────────────────────────
 export async function getPublicProfile(userId: string): Promise<ProfileResponse> {
   try {
     const { data, error } = await supabase
@@ -171,5 +171,3 @@ export async function getPublicProfile(userId: string): Promise<ProfileResponse>
     return { data: null, error: message };
   }
 }
-
-

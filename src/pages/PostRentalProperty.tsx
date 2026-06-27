@@ -1,4 +1,4 @@
-﻿/**
+/**
  * POST RENTAL PROPERTY
  * FILE LOCATION: src/pages/PostRentalProperty.tsx
  */
@@ -356,7 +356,6 @@ const PostRentalProperty: React.FC = () => {
 };
 
 export default PostRentalProperty;
-
 
 
 

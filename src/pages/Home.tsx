@@ -4,16 +4,16 @@
  * HOME PAGE - BAMBEH MARKETPLACE (FULLY INTERNATIONALIZED)
  * ---------------------------------------------------------------------------
  *
- * â€¢ Featured ads from marketplace (subscription-based)
- * â€¢ Posted items appear on home page (localStorage method)
- * â€¢ View count tracker on listings
- * â€¢ Social sharing integration
- * â€¢ All categories with beautiful layout
- * â€¢ Special Features Hub â€¢ links to all Bambeh-exclusive pages
- * â€¢ Recent Listings section (from localStorage)
- * â€¢ FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
+ * ? Featured ads from marketplace (subscription-based)
+ * ? Posted items appear on home page (localStorage method)
+ * ? View count tracker on listings
+ * ? Social sharing integration
+ * ? All categories with beautiful layout
+ * ? Special Features Hub — links to all Bambeh-exclusive pages
+ * ? Recent Listings section (from localStorage)
+ * ? FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
  *
- * Â© 2025â€“2026 Bambeh. All rights reserved.
+ * © 2025–2026 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
-import { useLanguage } from "@/App";
+import { useLanguage } from "@/context/LanguageContext";
 
 // --- Translation Table -----------------------------------------------------
 const HOME_T: Record<string, Record<string, string>> = {
@@ -41,7 +41,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% Transaction Fee! â€¢ The lowest you will see online.",
+    "home.feeMsg": "Only 1% Transaction Fee! — The lowest you will see online.",
     "home.shareBtn": "Share Bambeh with Friends",
     "home.jobsTitle": "Jobs",
     "home.jobsDesc": "Find your next opportunity",
@@ -94,51 +94,51 @@ const HOME_T: Record<string, Record<string, string>> = {
   fr: {
     "home.welcomePrefix": "Bienvenue sur ",
     "home.welcomeSuffix": "Bambeh",
-    "home.tagline": "Place de marchï¿½ en ligne",
-    "home.feeMsg": "Seulement 1 % de frais de transaction ! â€¢ Les plus bas que vous trouverez en ligne.",
+    "home.tagline": "Place de marché en ligne",
+    "home.feeMsg": "Seulement 1 % de frais de transaction ! — Les plus bas que vous trouverez en ligne.",
     "home.shareBtn": "Partager Bambeh avec des amis",
     "home.jobsTitle": "Emplois",
-    "home.jobsDesc": "Trouvez votre prochaine opportunitï¿½",
-    "home.marketplaceTitle": "Marchï¿½",
+    "home.jobsDesc": "Trouvez votre prochaine opportunité",
+    "home.marketplaceTitle": "Marché",
     "home.marketplaceDesc": "Acheter et vendre des articles",
     "home.servicesTitle": "Services",
     "home.servicesDesc": "Embaucher des professionnels",
     "home.rentalsTitle": "Locations",
     "home.rentalsDesc": "Trouvez votre prochain logement",
-    "home.vehiclesTitle": "Vï¿½hicules",
+    "home.vehiclesTitle": "Véhicules",
     "home.vehiclesDesc": "Voitures et motos",
-    "home.exchangeTitle": "ï¿½change",
+    "home.exchangeTitle": "Échange",
     "home.exchangeDesc": "Troquer des articles",
-    "home.featuresHeading": "Fonctionnalitï¿½s spï¿½ciales",
-    "home.zermCoins": "Piï¿½ces Zerm",
+    "home.featuresHeading": "Fonctionnalités spéciales",
+    "home.zermCoins": "Pièces Zerm",
     "home.farmFresh": "Produits frais",
-    "home.community": "Communautï¿½",
+    "home.community": "Communauté",
     "home.groupBuying": "Achat collectif",
     "home.compareItems": "Comparer les articles",
     "home.bambehAI": "IA Bambeh",
-    "home.flashDeals": "Offres ï¿½clair",
+    "home.flashDeals": "Offres éclair",
     "home.njangi": "Njangi/Tontine",
-    "home.meetSafely": "Rencontre sï¿½curisï¿½e",
-    "home.escrow": "Sï¿½questre",
-    "home.recentPosted": "Rï¿½cemment publiï¿½",
+    "home.meetSafely": "Rencontre sécurisée",
+    "home.escrow": "Séquestre",
+    "home.recentPosted": "Récemment publié",
     "home.seeAll": "Voir tout ?",
-    "home.badgeFeatured": "ï¿½ la une",
+    "home.badgeFeatured": "À la une",
     "home.badgeUrgent": "Urgent",
-    "home.typeExchange": "ï¿½change / Troc",
-    "home.typeNegotiable": "Nï¿½gociable",
+    "home.typeExchange": "Échange / Troc",
+    "home.typeNegotiable": "Négociable",
     "home.typeItem": "article",
     "home.whyChoose": "Pourquoi choisir Bambeh ?",
     "home.whyFee": "Frais de transaction de 1 %",
     "home.whyFeeDesc": "Les frais les plus bas partout ! Seulement 1 % par transaction.",
-    "home.whyEscrow": "Sï¿½questre sï¿½curisï¿½",
-    "home.whyEscrowDesc": "Votre argent est protï¿½gï¿½ jusqu'ï¿½ la confirmation de la livraison.",
-    "home.whyTracking": "Suivi en temps rï¿½el",
-    "home.whyTrackingDesc": "Suivez vos commandes de l'achat ï¿½ la livraison.",
-    "home.ctaTitle": "Prï¿½t ï¿½ commencer ?",
+    "home.whyEscrow": "Séquestre sécurisé",
+    "home.whyEscrowDesc": "Votre argent est protégé jusqu'à la confirmation de la livraison.",
+    "home.whyTracking": "Suivi en temps réel",
+    "home.whyTrackingDesc": "Suivez vos commandes de l'achat à la livraison.",
+    "home.ctaTitle": "Prêt à commencer ?",
     "home.ctaSubtitle": "Rejoignez des milliers d'utilisateurs achetant, vendant et troquant sur Bambeh !",
     "home.ctaShop": "Commencer les achats",
     "home.ctaSell": "Vendre un article",
-    "home.timeJustNow": "ï¿½ l'instant",
+    "home.timeJustNow": "À l'instant",
     "home.timeMinAgo": "Il y a {{m}} min",
     "home.timeHourAgo": "Il y a {{h}}h",
     "home.timeDayAgo": "Il y a {{d}}j",
@@ -149,7 +149,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "???? ????? ? ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "??? ????????",
-    "home.feeMsg": "??? ???? ?????? ????? 1 %! â€¢ ????? ???? ????? ??? ????????.",
+    "home.feeMsg": "??? ???? ?????? ????? 1 %! — ????? ???? ????? ??? ????????.",
     "home.shareBtn": "???? Bambeh ?? ????????",
     "home.jobsTitle": "???????",
     "home.jobsDesc": "???? ?? ????? ???????",
@@ -203,7 +203,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% money charge! â€¢ The lowest wey you go see anywhere online.",
+    "home.feeMsg": "Only 1% money charge! — The lowest wey you go see anywhere online.",
     "home.shareBtn": "Share Bambeh with your friends dem",
     "home.jobsTitle": "Work",
     "home.jobsDesc": "Find your next work opportunity",
@@ -257,7 +257,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Salamaleekum ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Taako Janngo Online",
-    "home.feeMsg": "Soo 1% ndiyam! â€¢ Ndiyam gadaa wey a dee gonngol online.",
+    "home.feeMsg": "Soo 1% ndiyam! — Ndiyam gadaa wey a dee gonngol online.",
     "home.shareBtn": "Jedd Bambeh e woot\u0257u",
     "home.jobsTitle": "Suudu",
     "home.jobsDesc": "Yiylo suudu mawngal",
@@ -390,11 +390,11 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    // -- Featured ads (mock â€¢ replace with Supabase in production) ----------
+    // -- Featured ads (mock — replace with Supabase in production) ----------
     setFeaturedAds([
-      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, YaoundÃ©', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
+      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, Yaoundé', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
       { id: '2', title: 'Toyota Camry 2020',           price: 15000000, location: 'Douala',          category: 'Vehicles',    subscriptionLevel: 'premium',  featured: true, posted: '5 hours ago' },
-      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, YaoundÃ©', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
+      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, Yaoundé', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
     ]);
 
     // -- Load recently posted listings from localStorage ---------------------
@@ -437,7 +437,7 @@ export default function Home() {
           </h1>
           <p className="text-xl text-gray-600 mb-2">{t('home.tagline')}</p>
           <p className="text-lg text-gray-500">
-            â€¢ <span className="font-bold text-green-600">{t('home.feeMsg')}</span> â€¢
+            ?? <span className="font-bold text-green-600">{t('home.feeMsg')}</span> ??
           </p>
 
           <div className="mt-6">
@@ -455,7 +455,7 @@ export default function Home() {
 
         {/* -- Special Features -------------------------------------------- */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">â€¢ {t('home.featuresHeading')}</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">? {t('home.featuresHeading')}</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {specialFeatures.map((feature) => (
               <Link
@@ -473,7 +473,7 @@ export default function Home() {
         {/* -- Featured Ads ------------------------------------------------ */}
         {featuredAds.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">â€¢ Featured</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">? Featured</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredAds.map((ad) => (
                 <Link
@@ -483,7 +483,7 @@ export default function Home() {
                 >
                   <div className="relative h-48 bg-gradient-to-br from-teal-100 to-blue-100 flex items-center justify-center">
                     <ShoppingBag className="w-16 h-16 text-teal-200" />
-                    <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold">â€¢ {t('home.badgeFeatured')}</div>
+                    <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold">? {t('home.badgeFeatured')}</div>
                   </div>
                   <div className="p-4">
                     <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{ad.title}</h3>
@@ -500,7 +500,7 @@ export default function Home() {
         {recentListings.length > 0 && (
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">â€¢ {t('home.recentPosted')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">?? {t('home.recentPosted')}</h2>
               <Link to="/marketplace" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -525,10 +525,10 @@ export default function Home() {
                     )}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {listing.featured && (
-                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">â€¢ {t('home.badgeFeatured')}</span>
+                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">? {t('home.badgeFeatured')}</span>
                       )}
                       {listing.urgent && (
-                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">â€¢ {t('home.badgeUrgent')}</span>
+                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">?? {t('home.badgeUrgent')}</span>
                       )}
                     </div>
                     <div className="absolute bottom-2 right-2">
@@ -552,11 +552,11 @@ export default function Home() {
                     <div className="flex items-center justify-between mt-1">
                       <div>
                         {listing.type === 'exchange' ? (
-                          <span className="font-bold text-purple-600 text-sm">â€¢ {t('home.typeExchange')}</span>
+                          <span className="font-bold text-purple-600 text-sm">?? {t('home.typeExchange')}</span>
                         ) : (
                           <>
                             <span className="font-bold text-teal-600 text-sm">{Number(listing.price).toLocaleString()} {listing.currency || 'XAF'}</span>
-                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">â€¢ {t('home.typeNegotiable')}</span>}
+                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">· {t('home.typeNegotiable')}</span>}
                           </>
                         )}
                       </div>
@@ -597,21 +597,21 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">â€¢</span>
+                <span className="text-3xl">??</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyFee')}</h3>
               <p className="text-gray-600">{t('home.whyFeeDesc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">â€¢</span>
+                <span className="text-3xl">??</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyEscrow')}</h3>
               <p className="text-gray-600">{t('home.whyEscrowDesc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">â€¢</span>
+                <span className="text-3xl">??</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyTracking')}</h3>
               <p className="text-gray-600">{t('home.whyTrackingDesc')}</p>
@@ -649,3 +649,6 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
+
+
+
