@@ -1,12 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * LANGUAGE SELECTOR — ONBOARDING LANDING
- * FILE: src/pages/LanguageSelection.tsx
- * ---------------------------------------------------------------------------
- * Writes "Bambeh_language" to localStorage, notifies the rest of the app via
- * "bambeh:langchange", then navigates to /terms-acceptance. The navigate call
- * runs LAST and is never blocked by the event dispatch, so onboarding can
- * always advance even if a listener throws.
+ * FILE: src/pages/LanguageSelector.tsx
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -68,7 +63,7 @@ const STRINGS: Record<
   },
 };
 
-export default function LanguageSelection() {
+export default function LanguageSelector() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<LangCode>("en");
   const [logoError, setLogoError] = useState(false);
@@ -76,21 +71,11 @@ export default function LanguageSelection() {
   const current = STRINGS[selected];
 
   const handleContinue = () => {
-    // 1) Persist first so the onboarding guard sees the language immediately.
     localStorage.setItem(STORAGE_KEY, selected);
-
-    // 2) Notify the app (inline provider + any useLang listeners). Best-effort:
-    //    a listener error must NOT stop navigation.
-    try {
-      window.dispatchEvent(
-        new CustomEvent("bambeh:langchange", { detail: selected })
-      );
-    } catch {
-      /* no-op: notification is non-critical */
-    }
-
-    // 3) Advance. Runs last and unconditionally.
-    navigate("/terms-acceptance", { replace: true });
+    window.dispatchEvent(
+      new CustomEvent("bambeh:langchange", { detail: { language: selected } })
+    );
+    navigate("/terms-acceptance");
   };
 
   return (

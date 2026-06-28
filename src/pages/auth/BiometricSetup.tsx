@@ -1,6 +1,6 @@
-﻿import React from "react";
+﻿import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Fingerprint, ShieldCheck } from "lucide-react";
+import { Fingerprint, ShieldCheck, ShieldAlert } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -14,62 +14,110 @@ const STRINGS: Record<
     enable: string;
     skip: string;
     note: string;
+    loading: string;
+    unsupported: string;
+    error: string;
   }
 > = {
   en: {
     title: "Enable biometrics",
-    subtitle: "Use fingerprint or face unlock for quicker sign in.",
+    subtitle: "Use fingerprint, face unlock, or device unlock for quicker sign in.",
     enable: "Enable biometrics",
     skip: "Skip for now",
     note: "You can change this later in settings.",
+    loading: "Setting up biometrics...",
+    unsupported: "This device cannot use biometrics right now.",
+    error: "Could not enable biometrics. Please try again.",
   },
   fr: {
     title: "Activer la biométrie",
-    subtitle: "Utilisez l’empreinte ou le visage pour aller plus vite.",
+    subtitle: "Utilisez l’empreinte, le visage ou le déverrouillage de l’appareil pour vous connecter plus vite.",
     enable: "Activer la biométrie",
     skip: "Passer pour le moment",
-    note: "Vous pourrez modifier ce choix plus tard.",
+    note: "Vous pourrez modifier ce choix plus tard dans les paramètres.",
+    loading: "Configuration de la biométrie...",
+    unsupported: "La biométrie n’est pas disponible sur cet appareil pour le moment.",
+    error: "Impossible d’activer la biométrie. Veuillez réessayer.",
   },
   pcm: {
     title: "Enable biometrics",
-    subtitle: "Use fingerprint or face unlock for quicker sign in.",
+    subtitle: "Use fingerprint, face unlock, or phone unlock for quicker sign in.",
     enable: "Enable biometrics",
     skip: "Skip for now",
-    note: "You can change this later in settings.",
+    note: "You fit change am later for settings.",
+    loading: "We dey set biometric...",
+    unsupported: "This phone no fit use biometrics now.",
+    error: "No fit enable biometrics. Try again.",
   },
   ar: {
     title: "تفعيل البصمة",
-    subtitle: "استخدم البصمة أو الوجه لتسجيل أسرع.",
+    subtitle: "استخدم البصمة أو الوجه أو قفل الجهاز لتسجيل دخول أسرع.",
     enable: "تفعيل البصمة",
     skip: "تخطي الآن",
-    note: "يمكنك تغيير هذا لاحقًا من الإعدادات.",
+    note: "يمكنك تغيير ذلك لاحقًا من الإعدادات.",
+    loading: "جارٍ إعداد البصمة...",
+    unsupported: "البصمة غير متاحة على هذا الجهاز الآن.",
+    error: "تعذر تفعيل البصمة. حاول مرة أخرى.",
   },
   ful: {
     title: "Huutu biometrics",
-    subtitle: "Huuto fingerprint walla face unlock.",
+    subtitle: "Huuto fingerprint, face unlock, walla loowdi telefon ngam seŋorde gulii.",
     enable: "Huutu biometrics",
     skip: "Yii goɗɗum",
-    note: "A waawi waɗde ɗum kadi e settings.",
+    note: "A waawi waylude ɗum kadi e settings.",
+    loading: "Ngam doole biometrics...",
+    unsupported: "Biometrics woodaani e ndee telefon hajji.",
+    error: "Huutude biometrics naa waawi. Rewɓe kadi.",
   },
   ha: {
     title: "Kunna biometrics",
-    subtitle: "Yi amfani da yatsa ko fuska don saurin shiga.",
+    subtitle: "Yi amfani da yatsa, fuska, ko buɗe na'ura don saurin shiga.",
     enable: "Kunna biometrics",
     skip: "Tsallake yanzu",
     note: "Za ka iya canza wannan daga baya a settings.",
+    loading: "Ana saita biometrics...",
+    unsupported: "Biometrics ba su samuwa a wannan na'urar yanzu.",
+    error: "An kasa kunna biometrics. Gwada kuma.",
   },
 };
 
 export default function BiometricSetup() {
   const navigate = useNavigate();
   const { language } = useLanguage();
+
   const lang = ((language as LangCode) in STRINGS ? (language as LangCode) : "en") as LangCode;
   const t = STRINGS[lang];
   const isRtl = lang === "ar";
 
-  const enable = () => {
-    localStorage.setItem("bambeh_biometric_enabled", "true");
-    navigate("/", { replace: true });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [unsupported, setUnsupported] = useState(false);
+
+  const canUseBiometrics = useMemo(() => {
+    if (typeof navigator === "undefined") return false;
+    return "credentials" in navigator;
+  }, []);
+
+  const enable = async () => {
+    setError(null);
+    setUnsupported(false);
+
+    if (!canUseBiometrics) {
+      setUnsupported(true);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 900));
+
+      navigate("/", { replace: true });
+    } catch {
+      setError(t.error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -77,19 +125,41 @@ export default function BiometricSetup() {
       <div className="space-y-4">
         <p className="text-sm leading-6 text-gray-600">{t.note}</p>
 
+        {unsupported && (
+          <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{t.unsupported}</span>
+          </div>
+        )}
+
+        {error && (
+          <div
+            role="alert"
+            aria-live="polite"
+            className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
         <button
           type="button"
           onClick={enable}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3.5 text-sm font-semibold text-white hover:bg-teal-700"
+          disabled={isLoading}
+          aria-label={t.enable}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-70"
         >
           <Fingerprint className="h-4 w-4" />
-          {t.enable}
+          {isLoading ? t.loading : t.enable}
         </button>
 
         <button
           type="button"
           onClick={() => navigate("/", { replace: true })}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100"
+          disabled={isLoading}
+          aria-label={t.skip}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
         >
           <ShieldCheck className="h-4 w-4" />
           {t.skip}
@@ -98,4 +168,3 @@ export default function BiometricSetup() {
     </AuthShell>
   );
 }
-
