@@ -1,10 +1,10 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ---------------------------------------------------------------------------
  * HOME PAGE - BAMBEH MARKETPLACE (FULLY INTERNATIONALIZED)
  * ---------------------------------------------------------------------------
  *
- * Featured ads from marketplace (subscription-based)
+ * Featured ads from marketplace
  * Posted items appear on home page (localStorage method)
  * View count tracker on listings
  * Social sharing integration
@@ -30,6 +30,8 @@ import {
   Share2,
   Clock,
   Eye,
+  RefreshCcw,
+  AlertCircle,
 } from 'lucide-react';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
@@ -90,6 +92,11 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.timeDayAgo": "{{d}}d ago",
     "home.viewSingular": "view",
     "home.viewPlural": "views",
+    "home.featuredLoading": "Loading featured ads...",
+    "home.featuredErrorTitle": "Could not load featured ads",
+    "home.featuredEmptyTitle": "No featured ads yet",
+    "home.featuredEmptyDesc": "Featured ads will appear here when users post promoted listings.",
+    "home.retry": "Retry",
   },
   fr: {
     "home.welcomePrefix": "Bienvenue sur ",
@@ -144,6 +151,11 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.timeDayAgo": "Il y a {{d}}j",
     "home.viewSingular": "vue",
     "home.viewPlural": "vues",
+    "home.featuredLoading": "Chargement des annonces mises en avant...",
+    "home.featuredErrorTitle": "Impossible de charger les annonces mises en avant",
+    "home.featuredEmptyTitle": "Aucune annonce mise en avant pour le moment",
+    "home.featuredEmptyDesc": "Les annonces mises en avant s'afficheront ici lorsque les utilisateurs publieront des annonces sponsorisées.",
+    "home.retry": "Réessayer",
   },
   ar: {
     "home.welcomePrefix": "مرحبًا بكم في ",
@@ -198,6 +210,11 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.timeDayAgo": "منذ {{d}} يوم",
     "home.viewSingular": "مشاهدة",
     "home.viewPlural": "مشاهدات",
+    "home.featuredLoading": "جارٍ تحميل الإعلانات المميزة...",
+    "home.featuredErrorTitle": "تعذر تحميل الإعلانات المميزة",
+    "home.featuredEmptyTitle": "لا توجد إعلانات مميزة بعد",
+    "home.featuredEmptyDesc": "ستظهر الإعلانات المميزة هنا عندما ينشر المستخدمون إعلانات مدفوعة.",
+    "home.retry": "إعادة المحاولة",
   },
   pidgin: {
     "home.welcomePrefix": "Welcome to ",
@@ -252,6 +269,11 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.timeDayAgo": "{{d}}d ago",
     "home.viewSingular": "view",
     "home.viewPlural": "views",
+    "home.featuredLoading": "Loading featured ads...",
+    "home.featuredErrorTitle": "Could not load featured ads",
+    "home.featuredEmptyTitle": "No featured ads yet",
+    "home.featuredEmptyDesc": "Featured ads go show here when users post promoted listings.",
+    "home.retry": "Retry",
   },
   ff: {
     "home.welcomePrefix": "On jaraama e ",
@@ -306,6 +328,11 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.timeDayAgo": "{{d}}d ago",
     "home.viewSingular": "yiylo",
     "home.viewPlural": "yiylo",
+    "home.featuredLoading": "Loading featured ads...",
+    "home.featuredErrorTitle": "Could not load featured ads",
+    "home.featuredEmptyTitle": "No featured ads yet",
+    "home.featuredEmptyDesc": "Featured ads go show here when users post promoted listings.",
+    "home.retry": "Retry",
   },
 };
 
@@ -326,9 +353,10 @@ interface FeaturedAd {
   price: number;
   location: string;
   category: string;
-  subscriptionLevel: string;
-  featured: boolean;
-  posted: string;
+  subscriptionLevel?: string;
+  featured?: boolean;
+  posted?: string;
+  primaryImage?: string;
 }
 
 interface RecentListing {
@@ -348,11 +376,17 @@ interface RecentListing {
   expiresAt?: string;
 }
 
+type FeaturedState = {
+  loading: boolean;
+  error: string | null;
+  items: FeaturedAd[];
+};
+
 export default function Home() {
   const { language } = useLanguage();
   const _rl = homeNormLang(language);
   const isRtl = _rl === "ar";
-  
+
   const t = (k: string, o?: Record<string, any>) => {
     let v = ((HOME_T[_rl] || HOME_T.en)[k]) ?? HOME_T.en[k] ?? k;
     if (o) {
@@ -361,7 +395,11 @@ export default function Home() {
     return v;
   };
 
-  const [featuredAds, setFeaturedAds] = useState<FeaturedAd[]>([]);
+  const [featuredState, setFeaturedState] = useState<FeaturedState>({
+    loading: true,
+    error: null,
+    items: [],
+  });
   const [recentListings, setRecentListings] = useState<RecentListing[]>([]);
 
   const categories = [
@@ -386,12 +424,27 @@ export default function Home() {
     { labelKey: 'home.escrow', link: '/escrow', emoji: '🔒', bg: 'bg-emerald-50', text: 'text-emerald-800' },
   ];
 
+  const loadFeaturedAds = async (signal?: AbortSignal) => {
+    setFeaturedState({ loading: true, error: null, items: [] });
+    try {
+      const res = await fetch('/api/featured-ads', { signal });
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      const data = await res.json();
+      const items = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
+      setFeaturedState({ loading: false, error: null, items });
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return;
+      setFeaturedState({
+        loading: false,
+        error: err?.message || 'Failed to load featured ads',
+        items: [],
+      });
+    }
+  };
+
   useEffect(() => {
-    setFeaturedAds([
-      { id: '1', title: 'iPhone 15 Pro Max - 256GB', price: 850000, location: 'Bastos, Yaoundé', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
-      { id: '2', title: 'Toyota Camry 2020', price: 15000000, location: 'Douala', category: 'Vehicles', subscriptionLevel: 'premium', featured: true, posted: '5 hours ago' },
-      { id: '3', title: '3 Bedroom Apartment', price: 450000, location: 'Bastos, Yaoundé', category: 'Rentals', subscriptionLevel: 'platinum', featured: true, posted: '1 day ago' },
-    ]);
+    const controller = new AbortController();
+    loadFeaturedAds(controller.signal);
 
     try {
       const stored = localStorage.getItem('Bambeh_listings');
@@ -405,6 +458,8 @@ export default function Home() {
         setRecentListings(active.slice(0, 10));
       }
     } catch (e) {}
+
+    return () => controller.abort();
   }, []);
 
   const timeAgo = (iso: string): string => {
@@ -417,6 +472,10 @@ export default function Home() {
     const d = Math.floor(h / 24);
     return t('home.timeDayAgo', { d });
   };
+
+  const featuredLoading = featuredState.loading;
+  const featuredError = featuredState.error;
+  const featuredAds = featuredState.items;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -459,18 +518,71 @@ export default function Home() {
           </div>
         </div>
 
-        {featuredAds.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured</h2>
+        <section className="mb-16" aria-busy={featuredLoading ? 'true' : 'false'}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Featured</h2>
+            {featuredLoading && (
+              <span className="text-sm text-gray-500">{t('home.featuredLoading')}</span>
+            )}
+          </div>
+
+          {featuredLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="status" aria-live="polite">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-200" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!featuredLoading && featuredError && (
+            <div className="bg-white rounded-xl shadow p-6 border border-red-200" role="alert">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">{t('home.featuredErrorTitle')}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{featuredError}</p>
+                  <button
+                    type="button"
+                    onClick={() => loadFeaturedAds()}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white font-semibold hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <RefreshCcw className="w-4 h-4" />
+                    {t('home.retry')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!featuredLoading && !featuredError && featuredAds.length === 0 && (
+            <div className="bg-white rounded-xl shadow p-6" role="status" aria-live="polite">
+              <h3 className="font-semibold text-gray-900">{t('home.featuredEmptyTitle')}</h3>
+              <p className="text-sm text-gray-600 mt-1">{t('home.featuredEmptyDesc')}</p>
+            </div>
+          )}
+
+          {!featuredLoading && !featuredError && featuredAds.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredAds.map((ad) => (
                 <Link
                   key={ad.id}
                   to={`/marketplace/${ad.id}`}
-                  className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all overflow-hidden group"
+                  className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all overflow-hidden group focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  aria-label={`${ad.title}, ${ad.location}, ${ad.category}`}
                 >
                   <div className="relative h-48 bg-gradient-to-br from-teal-100 to-blue-100 flex items-center justify-center">
-                    <ShoppingBag className="w-16 h-16 text-teal-200" />
+                    {ad.primaryImage ? (
+                      <ListingImage src={ad.primaryImage} alt={ad.title} width={400} height={192} />
+                    ) : (
+                      <ShoppingBag className="w-16 h-16 text-teal-200" />
+                    )}
                     <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold">
                       {t('home.badgeFeatured')}
                     </div>
@@ -483,8 +595,8 @@ export default function Home() {
                 </Link>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </section>
 
         {recentListings.length > 0 && (
           <div className="mb-16">
@@ -504,7 +616,7 @@ export default function Home() {
                     listing.type === 'service' ? `/services/${listing.id}` :
                     `/marketplace/${listing.id}`
                   }
-                  className="bg-white rounded-xl shadow hover:shadow-lg transition-all overflow-hidden group"
+                  className="bg-white rounded-xl shadow hover:shadow-lg transition-all overflow-hidden group focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <div className="relative h-36 bg-gradient-to-br from-teal-50 to-blue-50 flex items-center justify-center overflow-hidden">
                     {listing.primaryImage ? (
@@ -514,14 +626,10 @@ export default function Home() {
                     )}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {listing.featured && (
-                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">
-                          {t('home.badgeFeatured')}
-                        </span>
+                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">{t('home.badgeFeatured')}</span>
                       )}
                       {listing.urgent && (
-                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">
-                          {t('home.badgeUrgent')}
-                        </span>
+                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">{t('home.badgeUrgent')}</span>
                       )}
                     </div>
                     <div className="absolute bottom-2 right-2">
@@ -572,7 +680,7 @@ export default function Home() {
             <Link
               key={category.nameKey}
               to={category.link}
-              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2"
+              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <div className="p-8">
                 <div className={`w-16 h-16 ${category.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
@@ -616,10 +724,10 @@ export default function Home() {
           <h2 className="text-4xl font-bold mb-4">{t('home.ctaTitle')}</h2>
           <p className="text-xl mb-8">{t('home.ctaSubtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/marketplace" className="px-8 py-4 bg-white text-teal-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg">
+            <Link to="/marketplace" className="px-8 py-4 bg-white text-teal-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white">
               {t('home.ctaShop')}
             </Link>
-            <Link to="/marketplace/sell" className="px-8 py-4 bg-teal-700 text-white rounded-lg font-bold text-lg hover:bg-teal-800 transition-colors shadow-lg">
+            <Link to="/marketplace/sell" className="px-8 py-4 bg-teal-700 text-white rounded-lg font-bold text-lg hover:bg-teal-800 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white">
               {t('home.ctaSell')}
             </Link>
           </div>
@@ -638,4 +746,4 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
       <Eye className="w-3 h-3" />{count} {count === 1 ? t('home.viewSingular') : t('home.viewPlural')}
     </p>
   );
-}
+}	
