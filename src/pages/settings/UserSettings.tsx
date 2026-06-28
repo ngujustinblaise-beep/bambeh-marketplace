@@ -1,7 +1,8 @@
 /**
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
- * * i18n: All settings strings are localized inline via the local S table,
+ * 
+ * i18n: All settings strings are localized inline via the local S table,
  * bound directly to the mounted context provider inside App.tsx. 
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -350,7 +351,7 @@ const UserSettings: React.FC = () => {
                   <img src={currentUser.photoURL} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-teal-600 text-2xl font-bold">
-                    {(currentUser?.displayName || currentUser?.email || "U").toUpperCase()}
+                    {(currentUser?.displayName || currentUser?.email || "U")[0].toUpperCase()}
                   </span>
                 )}
               </div>

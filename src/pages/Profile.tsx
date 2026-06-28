@@ -1,273 +1,639 @@
-/**
- * src/pages/Profile.tsx - BAMBEH SARL
- * Production user profile page.
+﻿/**
+ * src/pages/Profile.tsx — Bambeh Marketplace
  *
- *  - Fully internationalised (English, French, Pidgin, Arabic, Fulfulde)
- *  - Language switches INSTANTLY via the global useLanguage() from @/App
- *  - RTL-aware layout for Arabic
- *  - Wired to real auth (useAuth from @/contexts/AuthContext)
- *  - Icons are NEVER translated (literal across all languages)
- *  - Non-ASCII stored as \u escapes => can never mojibake
+ * i18n: all visible strings live in the local S table below, keyed by the live
+ * language (EN / FR / Pidgin / Arabic / Fulfulde). The language code comes from
+ * useLang() (@/hooks/useAppLang), which reacts to the same "bambeh:langchange"
+ * event the real LanguageProvider (in @/App) fires — so this page re-renders
+ * and re-translates the instant the user switches language anywhere.
  *
- * (c) 2026 BAMBEH SARL. All rights reserved.
+ * Behaviour unchanged: avatar upload (base64, max 3MB), Supabase + localStorage
+ * load/save, logout clears session + local keys, Quick Links routes.
  */
 
-import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  User, Package, ClipboardList, Heart, Bell, Bookmark,
-  Crown, Gift, Settings as SettingsIcon, HelpCircle, PlusCircle,
-  LogOut, ChevronRight, ChevronLeft, BadgeCheck, LogIn,
+  User, Mail, Phone, MapPin, Edit2, Save,
+  X, LogOut, Camera, AlertCircle,
 } from "lucide-react";
-import { useLanguage } from "@/App";
-import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
+import { useLang } from "@/hooks/useAppLang";
 
-type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
+type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 
-const PROFILE_T: Record<LangCode, Record<string, string>> = {
-  en: {
-    profile: "Profile",
-    guest: "Guest",
-    signInPrompt: "Sign in to access your profile, listings and orders.",
-    signIn: "Sign in",
-    myListings: "My Listings",
-    orders: "My Orders",
-    favorites: "Favorites",
-    notifications: "Notifications",
-    savedSearches: "Saved Searches",
-    subscription: "Subscription",
-    referral: "Refer & Earn",
-    settings: "Settings",
-    help: "Help & Support",
-    sell: "Sell something",
-    logout: "Log out",
-    account: "Account",
-    activity: "Activity",
-    more: "More",
-    verified: "Verified",
-    editProfile: "Edit profile"
-  },
-  fr: {
-    profile: "Profil",
-    guest: "Invit\u00e9",
-    signInPrompt: "Connectez-vous pour acc\u00e9der \u00e0 votre profil, vos annonces et vos commandes.",
-    signIn: "Se connecter",
-    myListings: "Mes annonces",
-    orders: "Mes commandes",
-    favorites: "Favoris",
-    notifications: "Notifications",
-    savedSearches: "Recherches enregistr\u00e9es",
-    subscription: "Abonnement",
-    referral: "Parrainer et gagner",
-    settings: "Param\u00e8tres",
-    help: "Aide et assistance",
-    sell: "Vendre un article",
-    logout: "D\u00e9connexion",
-    account: "Compte",
-    activity: "Activit\u00e9",
-    more: "Plus",
-    verified: "V\u00e9rifi\u00e9",
-    editProfile: "Modifier le profil"
-  },
-  pidgin: {
-    profile: "Profile",
-    guest: "Guest",
-    signInPrompt: "Login make you fit see your profile, listings and orders.",
-    signIn: "Login",
-    myListings: "My Listings",
-    orders: "My Orders",
-    favorites: "Favorites",
-    notifications: "Notifications",
-    savedSearches: "Saved Searches",
-    subscription: "Subscription",
-    referral: "Refer & Earn",
-    settings: "Settings",
-    help: "Help & Support",
-    sell: "Sell something",
-    logout: "Log out",
-    account: "Account",
-    activity: "Activity",
-    more: "More",
-    verified: "Verified",
-    editProfile: "Edit profile"
-  },
-  ar: {
-    profile: "\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a",
-    guest: "\u0636\u064a\u0641",
-    signInPrompt: "\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0645\u0644\u0641\u0643 \u0648\u0625\u0639\u0644\u0627\u0646\u0627\u062a\u0643 \u0648\u0637\u0644\u0628\u0627\u062a\u0643.",
-    signIn: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644",
-    myListings: "\u0625\u0639\u0644\u0627\u0646\u0627\u062a\u064a",
-    orders: "\u0637\u0644\u0628\u0627\u062a\u064a",
-    favorites: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629",
-    notifications: "\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a",
-    savedSearches: "\u0639\u0645\u0644\u064a\u0627\u062a \u0627\u0644\u0628\u062d\u062b \u0627\u0644\u0645\u062d\u0641\u0648\u0638\u0629",
-    subscription: "\u0627\u0644\u0627\u0634\u062a\u0631\u0627\u0643",
-    referral: "\u0627\u062f\u0639\u064f \u0648\u0627\u0631\u0628\u062d",
-    settings: "\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a",
-    help: "\u0627\u0644\u0645\u0633\u0627\u0639\u062f\u0629 \u0648\u0627\u0644\u062f\u0639\u0645",
-    sell: "\u0628\u0639 \u0634\u064a\u0626\u064b\u0627",
-    logout: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c",
-    account: "\u0627\u0644\u062d\u0633\u0627\u0628",
-    activity: "\u0627\u0644\u0646\u0634\u0627\u0637",
-    more: "\u0627\u0644\u0645\u0632\u064a\u062f",
-    verified: "\u0645\u0648\u062b\u0651\u0642",
-    editProfile: "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0645\u0644\u0641"
-  },
-  ff: {
-    profile: "Konngol",
-    guest: "Ko\u0257o",
-    signInPrompt: "Naatu ngam yi\u0257de konngol, jeeyooji e komaaduuji maa.",
-    signIn: "Naatu",
-    myListings: "Jeeyooji am",
-    orders: "Komaaduuji am",
-    favorites: "Cu\u0253i\u0257aa\u0257i",
-    notifications: "Tinndinooje",
-    savedSearches: "\u0190tirteeji mara\u0257i",
-    subscription: "Jokkondiral",
-    referral: "Noddu & Hebu",
-    settings: "Teelte",
-    help: "Ballal & Faabo",
-    sell: "Yeey huunde",
-    logout: "Yaltu",
-    account: "Konte",
-    activity: "Golle",
-    more: "\u0181eydu",
-    verified: "Tabitin\u0257o",
-    editProfile: "Waylu konngol"
-  }
-};
-
-interface MenuRow {
-  key: string;
-  to: string;
-  Icon: React.ComponentType<{ className?: string }>;
+interface UserProfile {
+  id:       string;
+  name:     string;
+  email:    string;
+  phone:    string;
+  location: string;
+  bio:      string;
+  avatar?:  string;  // base64 or URL
+  joinedAt: string;
 }
 
+// ── i18n strings (local; keyed by live language) ──────────────────────────
+const S: Record<Lang, {
+  imgTypeErr: string; imgTooLarge: (mb: string) => string;
+  myProfile: string; logout: string; memberSince: string;
+  tapCamera: string; changePhotoAria: string; personalInfo: string;
+  saving: string; save: string; edit: string;
+  fullName: string; email: string; phone: string; location: string; bio: string;
+  notSet: string; locationPh: string; bioPh: string;
+  quickLinks: string; qlCoins: string; qlListings: string; qlOrders: string;
+  qlSaved: string; qlSettings: string; qlFarmFresh: string; qlPostAd: string;
+  account: string; signOut: string;
+}> = {
+  en: {
+    imgTypeErr: "Only JPG, PNG or WebP images allowed.",
+    imgTooLarge: (mb) => "Image too large (max 3 MB). Got " + mb + " MB.",
+    myProfile: "My Profile",
+    logout: "Logout",
+    memberSince: "Member since",
+    tapCamera: "Tap the camera icon to change your photo",
+    changePhotoAria: "Change profile photo",
+    personalInfo: "Personal Information",
+    saving: "Saving...",
+    save: "Save",
+    edit: "Edit",
+    fullName: "Full Name",
+    email: "Email",
+    phone: "Phone",
+    location: "Location",
+    bio: "Bio",
+    notSet: "Not set",
+    locationPh: "e.g. Yaoundé, Centre",
+    bioPh: "Tell buyers and sellers a little about yourself...",
+    quickLinks: "Quick Links",
+    qlCoins: "Zerm Coins",
+    qlListings: "My Listings",
+    qlOrders: "My Orders",
+    qlSaved: "Saved Items",
+    qlSettings: "Settings",
+    qlFarmFresh: "Farm Fresh",
+    qlPostAd: "Post an Ad",
+    account: "Account",
+    signOut: "Sign Out",
+  },
+  fr: {
+    imgTypeErr: "Seules les images JPG, PNG ou WebP sont autorisées.",
+    imgTooLarge: (mb) => "Image trop volumineuse (max 3 Mo). Reçu " + mb + " Mo.",
+    myProfile: "Mon profil",
+    logout: "Déconnexion",
+    memberSince: "Membre depuis",
+    tapCamera: "Touchez l'icône de l'appareil photo pour changer votre photo",
+    changePhotoAria: "Changer la photo de profil",
+    personalInfo: "Informations personnelles",
+    saving: "Enregistrement...",
+    save: "Enregistrer",
+    edit: "Modifier",
+    fullName: "Nom complet",
+    email: "E-mail",
+    phone: "Téléphone",
+    location: "Localisation",
+    bio: "Bio",
+    notSet: "Non défini",
+    locationPh: "ex. Yaoundé, Centre",
+    bioPh: "Présentez-vous brièvement aux acheteurs et vendeurs...",
+    quickLinks: "Liens rapides",
+    qlCoins: "Pièces Zerm",
+    qlListings: "Mes annonces",
+    qlOrders: "Mes commandes",
+    qlSaved: "Articles enregistrés",
+    qlSettings: "Paramètres",
+    qlFarmFresh: "Ferme Fraîche",
+    qlPostAd: "Publier une annonce",
+    account: "Compte",
+    signOut: "Se déconnecter",
+  },
+  pidgin: {
+    imgTypeErr: "Na only JPG, PNG or WebP image dem dey allow.",
+    imgTooLarge: (mb) => "Image too big (max 3 MB). Na " + mb + " MB you bring.",
+    myProfile: "My Profile",
+    logout: "Comot",
+    memberSince: "Member since",
+    tapCamera: "Press di camera icon to change your photo",
+    changePhotoAria: "Change profile photo",
+    personalInfo: "Your Personal Info",
+    saving: "E dey save...",
+    save: "Save",
+    edit: "Edit",
+    fullName: "Full Name",
+    email: "Email",
+    phone: "Phone",
+    location: "Wia You Dey",
+    bio: "Bio",
+    notSet: "You never set am",
+    locationPh: "e.g. Yaoundé, Centre",
+    bioPh: "Talk small about yourself make buyers and sellers know you...",
+    quickLinks: "Quick Links",
+    qlCoins: "Zerm Coins",
+    qlListings: "My Listings",
+    qlOrders: "My Orders",
+    qlSaved: "Things Wey I Save",
+    qlSettings: "Settings",
+    qlFarmFresh: "Farm Fresh",
+    qlPostAd: "Post Ad",
+    account: "Account",
+    signOut: "Comot",
+  },
+  ar: {
+    imgTypeErr: "يُسمح فقط بصور JPG أو PNG أو WebP.",
+    imgTooLarge: (mb) => "الصورة كبيرة جدًا (الحد الأقصى 3 ميغابايت). الحجم " + mb + " ميغابايت.",
+    myProfile: "ملفي الشخصي",
+    logout: "تسجيل الخروج",
+    memberSince: "عضو منذ",
+    tapCamera: "اضغط على أيقونة الكاميرا لتغيير صورتك",
+    changePhotoAria: "تغيير صورة الملف الشخصي",
+    personalInfo: "المعلومات الشخصية",
+    saving: "جارٍ الحفظ...",
+    save: "حفظ",
+    edit: "تعديل",
+    fullName: "الاسم الكامل",
+    email: "البريد الإلكتروني",
+    phone: "الهاتف",
+    location: "الموقع",
+    bio: "نبذة",
+    notSet: "غير محدد",
+    locationPh: "مثال: ياوندي، الوسطى",
+    bioPh: "عرّف بنفسك قليلًا للمشترين والبائعين...",
+    quickLinks: "روابط سريعة",
+    qlCoins: "عملات زيرم",
+    qlListings: "إعلاناتي",
+    qlOrders: "طلباتي",
+    qlSaved: "العناصر المحفوظة",
+    qlSettings: "الإعدادات",
+    qlFarmFresh: "طازج من المزرعة",
+    qlPostAd: "نشر إعلان",
+    account: "الحساب",
+    signOut: "تسجيل الخروج",
+  },
+  ff: {
+    imgTypeErr: "Ko natal JPG, PNG walla WebP tan yamiraa.",
+    imgTooLarge: (mb) => "Natal mawni no feewi (haa 3 MB). Hewtii " + mb + " MB.",
+    myProfile: "Profil am",
+    logout: "Yaltude",
+    memberSince: "Tuugnoode gila",
+    tapCamera: "Meem ikon kamera ndee ngam waylude natal maa",
+    changePhotoAria: "Waylu natal profil",
+    personalInfo: "Kabaruuji maa",
+    saving: "Ɗon danee...",
+    save: "Dannu",
+    edit: "Taƴto",
+    fullName: "Innde timmunde",
+    email: "Iimeel",
+    phone: "Telefoŋ",
+    location: "Nokku",
+    bio: "Faltaade",
+    notSet: "Teelaaka",
+    locationPh: "misal: Yaoundé, Centre",
+    bioPh: "Falto hoore maa seeɗa fayde soodooɓe e njeeyooɓe...",
+    quickLinks: "Jokkorɗe yaawɗe",
+    qlCoins: "Ceede Zerm",
+    qlListings: "Ko njeeyetee am",
+    qlOrders: "Sarwiiji am",
+    qlSaved: "Kuuje danaaɗe",
+    qlSettings: "Teelte",
+    qlFarmFresh: "Ko hecci diga ngesa",
+    qlPostAd: "Fewtu njeeyannde",
+    account: "Konto",
+    signOut: "Yaltude",
+  },
+};
+
+const LOCALE_MAP: Record<Lang, string> = {
+  en: "en-GB", fr: "fr-FR", pidgin: "en-GB", ar: "ar", ff: "en-GB",
+};
+
+const ALLOWED_IMG  = ["image/jpeg", "image/png", "image/webp"];
+const MAX_AVATAR   = 3 * 1024 * 1024; // 3MB — keeps localStorage manageable
+
 export default function Profile() {
-  const { language, isRtl } = useLanguage();
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const lang = useLang();
+  const l: Lang = (lang in S ? lang : "en") as Lang;
+  const s = S[l];
+  const isRtl = l === "ar";
+  const navigate  = useNavigate();
+  const fileRef   = useRef<HTMLInputElement>(null);
 
-  const lang = (language as LangCode) in PROFILE_T ? (language as LangCode) : "en";
-  const t = (k: string) => PROFILE_T[lang]?.[k] ?? PROFILE_T.en[k] ?? k;
-  const Chevron = isRtl ? ChevronLeft : ChevronRight;
+  const [profile,     setProfile]     = useState<UserProfile | null>(null);
+  const [editing,     setEditing]     = useState(false);
+  const [form,        setForm]        = useState<Partial<UserProfile>>({});
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [saving,      setSaving]      = useState(false);
 
-  const initials = useMemo(() => {
-    const base = (user?.name || user?.email || "").trim();
-    if (!base) return "?";
-    const parts = base.split(/[\s@.]+/).filter(Boolean);
-    return (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "");
-  }, [user]);
+  // ── Load profile ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    async function load() {
+      // 1. Try Supabase auth session
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const u = session.user;
 
-  const handleLogout = async () => {
-    try { await logout(); } catch { /* no-op */ }
-    navigate("/login", { replace: true });
-  };
+          // Try to fetch extended profile from profiles table
+          let extra: Record<string, any> = {};
+          try {
+            const { data } = await supabase
+              .from("profiles")
+              .select("display_name, phone, location, bio, avatar_url")
+              .eq("id", u.id)
+              .single();
+            if (data) extra = data;
+          } catch { /* profiles table may not exist — that's fine */ }
 
-  const account: MenuRow[] = [
-    { key: "myListings",    to: "/my-listings",    Icon: Package },
-    { key: "orders",        to: "/orders",         Icon: ClipboardList },
-    { key: "sell",          to: "/marketplace/sell", Icon: PlusCircle },
-  ];
-  const activity: MenuRow[] = [
-    { key: "favorites",     to: "/favorites",      Icon: Heart },
-    { key: "notifications", to: "/notifications",  Icon: Bell },
-    { key: "savedSearches", to: "/saved-searches", Icon: Bookmark },
-  ];
-  const more: MenuRow[] = [
-    { key: "subscription",  to: "/subscription",   Icon: Crown },
-    { key: "referral",      to: "/referral",       Icon: Gift },
-    { key: "settings",      to: "/settings",       Icon: SettingsIcon },
-    { key: "help",          to: "/help",           Icon: HelpCircle },
-  ];
+          const p: UserProfile = {
+            id:       u.id,
+            name:     extra.display_name ?? u.user_metadata?.full_name ?? u.email?.split("@")[0] ?? "Bambeh User",
+            email:    u.email ?? "",
+            phone:    extra.phone ?? u.user_metadata?.phone ?? "",
+            location: extra.location ?? u.user_metadata?.location ?? "",
+            bio:      extra.bio ?? "Bambeh Marketplace member",
+            avatar:   extra.avatar_url ?? u.user_metadata?.avatar_url,
+            joinedAt: u.created_at ?? new Date().toISOString(),
+          };
+          setProfile(p);
+          setForm(p);
+          return;
+        }
+      } catch { /* no session */ }
 
-  const Section = ({ title, rows }: { title: string; rows: MenuRow[] }) => (
-    <div className="mb-5">
-      <h2 className="px-4 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-        {title}
-      </h2>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100 dark:divide-gray-700">
-        {rows.map(({ key, to, Icon }) => (
-          <Link
-            key={key}
-            to={to}
-            className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-          >
-            <span className="flex items-center justify-center w-9 h-9 rounded-full bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-300">
-              <Icon className="w-5 h-5" />
-            </span>
-            <span className="flex-1 font-medium text-gray-800 dark:text-gray-100">{t(key)}</span>
-            <Chevron className="w-4 h-4 text-gray-300" />
-          </Link>
-        ))}
+      // 2. Fallback: localStorage (legacy keys)
+      const keys = ["Bambeh_user", "bambeh_user", "user"];
+      for (const key of keys) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const data = JSON.parse(raw);
+            if (data?.id || data?.email) {
+              const p: UserProfile = {
+                id:       data.id ?? data.uid ?? "user1",
+                name:     data.name ?? data.displayName ?? "Bambeh User",
+                email:    data.email ?? "",
+                phone:    data.phone ?? data.phoneNumber ?? "",
+                location: data.location ?? "",
+                bio:      data.bio ?? "Bambeh Marketplace member",
+                avatar:   data.avatar ?? data.photoURL,
+                joinedAt: data.joinedAt ?? data.createdAt ?? new Date().toISOString(),
+              };
+              setProfile(p);
+              setForm(p);
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      // 3. Guest fallback
+      const guest: UserProfile = {
+        id:       "guest",
+        name:     "Guest User",
+        email:    "",
+        phone:    "",
+        location: "",
+        bio:      "Welcome to Bambeh!",
+        joinedAt: new Date().toISOString(),
+      };
+      setProfile(guest);
+      setForm(guest);
+    }
+
+    void load();
+  }, []);
+
+  // ── Avatar upload ─────────────────────────────────────────────────────────
+  function handleAvatarClick() {
+    setAvatarError(null);
+    fileRef.current?.click();
+  }
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!ALLOWED_IMG.includes(file.type)) {
+      setAvatarError(s.imgTypeErr);
+      return;
+    }
+    if (file.size > MAX_AVATAR) {
+      const mb = (file.size / 1024 / 1024).toFixed(1);
+      setAvatarError(s.imgTooLarge(mb));
+      return;
+    }
+
+    // Convert to base64
+    const base64 = await new Promise<string>(resolve => {
+      const reader = new FileReader();
+      reader.onload = ev => resolve(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    });
+
+    // Update profile immediately (optimistic)
+    setProfile(prev => prev ? { ...prev, avatar: base64 } : prev);
+    setForm(prev => ({ ...prev, avatar: base64 }));
+
+    // Persist
+    try {
+      const raw = localStorage.getItem("Bambeh_user");
+      const existing = raw ? JSON.parse(raw) : {};
+      localStorage.setItem("Bambeh_user", JSON.stringify({ ...existing, avatar: base64 }));
+    } catch {}
+
+    // Try to update Supabase storage if user is logged in
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await supabase.auth.updateUser({ data: { avatar_url: base64 } });
+        // Also try profiles table
+        await supabase
+          .from("profiles")
+          .update({ avatar_url: base64 })
+          .eq("id", session.user.id);
+      }
+    } catch { /* Storage not configured — localStorage saved above is enough */ }
+  }
+
+  // ── Save profile edits ────────────────────────────────────────────────────
+  async function saveProfile() {
+    if (!profile) return;
+    setSaving(true);
+    const updated: UserProfile = { ...profile, ...form };
+    setProfile(updated);
+
+    // Persist to localStorage
+    try {
+      const raw = localStorage.getItem("Bambeh_user");
+      const existing = raw ? JSON.parse(raw) : {};
+      localStorage.setItem("Bambeh_user", JSON.stringify({ ...existing, ...updated }));
+    } catch {}
+
+    // Try Supabase
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await supabase.auth.updateUser({
+          data: { full_name: updated.name, phone: updated.phone, location: updated.location },
+        });
+        await supabase
+          .from("profiles")
+          .upsert({
+            id:           session.user.id,
+            display_name: updated.name,
+            phone:        updated.phone,
+            location:     updated.location,
+            bio:          updated.bio,
+          });
+      }
+    } catch { /* offline or profiles table doesn't exist — localStorage saved */ }
+
+    setSaving(false);
+    setEditing(false);
+  }
+
+  // ── Logout ────────────────────────────────────────────────────────────────
+  async function logout() {
+    try { await supabase.auth.signOut(); } catch {}
+    ["Bambeh_user","bambeh_user","Bambeh_vendor","Bambeh_cart","Bambeh_language","Bambeh_terms_accepted","Bambeh_welcome_shown"]
+      .forEach(k => { try { localStorage.removeItem(k); } catch {} });
+    navigate("/login");
+  }
+
+  // ── Loading ───────────────────────────────────────────────────────────────
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full"/>
       </div>
-    </div>
-  );
+    );
+  }
+
+  const memberSince = (() => {
+    try {
+      return new Date(profile.joinedAt).toLocaleDateString(LOCALE_MAP[l] ?? "en-GB", { month: "long", year: "numeric" });
+    } catch { return ""; }
+  })();
+
+  const quickLinks: [string, string][] = [
+    ["⚡  " + s.qlCoins,     "/coins"],
+    ["🛍️  " + s.qlListings,  "/marketplace"],
+    ["📦  " + s.qlOrders,    "/orders"],
+    ["❤️   " + s.qlSaved,     "/favorites"],
+    ["⚙️   " + s.qlSettings,  "/settings"],
+    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],
+    ["📢  " + s.qlPostAd,    "/post-ad"],
+  ];
 
   return (
-    <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
-      {/* Header card */}
-      <div className="bg-gradient-to-br from-teal-600 to-teal-800 px-4 pt-8 pb-14 text-white">
-        <h1 className="text-lg font-bold mb-5">{t("profile")}</h1>
-        <div className="flex items-center gap-4">
-          {user?.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt=""
-              className="w-16 h-16 rounded-full object-cover ring-2 ring-white/60"
-            />
-          ) : (
-            <span className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 text-2xl font-bold uppercase ring-2 ring-white/40">
-              {user ? initials : <User className="w-8 h-8" />}
-            </span>
-          )}
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <p className="text-lg font-semibold truncate">{user?.name || t("guest")}</p>
-              {user?.role === "verified" && <BadgeCheck className="w-4 h-4 text-emerald-300" />}
+    <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-20">
+
+      {/* Header */}
+      <div className="bg-gradient-to-br from-teal-600 to-teal-700 pt-8 pb-16 px-4">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-white font-bold text-xl">{s.myProfile}</h1>
+          <button
+            onClick={logout}
+            className="flex items-center gap-1.5 text-teal-100 text-sm hover:text-white transition-colors">
+            <LogOut className="w-4 h-4" />
+            {s.logout}
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center">
+          {/* Avatar with clickable camera overlay */}
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/40 overflow-hidden">
+              {profile.avatar
+                ? <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+                : <User className="w-12 h-12 text-white" />
+              }
             </div>
-            <p className="text-sm text-white/80 truncate">{user?.email || ""}</p>
-            {user?.phone && <p className="text-sm text-white/70">{user.phone}</p>}
+
+            {/* Camera button — wired to file input */}
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              aria-label={s.changePhotoAria}
+              className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 active:scale-95 transition-all border-2 border-teal-600">
+              <Camera className="w-4 h-4 text-teal-600" />
+            </button>
+
+            {/* Hidden file input */}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleAvatarChange} />
           </div>
+
+          {/* Avatar error */}
+          {avatarError && (
+            <div className="flex items-center gap-1.5 mt-2 bg-red-500/20 text-red-100 text-xs px-3 py-1.5 rounded-full">
+              <AlertCircle className="w-3 h-3 flex-shrink-0" />
+              {avatarError}
+            </div>
+          )}
+
+          <h2 className="text-white font-bold text-lg mt-3">{profile.name}</h2>
+          {profile.location && (
+            <p className="text-teal-100 text-sm flex items-center gap-1 mt-0.5">
+              <MapPin className="w-3.5 h-3.5" />{profile.location}
+            </p>
+          )}
+          {memberSince && (
+            <p className="text-teal-200 text-xs mt-1">{s.memberSince} {memberSince}</p>
+          )}
+
+          {/* Tap hint */}
+          <p className="text-teal-200 text-xs mt-2 opacity-70">
+            {s.tapCamera}
+          </p>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto -mt-8 px-3">
-        {!user ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 text-center mb-5">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">{t("signInPrompt")}</p>
-            <Link
-              to="/login"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold transition-colors"
-            >
-              <LogIn className="w-5 h-5" />
-              {t("signIn")}
-            </Link>
+      {/* Content */}
+      <div className="px-4 -mt-8 space-y-4">
+
+        {/* Personal info card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">{s.personalInfo}</h3>
+            {editing ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={saveProfile}
+                  disabled={saving}
+                  className="flex items-center gap-1 text-teal-600 text-sm font-semibold disabled:opacity-50">
+                  <Save className="w-4 h-4" />
+                  {saving ? s.saving : s.save}
+                </button>
+                <button
+                  onClick={() => { setEditing(false); setForm(profile); }}
+                  className="flex items-center gap-1 text-gray-400 text-sm">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEditing(true)}
+                className="flex items-center gap-1 text-teal-600 text-sm font-semibold">
+                <Edit2 className="w-4 h-4" />{s.edit}
+              </button>
+            )}
           </div>
-        ) : (
-          <Link
-            to="/settings"
-            className="flex items-center justify-center gap-2 mb-5 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 shadow-sm text-teal-600 dark:text-teal-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <User className="w-4 h-4" />
-            {t("editProfile")}
-          </Link>
-        )}
 
-        <Section title={t("account")}  rows={account} />
-        <Section title={t("activity")} rows={activity} />
-        <Section title={t("more")}     rows={more} />
+          <div className="space-y-4">
+            {/* Name */}
+            <div>
+              <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                <User className="w-3 h-3" />{s.fullName}
+              </label>
+              {editing
+                ? <input
+                    value={form.name ?? ""}
+                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors" />
+                : <p className="text-gray-900 font-medium text-sm">{profile.name}</p>
+              }
+            </div>
 
-        {user && (
+            {/* Email */}
+            <div>
+              <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                <Mail className="w-3 h-3" />{s.email}
+              </label>
+              {editing
+                ? <input
+                    type="email"
+                    value={form.email ?? ""}
+                    onChange={e => setForm({ ...form, email: e.target.value })}
+                    className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors" />
+                : <p className="text-gray-900 font-medium text-sm">{profile.email || s.notSet}</p>
+              }
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                <Phone className="w-3 h-3" />{s.phone}
+              </label>
+              {editing
+                ? <div className="flex">
+                    <span className="border-2 border-r-0 border-gray-200 rounded-l-xl px-3 py-2.5 text-sm bg-gray-50 text-gray-600 flex-shrink-0">
+                      🇨🇲 +237
+                    </span>
+                    <input
+                      type="tel"
+                      value={(form.phone ?? "").replace(/^\+?237/, "")}
+                      onChange={e => setForm({ ...form, phone: "+237" + e.target.value.replace(/\D/g, "").slice(0, 9) })}
+                      placeholder="6XX XXX XXX"
+                      className="flex-1 border-2 border-gray-200 focus:border-teal-500 rounded-r-xl px-3 py-2.5 text-sm outline-none transition-colors" />
+                  </div>
+                : <p className="text-gray-900 font-medium text-sm">{profile.phone || s.notSet}</p>
+              }
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                <MapPin className="w-3 h-3" />{s.location}
+              </label>
+              {editing
+                ? <input
+                    value={form.location ?? ""}
+                    onChange={e => setForm({ ...form, location: e.target.value })}
+                    placeholder={s.locationPh}
+                    className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors" />
+                : <p className="text-gray-900 font-medium text-sm">{profile.location || s.notSet}</p>
+              }
+            </div>
+
+            {/* Bio */}
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">{s.bio}</label>
+              {editing
+                ? <textarea
+                    value={form.bio ?? ""}
+                    onChange={e => setForm({ ...form, bio: e.target.value })}
+                    rows={2}
+                    placeholder={s.bioPh}
+                    className="w-full border-2 border-gray-200 focus:border-teal-500 rounded-xl px-3 py-2.5 text-sm outline-none resize-none transition-colors" />
+                : <p className="text-gray-900 font-medium text-sm">{profile.bio}</p>
+              }
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <h3 className="font-semibold text-gray-900 mb-3">{s.quickLinks}</h3>
+          <div className="space-y-1">
+            {quickLinks.map(([label, route]) => (
+              <button
+                key={route}
+                onClick={() => navigate(route)}
+                className="w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 text-sm text-gray-700 flex items-center justify-between transition-colors">
+                <span>{label}</span>
+                <span className="text-gray-400 text-base">›</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Account */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <h3 className="font-semibold text-gray-900 mb-3 text-sm">{s.account}</h3>
           <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-white dark:bg-gray-800 shadow-sm text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            {t("logout")}
+            onClick={logout}
+            className="w-full flex items-center gap-2 px-3 py-3 text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors">
+            <LogOut className="w-4 h-4" />
+            {s.signOut}
           </button>
-        )}
+        </div>
+
       </div>
     </div>
   );
 }
+

@@ -2,6 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "@/types/auth";
+import { useLanguage } from "@/context/LanguageContext";
 import { useLanguage } from '@/App';
 
 interface SubscriptionBannerProps {
@@ -11,6 +12,7 @@ interface SubscriptionBannerProps {
 
 const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ user, onDismiss }) => {
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
   const { t, language } = useLanguage();
   const tier = user?.tier ?? "free";
   if (tier !== "free") return null;
