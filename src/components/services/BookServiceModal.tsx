@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/services/BookServiceModal.tsx — Bambeh Marketplace
  *
  * CHANGES IN THIS VERSION:
@@ -33,7 +33,7 @@ import { useState } from 'react';
 import { X, CalendarDays, Clock, MessageCircle, CheckCircle, Loader2, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import AfricanPhoneInput from '@/components/AfricanPhoneInput';
-import { sendBookingMessage } from '@/utils/sendBookingMessage';
+import { sendBookingMessage } from '@/utils/SendBookingMessage';
 
 interface Props {
   serviceId:    string;

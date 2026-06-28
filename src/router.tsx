@@ -1,23 +1,21 @@
-﻿import { createBrowserRouter } from "react-router-dom"
+import { createBrowserRouter } from "react-router-dom"
 import MainLayout from "@/components/layout/MainLayout"
 import AuthGate from "@/components/security/AuthGate"
-import HomePage from "@/pages/HomePage"
-import AdvancedPaymentGateway from "@/pages/PaymentGateway-ADVANCED"
-import AdminPanelAdvanced from "@/pages/AdminPanel-ADVANCED"
-import GPSTrackingAdvanced from "@/pages/GPSTracking-ADVANCED"
-import OrderManagement from "@/pages/OrderManagement"
-import VoiceAssistant from "@/pages/VoiceAssistant"
+import HomePage from "@\/pages/HomePage.tsx"
+import AdvancedPaymentGateway from "@\/pages/PaymentGateway-ADVANCED.tsx"
+import AdminPanelAdvanced from "@\/pages/AdminPanel-ADVANCED.tsx"
+import GPSTrackingAdvanced from "@\/pages/GPSTracking-ADVANCED.tsx"
+import OrderManagement from "@\/pages/OrderManagement.tsx"
+import VoiceAssistant from "@\/pages/VoiceAssistant.tsx"
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <AuthGate>
-        <MainLayout />
-      </AuthGate>
+      <MainLayout />
     ),
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <div>Home Loaded</div> },
       { path: "payments/advanced", element: <AdvancedPaymentGateway /> },
       { path: "admin/advanced", element: <AdminPanelAdvanced /> },
       { path: "tracking/gps", element: <GPSTrackingAdvanced /> },
@@ -26,3 +24,13 @@ export const router = createBrowserRouter([
     ]
   }
 ])
+
+
+
+export default router
+
+
+
+
+
+

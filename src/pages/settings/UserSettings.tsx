@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
  * * i18n: All settings strings are localized inline via the local S table,
@@ -262,7 +262,7 @@ const UserSettings: React.FC = () => {
   });
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.;
+    const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       setPhotoError(s.errImageType);

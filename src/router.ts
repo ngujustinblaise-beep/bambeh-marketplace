@@ -164,3 +164,5 @@ export default navigate;
 
 
 
+export { router };
+

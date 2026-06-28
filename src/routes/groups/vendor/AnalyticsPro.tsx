@@ -1,14 +1,14 @@
-﻿/**
+/**
  * src/pages/vendor/AnalyticsPro.tsx
- * Bambeh Marketplace � Vendor Analytics Pro Page
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Vendor Analytics Pro Page
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React from "react";
 import { TrendingUp, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import VendorAnalytics from "@/components/vendor/VendorAnalytics";
-import DashboardOverview from "@/pages/vendor/components/DashboardOverview";
+import DashboardOverview from "@\/pages/vendor.tsx/components/DashboardOverview";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -54,6 +54,7 @@ const AnalyticsPro: React.FC = () => {
 };
 
 export default AnalyticsPro;
+
 
 
 

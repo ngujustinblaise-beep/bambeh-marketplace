@@ -1,4 +1,4 @@
-﻿import "@/lib/net-interceptor";
+import "@/lib/net-interceptor";
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
@@ -65,6 +65,8 @@ import {
   useMonthlyFeedback,
   MonthlyFeedbackBanner
 } from "@/hooks/useMonthlyFeedback";
+
+import ForgotPassword from "@/pages/auth/ForgotPassword";
 
 // ─── 5. Internal Providers ────────────────────────────────────────────────────
 import AppProviders from "@/providers/AppProviders";
@@ -487,189 +489,189 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import VendorLayout from "@/components/layout/VendorLayout";
 
 // ─── 7. Eager Page Imports (first-screen only) ────────────────────────────────
-import LanguageSelection from "@/pages/LanguageSelection";
-import TermsAcceptance from "@/pages/TermsAcceptance";
-import AuthPage from "@/pages/auth/AuthPage";
+import LanguageSelection from "@\/pages/LanguageSelection.tsx";
+import TermsAcceptance from "@\/pages/TermsAcceptance.tsx";
+import AuthPage from "@\/pages/auth/AuthPage.tsx";
 
 // ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
-const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
-const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
+const ForgotPassword    = lazy(() => import("@\/pages/auth/ForgotPassword"));
+const ForgotCredentials = lazy(() => import("@\/pages/auth/ForgotCredentials"));
 
 // CORE MARKETPLACE
-const Home            = lazy(() => import("@/pages/Home"));
-const Jobs            = lazy(() => import("@/routes/groups/marketplace/Jobs"));
-const Marketplace     = lazy(() => import("@/routes/groups/marketplace/Marketplace"));
-const Services        = lazy(() => import("@/routes/groups/marketplace/Services"));
-const Rentals         = lazy(() => import("@/routes/groups/marketplace/Rentals"));
-const VehicleRentals  = lazy(() => import("@/routes/groups/marketplace/VehicleRentals"));
-const Exchange        = lazy(() => import("@/routes/groups/marketplace/Exchange"));
-const FlashDeals      = lazy(() => import("@/routes/groups/community/FlashDeals"));
-const GroupBuying     = lazy(() => import("@/pages/GroupBuying"));
-const BambehAIChatbot = lazy(() => import("@/routes/groups/community/BambehAIChatbot"));
+const Home            = lazy(() => import("@\/pages/Home.tsx"));
+const Jobs            = lazy(() => import("@\/pages/Jobs.tsx"));
+const Marketplace     = lazy(() => import("@\/pages/Marketplace.tsx"));
+const Services        = lazy(() => import("@\/pages/Services.tsx"));
+const Rentals         = lazy(() => import("@\/pages/Rentals.tsx"));
+const VehicleRentals  = lazy(() => import("@\/pages/VehicleRentals.tsx"));
+const Exchange        = lazy(() => import("@\/pages/Exchange.tsx"));
+const FlashDeals      = lazy(() => import("@\/pages/FlashDeals.tsx"));
+const GroupBuying     = lazy(() => import("@\/pages/GroupBuying.tsx"));
+const BambehAIChatbot = lazy(() => import("@\/pages/BambehAIChatbot.tsx"));
 
 // DETAIL PAGES
-const JobDetails              = lazy(() => import("@/pages/JobDetails"));
-const MarketplaceItemDetails  = lazy(() => import("@/routes/groups/marketplace/MarketplaceItemDetails"));
-const ServiceDetails          = lazy(() => import("@/pages/ServiceDetails"));
-const RentalDetails           = lazy(() => import("@/pages/RentalDetails"));
-const VehicleDetails          = lazy(() => import("@/routes/groups/marketplace/VehicleDetails"));
-const ExchangeItemDetails     = lazy(() => import("@/routes/groups/marketplace/ExchangeItemDetails"));
-const ExchangeItemPost        = lazy(() => import("@/routes/groups/marketplace/ExchangeItemPost"));
-const ExchangeOfferPage       = lazy(() => import("@/routes/groups/marketplace/ExchangeOfferPage"));
+const JobDetails              = lazy(() => import("@\/pages/JobDetails.tsx"));
+const MarketplaceItemDetails  = lazy(() => import("@\/pages/MarketplaceItemDetails.tsx"));
+const ServiceDetails          = lazy(() => import("@\/pages/ServiceDetails.tsx"));
+const RentalDetails           = lazy(() => import("@\/pages/RentalDetails.tsx"));
+const VehicleDetails          = lazy(() => import("@\/pages/VehicleDetails.tsx"));
+const ExchangeItemDetails     = lazy(() => import("@\/pages/ExchangeItemDetails.tsx"));
+const ExchangeItemPost        = lazy(() => import("@\/pages/ExchangeItemPost.tsx"));
+const ExchangeOfferPage       = lazy(() => import("@\/pages/ExchangeOfferPage.tsx"));
 
 // USER PAGES
-const Profile       = lazy(() => import("@/pages/Profile"));
-const Cart          = lazy(() => import("@/pages/Cart"));
-const Favorites     = lazy(() => import("@/pages/Favorites"));
-const Notifications = lazy(() => import("@/pages/Notifications"));
-const AlertsPage    = lazy(() => import("@/pages/AlertsPage"));
-const Orders        = lazy(() => import("@/pages/Orders"));
-const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
-const MyListings    = lazy(() => import("@/pages/MyListings"));
+const Profile       = lazy(() => import("@\/pages/Profile.tsx"));
+const Cart          = lazy(() => import("@\/pages/Cart.tsx"));
+const Favorites     = lazy(() => import("@\/pages/Favorites.tsx"));
+const Notifications = lazy(() => import("@\/pages/Notifications.tsx"));
+const AlertsPage    = lazy(() => import("@\/pages/AlertsPage.tsx"));
+const Orders        = lazy(() => import("@\/pages/Orders.tsx"));
+const OrderTracking = lazy(() => import("@\/pages/OrderTracking.tsx"));
+const MyListings    = lazy(() => import("@\/pages/MyListings.tsx"));
 
 // SETTINGS
-const UserSettings = lazy(() => import("@/pages/settings/UserSettings"));
+const UserSettings = lazy(() => import("@\/pages/settings/UserSettings"));
 
 // POSTING FORMS
-const PostJobPage              = lazy(() => import("@/pages/PostJobPage"));
-const PostMarketplaceItemPage  = lazy(() => import("@/pages/PostMarketplaceItemPage"));
-const OfferService             = lazy(() => import("@/pages/OfferService"));
-const ListProperty             = lazy(() => import("@/pages/ListProperty"));
-const SellVehicle              = lazy(() => import("@/pages/SellVehicle"));
-const PostAd                   = lazy(() => import("@/pages/PostAd"));
+const PostJobPage              = lazy(() => import("@\/pages/PostJobPage.tsx"));
+const PostMarketplaceItemPage  = lazy(() => import("@\/pages/PostMarketplaceItemPage.tsx"));
+const OfferService             = lazy(() => import("@\/pages/OfferService.tsx"));
+const ListProperty             = lazy(() => import("@\/pages/ListProperty.tsx"));
+const SellVehicle              = lazy(() => import("@\/pages/SellVehicle.tsx"));
+const PostAd                   = lazy(() => import("@\/pages/PostAd.tsx"));
 
 // LISTING EDIT FORMS
-const EditMarketplaceListing = lazy(() => import("@/pages/EditMarketplaceListing"));
-const EditJobListing         = lazy(() => import("@/pages/EditJobListing"));
-const EditServiceListing     = lazy(() => import("@/pages/EditServiceListing"));
-const MarketplaceDrafts      = lazy(() => import("@/routes/groups/marketplace/MarketplaceDrafts"));
+const EditMarketplaceListing = lazy(() => import("@\/pages/EditMarketplaceListing.tsx"));
+const EditJobListing         = lazy(() => import("@\/pages/EditJobListing.tsx"));
+const EditServiceListing     = lazy(() => import("@\/pages/EditServiceListing.tsx"));
+const MarketplaceDrafts      = lazy(() => import("@\/pages/MarketplaceDrafts.tsx"));
 
 // CATEGORY PAGES
-const MarketplaceCategory = lazy(() => import("@/routes/groups/marketplace/MarketplaceCategory"));
-const JobsCategory        = lazy(() => import("@/routes/groups/marketplace/JobsCategory"));
+const MarketplaceCategory = lazy(() => import("@\/pages/MarketplaceCategory.tsx"));
+const JobsCategory        = lazy(() => import("@\/pages/JobsCategory.tsx"));
 
 // SUBSCRIPTION / ZERM
-const SubscriptionPlans = lazy(() => import("@/pages/SubscriptionPlans"));
-const CoinsBuyPage      = lazy(() => import("@/routes/groups/payments/CoinsBuyPage"));
-const CoinsPage         = lazy(() => import("@/routes/groups/payments/CoinsPage"));
-const CoinsHistory      = lazy(() => import("@/routes/groups/payments/CoinsHistory"));
-const CoinsTransfer     = lazy(() => import("@/routes/groups/payments/CoinsTransfer"));
+const SubscriptionPlans = lazy(() => import("@\/pages/SubscriptionPlans.tsx"));
+const CoinsBuyPage      = lazy(() => import("@\/pages/CoinsBuyPage.tsx"));
+const CoinsPage         = lazy(() => import("@\/pages/CoinsPage.tsx"));
+const CoinsHistory      = lazy(() => import("@\/pages/CoinsHistory.tsx"));
+const CoinsTransfer     = lazy(() => import("@\/pages/CoinsTransfer.tsx"));
 
 // GENERAL PAGES
-const About           = lazy(() => import("@/pages/About"));
-const PrivacyPolicy   = lazy(() => import("@/pages/PrivacyPolicy"));
-const TermsOfService  = lazy(() => import("@/pages/TermsOfService"));
-const DonatePremium   = lazy(() => import("@/pages/DonatePremium"));
-const ReferralProgram = lazy(() => import("@/pages/ReferralProgram"));
-const Chat            = lazy(() => import("@/pages/Chat"));
-const SearchResults   = lazy(() => import("@/pages/SearchResults"));
-const SavedSearches   = lazy(() => import("@/pages/SavedSearches"));
-const ReportIssuePage = lazy(() => import("@/pages/ReportIssuePage"));
+const About           = lazy(() => import("@\/pages/About.tsx"));
+const PrivacyPolicy   = lazy(() => import("@\/pages/PrivacyPolicy.tsx"));
+const TermsOfService  = lazy(() => import("@\/pages/TermsOfService.tsx"));
+const DonatePremium   = lazy(() => import("@\/pages/DonatePremium.tsx"));
+const ReferralProgram = lazy(() => import("@\/pages/ReferralProgram.tsx"));
+const Chat            = lazy(() => import("@\/pages/Chat.tsx"));
+const SearchResults   = lazy(() => import("@\/pages/SearchResults.tsx"));
+const SavedSearches   = lazy(() => import("@\/pages/SavedSearches.tsx"));
+const ReportIssuePage = lazy(() => import("@\/pages/ReportIssuePage.tsx"));
 
 // 404
-const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const NotFoundPage = lazy(() => import("@\/pages/NotFoundPage.tsx"));
 
 // VENDOR PAGES
-const VendorPortal                    = lazy(() => import("@/routes/groups/vendor/VendorPortal"));
-const VendorHome                      = lazy(() => import("@/routes/groups/vendor/VendorHome"));
-const VendorSignIn                    = lazy(() => import("@/routes/groups/vendor/VendorSignIn"));
-const VendorRegistration              = lazy(() => import("@/components/vendor/VendorRegistration"));
-const VendorAuthPage                  = lazy(() => import("@/routes/groups/vendor/VendorAuthPage"));
-const VendorSubscriptionPlans         = lazy(() => import("@/routes/groups/vendor/VendorSubscriptionPlans"));
-const VendorSubscriptionPlansExclusive = lazy(() => import("@/routes/groups/vendor/VendorSubscriptionPlansExclusive"));
-const VendorSecureDashboard           = lazy(() => import("@/routes/groups/vendor/VendorSecureDashboard"));
-const VendorAnalyticsEnhanced         = lazy(() => import("@/routes/groups/vendor/VendorAnalyticsEnhanced"));
-const VendorManageListings            = lazy(() => import("@/routes/groups/vendor/VendorManageListings"));
-const VendorMessagesPage              = lazy(() => import("@/routes/groups/vendor/VendorMessagesPage"));
-const VendorSettingsComplete          = lazy(() => import("@/routes/groups/vendor/VendorSettingsComplete"));
-const VendorProfile                   = lazy(() => import("@/components/vendor/VendorProfile"));
-const VendorFilter                    = lazy(() => import("@/routes/groups/vendor/VendorFilter"));
-const VendorCustomers                 = lazy(() => import("@/routes/groups/vendor/VendorCustomers"));
-const VendorRecommendations           = lazy(() => import("@/routes/groups/vendor/VendorRecommendations"));
-const VendorVerification              = lazy(() => import("@/components/vendor/VendorVerification"));
-const VendorNotifications             = lazy(() => import("@/routes/groups/vendor/VendorNotifications"));
-const VendorPremiumToolsEnhanced      = lazy(() => import("@/routes/groups/vendor/VendorPremiumToolsEnhanced"));
-const VendorSubscriptionPayment       = lazy(() => import("@/routes/groups/vendor/VendorSubscriptionPayment"));
-const VendorOrders                    = lazy(() => import("@/routes/groups/vendor/VendorOrders"));
-const VendorReviews                   = lazy(() => import("@/routes/groups/vendor/VendorReviews"));
-const VendorPayments                  = lazy(() => import("@/routes/groups/vendor/VendorPayments"));
-const VendorWithdraw                  = lazy(() => import("@/routes/groups/vendor/VendorWithdraw"));
-const VendorProducts                  = lazy(() => import("@/routes/groups/vendor/VendorProducts"));
-const VendorOnboardingChecklist       = lazy(() => import("@/routes/groups/vendor/VendorOnboardingChecklist"));
-const VendorSettingsAccountProfile    = lazy(() => import("@/pages/vendor/settings/VendorSettingsAccountProfile"));
-const VendorSettingsStore             = lazy(() => import("@/pages/vendor/settings/VendorSettingsStore"));
-const VendorSettingsNotification      = lazy(() => import("@/pages/vendor/settings/VendorSettingsNotification"));
-const VendorSettingsPayment           = lazy(() => import("@/pages/vendor/settings/VendorSettingsPayment"));
-const VendorSettingsSecurity          = lazy(() => import("@/pages/vendor/settings/VendorSettingsSecurity"));
-const VendorSettingsShipping          = lazy(() => import("@/pages/vendor/settings/VendorSettingsShipping"));
-const VendorSettingsBusinessHours     = lazy(() => import("@/pages/vendor/settings/VendorSettingsBusinessHours"));
-const VendorSettingsLanguage          = lazy(() => import("@/pages/vendor/settings/VendorSettingsLanguage"));
-const AnalyticsPro                    = lazy(() => import("@/pages/vendor/premium/AnalyticsPro"));
-const FeaturedListings                = lazy(() => import("@/pages/vendor/premium/FeaturedListings"));
-const BulkUpload                      = lazy(() => import("@/pages/vendor/premium/BulkUpload"));
-const PrioritySupport                 = lazy(() => import("@/pages/vendor/premium/PrioritySupport"));
-const VerifiedSeller                  = lazy(() => import("@/pages/vendor/premium/VerifiedSeller"));
-const AutoMessaging                   = lazy(() => import("@/pages/vendor/premium/AutoMessaging"));
-const VendorPublicProfile             = lazy(() => import("@/routes/groups/vendor/VendorPublicProfile"));
+const VendorPortal                    = lazy(() => import("@\/pages/vendor/VendorPortal"));
+const VendorHome                      = lazy(() => import("@\/pages/vendor/VendorHome"));
+const VendorSignIn                    = lazy(() => import("@\/pages/vendor/VendorSignIn"));
+const VendorRegistration              = lazy(() => import("@\/pages/vendor/VendorRegistration"));
+const VendorAuthPage                  = lazy(() => import("@\/pages/vendor/VendorAuthPage"));
+const VendorSubscriptionPlans         = lazy(() => import("@\/pages/vendor/VendorSubscriptionPlans"));
+const VendorSubscriptionPlansExclusive = lazy(() => import("@\/pages/vendor/VendorSubscriptionPlansExclusive"));
+const VendorSecureDashboard           = lazy(() => import("@\/pages/vendor/VendorSecureDashboard"));
+const VendorAnalyticsEnhanced         = lazy(() => import("@\/pages/vendor/VendorAnalyticsEnhanced"));
+const VendorManageListings            = lazy(() => import("@\/pages/vendor/VendorManageListings"));
+const VendorMessagesPage              = lazy(() => import("@\/pages/vendor/VendorMessagesPage"));
+const VendorSettingsComplete          = lazy(() => import("@\/pages/vendor/VendorSettingsComplete"));
+const VendorProfile                   = lazy(() => import("@\/pages/vendor/VendorProfile"));
+const VendorFilter                    = lazy(() => import("@\/pages/vendor/VendorFilter"));
+const VendorCustomers                 = lazy(() => import("@\/pages/vendor/VendorCustomers"));
+const VendorRecommendations           = lazy(() => import("@\/pages/vendor/VendorRecommendations"));
+const VendorVerification              = lazy(() => import("@\/pages/vendor/VendorVerification"));
+const VendorNotifications             = lazy(() => import("@\/pages/vendor/VendorNotifications"));
+const VendorPremiumToolsEnhanced      = lazy(() => import("@\/pages/vendor/VendorPremiumToolsEnhanced"));
+const VendorSubscriptionPayment       = lazy(() => import("@\/pages/vendor/VendorSubscriptionPayment"));
+const VendorOrders                    = lazy(() => import("@\/pages/vendor/VendorOrders"));
+const VendorReviews                   = lazy(() => import("@\/pages/vendor/VendorReviews"));
+const VendorPayments                  = lazy(() => import("@\/pages/vendor/VendorPayments"));
+const VendorWithdraw                  = lazy(() => import("@\/pages/vendor/VendorWithdraw"));
+const VendorProducts                  = lazy(() => import("@\/pages/vendor/VendorProducts"));
+const VendorOnboardingChecklist       = lazy(() => import("@\/pages/vendor/VendorOnboardingChecklist"));
+const VendorSettingsAccountProfile    = lazy(() => import("@\/pages/vendor/settings/VendorSettingsAccountProfile"));
+const VendorSettingsStore             = lazy(() => import("@\/pages/vendor/settings/VendorSettingsStore"));
+const VendorSettingsNotification      = lazy(() => import("@\/pages/vendor/settings/VendorSettingsNotification"));
+const VendorSettingsPayment           = lazy(() => import("@\/pages/vendor/settings/VendorSettingsPayment"));
+const VendorSettingsSecurity          = lazy(() => import("@\/pages/vendor/settings/VendorSettingsSecurity"));
+const VendorSettingsShipping          = lazy(() => import("@\/pages/vendor/settings/VendorSettingsShipping"));
+const VendorSettingsBusinessHours     = lazy(() => import("@\/pages/vendor/settings/VendorSettingsBusinessHours"));
+const VendorSettingsLanguage          = lazy(() => import("@\/pages/vendor/settings/VendorSettingsLanguage"));
+const AnalyticsPro                    = lazy(() => import("@\/pages/vendor/premium/AnalyticsPro"));
+const FeaturedListings                = lazy(() => import("@\/pages/vendor/premium/FeaturedListings"));
+const BulkUpload                      = lazy(() => import("@\/pages/vendor/premium/BulkUpload"));
+const PrioritySupport                 = lazy(() => import("@\/pages/vendor/premium/PrioritySupport"));
+const VerifiedSeller                  = lazy(() => import("@\/pages/vendor/premium/VerifiedSeller"));
+const AutoMessaging                   = lazy(() => import("@\/pages/vendor/premium/AutoMessaging"));
+const VendorPublicProfile             = lazy(() => import("@\/pages/vendor/VendorPublicProfile"));
 
 // ADMIN PAGES
-const AdminLogin                  = lazy(() => import("@/routes/groups/admin/AdminLogin"));
-const AdminDashboard              = lazy(() => import("@/routes/groups/admin/AdminDashboard"));
-const CreateAdminPage             = lazy(() => import("@/routes/groups/admin/CreateAdminPage"));
-const AdminInbox                  = lazy(() => import("@/admin/AdminInbox"));
-const AdminSettings               = lazy(() => import("@/routes/groups/admin/AdminSettings"));
-const AdminDisputeResolution      = lazy(() => import("@/routes/groups/admin/AdminDisputeResolution"));
-const AdminLiveChat               = lazy(() => import("@/routes/groups/admin/AdminLiveChat"));
-const AdminUserManagement         = lazy(() => import("@/routes/groups/admin/AdminUserManagement"));
-const AdminResolveDispute         = lazy(() => import("@/routes/groups/admin/AdminResolveDispute"));
-const AdminUserAccountManagement  = lazy(() => import("@/routes/groups/admin/AdminUserAccountManagement"));
+const AdminLogin                  = lazy(() => import("@\/pages/admin/AdminLogin"));
+const AdminDashboard              = lazy(() => import("@\/pages/admin/AdminDashboard"));
+const CreateAdminPage             = lazy(() => import("@\/pages/admin/CreateAdminPage"));
+const AdminInbox                  = lazy(() => import("@\/pages/admin/AdminInbox"));
+const AdminSettings               = lazy(() => import("@\/pages/admin/AdminSettings"));
+const AdminDisputeResolution      = lazy(() => import("@\/pages/admin/AdminDisputeResolution"));
+const AdminLiveChat               = lazy(() => import("@\/pages/admin/AdminLiveChat"));
+const AdminUserManagement         = lazy(() => import("@\/pages/admin/AdminUserManagement"));
+const AdminResolveDispute         = lazy(() => import("@\/pages/admin/AdminResolveDispute"));
+const AdminUserAccountManagement  = lazy(() => import("@\/pages/admin/AdminUserAccountManagement"));
 
 // HELP CENTER
-const Help                    = lazy(() => import("@/pages/help/Help"));
-const HelpGuides              = lazy(() => import("@/pages/help/HelpGuides"));
-const VideoTutorials          = lazy(() => import("@/pages/help/VideoTutorials"));
-const GettingStarted          = lazy(() => import("@/pages/help/GettingStarted"));
-const CreatingAccount         = lazy(() => import("@/pages/help/CreatingAccount"));
-const ProfileSetup            = lazy(() => import("@/pages/help/ProfileSetup"));
-const UnderstandingZermCoins  = lazy(() => import("@/pages/help/UnderstandingZermCoins"));
-const BuyingSelling           = lazy(() => import("@/pages/help/BuyingSelling"));
-const HowToPostAd             = lazy(() => import("@/pages/help/HowToPostAd"));
-const SettingRightPrice       = lazy(() => import("@/pages/help/SettingRightPrice"));
-const PaymentMethods          = lazy(() => import("@/pages/help/PaymentMethods"));
-const SafetySecurity          = lazy(() => import("@/pages/help/SafetySecurity"));
-const AvoidingScams           = lazy(() => import("@/pages/help/AvoidingScams"));
-const MeetingSafely           = lazy(() => import("@/pages/help/MeetingSafely"));
-const ReportingIssues         = lazy(() => import("@/pages/help/ReportingIssues"));
-const ContactSupport          = lazy(() => import("@/pages/help/ContactSupport"));
+const Help                    = lazy(() => import("@\/pages/help/Help"));
+const HelpGuides              = lazy(() => import("@\/pages/help/HelpGuides"));
+const VideoTutorials          = lazy(() => import("@\/pages/help/VideoTutorials"));
+const GettingStarted          = lazy(() => import("@\/pages/help/GettingStarted"));
+const CreatingAccount         = lazy(() => import("@\/pages/help/CreatingAccount"));
+const ProfileSetup            = lazy(() => import("@\/pages/help/ProfileSetup"));
+const UnderstandingZermCoins  = lazy(() => import("@\/pages/help/UnderstandingZermCoins"));
+const BuyingSelling           = lazy(() => import("@\/pages/help/BuyingSelling"));
+const HowToPostAd             = lazy(() => import("@\/pages/help/HowToPostAd"));
+const SettingRightPrice       = lazy(() => import("@\/pages/help/SettingRightPrice"));
+const PaymentMethods          = lazy(() => import("@\/pages/help/PaymentMethods"));
+const SafetySecurity          = lazy(() => import("@\/pages/help/SafetySecurity"));
+const AvoidingScams           = lazy(() => import("@\/pages/help/AvoidingScams"));
+const MeetingSafely           = lazy(() => import("@\/pages/help/MeetingSafely"));
+const ReportingIssues         = lazy(() => import("@\/pages/help/ReportingIssues"));
+const ContactSupport          = lazy(() => import("@\/pages/help/ContactSupport"));
 
 // BAMBEH FEATURES
-const EscrowPage          = lazy(() => import("@/routes/groups/community/EscrowPage"));
-const SellerRatingPage    = lazy(() => import("@/pages/SellerRatingPage"));
-const OfflineModePage     = lazy(() => import("@/pages/OfflineModePage"));
-const MeetSafelyPage      = lazy(() => import("@/routes/groups/community/MeetSafelyPage"));
-const CommunityPage       = lazy(() => import("@/routes/groups/community/CommunityPage"));
-const CommunityDetail     = lazy(() => import("@/routes/groups/community/CommunityDetail"));
-const TontinePage         = lazy(() => import("@/routes/groups/community/TontinePage"));
-const TontineDetail       = lazy(() => import("@/routes/groups/community/TontineDetail"));
-const TontineCreate       = lazy(() => import("@/routes/groups/community/TontineCreate"));
-const FarmFreshPage       = lazy(() => import("@/routes/groups/community/FarmFreshPage"));
-const FarmFreshDetail     = lazy(() => import("@/routes/groups/community/FarmFreshDetail"));
-const FarmFreshOrderPage  = lazy(() => import("@/routes/groups/community/FarmFreshOrderPage"));
-const FarmFreshSellerPage = lazy(() => import("@/routes/groups/community/FarmFreshSellerPage"));
-const MakeOfferPage       = lazy(() => import("@/pages/MakeOfferPage"));
-const ComparisonTool      = lazy(() => import("@/pages/ComparisonTool"));
-const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
-const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
-const BambehWelcomeScreen = lazy(() => import("@/pages/BambehWelcomeScreen"));
-const HeavyLiftSpotlight  = lazy(() => import("@/pages/HeavyLiftSpotlight"));
+const EscrowPage          = lazy(() => import("@\/pages/EscrowPage.tsx"));
+const SellerRatingPage    = lazy(() => import("@\/pages/SellerRatingPage.tsx"));
+const OfflineModePage     = lazy(() => import("@\/pages/OfflineModePage.tsx"));
+const MeetSafelyPage      = lazy(() => import("@\/pages/MeetSafelyPage.tsx"));
+const CommunityPage       = lazy(() => import("@\/pages/CommunityPage.tsx"));
+const CommunityDetail     = lazy(() => import("@\/pages/CommunityDetail.tsx"));
+const TontinePage         = lazy(() => import("@\/pages/TontinePage.tsx"));
+const TontineDetail       = lazy(() => import("@\/pages/TontineDetail.tsx"));
+const TontineCreate       = lazy(() => import("@\/pages/TontineCreate.tsx"));
+const FarmFreshPage       = lazy(() => import("@\/pages/FarmFreshPage.tsx"));
+const FarmFreshDetail     = lazy(() => import("@\/pages/FarmFreshDetail.tsx"));
+const FarmFreshOrderPage  = lazy(() => import("@\/pages/FarmFreshOrderPage.tsx"));
+const FarmFreshSellerPage = lazy(() => import("@\/pages/FarmFreshSellerPage.tsx"));
+const MakeOfferPage       = lazy(() => import("@\/pages/MakeOfferPage.tsx"));
+const ComparisonTool      = lazy(() => import("@\/pages/ComparisonTool.tsx"));
+const SplashScreenPage    = lazy(() => import("@\/pages/SplashScreen.tsx"));
+const GroupBuyingDetail   = lazy(() => import("@\/pages/GroupBuyingDetail.tsx"));
+const BambehWelcomeScreen = lazy(() => import("@\/pages/BambehWelcomeScreen.tsx"));
+const HeavyLiftSpotlight  = lazy(() => import("@\/pages/HeavyLiftSpotlight.tsx"));
 
 // PAYMENT (CamPay via Bambeh Payment Server)
-const PaymentCheckout = lazy(() => import("@/routes/groups/payments/PaymentCheckout"));
-const PaymentCallback = lazy(() => import("@/routes/groups/payments/PaymentCallback"));
-const PaymentPending  = lazy(() => import("@/pages/PaymentPending"));
-const PaymentSuccess  = lazy(() => import("@/routes/groups/payments/PaymentSuccess"));
-const PaymentFailed   = lazy(() => import("@/routes/groups/payments/PaymentFailed"));
+const PaymentCheckout = lazy(() => import("@\/pages/payment/PaymentCheckout"));
+const PaymentCallback = lazy(() => import("@\/pages/payment/PaymentCallback"));
+const PaymentPending  = lazy(() => import("@\/pages/payment/PaymentPending"));
+const PaymentSuccess  = lazy(() => import("@\/pages/payment/PaymentSuccess"));
+const PaymentFailed   = lazy(() => import("@\/pages/payment/PaymentFailed"));
 
 // ─── 9. Inline Components ─────────────────────────────────────────────────────
 
@@ -1729,4 +1731,5 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
 
