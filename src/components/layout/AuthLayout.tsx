@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AuthLayout.tsx
  * FILE LOCATION: src/components/layout/AuthLayout.tsx
  *
@@ -30,7 +30,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Branding strip */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-600 py-3 px-4 text-center shadow-md">
         <span className="text-white font-bold text-lg tracking-wide">
-          {t("auth.brandingStrip")}
+          {"BAMBEH - WE CARRY ALL LOADS"}
         </span>
       </div>
 
@@ -41,7 +41,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 
       {/* Footer */}
       <div className="py-4 text-center text-xs text-gray-500 border-t border-gray-200 bg-white">
-        &copy; 2026 Bambeh Marketplace &middot; {t("footer.transactionFeeBadge")}
+        &copy; 2026 Bambeh Marketplace - The Pulse of African Commerce
       </div>
     </div>
   );

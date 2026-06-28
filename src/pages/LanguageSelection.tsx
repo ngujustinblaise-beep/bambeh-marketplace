@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════════
  * LANGUAGE SELECTOR — ONBOARDING LANDING
  * FILE: src/pages/LanguageSelector.tsx
@@ -17,7 +17,7 @@ interface LangOption {
   native: string;
 }
 
-const STORAGE_KEY = "bambeh_user_lang";
+const STORAGE_KEY = "Bambeh_language";
 
 const LANGUAGES: LangOption[] = [
   { code: "en", label: "English", native: "English" },
@@ -75,7 +75,7 @@ export default function LanguageSelector() {
     window.dispatchEvent(
       new CustomEvent("bambeh:langchange", { detail: { language: selected } })
     );
-    navigate("/terms");
+    navigate("/terms-acceptance");
   };
 
   return (
