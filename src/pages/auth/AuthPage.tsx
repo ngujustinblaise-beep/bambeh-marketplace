@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ShieldCheck, Fingerprint, LifeBuoy } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ const translations = {
     },
     buttons: {
       signIn: "Sign in",
+      biometric: "Sign in with biometrics",
       create: "Create account",
       forgotPassword: "Forgot password",
       forgotCredentials: "Forgot credentials",
@@ -33,6 +34,7 @@ const translations = {
     },
     buttons: {
       signIn: "Se connecter",
+      biometric: "Se connecter avec la biométrie",
       create: "Créer un compte",
       forgotPassword: "Mot de passe oublié",
       forgotCredentials: "Identifiants oubliés",
@@ -53,6 +55,7 @@ const translations = {
     },
     buttons: {
       signIn: "تسجيل الدخول",
+      biometric: "تسجيل الدخول بالبصمة",
       create: "إنشاء حساب",
       forgotPassword: "نسيت كلمة المرور",
       forgotCredentials: "نسيت بيانات الدخول",
@@ -73,6 +76,7 @@ const translations = {
     },
     buttons: {
       signIn: "Seŋto",
+      biometric: "Seŋto e biometrik",
       create: "Sos hakat",
       forgotPassword: "Mi jokkii leñol",
       forgotCredentials: "Mi jokkii ɗum",
@@ -93,6 +97,7 @@ const translations = {
     },
     buttons: {
       signIn: "Sign in",
+      biometric: "Sign in with biometrics",
       create: "Create account",
       forgotPassword: "Forget password",
       forgotCredentials: "Forget details",
@@ -167,29 +172,37 @@ export default function AuthPage() {
 
           <div className="mt-8 space-y-3">
             <Link
-              to="/auth/login"
+              to="/signin"
               className="block text-center rounded-xl bg-teal-500 hover:bg-teal-600 px-5 py-3 font-semibold transition-colors text-white"
             >
               {t.buttons.signIn}
             </Link>
 
             <Link
-              to="/auth/register"
-              className="block text-center rounded-xl bg-white/10 hover:bg-white/15 px-5 py-3 font-semibold transition-colors border border-white/10 text-gray-900"
+              to="/biometric-login"
+              className="flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-teal-50 px-5 py-3 font-semibold transition-colors border border-teal-200 text-teal-700"
+            >
+              <Fingerprint className="h-5 w-5" />
+              {t.buttons.biometric}
+            </Link>
+
+            <Link
+              to="/register"
+              className="block text-center rounded-xl bg-gray-900/5 hover:bg-gray-900/10 px-5 py-3 font-semibold transition-colors border border-gray-200 text-gray-900"
             >
               {t.buttons.create}
             </Link>
 
             <div className="flex gap-3">
               <Link
-                to="/auth/forgot-password"
-                className="flex-1 text-center rounded-xl bg-white/5 hover:bg-white/10 px-4 py-2 font-semibold transition-colors border border-white/10 text-gray-900"
+                to="/forgot-password"
+                className="flex-1 text-center rounded-xl bg-gray-900/5 hover:bg-gray-900/10 px-4 py-2 font-semibold transition-colors border border-gray-200 text-gray-900"
               >
                 {t.buttons.forgotPassword}
               </Link>
               <Link
-                to="/auth/forgot-credentials"
-                className="flex-1 text-center rounded-xl bg-white/5 hover:bg-white/10 px-4 py-2 font-semibold transition-colors border border-white/10 text-gray-900"
+                to="/forgot-credentials"
+                className="flex-1 text-center rounded-xl bg-gray-900/5 hover:bg-gray-900/10 px-4 py-2 font-semibold transition-colors border border-gray-200 text-gray-900"
               >
                 {t.buttons.forgotCredentials}
               </Link>
