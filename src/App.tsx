@@ -493,6 +493,8 @@ import AuthPage from "@/pages/auth/AuthPage";
 
 // ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
+const LoginPage = lazy(() => import("@/pages/auth/Login"));
+const RegisterPage = lazy(() => import("@/pages/auth/Register"));
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
 
@@ -1033,13 +1035,13 @@ export default function App() {
                       <Routes>
 
                         {/* ── 1. ONBOARDING ──────────────────────────────────────── */}
-                        <Route path="/welcome" element={<WelcomeWrapper />} />
                         <Route path="/language" element={<LanguageSelection />} />
                         <Route path="/terms-acceptance" element={<TermsAcceptance />} />
-
+                        <Route path="/welcome" element={<WelcomeWrapper />} />
+                         
                         {/* ── 2. AUTH ─────────────────────────────────────────────── */}
                         <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
-                        <Route path="/register" element={<Navigate to="/login" replace />} />
+                        <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}

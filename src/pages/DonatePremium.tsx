@@ -1,4 +1,20 @@
-﻿import { useMemo, useState } from 'react';
+﻿/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * DONATION PAGE - BAMBEH
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Supports:
+ * - MTN / Orange Mobile Money via CamPay
+ * - Card payments for foreign users when enabled on the payment server
+ * - Minimum donation: 500 XAF
+ * - Quick amounts + custom amount
+ * - Cameroon phone default (+237)
+ *
+ * © 2025 Bambeh. Support Our Mission
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+import { useMemo, useState } from 'react';
 import {
   Heart,
   CreditCard,
@@ -300,4 +316,3 @@ export default function DonatePremium() {
     </div>
   );
 }
-

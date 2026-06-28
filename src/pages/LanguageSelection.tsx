@@ -1,9 +1,15 @@
-﻿import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowRight, Globe } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
+﻿/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LANGUAGE SELECTOR — ONBOARDING LANDING
+ * FILE: src/pages/LanguageSelector.tsx
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
 
-type LangCode = "en" | "fr" | "pcm" | "ar" | "ful" | "ha";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+
+type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
 
 interface LangOption {
   code: LangCode;
@@ -11,111 +17,136 @@ interface LangOption {
   native: string;
 }
 
-type Strings = {
-  title: string;
-  subtitle: string;
-  btn: string;
-  promo: string;
-};
-
-const STORAGE_KEY = "Bambeh_language";
-const LANGUAGE_SELECTED_KEY = "Bambeh_language_selected";
+const STORAGE_KEY = "bambeh_user_lang";
 
 const LANGUAGES: LangOption[] = [
   { code: "en", label: "English", native: "English" },
-  { code: "fr", label: "French", native: "Fran�ais" },
-  { code: "pcm", label: "Pidgin", native: "Pidgin English" },
-  { code: "ar", label: "Arabic", native: "???????" },
-  { code: "ful", label: "Fulfulde", native: "Pulaar" },
-  { code: "ha", label: "Hausa", native: "Hausa" },
+  { code: "fr", label: "French", native: "Français" },
+  { code: "pidgin", label: "Pidgin", native: "Pidgin English" },
+  { code: "ar", label: "Arabic", native: "العربية" },
+  { code: "ff", label: "Fulfulde", native: "Pulaar" },
 ];
 
-const STRINGS: Record<LangCode, Strings> = {
-  en: { title: "Select Language", subtitle: "Choose your preferred language", btn: "Continue", promo: "Only 1% Fee" },
-  fr: { title: "Choisir la langue", subtitle: "Choisissez votre langue pr�f�r�e", btn: "Continuer", promo: "Seulement 1% de frais" },
-  pcm: { title: "Chus Language", subtitle: "Pick the language weh you want", btn: "Waka Di Go", promo: "Only 1% Charge" },
-  ar: { title: "????? ?????", subtitle: "???? ???? ???????", btn: "??????", promo: "???? 1% ???" },
-  ful: { title: "Su?o ?emngal", subtitle: "Su?o ?emngal ngal nji?-?aa", btn: "Yeeso", promo: "Alasme 1% tan" },
-  ha: { title: "Zabi Harshe", subtitle: "Zabi harshen da kake so", btn: "Ci gaba", promo: "Caji 1% kawai" },
+const STRINGS: Record<
+  LangCode,
+  { title: string; subtitle: string; btn: string; promo: string }
+> = {
+  en: {
+    title: "Select Language",
+    subtitle: "Choose your preferred app language.",
+    btn: "Continue",
+    promo: "Fast setup. Secure experience.",
+  },
+  fr: {
+    title: "Choisir la langue",
+    subtitle: "Choisissez la langue de l’application.",
+    btn: "Continuer",
+    promo: "Configuration rapide. Expérience sécurisée.",
+  },
+  pidgin: {
+    title: "Select Language",
+    subtitle: "Choose the language wey you wan use.",
+    btn: "Continue",
+    promo: "Fast setup. Secure experience.",
+  },
+  ar: {
+    title: "اختر اللغة",
+    subtitle: "اختر لغة التطبيق المفضلة لديك.",
+    btn: "متابعة",
+    promo: "إعداد سريع. تجربة آمنة.",
+  },
+  ff: {
+    title: "Suɓo Ɗemngal",
+    subtitle: "Suɓo ɗemngal gollitorde nde njiɗ-ɗaa.",
+    btn: "Yeeso",
+    promo: "Jaɓɓorgol ɗumɗum. Aade hisnude.",
+  },
 };
 
-export default function LanguageSelection() {
+export default function LanguageSelector() {
   const navigate = useNavigate();
-  const { setLanguage } = useLanguage();
-  const [selectedLang, setSelectedLang] = useState<LangCode>("en");
-  const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<LangCode>("en");
+  const [logoError, setLogoError] = useState(false);
+  const isRtl = selected === "ar";
+  const current = STRINGS[selected];
 
-  const strings = useMemo(() => STRINGS[selectedLang] ?? STRINGS.en, [selectedLang]);
-  const isRtl = selectedLang === "ar";
-
-  const handleContinue = (): void => {
-    if (saving) return;
-    setSaving(true);
-
-    try {
-      setLanguage(selectedLang);
-      localStorage.setItem(STORAGE_KEY, selectedLang);
-      localStorage.setItem(LANGUAGE_SELECTED_KEY, "true");
-      navigate("/terms-acceptance", { replace: true });
-    } finally {
-      setSaving(false);
-    }
+  const handleContinue = () => {
+    localStorage.setItem(STORAGE_KEY, selected);
+    window.dispatchEvent(
+      new CustomEvent("bambeh:langchange", { detail: { language: selected } })
+    );
+    navigate("/terms");
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-between p-6" dir={isRtl ? "rtl" : "ltr"}>
-      <div className="max-w-md w-full mx-auto pt-8">
-        <div className="text-center mb-10">
-          <div className="w-20 h-20 bg-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-md">
-            <Globe className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Bambeh</h1>
-          <p className="text-xs font-semibold text-teal-600 uppercase tracking-widest mt-1">Marketplace</p>
-          <div className="h-px bg-gray-100 w-1/3 mx-auto my-6" />
-          <h2 className="text-xl font-bold text-gray-800">{strings.title}</h2>
-          <p className="text-sm text-gray-400 mt-1">{strings.subtitle}</p>
+    <main
+      className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 flex flex-col justify-between p-6"
+      dir={isRtl ? "rtl" : "ltr"}
+      aria-labelledby="language-selector-title"
+    >
+      <section className="max-w-md w-full mx-auto my-auto space-y-8">
+        <div className="text-center">
+          {!logoError ? (
+            <img
+              src="/logo.png"
+              alt="Bambeh Logo"
+              className="mx-auto h-24 w-auto object-contain mb-4 drop-shadow-md"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full mb-4 shadow-xl mx-auto">
+              <span className="text-4xl font-bold text-white">B</span>
+            </div>
+          )}
+
+          <h1 id="language-selector-title" className="text-3xl font-extrabold text-gray-900 tracking-tight">
+            {current.title}
+          </h1>
+          <p className="text-sm text-gray-500 mt-2">{current.subtitle}</p>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-3" role="list" aria-label="Language choices">
           {LANGUAGES.map((lang) => {
-            const selected = selectedLang === lang.code;
+            const isSelected = selected === lang.code;
+
             return (
               <button
                 key={lang.code}
                 type="button"
-                onClick={() => setSelectedLang(lang.code)}
-                className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left transition-all ${
-                  selected ? "border-teal-600 bg-teal-50/30 ring-4 ring-teal-500/10 font-semibold" : "border-gray-100 bg-gray-50/50 hover:bg-gray-50 hover:border-gray-200"
+                onClick={() => setSelected(lang.code)}
+                aria-pressed={isSelected}
+                className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left focus:outline-none focus:ring-4 focus:ring-teal-200 ${
+                  isSelected
+                    ? "bg-teal-50 border-teal-600 shadow-md font-semibold"
+                    : "bg-white border-gray-200 hover:border-gray-300"
                 }`}
+                style={{ textAlign: isRtl ? "right" : "left" }}
               >
-                <div className={isRtl ? "text-right" : "text-left"}>
-                  <span className="text-gray-900 block text-base font-medium">{lang.label}</span>
-                  <span className="text-gray-400 text-xs font-normal">{lang.native}</span>
+                <div>
+                  <span className="text-gray-900 block">{lang.label}</span>
+                  <span className="text-gray-400 text-xs">{lang.native}</span>
                 </div>
-                {selected && (
-                  <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center shadow-sm">
-                    <div className="w-2 h-2 bg-white rounded-full" />
-                  </div>
-                )}
+                {isSelected && <div className="w-3 h-3 bg-teal-600 rounded-full" aria-hidden="true" />}
               </button>
             );
           })}
         </div>
-      </div>
 
-      <div className="max-w-md w-full mx-auto mt-10">
         <button
           type="button"
           onClick={handleContinue}
-          disabled={saving}
-          className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 disabled:opacity-70 text-white font-bold py-4 rounded-2xl shadow-lg shadow-teal-600/10 flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
+          className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-teal-200"
         >
-          <span>{strings.btn}</span>
+          <span>{current.btn}</span>
           <ArrowRight className={`w-5 h-5 ${isRtl ? "rotate-180" : ""}`} />
         </button>
-        <p className="text-center text-xs text-green-600 font-bold mt-3 uppercase tracking-wider">{strings.promo}</p>
-      </div>
-    </div>
+      </section>
+
+      <footer className="text-center pt-6 border-t border-gray-200 max-w-md w-full mx-auto">
+        <p className="text-sm text-gray-700">
+          <span className="font-bold text-green-600">{current.promo}</span>
+        </p>
+      </footer>
+    </main>
   );
 }
-
