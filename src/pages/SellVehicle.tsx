@@ -505,7 +505,7 @@ const SellVehicle: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-2">{tr("pageTitle")}</h2>
           <p className="text-gray-500 text-sm mb-6">{tr("loginRequired")}</p>
           <button
-            onClick={() => navigate("/auth/login")}
+            onClick={() => navigate("/login")}
             className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 active:scale-95 transition-all"
           >
             {tr("login")}

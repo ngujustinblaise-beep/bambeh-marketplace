@@ -85,7 +85,7 @@ interface ProtectedProps {
 
 /**
  * Wraps vendor pages. Waits for server-side JWT verification.
- * Redirects to /vendor/signin if user is not a verified vendor.
+ * Redirects to /vendor/login if user is not a verified vendor.
  */
 export const VendorProtectedRoute: React.FC<ProtectedProps> = ({ children }) => {
   const location                     = useLocation();
@@ -98,7 +98,7 @@ export const VendorProtectedRoute: React.FC<ProtectedProps> = ({ children }) => 
       ? location.pathname
       : '/vendor/dashboard';
     localStorage.setItem('Bambeh_vendor_redirect', safe);
-    return <Navigate to="/vendor/signin" replace />;
+    return <Navigate to="/vendor/login" replace />;
   }
 
   return <>{children}</>;
@@ -140,7 +140,7 @@ export const UserProtectedRoute: React.FC<ProtectedProps> = ({ children }) => {
 
   if (!user) {
     localStorage.setItem('Bambeh_user_redirect', location.pathname);
-    return <Navigate to="/signin" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;

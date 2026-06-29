@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/utils/firebase/firebaseConfig.ts � Bambeh Marketplace
  * ? FIXED: getApps() guard + safe AppCheck + initializeFirebaseAppCheck export
  */
@@ -77,7 +77,7 @@ export const API_BASE_URL: string = (import.meta.env.VITE_API_BASE_URL as string
 // API endpoints map � used by api.service.ts
 export const API_ENDPOINTS = {
   auth: {
-    login:          `${API_BASE_URL}/auth/login`,
+    login:          `${API_BASE_URL}/login`,
     register:       `${API_BASE_URL}/auth/register`,
     logout:         `${API_BASE_URL}/auth/logout`,
     refresh:        `${API_BASE_URL}/auth/refresh`,

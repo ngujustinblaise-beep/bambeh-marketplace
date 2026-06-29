@@ -181,7 +181,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
         "authToken",
       ].forEach((k) => localStorage.removeItem(k));
     } finally {
-      window.location.href = "/vendor/signin";
+      window.location.href = "/vendor/login";
     }
   };
 

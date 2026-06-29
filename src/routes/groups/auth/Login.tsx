@@ -133,7 +133,7 @@ export default function Login() {
         return;
       }
       const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/";
-      navigate(from, { replace: true });
+      navigate(safeTarget, { replace: true });
     } finally {
       setLoading(false);
     }
@@ -222,4 +222,5 @@ export default function Login() {
     </main>
   );
 }
+
 

@@ -119,7 +119,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
       'Bambeh_is_authenticated', 'Bambeh_auth_token',
       'Bambeh_user', 'Bambeh_current_user', 'authToken',
     ].forEach(k => localStorage.removeItem(k));
-    window.location.href = '/vendor/signin';
+    window.location.href = '/vendor/login';
   };
 
   const handleSearch = (e: React.FormEvent) => {

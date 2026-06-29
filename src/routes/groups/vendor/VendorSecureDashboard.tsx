@@ -35,7 +35,7 @@ export default function VendorSecureDashboard() {
     if (vendorData) {
       setVendor(JSON.parse(vendorData));
     } else {
-      navigate('/vendor/signin');
+      navigate('/vendor/login');
     }
   }, [navigate]);
 

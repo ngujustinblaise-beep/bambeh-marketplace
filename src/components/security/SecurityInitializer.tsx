@@ -24,7 +24,7 @@ const SESSION_EXPIRED_MESSAGES: Record<string, string> = {
 };
 
 const REDIRECT_PATHS: Record<string, string> = {
-  admin: '/admin/login', vendor: '/vendor/signin', user: '/login',
+  admin: '/admin/login', vendor: '/vendor/login', user: '/login',
 };
 
 const SecurityInitializer: React.FC = () => {

@@ -115,7 +115,7 @@ export default function VendorPortal() {
 
             {/* Sign In Card */}
             <Link
-              to="/vendor/signin"
+              to="/vendor/login"
       className="bg-white rounded-2xl shadow-xl p-8 border-2 border-transparent hover:border-teal-500 transition-all group"
             >
               <div className="w-16 h-16 bg-gradient-to-br from-teal-100 to-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">

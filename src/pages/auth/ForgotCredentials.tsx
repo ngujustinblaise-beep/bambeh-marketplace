@@ -63,7 +63,7 @@ export default function ForgotCredentials() {
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Back to{" "}
-            <Link to="/auth/login" className="text-teal-700 font-semibold hover:underline">
+            <Link to="/login" className="text-teal-700 font-semibold hover:underline">
               Sign in
             </Link>
           </p>

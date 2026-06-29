@@ -1,4 +1,4 @@
-﻿/**
+/**
  * supabaseAuthGuard.ts � Bambeh Marketplace
  * ============================================================
  * REPLACES: isAdminAuthenticated(), isUserLoggedIn(),
@@ -131,7 +131,7 @@ export async function getVerifiedAdmin(userId: string): Promise<boolean> {
  *
  * @example
  * const vendor = await getVerifiedVendor(user.id);
- * if (!vendor.isVendor) return <Navigate to="/vendor/signin" />;
+ * if (!vendor.isVendor) return <Navigate to="/vendor/login" />;
  */
 export async function getVerifiedVendor(
   userId: string

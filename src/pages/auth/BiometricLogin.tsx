@@ -122,7 +122,11 @@ export default function BiometricLogin() {
         )}
 
         {error && (
-          <div role="alert" aria-live="polite" className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -141,7 +145,7 @@ export default function BiometricLogin() {
 
         <button
           type="button"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/login", { replace: true })}
           disabled={isLoading}
           aria-label={t.fallback}
           className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"

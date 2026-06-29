@@ -7,7 +7,6 @@ export type LangCode = "en" | "fr" | "pidgin" | "ar" | "ff";
 
 export const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
   en: {
-    cart:"Cart", myListings:"My Listings", editProfile:"Edit Profile", language:"Language", listening:"Listening…", notSupported:"Voice not supported", tapToSpeak:"Tap to speak",
     profile:"Profile", coins:"Coins", messages:"Messages", notifications:"Notifications",
     // Nav
     home:"Home", jobs:"Jobs", marketplace:"Marketplace", services:"Services",
@@ -82,7 +81,6 @@ export const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     viewWallet:"View Wallet", added:"added to your wallet", buyCoins:"Buy Zerm Coins",
   },
   fr: {
-    cart:"Panier", myListings:"Mes annonces", editProfile:"Modifier le profil", language:"Langue", listening:"Écoute…", notSupported:"Voix non prise en charge", tapToSpeak:"Appuyez pour parler",
     profile:"Profil", coins:"Pièces", messages:"Messages", notifications:"Notifications",
     home:"Accueil", jobs:"Emplois", marketplace:"Marché", services:"Services",
     rentals:"Locations", vehicles:"Véhicules", exchange:"Échange", community:"Communauté",
@@ -154,7 +152,6 @@ export const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     viewWallet:"Voir le Portefeuille", added:"ajouté à votre portefeuille", buyCoins:"Acheter des Pièces Zerm",
   },
   pidgin: {
-    cart:"Cart", myListings:"My Listings", editProfile:"Edit Profile", language:"Language", listening:"I dey listen…", notSupported:"Voice no dey work", tapToSpeak:"Tap to talk",
     profile:"Profile", coins:"Coins", messages:"Messages", notifications:"Notifications",
     home:"Home", jobs:"Jobs", marketplace:"Market", services:"Services",
     rentals:"Rentals", vehicles:"Cars", exchange:"Exchange", community:"Community",
@@ -220,7 +217,6 @@ export const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     viewWallet:"Look Your Wallet", added:"don enter inside your wallet", buyCoins:"Buy Zerm Coins",
   },
   ar: {
-    cart:"السلة", myListings:"إعلاناتي", editProfile:"تعديل الملف الشخصي", language:"اللغة", listening:"جارٍ الاستماع…", notSupported:"الصوت غير مدعوم", tapToSpeak:"اضغط للتحدث",
     profile:"الملف الشخصي", coins:"العملات", messages:"الرسائل", notifications:"الإشعارات",
     home:"الرئيسية", jobs:"الوظائف", marketplace:"السوق", services:"الخدمات",
     rentals:"الإيجارات", vehicles:"المركبات", exchange:"التبادل", community:"المجتمع",
@@ -290,7 +286,6 @@ export const LANG_STRINGS: Record<LangCode, Record<string, string>> = {
     viewWallet:"عرض المحفظة", added:"تمت إضافته إلى محفظتك", buyCoins:"شراء عملات زيرم",
   },
   ff: {
-    cart:"Panyee", myListings:"Jeeyaaji am", editProfile:"Waylu Profiil", language:"Ɗemngal", listening:"Ina heɗoo…", notSupported:"Sawru waawaa", tapToSpeak:"Ñakku ngam haalde",
     profile:"Profiil", coins:"Kaalisaaji", messages:"Nulal", notifications:"Tintinaali",
     home:"Jeyeendi", jobs:"Liggaade", marketplace:"Maare", services:"Ɓalɗe",
     rentals:"Hireeli", vehicles:"Ottooji", exchange:"Yoƴtaari", community:"Ɓiɓɓe",

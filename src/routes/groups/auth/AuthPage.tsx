@@ -57,7 +57,7 @@ export default function AuthPage() {
 
           <div className="mt-8 space-y-4">
             <Link
-              to="/auth/login"
+              to="/login"
               className="block text-center rounded-xl bg-teal-500 hover:bg-teal-600 px-5 py-4 font-semibold transition-colors"
             >
               Sign in

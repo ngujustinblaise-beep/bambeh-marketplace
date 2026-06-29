@@ -82,6 +82,14 @@ const STRINGS = {
   },
 } as const;
 
+type LoginLocationState = {
+  from?: {
+    pathname?: string;
+    search?: string;
+    hash?: string;
+  };
+};
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -113,8 +121,16 @@ export default function Login() {
         setError(result.error);
         return;
       }
-      const from = (location.state as any)?.from?.pathname || "/";
-      navigate(from, { replace: true });
+
+      const state = location.state as LoginLocationState | null;
+      const from = state?.from;
+
+      const safeTarget =
+        from?.pathname && from.pathname !== "/login" && from.pathname !== "/signin"
+          ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
+          : "/";
+
+      navigate(safeTarget, { replace: true });
     } finally {
       setLoading(false);
     }

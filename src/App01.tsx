@@ -1410,7 +1410,7 @@ export default function App() {
                         <Route path="/vendor" element={<Navigate to="/vendor/home" replace />} />
                         <Route path="/vendor/portal" element={<VendorLayout><VendorPortal /></VendorLayout>} />
                         <Route path="/vendor/home" element={<VendorLayout><VendorHome /></VendorLayout>} />
-                        <Route path="/vendor/signin" element={<VendorLayout><VendorSignIn /></VendorLayout>} />
+                        <Route path="/vendor/login" element={<VendorLayout><VendorSignIn /></VendorLayout>} />
                         <Route path="/vendor/register" element={<VendorLayout><VendorRegistration /></VendorLayout>} />
                         <Route path="/vendor/auth" element={<VendorLayout><VendorAuthPage /></VendorLayout>} />
                         <Route path="/vendor/subscription-plans" element={<VendorLayout><VendorSubscriptionPlans /></VendorLayout>} />
@@ -1421,9 +1421,9 @@ export default function App() {
                         <Route path="/vendor/subscribe" element={<Navigate to="/vendor/subscription-plans" replace />} />
                         <Route path="/vendor/secure-dashboard" element={<Navigate to="/vendor/dashboard" replace />} />
                         <Route path="/vendor/subscription-payment" element={<Navigate to="/vendor/subscription" replace />} />
-                        <Route path="/vendor/login" element={<Navigate to="/vendor/signin" replace />} />
-                        <Route path="/vendorsignin" element={<Navigate to="/vendor/signin" replace />} />
-                        <Route path="/vendor-signin" element={<Navigate to="/vendor/signin" replace />} />
+                        <Route path="/vendor/login" element={<Navigate to="/vendor/login" replace />} />
+                        <Route path="/vendorsignin" element={<Navigate to="/vendor/login" replace />} />
+                        <Route path="/vendor-signin" element={<Navigate to="/vendor/login" replace />} />
                         <Route path="/vendor/manage-listings" element={<Navigate to="/vendor/listings" replace />} />
 
                         {/* ── 10. VENDOR PROTECTED ───────────────────────────────── */}
@@ -1731,5 +1731,6 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
 
 
