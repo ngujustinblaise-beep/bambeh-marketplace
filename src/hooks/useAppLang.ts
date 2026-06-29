@@ -21,7 +21,7 @@
  */
 
 import { useContext } from "react";
-import { LanguageContext } from "@/contexts/LanguageContext";
+import { useLanguage as useAppLanguage } from "@/context/LanguageContext";
 import { t as translateFn, AppLang } from "@/i18n/appTranslations";
 
 export type { AppLang };
@@ -47,3 +47,4 @@ export function useLang(): AppLang {
  *   t("confirmPay", lang)(5000)    → "Payer 5 000 XAF"
  */
 export { translateFn as t };
+
