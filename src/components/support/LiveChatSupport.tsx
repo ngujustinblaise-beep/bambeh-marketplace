@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LIVE CHAT SUPPORT
  * FILE LOCATION: src/components/support/LiveChatSupport.tsx
  */

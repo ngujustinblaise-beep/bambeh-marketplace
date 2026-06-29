@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FlashDeals.tsx
  * Bambeh Marketplace � Flash Deals page
  *

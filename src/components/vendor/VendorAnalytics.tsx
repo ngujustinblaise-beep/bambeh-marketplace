@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/vendor/VendorAnalytics.tsx
  * Bambeh Marketplace � Vendor Analytics Summary Card
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { SUBSCRIPTION_PLANS, getSubscriptionPlan } from "../../config/subscription";
 import type { SubscriptionTier } from "../../types/subscription";

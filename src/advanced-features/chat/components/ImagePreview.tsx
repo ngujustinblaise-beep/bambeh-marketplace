@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMB� MARKETPLACE - IMAGE PREVIEW COMPONENT
  * Version: 1.0.0
  */

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import type { PaymentMethod } from "../../types/subscription";
 import { PAYMENT_METHODS } from "../../types/subscription";

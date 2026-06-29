@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE COMPONENT - COMPACT DROPDOWN VERSION
  * FILE LOCATION: src/components/common/SocialShare.tsx
  */

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/vendor/VendorRegistration.tsx
  * Bambeh Marketplace � Vendor Registration Form
  * � 2026 Bambeh Marketplace. All rights reserved.

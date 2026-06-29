@@ -386,3 +386,47 @@ s3_region = "env(S3_REGION)"
 s3_access_key = "env(S3_ACCESS_KEY)"
 # Configures AWS_SECRET_ACCESS_KEY for S3 bucket
 s3_secret_key = "env(S3_SECRET_KEY)"
+
+[functions.passkeys-register-start]
+enabled = true
+verify_jwt = true
+import_map = "./functions/passkeys-register-start/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/passkeys-register-start/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/passkeys-register-start/*.html" ]
+
+[functions.passkeys-register-verify]
+enabled = true
+verify_jwt = true
+import_map = "./functions/passkeys-register-verify/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/passkeys-register-verify/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/passkeys-register-verify/*.html" ]
+
+[functions.passkeys-login-start]
+enabled = true
+verify_jwt = true
+import_map = "./functions/passkeys-login-start/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/passkeys-login-start/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/passkeys-login-start/*.html" ]
+
+[functions.passkeys-login-verify]
+enabled = true
+verify_jwt = true
+import_map = "./functions/passkeys-login-verify/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/passkeys-login-verify/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/passkeys-login-verify/*.html" ]

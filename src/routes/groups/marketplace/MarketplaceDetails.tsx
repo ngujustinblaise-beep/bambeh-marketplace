@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/MarketplaceDetails.tsx � Bambeh Marketplace
  *
  * REWRITE � June 2026

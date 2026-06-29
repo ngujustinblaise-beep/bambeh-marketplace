@@ -1,55 +1,90 @@
 /**
- * AuthLayout.tsx
- * FILE LOCATION: src/components/layout/AuthLayout.tsx
- *
- * CHANGES IN THIS VERSION:
- *  ✅ Fixed broken branding string "— 's #1 App" → proper translated text via t()
- *  ✅ Full i18n — branding strip and footer line now use LanguageContext t()
- *  ✅ "Only 1% Transaction Fee" → "Lowest in any marketplace"
- *  ✅ RTL direction applied when language is Arabic
- *
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
+ * AUTHLAYOUT.TSX - COMPLETE FIXED VERSION
+ * 
+ * Layout for authentication pages (Login, Register, Forgot Password)
+ * 
+ * ✅ BRANDING FIXED:
+ * - Single "Bambeh" logo in BLACK
+ * - NO teal/turquoise colors
+ * - NO "Bambé" with accent
+ * - Clean, professional design
+ * 
+ * COPY THIS FILE TO: src/components/layout/AuthLayout.tsx
+ * 
+ * Updated: December 10, 2025
  */
 
-import React from "react";
-import { useLanguage } from '@/App';
+import { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 interface AuthLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
-  const { t, language } = useLanguage();
-  const isRtl = language === "ar";
-
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 flex flex-col"
-      dir={isRtl ? "rtl" : "ltr"}
-    >
-      {/* Branding strip */}
-      <div className="bg-gradient-to-r from-teal-600 to-blue-600 py-3 px-4 text-center shadow-md">
-        <span className="text-white font-bold text-lg tracking-wide">
-          {"BAMBEH - WE CARRY ALL LOADS"}
-        </span>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
+      {/* ============================================
+          HEADER - SIMPLE LOGO
+          ============================================ */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* SINGLE BLACK LOGO */}
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center shadow-md">
+                <span className="text-white text-2xl font-bold">B</span>
+              </div>
+              <span className="text-2xl font-bold text-black tracking-tight">
+                Bambeh
+              </span>
+            </Link>
 
-      {/* Content */}
-      <div className="flex-1 flex items-start justify-center px-4 py-8">
-        <div className="w-full max-w-md">{children}</div>
-      </div>
+            {/* Back to Home Link */}
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-gray-600 hover:text-black font-medium transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back to Home</span>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-      {/* Footer */}
-      <div className="py-4 text-center text-xs text-gray-500 border-t border-gray-200 bg-white">
-        &copy; 2026 Bambeh Marketplace - The Pulse of African Commerce
-      </div>
+      {/* ============================================
+          MAIN CONTENT AREA
+          ============================================ */}
+      <main className="flex-grow flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          {children}
+        </div>
+      </main>
+
+      {/* ============================================
+          FOOTER - MINIMAL
+          ============================================ */}
+      <footer className="bg-white border-t border-gray-200 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
+            <p>
+              &copy; 2025 <span className="font-semibold text-black">Bambeh</span>. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <Link to="/terms" className="hover:text-black transition-colors">
+                Terms
+              </Link>
+              <Link to="/privacy" className="hover:text-black transition-colors">
+                Privacy
+              </Link>
+              <Link to="/help" className="hover:text-black transition-colors">
+                Help
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
-
-
-
-
-
-
-

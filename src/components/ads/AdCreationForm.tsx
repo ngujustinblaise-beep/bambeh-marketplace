@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * AD CREATION FORM COMPONENT � Form for creating advertisements to promote items.
  */

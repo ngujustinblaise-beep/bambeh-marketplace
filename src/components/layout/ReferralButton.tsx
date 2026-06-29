@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ReferralButton.tsx � Bambeh Marketplace
  * FILE LOCATION: src/components/ReferralButton.tsx  (or wherever you had it)
  *

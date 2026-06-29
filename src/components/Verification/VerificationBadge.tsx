@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Verification/VerificationBadge.tsx
  * Bambeh Marketplace � Seller / Vendor Verification Badge
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TERMS AND CONDITIONS
  * FILE LOCATION: src/pages/TermsAndConditions.tsx
  */

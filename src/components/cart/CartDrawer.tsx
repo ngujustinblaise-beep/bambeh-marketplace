@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import type { CartItem, CartContextType } from "@/types/cart";
 

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
 import { useLang, t } from "@/hooks/useAppLang";
 

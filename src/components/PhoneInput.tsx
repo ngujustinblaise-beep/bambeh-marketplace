@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/PhoneInput.tsx
  * Bambeh Marketplace — Phone Number Input
  *

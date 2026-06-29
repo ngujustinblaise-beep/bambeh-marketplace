@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/CommunityPage.tsx � Bambeh Marketplace
  *
  * FIXED:

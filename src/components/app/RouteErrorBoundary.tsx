@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RouteErrorBoundary.tsx
  * Path: src/components/app/RouteErrorBoundary.tsx
  * ---------------------------------------------------------------------------

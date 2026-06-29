@@ -1,4 +1,4 @@
-﻿/**
+/**
  * APP ENHANCERS - Performance & Security Wrappers
  */
 

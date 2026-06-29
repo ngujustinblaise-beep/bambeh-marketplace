@@ -1,4 +1,4 @@
-﻿/**
+/**
  * REPORT ISSUE BUTTON - UNIVERSAL REPORT COMPONENT
  * FILE LOCATION: src/components/report/ReportIssueButton.tsx
  */

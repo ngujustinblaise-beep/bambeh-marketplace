@@ -1,4 +1,4 @@
-﻿/**
+/**
  * REPORT MODAL - COMPREHENSIVE REPORTING SYSTEM
  * FILE LOCATION: src/components/common/ReportModal.tsx
  */

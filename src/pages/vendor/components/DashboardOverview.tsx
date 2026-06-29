@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/vendor/components/DashboardOverview.tsx
  * Bambeh Marketplace � Vendor Dashboard Overview
  * � 2026 Bambeh Marketplace. All rights reserved.

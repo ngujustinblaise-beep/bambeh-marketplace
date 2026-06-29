@@ -1,0 +1,10 @@
+﻿[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.bambe.android",
+      "sha256_cert_fingerprints": ["86:5F:EC:15:65:49:FD:4D:1E:35:E2:A1:56:4C:0F:05:8D:8C:6E:47:07:64:ED:A1:B9:A2:62:CA:8E:90:04:7F"]
+    }
+  }
+]

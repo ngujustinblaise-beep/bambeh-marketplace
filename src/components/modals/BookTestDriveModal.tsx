@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { X, CalendarDays, Clock3, Phone, MessageSquareText, Loader2, Sparkles, CarFront } from 'lucide-react';
 import { useLanguage } from '@/App';
 import { sendBookingMessage } from '@/utils/sendBookingMessage';

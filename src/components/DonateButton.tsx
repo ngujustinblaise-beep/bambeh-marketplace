@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/DonateButton.tsx
  * Bambeh Marketplace � Donate / Support Button
  * � 2026 Bambeh Marketplace. All rights reserved.

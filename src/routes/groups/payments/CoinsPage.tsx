@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/CoinsPage.tsx � Bambeh Marketplace
  *
  * FIXED (this version):

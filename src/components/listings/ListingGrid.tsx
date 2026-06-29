@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ListingCard, Listing } from './ListingCard';
 
 interface ListingGridProps {

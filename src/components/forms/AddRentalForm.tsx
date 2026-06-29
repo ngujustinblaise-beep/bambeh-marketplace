@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/AddRentalForm.tsx
  * Bambeh Marketplace � Add Rental Listing Form
  */

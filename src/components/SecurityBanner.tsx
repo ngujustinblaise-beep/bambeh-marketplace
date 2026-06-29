@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/SecurityBanner.tsx
  * Bambeh Marketplace � Security / Trust Banner
  * � 2026 Bambeh Marketplace. All rights reserved.

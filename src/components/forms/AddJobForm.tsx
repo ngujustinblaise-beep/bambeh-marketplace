@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/AddJobForm.tsx
  * Bambeh Marketplace � Add Job Listing Form
  * � 2026 Bambeh Marketplace. All rights reserved.

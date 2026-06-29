@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UPGRADE PROMPT
  * FILE LOCATION: src/components/subscription/UpgradePrompt.tsx
  */

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 🔒 SECURITY PROVIDER - Centralized Security Context
  */
 import React, { createContext, useContext, useEffect, useState } from "react";

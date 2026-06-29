@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EditProfileModal.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/profile/EditProfileModal.tsx
  *

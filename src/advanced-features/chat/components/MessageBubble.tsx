@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - MESSAGE BUBBLE COMPONENT
  * Version: 1.0.0
  */

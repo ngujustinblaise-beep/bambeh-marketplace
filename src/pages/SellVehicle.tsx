@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/SellVehicle.tsx — Bambeh Marketplace
  * Full vehicle listing form: multilingual, Supabase storage image upload,
  * category, price, location, phone, description — zero errors.

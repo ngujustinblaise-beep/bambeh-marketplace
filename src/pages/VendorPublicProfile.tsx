@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/vendor/VendorPublicProfile.tsx � Bambeh Marketplace
  * FIXED: Reads real vendor data from Supabase vendor_profiles table.
  * Also loads vendor's active listings from the listings table.

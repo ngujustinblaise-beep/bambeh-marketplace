@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SUBSCRIPTION GATE MODAL
  * FILE LOCATION: src/components/subscription/SubscriptionGateModal.tsx
  */

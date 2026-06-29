@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/TontineGroupDetail.tsx
  * Bambeh Marketplace � Tontine/Njangi Group Detail
  * � 2026 Bambeh Marketplace. All rights reserved.

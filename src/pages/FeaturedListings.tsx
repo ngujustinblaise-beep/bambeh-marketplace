@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/vendor/FeaturedListings.tsx
  * Bambeh Marketplace � Featured Listings Manager
  * � 2026 Bambeh Marketplace. All rights reserved.

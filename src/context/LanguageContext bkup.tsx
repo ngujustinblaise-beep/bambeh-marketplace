@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 
 type LangCode = "en" | "fr" | "pcm" | "ar" | "ful" | "ha";
 type TranslationMap = Record<string, string>;

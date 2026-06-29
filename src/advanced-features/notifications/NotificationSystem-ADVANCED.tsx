@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import { NotificationService } from "./NotificationService";
 import type { AppNotification } from "./NotificationService";

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * COMPACT SHARE MODAL
  * FILE LOCATION: src/components/common/CompactShareModal.tsx
  */

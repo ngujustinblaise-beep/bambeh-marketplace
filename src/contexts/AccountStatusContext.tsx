@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ACCOUNT STATUS CONTEXT - USER ACCOUNT STATE MANAGEMENT
  * FILE LOCATION: src/contexts/AccountStatusContext.tsx
  * © 2025 Bambeh. All rights reserved.

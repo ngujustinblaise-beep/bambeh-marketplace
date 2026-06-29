@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Rocket } from "lucide-react";
 import { useLang } from '@/hooks/useAppLang';
 

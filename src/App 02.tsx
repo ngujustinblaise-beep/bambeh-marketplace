@@ -1,4 +1,4 @@
-﻿import "@/lib/net-interceptor";
+import "@/lib/net-interceptor";
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.

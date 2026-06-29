@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/SecurityRecovery.tsx
  * Bambeh Marketplace - functional account recovery flow.
  *

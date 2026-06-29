@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/test/PerformanceTest.tsx
  * Bambeh Marketplace � Performance Test Component (Dev Only)
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/vendor/VendorMessages.tsx
  * Bambeh Marketplace � Vendor Messages Page
  * � 2026 Bambeh Marketplace. All rights reserved.

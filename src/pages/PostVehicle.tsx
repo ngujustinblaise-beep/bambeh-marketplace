@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/PostVehicle.tsx � Bambeh Marketplace
  *
  * PHONE INPUT CHANGE:

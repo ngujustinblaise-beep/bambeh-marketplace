@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Shield, Lock, Eye, EyeOff, CheckCircle, AlertCircle, Smartphone, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";

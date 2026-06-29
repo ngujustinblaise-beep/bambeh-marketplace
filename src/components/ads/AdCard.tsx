@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/ads/AdCard.tsx
  * FIXES: title/description/type properties now exist on ad item type
  */

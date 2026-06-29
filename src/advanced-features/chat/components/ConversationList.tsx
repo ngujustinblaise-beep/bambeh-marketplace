@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - CONVERSATION LIST COMPONENT
  * Version: 1.0.0
  */

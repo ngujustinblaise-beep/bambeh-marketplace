@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/ReportForm.tsx
  * Bambeh Marketplace � Report / Signalement Form
  * � 2026 Bambeh Marketplace. All rights reserved.

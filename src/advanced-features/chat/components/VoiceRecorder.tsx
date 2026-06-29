@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - VOICE RECORDER COMPONENT
  * Version: 1.0.0
  */

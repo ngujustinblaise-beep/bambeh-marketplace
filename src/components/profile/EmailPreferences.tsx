@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EmailPreferences.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/profile/EmailPreferences.tsx
  *

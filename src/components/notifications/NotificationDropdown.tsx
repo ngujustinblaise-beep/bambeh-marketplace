@@ -1,4 +1,4 @@
-﻿/**
+/**
  * NOTIFICATION DROPDOWN
  * FILE LOCATION: src/components/notifications/NotificationDropdown.tsx
  */

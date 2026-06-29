@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, Fingerprint, UserPlus, LogIn, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";

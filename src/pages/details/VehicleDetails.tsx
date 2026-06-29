@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Bambeh Marketplace � D�tails du v�hicule
  * � 2026 Bambeh Marketplace. All rights reserved.
  */

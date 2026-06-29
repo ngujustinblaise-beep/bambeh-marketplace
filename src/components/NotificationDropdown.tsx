@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/NotificationDropdown.tsx
  * Bambeh Marketplace � Notification Dropdown
  * � 2026 Bambeh Marketplace. All rights reserved.

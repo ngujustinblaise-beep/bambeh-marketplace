@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE MODAL
  * FILE LOCATION: src/components/common/SocialShareModal.tsx
  */

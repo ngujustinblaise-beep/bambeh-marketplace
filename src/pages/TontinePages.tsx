@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/TontinePages.tsx � Bambeh Marketplace
  * FIXED: Was a stub (emoji + title). Now redirects to /tontine.
  * The real tontine listing is in TontinePage.tsx.

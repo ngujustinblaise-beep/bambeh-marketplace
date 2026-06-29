@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FeaturedAdsStrip.tsx � Bambeh Marketplace
  * FILE LOCATION: src/components/ads/FeaturedAdsStrip.tsx
  *

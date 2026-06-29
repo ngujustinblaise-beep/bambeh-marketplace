@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/shared/index.tsx
  * Shared UI building blocks used across all updated Bambeh pages.
  *

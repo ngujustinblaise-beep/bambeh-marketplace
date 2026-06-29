@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/JobsCategory.tsx
  * Bambeh Marketplace — Jobs Category Page
  * © 2026 Bambeh Marketplace. All rights reserved.

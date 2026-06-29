@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DARK MODE TOGGLE - THEME SWITCHER COMPONENT
  * FILE LOCATION: src/components/theme/DarkModeToggle.tsx
  */

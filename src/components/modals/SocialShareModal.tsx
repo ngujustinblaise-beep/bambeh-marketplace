@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { X, Share2, Copy, CheckCircle, MessageCircle, Send } from 'lucide-react';
 
 // --- Types --------------------------------------------------------------------

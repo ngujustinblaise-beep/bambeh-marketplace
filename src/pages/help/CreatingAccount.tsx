@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 

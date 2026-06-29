@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - CHAT WINDOW COMPONENT
  * Version: 1.0.0
  */

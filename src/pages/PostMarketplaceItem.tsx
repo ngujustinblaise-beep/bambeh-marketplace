@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * POST MARKETPLACE ITEM - MILITARY GRADE VERSION
  * FILE LOCATION: src/pages/PostMarketplaceItem.tsx

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SUBSCRIPTION WALL - UPGRADE PROMPT
  * Shows when free users try to access premium content.
  * (c) 2025 Bambeh. All rights reserved.

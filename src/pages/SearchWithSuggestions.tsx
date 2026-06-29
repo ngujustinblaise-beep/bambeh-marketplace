@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/SearchWithSuggestions.tsx � Bambeh Marketplace
  * FIXED: Was a stub with wrong Firebase AuthContext.
  * Now redirects to /search (SearchResults.tsx) which reads from Supabase.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PROTECTED ROUTE � Fixed to use currentUser from AuthContext
  * FILE LOCATION: src/components/security/ProtectedRoute.tsx
  */

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang, t } from "@/hooks/useAppLang";

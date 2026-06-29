@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FlashDealDetail.tsx � Bambeh Marketplace
  *
  * FIXES applied:

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/AfricanPhoneInput.tsx � Bambeh Marketplace
  *
  * Reusable phone input with African country code picker.

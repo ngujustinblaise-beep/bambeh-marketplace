@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/advanced-features/chat/ChatList.tsx
  * Bambeh Marketplace � Chat Conversation List
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * HOME PAGE - BAMBEH MARKETPLACE (FULLY INTERNATIONALIZED)

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * ADMIN INBOX - MESSAGING SYSTEM FOR ADMIN PORTAL

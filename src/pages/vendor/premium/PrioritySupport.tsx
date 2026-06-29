@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Headphones, MessageSquare, Clock, CheckCircle, AlertCircle, ChevronRight, Plus, Star, Zap, Shield } from "lucide-react";
 import { supabase } from "@/lib/supabase";

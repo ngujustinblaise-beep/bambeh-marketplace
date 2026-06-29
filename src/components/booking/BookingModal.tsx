@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BOOKING MODAL - REUSABLE FOR SERVICES, RENTALS, VEHICLES
  * FILE LOCATION: src/components/booking/BookingModal.tsx
  */

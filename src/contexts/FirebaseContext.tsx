@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/contexts/FirebaseContext.tsx
  * Firebase FCM Context — Bambeh Marketplace
  *

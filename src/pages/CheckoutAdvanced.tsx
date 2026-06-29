@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ---------------------------------------------------------------------------
  * CHECKOUT ADVANCED - PAYMENT GATEWAY INTEGRATION EXAMPLE

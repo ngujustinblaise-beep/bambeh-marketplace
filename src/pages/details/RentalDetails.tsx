@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Bambeh Marketplace � D�tails de la location
  * � 2026 Bambeh Marketplace. All rights reserved.
  */

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/VerificationCenter.tsx � Bambeh Marketplace
  * FIXED: Saves verification requests to Supabase verification_requests table.
  * Was only calling alert() � no data was being saved anywhere.

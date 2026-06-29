@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VENDOR SETTINGS PAGE - COMPREHENSIVE VENDOR SETTINGS
  * FILE LOCATION: src/pages/vendor/VendorSettings.tsx

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Services.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
  * WORLD-CLASS REWRITE — Production Grade, Military Security, Full i18n

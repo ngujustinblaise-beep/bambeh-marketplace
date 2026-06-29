@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/filters/LocationFilter.tsx � Bambeh Marketplace
  *
  * MILITARY-GRADE SHARED LOCATION FILTER

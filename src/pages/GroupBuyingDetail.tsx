@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/GroupBuyingDetail.tsx � Bambeh Marketplace
  */
 

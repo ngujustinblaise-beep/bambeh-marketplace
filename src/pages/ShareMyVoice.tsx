@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/ShareMyVoice.tsx � Bambeh Marketplace
  *
  * NEW PAGE: User experience feedback form.

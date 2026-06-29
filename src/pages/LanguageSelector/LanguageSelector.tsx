@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LANGUAGE SELECTION - ONBOARDING STEP 1
  * © 2026 Bambeh SARL. All rights reserved.
  */

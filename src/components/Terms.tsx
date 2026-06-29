@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════════
  * TERMS ACCEPTANCE — BAMBEH MARKETPLACE
  * FILE: src/pages/TermsAcceptance.tsx

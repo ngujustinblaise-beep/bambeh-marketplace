@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { DemoBadge } from './DemoBadge';
 
 export interface Listing {

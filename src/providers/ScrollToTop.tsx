@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ScrollToTop.tsx
  * Scrolls to the top of the page on every route change.
  * Used directly in App.tsx inside <BrowserRouter>.

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * MESSAGE INPUT COMPONENT � Input area for composing and sending messages.
  */

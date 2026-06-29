@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/shared/CompactShareModal.tsx
  * Bambeh Marketplace � Compact Share Bottom Sheet
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PrivacySettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/profile/PrivacySettings.tsx
  *

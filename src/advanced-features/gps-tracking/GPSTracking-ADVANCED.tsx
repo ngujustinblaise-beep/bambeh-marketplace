@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * BAMBÉ MARKETPLACE - GPS TRACKING COMPONENT
  * Version: 1.0.0

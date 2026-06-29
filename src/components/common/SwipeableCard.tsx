@@ -1,4 +1,4 @@
-﻿import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
+import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Heart, X, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * NOTIFICATIONS CONTEXT
  * Manages notifications throughout the app
  */

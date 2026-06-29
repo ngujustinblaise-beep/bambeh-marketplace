@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/CoinsHistory.tsx — Bambeh Marketplace
  *
  * FIXED (this version):

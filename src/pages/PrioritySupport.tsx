@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/vendor/PrioritySupport.tsx
  * Bambeh Marketplace � Priority Support Page
  * � 2026 Bambeh Marketplace. All rights reserved.

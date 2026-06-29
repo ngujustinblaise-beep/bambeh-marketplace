@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * GlobalSearchBar.tsx � UNIVERSAL SEARCH
  * FILE LOCATION: src/components/search/GlobalSearchBar.tsx

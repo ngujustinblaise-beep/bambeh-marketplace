@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/BookingModal.tsx
  * Bambeh Marketplace � Booking Modal
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
 
 // Icon components (inline SVG — no extra dependency needed)

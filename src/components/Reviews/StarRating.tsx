@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * STAR RATING COMPONENT
  * FILE LOCATION: src/components/reviews/StarRating.tsx

@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { useNotchPay } from "@/hooks/useNotchPay";
 
 interface PaymentButtonProps {

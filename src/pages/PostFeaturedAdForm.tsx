@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PostFeaturedAdForm.tsx â€â€ Bambeh Marketplace
  * FILE LOCATION: src/components/ads/PostFeaturedAdForm.tsx
  *

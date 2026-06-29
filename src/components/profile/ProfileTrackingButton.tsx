@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProfileTrackingButton.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/profile/ProfileTrackingButton.tsx
  *

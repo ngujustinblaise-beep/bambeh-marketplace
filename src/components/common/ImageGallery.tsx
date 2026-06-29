@@ -1,4 +1,4 @@
-﻿/**
+/**
  * IMAGE GALLERY
  * FILE LOCATION: src/components/common/ImageGallery.tsx
  */

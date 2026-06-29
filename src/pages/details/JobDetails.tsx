@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
  * © 2026 Bambeh Marketplace. All rights reserved.

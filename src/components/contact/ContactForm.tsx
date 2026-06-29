@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UNIVERSAL CONTACT FORM
  * Used for: Jobs (Apply Now), Services (Book Now), Rentals (Contact Owner), Vehicles (Contact Seller)
  * Shows contact details ONLY for paid subscribers

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/CoinsTransfer.tsx � Bambeh Marketplace
  *
  * FIXED (this version):

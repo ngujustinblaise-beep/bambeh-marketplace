@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Search/SearchBar.tsx
  * Bambeh Marketplace � Search Bar Component
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/FarmFreshDetail.tsx � Bambeh Marketplace
  *
  * FIXED & REWRITTEN:

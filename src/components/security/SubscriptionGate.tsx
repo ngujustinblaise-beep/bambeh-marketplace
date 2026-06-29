@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SUBSCRIPTION GATE
  * FILE LOCATION: src/components/security/SubscriptionGate.tsx
  */

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * src/components/listings/RentalList.tsx � Bambeh Marketplace
  *

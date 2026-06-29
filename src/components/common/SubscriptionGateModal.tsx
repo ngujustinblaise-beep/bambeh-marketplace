@@ -1,4 +1,4 @@
-﻿// FILE: src/components/common/SubscriptionGateModal.tsx
+// FILE: src/components/common/SubscriptionGateModal.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Star, Zap, Lock } from 'lucide-react';

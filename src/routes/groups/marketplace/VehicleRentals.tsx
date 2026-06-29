@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/VehicleRentals.tsx � Bambeh Marketplace
  * Full vehicle listings page with multilingual support, Supabase realtime,
  * rich filters, and zero-error UX.

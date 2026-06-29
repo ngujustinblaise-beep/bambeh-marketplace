@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import type { SubscriptionTier } from "../../types/subscription";
 import { meetsAuthTierRequirement, getFeatureAccess } from "../../utils/tierBridge";

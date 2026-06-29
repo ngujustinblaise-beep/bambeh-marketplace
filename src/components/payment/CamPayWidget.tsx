@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CamPayWidget.tsx  —  Bambeh Marketplace
  * FILE LOCATION: src/components/payment/CamPayWidget.tsx
  *

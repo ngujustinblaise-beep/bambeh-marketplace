@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Chatbot/chat/MovableChatWidget.tsx
  * Bambeh Marketplace � Floating Movable Chat Widget
  * � 2026 Bambeh Marketplace. All rights reserved.

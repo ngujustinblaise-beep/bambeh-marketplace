@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/OfferService.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
  * WORLD-CLASS REBUILD — Production Grade, Military Security, Full i18n

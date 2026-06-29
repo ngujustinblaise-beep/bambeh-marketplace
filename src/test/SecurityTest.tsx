@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { securityManager } from "../utils/security/SecurityHeaders";
 import { rateLimiter }     from "../utils/security/RateLimiter";

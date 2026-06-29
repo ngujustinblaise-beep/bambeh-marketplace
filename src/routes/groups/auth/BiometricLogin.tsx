@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Fingerprint, ArrowRight } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";

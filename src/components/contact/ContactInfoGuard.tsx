@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CONTACT INFO GUARD � Hide phone/email until 2 chats exchanged.
  * FILE LOCATION: src/components/contact/ContactInfoGuard.tsx
  */

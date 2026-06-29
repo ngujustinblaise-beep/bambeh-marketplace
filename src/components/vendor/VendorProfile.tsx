@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/vendor/VendorProfile.tsx
  * Bambeh Marketplace � Vendor Profile Card
  * � 2026 Bambeh Marketplace. All rights reserved.

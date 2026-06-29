@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/ComparisonTool.tsx � Bambeh Marketplace
  *
  * FIXES applied:

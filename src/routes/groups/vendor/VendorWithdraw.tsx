@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VendorWithdraw.tsx � BAMBEH VENDOR PORTAL
  * � 2026 Bambeh Marketplace. All rights reserved.

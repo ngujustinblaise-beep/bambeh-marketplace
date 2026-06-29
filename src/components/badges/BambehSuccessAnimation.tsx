@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BambehSuccessAnimation.tsx
  * The Bambeh figure sets down his load, wipes his brow, and gives a thumbs up.
  * © 2025 Bambeh. All rights reserved.

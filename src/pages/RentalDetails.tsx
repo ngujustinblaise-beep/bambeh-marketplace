@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader2, ArrowLeft, Share2, Heart, Home, AlertTriangle, MapPin, Bed, Bath, Eye, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";

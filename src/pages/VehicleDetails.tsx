@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/VehicleDetails.tsx � Bambeh Marketplace
  * Full vehicle detail page: multilingual, Supabase, image gallery,
  * Call / WhatsApp CTA, expiry warning, view count, share.

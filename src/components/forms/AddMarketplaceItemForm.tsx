@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/forms/AddMarketplaceItemForm.tsx
  * Bambeh Marketplace � Add Marketplace Item Form
  */

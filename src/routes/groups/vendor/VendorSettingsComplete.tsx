@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VENDOR SETTINGS COMPLETE - ENTERPRISE-GRADE SETTINGS PAGE
  * FILE LOCATION: src/pages/vendor/VendorSettingsComplete.tsx

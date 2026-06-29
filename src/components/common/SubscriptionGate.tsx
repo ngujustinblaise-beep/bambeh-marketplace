@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SubscriptionGate.tsx — Subscription enforcement component.
  * FILE LOCATION: src/components/common/SubscriptionGate.tsx
  */

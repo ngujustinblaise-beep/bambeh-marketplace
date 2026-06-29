@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * Chat.tsx � Bambeh Marketplace
  * � 2026 Bambeh Marketplace. All rights reserved.

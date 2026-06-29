@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
  *
  * FIXES — June 2026

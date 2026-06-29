@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/profile/ChangePasswordModal.tsx
  * � 2026 Bambeh Marketplace. All rights reserved.
  */

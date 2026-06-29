@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/TontineDetail.tsx � Bambeh Marketplace
  *
  * FIXES applied:

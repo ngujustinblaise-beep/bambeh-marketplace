@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Package, Upload, X, DollarSign, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';

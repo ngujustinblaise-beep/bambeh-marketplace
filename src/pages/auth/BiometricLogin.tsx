@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Fingerprint, ArrowRight, ShieldAlert } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
 import { useLanguage } from "@/context/LanguageContext";
+import { authenticateWithPasskey } from "@/services/passkeys";
 
 type LangCode = "en" | "fr" | "pcm" | "ar" | "ful" | "ha";
 
@@ -77,7 +78,6 @@ const STRINGS: Record<
 export default function BiometricLogin() {
   const navigate = useNavigate();
   const { language } = useLanguage();
-
   const lang = ((language as LangCode) in STRINGS ? (language as LangCode) : "en") as LangCode;
   const t = STRINGS[lang];
   const isRtl = lang === "ar";
@@ -87,8 +87,7 @@ export default function BiometricLogin() {
   const [unsupported, setUnsupported] = useState(false);
 
   const canUseBiometrics = useMemo(() => {
-    if (typeof navigator === "undefined") return false;
-    return "credentials" in navigator;
+    return typeof window !== "undefined" && "credentials" in navigator;
   }, []);
 
   const handleBiometricLogin = async () => {
@@ -102,11 +101,10 @@ export default function BiometricLogin() {
 
     try {
       setIsLoading(true);
-
-      await new Promise((resolve) => setTimeout(resolve, 900));
-
+      await authenticateWithPasskey();
       navigate("/", { replace: true });
-    } catch {
+    } catch (e: any) {
+      if (e?.name === "NotAllowedError") return;
       setError(t.error);
     } finally {
       setIsLoading(false);
@@ -124,11 +122,7 @@ export default function BiometricLogin() {
         )}
 
         {error && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-          >
+          <div role="alert" aria-live="polite" className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>

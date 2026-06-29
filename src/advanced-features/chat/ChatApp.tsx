@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMB� MARKETPLACE - MAIN CHAT APP COMPONENT
  * Version: 1.0.0
  */

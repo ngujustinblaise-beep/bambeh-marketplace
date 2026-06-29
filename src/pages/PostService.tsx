@@ -1,4 +1,4 @@
-﻿/**
+/**
  * POST SERVICE
  * FILE LOCATION: src/pages/PostService.tsx
  */

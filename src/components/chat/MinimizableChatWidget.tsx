@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MINIMIZABLE CHAT WIDGET � Floating chat support widget.
  */
 

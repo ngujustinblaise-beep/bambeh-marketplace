@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Play, Pause, Volume2, VolumeX, Maximize, Minimize,
   Settings, Download, Share2, SkipBack, SkipForward, Loader2

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ChangePasswordForm.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/profile/ChangePasswordForm.tsx
  *

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProfileSetup.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/profile/ProfileSetup.tsx
  *

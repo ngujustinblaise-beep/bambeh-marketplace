@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VENDOR SUBSCRIPTION PAYMENT PAGE
  * � 2025 Bambeh. All rights reserved.

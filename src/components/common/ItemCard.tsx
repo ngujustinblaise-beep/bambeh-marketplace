@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ItemCard.tsx � Military Grade Item Display Component
  * FILE LOCATION: src/components/common/ItemCard.tsx

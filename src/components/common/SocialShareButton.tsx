@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SOCIAL SHARE BUTTON - COMPACT WITH FLOATING X
  * FILE LOCATION: src/components/common/SocialShareButton.tsx
  */

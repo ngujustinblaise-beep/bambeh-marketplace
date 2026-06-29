@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
  */

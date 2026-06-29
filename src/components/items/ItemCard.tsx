@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/items/ItemCard.tsx
  * Bambeh Marketplace � Listing Item Card
  * � 2026 Bambeh Marketplace. All rights reserved.

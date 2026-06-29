@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FILTERBAR.TSX - Universal Filter Component
  * Can be used for Jobs, Marketplace, Services, Rentals
  */

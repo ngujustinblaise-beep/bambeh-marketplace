@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
  *

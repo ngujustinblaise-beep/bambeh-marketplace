@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/contexts/SearchContext.tsx
  * Bambeh Marketplace � Search Context & Provider
  * � 2026 Bambeh Marketplace. All rights reserved.

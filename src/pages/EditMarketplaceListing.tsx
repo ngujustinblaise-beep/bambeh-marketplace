@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/EditMarketplaceListing.tsx � Bambeh Marketplace
  * FIXED: Was a stub. Now loads the listing from Supabase and saves edits back.
  */

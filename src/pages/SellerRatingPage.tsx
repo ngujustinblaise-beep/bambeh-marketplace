@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Loader2, Star } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";

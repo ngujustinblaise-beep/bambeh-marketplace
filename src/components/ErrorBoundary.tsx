@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/ErrorBoundary.tsx — Bambeh Marketplace
  *
  * Wraps the entire app. When anything crashes at startup you get a

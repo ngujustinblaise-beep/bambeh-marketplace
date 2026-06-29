@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/payment/PaymentSuccess.tsx
  * Shown after a successful payment verification.
  */

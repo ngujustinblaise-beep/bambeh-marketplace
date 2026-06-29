@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ADD JOB FORM COMPONENT
  * FILE LOCATION: src/components/jobs/AddJobForm.tsx

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/social/SocialShare.tsx
  * Bambeh Marketplace � Social Share Panel
  * � 2026 Bambeh Marketplace. All rights reserved.

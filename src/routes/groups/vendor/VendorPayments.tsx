@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VendorPayments.tsx � BAMBEH VENDOR PORTAL
  * Earnings tracker, withdrawal requests, payment history

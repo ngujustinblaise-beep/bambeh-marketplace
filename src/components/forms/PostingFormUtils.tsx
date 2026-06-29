@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PostingFormUtils.tsx — Bambeh Marketplace
  * Path: src/components/forms/PostingFormUtils.tsx
  * ---------------------------------------------------------------------------

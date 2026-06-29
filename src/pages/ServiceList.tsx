@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * SERVICE LIST PAGE � BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/listings/ServiceList.tsx

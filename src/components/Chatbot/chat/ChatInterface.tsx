@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Chatbot/chat/ChatInterface.tsx
  * Bambeh Marketplace � Chat Interface
  * � 2026 Bambeh Marketplace. All rights reserved.

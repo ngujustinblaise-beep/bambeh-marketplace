@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MOVABLE CHAT WIDGET - Android Optimized Version
  * FILE LOCATION: src/components/chat/MovableChatWidget.tsx
  *

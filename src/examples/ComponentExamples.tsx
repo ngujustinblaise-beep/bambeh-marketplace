@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { Suspense } from "react";
 import VerificationBadge from "../components/VerificationBadge";
 

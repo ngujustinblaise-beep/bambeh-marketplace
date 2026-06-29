@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw, Eye, AlertCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";

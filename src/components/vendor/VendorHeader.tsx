@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/vendor/VendorHeader.tsx
  * Bambeh Marketplace � Vendor Store Header
  * � 2026 Bambeh Marketplace. All rights reserved.

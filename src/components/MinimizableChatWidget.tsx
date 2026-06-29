@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/MinimizableChatWidget.tsx
  * Bambeh Marketplace � Minimizable Chat Widget
  * � 2026 Bambeh Marketplace. All rights reserved.

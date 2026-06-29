@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ADVANCED SEARCH COMPONENT
  * FILE LOCATION: src/components/search/AdvancedSearch.tsx
  */

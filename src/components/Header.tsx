@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Header.tsx
  * Bambeh Marketplace � Main App Header
  * � 2026 Bambeh Marketplace. All rights reserved.

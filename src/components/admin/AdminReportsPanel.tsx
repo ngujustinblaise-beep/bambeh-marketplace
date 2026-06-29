@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════════
  * ADMIN REPORTS PANEL
  * FILE LOCATION: src/components/admin/AdminReportsPanel.tsx

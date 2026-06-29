@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ACTION GUARD - PROTECT PREMIUM ACTIONS
  * FILE LOCATION: src/components/security/ActionGuard.tsx

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GLOBAL SEARCH PANEL
  * FILE LOCATION: src/components/search/GlobalSearch.tsx
  */

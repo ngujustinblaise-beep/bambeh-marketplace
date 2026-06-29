@@ -1,4 +1,4 @@
-﻿/**
+/**
  * IMAGE UPLOADER COMPONENT - FULLY FUNCTIONAL
  * FILE LOCATION: src/components/common/ImageUploader.tsx
  */

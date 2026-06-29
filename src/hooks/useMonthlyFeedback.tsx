@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useMonthlyFeedback.tsx
  * Fires the monthly feedback notification once per calendar month.
  */

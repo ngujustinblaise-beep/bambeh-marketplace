@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SECURITY INITIALIZER
  * FILE LOCATION: src/components/security/SecurityInitializer.tsx
  */

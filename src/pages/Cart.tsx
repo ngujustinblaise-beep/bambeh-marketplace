@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/Cart.tsx � Bambeh Marketplace
  *
  * FIXED:

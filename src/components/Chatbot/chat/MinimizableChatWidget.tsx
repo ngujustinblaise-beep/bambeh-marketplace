@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Minimize2, Maximize2, Send } from 'lucide-react';
 
 const MinimizableChatWidget = () => {

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Orders.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/Orders.tsx
  *

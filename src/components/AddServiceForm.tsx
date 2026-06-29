@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ADD SERVICE FORM COMPONENT
  * FILE LOCATION: src/components/services/AddServiceForm.tsx

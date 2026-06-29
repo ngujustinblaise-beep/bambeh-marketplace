@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/listings/ActionButtons.tsx
  * Bambeh Marketplace � Shared Contact / Report / Share Action Buttons
  *

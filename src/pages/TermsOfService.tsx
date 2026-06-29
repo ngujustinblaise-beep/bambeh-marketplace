@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TermsOfService.tsx — Bambeh Marketplace
  * ---------------------------------------------------------------------------
  * Play Store / App Store compliant — June 2026

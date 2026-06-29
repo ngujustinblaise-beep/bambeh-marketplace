@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VENDOR SUBSCRIPTION PLANS EXCLUSIVE - VENDOR-ONLY PAGE
  * ROUTE: /vendor/manage-plan

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/voice/MovableVoiceControl.tsx
  * FIXES: Removes duplicate isFinal/length/transcript/confidence declarations (TS2687)
  * Rebuilt clean with proper interface merging

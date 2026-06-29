@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * VENDOR SECURE DASHBOARD - ENHANCED VERSION
  * � 2025 Bambeh. All rights reserved.

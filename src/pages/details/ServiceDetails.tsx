@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Bambeh Marketplace � D�tails du service
  * � 2026 Bambeh Marketplace. All rights reserved.
  */

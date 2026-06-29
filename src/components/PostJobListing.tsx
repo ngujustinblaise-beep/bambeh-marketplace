@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Jobs/PostJobListing.tsx
  * Bambeh Marketplace — Post Job Listing Form (Embeddable Component)
  * © 2026 Bambeh Marketplace. All rights reserved.

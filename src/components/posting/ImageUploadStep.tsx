@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ════════════════════════════════════════════════════════════════
  * src/components/posting/ImageUploadStep.tsx
  * Universal image upload step — drop into any posting form.

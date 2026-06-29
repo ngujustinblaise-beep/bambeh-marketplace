@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/ListProperty.tsx — Bambeh Marketplace
  *
  * ✅ FULL REWRITE — production-ready rental posting form:

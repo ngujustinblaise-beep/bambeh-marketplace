@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/contexts/VendorContext.tsx
  * Bambeh Marketplace � Vendor Context (duplicate vendorStatus fixed)
  * � 2026 Bambeh Marketplace. All rights reserved.

@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React from "react";
 import { SUBSCRIPTION_PLANS } from "../../config/subscription";
 import { PAYMENT_METHODS } from "../../types/subscription";

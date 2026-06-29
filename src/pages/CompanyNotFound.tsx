@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/CompanyNotFound.tsx � Bambeh Marketplace
  *
  * FIXES applied:

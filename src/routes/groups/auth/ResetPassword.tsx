@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, KeyRound, Lock } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";

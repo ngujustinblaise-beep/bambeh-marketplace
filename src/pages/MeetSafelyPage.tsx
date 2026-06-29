@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/pages/MeetSafelyPage.tsx � Bambeh Marketplace
  * FIXED: Was a stub (emoji + title). Now a full safety guide.
  */

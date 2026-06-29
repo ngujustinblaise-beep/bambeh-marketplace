@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BAMBÉ MARKETPLACE - PRODUCT MANAGEMENT COMPONENT
  * Version: 1.0.0
  */

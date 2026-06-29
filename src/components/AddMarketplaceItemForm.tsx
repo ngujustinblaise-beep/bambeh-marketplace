@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
  * ADD MARKETPLACE ITEM FORM COMPONENT
  * FILE LOCATION: src/components/marketplace/AddMarketplaceItemForm.tsx

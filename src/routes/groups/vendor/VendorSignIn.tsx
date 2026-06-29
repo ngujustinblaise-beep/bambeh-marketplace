@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Store, ArrowLeft, LogIn, User, Lock, Eye, EyeOff, AlertCircle, Shield, Clock, CheckCircle, Building, Loader2 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";

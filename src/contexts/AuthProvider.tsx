@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════
  * src/contexts/AuthProvider.tsx
  * Single Auth Source of Truth — Bambeh Marketplace

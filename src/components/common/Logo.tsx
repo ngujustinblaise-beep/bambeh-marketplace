@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LOGO COMPONENT
  * FILE LOCATION: src/components/common/Logo.tsx
  */

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ---------------------------------------------------------------------------
  * ESCROW PAGE - BAMBEH MARKETPLACE
  * Zerm Coins Escrow / Buyer Protection System

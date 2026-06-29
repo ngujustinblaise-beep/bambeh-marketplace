@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/services/ServiceLikeButton.tsx � Bambeh Marketplace
  *
  * SECURITY & BUG FIXES:

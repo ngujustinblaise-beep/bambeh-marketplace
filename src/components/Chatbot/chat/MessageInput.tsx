@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/components/Chatbot/chat/MessageInput.tsx
  * Bambeh Marketplace � Chat Message Input Bar
  * � 2026 Bambeh Marketplace. All rights reserved.

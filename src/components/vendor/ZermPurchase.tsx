@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import React, { useState } from "react";
 import { ZERM_COIN_PACKAGES, getTotalZermCoins } from "@/utils/tierBridge";
 import type { ZermCoinPackage } from "@/utils/tierBridge";
