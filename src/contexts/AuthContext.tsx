@@ -15,6 +15,7 @@ export interface AuthContextValue {
   user: AuthUser | null;
   currentUser: AuthUser | null;
   loading: boolean;
+  authReady: boolean;
   isAdmin: boolean;
   isVendor: boolean;
   login: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -43,6 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { user: supabaseUser, loading: supabaseLoading, refreshSession } = useSupabaseAuth();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
 
   const refreshUser = useCallback(async () => {
     setLoading(true);
@@ -53,6 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(mapUser(sessionUser));
     } finally {
       setLoading(false);
+      setAuthReady(true);
+      setAuthReady(true);
     }
   }, [refreshSession]);
 
@@ -65,6 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(mapUser(session?.user ?? null));
       setLoading(false);
+      setAuthReady(true);
+      setAuthReady(true);
     });
 
     return () => {
@@ -114,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       currentUser: user,
       loading,
+    authReady,
       isAdmin,
       isVendor,
       login,
@@ -133,4 +140,5 @@ export function useAuth(): AuthContextValue {
 }
 
 export default AuthContext;
+
 

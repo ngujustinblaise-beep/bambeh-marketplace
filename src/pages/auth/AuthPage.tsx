@@ -172,7 +172,7 @@ export default function AuthPage() {
 
           <div className="mt-8 space-y-3">
             <Link
-              to="/login"
+              to="/signin"
               className="block text-center rounded-xl bg-teal-500 hover:bg-teal-600 px-5 py-3 font-semibold transition-colors text-white"
             >
               {t.buttons.signIn}

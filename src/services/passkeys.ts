@@ -56,3 +56,4 @@ export function passkeysLoginStart(payload: unknown) {
 export function passkeysLoginVerify(payload: unknown) {
   return postFunction("passkeys-login-verify", payload);
 }
+export const authenticateWithPasskey = getAuthHeaders;

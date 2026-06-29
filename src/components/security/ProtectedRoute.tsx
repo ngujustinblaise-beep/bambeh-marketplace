@@ -9,10 +9,10 @@ import { ReactNode } from 'react';
 interface ProtectedRouteProps { children: ReactNode; }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { currentUser, loading } = useAuth();
+  const { currentUser, loading, authReady } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (loading || !authReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -37,6 +37,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 };
 
 export default ProtectedRoute;
+
 
 
 

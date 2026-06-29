@@ -57,7 +57,7 @@ export default function BiometricLogin() {
       <div className="space-y-3">
         <button
           type="button"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/", { replace: true })}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3.5 text-sm font-semibold text-white hover:bg-teal-700"
         >
           <Fingerprint className="h-4 w-4" />
@@ -66,7 +66,7 @@ export default function BiometricLogin() {
 
         <button
           type="button"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/login", { replace: true })}
           className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100"
         >
           {t.fallback}
@@ -76,4 +76,6 @@ export default function BiometricLogin() {
     </AuthShell>
   );
 }
+
+
 

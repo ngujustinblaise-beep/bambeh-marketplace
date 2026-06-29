@@ -154,11 +154,14 @@ import VendorLayout from "@/components/layout/VendorLayout";
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
 import AuthPage from "@/pages/auth/AuthPage";
+import BiometricLogin from "@/pages/auth/BiometricLogin";
 
 // ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
+const Login             = lazy(() => import("@/pages/auth/Login"));
+const Register          = lazy(() => import("@/pages/auth/Register"));
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
@@ -463,6 +466,8 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   // browsing public content before completing onboarding.
   const publicPrefixes = [
     "/login",
+    "/signin",
+    "/biometric-login",
     "/register",
     "/forgot-password",
     "/forgot-credentials",
@@ -703,7 +708,9 @@ export default function App() {
 
                         {/* ── 2. AUTH ─────────────────────────────────────────────── */}
                         <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
-                        <Route path="/register" element={<Navigate to="/login" replace />} />
+                        <Route path="/signin" element={<AuthLayout><Login /></AuthLayout>} />
+                        <Route path="/biometric-login" element={<AuthLayout><BiometricLogin /></AuthLayout>} />
+                        <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}
@@ -1393,5 +1400,6 @@ export default function App() {
     </React.StrictMode>
   );
 }
+
 
 

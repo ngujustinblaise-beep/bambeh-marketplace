@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
@@ -28,27 +28,27 @@ const STRINGS = {
     signIn: "Se connecter",
     signingIn: "Connexion...",
     noAccount: "Pas encore de compte ?",
-    createOne: "Créer un compte",
-    forgotPassword: "Mot de passe oublié ?",
+    createOne: "Cr�er un compte",
+    forgotPassword: "Mot de passe oubli� ?",
     invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
     show: "Afficher le mot de passe",
     hide: "Masquer le mot de passe",
     logoAlt: "Logo Bambeh",
   },
   ar: {
-    title: "مرحبًا بعودتك",
-    subtitle: "سجّل الدخول للمتابعة.",
-    email: "البريد الإلكتروني",
-    password: "كلمة المرور",
-    signIn: "تسجيل الدخول",
-    signingIn: "جارٍ تسجيل الدخول...",
-    noAccount: "ليس لديك حساب؟",
-    createOne: "إنشاء حساب",
-    forgotPassword: "نسيت كلمة المرور؟",
-    invalid: "يرجى إدخال بريد إلكتروني وكلمة مرور صالحين.",
-    show: "إظهار كلمة المرور",
-    hide: "إخفاء كلمة المرور",
-    logoAlt: "شعار Bambeh",
+    title: "?????? ??????",
+    subtitle: "???? ?????? ????????.",
+    email: "?????? ??????????",
+    password: "???? ??????",
+    signIn: "????? ??????",
+    signingIn: "???? ????? ??????...",
+    noAccount: "??? ???? ?????",
+    createOne: "????? ????",
+    forgotPassword: "???? ???? ???????",
+    invalid: "???? ????? ???? ???????? ????? ???? ??????.",
+    show: "????? ???? ??????",
+    hide: "????? ???? ??????",
+    logoAlt: "???? Bambeh",
   },
   pidgin: {
     title: "Welcome back",
@@ -67,35 +67,26 @@ const STRINGS = {
   },
   ff: {
     title: "Jam tan",
-    subtitle: "Seŋo e barne.",
+    subtitle: "Se?o e barne.",
     email: "Njiital email",
-    password: "Moƴƴere moƴƴi",
-    signIn: "Seŋo",
-    signingIn: "Ko seŋoto...",
+    password: "Mo??ere mo??i",
+    signIn: "Se?o",
+    signingIn: "Ko se?oto...",
     noAccount: "A adi a waawi fotaade?",
     createOne: "Sos njiya",
-    forgotPassword: "Nodii moƴƴere?",
-    invalid: "Tiiɗno naatnude email e moƴƴere moƴƴi.",
-    show: "Waɗtude moƴƴere",
-    hide: "Ưittude moƴƴere",
+    forgotPassword: "Nodii mo??ere?",
+    invalid: "Tii?no naatnude email e mo??ere mo??i.",
+    show: "Wa?tude mo??ere",
+    hide: "?ittude mo??ere",
     logoAlt: "Bambeh logo",
   },
 } as const;
 
-type LoginLocationState = {
-  from?: {
-    pathname?: string;
-    search?: string;
-    hash?: string;
-  };
-};
-
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { language } = useLanguage();
-  const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
   const { login } = useAuth();
+  const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -121,16 +112,7 @@ export default function Login() {
         setError(result.error);
         return;
       }
-
-      const state = location.state as LoginLocationState | null;
-      const from = state?.from;
-
-      const safeTarget =
-        from?.pathname && from.pathname !== "/login" && from.pathname !== "/signin"
-          ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
-          : "/";
-
-      navigate(safeTarget, { replace: true });
+      navigate("/", { replace: true });
     } finally {
       setLoading(false);
     }
@@ -148,8 +130,6 @@ export default function Login() {
               e.currentTarget.style.display = "none";
             }}
           />
-          <h1 className="text-3xl font-bold text-gray-900">{t.title}</h1>
-          <p className="mt-2 text-sm text-gray-600">{t.subtitle}</p>
         </div>
 
         <div className="rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-xl">
@@ -182,7 +162,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
-                  placeholder="••••••••"
+                  placeholder="��������"
                 />
                 <button
                   type="button"

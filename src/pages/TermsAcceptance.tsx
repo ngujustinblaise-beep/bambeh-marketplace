@@ -1,490 +1,495 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * TERMS ACCEPTANCE — BAMBEH MARKETPLACE
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * LEGAL COMPLIANCE:
+ * ✅ OHADA e-consent checkbox — Cameroonian data protection law
+ *    (Law No. 2024/017 of 23 December 2024, Sections 13-16)
+ * ✅ Standard Terms & Conditions acceptance checkbox
+ * ✅ Scroll-to-bottom enforcement before acceptance is enabled
+ * ✅ Explicit opt-in (not pre-checked) — required by Law 2024/017
+ * ✅ Timestamps stored on acceptance
+ * ✅ Returning users correctly bypass re-acceptance
+ *
  * FILE: src/pages/TermsAcceptance.tsx
- * ---------------------------------------------------------------------------
- * Self-contained. Does NOT import "@/hooks/useAppLang" (that import was the
- * likely cause of the onboarding freeze: if the hook is missing/broken the
- * page crashed on mount, so the app appeared stuck on language selection).
- * Language is read directly from localStorage and kept in sync via the
- * "bambeh:langchange" + "storage" events. Full legal body is included here.
+ * © 2026 BAMBEH SARL. Registre de Commerce: CM-NSI-02-2026-B13-00179 · NIU: M022618405804C · D-U-N-S No: 850379853
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, ScrollText, Mail, Building2, CheckCircle2 } from "lucide-react";
-
-type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
-
-const LANG_KEY = "Bambeh_language";
-const ACCEPTED_KEY = "Bambeh_terms_accepted";
-const ACCEPTED_DATE_KEY = "Bambeh_terms_accepted_date";
-
-/** Resolve any stored value to a known LangCode (mirrors App.tsx). */
-function resolveLang(raw: string | null): Lang {
-  const valid: Lang[] = ["en", "fr", "pidgin", "ar", "ff"];
-  if (raw === "pcm" || raw === "pidgin_english") return "pidgin";
-  if (raw === "ful" || raw === "fulfulde") return "ff";
-  return valid.includes(raw as Lang) ? (raw as Lang) : "en";
-}
-
-/**
- * Tiny self-contained language hook. Reads localStorage on mount and updates
- * when either the inline App provider OR the LanguageSelection page fires
- * "bambeh:langchange" (detail may be a string OR { language }), and on the
- * cross-tab "storage" event. No external file dependency = no crash risk.
- */
-function useOnboardingLang(): Lang {
-  const [lang, setLang] = useState<Lang>(() =>
-    resolveLang(typeof window !== "undefined" ? localStorage.getItem(LANG_KEY) : null)
-  );
-
-  useEffect(() => {
-    const onLangChange = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      const raw =
-        typeof detail === "string"
-          ? detail
-          : detail && typeof detail === "object" && "language" in detail
-          ? (detail as { language: string }).language
-          : localStorage.getItem(LANG_KEY);
-      setLang(resolveLang(raw));
-    };
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === LANG_KEY) setLang(resolveLang(e.newValue));
-    };
-    window.addEventListener("bambeh:langchange", onLangChange as EventListener);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("bambeh:langchange", onLangChange as EventListener);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  return lang;
-}
-
-const COMPANY = {
-  legalName: "BAMBEH SARL",
-  registreDeCommerce: "CM -NSI-02-2026-B13-00179",
-  niu: "M022618405804C",
-  duns: "850379853",
-  emails: ["support@bambeh.com", "bambetheapp@gmail.com"],
-};
-
-const SUBSCRIPTION_TIERS = [
-  { tier: "Basic (Bronze)", price: "100 XAF", cycle: "Daily" },
-  { tier: "Premium (Silver)", price: "500 XAF", cycle: "Weekly" },
-  { tier: "Gold", price: "1,500 XAF", cycle: "Monthly" },
-];
-
-/** UI chrome strings (translated). Legal body stays in English. */
-const S: Record<
-  Lang,
-  {
-    title: string;
-    subtitle: string;
-    effective: string;
-    legalScroll: string;
-    scrollAlert: string;
-    readSuccess: string;
-    checkLabel: string;
-    ohadaLabel: string;
-    decline: string;
-    accept: string;
-    helper: string;
-    companyTitle: string;
-    contactsTitle: string;
-    tiersTitle: string;
-    colTier: string;
-    colPrice: string;
-    colCycle: string;
-  }
-> = {
-  en: {
-    title: "Welcome to Bambeh",
-    subtitle: "Marketplace Terms & Conditions",
-    effective: "Effective Date: November 21, 2025",
-    legalScroll: "Bambeh Terms and Conditions of Use",
-    scrollAlert: "Please scroll to the bottom and review the terms before accepting.",
-    readSuccess: "Thank you. You can now accept the terms below.",
-    checkLabel: "I have read, understood, and agree to the Terms and Conditions and Marketplace Fees.",
-    ohadaLabel: "I consent to secure data verification under applicable law.",
-    decline: "Decline",
-    accept: "Accept & Continue",
-    helper: "You must read the terms, then confirm both checkboxes to continue.",
-    companyTitle: "Business Identity",
-    contactsTitle: "Contact Emails",
-    tiersTitle: "Subscription Tiers",
-    colTier: "Tier",
-    colPrice: "Price (XAF)",
-    colCycle: "Billing Cycle",
-  },
-  fr: {
-    title: "Bienvenue sur Bambeh",
-    subtitle: "Conditions du marché",
-    effective: "Date d’entrée en vigueur : 21 novembre 2025",
-    legalScroll: "Conditions générales d’utilisation de Bambeh",
-    scrollAlert: "Veuillez faire défiler jusqu’en bas et lire les conditions avant d’accepter.",
-    readSuccess: "Merci. Vous pouvez maintenant accepter les conditions ci-dessous.",
-    checkLabel: "J’ai lu, compris et j’accepte les conditions générales et les frais de marché.",
-    ohadaLabel: "Je consens à la vérification sécurisée des données conformément à la loi applicable.",
-    decline: "Refuser",
-    accept: "Accepter et continuer",
-    helper: "Vous devez lire les conditions puis confirmer les deux cases pour continuer.",
-    companyTitle: "Identité de l’entreprise",
-    contactsTitle: "Emails de contact",
-    tiersTitle: "Formules d’abonnement",
-    colTier: "Formule",
-    colPrice: "Prix (XAF)",
-    colCycle: "Cycle de facturation",
-  },
-  pidgin: {
-    title: "Welcome to Bambeh",
-    subtitle: "Marketplace Terms",
-    effective: "Effective Date: November 21, 2025",
-    legalScroll: "Bambeh Conditions for Use",
-    scrollAlert: "Abeg scroll reach bottom and read am before you accept.",
-    readSuccess: "Thanks. You fit accept the terms now.",
-    checkLabel: "I don read, understand and I agree with the terms and marketplace fees.",
-    ohadaLabel: "I consent to secure data verification under the law.",
-    decline: "Decline",
-    accept: "Accept & Continue",
-    helper: "Read the terms first, then tick both boxes to continue.",
-    companyTitle: "Business Identity",
-    contactsTitle: "Contact Emails",
-    tiersTitle: "Subscription Tiers",
-    colTier: "Tier",
-    colPrice: "Price (XAF)",
-    colCycle: "Billing Cycle",
-  },
-  ar: {
-    title: "مرحباً بكم في بامبيه",
-    subtitle: "شروط وأحكام السوق",
-    effective: "تاريخ السريان: 21 نوفمبر 2025",
-    legalScroll: "شروط وأحكام استخدام بامبيه",
-    scrollAlert: "يرجى التمرير إلى الأسفل ومراجعة الشروط قبل القبول.",
-    readSuccess: "شكراً لك. يمكنك الآن قبول الشروط أدناه.",
-    checkLabel: "لقد قرأت وفهمت وأوافق على الشروط والأحكام ورسوم السوق.",
-    ohadaLabel: "أوافق على التحقق الآمن من البيانات وفقاً للقانون المعمول به.",
-    decline: "رفض",
-    accept: "قبول ومتابعة",
-    helper: "يجب قراءة الشروط ثم تأكيد المربعين للمتابعة.",
-    companyTitle: "هوية الشركة",
-    contactsTitle: "البريد الإلكتروني للتواصل",
-    tiersTitle: "باقات الاشتراك",
-    colTier: "الباقة",
-    colPrice: "السعر (XAF)",
-    colCycle: "دورة الفوترة",
-  },
-  ff: {
-    title: "Njabbama ko Bambeh",
-    subtitle: "Sarɗiiji Lumo",
-    effective: "Ñalnde Fuɗɗorde: 21 November 2025",
-    legalScroll: "Sarɗiiji gollitorde Bambeh",
-    scrollAlert: "Abeg ɓuttu to les e janngu ko ɗiɗi ɓen a jaɓa.",
-    readSuccess: "A jarama. Aɗa waawi jaɓde sarɗiiji ɗi jooni.",
-    checkLabel: "Mi janngii, mi faami, mi jaɓi sarɗiiji e njoɓdi lumo.",
-    ohadaLabel: "Mi jaɓi ƴeewtere keɓe binndol e sariya jooni.",
-    decline: "Waawaa",
-    accept: "Jaɓugo e Yahu",
-    helper: "Janngu sarɗiiji ɗi fuɗɗi, ɗaɓɓit ɗiɗi checkboxes ɗi, puɗɗo.",
-    companyTitle: "Business Identity",
-    contactsTitle: "Contact Emails",
-    tiersTitle: "Subscription Tiers",
-    colTier: "Tier",
-    colPrice: "Price (XAF)",
-    colCycle: "Billing Cycle",
-  },
-};
+import {
+  CheckCircle,
+  AlertTriangle,
+  FileText,
+  ArrowRight,
+  ScrollText,
+  Check,
+  Shield,
+} from "lucide-react";
 
 export default function TermsAcceptance() {
-  const lang = useOnboardingLang();
   const navigate = useNavigate();
   const [hasRead, setHasRead] = useState(false);
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
+  const [isReturningUser, setIsReturningUser] = useState(false);
+
+  // ── OHADA / Law No. 2024/017 consent ──────────────────────────────────────
+  // Cameroonian personal data protection law (enacted 23 December 2024)
+  // requires explicit, informed, opt-in consent BEFORE any data is collected.
+  // This checkbox is separate from the Terms checkbox — it specifically covers
+  // personal data processing. It must NOT be pre-checked (Law 2024/017 §13–16).
   const [ohadaConsented, setOhadaConsented] = useState(false);
-  const [logoError, setLogoError] = useState(false);
 
-  const isRtl = lang === "ar";
-  const current = S[lang] || S.en;
-
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    const atBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 48;
-    if (atBottom) setHasRead(true);
+  useEffect(() => {
+    const termsAccepted = localStorage.getItem("Bambeh_terms_accepted");
+    if (termsAccepted === "true") {
+      setIsReturningUser(true);
+      setHasRead(true);
+      setHasScrolledToBottom(true);
+      setIsAccepted(true);
+      setOhadaConsented(true); // returning users already gave consent
+    }
   }, []);
 
-  const canContinue = hasRead && isAccepted && ohadaConsented;
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const reachedBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 50;
+    if (reachedBottom && !hasScrolledToBottom) {
+      setHasScrolledToBottom(true);
+      setHasRead(true);
+    }
+  };
 
   const handleAccept = () => {
-    if (!canContinue) return;
-    localStorage.setItem(ACCEPTED_KEY, "true");
-    localStorage.setItem(ACCEPTED_DATE_KEY, new Date().toISOString());
+    if (!hasRead) {
+      alert("Please read the entire Terms and Conditions before accepting.");
+      return;
+    }
+    if (!isAccepted) {
+      alert("Please check the acceptance box to continue.");
+      return;
+    }
+    if (!ohadaConsented) {
+      alert(
+        "Please confirm your consent to data processing under Cameroonian law (Law No. 2024/017) to continue."
+      );
+      return;
+    }
+
+    localStorage.setItem("Bambeh_terms_accepted", "true");
+    localStorage.setItem("Bambeh_terms_accepted_date", new Date().toISOString());
+    // Store OHADA consent timestamp separately for audit purposes
+    localStorage.setItem("Bambeh_ohada_consent_date", new Date().toISOString());
+
     // Onboarding order in App.tsx guard: language -> terms -> welcome
     navigate("/welcome", { replace: true });
   };
 
+  const handleDecline = () => {
+    if (
+      confirm(
+        "You must accept the Terms and Conditions to use Bambeh. Are you sure you want to decline?"
+      )
+    ) {
+      localStorage.clear();
+      alert("You have declined the Terms and Conditions. The app will now close.");
+      window.close();
+    }
+  };
+
+  const canAccept = hasRead && isAccepted && ohadaConsented;
+
   return (
-    <main
-      className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 p-4"
-      dir={isRtl ? "rtl" : "ltr"}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 p-4">
       <div className="max-w-4xl mx-auto py-8">
-        <header className="text-center mb-8">
-          {!logoError ? (
-            <img
-              src="/logo.png"
-              alt="Bambeh Logo"
-              className="mx-auto h-24 w-auto object-contain mb-4 drop-shadow-md"
-              onError={() => setLogoError(true)}
-            />
-          ) : (
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full mb-4 shadow-xl mx-auto">
-              <span className="text-4xl font-bold text-white">B</span>
+
+        {/* ── Header ─────────────────────────────────────────────────────── */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full mb-4 shadow-xl">
+            <span className="text-4xl font-bold text-white">B</span>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Welcome to <span className="text-teal-600">Bambeh</span>
+          </h1>
+          <p className="text-lg text-gray-600 mb-1">Online Marketplace</p>
+          <div className="flex items-center justify-center gap-2 text-teal-600">
+            <FileText className="w-5 h-5" />
+            <p className="text-sm font-medium">
+              Please read and accept our Terms and Conditions
+            </p>
+          </div>
+        </div>
+
+        {/* ── Terms Container ─────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+          {/* Scroll indicator banners */}
+          {!hasScrolledToBottom && (
+            <div className="bg-amber-50 border-b border-amber-200 px-6 py-3">
+              <div className="flex items-center gap-2 text-amber-800">
+                <ScrollText className="w-5 h-5" />
+                <p className="text-sm font-medium">
+                  Please scroll down and read the entire document
+                </p>
+              </div>
             </div>
           )}
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">{current.title}</h1>
-          <p className="text-lg text-gray-600 mb-1">{current.subtitle}</p>
-          <p className="text-sm text-gray-500">{current.effective}</p>
-        </header>
+          {hasScrolledToBottom && (
+            <div className="bg-green-50 border-b border-green-200 px-6 py-3">
+              <div className="flex items-center gap-2 text-green-800">
+                <CheckCircle className="w-5 h-5" />
+                <p className="text-sm font-medium">
+                  ✅ Thank you for reading! You may now accept the terms below.
+                </p>
+              </div>
+            </div>
+          )}
 
-        <section className="bg-white rounded-2xl shadow-2xl overflow-hidden" aria-labelledby="terms-title">
-          <div
-            className={`px-6 py-3 border-b flex items-center gap-2 ${
-              hasRead ? "bg-green-50 text-green-800" : "bg-amber-50 text-amber-800"
-            }`}
-          >
-            <ScrollText className="w-5 h-5 shrink-0" />
-            <p className="text-sm font-medium">{hasRead ? current.readSuccess : current.scrollAlert}</p>
-          </div>
-
+          {/* ── Scrollable Terms Content ────────────────────────────────── */}
           <div
             onScroll={handleScroll}
-            className="h-[26rem] overflow-y-auto px-6 sm:px-8 py-6 text-gray-700 space-y-6"
-            tabIndex={0}
-            aria-describedby="terms-help"
+            className="h-96 overflow-y-auto px-8 py-6 prose prose-sm max-w-none"
+            style={{ scrollBehavior: "smooth" }}
           >
-            <div>
-              <h2 id="terms-title" className="text-xl font-bold text-teal-700 text-center">
-                {current.legalScroll}
-              </h2>
-              <p id="terms-help" className="text-sm text-gray-500 text-center mt-2">
-                {current.helper}
-              </p>
-            </div>
-
-            {/* Business identity */}
-            <div className="rounded-2xl border border-gray-200 p-5 bg-gray-50">
-              <div className="flex items-center gap-2 mb-3 text-gray-800 font-semibold">
-                <Building2 className="w-4 h-4" />
-                <span>{current.companyTitle}</span>
+            <div className="text-gray-700">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-teal-700">
+                  BAMBEH TERMS AND CONDITIONS
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Effective Date: January 1, 2026
+                </p>
               </div>
-              <p className="text-sm leading-7"><span className="font-semibold">Legal name:</span> {COMPANY.legalName}</p>
-              <p className="text-sm leading-7"><span className="font-semibold">Registre de commerce:</span> {COMPANY.registreDeCommerce}</p>
-              <p className="text-sm leading-7"><span className="font-semibold">NIU:</span> {COMPANY.niu}</p>
-              <p className="text-sm leading-7"><span className="font-semibold">D-U-N-S No:</span> {COMPANY.duns}</p>
-            </div>
 
-            <p className="text-sm leading-7">
-              Welcome to the Bambeh mobile application (&quot;App&quot;) and Services. Bambeh connects users for
-              buying, selling, job and housing searches in a dynamic marketplace and community. By accessing or
-              using the App, you agree to these Terms, a <strong>binding legal agreement</strong>.
-            </p>
+              <p className="mb-4 font-semibold">
+                Welcome to Bambeh ("the App"), a marketplace platform operated
+                by BAMBEH SARL (Registre de Commerce: CM-NSI-02-2026-B13-00179),
+                connecting buyers and sellers digitally across Cameroon and beyond.
+              </p>
 
-            {/* I. Agreement and Your Role */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">I. Agreement and Your Role</h3>
-              <p className="text-sm leading-7 font-semibold text-gray-800">A. Acceptance and Governing Law</p>
-              <p className="text-sm leading-7">
-                These Terms shall be governed by the laws applicable to the Republic of Cameroon, including the
-                mandatory provisions of OHADA Uniform Acts and Law No. 2010/012 (Cybersecurity), where applicable.
-              </p>
-              <p className="text-sm leading-7">
-                Bambeh reserves the right to modify these Terms at any time, with modifications becoming effective
-                upon posting. Continued use constitutes acceptance of the revised Terms.
-              </p>
-              <p className="text-sm leading-7 font-semibold text-gray-800 mt-3">B. Eligibility and Account Security</p>
-              <p className="text-sm leading-7">You must be 18 or older to use the Services.</p>
-              <p className="text-sm leading-7">
-                You are responsible for maintaining the security of your account credentials and for all activity
-                under your account.
-              </p>
-            </div>
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
+                1. DEFINITIONS AND INTERPRETATION
+              </h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>"BAMBEH SARL"</strong> refers to the legal entity operating Bambeh, registered in Yaoundé, Cameroon (Registre de Commerce: CM-NSI-02-2026-B13-00179; NIU: M022618405804C; D-U-N-S No: 850379853).</li>
+                <li><strong>"User"</strong> means any individual who creates an account and uses the App for buying, selling, or browsing.</li>
+                <li><strong>"Vendor"</strong> means a User who offers goods or services for sale on the platform.</li>
+                <li><strong>"Zerm Coins"</strong> are a proprietary in-app virtual currency with no real-world cash value outside the platform.</li>
+              </ul>
 
-            {/* II. Pricing and Payment */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">II. Pricing and Payment Provisions</h3>
-              <p className="text-sm leading-7 font-semibold text-gray-800">A. {current.tiersTitle}</p>
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 my-3 overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200 text-left">
-                      <th className="py-2 px-2">{current.colTier}</th>
-                      <th className="py-2 px-2">{current.colPrice}</th>
-                      <th className="py-2 px-2">{current.colCycle}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SUBSCRIPTION_TIERS.map((row) => (
-                      <tr key={row.tier} className="border-b border-gray-100 last:border-0">
-                        <td className="py-2 px-2 font-semibold">{row.tier}</td>
-                        <td className="py-2 px-2">{row.price}</td>
-                        <td className="py-2 px-2">{row.cycle}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
+                2. ACCOUNT REGISTRATION
+              </h3>
+              <h4 className="text-lg font-semibold text-gray-800 mt-4">2.1 Eligibility</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>You must be at least 18 years old to use Bambeh.</li>
+                <li>By registering, you affirm that all information provided is accurate and complete.</li>
+              </ul>
+              <h4 className="text-lg font-semibold text-gray-800 mt-4">2.2 Account Security</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>You are responsible for maintaining the confidentiality of your credentials.</li>
+                <li>Notify us immediately of any unauthorized access at support@bambeh.com.</li>
+              </ul>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
+                3. MARKETPLACE RULES
+              </h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>All listings must be accurate and lawful under Cameroonian law.</li>
+                <li>No counterfeit, stolen, or prohibited items are permitted.</li>
+                <li>Bambeh reserves the right to remove listings at its discretion.</li>
+                <li>A 1% transaction fee applies to all completed sales — the lowest in Cameroon.</li>
+              </ul>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">4. ZERM COINS</h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Zerm Coins have no monetary value outside the platform.</li>
+                <li>They cannot be exchanged for cash.</li>
+                <li>BAMBEH SARL reserves the right to modify Zerm Coin policies with 30 days' notice.</li>
+              </ul>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">5. DATA PROTECTION</h3>
+              <p>
+                The collection and processing of your personal data is governed by
+                Cameroon's Law No. 2024/017 of 23 December 2024 on Personal Data Protection.
+                You have the right to access, rectify, and request deletion of your data at
+                any time by contacting support@bambeh.com. Full details are in our{" "}
+                <strong>Privacy Policy</strong> available at bambeh.com/privacy-policy.
+              </p>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
+                6. LIMITATION OF LIABILITY
+              </h3>
+              <p>
+                Bambeh is not liable for any indirect, incidental, or consequential
+                damages arising from your use of the platform.
+              </p>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
+                7. DISPUTE RESOLUTION
+              </h3>
+              <p>
+                All disputes shall be resolved through binding arbitration in
+                Yaoundé, Cameroon, under the laws of the Republic of Cameroon and
+                applicable OHADA Uniform Acts.
+              </p>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
+                8. INTELLECTUAL PROPERTY
+              </h3>
+              <p>
+                All content, trademarks, and technology are owned by BAMBEH SARL.
+                You may not copy, modify, or distribute any part without written permission.
+              </p>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">9. MODIFICATIONS</h3>
+              <p>
+                Bambeh may modify these Terms at any time. Continued use constitutes
+                acceptance. Material changes will be notified via in-app notice.
+              </p>
+
+              <h3 className="text-xl font-bold text-gray-900 mt-6">10. GOVERNING LAW</h3>
+              <p>
+                These Terms are governed by the laws of the Republic of Cameroon,
+                including applicable OHADA Uniform Acts.
+              </p>
+
+              <div className="bg-teal-50 border-l-4 border-teal-600 p-6 mt-8">
+                <h3 className="font-bold text-teal-900 mb-2">✅ ACKNOWLEDGMENT</h3>
+                <p className="text-sm">
+                  By checking the boxes below and clicking "Accept and Continue," you acknowledge:
+                </p>
+                <ul className="list-disc pl-6 mt-2 text-sm space-y-1">
+                  <li>You have read and understood these Terms and Conditions</li>
+                  <li>You agree to be bound by all provisions herein</li>
+                  <li>You are at least 18 years of age</li>
+                  <li>You have the legal capacity to enter into this agreement</li>
+                  <li>You consent to data processing as described under Law No. 2024/017</li>
+                </ul>
               </div>
-              <p className="text-sm leading-7 font-semibold text-gray-800 mt-2">B. Payment Processing and Wallet Services</p>
-              <p className="text-sm leading-7">
-                Payments processed via MTN Mobile Money, Orange Money, or other authorized gateways are subject to
-                the payment provider&apos;s processing rules and applicable law.
-              </p>
-              <p className="text-sm leading-7">
-                The App includes a digital wallet (&quot;Wallet&quot;) for holding in-app funds, represented by Zerm
-                Coins (1 Zerm = 100 XAF). Wallet balances are only usable within the Bambeh platform unless otherwise
-                stated.
-              </p>
-              <p className="text-sm leading-7 font-semibold text-gray-800 mt-2">C. Refund Policy</p>
-              <p className="text-sm leading-7">
-                Refund requests must be submitted within 7 calendar days via the approved support emails listed in
-                this document.
-              </p>
-            </div>
 
-            {/* III. User Responsibilities */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">III. User Responsibilities</h3>
-              <p className="text-sm leading-7">
-                Use the App only lawfully and consistent with its intended marketplace functions. Prohibited actions
-                include fraud, financial crime, money laundering, cybercrime, data scraping, impersonation, and
-                harassment.
-              </p>
-              <p className="text-sm leading-7">
-                By uploading any content, you grant Bambeh a license to use that content in connection with the
-                Services, subject to applicable law.
-              </p>
-            </div>
-
-            {/* IV. Intellectual Property */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">IV. Intellectual Property</h3>
-              <p className="text-sm leading-7">
-                Bambeh IP is protected by law, the OAPI Bangui Agreement, and international copyright principles.
-                Unauthorized use, copying, or reverse engineering is prohibited.
-              </p>
-            </div>
-
-            {/* V. Protection of User Data */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">V. Protection of User Data and Security</h3>
-              <p className="text-sm leading-7">
-                Bambeh processes personal data in compliance with applicable law and may cooperate with lawful
-                requests from authorities where required.
-              </p>
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 my-3 text-sm leading-7">
-                <strong>Security Notice:</strong> Bambeh uses reasonable security measures, but no online service can
-                guarantee absolute security.
-              </div>
-            </div>
-
-            {/* VI. Disclaimers */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">VI. Disclaimers and Liability Limitations</h3>
-              <p className="text-sm leading-7">
-                The Services are provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis, without
-                warranties to the extent permitted by law.
-              </p>
-            </div>
-
-            {/* VII. Termination */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-bold text-teal-700 mb-2">VII. Termination and Dispute Resolution</h3>
-              <p className="text-sm leading-7">Bambeh may suspend or terminate accounts for material breaches.</p>
-              <p className="text-sm leading-7">
-                Disputes are governed by applicable Cameroonian law and resolved in the competent courts of Yaoundé,
-                where permitted.
-              </p>
-            </div>
-
-            {/* Contact */}
-            <div className="rounded-2xl border border-gray-200 p-5 bg-gray-50">
-              <div className="flex items-center gap-2 mb-3 text-gray-800 font-semibold">
-                <Mail className="w-4 h-4" />
-                <span>{current.contactsTitle}</span>
-              </div>
-              {COMPANY.emails.map((email) => (
-                <p key={email} className="text-sm leading-7">{email}</p>
-              ))}
-            </div>
-
-            {/* End marker — reaching this enables acceptance */}
-            <div className="border-t-2 pt-6 bg-teal-50 p-6 rounded-2xl text-center">
-              <CheckCircle2 className="w-8 h-8 text-teal-600 mx-auto mb-2" />
-              <p className="font-bold text-teal-800">End of Terms and Conditions</p>
-              <p className="text-sm text-gray-600 mt-1">
-                You have reached the end of the document. Please confirm your acceptance below.
+              <p className="text-center text-sm text-gray-600 mt-8 pb-8">
+                <strong>Last Updated:</strong> January 1, 2026
+                <br />
+                <strong>Contact:</strong> support@bambeh.com · bambetheapp@gmail.com
+                <br />© 2026 BAMBEH SARL. Registre de Commerce: CM-NSI-02-2026-B13-00179 · NIU: M022618405804C · D-U-N-S No: 850379853
               </p>
             </div>
           </div>
 
-          {/* Acceptance controls */}
-          <div className="bg-gray-50 border-t p-6 space-y-4">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isAccepted}
-                disabled={!hasRead}
-                onChange={(e) => setIsAccepted(e.target.checked)}
-                className="mt-1 w-5 h-5 accent-teal-600 disabled:opacity-40"
-              />
-              <span className={`text-sm font-medium ${hasRead ? "text-gray-700" : "text-gray-400"}`}>
-                {current.checkLabel}
-              </span>
-            </label>
+          {/* ── Acceptance Section ──────────────────────────────────────────── */}
+          <div className="border-t-4 border-teal-500 bg-gradient-to-b from-gray-50 to-gray-100 px-8 py-8">
 
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={ohadaConsented}
-                disabled={!hasRead}
-                onChange={(e) => setOhadaConsented(e.target.checked)}
-                className="mt-1 w-5 h-5 accent-teal-600 disabled:opacity-40"
-              />
-              <span className={`text-sm font-medium ${hasRead ? "text-gray-700" : "text-gray-400"}`}>
-                {current.ohadaLabel}
-              </span>
-            </label>
-
+            {/* Warning if not scrolled */}
             {!hasRead && (
-              <p className="text-xs text-amber-700 bg-amber-50 rounded-lg p-2">{current.scrollAlert}</p>
+              <div className="mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-amber-900">
+                      Please read the entire document
+                    </p>
+                    <p className="text-xs text-amber-700 mt-1">
+                      Scroll down to the bottom to enable the acceptance checkboxes
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
 
-            <div className="flex gap-4 pt-2">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex-1 py-4 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-colors"
+            {/* ── Checkbox 1: General Terms ─────────────────────────────────── */}
+            <div
+              onClick={() => hasRead && setIsAccepted(!isAccepted)}
+              className={`
+                cursor-pointer rounded-2xl border-4 p-6 mb-4 transition-all duration-300 transform
+                ${!hasRead ? "opacity-50 cursor-not-allowed bg-gray-100 border-gray-300" : ""}
+                ${hasRead && !isAccepted ? "bg-white border-gray-300 hover:border-teal-400 hover:shadow-lg hover:scale-[1.01]" : ""}
+                ${isAccepted ? "bg-teal-50 border-teal-500 shadow-xl scale-[1.01]" : ""}
+              `}
+            >
+              <div className="flex items-start gap-5">
+                <div
+                  className={`
+                    flex-shrink-0 w-14 h-14 rounded-xl border-4 flex items-center justify-center transition-all duration-300
+                    ${!hasRead ? "border-gray-300 bg-gray-200" : ""}
+                    ${hasRead && !isAccepted ? "border-gray-400 bg-white hover:border-teal-500" : ""}
+                    ${isAccepted ? "border-teal-600 bg-teal-600" : ""}
+                  `}
+                  style={{ minWidth: "56px", minHeight: "56px" }}
+                >
+                  {isAccepted ? (
+                    <Check className="w-10 h-10 text-white" strokeWidth={4} />
+                  ) : (
+                    <div className="w-8 h-8 border-2 border-dashed border-gray-400 rounded-lg" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className={`text-base font-semibold ${hasRead ? "text-gray-900" : "text-gray-500"}`}>
+                    I have read, understood, and agree to be bound by the Bambeh
+                    Terms and Conditions.
+                  </p>
+                  <p className={`text-sm mt-2 ${hasRead ? "text-gray-600" : "text-gray-400"}`}>
+                    I acknowledge that I am at least 18 years of age and have
+                    the legal capacity to enter into this agreement.
+                  </p>
+                  {isAccepted && (
+                    <div className="mt-3 flex items-center gap-2 text-teal-600 font-bold">
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Terms Accepted ✓</span>
+                    </div>
+                  )}
+                  {hasRead && !isAccepted && (
+                    <div className="mt-3 flex items-center gap-2 text-gray-500 text-sm">
+                      <span className="animate-bounce">👆</span>
+                      <span>Click here to accept Terms and Conditions</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Checkbox 2: OHADA / Law No. 2024/017 Data Consent ─────────────
+                MANDATORY under Cameroon's Personal Data Protection Act
+                (Law No. 2024/017, 23 December 2024, Sections 13-16).
+                — Must be explicit and opt-in (never pre-checked)
+                — Must clearly state what data is processed and why
+                — Must state the user's right to withdraw consent
+                — Stored with its own timestamp for legal audit trail
+            ──────────────────────────────────────────────────────────────────── */}
+            {hasRead && (
+              <label
+                className={`flex items-start gap-4 cursor-pointer rounded-2xl border-4 p-5 mb-6 transition-all duration-300
+                  ${ohadaConsented
+                    ? "bg-blue-50 border-blue-500 shadow-md"
+                    : "bg-white border-gray-300 hover:border-blue-400 hover:shadow-md"
+                  }`}
               >
-                {current.decline}
+                <div
+                  className={`flex-shrink-0 w-12 h-12 rounded-lg border-4 flex items-center justify-center transition-all duration-300 mt-0.5
+                    ${ohadaConsented
+                      ? "border-blue-600 bg-blue-600"
+                      : "border-gray-400 bg-white hover:border-blue-500"
+                    }`}
+                  style={{ minWidth: "48px", minHeight: "48px" }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={ohadaConsented}
+                    onChange={(e) => setOhadaConsented(e.target.checked)}
+                    className="sr-only"
+                    aria-label="OHADA data protection consent — Law No. 2024/017"
+                  />
+                  {ohadaConsented ? (
+                    <Check className="w-7 h-7 text-white" strokeWidth={4} />
+                  ) : (
+                    <div className="w-6 h-6 border-2 border-dashed border-gray-400 rounded" />
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <p className="text-sm font-bold text-gray-900">
+                      Data Protection Consent — Law No. 2024/017 (Cameroon)
+                    </p>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    I consent to BAMBEH SARL collecting and processing my personal
+                    data (name, email, phone number, location, device identifiers) solely
+                    to operate my Bambeh account, process transactions, and improve the
+                    platform — in accordance with{" "}
+                    <strong>Cameroon's Law No. 2024/017 of 23 December 2024</strong>{" "}
+                    on Personal Data Protection and applicable OHADA Uniform Acts.
+                  </p>
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                    Your data is never sold to third parties. You may withdraw this
+                    consent and request deletion of your data at any time by emailing{" "}
+                    <strong>support@bambeh.com</strong>. See our full{" "}
+                    <strong>Privacy Policy</strong> at bambeh.com/privacy-policy.
+                  </p>
+                  {ohadaConsented && (
+                    <div className="mt-3 flex items-center gap-2 text-blue-600 font-semibold text-sm">
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Data processing consent confirmed ✓</span>
+                    </div>
+                  )}
+                  {!ohadaConsented && (
+                    <div className="mt-2 flex items-center gap-2 text-gray-500 text-xs">
+                      <span className="animate-bounce">👆</span>
+                      <span>Required — click to give data processing consent</span>
+                    </div>
+                  )}
+                </div>
+              </label>
+            )}
+
+            {/* ── Progress indicator ─────────────────────────────────────────── */}
+            {hasRead && (
+              <div className="flex items-center gap-3 mb-6 px-2">
+                <div className={`flex items-center gap-1.5 text-xs font-medium ${hasRead ? "text-teal-600" : "text-gray-400"}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-xs ${hasRead ? "bg-teal-500" : "bg-gray-300"}`}>1</div>
+                  Read
+                </div>
+                <div className="flex-1 h-0.5 bg-gray-200 rounded">
+                  <div className={`h-full rounded transition-all duration-500 bg-teal-500 ${isAccepted ? "w-full" : "w-0"}`} />
+                </div>
+                <div className={`flex items-center gap-1.5 text-xs font-medium ${isAccepted ? "text-teal-600" : "text-gray-400"}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-xs ${isAccepted ? "bg-teal-500" : "bg-gray-300"}`}>2</div>
+                  Terms
+                </div>
+                <div className="flex-1 h-0.5 bg-gray-200 rounded">
+                  <div className={`h-full rounded transition-all duration-500 bg-blue-500 ${ohadaConsented ? "w-full" : "w-0"}`} />
+                </div>
+                <div className={`flex items-center gap-1.5 text-xs font-medium ${ohadaConsented ? "text-blue-600" : "text-gray-400"}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-xs ${ohadaConsented ? "bg-blue-500" : "bg-gray-300"}`}>3</div>
+                  Data
+                </div>
+              </div>
+            )}
+
+            {/* ── Action Buttons ─────────────────────────────────────────────── */}
+            <div className="flex gap-4">
+              <button
+                onClick={handleDecline}
+                className="flex-1 px-6 py-4 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
+              >
+                {isReturningUser ? "Close" : "Decline"}
               </button>
               <button
-                type="button"
                 onClick={handleAccept}
-                disabled={!canContinue}
-                className={`flex-1 py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-colors ${
-                  canContinue ? "bg-teal-600 hover:bg-teal-700" : "bg-gray-300 cursor-not-allowed"
+                disabled={!canAccept}
+                className={`flex-1 px-6 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${
+                  canAccept
+                    ? "bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-xl hover:shadow-2xl hover:scale-105"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                <span>{current.accept}</span>
-                <ArrowRight className={`w-5 h-5 ${isRtl ? "rotate-180" : ""}`} />
+                <span>{isReturningUser ? "Close" : "Accept and Continue"}</span>
+                <ArrowRight className="w-6 h-6" />
               </button>
             </div>
+
+            {/* Compliance note */}
+            <p className="text-center text-xs text-gray-400 mt-4">
+              Compliant with Cameroon Law No. 2024/017 · OHADA Uniform Acts ·
+              Google Play Developer Policy
+            </p>
           </div>
-        </section>
+        </div>
+
+        {/* ── Footer ─────────────────────────────────────────────────────────── */}
+        <div className="text-center mt-8">
+          <p className="text-sm text-gray-600">
+            🎉{" "}
+            <span className="font-bold text-green-600">Only 1% Transaction Fee</span>{" "}
+            — Lowest you will find online! 💚
+          </p>
+          <p className="text-xs text-gray-500 mt-2">BAMBEH MARKETPLACE - THE PULSE OF AFRICAN COMMERCE</p>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

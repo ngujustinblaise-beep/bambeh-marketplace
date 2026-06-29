@@ -43,13 +43,13 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
   const location = useLocation();
   const { language } = useLanguage();
   const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
-  const { user, loading, isAdmin, isVendor } = useAuth();
+  const { user, loading, authReady, isAdmin, isVendor } = useAuth();
 
   const userId = user?.id ?? null;
 
   const isSubscribed = true;
 
-  if (loading) {
+  if (loading || !authReady) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3 text-gray-600">
@@ -81,5 +81,6 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
 };
 
 export default AuthGate;
+
 
 

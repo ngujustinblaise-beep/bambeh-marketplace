@@ -132,7 +132,7 @@ export default function Login() {
         setError(result.error);
         return;
       }
-      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/";
+      navigate("/", { replace: true });
       navigate(safeTarget, { replace: true });
     } finally {
       setLoading(false);
@@ -147,9 +147,9 @@ export default function Login() {
         <div className="text-center mb-6">
           <div className="w-18 h-18 mx-auto mb-4 rounded-3xl bg-teal-600 flex items-center justify-center shadow-md">
             <Globe className="w-9 h-9 text-white" />
-          </div>
+
           <h1 className="text-2xl font-black text-gray-900">{t.title}</h1>
-          <p className="mt-2 text-sm text-gray-600">{t.subtitle}</p>
+
         </div>
 
         <div className="rounded-3xl border border-gray-100 bg-white shadow-xl p-5 sm:p-6">
@@ -166,7 +166,7 @@ export default function Login() {
                 className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
                 placeholder="name@example.com"
               />
-            </div>
+  
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">{t.password}</label>
@@ -188,13 +188,13 @@ export default function Login() {
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
-              </div>
-            </div>
+    
+  
 
             {error && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
-              </div>
+    
             )}
 
             <button
@@ -216,11 +216,12 @@ export default function Login() {
               <Fingerprint className="h-4 w-4" />
               {t.biometricLogin}
             </Link>
-          </div>
+
         </div>
       </section>
     </main>
   );
 }
+
 
 

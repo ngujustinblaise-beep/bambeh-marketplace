@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Fingerprint, ArrowRight, ShieldAlert } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
@@ -29,13 +29,13 @@ const STRINGS: Record<
     error: "Biometric sign-in failed. Try again or use password.",
   },
   fr: {
-    title: "Connexion biométrique",
-    subtitle: "Utilisez votre empreinte, votre visage ou le déverrouillage de l’appareil pour continuer.",
-    biometric: "Continuer avec la biométrie",
+    title: "Connexion biom�trique",
+    subtitle: "Utilisez votre empreinte, votre visage ou le d�verrouillage de l�appareil pour continuer.",
+    biometric: "Continuer avec la biom�trie",
     fallback: "Utiliser le mot de passe",
-    loading: "Vérification de l’appareil...",
-    unsupported: "La biométrie n’est pas disponible sur cet appareil.",
-    error: "La connexion biométrique a échoué. Réessayez ou utilisez le mot de passe.",
+    loading: "V�rification de l�appareil...",
+    unsupported: "La biom�trie n�est pas disponible sur cet appareil.",
+    error: "La connexion biom�trique a �chou�. R�essayez ou utilisez le mot de passe.",
   },
   pcm: {
     title: "Biometric login",
@@ -47,26 +47,26 @@ const STRINGS: Record<
     error: "Biometric login no work. Try again or use password.",
   },
   ar: {
-    title: "تسجيل الدخول بالبصمة",
-    subtitle: "استخدم البصمة أو الوجه أو قفل الجهاز للمتابعة.",
-    biometric: "المتابعة بالبصمة",
-    fallback: "استخدام كلمة المرور",
-    loading: "جارٍ التحقق من الجهاز...",
-    unsupported: "البصمة غير متاحة على هذا الجهاز.",
-    error: "فشل تسجيل الدخول بالبصمة. حاول مرة أخرى أو استخدم كلمة المرور.",
+    title: "????? ?????? ???????",
+    subtitle: "?????? ?????? ?? ????? ?? ??? ?????? ????????.",
+    biometric: "???????? ???????",
+    fallback: "??????? ???? ??????",
+    loading: "???? ?????? ?? ??????...",
+    unsupported: "?????? ??? ????? ??? ??? ??????.",
+    error: "??? ????? ?????? ???????. ???? ??? ???? ?? ?????? ???? ??????.",
   },
   ful: {
-    title: "Seŋo e biometrics",
-    subtitle: "Huuto fingerprint, face, walla loowdi ɓii ngol e ndee.",
+    title: "Se?o e biometrics",
+    subtitle: "Huuto fingerprint, face, walla loowdi ?ii ngol e ndee.",
     biometric: "Jokkondir e biometrics",
     fallback: "Huuto password",
-    loading: "Ngam njiɗde telefon maa...",
+    loading: "Ngam nji?de telefon maa...",
     unsupported: "Biometrics woodaani e ndee telefon.",
-    error: "Biometric login moƴƴaani. Rewɓe woni ndee walla huutoro password.",
+    error: "Biometric login mo??aani. Rew?e woni ndee walla huutoro password.",
   },
   ha: {
     title: "Shiga da biometrics",
-    subtitle: "Yi amfani da yatsa, fuska, ko buɗe na'ura don ci gaba.",
+    subtitle: "Yi amfani da yatsa, fuska, ko bu?e na'ura don ci gaba.",
     biometric: "Ci gaba da biometrics",
     fallback: "Yi amfani da kalmar sirri",
     loading: "Ana bincika na'urar ka...",
