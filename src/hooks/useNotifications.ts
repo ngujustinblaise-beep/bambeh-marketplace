@@ -1,80 +1,60 @@
-﻿import { useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/contexts/AuthContext';
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-export interface BambehNotification {
+export type BambehNotification = {
   id: string;
-  type: 'welcome' | 'subscription' | 'new_order' | 'new_message' | string;
+  user_id: string;
+  type: string;
   title: string;
   body: string;
   is_read: boolean;
   created_at: string;
-}
-
-const activeChannels = new Map();
+  link?: string | null;
+  data?: Record<string, unknown> | null;
+};
 
 export function useNotifications() {
-  const { user } = useAuth();
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<BambehNotification[]>([]);
   const [loading, setLoading] = useState(true);
-  const unreadCount = notifications.filter(n => !n.is_read).length;
-  const mountedRef = useRef(true);
+
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.is_read).length,
+    [notifications]
+  );
 
   const fetchNotifications = useCallback(async () => {
-    if (!user?.id) return;
     setLoading(true);
     const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50);
-    if (!error && data && mountedRef.current) setNotifications(data);
-    if (mountedRef.current) setLoading(false);
-  }, [user?.id]);
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  const markRead = useCallback(async (id) => {
-    await supabase.from('notifications').update({ is_read: true }).eq('id', id);
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+    if (!error && data) setNotifications(data as BambehNotification[]);
+    setLoading(false);
+  }, []);
+
+  const markRead = useCallback(async (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+    );
+    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
   }, []);
 
   const markAllRead = useCallback(async () => {
-    if (!user?.id) return;
-    await supabase.from('notifications').update({ is_read: true }).eq('user_id', user.id).eq('is_read', false);
-    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-  }, [user?.id]);
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => { mountedRef.current = false; };
+    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    await supabase.from("notifications").update({ is_read: true }).eq("is_read", false);
   }, []);
 
-  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
-
   useEffect(() => {
-    if (!user?.id) return;
-    const channelKey = 'bambeh-notifications-' + user.id;
-    if (activeChannels.has(channelKey)) return;
-    const channel = supabase
-      .channel(channelKey)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'notifications',
-        filter: 'user_id=eq.' + user.id,
-      }, (payload) => {
-        if (mountedRef.current) {
-          setNotifications(prev => [payload.new, ...prev]);
-        }
-      })
-      .subscribe();
-    activeChannels.set(channelKey, channel);
-    return () => {
-      activeChannels.delete(channelKey);
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
-  return { notifications, unreadCount, loading, markRead, markAllRead, refetch: fetchNotifications };
+  return {
+    notifications,
+    unreadCount,
+    loading,
+    markRead,
+    markAllRead,
+    refetch: fetchNotifications,
+  };
 }
-

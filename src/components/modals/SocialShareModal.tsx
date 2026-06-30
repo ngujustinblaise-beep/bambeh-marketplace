@@ -130,7 +130,7 @@ export default function SocialShareModal({
           url: shareUrl,
         });
       } catch (e) {
-        // User cancelled or share failed � ignore
+        // User cancelled or share failed ? ignore
       }
     }
   };

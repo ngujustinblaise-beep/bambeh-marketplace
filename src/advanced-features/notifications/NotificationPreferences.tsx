@@ -42,7 +42,7 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({ userI
       ))}
       <button onClick={handleSave} disabled={saving}
         className="mt-4 w-full bg-teal-600 text-white py-2 rounded-xl font-medium disabled:opacity-50">
-        {saving ? "Saving�" : "Save Preferences"}
+        {saving ? "Saving?" : "Save Preferences"}
       </button>
     </div>
   );

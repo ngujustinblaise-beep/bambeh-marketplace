@@ -1,7 +1,7 @@
 /**
  * src/contexts/VendorContext.tsx
- * Bambeh Marketplace � Vendor Context (duplicate vendorStatus fixed)
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Vendor Context (duplicate vendorStatus fixed)
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
@@ -37,7 +37,7 @@ export interface VendorProfile {
 
 export interface VendorContextValue {
   vendorProfile: VendorProfile | null;
-  vendorStatus: VendorStatus;       // single declaration � fixes TS2300 / TS2687
+  vendorStatus: VendorStatus;       // single declaration ? fixes TS2300 / TS2687
   isVendor: boolean;
   isLoadingVendor: boolean;
   vendorError: string | null;

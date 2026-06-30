@@ -39,8 +39,8 @@ const ReferralButton: React.FC<ReferralButtonProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Join Bamb� Marketplace',
-          text: `Use my referral code ${referralCode} to join Bamb� and get bonus Zerm Coins!`,
+          title: 'Join Bamb? Marketplace',
+          text: `Use my referral code ${referralCode} to join Bamb? and get bonus Zerm Coins!`,
           url: referralLink,
         });
       } catch (err) {

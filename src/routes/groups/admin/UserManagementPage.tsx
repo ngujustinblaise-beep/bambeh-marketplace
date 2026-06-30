@@ -1,7 +1,7 @@
 /**
  * src/pages/admin/UserManagementPage.tsx
- * Bambeh Marketplace � Admin User Management
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Admin User Management
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -51,8 +51,8 @@ const UserManagementPage: React.FC = () => {
       if (!error && data) {
         setUsers(data.map((row) => ({
           id: row.id as string,
-          displayName: (row.display_name as string) ?? "�",
-          email: (row.email as string) ?? "�",
+          displayName: (row.display_name as string) ?? "?",
+          email: (row.email as string) ?? "?",
           avatarUrl: row.avatar_url as string | undefined,
           city: row.city as string | undefined,
           isVerified: Boolean(row.is_verified),
@@ -142,8 +142,8 @@ const UserManagementPage: React.FC = () => {
           <Filter className="w-4 h-4 text-gray-400" />
           <select value={filter} onChange={(e) => setFilter(e.target.value as UserFilter)} className="text-sm outline-none bg-transparent">
             <option value="all">Tous</option>
-            <option value="verified">V�rifi�s</option>
-            <option value="unverified">Non v�rifi�s</option>
+            <option value="verified">V?rifi?s</option>
+            <option value="unverified">Non v?rifi?s</option>
             <option value="vendors">Vendeurs</option>
             <option value="banned">Bannis</option>
           </select>
@@ -155,7 +155,7 @@ const UserManagementPage: React.FC = () => {
         {loading ? (
           <div className="py-12 text-center"><RefreshCw className="w-5 h-5 text-gray-300 animate-spin mx-auto mb-2" /><p className="text-sm text-gray-400">Chargement...</p></div>
         ) : filtered.length === 0 ? (
-          <div className="py-12 text-center"><Users className="w-8 h-8 text-gray-200 mx-auto mb-2" /><p className="text-sm text-gray-400">Aucun utilisateur trouv�</p></div>
+          <div className="py-12 text-center"><Users className="w-8 h-8 text-gray-200 mx-auto mb-2" /><p className="text-sm text-gray-400">Aucun utilisateur trouv?</p></div>
         ) : (
           <div className="divide-y divide-gray-50">
             {filtered.map((u) => (
@@ -180,10 +180,10 @@ const UserManagementPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button type="button" onClick={() => setSelected(u)} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500" aria-label="Voir"><Eye className="w-4 h-4" /></button>
-                  <button type="button" onClick={() => toggleVerify(u)} disabled={actioning === u.id} className="p-1.5 rounded-lg hover:bg-teal-50 text-teal-600" aria-label={u.isVerified ? "Retirer v�rification" : "V�rifier"}>
+                  <button type="button" onClick={() => toggleVerify(u)} disabled={actioning === u.id} className="p-1.5 rounded-lg hover:bg-teal-50 text-teal-600" aria-label={u.isVerified ? "Retirer v?rification" : "V?rifier"}>
                     {actioning === u.id ? <Loader2 className="w-4 h-4 animate-spin" /> : u.isVerified ? <ShieldOff className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                   </button>
-                  <button type="button" onClick={() => toggleBan(u)} disabled={actioning === u.id} className={`p-1.5 rounded-lg ${u.isBanned ? "hover:bg-green-50 text-green-600" : "hover:bg-red-50 text-red-500"}`} aria-label={u.isBanned ? "D�bannir" : "Bannir"}>
+                  <button type="button" onClick={() => toggleBan(u)} disabled={actioning === u.id} className={`p-1.5 rounded-lg ${u.isBanned ? "hover:bg-green-50 text-green-600" : "hover:bg-red-50 text-red-500"}`} aria-label={u.isBanned ? "D?bannir" : "Bannir"}>
                     <Ban className="w-4 h-4" />
                   </button>
                 </div>
@@ -212,19 +212,19 @@ const UserManagementPage: React.FC = () => {
               <p className="text-sm text-gray-500">{selected.email}</p>
             </div>
             <div className="space-y-2 text-sm bg-gray-50 rounded-xl p-3">
-              <div className="flex justify-between"><span className="text-gray-500">Ville</span><span>{selected.city ?? "�"}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Ville</span><span>{selected.city ?? "?"}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Abonnement</span><span className="font-medium">{selected.subscriptionTier}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Annonces</span><span>{selected.totalListings}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Inscrit le</span><span>{new Date(selected.createdAt).toLocaleDateString("fr-CM")}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">V�rifi�</span><span className={selected.isVerified ? "text-green-600 font-medium" : "text-gray-400"}>{selected.isVerified ? "Oui" : "Non"}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">V?rifi?</span><span className={selected.isVerified ? "text-green-600 font-medium" : "text-gray-400"}>{selected.isVerified ? "Oui" : "Non"}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Banni</span><span className={selected.isBanned ? "text-red-500 font-medium" : "text-gray-400"}>{selected.isBanned ? "Oui" : "Non"}</span></div>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => toggleVerify(selected)} disabled={actioning === selected.id} className="flex-1 py-2.5 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-xl text-sm font-medium">
-                {selected.isVerified ? "Retirer v�rif." : "V�rifier"}
+                {selected.isVerified ? "Retirer v?rif." : "V?rifier"}
               </button>
               <button type="button" onClick={() => toggleBan(selected)} disabled={actioning === selected.id} className={`flex-1 py-2.5 rounded-xl text-sm font-medium ${selected.isBanned ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>
-                {selected.isBanned ? "D�bannir" : "Bannir"}
+                {selected.isBanned ? "D?bannir" : "Bannir"}
               </button>
             </div>
           </div>

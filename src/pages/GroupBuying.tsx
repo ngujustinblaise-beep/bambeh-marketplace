@@ -1,8 +1,8 @@
 /**
- * src/pages/GroupBuying.tsx � Bambeh Marketplace
+ * src/pages/GroupBuying.tsx ? Bambeh Marketplace
  *
  * FIXED / NEW in this version:
- *  ? "Create Group Buy" button opens an inline modal � no page redirect
+ *  ? "Create Group Buy" button opens an inline modal ? no page redirect
  *  ? Groups saved to component state (with Supabase insert attempt)
  *  ? Full escrow logic: all money held in escrow, released only after purchase
  *  ? "Invite Friends" button shares a real group link (Web Share API + WhatsApp fallback)
@@ -48,18 +48,18 @@ const DIAL_CODES = [
   { code: '+237', flag: '????', name: 'Cameroun' },
   { code: '+234', flag: '????', name: 'Nigeria' },
   { code: '+233', flag: '????', name: 'Ghana' },
-  { code: '+221', flag: '????', name: 'S�n�gal' },
-  { code: '+225', flag: '????', name: "C�te d'Ivoire" },
+  { code: '+221', flag: '????', name: 'S?n?gal' },
+  { code: '+225', flag: '????', name: "C?te d'Ivoire" },
   { code: '+241', flag: '????', name: 'Gabon' },
   { code: '+242', flag: '????', name: 'Congo' },
   { code: '+243', flag: '????', name: 'RD Congo' },
-  { code: '+240', flag: '????', name: 'Guin�e �q.' },
+  { code: '+240', flag: '????', name: 'Guin?e ?q.' },
   { code: '+236', flag: '????', name: 'Centrafrique' },
   { code: '+235', flag: '????', name: 'Tchad' },
   { code: '+227', flag: '????', name: 'Niger' },
   { code: '+228', flag: '????', name: 'Togo' },
-  { code: '+229', flag: '????', name: 'B�nin' },
-  { code: '+224', flag: '????', name: 'Guin�e' },
+  { code: '+229', flag: '????', name: 'B?nin' },
+  { code: '+224', flag: '????', name: 'Guin?e' },
 ];
 
 // --- Demo Deals with beautiful Unsplash images ---------------------------------
@@ -87,7 +87,7 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
   {
     id: 'grp-002',
-    name: 'Samsung Galaxy Buds2 Pro � Wireless Earbuds',
+    name: 'Samsung Galaxy Buds2 Pro ? Wireless Earbuds',
     image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80',
     category: 'Electronics',
@@ -100,7 +100,7 @@ const INITIAL_DEALS: GroupDeal[] = [
     currentBuyers: 4,
     maxBuyers: 8,
     endsAt: new Date(Date.now() + 86400000 * 2).toISOString(),
-    vendor: 'TechShop Yaound�',
+    vendor: 'TechShop Yaound?',
     rating: 4.7,
     reviews: 18,
     description: 'Noise-cancelling wireless earbuds with 30hr battery life. Unlocked, works with all phones.',
@@ -146,7 +146,7 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
   {
     id: 'grp-005',
-    name: 'Fresh Avocados � 10kg Farm Box',
+    name: 'Fresh Avocados ? 10kg Farm Box',
     image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80',
     category: 'Food',
@@ -166,7 +166,7 @@ const INITIAL_DEALS: GroupDeal[] = [
   },
   {
     id: 'grp-006',
-    name: 'Solar Lantern � 3-in-1 Charging Kit',
+    name: 'Solar Lantern ? 3-in-1 Charging Kit',
     image: '??',
     imageUrl: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80',
     category: 'Electronics',
@@ -670,7 +670,7 @@ const GroupDealCard = ({ deal, onJoin, onShare }: {
           <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
           <span className="text-xs font-semibold text-gray-700">{deal.rating}</span>
           <span className="text-xs text-gray-400">({deal.reviews})</span>
-          <span className="text-gray-200 mx-1">�</span>
+          <span className="text-gray-200 mx-1">?</span>
           <span className="text-xs text-gray-500 truncate">{deal.vendor}</span>
         </div>
 
@@ -816,7 +816,7 @@ const GroupBuying: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl font-black">Group Buying ??</h1>
-              <p className="text-blue-100 text-sm">Buy together, save together � the more the merrier!</p>
+              <p className="text-blue-100 text-sm">Buy together, save together ? the more the merrier!</p>
             </div>
           </div>
 

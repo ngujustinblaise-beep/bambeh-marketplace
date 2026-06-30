@@ -45,13 +45,13 @@ const OTPModal: React.FC<OTPModalProps> = ({
         <button onClick={handleVerify} disabled={isVerifying || code.length < 6}
           className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold
             disabled:opacity-50 mb-3">
-          {isVerifying ? "Verifying�" : "Verify"}
+          {isVerifying ? "Verifying?" : "Verify"}
         </button>
 
         <div className="flex gap-3">
           <button onClick={onResend} disabled={isSending}
             className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-xl text-sm">
-            {isSending ? "Sending�" : "Resend"}
+            {isSending ? "Sending?" : "Resend"}
           </button>
           <button onClick={onCancel}
             className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-xl text-sm">
@@ -92,7 +92,7 @@ const TwoFactorAuth: React.FC = () => {
       </p>
       <button onClick={handleSendOTP} disabled={sending}
         className="bg-teal-600 text-white px-6 py-2.5 rounded-xl font-medium disabled:opacity-50">
-        {sending ? "Sending OTP�" : "Enable 2FA"}
+        {sending ? "Sending OTP?" : "Enable 2FA"}
       </button>
 
       {showOTP && (

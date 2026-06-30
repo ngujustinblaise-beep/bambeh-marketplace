@@ -1,7 +1,7 @@
 /**
  * src/advanced-features/admin/OrderManagement.tsx
- * Bambeh Marketplace � Admin Order Management
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Admin Order Management
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -34,12 +34,12 @@ interface AdminOrder {
 // --- Status Config ------------------------------------------------------------
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; icon: React.ElementType }> = {
   pending:    { label: "En attente",     color: "text-yellow-600 bg-yellow-50 border-yellow-200", icon: Clock },
-  confirmed:  { label: "Confirm�",       color: "text-blue-600 bg-blue-50 border-blue-200",       icon: CheckCircle },
+  confirmed:  { label: "Confirm?",       color: "text-blue-600 bg-blue-50 border-blue-200",       icon: CheckCircle },
   processing: { label: "En traitement",  color: "text-purple-600 bg-purple-50 border-purple-200", icon: RefreshCw },
-  shipped:    { label: "Exp�di�",        color: "text-teal-600 bg-teal-50 border-teal-200",       icon: Truck },
-  delivered:  { label: "Livr�",          color: "text-green-600 bg-green-50 border-green-200",    icon: CheckCircle },
-  canceled:   { label: "Annul�",         color: "text-red-500 bg-red-50 border-red-200",          icon: XCircle },
-  refunded:   { label: "Rembours�",      color: "text-gray-500 bg-gray-100 border-gray-200",      icon: RefreshCw },
+  shipped:    { label: "Exp?di?",        color: "text-teal-600 bg-teal-50 border-teal-200",       icon: Truck },
+  delivered:  { label: "Livr?",          color: "text-green-600 bg-green-50 border-green-200",    icon: CheckCircle },
+  canceled:   { label: "Annul?",         color: "text-red-500 bg-red-50 border-red-200",          icon: XCircle },
+  refunded:   { label: "Rembours?",      color: "text-gray-500 bg-gray-100 border-gray-200",      icon: RefreshCw },
 };
 
 function StatusBadge({ status }: { status: OrderStatus }) {
@@ -98,9 +98,9 @@ const AdminOrderManagement: React.FC = () => {
         return {
           id: row.id as string,
           vendorId: row.vendor_id as string,
-          vendorName: (vendor?.store_name as string) ?? "�",
+          vendorName: (vendor?.store_name as string) ?? "?",
           customerId: row.customer_id as string,
-          customerName: (customer?.display_name as string) ?? "�",
+          customerName: (customer?.display_name as string) ?? "?",
           totalXAF: row.total_xaf as number,
           commissionXAF: row.commission_xaf as number,
           status: row.status as OrderStatus,
@@ -181,7 +181,7 @@ const AdminOrderManagement: React.FC = () => {
 
       {/* Commission summary */}
       <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-3 flex items-center justify-between">
-        <span className="text-sm text-teal-700 font-medium">Commission Bambeh (r�sultats filtr�s)</span>
+        <span className="text-sm text-teal-700 font-medium">Commission Bambeh (r?sultats filtr?s)</span>
         <span className="text-lg font-bold text-teal-800">{formatXAF(totalCommission)}</span>
       </div>
 
@@ -228,7 +228,7 @@ const AdminOrderManagement: React.FC = () => {
         ) : filtered.length === 0 ? (
           <div className="py-12 text-center">
             <ShoppingBag className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">Aucune commande trouv�e</p>
+            <p className="text-sm text-gray-400">Aucune commande trouv?e</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -271,7 +271,7 @@ const AdminOrderManagement: React.FC = () => {
                           type="button"
                           onClick={() => setSelectedOrder(order)}
                           className="p-1.5 rounded-lg hover:bg-teal-50 text-teal-600 transition-colors"
-                          aria-label="Voir d�tails"
+                          aria-label="Voir d?tails"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -313,7 +313,7 @@ const AdminOrderManagement: React.FC = () => {
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSelectedOrder(null)} />
           <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl z-50 p-5 max-w-md mx-auto space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-gray-900">D�tail commande</h3>
+              <h3 className="font-bold text-gray-900">D?tail commande</h3>
               <button type="button" onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600">?</button>
             </div>
             <div className="space-y-2 text-sm">

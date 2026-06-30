@@ -1,5 +1,5 @@
 /**
- * SubscriptionPlans.tsx  �  Bambeh Marketplace
+ * SubscriptionPlans.tsx  ?  Bambeh Marketplace
  * FILE LOCATION: src/pages/subscription.tsx
  *
  * FIXED (this version):
@@ -150,7 +150,7 @@ const SubscriptionPlans: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center max-w-sm w-full">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-green-700 mb-2">Access Unlocked! ??</h2>
-          <p className="text-gray-600">Your {selectedPlan?.name} is active. Redirecting�</p>
+          <p className="text-gray-600">Your {selectedPlan?.name} is active. Redirecting?</p>
         </div>
       </div>
     );
@@ -171,7 +171,7 @@ const SubscriptionPlans: React.FC = () => {
             <div className="bg-white/20 p-3 rounded-full">{selectedPlan.icon}</div>
             <div>
               <h1 className="text-xl font-bold">{selectedPlan.name}</h1>
-              <p className="text-sm opacity-80">{selectedPlan.duration} � {selectedPlan.price.toLocaleString()} XAF</p>
+              <p className="text-sm opacity-80">{selectedPlan.duration} ? {selectedPlan.price.toLocaleString()} XAF</p>
             </div>
           </div>
         </div>
@@ -194,11 +194,11 @@ const SubscriptionPlans: React.FC = () => {
             <h3 className="font-semibold text-gray-800 mb-4">Pay with Mobile Money</h3>
             <CamPayWidget
               amount={selectedPlan.price}
-              description={`Bambeh ${selectedPlan.name} � ${selectedPlan.duration}`}
+              description={`Bambeh ${selectedPlan.name} ? ${selectedPlan.duration}`}
               externalRef={`sub_${selectedPlan.id}_${userId}_${Date.now()}`}
               metadata={{ user_id: userId, plan_id: selectedPlan.id }}
               onSuccess={handlePaymentSuccess}
-              buttonLabel={`Subscribe � ${selectedPlan.price.toLocaleString()} XAF`}
+              buttonLabel={`Subscribe ? ${selectedPlan.price.toLocaleString()} XAF`}
             />
           </div>
         </div>
@@ -255,14 +255,14 @@ const SubscriptionPlans: React.FC = () => {
                 }}
                 className={`w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r ${plan.gradient} hover:opacity-90 transition-opacity`}
               >
-                Select � {plan.price.toLocaleString()} XAF
+                Select ? {plan.price.toLocaleString()} XAF
               </button>
             </div>
           </div>
         ))}
 
         <p className="text-xs text-gray-400 text-center">
-          Secured by CamPay � BAMBEH SARL � support@bambeh.com
+          Secured by CamPay ? BAMBEH SARL ? support@bambeh.com
         </p>
       </div>
     </div>

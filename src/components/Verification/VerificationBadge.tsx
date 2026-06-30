@@ -1,7 +1,7 @@
 /**
  * src/components/Verification/VerificationBadge.tsx
- * Bambeh Marketplace � Seller / Vendor Verification Badge
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Seller / Vendor Verification Badge
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useCallback } from "react";
@@ -47,44 +47,44 @@ interface BadgeConfig {
 
 const BADGE_CONFIGS: Record<VerificationLevel, BadgeConfig> = {
   unverified: {
-    label: "Non v�rifi�",
+    label: "Non v?rifi?",
     color: "text-gray-500",
     bgColor: "bg-gray-100",
     borderColor: "border-gray-200",
     icon: Shield,
-    description: "Ce compte n'a pas encore �t� v�rifi�.",
+    description: "Ce compte n'a pas encore ?t? v?rifi?.",
   },
   email_verified: {
-    label: "Email v�rifi�",
+    label: "Email v?rifi?",
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     icon: Check,
-    description: "L'adresse e-mail de ce compte a �t� v�rifi�e.",
+    description: "L'adresse e-mail de ce compte a ?t? v?rifi?e.",
   },
   phone_verified: {
-    label: "T�l�phone v�rifi�",
+    label: "T?l?phone v?rifi?",
     color: "text-teal-600",
     bgColor: "bg-teal-50",
     borderColor: "border-teal-200",
     icon: BadgeCheck,
-    description: "Le num�ro de t�l�phone de ce compte a �t� v�rifi�.",
+    description: "Le num?ro de t?l?phone de ce compte a ?t? v?rifi?.",
   },
   id_verified: {
-    label: "Identit� v�rifi�e",
+    label: "Identit? v?rifi?e",
     color: "text-green-700",
     bgColor: "bg-green-50",
     borderColor: "border-green-300",
     icon: ShieldCheck,
-    description: "L'identit� de ce membre a �t� v�rifi�e par Bambeh.",
+    description: "L'identit? de ce membre a ?t? v?rifi?e par Bambeh.",
   },
   business_verified: {
-    label: "Entreprise v�rifi�e",
+    label: "Entreprise v?rifi?e",
     color: "text-purple-700",
     bgColor: "bg-purple-50",
     borderColor: "border-purple-300",
     icon: Award,
-    description: "Cette entreprise a �t� v�rifi�e et enregistr�e par Bambeh.",
+    description: "Cette entreprise a ?t? v?rifi?e et enregistr?e par Bambeh.",
   },
   premium_verified: {
     label: "Vendeur Premium ?",
@@ -92,7 +92,7 @@ const BADGE_CONFIGS: Record<VerificationLevel, BadgeConfig> = {
     bgColor: "bg-yellow-50",
     borderColor: "border-yellow-400",
     icon: Star,
-    description: "Vendeur Premium Bambeh � identit�, entreprise et excellence de service v�rifi�es.",
+    description: "Vendeur Premium Bambeh ? identit?, entreprise et excellence de service v?rifi?es.",
   },
 };
 
@@ -139,7 +139,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
         type="button"
         onClick={() => showTooltip && setTooltipOpen((v) => !v)}
         className={`inline-flex items-center border rounded-full font-medium transition-colors ${sizes.padding} ${sizes.gap} ${config.bgColor} ${config.borderColor} ${config.color} ${showTooltip ? "cursor-pointer hover:opacity-80" : "cursor-default"}`}
-        aria-label={`V�rification: ${config.label}`}
+        aria-label={`V?rification: ${config.label}`}
       >
         <Icon className={sizes.icon} />
         {showLabel && <span className={sizes.text}>{config.label}</span>}
@@ -173,19 +173,19 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
             {status && (
               <div className="mt-3 space-y-1.5">
                 <VerificationCheck
-                  label="Email v�rifi�"
+                  label="Email v?rifi?"
                   done={status.emailVerified ?? false}
                 />
                 <VerificationCheck
-                  label="T�l�phone v�rifi�"
+                  label="T?l?phone v?rifi?"
                   done={status.phoneVerified ?? false}
                 />
                 <VerificationCheck
-                  label="Identit� v�rifi�e"
+                  label="Identit? v?rifi?e"
                   done={status.idVerified ?? false}
                 />
                 <VerificationCheck
-                  label="Entreprise v�rifi�e"
+                  label="Entreprise v?rifi?e"
                   done={status.businessVerified ?? false}
                 />
               </div>
@@ -193,7 +193,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
 
             {status?.verifiedAt && (
               <p className="mt-2 text-xs text-gray-400">
-                V�rifi� le {new Date(status.verifiedAt).toLocaleDateString("fr-CM")}
+                V?rifi? le {new Date(status.verifiedAt).toLocaleDateString("fr-CM")}
               </p>
             )}
           </div>
@@ -233,25 +233,25 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
   const steps = [
     {
       id: "email",
-      label: "V�rification email",
+      label: "V?rification email",
       done: status.emailVerified ?? false,
       required: true,
     },
     {
       id: "phone",
-      label: "V�rification t�l�phone",
+      label: "V?rification t?l?phone",
       done: status.phoneVerified ?? false,
       required: true,
     },
     {
       id: "id",
-      label: "V�rification identit�",
+      label: "V?rification identit?",
       done: status.idVerified ?? false,
       required: false,
     },
     {
       id: "business",
-      label: "V�rification entreprise",
+      label: "V?rification entreprise",
       done: status.businessVerified ?? false,
       required: false,
     },
@@ -264,9 +264,9 @@ export const VerificationStepsPanel: React.FC<VerificationStepsPanelProps> = ({
   return (
     <div className={`bg-white border border-gray-200 rounded-2xl p-4 space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Niveau de v�rification</h3>
+        <h3 className="font-semibold text-gray-900">Niveau de v?rification</h3>
         <span className="text-sm text-gray-500">
-          {completedCount}/{totalCount} �tapes
+          {completedCount}/{totalCount} ?tapes
         </span>
       </div>
 

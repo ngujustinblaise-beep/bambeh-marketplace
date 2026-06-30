@@ -14,7 +14,7 @@
  * ? Transaction receipts
  * ? Order confirmation
  * 
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -86,7 +86,7 @@ export default function CheckoutAdvanced() {
         subtotal: subtotal,
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
-        deliveryAddress: 'Bastos, Yaound�, '
+        deliveryAddress: 'Bastos, Yaound?, '
       };
 
       setCheckoutData(mockCheckoutData);

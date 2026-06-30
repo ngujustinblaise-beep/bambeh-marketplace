@@ -1,7 +1,7 @@
 /**
  * src/components/forms/AddJobForm.tsx
- * Bambeh Marketplace � Add Job Listing Form
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Add Job Listing Form
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -13,8 +13,8 @@ interface AddJobFormProps {
   onCancel?: () => void;
 }
 
-const JOB_TYPES = ["CDI", "CDD", "Temps partiel", "Stage", "Freelance", "B�n�volat"] as const;
-const JOB_CATEGORIES = ["Informatique & Tech", "Commerce & Vente", "�ducation", "Sant�", "Transport", "Agriculture", "BTP & Travaux", "Administration", "H�tellerie & Restauration", "Autres"] as const;
+const JOB_TYPES = ["CDI", "CDD", "Temps partiel", "Stage", "Freelance", "B?n?volat"] as const;
+const JOB_CATEGORIES = ["Informatique & Tech", "Commerce & Vente", "?ducation", "Sant?", "Transport", "Agriculture", "BTP & Travaux", "Administration", "H?tellerie & Restauration", "Autres"] as const;
 
 const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
   const { user } = useAuth();
@@ -39,7 +39,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) { setError("Vous devez �tre connect�."); return; }
+    if (!user) { setError("Vous devez ?tre connect?."); return; }
     if (!form.title || !form.description || !form.jobType || !form.category) { setError("Veuillez remplir tous les champs obligatoires."); return; }
     setLoading(true);
     setError("");
@@ -76,7 +76,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900">Publier une offre d'emploi</h2>
-        <p className="text-sm text-gray-500 mt-1">Trouvez le talent id�al pour votre entreprise</p>
+        <p className="text-sm text-gray-500 mt-1">Trouvez le talent id?al pour votre entreprise</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -84,7 +84,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Titre du poste <span className="text-red-500">*</span></label>
-            <input type="text" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Ex: D�veloppeur React Senior" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" />
+            <input type="text" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Ex: D?veloppeur React Senior" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Entreprise</label>
@@ -97,14 +97,14 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Type de contrat <span className="text-red-500">*</span></label>
             <select value={form.jobType} onChange={(e) => set("jobType", e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white">
-              <option value="">-- S�lectionner --</option>
+              <option value="">-- S?lectionner --</option>
               {JOB_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cat�gorie <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Cat?gorie <span className="text-red-500">*</span></label>
             <select value={form.category} onChange={(e) => set("category", e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white">
-              <option value="">-- S�lectionner --</option>
+              <option value="">-- S?lectionner --</option>
               {JOB_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -113,13 +113,13 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
         {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description du poste <span className="text-red-500">*</span></label>
-          <textarea value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="D�crivez le poste, les responsabilit�s, l'environnement de travail..." rows={5} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none" />
+          <textarea value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="D?crivez le poste, les responsabilit?s, l'environnement de travail..." rows={5} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none" />
         </div>
 
         {/* Requirements */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Pr�requis & Qualifications</label>
-          <textarea value={form.requirements} onChange={(e) => set("requirements", e.target.value)} placeholder="Niveau d'�tudes, exp�riences requises, comp�tences..." rows={3} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none" />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Pr?requis & Qualifications</label>
+          <textarea value={form.requirements} onChange={(e) => set("requirements", e.target.value)} placeholder="Niveau d'?tudes, exp?riences requises, comp?tences..." rows={3} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none resize-none" />
         </div>
 
         {/* Salary */}
@@ -127,7 +127,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
           <label className="block text-sm font-medium text-gray-700 mb-1">Salaire mensuel (optionnel)</label>
           <div className="flex gap-2 items-center">
             <input type="number" value={form.salaryMin} onChange={(e) => set("salaryMin", e.target.value)} placeholder="Min" className="flex-1 border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" />
-            <span className="text-gray-400 text-sm">�</span>
+            <span className="text-gray-400 text-sm">?</span>
             <input type="number" value={form.salaryMax} onChange={(e) => set("salaryMax", e.target.value)} placeholder="Max" className="flex-1 border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" />
             <select value={form.salaryCurrency} onChange={(e) => set("salaryCurrency", e.target.value)} className="border border-gray-300 rounded-xl px-2 py-2.5 text-sm bg-white">
               <option value="XAF">FCFA</option>
@@ -147,7 +147,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.isRemote} onChange={(e) => set("isRemote", e.target.checked)} className="w-4 h-4 text-teal-600 rounded" />
-            <span className="text-sm text-gray-700">T�l�travail possible</span>
+            <span className="text-sm text-gray-700">T?l?travail possible</span>
           </label>
         </div>
 

@@ -1,7 +1,7 @@
 /**
  * src/components/Chatbot/chat/ChatInterface.tsx
- * Bambeh Marketplace � Chat Interface
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Chat Interface
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -254,7 +254,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-sm text-gray-400">Dites bonjour � {participantName} ??</p>
+            <p className="text-sm text-gray-400">Dites bonjour ? {participantName} ??</p>
           </div>
         ) : (
           groupByDate(messages).map((group) => (
@@ -313,7 +313,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="�crire un message..."
+              placeholder="?crire un message..."
               rows={1}
               className="w-full bg-transparent outline-none text-sm text-gray-900 placeholder-gray-400 resize-none max-h-28 overflow-y-auto"
               style={{ height: "auto" }}

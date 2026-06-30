@@ -1,7 +1,7 @@
 /**
  * NETWORK MONITOR - DETECT NETWORK STRENGTH & OPTIMIZE FOR POOR CONNECTIONS
  * FILE LOCATION: src/components/network/NetworkMonitor.tsx
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  */
 
 import {

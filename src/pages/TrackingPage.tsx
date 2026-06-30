@@ -1,7 +1,7 @@
 /**
  * src/pages/TrackingPage.tsx
- * Bambeh Marketplace � Order Tracking Page
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Order Tracking Page
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -31,12 +31,12 @@ interface TrackingInfo {
 }
 
 const STATUS_STEPS: { status: TrackingStatus; label: string }[] = [
-  { status: "pending",           label: "Commande re�ue" },
-  { status: "confirmed",         label: "Confirm�e" },
-  { status: "processing",        label: "En pr�paration" },
-  { status: "shipped",           label: "Exp�di�e" },
+  { status: "pending",           label: "Commande re?ue" },
+  { status: "confirmed",         label: "Confirm?e" },
+  { status: "processing",        label: "En pr?paration" },
+  { status: "shipped",           label: "Exp?di?e" },
   { status: "out_for_delivery",  label: "En livraison" },
-  { status: "delivered",         label: "Livr�e" },
+  { status: "delivered",         label: "Livr?e" },
 ];
 
 const TrackingPage: React.FC = () => {
@@ -59,7 +59,7 @@ const TrackingPage: React.FC = () => {
         .single();
 
       if (dbErr || !data) {
-        setError("Num�ro de suivi introuvable. V�rifiez le num�ro et r�essayez.");
+        setError("Num?ro de suivi introuvable. V?rifiez le num?ro et r?essayez.");
         return;
       }
 
@@ -70,7 +70,7 @@ const TrackingPage: React.FC = () => {
       const steps: TrackingStep[] = STATUS_STEPS.map((step, idx) => ({
         status: step.status,
         label: step.label,
-        description: `�tape ${idx + 1}`,
+        description: `?tape ${idx + 1}`,
         done: idx < currentIdx,
         active: idx === currentIdx,
         timestamp: idx <= currentIdx ? data.updated_at as string : undefined,
@@ -112,7 +112,7 @@ const TrackingPage: React.FC = () => {
             value={trackingNumber}
             onChange={(e) => setTrackingNumber(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Num�ro de commande ou r�f�rence..."
+            placeholder="Num?ro de commande ou r?f?rence..."
             className="flex-1 outline-none text-sm"
           />
         </div>
@@ -155,17 +155,17 @@ const TrackingPage: React.FC = () => {
               )}
               <div>
                 <p className="font-bold text-gray-900">
-                  {tracking.status === "delivered" ? "Commande livr�e ?" :
+                  {tracking.status === "delivered" ? "Commande livr?e ?" :
                    tracking.status === "out_for_delivery" ? "En cours de livraison..." :
-                   tracking.status === "shipped" ? "Colis exp�di�" :
-                   tracking.status === "processing" ? "En pr�paration" :
-                   tracking.status === "confirmed" ? "Commande confirm�e" :
-                   "Commande re�ue"}
+                   tracking.status === "shipped" ? "Colis exp?di?" :
+                   tracking.status === "processing" ? "En pr?paration" :
+                   tracking.status === "confirmed" ? "Commande confirm?e" :
+                   "Commande re?ue"}
                 </p>
-                <p className="text-sm text-gray-500">N� {tracking.trackingNumber}</p>
+                <p className="text-sm text-gray-500">N? {tracking.trackingNumber}</p>
                 {tracking.estimatedDelivery && (
                   <p className="text-sm text-teal-700 font-medium mt-0.5">
-                    Livraison estim�e: {new Date(tracking.estimatedDelivery).toLocaleDateString("fr-CM")}
+                    Livraison estim?e: {new Date(tracking.estimatedDelivery).toLocaleDateString("fr-CM")}
                   </p>
                 )}
               </div>

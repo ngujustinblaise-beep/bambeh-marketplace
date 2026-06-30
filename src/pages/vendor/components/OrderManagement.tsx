@@ -5,7 +5,7 @@
  * 
  * Manage vendor orders - view, update status, track deliveries
  * 
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -227,7 +227,7 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ vendorId }) => {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 truncate">{item.name}</p>
                         <p className="text-sm text-gray-500">
-                          {item.price?.toLocaleString()} XAF � {item.quantity}
+                          {item.price?.toLocaleString()} XAF ? {item.quantity}
                         </p>
                       </div>
                     </div>
@@ -299,7 +299,7 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ vendorId }) => {
                 onClick={() => setSelectedOrder(null)}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
-                �
+                ?
               </button>
             </div>
             <div className="p-4 space-y-4">
@@ -323,7 +323,7 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ vendorId }) => {
                 <div className="mt-2 space-y-2">
                   {selectedOrder.items?.map((item, idx) => (
                     <div key={idx} className="flex justify-between p-2 bg-gray-50 rounded-lg">
-                      <span>{item.name} � {item.quantity}</span>
+                      <span>{item.name} ? {item.quantity}</span>
                       <span className="font-medium">{(item.price * item.quantity).toLocaleString()} XAF</span>
                     </div>
                   ))}

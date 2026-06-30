@@ -7,8 +7,8 @@ import { useLang, t } from "@/hooks/useAppLang";
 
 interface LangSettings { preferred_language:string; secondary_language:string; currency_display:string; date_format:string; number_format:string; }
 const defaultSettings: LangSettings = { preferred_language:"fr", secondary_language:"en", currency_display:"FCFA", date_format:"DD/MM/YYYY", number_format:"1.000,00" };
-const LANGUAGES = [{code:"fr",label:"Fran�ais",flag:"????"},{code:"en",label:"English",flag:"????"},{code:"fuf",label:"Fulfulde",flag:"????"},{code:"ewo",label:"Ewondo",flag:"????"},{code:"bum",label:"Bulu",flag:"????"},{code:"ybb",label:"Yemba",flag:"????"}];
-const CURRENCIES = [{code:"FCFA",label:"FCFA � Franc CFA"},{code:"XAF",label:"XAF � Central African Franc"},{code:"USD",label:"USD � US Dollar"},{code:"EUR",label:"EUR � Euro"}];
+const LANGUAGES = [{code:"fr",label:"Fran?ais",flag:"????"},{code:"en",label:"English",flag:"????"},{code:"fuf",label:"Fulfulde",flag:"????"},{code:"ewo",label:"Ewondo",flag:"????"},{code:"bum",label:"Bulu",flag:"????"},{code:"ybb",label:"Yemba",flag:"????"}];
+const CURRENCIES = [{code:"FCFA",label:"FCFA ? Franc CFA"},{code:"XAF",label:"XAF ? Central African Franc"},{code:"USD",label:"USD ? US Dollar"},{code:"EUR",label:"EUR ? Euro"}];
 const DATE_FORMATS = [{value:"DD/MM/YYYY",label:"DD/MM/YYYY (e.g. 23/03/2026)"},{value:"MM/DD/YYYY",label:"MM/DD/YYYY (e.g. 03/23/2026)"},{value:"YYYY-MM-DD",label:"YYYY-MM-DD (e.g. 2026-03-23)"}];
 const NUMBER_FORMATS = [{value:"1.000,00",label:"1.000,00 (European)"},{value:"1,000.00",label:"1,000.00 (US/UK)"},{value:"1 000,00",label:"1 000,00 (French/CFA)"}];
 

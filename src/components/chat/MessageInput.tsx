@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * MESSAGE INPUT COMPONENT � Input area for composing and sending messages.
+ * MESSAGE INPUT COMPONENT ? Input area for composing and sending messages.
  */
 
 import { useState, useRef, useEffect } from 'react';

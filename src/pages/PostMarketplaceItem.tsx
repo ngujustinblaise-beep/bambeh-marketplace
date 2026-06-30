@@ -49,7 +49,7 @@ const PostMarketplaceItem = () => {
     { value: 'for-parts',  label: 'For Parts',  description: 'Not fully functional' },
   ];
 
-  const majorCities = ['Yaound�', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
+  const majorCities = ['Yaound?', 'Douala', 'Garoua', 'Bamenda', 'Bafoussam', 'Buea'];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;

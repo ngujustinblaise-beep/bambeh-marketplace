@@ -12,7 +12,7 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Rentals",
     "rentals.listProperty": "List Property",
     "rentals.refresh": "Refresh",
-    "rentals.search": "Search by name or neighbourhood�",
+    "rentals.search": "Search by name or neighbourhood?",
     "rentals.maxRent": "Max Rent",
     "rentals.allCities": "All Cities",
     "rentals.allTypes": "All Types",
@@ -20,10 +20,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "Furnished",
     "rentals.views": "views",
     "rentals.view": "view",
-    "rentals.sampleListing": "Sample � not a real listing",
+    "rentals.sampleListing": "Sample ? not a real listing",
     "rentals.expiringSoon": "Expiring soon",
     "rentals.propertiesFound": "{{count}} propert{{suffix}} found",
-    "rentals.loading": "Loading properties�",
+    "rentals.loading": "Loading properties?",
     "rentals.error": "Could not load listings. Showing demo data.",
     "rentals.noPropertiesTitle": "No properties found",
     "rentals.noPropertiesHint": "Try widening your filters or list your own property."
@@ -32,27 +32,27 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Locations",
     "rentals.listProperty": "Publier une location",
     "rentals.refresh": "Actualiser",
-    "rentals.search": "Rechercher par nom ou quartier�",
+    "rentals.search": "Rechercher par nom ou quartier?",
     "rentals.maxRent": "Loyer max",
     "rentals.allCities": "Toutes les villes",
     "rentals.allTypes": "Tous les types",
     "rentals.perMonth": "XAF/mois",
-    "rentals.furnished": "Meubl�",
+    "rentals.furnished": "Meubl?",
     "rentals.views": "vues",
     "rentals.view": "vue",
-    "rentals.sampleListing": "Exemple � annonce fictive",
-    "rentals.expiringSoon": "Bient�t expir�",
-    "rentals.propertiesFound": "{{count}} propri�t�{{suffix}} trouv�e{{suffix}}",
-    "rentals.loading": "Chargement des propri�t�s�",
-    "rentals.error": "Impossible de charger les annonces. Affichage des donn�es de d�monstration.",
-    "rentals.noPropertiesTitle": "Aucune propri�t� trouv�e",
-    "rentals.noPropertiesHint": "�largissez vos filtres ou publiez votre propri�t�."
+    "rentals.sampleListing": "Exemple ? annonce fictive",
+    "rentals.expiringSoon": "Bient?t expir?",
+    "rentals.propertiesFound": "{{count}} propri?t?{{suffix}} trouv?e{{suffix}}",
+    "rentals.loading": "Chargement des propri?t?s?",
+    "rentals.error": "Impossible de charger les annonces. Affichage des donn?es de d?monstration.",
+    "rentals.noPropertiesTitle": "Aucune propri?t? trouv?e",
+    "rentals.noPropertiesHint": "?largissez vos filtres ou publiez votre propri?t?."
   },
   ar: {
     "rentals.title": "?????????",
     "rentals.listProperty": "??? ??????",
     "rentals.refresh": "?????",
-    "rentals.search": "???? ?????? ?? ????�",
+    "rentals.search": "???? ?????? ?? ?????",
     "rentals.maxRent": "???? ?????",
     "rentals.allCities": "?? ?????",
     "rentals.allTypes": "?? ???????",
@@ -60,10 +60,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "?????",
     "rentals.views": "???????",
     "rentals.view": "??????",
-    "rentals.sampleListing": "???? � ??? ??????? ???????",
+    "rentals.sampleListing": "???? ? ??? ??????? ???????",
     "rentals.expiringSoon": "????? ??????",
     "rentals.propertiesFound": "?? ?????? ??? {{count}} ????",
-    "rentals.loading": "???? ????? ????????�",
+    "rentals.loading": "???? ????? ?????????",
     "rentals.error": "???? ????? ?????????. ??? ??? ?????? ???????.",
     "rentals.noPropertiesTitle": "?? ???? ??????",
     "rentals.noPropertiesHint": "???? ???? ????? ??????? ?? ???? ?????."
@@ -72,7 +72,7 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Luwaaji",
     "rentals.listProperty": "Windude suudu",
     "rentals.refresh": "Hes?itin",
-    "rentals.search": "Yiilo innde wala wuro�",
+    "rentals.search": "Yiilo innde wala wuro?",
     "rentals.maxRent": "Coggu ?urtu?o",
     "rentals.allCities": "Gure fof",
     "rentals.allTypes": "Sifaaji fof",
@@ -80,10 +80,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "Hee?aa?o",
     "rentals.views": "njiyaali",
     "rentals.view": "njiyaa",
-    "rentals.sampleListing": "Misal � wonaa bayyinaango goonga",
+    "rentals.sampleListing": "Misal ? wonaa bayyinaango goonga",
     "rentals.expiringSoon": "Aray timmude",
     "rentals.propertiesFound": "{{count}} cuu?i ke?aama",
-    "rentals.loading": "Loowugol cuu?i�",
+    "rentals.loading": "Loowugol cuu?i?",
     "rentals.error": "Ro?ki loowude bayyinaali. Hollirde ke?e ndaar?e.",
     "rentals.noPropertiesTitle": "Cuu?i alaa",
     "rentals.noPropertiesHint": "Yaaju filtaaji maa, walla windu suudu maa."
@@ -92,7 +92,7 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.title": "Rentals",
     "rentals.listProperty": "Post House",
     "rentals.refresh": "Refresh",
-    "rentals.search": "Find by name or quarter�",
+    "rentals.search": "Find by name or quarter?",
     "rentals.maxRent": "Max Rent",
     "rentals.allCities": "All Towns",
     "rentals.allTypes": "All Types",
@@ -100,10 +100,10 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.furnished": "Get furniture",
     "rentals.views": "views",
     "rentals.view": "view",
-    "rentals.sampleListing": "Sample � no be real listing",
+    "rentals.sampleListing": "Sample ? no be real listing",
     "rentals.expiringSoon": "E go soon finish",
     "rentals.propertiesFound": "{{count}} house dem dey",
-    "rentals.loading": "E dey load houses�",
+    "rentals.loading": "E dey load houses?",
     "rentals.error": "E no fit load listings. We dey show demo.",
     "rentals.noPropertiesTitle": "No house dey",
     "rentals.noPropertiesHint": "Open your filter small, or post your own house."
@@ -138,13 +138,13 @@ interface Property {
 }
 
 const SAMPLE: Property[] = [
-  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaound�", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
+  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaound?", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
   { id: "demo-2", title: "Spacious villa in Bonamoussadi", type: "Villa", price: 350000, location: "Douala", quartier: "Bonamoussadi", bedrooms: "4", bathrooms: "3", description: "4-bedroom villa with garden and parking.", postedAt: new Date().toISOString(), isDemo: true },
-  { id: "demo-3", title: "Studio near University of Yaound�", type: "Studio", price: 60000, location: "Yaound�", quartier: "Ngoa-Ek�l�", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
+  { id: "demo-3", title: "Studio near University of Yaound?", type: "Studio", price: 60000, location: "Yaound?", quartier: "Ngoa-Ek?l?", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
   { id: "demo-4", title: "Professional office space in Akwa", type: "Office", price: 200000, location: "Douala", quartier: "Akwa", bedrooms: "N/A", bathrooms: "1", description: "Professional office space in prime location.", postedAt: new Date().toISOString(), isDemo: true },
 ];
 
-const CITIES = ["allCities", "Yaound�", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaound�r�", "Bertoua", "Ebolowa", "Kumba"];
+const CITIES = ["allCities", "Yaound?", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaound?r?", "Bertoua", "Ebolowa", "Kumba"];
 const TYPES = ["allTypes", "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop"];
 
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {

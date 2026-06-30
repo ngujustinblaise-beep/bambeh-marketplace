@@ -1,18 +1,18 @@
 // @ts-nocheck
 /**
- * src/components/listings/RentalList.tsx � Bambeh Marketplace
+ * src/components/listings/RentalList.tsx ? Bambeh Marketplace
  *
  * FIXES IN THIS VERSION:
- *  ? FIX 1 � CRITICAL: Broken JSX structure fixed (loading block was never closed,
- *             trapping the main return statement inside it � caused the "Oops" crash)
- *  ? FIX 2 � Reads from Supabase instead of localStorage (cross-device visibility)
- *  ? FIX 3 � Real-time subscription so new listings appear without refresh
- *  ? FIX 4 � Storage event listener now properly cleaned up (no memory leak)
- *  ? FIX 5 � Navigate to /rentals/:id for details (correct route)
- *  ? FIX 6 � pb-28 so bottom nav never covers cards
- *  ? FIX 7 � Error state with user-friendly banner
+ *  ? FIX 1 ? CRITICAL: Broken JSX structure fixed (loading block was never closed,
+ *             trapping the main return statement inside it ? caused the "Oops" crash)
+ *  ? FIX 2 ? Reads from Supabase instead of localStorage (cross-device visibility)
+ *  ? FIX 3 ? Real-time subscription so new listings appear without refresh
+ *  ? FIX 4 ? Storage event listener now properly cleaned up (no memory leak)
+ *  ? FIX 5 ? Navigate to /rentals/:id for details (correct route)
+ *  ? FIX 6 ? pb-28 so bottom nav never covers cards
+ *  ? FIX 7 ? Error state with user-friendly banner
  *
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -120,7 +120,7 @@ const RentalList = () => {
         </div>
       </div>
     );
-  } // ? ? FIX 1: this brace was missing � closing the if(loading) block properly
+  } // ? ? FIX 1: this brace was missing ? closing the if(loading) block properly
 
   return (
     <div className="container mx-auto px-4 py-8 pb-28">
@@ -229,7 +229,7 @@ const RentalList = () => {
                 {rental.area && (
                   <div className="flex items-center gap-1">
                     <Square className="h-3.5 w-3.5" />
-                    <span>{rental.area} m�</span>
+                    <span>{rental.area} m?</span>
                   </div>
                 )}
               </div>

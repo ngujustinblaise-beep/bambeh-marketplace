@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
+﻿import React, { useState, useRef, useEffect } from 'react';
+import { useNotifications, type BambehNotification } from '@/hooks/useNotifications';
 
-// Icon components (inline SVG — no extra dependency needed)
 const BellIcon = ({ hasUnread }: { hasUnread: boolean }) => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -11,10 +10,16 @@ const BellIcon = ({ hasUnread }: { hasUnread: boolean }) => (
 );
 
 const typeIcon: Record<string, string> = {
-  welcome:      '👋',
+  welcome: '👋',
   subscription: '⭐',
-  new_order:    '🛒',
-  new_message:  '💬',
+  new_order: '🛒',
+  new_message: '💬',
+  order: '🛒',
+  chat: '💬',
+  promo: '🔔',
+  system: '⚙️',
+  review: '⭐',
+  payment: '💳',
 };
 
 function timeAgo(dateStr: string): string {
@@ -30,14 +35,14 @@ function timeAgo(dateStr: string): string {
 function NotifItem({ notif, onRead }: { notif: BambehNotification; onRead: (id: string) => void }) {
   return (
     <div
-      onClick={() => !notif.is_read && onRead(notif.id)}
+      onClick={() => !notif.read && onRead(notif.id)}
       style={{
         display: 'flex',
         gap: '10px',
         padding: '12px 16px',
         borderBottom: '0.5px solid rgba(0,0,0,0.06)',
-        background: notif.is_read ? 'transparent' : 'rgba(29,158,117,0.05)',
-        cursor: notif.is_read ? 'default' : 'pointer',
+        background: notif.read ? 'transparent' : 'rgba(29,158,117,0.05)',
+        cursor: notif.read ? 'default' : 'pointer',
         transition: 'background 0.15s',
       }}
     >
@@ -51,10 +56,10 @@ function NotifItem({ notif, onRead }: { notif: BambehNotification; onRead: (id: 
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: notif.is_read ? 400 : 600, color: 'inherit', lineHeight: 1.3 }}>
+          <span style={{ fontSize: 13, fontWeight: notif.read ? 400 : 600, color: 'inherit', lineHeight: 1.3 }}>
             {notif.title}
           </span>
-          {!notif.is_read && (
+          {!notif.read && (
             <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1D9E75', flexShrink: 0, marginTop: 4 }} />
           )}
         </div>
@@ -74,7 +79,6 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -85,7 +89,6 @@ export function NotificationBell() {
 
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      {/* Bell button */}
       <button
         onClick={() => setOpen(o => !o)}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
@@ -112,7 +115,6 @@ export function NotificationBell() {
         )}
       </button>
 
-      {/* Dropdown panel */}
       {open && (
         <div style={{
           position: 'absolute', right: 0, top: 'calc(100% + 8px)',
@@ -123,7 +125,6 @@ export function NotificationBell() {
           zIndex: 9999, overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
         }}>
-          {/* Header */}
           <div style={{
             padding: '14px 16px 12px',
             borderBottom: '0.5px solid rgba(0,0,0,0.07)',
@@ -143,7 +144,6 @@ export function NotificationBell() {
             )}
           </div>
 
-          {/* List */}
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {loading ? (
               <div style={{ padding: 32, textAlign: 'center', color: 'rgba(128,128,128,0.7)', fontSize: 13 }}>
@@ -165,6 +165,3 @@ export function NotificationBell() {
     </div>
   );
 }
-
-
-

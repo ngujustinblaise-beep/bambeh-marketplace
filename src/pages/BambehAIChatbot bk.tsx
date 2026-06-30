@@ -1,12 +1,12 @@
 /**
- * src/pages/BambehAIChatbot.tsx � Bambeh Marketplace
+ * src/pages/BambehAIChatbot.tsx ? Bambeh Marketplace
  *
  * FIXES applied:
- *  ? Web search tool enabled � AI can now look up real-time prices, products, news
+ *  ? Web search tool enabled ? AI can now look up real-time prices, products, news
  *  ? Source citations shown in responses (verifiable links)
  *  ? Conversation history sent with each request (multi-turn memory)
- *  ? Character encoding fixed � removed garbled �" chars from system prompt
- *  ? AbortController added � avoids memory leak on unmount / fast re-sends
+ *  ? Character encoding fixed ? removed garbled ?" chars from system prompt
+ *  ? AbortController added ? avoids memory leak on unmount / fast re-sends
  *  ? Input disabled during loading (prevents duplicate sends)
  *  ? Keyboard submit: Enter sends, Shift+Enter inserts newline
  *  ? Auto-scroll only when user is near the bottom (prevents jarring jumps)
@@ -30,7 +30,7 @@ const SYSTEM_PROMPT =
   'You are Bambeh AI, a helpful and friendly assistant for the Bambeh Marketplace app in Cameroon. ' +
   'Help users with buying, selling, finding jobs, rentals, vehicles, services, and using the app. ' +
   'Keep answers concise and practical. Use XAF for prices. ' +
-  'Be culturally aware of Cameroonian context (Yaound�, Douala, francophone/anglophone regions). ' +
+  'Be culturally aware of Cameroonian context (Yaound?, Douala, francophone/anglophone regions). ' +
   'When asked about current prices, product availability, or recent news, search the web and cite your sources. ' +
   'Always provide source URLs when you use web search results.';
 
@@ -67,7 +67,7 @@ function SourcePills({ sources }: { sources: { title: string; url: string }[] })
           className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full hover:underline"
         >
           <Globe className="w-2.5 h-2.5" />
-          {s.title.slice(0, 30)}{s.title.length > 30 ? '�' : ''}
+          {s.title.slice(0, 30)}{s.title.length > 30 ? '?' : ''}
         </a>
       ))}
     </div>
@@ -323,7 +323,7 @@ export default function BambehAIChatbot() {
             value={input}
             onChange={e => setInput(e.target.value.slice(0, MAX_INPUT_LENGTH))}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Bambeh AI anything�"
+            placeholder="Ask Bambeh AI anything?"
             disabled={loading}
             maxLength={MAX_INPUT_LENGTH}
             className="w-full border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-gray-50 disabled:text-gray-400"

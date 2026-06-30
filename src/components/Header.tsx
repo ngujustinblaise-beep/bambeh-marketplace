@@ -1,7 +1,7 @@
 /**
  * src/components/Header.tsx
- * Bambeh Marketplace � Main App Header
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Main App Header
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -124,7 +124,7 @@ const Header: React.FC = () => {
                       <button onClick={() => { navigate("/favorites"); setMenuOpen(false); }} className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Favoris</button>
                       <button onClick={() => { navigate("/vendor/dashboard"); setMenuOpen(false); }} className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Espace vendeur</button>
                       <div className="border-t border-gray-100 my-1" />
-                      <button onClick={async () => { await logout(); setMenuOpen(false); navigate("/"); }} className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">D�connexion</button>
+                      <button onClick={async () => { await logout(); setMenuOpen(false); navigate("/"); }} className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">D?connexion</button>
                     </div>
                   </>
                 )}

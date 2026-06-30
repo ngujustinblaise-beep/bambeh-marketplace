@@ -69,7 +69,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
         <button onClick={handlePay} disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50
             text-white font-semibold py-3 rounded-xl transition-colors">
-          {loading ? "Processing�" : "Pay Now"}
+          {loading ? "Processing?" : "Pay Now"}
         </button>
       )}
     </div>

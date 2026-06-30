@@ -1,5 +1,5 @@
 /**
- * BambehBadgeSVGs.tsx � All 5 Bambeh badge tier SVG assets.
+ * BambehBadgeSVGs.tsx ? All 5 Bambeh badge tier SVG assets.
  * USAGE: import { GoldenBambehBadge, BadgeDisplay } from '@/components/badges/BambehBadgeSVGs';
  */
 

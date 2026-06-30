@@ -1,12 +1,37 @@
 // File: src/pages/BambehWelcomeScreen.jsx
 // REDESIGN: Collapsed 3-phase welcome into ONE single page.
 // All content visible at once. ONE large NEXT button at the bottom.
-// Full translation support — renders in the language chosen by user.
+//
+// LANGUAGE: now speaks the app's 5 in-app languages (en / fr / pidgin / ar / ff)
+// and is fully REACTIVE — it reads the language chosen on the first selector
+// (localStorage "Bambeh_language") and live-updates the instant the language
+// changes anywhere via the "bambeh:langchange" event. Its own language buttons
+// also broadcast that event, so picking a language here re-translates the whole
+// app (terms, home, etc.) with no refresh.
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCurrentWelcome } from "@/utils/languageConfig";
 import bambehLogo from "@/assets/bambeh-glossy-logo.png";
+
+const LANG_KEY = "Bambeh_language";
+
+// Map any stored value to one of the 5 in-app languages.
+function resolveCode(raw) {
+  const valid = ["en", "fr", "pidgin", "ar", "ff"];
+  if (!raw) return "en";
+  if (raw === "pcm" || raw === "pidgin_english") return "pidgin";
+  if (raw === "ful" || raw === "fulfulde") return "ff";
+  if (raw === "ha" || raw === "hausa") return "en"; // legacy value -> safe default
+  return valid.includes(raw) ? raw : "en";
+}
+
+function readStoredLang() {
+  try {
+    return resolveCode(localStorage.getItem(LANG_KEY));
+  } catch (_) {
+    return "en";
+  }
+}
 
 const LANGUAGES = {
   en: {
@@ -26,60 +51,83 @@ const LANGUAGES = {
       { icon: "🏪", label: "Vendors" },
     ],
     next: "Enter Bambeh",
+    caption: "5 Languages · 6 Categories · 1 Family",
   },
   fr: {
     code: "fr",
     label: "Français",
     flag: "🇫🇷",
-    greeting: "Bienvenue à la maison",
+    greeting: "Bienvenue dans la Famille",
     tagline: "Nous Portons Toutes les Charges.",
     blurb:
-      "Achetez, vendez, trouvez un emploi, louez, échangez et louez des véhicules — tout en un seul endroit, fait pour vous.",
+      "Achetez, vendez, trouvez un emploi, louez un logement, échangez des biens et louez des véhicules — tout au même endroit, conçu pour vous.",
     items: [
       { icon: "🛒", label: "Acheter & Vendre" },
-      { icon: "💼", label: "Emploi" },
-      { icon: "🏠", label: "Location" },
+      { icon: "💼", label: "Emplois" },
+      { icon: "🏠", label: "Locations" },
       { icon: "🔄", label: "Échange" },
       { icon: "🚗", label: "Véhicules" },
       { icon: "🏪", label: "Vendeurs" },
     ],
     next: "Entrer dans Bambeh",
+    caption: "5 Langues · 6 Catégories · 1 Famille",
   },
-  ha: {
-    code: "ha",
-    label: "Hausa",
-    flag: "🇳🇬",
-    greeting: "Barka da zuwa gida",
-    tagline: "Muna ɗaukar duk kaya.",
+  pidgin: {
+    code: "pidgin",
+    label: "Pidgin",
+    flag: "🇨🇲",
+    greeting: "Welcome to di Family",
+    tagline: "We Dey Carry All Load.",
     blurb:
-      "Siya, sayarwa, neman aiki, hayar gida, musaya da motoci — duk a wuri ɗaya, an gina maka.",
+      "Buy, sell, find work, rent house, exchange things & hire motor — all for one place, we build am for you.",
     items: [
-      { icon: "🛒", label: "Siya & Sayarwa" },
-      { icon: "💼", label: "Aiki" },
-      { icon: "🏠", label: "Hayar Gida" },
-      { icon: "🔄", label: "Musaya" },
-      { icon: "🚗", label: "Motoci" },
-      { icon: "🏪", label: "Yan kasuwa" },
+      { icon: "🛒", label: "Buy & Sell" },
+      { icon: "💼", label: "Work" },
+      { icon: "🏠", label: "House Rent" },
+      { icon: "🔄", label: "Exchange" },
+      { icon: "🚗", label: "Motor" },
+      { icon: "🏪", label: "Sellers" },
     ],
-    next: "Shiga Bambeh",
+    next: "Enta Bambeh",
+    caption: "5 Languages · 6 Categories · 1 Family",
   },
   ar: {
     code: "ar",
     label: "العربية",
     flag: "🇸🇦",
-    greeting: "أهلاً بك في بيتك",
+    greeting: "أهلاً بك في العائلة",
     tagline: "نحمل كل الأحمال.",
     blurb:
-      "اشترِ، بع، ابحث عن عمل، استأجر، تبادل وتأجير المركبات — كل شيء في مكان واحد، مبنيٌّ من أجلك.",
+      "اشترِ، بِع، ابحث عن عمل، استأجر سكنًا، بادل السلع واستأجر المركبات — كل ذلك في مكان واحد، صُمم من أجلك.",
     items: [
       { icon: "🛒", label: "شراء وبيع" },
       { icon: "💼", label: "وظائف" },
-      { icon: "🏠", label: "إيجار" },
+      { icon: "🏠", label: "إيجارات" },
       { icon: "🔄", label: "تبادل" },
       { icon: "🚗", label: "مركبات" },
       { icon: "🏪", label: "بائعون" },
     ],
     next: "ادخل إلى بامبيه",
+    caption: "5 لغات · 6 فئات · عائلة واحدة",
+  },
+  ff: {
+    code: "ff",
+    label: "Fulfulde",
+    flag: "🌍",
+    greeting: "Njabbama e Goreeji",
+    tagline: "Min Ronndoto Donngal Fof.",
+    blurb:
+      "Soodu, yeeyu, ɗaɓɓito golle, luwo suudu, waɗtu kaake & luwo otooji — fof e nokku gooto, mahanaa ma.",
+    items: [
+      { icon: "🛒", label: "Soodu & Yeeyu" },
+      { icon: "💼", label: "Golle" },
+      { icon: "🏠", label: "Luwol" },
+      { icon: "🔄", label: "Waɗtita" },
+      { icon: "🚗", label: "Otooji" },
+      { icon: "🏪", label: "Yeeyooɓe" },
+    ],
+    next: "Naatu Bambeh",
+    caption: "Ɗemɗe 5 · Kelle 6 · Goree gooto",
   },
 };
 
@@ -103,10 +151,27 @@ function FloatingParticle({ delay, x, size }) {
 
 export default function BambehWelcomeScreen() {
   const navigate = useNavigate();
-  const [lang, setLang] = useState(getCurrentWelcome().code);
+  const [lang, setLang] = useState(() => readStoredLang());
   const [visible, setVisible] = useState(false);
   const t = LANGUAGES[lang] || LANGUAGES.en;
   const isRTL = lang === "ar";
+
+  // ── Reactive language: follow the first selector and any later change ──────
+  useEffect(() => {
+    const onLangChange = (e) => {
+      const d = e && e.detail;
+      setLang(resolveCode(typeof d === "string" ? d : readStoredLang()));
+    };
+    const onStorage = (e) => {
+      if (e.key === LANG_KEY) setLang(resolveCode(e.newValue));
+    };
+    window.addEventListener("bambeh:langchange", onLangChange);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("bambeh:langchange", onLangChange);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 80);
@@ -124,6 +189,18 @@ export default function BambehWelcomeScreen() {
     delay: i * 0.6,
     size: 8 + (i % 4) * 5,
   }));
+
+  // Pick a language here -> persist + broadcast so the WHOLE app re-translates.
+  const chooseLang = (code) => {
+    const c = resolveCode(code);
+    setLang(c);
+    try {
+      localStorage.setItem(LANG_KEY, c);
+    } catch (_) {}
+    try {
+      window.dispatchEvent(new CustomEvent("bambeh:langchange", { detail: c }));
+    } catch (_) {}
+  };
 
   return (
     <div
@@ -294,10 +371,7 @@ export default function BambehWelcomeScreen() {
           <button
             key={l.code}
             className={`lang-btn ${lang === l.code ? "active" : ""}`}
-            onClick={() => {
-              setLang(l.code);
-              try { localStorage.setItem("Bambeh_language", l.code); } catch (_) {}
-            }}
+            onClick={() => chooseLang(l.code)}
           >
             {l.flag} {l.label}
           </button>
@@ -459,12 +533,9 @@ export default function BambehWelcomeScreen() {
             textAlign: "center",
           }}
         >
-          🇨🇲 · 4 Languages · 6 Categories · 1 Family
+          🇨🇲 · {t.caption}
         </div>
       </div>
     </div>
   );
 }
-
-
-

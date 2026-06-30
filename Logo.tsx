@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface LogoProps {
@@ -66,7 +66,7 @@ const Logo: React.FC<LogoProps> = ({
                 textShadow: '0 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.2)',
                 fontFamily: 'system-ui, -apple-system, sans-serif'
               }}>
-          BambÃ©
+          Bambé
         </span>
       </div>
       
@@ -90,7 +90,7 @@ const Logo: React.FC<LogoProps> = ({
       <Link to={linkTo} className={`flex flex-col ${className}`}>
         <span className={`${currentSize.text} font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-          BambÃ©
+          Bambé
         </span>
         {showTagline && (
           <span className={`${currentSize.tagline} text-gray-600 dark:text-gray-400 -mt-1`}>
@@ -108,7 +108,7 @@ const Logo: React.FC<LogoProps> = ({
       <div className="flex flex-col">
         <span className={`${currentSize.text} font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent leading-tight`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-          BambÃ©
+          Bambé
         </span>
         {showTagline && (
           <span className={`${currentSize.tagline} text-gray-600 dark:text-gray-400 -mt-0.5`}>

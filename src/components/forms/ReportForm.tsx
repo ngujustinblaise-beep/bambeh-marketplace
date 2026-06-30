@@ -1,7 +1,7 @@
 /**
  * src/components/forms/ReportForm.tsx
- * Bambeh Marketplace � Report / Signalement Form
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Report / Signalement Form
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -19,10 +19,10 @@ interface ReportFormProps {
 
 const REPORT_REASONS = [
   "Produit frauduleux ou faux",
-  "Contenu inappropri� ou offensant",
-  "Spam ou publicit� mensong�re",
+  "Contenu inappropri? ou offensant",
+  "Spam ou publicit? mensong?re",
   "Prix abusif",
-  "Vendeur malhonn�te",
+  "Vendeur malhonn?te",
   "Article interdit",
   "Informations incorrectes",
   "Autre",
@@ -38,8 +38,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ isOpen, onClose, itemDetails })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reason) { setError("Veuillez s�lectionner un motif."); return; }
-    if (!user) { setError("Vous devez �tre connect� pour signaler."); return; }
+    if (!reason) { setError("Veuillez s?lectionner un motif."); return; }
+    if (!user) { setError("Vous devez ?tre connect? pour signaler."); return; }
     setLoading(true);
     setError("");
     try {
@@ -97,8 +97,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ isOpen, onClose, itemDetails })
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Signalement envoy�</h3>
-              <p className="text-sm text-gray-500 mb-6">Merci. Notre �quipe examinera votre signalement dans les plus brefs d�lais.</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Signalement envoy?</h3>
+              <p className="text-sm text-gray-500 mb-6">Merci. Notre ?quipe examinera votre signalement dans les plus brefs d?lais.</p>
               <button onClick={handleClose} className="px-6 py-2.5 bg-teal-600 text-white rounded-xl font-medium hover:bg-teal-700 transition-colors">
                 Fermer
               </button>
@@ -107,7 +107,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ isOpen, onClose, itemDetails })
             <form onSubmit={handleSubmit} className="space-y-4">
               {itemDetails?.itemTitle && (
                 <div className="bg-gray-50 rounded-xl px-3 py-2">
-                  <p className="text-xs text-gray-500">Article signal�</p>
+                  <p className="text-xs text-gray-500">Article signal?</p>
                   <p className="text-sm font-medium text-gray-900 line-clamp-1">{itemDetails.itemTitle}</p>
                 </div>
               )}
@@ -131,7 +131,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ isOpen, onClose, itemDetails })
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="D�crivez le probl�me en d�tail..."
+                  placeholder="D?crivez le probl?me en d?tail..."
                   rows={3}
                   className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none resize-none"
                 />

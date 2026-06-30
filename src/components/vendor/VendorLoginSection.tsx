@@ -13,7 +13,7 @@
  * 
  * FILE LOCATION: src/components/vendor/VendorLoginSection.tsx
  * 
- * � 2025 Bamb�. All rights reserved.
+ * ? 2025 Bamb?. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 

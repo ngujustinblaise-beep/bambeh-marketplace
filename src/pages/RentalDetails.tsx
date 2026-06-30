@@ -24,12 +24,12 @@ const DETAIL_T: Record<string, Record<string, string>> = {
     "rental.expiringSoon": "This listing is expiring soon."
   },
   fr: {
-    "rental.title": "D�tails du bien",
+    "rental.title": "D?tails du bien",
     "rental.back": "Retour",
     "rental.notFound": "Bien introuvable",
     "rental.browse": "Voir les locations",
     "rental.share": "Partager",
-    "rental.saved": "Enregistr�",
+    "rental.saved": "Enregistr?",
     "rental.save": "Enregistrer",
     "rental.contact": "Contact",
     "rental.call": "Appeler",
@@ -39,7 +39,7 @@ const DETAIL_T: Record<string, Record<string, string>> = {
     "rental.bathrooms": "Salles de bain",
     "rental.views": "Vues",
     "rental.month": "XAF / mois",
-    "rental.expiringSoon": "Cette annonce expire bient�t."
+    "rental.expiringSoon": "Cette annonce expire bient?t."
   },
   ar: {
     "rental.title": "?????? ??????",
@@ -131,7 +131,7 @@ interface RentalListing {
 }
 
 const DEMO_LISTINGS: Record<string, RentalListing> = {
-  "demo-1": { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaound�", quartier: "Bastos", region: "Centre", bedrooms: "2", bathrooms: "1", area: 85, isFurnished: true, description: "Beautiful furnished apartment with balcony, 24-hour security, water and electricity included.", images: [], amenities: ["Security", "Balcony"], contactPhone: "", contactName: "Demo Owner", postedAt: new Date().toISOString(), view_count: 0, status: "active" },
+  "demo-1": { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaound?", quartier: "Bastos", region: "Centre", bedrooms: "2", bathrooms: "1", area: 85, isFurnished: true, description: "Beautiful furnished apartment with balcony, 24-hour security, water and electricity included.", images: [], amenities: ["Security", "Balcony"], contactPhone: "", contactName: "Demo Owner", postedAt: new Date().toISOString(), view_count: 0, status: "active" },
   "demo-2": { id: "demo-2", title: "Spacious villa in Bonamoussadi", type: "Villa", price: 350000, location: "Douala", quartier: "Bonamoussadi", region: "Littoral", bedrooms: "4", bathrooms: "3", area: 220, isFurnished: false, description: "Family villa with parking and garden.", images: [], amenities: ["Parking", "Garden"], contactPhone: "", contactName: "Demo Owner", postedAt: new Date().toISOString(), view_count: 0, status: "active" },
 };
 

@@ -28,8 +28,8 @@ const STRINGS = {
     signIn: "Se connecter",
     signingIn: "Connexion...",
     noAccount: "Pas encore de compte ?",
-    createOne: "Créer un compte",
-    forgotPassword: "Mot de passe oublié ?",
+    createOne: "Cr?er un compte",
+    forgotPassword: "Mot de passe oubli? ?",
     invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
     show: "Afficher le mot de passe",
     hide: "Masquer le mot de passe",
@@ -162,7 +162,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
-                  placeholder="••••••••"
+                  placeholder="????????"
                 />
                 <button
                   type="button"

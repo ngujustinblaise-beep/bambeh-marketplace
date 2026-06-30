@@ -1,8 +1,8 @@
 /**
- * src/pages/MarketplaceCategory.tsx � Bambeh Marketplace
+ * src/pages/MarketplaceCategory.tsx ? Bambeh Marketplace
  *
- * FIXES � June 2026
- *  ? FIX 1: extractImage() was calling useLang() inside a plain helper �
+ * FIXES ? June 2026
+ *  ? FIX 1: extractImage() was calling useLang() inside a plain helper ?
  *            illegal React hook call ? crash ? "connection issue" symptom.
  *            extractImage() is now a pure function.
  *  ? FIX 2: All UI strings translated via inline TR map (same pattern as Marketplace.tsx)
@@ -24,15 +24,15 @@ import { supabase } from "@/lib/supabase";
 // --- i18n ---------------------------------------------------------------------
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 const TR: Record<string, Record<Lang, string>> = {
-  marketplace:    { en: "Marketplace", fr: "March�", ha: "Kasuwanci", ar: "?????", pcm: "Market", ff: "Suudu" },
+  marketplace:    { en: "Marketplace", fr: "March?", ha: "Kasuwanci", ar: "?????", pcm: "Market", ff: "Suudu" },
   loading:        { en: "Loading", fr: "Chargement", ha: "Lodawa", ar: "?????", pcm: "Loading", ff: "Naatirde" },
-  no_match:       { en: "No matching items", fr: "Aucun r�sultat", ha: "Babu", ar: "?? ?????", pcm: "Notin match", ff: "Alaa goonga" },
+  no_match:       { en: "No matching items", fr: "Aucun r?sultat", ha: "Babu", ar: "?? ?????", pcm: "Notin match", ff: "Alaa goonga" },
   try_different:  { en: "Try a different keyword", fr: "Essayez un autre terme", ha: "Gwada wani kalma", ar: "??? ??????? ???", pcm: "Try different word", ff: "Mbiy go??o" },
   no_listings:    { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "?? ???????", pcm: "No listing yet", ff: "Alaa" },
-  first_to_list:  { en: "Be the first to list in this category!", fr: "Soyez le premier � lister!", ha: "Kasance na farko!", ar: "?? ??? ?? ????!", pcm: "Be first to list here!", ff: "Wartoraa!" },
+  first_to_list:  { en: "Be the first to list in this category!", fr: "Soyez le premier ? lister!", ha: "Kasance na farko!", ar: "?? ??? ?? ????!", pcm: "Be first to list here!", ff: "Wartoraa!" },
   sell_item:      { en: "+ Sell an item", fr: "+ Vendre un article", ha: "+ Sayar da abu", ar: "+ ??? ????", pcm: "+ Sell item", ff: "+ Yo? kala" },
-  try_again:      { en: "Try again", fr: "R�essayer", ha: "Sake", ar: "???? ??????", pcm: "Try again", ff: "Artu jeer" },
-  negoc:          { en: "Nego.", fr: "N�goc.", ha: "Tattaunawa", ar: "???? ???ف???", pcm: "Nego.", ff: "Hewtii" },
+  try_again:      { en: "Try again", fr: "R?essayer", ha: "Sake", ar: "???? ??????", pcm: "Try again", ff: "Artu jeer" },
+  negoc:          { en: "Nego.", fr: "N?goc.", ha: "Tattaunawa", ar: "???? ???????", pcm: "Nego.", ff: "Hewtii" },
   listings:       { en: "listings", fr: "annonces", ha: "jeri", ar: "???????", pcm: "listing", ff: "ndes" },
   listing_one:    { en: "listing", fr: "annonce", ha: "jeri ?aya", ar: "?????", pcm: "listing", ff: "nde" },
 };
@@ -63,8 +63,8 @@ interface Item {
 const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
 
-// --- Helpers � PURE FUNCTIONS, NO HOOKS ----------------------------------------
-// ?️  extractImage MUST NOT call useLang() or any React hook.
+// --- Helpers ? PURE FUNCTIONS, NO HOOKS ----------------------------------------
+// ??  extractImage MUST NOT call useLang() or any React hook.
 //     It is called during data mapping, outside React render cycles.
 function extractImage(row: any): string | undefined {
   if (Array.isArray(row.images) && row.images.length > 0) {
@@ -144,7 +144,7 @@ const MarketplaceCategory: React.FC = () => {
         title:       row.title ?? "",
         price:       row.price ?? 0,
         location:    row.location ?? "",
-        image:       extractImage(row),   // ? pure function � no hook call
+        image:       extractImage(row),   // ? pure function ? no hook call
         condition:   row.condition ?? "Used",
         view_count:  row.view_count ?? 0,
         negotiable:  row.negotiable ?? false,
@@ -189,7 +189,7 @@ const MarketplaceCategory: React.FC = () => {
           <div className="flex-1">
             <div className="flex items-center gap-1 text-xs text-gray-400 mb-0.5">
               <Link to="/marketplace" className="hover:text-teal-600 transition-colors">{tx("marketplace")}</Link>
-              <span>�</span>
+              <span>?</span>
               <span className="text-gray-700 font-medium capitalize">{label}</span>
             </div>
             <h1 className="text-lg font-bold text-gray-900 capitalize">{label}</h1>
@@ -209,7 +209,7 @@ const MarketplaceCategory: React.FC = () => {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={`${tx("loading").replace("�","").replace("�","")} ${label}�`}
+            placeholder={`${tx("loading").replace("?","").replace("?","")} ${label}?`}
             className="w-full pl-9 pr-9 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50"
           />
           {search && (
@@ -224,7 +224,7 @@ const MarketplaceCategory: React.FC = () => {
         {loading && (
           <div className="flex flex-col items-center py-20 gap-3">
             <Loader2 className="w-7 h-7 animate-spin text-teal-600" />
-            <p className="text-sm text-gray-500">{tx("loading")} {label}�</p>
+            <p className="text-sm text-gray-500">{tx("loading")} {label}?</p>
           </div>
         )}
 

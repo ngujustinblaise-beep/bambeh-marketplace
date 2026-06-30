@@ -1,8 +1,8 @@
 /**
- * src/pages/CommunityPage.tsx � Bambeh Marketplace
+ * src/pages/CommunityPage.tsx ? Bambeh Marketplace
  *
  * FIXED:
- *  ? Create Group opens an INLINE MODAL � no page redirect
+ *  ? Create Group opens an INLINE MODAL ? no page redirect
  *  ? Created groups immediately appear in the list
  *  ? Share button is compact icon, never blocks UI
  *  ? Beautiful Unsplash group cover images
@@ -37,8 +37,8 @@ interface Group {
 const INITIAL_GROUPS: Group[] = [
   {
     id: '1',
-    name: 'Yaound� Tech Entrepreneurs',
-    description: 'A community for tech founders and developers in Yaound� to share resources and opportunities.',
+    name: 'Yaound? Tech Entrepreneurs',
+    description: 'A community for tech founders and developers in Yaound? to share resources and opportunities.',
     category: 'Technology',
     emoji: '??',
     coverUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&q=80',
@@ -109,8 +109,8 @@ const DIAL_CODES = [
   { code: '+237', flag: '????', name: 'Cameroun' },
   { code: '+234', flag: '????', name: 'Nigeria' },
   { code: '+233', flag: '????', name: 'Ghana' },
-  { code: '+221', flag: '????', name: 'S�n�gal' },
-  { code: '+225', flag: '????', name: "C�te d'Ivoire" },
+  { code: '+221', flag: '????', name: 'S?n?gal' },
+  { code: '+225', flag: '????', name: "C?te d'Ivoire" },
   { code: '+241', flag: '????', name: 'Gabon' },
   { code: '+242', flag: '????', name: 'Congo' },
   { code: '+243', flag: '????', name: 'RD Congo' },
@@ -354,7 +354,7 @@ function CreateGroupModal({ onClose, onCreated }: {
                 <div className="absolute inset-0 bg-black/30"/>
                 <div className="absolute bottom-2 left-3 text-white">
                   <p className="font-bold text-sm">{CAT_EMOJIS[category]} {name || 'Group Name'}</p>
-                  <p className="text-xs text-white/80">{category} � {isPublic ? 'Public' : 'Private'}</p>
+                  <p className="text-xs text-white/80">{category} ? {isPublic ? 'Public' : 'Private'}</p>
                 </div>
               </div>
             </div>
@@ -539,7 +539,7 @@ export default function CommunityPage() {
           ))}
         </div>
 
-        {/* ? CREATE GROUP BUTTON � opens modal, never redirects */}
+        {/* ? CREATE GROUP BUTTON ? opens modal, never redirects */}
         <button
           onClick={() => setShowCreate(true)}
           className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform"

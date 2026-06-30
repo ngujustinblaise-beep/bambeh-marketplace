@@ -1,8 +1,8 @@
 /**
- * src/pages/CoinsPage.tsx � Bambeh Marketplace
+ * src/pages/CoinsPage.tsx ? Bambeh Marketplace
  *
  * FIXED (this version):
- *  ? Full i18n via useLang / t() � EN, FR, Pidgin, Arabic, Fulfulde
+ *  ? Full i18n via useLang / t() ? EN, FR, Pidgin, Arabic, Fulfulde
  *  ? Buy Coins navigates to /coins/buy (aligned with router fix below)
  *  ? maybeSingle() so no crash when row doesn't exist yet
  *  ? Manual refresh button + auto-refresh on ?purchased=1
@@ -39,27 +39,27 @@ const strings = {
     purchased:     'Purchase received!',
     purchasedSub:  'Your coins may take a moment to appear. Tap Refresh if needed.',
     refresh:       'Refresh',
-    refreshing:    'Refreshing�',
+    refreshing:    'Refreshing?',
   },
   fr: {
-    title:         'Pi�ces Zerm',
+    title:         'Pi?ces Zerm',
     balance:       'Votre Solde',
     available:     'Disponible',
-    earned:        'Gagn�',
-    spent:         'D�pens�',
+    earned:        'Gagn?',
+    spent:         'D?pens?',
     buyCoins:      'Acheter',
-    transfer:      'Transf�rer',
-    tipTitle:      'Gagnez plus de pi�ces Zerm',
-    tipBody:       'Parrainez des amis, compl�tez votre profil et restez actif pour gagner des bonus.',
+    transfer:      'Transf?rer',
+    tipTitle:      'Gagnez plus de pi?ces Zerm',
+    tipBody:       'Parrainez des amis, compl?tez votre profil et restez actif pour gagner des bonus.',
     historyTitle:  'Historique des transactions',
     all:           'Tout',
-    earnedTab:     'Gagn�',
-    spentTab:      'D�pens�',
+    earnedTab:     'Gagn?',
+    spentTab:      'D?pens?',
     noTx:          'Aucune transaction',
-    purchased:     'Achat re�u !',
-    purchasedSub:  "Vos pi�ces peuvent prendre un moment. Appuyez sur Actualiser si n�cessaire.",
+    purchased:     'Achat re?u !',
+    purchasedSub:  "Vos pi?ces peuvent prendre un moment. Appuyez sur Actualiser si n?cessaire.",
     refresh:       'Actualiser',
-    refreshing:    'Actualisation�',
+    refreshing:    'Actualisation?',
   },
   pidgin: {
     title:         'Zerm Coins',
@@ -70,7 +70,7 @@ const strings = {
     buyCoins:      'Buy Coins',
     transfer:      'Send',
     tipTitle:      'Get more Zerm Coins',
-    tipBody:       'Bring your padis, complete your profile, stay active � na so bonus dey come.',
+    tipBody:       'Bring your padis, complete your profile, stay active ? na so bonus dey come.',
     historyTitle:  'Transaction History',
     all:           'All',
     earnedTab:     'You Get',
@@ -79,27 +79,27 @@ const strings = {
     purchased:     'Purchase done!',
     purchasedSub:  'Your coins fit take small time appear. Press Refresh if e no show.',
     refresh:       'Refresh',
-    refreshing:    'Refreshing�',
+    refreshing:    'Refreshing?',
   },
   ar: {
     title:         '????? ???',
     balance:       '?????',
     available:     '????',
     earned:        '?????',
-    spent:         '?ُ?ف??',
+    spent:         '??????',
     buyCoins:      '????',
     transfer:      '?????',
     tipTitle:      '???? ?????? ?? ????? ???',
-    tipBody:       '???ُ ???????? ???? ??ف? ??????? ????? ????? ?????? ??? ???ف??.',
+    tipBody:       '???? ???????? ???? ???? ??????? ????? ????? ?????? ??? ??????.',
     historyTitle:  '??? ?????????',
     all:           '????',
     earnedTab:     '?????',
-    spentTab:      '?ُ?ف??',
+    spentTab:      '??????',
     noTx:          '?? ???? ??????? ???',
     purchased:     '?? ?????? ??? ??????!',
     purchasedSub:  '?? ?????? ?????? ???? ??????. ???? ????? ??? ??????.',
     refresh:       '?????',
-    refreshing:    '???ٍ ???????�',
+    refreshing:    '???? ????????',
   },
   fulfulde: {
     title:         'Zerm Coin?e',
@@ -110,7 +110,7 @@ const strings = {
     buyCoins:      'Sood',
     transfer:      'Neldu',
     tipTitle:      'He? coin?e Zerm keew?e',
-    tipBody:       'Naatnu yim?e, he? profil maa, yahugol aktif � so hono nii mba?aten bonus.',
+    tipBody:       'Naatnu yim?e, he? profil maa, yahugol aktif ? so hono nii mba?aten bonus.',
     historyTitle:  'Laamu Li??itol',
     all:           'Fof',
     earnedTab:     'He?iino',
@@ -119,7 +119,7 @@ const strings = {
     purchased:     'Soodaande accii!',
     purchasedSub:  'Coin?e maa mbaawa waa?ude. Taa? Refresh so wonaa haa.',
     refresh:       'Refresh',
-    refreshing:    'Dawnugol�',
+    refreshing:    'Dawnugol?',
   },
 } as const;
 
@@ -162,7 +162,7 @@ export default function CoinsPage() {
       if (!session?.user) { navigate('/login'); return; }
       const userId = session.user.id;
 
-      // Fetch balance � maybeSingle() never throws on missing row
+      // Fetch balance ? maybeSingle() never throws on missing row
       const { data: coinData } = await supabase
         .from('zerm_coins')
         .select('balance')
@@ -172,7 +172,7 @@ export default function CoinsPage() {
       if (coinData) {
         setBalance(coinData.balance ?? 0);
       } else {
-        // First-time user � create wallet row
+        // First-time user ? create wallet row
         const { data: newRow } = await supabase
           .from('zerm_coins')
           .upsert({ user_id: userId, balance: 0 }, { onConflict: 'user_id' })
@@ -248,7 +248,7 @@ export default function CoinsPage() {
         <div className="text-center">
           <p className="text-teal-100 text-sm mb-1">{s.balance}</p>
           <div className="text-white text-6xl font-black mb-1">
-            {loading ? '�' : (balance ?? 0).toLocaleString()}
+            {loading ? '?' : (balance ?? 0).toLocaleString()}
           </div>
           <p className="text-teal-100 text-sm flex items-center justify-center gap-1">
             <Zap className="w-4 h-4 text-yellow-300" /> Zerm Coins
@@ -256,7 +256,7 @@ export default function CoinsPage() {
         </div>
       </div>
 
-      {/* Stats card � overlaps hero */}
+      {/* Stats card ? overlaps hero */}
       <div className="px-4 -mt-14 mb-4 relative z-10">
         <div className="bg-white rounded-2xl shadow-md border p-4 grid grid-cols-3 gap-3">
           <div className="text-center">

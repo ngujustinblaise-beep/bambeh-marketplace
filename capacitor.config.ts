@@ -1,6 +1,6 @@
-/**
- * capacitor.config.ts — Bambeh Marketplace
- * © 2026 Bambeh Marketplace. All rights reserved.
+﻿/**
+ * capacitor.config.ts â€” Bambeh Marketplace
+ * Â© 2026 Bambeh Marketplace. All rights reserved.
  *
  * UPGRADED: androidScheme set to 'bambeh' for deep links.
  *
@@ -14,33 +14,33 @@
  *
  * The appUrlOpen listener in App.tsx bridges these to React Router.
  *
- * ALSO requires AndroidManifest.xml intent-filter — see AndroidManifest-deeplink.xml
+ * ALSO requires AndroidManifest.xml intent-filter â€” see AndroidManifest-deeplink.xml
  */
 
-import { CapacitorConfig } from "@capacitor/cli";
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  // ── App Identity ──────────────────────────────────────────────────────────
+  // â”€â”€ App Identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   appId: "cm.bambeh.marketplace",
   appName: "Bambeh",
 
-  // ── Web Dir ───────────────────────────────────────────────────────────────
+  // â”€â”€ Web Dir â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   webDir: "dist",
 
-  // ── Server ────────────────────────────────────────────────────────────────
+  // â”€â”€ Server â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   server: {
     // CRITICAL: 'bambeh' scheme enables deep links like bambeh://payment/callback
     // Without this, Capacitor uses https:// internally and the appUrlOpen event
     // is never fired for custom scheme URLs from NotchPay or FCM.
     androidScheme: "bambeh",
 
-    // Allow cleartext for local dev only — production uses HTTPS
+    // Allow cleartext for local dev only â€” production uses HTTPS
     cleartext: false,
 
-    // Hostname for the embedded WebView — used as origin for CORS
+    // Hostname for the embedded WebView â€” used as origin for CORS
     hostname: "bambeh.app",
 
-    // ── Content Security Policy ──────────────────────────────────────────────
+    // â”€â”€ Content Security Policy â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Prevents XSS, clickjacking, data injection, and mixed content attacks.
     // Each directive whitelists only the exact domains Bambeh communicates with.
     headers: {
@@ -79,24 +79,24 @@ const config: CapacitorConfig = {
     },
   },
 
-  // ── Android ───────────────────────────────────────────────────────────────
+  // â”€â”€ Android â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   android: {
     // Build output directory
     buildOptions: {
       releaseType: "APK",
     },
-    // Override back button globally — handled in App.tsx initializeCapacitor
+    // Override back button globally â€” handled in App.tsx initializeCapacitor
     overrideUserAgent: undefined,
   },
 
-  // ── iOS (future-proofing) ─────────────────────────────────────────────────
+  // â”€â”€ iOS (future-proofing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   ios: {
     scheme: "bambeh",
   },
 
-  // ── Plugins ───────────────────────────────────────────────────────────────
+  // â”€â”€ Plugins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   plugins: {
-    // ── SplashScreen ────────────────────────────────────────────────────────
+    // â”€â”€ SplashScreen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
@@ -105,40 +105,41 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
 
-    // ── StatusBar ───────────────────────────────────────────────────────────
+    // â”€â”€ StatusBar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     StatusBar: {
       style: "LIGHT",
       backgroundColor: "#0d9488",
     },
 
-    // ── Keyboard ────────────────────────────────────────────────────────────
+    // â”€â”€ Keyboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Keyboard: {
       resize: "body",
       style: "DARK",
       resizeOnFullScreen: true,
     },
 
-    // ── PushNotifications (FCM) ──────────────────────────────────────────────
+    // â”€â”€ PushNotifications (FCM) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },
 
-    // ── LocalNotifications ──────────────────────────────────────────────────
+    // â”€â”€ LocalNotifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     LocalNotifications: {
       smallIcon: "ic_stat_icon_config_sample",
       iconColor: "#0d9488",
       sound: "bambeh_notify.wav",
     },
 
-    // ── Preferences (used by offline posting queue) ──────────────────────────
+    // â”€â”€ Preferences (used by offline posting queue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Preferences: {
       group: "BambehPreferences",
     },
 
-    // ── Share ────────────────────────────────────────────────────────────────
-    // Capacitor Share plugin — used by the share listing button
-    // No config needed — uses native OS share sheet
+    // â”€â”€ Share â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Capacitor Share plugin â€” used by the share listing button
+    // No config needed â€” uses native OS share sheet
   },
 };
 
 export default config;
+

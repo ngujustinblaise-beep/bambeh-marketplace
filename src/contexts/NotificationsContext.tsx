@@ -1,94 +1,35 @@
-/**
- * NOTIFICATIONS CONTEXT
- * Manages notifications throughout the app
- */
+﻿import React, { createContext, useContext } from "react";
+import { useNotifications, type BambehNotification } from "@/hooks/useNotifications";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+export interface Notification extends BambehNotification {}
 
-// Notification Type
-export interface Notification {
-  id: string;
-  type: "success" | "error" | "warning" | "info";
-  title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-  actionUrl?: string;
-  actionLabel?: string;
-}
-
-// Context Type
 interface NotificationsContextType {
   notifications: Notification[];
   unreadCount: number;
   addNotification: (
-    notification: Omit<Notification, "id" | "timestamp" | "read">,
-  ) => void;
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  removeNotification: (id: string) => void;
-  clearAll: () => void;
+    notification: Omit<Notification, "id" | "read" | "created_at">
+  ) => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  removeNotification: (id: string) => Promise<void>;
+  clearAll: () => Promise<void>;
+  refetch: () => Promise<void>;
 }
 
-// Create Context
-const NotificationsContext = createContext<
-  NotificationsContextType | undefined
->(undefined);
+const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
 
-// Provider Component
-export function NotificationsProvider({
-  children
-}: { children: React.ReactNode;  }) {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  // Calculate unread count
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  // Add a new notification
-  const addNotification = useCallback(
-    (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
-      const newNotification: Notification = {
-        ...notification,
-        id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: new Date(),
-        read: false,
-      };
-
-      setNotifications((prev) => [newNotification, ...prev]);
-    },
-    [],
-  );
-
-  // Mark a notification as read
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)),
-    );
-  }, []);
-
-  // Mark all notifications as read
-  const markAllAsRead = useCallback(() => {
-    setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
-  }, []);
-
-  // Remove a notification
-  const removeNotification = useCallback((id: string) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
-  }, []);
-
-  // Clear all notifications
-  const clearAll = useCallback(() => {
-    setNotifications([]);
-  }, []);
+export function NotificationsProvider({ children }: { children: React.ReactNode }) {
+  const api = useNotifications();
 
   const value: NotificationsContextType = {
-    notifications,
-    unreadCount,
-    addNotification,
-    markAsRead,
-    markAllAsRead,
-    removeNotification,
-    clearAll
+    notifications: api.notifications,
+    unreadCount: api.unreadCount,
+    addNotification: api.addNotification,
+    markAsRead: api.markRead,
+    markAllAsRead: api.markAllRead,
+    removeNotification: api.deleteNotification,
+    clearAll: api.clearAll,
+    refetch: api.refetch,
   };
 
   return (
@@ -98,20 +39,12 @@ export function NotificationsProvider({
   );
 }
 
-// Custom Hook
-export function useNotifications() {
+export function useNotificationsContext() {
   const context = useContext(NotificationsContext);
-  if (context === undefined) {
-    throw new Error(
-      "useNotifications must be used within a NotificationsProvider",
-    );
+  if (!context) {
+    throw new Error("useNotificationsContext must be used within a NotificationsProvider");
   }
   return context;
 }
 
 export default NotificationsContext;
-
-
-
-
-

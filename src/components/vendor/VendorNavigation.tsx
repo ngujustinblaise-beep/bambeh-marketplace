@@ -6,7 +6,7 @@
  * Quick navigation for vendors to access dashboard features
  * Used in Profile page and other vendor-related areas
  *
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 

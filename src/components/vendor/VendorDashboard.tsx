@@ -1,7 +1,7 @@
 /**
  * src/components/vendor/VendorDashboard.tsx
- * Bambeh Marketplace � Vendor Dashboard Widget
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Vendor Dashboard Widget
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -29,12 +29,12 @@ const ORDER_STATUS_CONFIG: Record<
   { label: string; color: string; icon: React.ElementType }
 > = {
   pending: { label: "En attente", color: "text-yellow-600 bg-yellow-50", icon: Clock },
-  confirmed: { label: "Confirm�", color: "text-blue-600 bg-blue-50", icon: CheckCircle },
+  confirmed: { label: "Confirm?", color: "text-blue-600 bg-blue-50", icon: CheckCircle },
   processing: { label: "En traitement", color: "text-purple-600 bg-purple-50", icon: Clock },
-  shipped: { label: "Exp�di�", color: "text-teal-600 bg-teal-50", icon: Package },
-  delivered: { label: "Livr�", color: "text-green-600 bg-green-50", icon: CheckCircle },
-  canceled: { label: "Annul�", color: "text-red-500 bg-red-50", icon: XCircle },
-  refunded: { label: "Rembours�", color: "text-gray-500 bg-gray-100", icon: AlertCircle },
+  shipped: { label: "Exp?di?", color: "text-teal-600 bg-teal-50", icon: Package },
+  delivered: { label: "Livr?", color: "text-green-600 bg-green-50", icon: CheckCircle },
+  canceled: { label: "Annul?", color: "text-red-500 bg-red-50", icon: XCircle },
+  refunded: { label: "Rembours?", color: "text-gray-500 bg-gray-100", icon: AlertCircle },
 };
 
 function OrderStatusBadge({ status }: { status: VendorOrder["status"] }) {
@@ -123,7 +123,7 @@ const VendorDashboard: React.FC<VendorDashboardProps> = ({ vendorId, className =
           className="flex items-center gap-1 text-sm text-red-600"
         >
           <RefreshCw className="w-4 h-4" />
-          R�essayer
+          R?essayer
         </button>
       </div>
     );
@@ -139,7 +139,7 @@ const VendorDashboard: React.FC<VendorDashboardProps> = ({ vendorId, className =
             <span className="text-xs text-teal-700 font-medium">Revenus nets</span>
           </div>
           <p className="text-lg font-bold text-teal-800">
-            {earnings ? formatXAF(earnings.netEarningsXAF) : "�"}
+            {earnings ? formatXAF(earnings.netEarningsXAF) : "?"}
           </p>
         </div>
 
@@ -165,7 +165,7 @@ const VendorDashboard: React.FC<VendorDashboardProps> = ({ vendorId, className =
             <span className="text-xs text-green-700 font-medium">Retrait dispo</span>
           </div>
           <p className="text-lg font-bold text-green-800">
-            {earnings ? formatXAF(earnings.pendingWithdrawalXAF) : "�"}
+            {earnings ? formatXAF(earnings.pendingWithdrawalXAF) : "?"}
           </p>
         </div>
       </div>
@@ -173,7 +173,7 @@ const VendorDashboard: React.FC<VendorDashboardProps> = ({ vendorId, className =
       {/* Recent Orders */}
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-900">Commandes r�centes</h3>
+          <h3 className="text-sm font-semibold text-gray-900">Commandes r?centes</h3>
           <button
             type="button"
             onClick={() => navigate("/vendor/orders")}
@@ -202,7 +202,7 @@ const VendorDashboard: React.FC<VendorDashboardProps> = ({ vendorId, className =
                     {order.customerName ?? "Client"}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {formatXAF(order.totalXAF)} � {new Date(order.createdAt).toLocaleDateString("fr-CM")}
+                    {formatXAF(order.totalXAF)} ? {new Date(order.createdAt).toLocaleDateString("fr-CM")}
                   </p>
                 </div>
                 <OrderStatusBadge status={order.status} />

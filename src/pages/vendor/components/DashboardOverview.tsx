@@ -1,7 +1,7 @@
 /**
  * src/pages/vendor/components/DashboardOverview.tsx
- * Bambeh Marketplace � Vendor Dashboard Overview
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Vendor Dashboard Overview
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -108,7 +108,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
     { value: "today", label: "Aujourd'hui" },
     { value: "week", label: "Cette semaine" },
     { value: "month", label: "Ce mois" },
-    { value: "year", label: "Cette ann�e" },
+    { value: "year", label: "Cette ann?e" },
   ];
 
   return (
@@ -151,7 +151,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             className="flex items-center gap-1 text-red-600 text-sm"
           >
             <RefreshCw className="w-4 h-4" />
-            R�essayer
+            R?essayer
           </button>
         </div>
       )}
@@ -169,7 +169,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             label="Commandes"
             value={String(snapshot.ordersPlaced)}
             icon={ShoppingBag}
-            subValue={`${snapshot.ordersCompleted} livr�es`}
+            subValue={`${snapshot.ordersCompleted} livr?es`}
             colorClass="bg-blue-50 text-blue-600"
           />
           <KpiCard
@@ -187,7 +187,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             colorClass="bg-yellow-50 text-yellow-600"
           />
           <KpiCard
-            label="Nouveaux abonn�s"
+            label="Nouveaux abonn?s"
             value={String(snapshot.newFollowers)}
             icon={Users}
             colorClass="bg-teal-50 text-teal-600"

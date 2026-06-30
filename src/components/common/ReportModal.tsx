@@ -169,9 +169,9 @@ export default function ReportModal({ itemType, itemId, itemTitle, onClose }: Re
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <ul className="text-xs text-amber-800 space-y-1">
-                <li>� Your report will be sent to Bambeh admin team</li>
-                <li>� False reports may result in account suspension</li>
-                <li>� We review all reports within 24 hours</li>
+                <li>? Your report will be sent to Bambeh admin team</li>
+                <li>? False reports may result in account suspension</li>
+                <li>? We review all reports within 24 hours</li>
               </ul>
             </div>
           </div>

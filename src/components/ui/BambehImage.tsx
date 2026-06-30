@@ -1,6 +1,6 @@
 /**
- * BambehImage.tsx � Bambeh Marketplace
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * BambehImage.tsx ? Bambeh Marketplace
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  *
  * --- STEP 24: IMAGE OPTIMISATION FOR  3G / 2G ------------------------
  *
@@ -8,19 +8,19 @@
  *
  *  1. LAYOUT SHIFT (CLS)
  *     Every image that loads without explicit width+height causes the page to
- *     reflow � on a 2G connection where images take 3�8 seconds to load, users
+ *     reflow ? on a 2G connection where images take 3?8 seconds to load, users
  *     experience constant jumping content. We fix this with the aspect-ratio
  *     padding trick: a placeholder div holds the exact space before the image
  *     arrives, so the layout never shifts.
  *
  *  2. BANDWIDTH WASTE
- *     PNG/JPEG images sent to browsers that support WebP waste 25�40% bandwidth.
+ *     PNG/JPEG images sent to browsers that support WebP waste 25?40% bandwidth.
  *     We use <picture> + <source type="image/webp"> so modern browsers (Chrome,
- *     Firefox, Edge � i.e. every Android phone in ) get WebP
+ *     Firefox, Edge ? i.e. every Android phone in ) get WebP
  *     automatically, while older browsers fall back to the original format.
  *
  *  3. EAGER LOADING OFF-SCREEN IMAGES
- *     Without lazy loading, a marketplace listing page downloads ALL 20�50
+ *     Without lazy loading, a marketplace listing page downloads ALL 20?50
  *     product images immediately, saturating the 3G pipe and delaying the
  *     images actually visible on screen. We use loading="lazy" + IntersectionObserver
  *     so only images within ~200px of the viewport are fetched.
@@ -28,7 +28,7 @@
  *  4. NO SKELETON DURING LOAD
  *     A blank white box during image load looks broken. We show a shimmer
  *     skeleton (matching the image's aspect ratio) so users know content is
- *     coming. This is especially important on 2G where images can take 5�10s.
+ *     coming. This is especially important on 2G where images can take 5?10s.
  *
  *  5. BROKEN IMAGE HANDLING
  *     Supabase storage URLs can return 404 if a seller deletes an image.
@@ -45,7 +45,7 @@
  *    className="rounded-lg"
  *  />
  *
- *  // Hero / above-the-fold image � disable lazy loading:
+ *  // Hero / above-the-fold image ? disable lazy loading:
  *  <BambehImage
  *    src={heroImageUrl}
  *    alt="Bambeh Marketplace Hero"
@@ -85,20 +85,20 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 // --- TYPES --------------------------------------------------------------------
 
 export interface BambehImageProps {
-  /** The image URL � typically a Supabase storage URL */
+  /** The image URL ? typically a Supabase storage URL */
   src: string;
 
-  /** Alt text � required for accessibility */
+  /** Alt text ? required for accessibility */
   alt: string;
 
   /**
-   * Explicit pixel width � REQUIRED to prevent layout shift (CLS).
+   * Explicit pixel width ? REQUIRED to prevent layout shift (CLS).
    * Use the display size, not the original image size.
    */
   width: number;
 
   /**
-   * Explicit pixel height � REQUIRED to prevent layout shift (CLS).
+   * Explicit pixel height ? REQUIRED to prevent layout shift (CLS).
    * Use the display size, not the original image size.
    */
   height: number;
@@ -123,7 +123,7 @@ export interface BambehImageProps {
   fallbackSrc?: string;
 
   /**
-   * sizes attribute for responsive images � tells the browser which
+   * sizes attribute for responsive images ? tells the browser which
    * image size to fetch based on viewport width.
    * Example: "(max-width: 640px) 160px, 320px"
    */
@@ -134,8 +134,8 @@ export interface BambehImageProps {
 
   /**
    * Object-fit strategy.
-   * "cover" (default) � fills the box, crops if needed (product images)
-   * "contain"         � fits inside the box, no crop (logos, icons)
+   * "cover" (default) ? fills the box, crops if needed (product images)
+   * "contain"         ? fits inside the box, no crop (logos, icons)
    */
   objectFit?: "cover" | "contain" | "fill" | "none";
 }
@@ -160,7 +160,7 @@ function toWebpUrl(src: string, width: number): string {
     // Supabase image transform params
     url.searchParams.set("format", "webp");
     url.searchParams.set("width", String(Math.round(width * 1.5))); // 1.5x for retina
-    url.searchParams.set("quality", "80"); // 80% quality � good balance for 3G
+    url.searchParams.set("quality", "80"); // 80% quality ? good balance for 3G
     return url.toString();
   } catch {
     return src;
@@ -219,7 +219,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
 
   // -- IntersectionObserver for lazy loading ----------------------------------
   // We use a 200px rootMargin so images start loading slightly BEFORE they
-  // scroll into view � this hides the loading time on fast scrolls.
+  // scroll into view ? this hides the loading time on fast scrolls.
   // On 2G connections this gives the image a ~1s head start.
   useEffect(() => {
     if (priority) return; // priority images don't need observer
@@ -237,7 +237,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
       (entries) => {
         if (entries[0].isIntersecting) {
           setIsInView(true);
-          observer.disconnect(); // stop observing once in view � saves memory
+          observer.disconnect(); // stop observing once in view ? saves memory
         }
       },
       {
@@ -274,7 +274,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
       {/*
         Inject the shimmer animation once.
         We use a style tag here rather than a CSS file to keep this component
-        fully self-contained � no extra import needed.
+        fully self-contained ? no extra import needed.
       */}
       <style>{`
         @keyframes bambeh-shimmer {
@@ -296,13 +296,13 @@ export const BambehImage: React.FC<BambehImageProps> = ({
         }}
         onClick={onClick}
       >
-        {/* Shimmer skeleton � visible until image loads */}
+        {/* Shimmer skeleton ? visible until image loads */}
         {!isLoaded && <ShimmerSkeleton aspectRatio={aspectRatio} />}
 
         {/* Only render the actual <picture> element when in viewport */}
         {isInView && (
           <picture>
-            {/* WebP source � served to Chrome, Firefox, Edge (all Android) */}
+            {/* WebP source ? served to Chrome, Firefox, Edge (all Android) */}
             {!hasError && (
               <source
                 srcSet={effectiveWebpSrc}
@@ -311,7 +311,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
               />
             )}
 
-            {/* Original format fallback � served to Safari < 14, old browsers */}
+            {/* Original format fallback ? served to Safari < 14, old browsers */}
             <img
               ref={imgRef}
               src={effectiveSrc}
@@ -320,7 +320,7 @@ export const BambehImage: React.FC<BambehImageProps> = ({
               height={height}
               sizes={sizes}
               loading={priority ? "eager" : "lazy"}
-              // fetchpriority is a newer attribute � helps browser prioritise
+              // fetchpriority is a newer attribute ? helps browser prioritise
               // above-the-fold images over lazy ones during initial page load
               {...(priority ? { fetchPriority: "high" } : { fetchPriority: "low" })}
               decoding={priority ? "sync" : "async"}
@@ -345,8 +345,8 @@ export const BambehImage: React.FC<BambehImageProps> = ({
 // Import these directly instead of configuring BambehImage each time.
 
 /**
- * ListingCard image � standard 4:3 product image for marketplace grid.
- * 320�240 is optimal for 3G: small enough to load fast, large enough for detail.
+ * ListingCard image ? standard 4:3 product image for marketplace grid.
+ * 320?240 is optimal for 3G: small enough to load fast, large enough for detail.
  */
 export const ListingImage: React.FC<Omit<BambehImageProps, "width" | "height"> & {
   width?: number;
@@ -362,7 +362,7 @@ export const ListingImage: React.FC<Omit<BambehImageProps, "width" | "height"> &
 );
 
 /**
- * Avatar image � square, used in Profile, VendorCard, ChatMessage.
+ * Avatar image ? square, used in Profile, VendorCard, ChatMessage.
  */
 export const AvatarImage: React.FC<Omit<BambehImageProps, "width" | "height"> & {
   size?: number;
@@ -377,14 +377,14 @@ export const AvatarImage: React.FC<Omit<BambehImageProps, "width" | "height"> & 
 );
 
 /**
- * HeroImage � above-the-fold banner. Priority loaded, no lazy loading.
+ * HeroImage ? above-the-fold banner. Priority loaded, no lazy loading.
  */
 export const HeroImage: React.FC<Omit<BambehImageProps, "priority">> = (props) => (
   <BambehImage priority {...props} />
 );
 
 /**
- * VendorBanner � wide 16:9 banner for vendor profile pages.
+ * VendorBanner ? wide 16:9 banner for vendor profile pages.
  */
 export const VendorBannerImage: React.FC<Omit<BambehImageProps, "width" | "height">> = (props) => (
   <BambehImage

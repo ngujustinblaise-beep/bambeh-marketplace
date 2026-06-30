@@ -5,7 +5,7 @@
  * 
  * Manage vendor products - view, edit, delete, toggle availability
  * 
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 

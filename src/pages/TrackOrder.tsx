@@ -1,7 +1,7 @@
 /**
  * src/pages/TrackOrder.tsx
- * Bambeh Marketplace � Track a Specific Order
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Track a Specific Order
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -51,7 +51,7 @@ const TrackOrder: React.FC = () => {
         id: data.id as string,
         status: data.status as string,
         totalXAF: data.total_xaf as number,
-        vendorName: (vendor?.store_name as string) ?? "�",
+        vendorName: (vendor?.store_name as string) ?? "?",
         itemCount: 1,
         paymentStatus: data.payment_status as string,
         paymentReference: data.payment_reference as string | undefined,
@@ -110,7 +110,7 @@ const TrackOrder: React.FC = () => {
               <div>
                 <p className="font-bold text-gray-900 capitalize">{order.status.replace(/_/g, " ")}</p>
                 <p className="text-xs text-gray-400">
-                  Mis � jour: {new Date(order.updatedAt).toLocaleString("fr-CM")}
+                  Mis ? jour: {new Date(order.updatedAt).toLocaleString("fr-CM")}
                 </p>
               </div>
             </div>
@@ -120,7 +120,7 @@ const TrackOrder: React.FC = () => {
               <div className="flex justify-between"><span className="text-gray-500">Total</span><span className="font-bold text-teal-700">{formatXAF(order.totalXAF)}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Paiement</span><span className={order.paymentStatus === "paid" ? "text-green-600 font-medium" : "text-yellow-600"}>{order.paymentStatus}</span></div>
               {order.paymentReference && (
-                <div className="flex justify-between"><span className="text-gray-500">R�f�rence</span><span className="font-mono text-xs">{order.paymentReference}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">R?f?rence</span><span className="font-mono text-xs">{order.paymentReference}</span></div>
               )}
               <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{new Date(order.createdAt).toLocaleDateString("fr-CM")}</span></div>
             </div>
@@ -128,7 +128,7 @@ const TrackOrder: React.FC = () => {
 
           <button type="button" onClick={() => navigate("/tracking")} className="w-full py-3 border border-teal-300 text-teal-700 rounded-xl text-sm font-medium hover:bg-teal-50 transition-colors flex items-center justify-center gap-2">
             <Package className="w-4 h-4" />
-            Suivi d�taill�
+            Suivi d?taill?
           </button>
         </div>
       )}

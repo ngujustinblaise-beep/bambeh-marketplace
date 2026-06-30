@@ -858,9 +858,9 @@ export default function Advertisements() {
                   <Select value={selectedDuration} onValueChange={(v) => setSelectedDuration(v as AdDuration)}>
                     <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">?? {t('ads.daily', 'Daily (1 day)')} � {calculatePrice(selectedTier, 'daily').toLocaleString()} XAF</SelectItem>
-                      <SelectItem value="weekly">?? {t('ads.weekly', 'Weekly (7 days)')} � {calculatePrice(selectedTier, 'weekly').toLocaleString()} XAF</SelectItem>
-                      <SelectItem value="monthly">?? {t('ads.monthly', 'Monthly (30 days)')} � {calculatePrice(selectedTier, 'monthly').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="daily">?? {t('ads.daily', 'Daily (1 day)')} ? {calculatePrice(selectedTier, 'daily').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="weekly">?? {t('ads.weekly', 'Weekly (7 days)')} ? {calculatePrice(selectedTier, 'weekly').toLocaleString()} XAF</SelectItem>
+                      <SelectItem value="monthly">?? {t('ads.monthly', 'Monthly (30 days)')} ? {calculatePrice(selectedTier, 'monthly').toLocaleString()} XAF</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

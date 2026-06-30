@@ -230,6 +230,7 @@ const TermsOfService  = lazy(() => import("@/pages/TermsOfService"));
 const DonatePremium   = lazy(() => import("@/pages/DonatePremium"));
 const ReferralProgram = lazy(() => import("@/pages/ReferralProgram"));
 const Chat            = lazy(() => import("@/pages/Chat"));
+const MessagesPage    = lazy(() => import("@/pages/MessagesPage"));
 const SearchResults   = lazy(() => import("@/pages/SearchResults"));
 const SavedSearches   = lazy(() => import("@/pages/SavedSearches"));
 const ReportIssuePage = lazy(() => import("@/pages/ReportIssuePage"));
@@ -1170,6 +1171,7 @@ export default function App() {
 
                         {/* ── 13. GENERAL PAGES ──────────────────────────────────── */}
                         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+                        <Route path="/messages" element={<MainLayout><MessagesPage /></MainLayout>} />
                         <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
                         <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
                         <Route path="/terms-of-service" element={<MainLayout><TermsOfService /></MainLayout>} />

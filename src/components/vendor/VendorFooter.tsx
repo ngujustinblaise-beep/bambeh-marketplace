@@ -13,7 +13,7 @@
  * ? Payment methods display
  *
  * FILE LOCATION: src/components/vendor/VendorFooter.tsx
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
@@ -236,7 +236,7 @@ export default function VendorFooter() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
-                  Yaound�, 
+                  Yaound?, 
                   <br />
                   Centre Region
                 </span>
@@ -280,7 +280,7 @@ export default function VendorFooter() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
-              � 2025 Bambeh. All rights reserved.
+              ? 2025 Bambeh. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link

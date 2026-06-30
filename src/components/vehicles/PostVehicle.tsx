@@ -326,7 +326,7 @@ const PostVehicle: React.FC = () => {
 
       toast({
         title: 'Vehicle posted successfully!',
-        description: 'Your vehicle is now listed on Bamb�',
+        description: 'Your vehicle is now listed on Bamb?',
       });
 
       navigate('/products?category=vehicles');
@@ -357,7 +357,7 @@ const PostVehicle: React.FC = () => {
             </Button>
             <div>
               <h1 className="text-xl font-bold">Post Vehicle</h1>
-              <p className="text-sm text-gray-600">Sell your vehicle on Bamb�</p>
+              <p className="text-sm text-gray-600">Sell your vehicle on Bamb?</p>
             </div>
           </div>
         </div>
@@ -776,7 +776,7 @@ const PostVehicle: React.FC = () => {
                 <Input
                   id="location"
                   name="location"
-                  placeholder="e.g., Yaound�, "
+                  placeholder="e.g., Yaound?, "
                   value={formData.location}
                   onChange={handleInputChange}
                   required

@@ -11,7 +11,7 @@ import { useLang, t } from "@/hooks/useAppLang";
 
 const PaymentSuccess: React.FC = () => {
   const { state } = useLocation();
-  const reference = (state as any)?.reference || '�';
+  const reference = (state as any)?.reference || '?';
   const amount    = (state as any)?.amount    || 0;
   const paidAt    = (state as any)?.paidAt    || new Date().toISOString();
 

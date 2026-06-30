@@ -242,7 +242,7 @@ const PostRentalProperty: React.FC = () => {
             const existingRentals = JSON.parse(localStorage.getItem('bambe-rentals') || '[]');
             localStorage.setItem('bambe-rentals', JSON.stringify([rentalListing, ...existingRentals]));
 
-            toast({ title: 'Property posted successfully!', description: 'Your rental property is now listed on Bamb�' });
+            toast({ title: 'Property posted successfully!', description: 'Your rental property is now listed on Bamb?' });
             navigate('/rentals');
         } catch (error) {
             console.error('Error posting rental:', error);
@@ -359,7 +359,7 @@ const PostRentalProperty: React.FC = () => {
                                     <Input id="bathrooms" name="bathrooms" type="number" min="0" step="0.5" value={formData.bathrooms} onChange={handleInputChange} />
                                 </div>
                                 <div>
-                                    <Label htmlFor="area">Area (m�)</Label>
+                                    <Label htmlFor="area">Area (m?)</Label>
                                     <Input id="area" name="area" type="number" placeholder="100" value={formData.area} onChange={handleInputChange} />
                                 </div>
                                 <div className="flex items-end">
@@ -392,7 +392,7 @@ const PostRentalProperty: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label htmlFor="city">City</Label>
-                                    <Input id="city" name="city" placeholder="e.g., Yaound�" value={formData.city} onChange={handleInputChange} />
+                                    <Input id="city" name="city" placeholder="e.g., Yaound?" value={formData.city} onChange={handleInputChange} />
                                 </div>
                                 <div>
                                     <Label htmlFor="neighborhood">Neighborhood</Label>

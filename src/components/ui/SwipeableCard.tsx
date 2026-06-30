@@ -1,7 +1,7 @@
 /**
  * src/components/ui/SwipeableCard.tsx
- * Bambeh Marketplace � Swipeable Card with Action Reveal
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Bambeh Marketplace ? Swipeable Card with Action Reveal
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useRef, useState, useCallback } from "react";

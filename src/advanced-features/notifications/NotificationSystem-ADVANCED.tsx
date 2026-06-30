@@ -33,7 +33,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ userId }) => {
   if (loading) return (
     <div className="p-4 flex items-center gap-2">
       <div className="animate-spin h-4 w-4 rounded-full border-2 border-teal-500 border-t-transparent" />
-      <span className="text-sm text-gray-500">Loading notifications�</span>
+      <span className="text-sm text-gray-500">Loading notifications?</span>
     </div>
   );
 

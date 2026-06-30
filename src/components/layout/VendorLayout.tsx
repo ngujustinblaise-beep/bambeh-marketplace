@@ -1,6 +1,6 @@
 /**
- * VendorLayout.tsx � PREMIUM REDESIGN
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * VendorLayout.tsx ? PREMIUM REDESIGN
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import React, { useState, useEffect } from "react";
@@ -318,7 +318,7 @@ const VendorLayout: React.FC<VendorLayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        {/* ROW 2 � Desktop nav */}
+        {/* ROW 2 ? Desktop nav */}
         <div className="hidden lg:block bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center h-10 overflow-x-auto scrollbar-hide">

@@ -1,10 +1,10 @@
 // @ts-nocheck
 /**
- * Chat.tsx � Bambeh Marketplace
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * Chat.tsx ? Bambeh Marketplace
+ * ? 2026 Bambeh Marketplace. All rights reserved.
  *
  * UPGRADED: Full Supabase Realtime chat with:
- * - Live typing indicators ("Seller is typing�")
+ * - Live typing indicators ("Seller is typing?")
  * - Real-time message delivery via Supabase Realtime channels
  * - Presence tracking (online/offline)
  * - Unread count badge
@@ -12,11 +12,11 @@
  * - Subscriber-only access gate
  *
  * NEW IN THIS VERSION:
- * ? is_booking_message support � booking messages (from BookVisitModal,
+ * ? is_booking_message support ? booking messages (from BookVisitModal,
  *    BookServiceModal, BookTestDrive) render as a formatted notification card
  *    instead of a plain text bubble.
  * ? Reply input is hidden when the last message in a conversation is a booking
- *    message � the conversation is intentionally one-way for booking notifications.
+ *    message ? the conversation is intentionally one-way for booking notifications.
  * ? ChatMessage interface extended with isBookingMessage flag.
  * ? Both fetchMessages and the Realtime INSERT handler map is_booking_message.
  */
@@ -99,7 +99,7 @@ const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
         <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </div>
-    <span className="text-xs text-gray-400 mb-1">{name} is typing�</span>
+    <span className="text-xs text-gray-400 mb-1">{name} is typing?</span>
   </div>
 );
 
@@ -163,7 +163,7 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
 
         {/* Footer note */}
         <p className="text-[10px] text-teal-400 mt-3 pt-2 border-t border-teal-100 italic text-center">
-          ?? This is a booking notification � replies are disabled for this message.
+          ?? This is a booking notification ? replies are disabled for this message.
         </p>
       </div>
     </div>
@@ -192,7 +192,7 @@ const MessageBubble: React.FC<{
 
   return (
     <div className={`flex items-end gap-2 px-4 py-0.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Avatar � only for other person, only on last message in a group */}
+      {/* Avatar ? only for other person, only on last message in a group */}
       {!isMine && (
         <div className="w-7 flex-shrink-0">
           {showAvatar && (
@@ -664,7 +664,7 @@ export default function ChatPage() {
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search conversations�"
+            placeholder="Search conversations?"
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
           />
         </div>
@@ -762,7 +762,7 @@ export default function ChatPage() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin"/>
-              <p className="text-sm text-gray-400">Loading messages�</p>
+              <p className="text-sm text-gray-400">Loading messages?</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
@@ -813,7 +813,7 @@ export default function ChatPage() {
         </button>
       )}
 
-      {/* ? Input bar � hidden when last message is a booking notification */}
+      {/* ? Input bar ? hidden when last message is a booking notification */}
       {isBookingOnlyThread ? (
         <div className="bg-teal-50 border-t border-teal-100 px-4 py-4 text-center">
           <p className="text-xs text-teal-600 font-medium">
@@ -836,7 +836,7 @@ export default function ChatPage() {
                 value={newMessage}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a message�"
+                placeholder="Type a message?"
                 className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
               />
             </div>

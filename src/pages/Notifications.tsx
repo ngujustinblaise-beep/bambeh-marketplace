@@ -1,146 +1,123 @@
-import React from 'react';
-import { useNotifications, BambehNotification } from '@/hooks/useNotifications';
-import { useLang, t } from "@/hooks/useAppLang";
+﻿import React from "react";
+import { useNotifications } from "@/hooks/useNotifications";
+import NotificationCard from "@/components/notifications/NotificationCard";
+import { useLang } from "@/hooks/useAppLang";
 
-const typeIcon: Record<string, string> = {
-  welcome:      '??',
-  subscription: '?',
-  new_order:    '??',
-  new_message:  '??',
+type SupportedLang = "en" | "fr" | "ar" | "ff" | "pcm";
+
+const copyMap: Record<SupportedLang, {
+  title: string;
+  markAllRead: string;
+  loading: string;
+  emptyTitle: string;
+  emptyBody: string;
+}> = {
+  en: {
+    title: "Notifications",
+    markAllRead: "Mark all read",
+    loading: "Loading notifications...",
+    emptyTitle: "All caught up!",
+    emptyBody: "Your notifications will appear here.",
+  },
+  fr: {
+    title: "Notifications",
+    markAllRead: "Tout marquer comme lu",
+    loading: "Chargement des notifications...",
+    emptyTitle: "Tout est à jour !",
+    emptyBody: "Vos notifications apparaîtront ici.",
+  },
+  ar: {
+    title: "الإشعارات",
+    markAllRead: "وضع الكل كمقروء",
+    loading: "جارٍ تحميل الإشعارات...",
+    emptyTitle: "كل شيء محدث!",
+    emptyBody: "ستظهر إشعاراتك هنا.",
+  },
+  ff: {
+    title: "Tintinnɗe",
+    markAllRead: "Waɗo fow jaŋde",
+    loading: "Your notifications are loading...",
+    emptyTitle: "Kuuɓe fow ooñii!",
+    emptyBody: "Tintinnɗe maa ɓe waɗo e ndee.",
+  },
+  pcm: {
+    title: "Notifications",
+    markAllRead: "Mark all as read",
+    loading: "Notifications dey load...",
+    emptyTitle: "Everything don set!",
+    emptyBody: "You notifications go show here.",
+  },
 };
-
-const typeBg: Record<string, string> = {
-  welcome:      'rgba(29,158,117,0.12)',
-  subscription: 'rgba(239,159,39,0.12)',
-  new_order:    'rgba(55,138,221,0.12)',
-  new_message:  'rgba(212,83,126,0.12)',
-};
-
-function timeAgo(dateStr: string): string {
-  const lang = useLang();
-  const isRtl = lang === "ar";
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1)  return 'Just now';
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  if (d < 7)  return `${d}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-}
-
-function NotifCard({ notif, onRead }: { notif: BambehNotification; onRead: (id: string) => void }) {
-  const icon = typeIcon[notif.type] ?? '??';
-  const bg   = typeBg[notif.type]   ?? 'rgba(29,158,117,0.12)';
-
-  return (
-    <div
-      onClick={() => !notif.is_read && onRead(notif.id)}
-      style={{
-        display: 'flex', gap: 14, padding: '16px',
-        borderBottom: '0.5px solid rgba(0,0,0,0.06)',
-        background: notif.is_read ? 'transparent' : 'rgba(29,158,117,0.04)',
-        cursor: notif.is_read ? 'default' : 'pointer',
-        transition: 'background 0.2s',
-      }}
-    >
-      <div style={{
-        width: 44, height: 44, borderRadius: '50%',
-        background: bg, display: 'flex', alignItems: 'center',
-        justifyContent: 'center', fontSize: 20, flexShrink: 0,
-      }}>
-        {icon}
-      </div>
-
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-          <span style={{
-            fontSize: 14, fontWeight: notif.is_read ? 500 : 700,
-            lineHeight: 1.3, color: 'inherit',
-          }}>
-            {notif.title}
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-            <span style={{ fontSize: 11, color: 'rgba(128,128,128,0.75)', whiteSpace: 'nowrap' }}>
-              {timeAgo(notif.created_at)}
-            </span>
-            {!notif.is_read && (
-              <div  style={{ width: 8, height: 8, borderRadius: '50%', background: '#1D9E75' }} />
-            )}
-          </div>
-        </div>
-        <p style={{
-          fontSize: 13, color: 'rgba(100,100,100,0.9)',
-          margin: 0, lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-        }}>
-          {notif.body}
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export default function Notifications() {
+  const lang = (useLang() || "en") as SupportedLang;
+  const copy = copyMap[lang] ?? copyMap.en;
+  const isRTL = lang === "ar";
   const { notifications, unreadCount, loading, markRead, markAllRead } = useNotifications();
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', paddingBottom: 80 }}>
-      {/* Header */}
-      <div style={{
-        position: 'sticky', top: 0, zIndex: 10,
-        background: 'var(--color-background-primary, #fff)',
-        borderBottom: '0.5px solid rgba(0,0,0,0.08)',
-        padding: '16px 16px 12px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
+    <div style={{ maxWidth: 600, margin: "0 auto", paddingBottom: 80, direction: isRTL ? "rtl" : "ltr" }}>
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          background: "var(--color-background-primary, #fff)",
+          borderBottom: "0.5px solid rgba(0,0,0,0.08)",
+          padding: "16px 16px 12px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}
+      >
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Notifications</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0, textAlign: isRTL ? "right" : "left" }}>
+            {copy.title}
+          </h1>
           {unreadCount > 0 && (
-            <span style={{ fontSize: 12, color: '#1D9E75', fontWeight: 500 }}>
+            <span style={{ fontSize: 12, color: "#1D9E75", fontWeight: 500 }}>
               {unreadCount} unread
             </span>
           )}
         </div>
+
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
             style={{
-              fontSize: 13, color: '#1D9E75', background: 'rgba(29,158,117,0.08)',
-              border: 'none', borderRadius: 20, padding: '6px 14px',
-              cursor: 'pointer', fontWeight: 500,
+              fontSize: 13,
+              color: "#1D9E75",
+              background: "rgba(29,158,117,0.08)",
+              border: "none",
+              borderRadius: 20,
+              padding: "6px 14px",
+              cursor: "pointer",
+              fontWeight: 500,
             }}
           >
-            Mark all read
+            {copy.markAllRead}
           </button>
         )}
       </div>
 
-      {/* Content */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.7)' }}>Loading notifications�</div>
+        <div style={{ padding: 60, textAlign: "center" }}>
+          <div style={{ fontSize: 13, color: "rgba(128,128,128,0.7)" }}>{copy.loading}</div>
         </div>
       ) : notifications.length === 0 ? (
-        <div style={{ padding: 80, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>??</div>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>All caught up!</div>
-          <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.8)' }}>
-            Your notifications will appear here
-          </div>
+        <div style={{ padding: 80, textAlign: "center" }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🔔</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{copy.emptyTitle}</div>
+          <div style={{ fontSize: 13, color: "rgba(128,128,128,0.8)" }}>{copy.emptyBody}</div>
         </div>
       ) : (
         <div>
-          {notifications.map(n => (
-            <NotifCard key={n.id} notif={n} onRead={markRead} />
+          {notifications.map((n) => (
+            <NotificationCard key={n.id} notif={n} onRead={markRead} />
           ))}
         </div>
       )}
     </div>
   );
 }
-
-
-
-
-

@@ -1,5 +1,5 @@
 /**
- * src/pages/MeetSafelyPage.tsx � Bambeh Marketplace
+ * src/pages/MeetSafelyPage.tsx ? Bambeh Marketplace
  * FIXED: Was a stub (emoji + title). Now a full safety guide.
  */
 
@@ -15,7 +15,7 @@ const TIPS = [
     points: [
       'Choose busy locations: supermarkets, shopping centres, banks',
       'Avoid isolated areas, parking lots, or your home address',
-      'Popular spots in : March� Central, shopping malls, hotel lobbies',
+      'Popular spots in : March? Central, shopping malls, hotel lobbies',
       'Meet during daytime hours whenever possible',
     ],
   },
@@ -35,7 +35,7 @@ const TIPS = [
     title: 'Verify the Item Before Paying',
     color: 'bg-purple-50 border-purple-200',
     points: [
-      'Test electronics � power them on, check all functions',
+      'Test electronics ? power them on, check all functions',
       'Inspect items carefully for damage not shown in photos',
       'For vehicles, check the engine, tyres, and all documents',
       'Do NOT pay until you are satisfied with the item',
@@ -48,17 +48,17 @@ const TIPS = [
     points: [
       'Count cash before handing it over',
       'Prefer mobile money (MTN MoMo / Orange Money) for a trail',
-      'Use Bambeh Escrow for expensive purchases � funds held until delivery confirmed',
+      'Use Bambeh Escrow for expensive purchases ? funds held until delivery confirmed',
       'Never wire transfer to unknown bank accounts',
     ],
   },
   {
     icon: <AlertTriangle className="w-5 h-5 text-red-600" />,
-    title: 'Red Flags � Walk Away If...',
+    title: 'Red Flags ? Walk Away If...',
     color: 'bg-red-50 border-red-200',
     points: [
       '?? Seller asks you to pay before meeting or seeing the item',
-      '?? Price is unbelievably low � "too good to be true"',
+      '?? Price is unbelievably low ? "too good to be true"',
       '?? Seller refuses to meet in a public place',
       '?? Seller pressures you to decide quickly',
       '?? Seller sends someone else in their place unexpectedly',
@@ -67,8 +67,8 @@ const TIPS = [
 ];
 
 const SAFE_SPOTS = [
-  { name: 'March� Central, Yaound�', type: 'Market' },
-  { name: 'Auchan, Yaound�', type: 'Supermarket' },
+  { name: 'March? Central, Yaound?', type: 'Market' },
+  { name: 'Auchan, Yaound?', type: 'Supermarket' },
   { name: 'Akwa Business District, Douala', type: 'Business Area' },
   { name: 'Hotel lobbies (any city)', type: 'Hotel' },
   { name: 'Police stations', type: 'Official' },
@@ -111,7 +111,7 @@ export default function MeetSafelyPage() {
               'Tell someone where you are going',
               'Test the item before paying',
               'Count money / verify mobile payment',
-              'Trust your instincts � if something feels wrong, leave',
+              'Trust your instincts ? if something feels wrong, leave',
             ].map((tip, i) => (
               <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
                 <div className="w-5 h-5 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -160,7 +160,7 @@ export default function MeetSafelyPage() {
           <div className="flex items-start gap-3">
             <Shield className="w-8 h-8 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-bold text-lg mb-1">For Expensive Items � Use Escrow</h3>
+              <h3 className="font-bold text-lg mb-1">For Expensive Items ? Use Escrow</h3>
               <p className="text-teal-100 text-sm mb-3">
                 Bambeh Escrow holds your payment securely until you confirm you received the item. No risk to buyer or seller.
               </p>

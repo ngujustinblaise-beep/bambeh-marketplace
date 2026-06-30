@@ -9,7 +9,7 @@ interface ShippingZone { id:string; name:string; enabled:boolean; price:number; 
 interface ShippingSettings { offersDelivery:boolean; offersPickup:boolean; pickupAddress:string; processingDays:number; zones:ShippingZone[]; }
 
 const DEFAULT_ZONES: ShippingZone[] = [
-  { id:"yaounde",      name:"Yaound�",     enabled:true,  price:500,  freeAbove:10000, estimatedDays:"1-2" },
+  { id:"yaounde",      name:"Yaound?",     enabled:true,  price:500,  freeAbove:10000, estimatedDays:"1-2" },
   { id:"douala",       name:"Douala",       enabled:true,  price:1500, freeAbove:20000, estimatedDays:"2-3" },
   { id:"other_cities", name:"Other Cities", enabled:false, price:3000, freeAbove:null,  estimatedDays:"3-5" },
   { id:"nationwide",   name:"Nationwide",   enabled:false, price:5000, freeAbove:null,  estimatedDays:"5-7" },

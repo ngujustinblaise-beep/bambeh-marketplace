@@ -22,7 +22,7 @@ const defaultSettings: LangSettings = {
 };
 
 const LANGUAGES = [
-  { code: "fr",  label: "Fran�ais", flag: "????" },
+  { code: "fr",  label: "Fran?ais", flag: "????" },
   { code: "en",  label: "English",  flag: "????" },
   { code: "fuf", label: "Fulfulde", flag: "????" },
   { code: "ewo", label: "Ewondo",   flag: "????" },

@@ -46,13 +46,13 @@ const AccountRestrictionBanner: React.FC<AccountRestrictionBannerProps> = ({
 
   return (
     <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 flex items-start gap-3">
-      <span className="text-yellow-500 text-xl">?️</span>
+      <span className="text-yellow-500 text-xl">??</span>
       <div className="flex-1">
         <p className="text-yellow-800 font-medium text-sm">Account Restricted</p>
         <p className="text-yellow-700 text-xs mt-0.5">{reason ?? "Some features may be unavailable."}</p>
       </div>
       {onDismiss && (
-        <button onClick={onDismiss} className="text-yellow-500 hover:text-yellow-700 text-lg">�</button>
+        <button onClick={onDismiss} className="text-yellow-500 hover:text-yellow-700 text-lg">?</button>
       )}
     </div>
   );

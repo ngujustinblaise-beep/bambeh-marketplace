@@ -9,7 +9,7 @@
  * 
  * FILE LOCATION: src/pages/vendor/VendorPortal.tsx
  * 
- * � 2025 Bambeh. All rights reserved.
+ * ? 2025 Bambeh. All rights reserved.
  * ---------------------------------------------------------------------------
  */
 
