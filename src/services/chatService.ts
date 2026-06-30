@@ -1,12 +1,12 @@
 /**
- * BAMBÉ MARKETPLACE - CHAT SERVICE
+ * BAMBEH MARKETPLACE - CHAT SERVICE
  * Real-time messaging with Socket.io
  * Version: 1.0.0
  */
 
 import { io, Socket } from "socket.io-client";
 import axios, { AxiosInstance } from "axios";
-import ENV_CONFIG from "../../config/env.config";
+import ENV_CONFIG from "../config/env.config";
 
 export interface ChatMessage {
   id: string;
@@ -73,8 +73,6 @@ class ChatService {
     });
   }
 
-  // ── SOCKET CONNECTION ─────────────────────────────────────────────────────
-
   connect(userId: string): void {
     if (this.socket?.connected) return;
     this.currentUserId = userId;
@@ -107,8 +105,6 @@ class ChatService {
     this.socket.on("user_online", (userId: string) => { this.handleOnlineStatus(userId, true); });
     this.socket.on("user_offline", (userId: string) => { this.handleOnlineStatus(userId, false); });
   }
-
-  // ── MESSAGE OPERATIONS ───────────────────────────────────────────────────
 
   async sendTextMessage(conversationId: string, receiverId: string, content: string): Promise<ChatMessage> {
     try {
@@ -207,8 +203,6 @@ class ChatService {
     }
   }
 
-  // ── CONVERSATION OPERATIONS ──────────────────────────────────────────────
-
   async getConversations(): Promise<Conversation[]> {
     try {
       const response = await this.apiAxios.get("/chat/conversations");
@@ -248,8 +242,6 @@ class ChatService {
     }
   }
 
-  // ── TYPING INDICATORS ────────────────────────────────────────────────────
-
   startTyping(conversationId: string): void {
     this.socket?.emit("start_typing", { conversationId, userId: this.currentUserId });
   }
@@ -257,8 +249,6 @@ class ChatService {
   stopTyping(conversationId: string): void {
     this.socket?.emit("stop_typing", { conversationId, userId: this.currentUserId });
   }
-
-  // ── EVENT HANDLERS ───────────────────────────────────────────────────────
 
   private handleNewMessage(message: ChatMessage): void {
     this.messageCallbacks.forEach((callback) => { callback(message); });
@@ -279,8 +269,6 @@ class ChatService {
     audio.play().catch(console.error);
   }
 
-  // ── CALLBACK REGISTRATION ────────────────────────────────────────────────
-
   onMessage(callback: (message: ChatMessage) => void): () => void {
     const id = Math.random().toString(36);
     this.messageCallbacks.set(id, callback);
@@ -299,8 +287,6 @@ class ChatService {
     return () => { this.onlineStatusCallbacks.delete(id); };
   }
 
-  // ── UTILITY ──────────────────────────────────────────────────────────────
-
   isConnected(): boolean { return this.socket?.connected || false; }
   getCurrentUserId(): string | null { return this.currentUserId; }
 
@@ -315,4 +301,13 @@ class ChatService {
   }
 }
 
-export default new ChatService();
+const chatService = new ChatService();
+
+export const getCurrentUserId = () => chatService.getCurrentUserId();
+export const listConversations = () => chatService.getConversations();
+export const loadMessages = (conversationId: string, limit?: number, before?: string) => chatService.getMessages(conversationId, limit, before);
+export const markRead = (conversationId: string, messageIds: string[]) => chatService.markAsRead(conversationId, messageIds);
+export const sendText = (conversationId: string, receiverId: string, content: string) => chatService.sendTextMessage(conversationId, receiverId, content);
+export const subscribeToConversation = (callback: (message: ChatMessage) => void) => chatService.onMessage(callback);
+
+export default chatService;

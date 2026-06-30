@@ -31,7 +31,7 @@ import {
   markRead,
   sendText,
   subscribeToConversation,
-} from "@/services/chatService";
+} from "@/services/your-correct-file";
 
 const MessagesPage: React.FC = () => {
   const { t, tSystem, dir } = useChatLang();
@@ -386,3 +386,4 @@ const MessagesPage: React.FC = () => {
 };
 
 export default MessagesPage;
+
