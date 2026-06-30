@@ -6,11 +6,11 @@
  *  • No dotted i18n keys, no dependency on the broken App.tsx dictionary.
  *  • Icons are literal lucide components — never translated.
  *  • RTL layout applied automatically for Arabic.
- */
+ */	
 
 import { Link } from "react-router-dom";
-import {
-  Facebook, Twitter, Instagram, Mail, Phone, MapPin, Heart,
+import {	
+  Mail, Phone, MapPin, Heart,
   ArrowLeftRight, Briefcase, ShoppingBag, Wrench, Home as HomeIcon, Car,
 } from "lucide-react";
 import { useLang } from "@/hooks/useAppLang";

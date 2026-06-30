@@ -10,7 +10,7 @@
  * before it can paint ANYTHING. Every KB of CSS in this file delays first paint.
  *
  * This file contains ONLY:
- *  1. Tailwind base/components/utilities directives (processed by PostCSS)
+ *  1. Tailwind styles via the v4 import
  *  2. Critical above-the-fold styles (nav, skeleton, fonts)
  *  3. Performance-critical CSS variables
  *  4. Shimmer animation for BambehImage
@@ -30,46 +30,29 @@
  *  Replace: C:\Dev\bambe-android\src\index.css
  */
 
-/* ── 1. TAILWIND DIRECTIVES ──────────────────────────────────────────────────
-   These are processed by PostCSS + Tailwind JIT.
-   With precise content paths in tailwind.config.ts, only classes actually
-   used in your components are output — not the full Tailwind library.
-   Expected output: ~35–55 KB instead of 160 KB.
-*/
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* ── 2. CRITICAL CSS CUSTOM PROPERTIES ──────────────────────────────────────
-   CSS variables are parsed once and reused everywhere.
-   Defining them here means zero recalculation cost per component.
-*/
 :root {
-  /* Brand colours — matches tailwind.config.ts brand palette */
   --color-brand-50:  #f0fdf4;
   --color-brand-100: #dcfce7;
   --color-brand-200: #bbf7d0;
   --color-brand-400: #4ade80;
-  --color-brand-600: #0d9488;  /* Primary teal */
+  --color-brand-600: #0d9488;
   --color-brand-700: #0f766e;
   --color-brand-800: #065f46;
   --color-brand-900: #064e3b;
 
-  /* Safe area insets — Android notch/nav bar compensation */
   --safe-area-top:    env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 
-  /* Typography scale */
   --font-size-base: 16px;
   --line-height-base: 1.5;
 
-  /* Transition speed — slightly slower than default for 60Hz screens common in  */
   --transition-fast:   150ms ease-out;
   --transition-normal: 250ms ease-out;
   --transition-slow:   400ms ease-out;
 }
 
-/* Dark mode variables */
 .dark {
   --color-bg-primary:   #111827;
   --color-bg-secondary: #1f2937;
@@ -77,9 +60,6 @@
   --color-text-secondary: #d1d5db;
 }
 
-/* ── 3. BASE RESETS — CRITICAL ───────────────────────────────────────────────
-   These affect every element. Must be in the critical path.
-*/
 *,
 *::before,
 *::after {
@@ -87,14 +67,9 @@
 }
 
 html {
-  /* Prevent font size inflation on mobile — critical for Android */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-
-  /* Smooth scrolling — but only when no motion preference */
   scroll-behavior: smooth;
-
-  /* Optimise font rendering on Android */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -103,6 +78,7 @@ html {
   html {
     scroll-behavior: auto;
   }
+
   *,
   *::before,
   *::after {
@@ -118,7 +94,7 @@ body {
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
-    Roboto,        /* Android default */
+    Roboto,
     "Helvetica Neue",
     Arial,
     sans-serif;
@@ -126,63 +102,37 @@ body {
   line-height: var(--line-height-base);
   color: #111827;
   background-color: #ffffff;
-
-  /* Prevent horizontal scroll on mobile */
   overflow-x: hidden;
-
-  /* Enable momentum scrolling on iOS */
   -webkit-overflow-scrolling: touch;
 }
 
-/* ── 4. FONT LOADING — font-display: swap ────────────────────────────────────
-   If you use Google Fonts or local fonts, define them here with swap.
-   font-display: swap means text is ALWAYS visible — system font first,
-   custom font swaps in. No invisible text on slow 2G connections.
-
-   If you use Google Fonts via <link> in index.html, add &display=swap
-   to the URL instead:
-   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-*/
-
-/* ── 5. BAMBEH IMAGE SHIMMER ─────────────────────────────────────────────────
-   Defined here as a global keyframe so the BambehImage component can use it
-   without injecting a <style> tag on every render.
-   (The component also injects it as a fallback, but this is the primary source.)
-*/
 @keyframes bambeh-shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes bambeh-fade-in {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bambeh-slide-up {
   from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bambeh-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+  50% { opacity: 0.5; }
 }
 
-/* ── 6. CRITICAL LAYOUT PRIMITIVES ──────────────────────────────────────────
-   These are used on EVERY page. Keeping them in the critical CSS
-   means zero layout recalculation on first paint.
-*/
-
-/* Full-height app shell — prevents scroll flash on app load */
 #root {
   min-height: 100vh;
-  min-height: 100dvh; /* dynamic viewport height — correct on mobile browsers */
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-/* Safe area padding for Android bottom navigation bar */
 .pb-safe {
   padding-bottom: var(--safe-area-bottom);
 }
@@ -191,51 +141,41 @@ body {
   padding-top: var(--safe-area-top);
 }
 
-/* ── 7. TAILWIND COMPONENT LAYER ─────────────────────────────────────────────
-   Define reusable component classes here.
-   These are processed by Tailwind so they support responsive variants.
-*/
 @layer components {
-
-  /* Primary button — used on nearly every page */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           px-6 py-3 rounded-xl font-semibold text-sm
-           bg-teal-600 text-white
-           hover:bg-teal-700 active:scale-95
-           transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+      px-6 py-3 rounded-xl font-semibold text-sm
+      bg-teal-600 text-white
+      hover:bg-teal-700 active:scale-95
+      transition-all duration-200
+      focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
+      disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
-  /* Secondary button */
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           px-6 py-3 rounded-xl font-semibold text-sm
-           bg-gray-100 text-gray-700
-           hover:bg-gray-200 active:scale-95
-           transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
+      px-6 py-3 rounded-xl font-semibold text-sm
+      bg-gray-100 text-gray-700
+      hover:bg-gray-200 active:scale-95
+      transition-all duration-200
+      focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
+      disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  /* Standard card — marketplace listing, job card */
   .card {
     @apply bg-white rounded-2xl shadow-sm border border-gray-100
-           transition-shadow duration-200
-           hover:shadow-md;
+      transition-shadow duration-200
+      hover:shadow-md;
   }
 
-  /* Input field — consistent across all forms */
   .input-field {
     @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
-           text-sm text-gray-900 placeholder-gray-400
-           focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
-           transition-colors duration-200
-           disabled:bg-gray-50 disabled:cursor-not-allowed;
+      text-sm text-gray-900 placeholder-gray-400
+      focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
+      transition-colors duration-200
+      disabled:bg-gray-50 disabled:cursor-not-allowed;
   }
 
-  /* Loading skeleton — used in LoadingFallback and BambehImage */
   .skeleton {
     @apply bg-gray-200 rounded animate-pulse;
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -243,122 +183,107 @@ body {
     animation: bambeh-shimmer 1.8s infinite linear;
   }
 
-  /* Badge — category labels, status indicators */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full
-           text-xs font-medium;
-  }
-
   .badge-teal {
-    @apply badge bg-teal-100 text-teal-800;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800;
   }
 
   .badge-gray {
-    @apply badge bg-gray-100 text-gray-700;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700;
   }
 
   .badge-amber {
-    @apply badge bg-amber-100 text-amber-800;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800;
   }
 
   .badge-red {
-    @apply badge bg-red-100 text-red-700;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700;
   }
 
-  /* Page container — consistent max-width and padding */
   .page-container {
     @apply max-w-5xl mx-auto px-4 py-6;
   }
 
-  /* Section heading */
   .section-heading {
     @apply text-xl font-bold text-gray-900 mb-4;
   }
 }
 
-/* ── 8. TAILWIND UTILITIES LAYER ─────────────────────────────────────────────
-   Custom utilities that Tailwind doesn't provide out of the box.
-*/
 @layer utilities {
-
-  /* Tap highlight removal — removes blue flash on Android tap */
   .no-tap-highlight {
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Touch action — improves scroll performance on Android */
   .touch-pan-y {
     touch-action: pan-y;
   }
 
-  /* GPU-accelerated transitions — uses compositor thread, not main thread */
   .gpu {
     transform: translateZ(0);
     will-change: transform;
   }
 
-  /* Line clamp utilities — for truncating listing titles */
-  .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
-  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
 
-  /* Scrollbar hide — for horizontal scroll containers (category pills) */
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
 
-  /* Safe area utilities */
   .h-safe-bottom {
     height: var(--safe-area-bottom);
   }
 }
 
-/* ── 9. GLOBAL FOCUS STYLES ──────────────────────────────────────────────────
-   Replace browser default focus ring with Bambeh brand focus ring.
-   Critical for keyboard accessibility and Android TV/keyboard users.
-*/
 :focus-visible {
   outline: 2px solid #0d9488;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Remove focus ring for mouse/touch users (it appears for keyboard only) */
 :focus:not(:focus-visible) {
   outline: none;
 }
 
-/* ── 10. IMAGE DEFAULTS ───────────────────────────────────────────────────────
-    Prevent images from causing layout overflow.
-    Apply lazy loading by default to all images not using BambehImage.
-*/
 img {
   max-width: 100%;
   height: auto;
-  display: block; /* removes inline baseline gap */
+  display: block;
 }
 
-/* ── 11. NETWORK STATUS BANNER ────────────────────────────────────────────────
-   The NetworkStatusBar component in App.tsx uses these classes.
-   Keeping them in critical CSS means the offline banner appears
-   instantly when the connection drops — no chunk download needed.
-*/
 .network-banner-offline {
   @apply fixed top-0 left-0 right-0 z-50
-         bg-red-500 text-white text-center text-sm font-medium py-2 px-4;
+    bg-red-500 text-white text-center text-sm font-medium py-2 px-4;
 }
 
 .network-banner-slow {
   @apply fixed top-0 left-0 right-0 z-50
-         bg-amber-500 text-white text-center text-sm font-medium py-2 px-4;
+    bg-amber-500 text-white text-center text-sm font-medium py-2 px-4;
 }
 
 .network-banner-online {
   @apply fixed top-0 left-0 right-0 z-50
-         bg-green-500 text-white text-center text-sm font-medium py-2 px-4;
+    bg-green-500 text-white text-center text-sm font-medium py-2 px-4;
 }
-

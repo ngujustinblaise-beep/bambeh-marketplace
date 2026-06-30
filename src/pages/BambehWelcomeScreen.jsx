@@ -11,7 +11,6 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import bambehLogo from "@/assets/bambeh-glossy-logo.png";
 
 const LANG_KEY = "Bambeh_language";
 
@@ -405,7 +404,7 @@ export default function BambehWelcomeScreen() {
           }}
         >
           <img
-            src={bambehLogo}
+            src="/bambeh-logo.png"
             alt="Bambeh"
             style={{
               width: "130px",

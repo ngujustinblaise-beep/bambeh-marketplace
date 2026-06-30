@@ -9,7 +9,7 @@ import Header from "@/components/layout/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Home, ShoppingBag, MessageCircle, Bell, User, Zap,
-  Share2, X, Copy, Check, Facebook, Twitter, MessageSquare
+  Share2, X, Copy, Check, MessageSquare
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
