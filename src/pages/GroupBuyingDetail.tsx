@@ -28,6 +28,164 @@ interface GroupDeal {
   image?: string;
 }
 
+const COPY = {
+  en: {
+    back: 'Back',
+    dealNotFound: 'Deal not found',
+    browseGroupDeals: 'Browse group deals',
+    goBack: 'Go back',
+    linkCopied: 'Link copied',
+    copyLink: 'Copy link',
+    categoryLabel: 'Category',
+    save: 'Save',
+    joined: 'joined',
+    peopleNeeded: (n: number) => `${n} more ${n === 1 ? 'person' : 'people'} needed to activate deal`,
+    dealActivated: 'Deal activated!',
+    youSave: 'You save',
+    timeLeft: 'Time Left',
+    aboutThisDeal: 'About this Deal',
+    howGroupBuyingWorks: 'How Group Buying Works',
+    step1Title: 'Join the deal',
+    step1Desc: 'Tap Join below to reserve your spot',
+    step2Title: 'Share with friends',
+    step2Desc: 'More participants = deal activates sooner',
+    step3Title: 'Deal activates',
+    step3Desc: (n: number, pct: number) => `When ${n} people join, everyone gets ${pct}% off`,
+    step4Title: 'Pay & receive',
+    step4Desc: 'Payment collected and order placed together',
+    joinedDeal: 'You have joined this deal!',
+    joinedDealSubtitle: "We'll notify you when the deal activates.",
+    shareThisDeal: 'Share This Deal',
+    joinGroupDeal: (pct: number) => `Join Group Deal ? Save ${pct}%`,
+    joining: 'Joining?',
+    loading: 'Loading',
+  },
+  fr: {
+    back: 'Retour',
+    dealNotFound: "Offre introuvable",
+    browseGroupDeals: 'Parcourir les offres groupées',
+    goBack: 'Retour',
+    linkCopied: 'Lien copié',
+    copyLink: 'Copier le lien',
+    categoryLabel: 'Catégorie',
+    save: 'Économie',
+    joined: 'inscrits',
+    peopleNeeded: (n: number) => `${n} ${n === 1 ? 'personne' : 'personnes'} de plus pour activer l’offre`,
+    dealActivated: 'Offre activée !',
+    youSave: 'Vous économisez',
+    timeLeft: 'Temps restant',
+    aboutThisDeal: 'À propos de cette offre',
+    howGroupBuyingWorks: 'Comment fonctionne l’achat groupé',
+    step1Title: 'Rejoignez l’offre',
+    step1Desc: 'Appuyez sur Rejoindre ci-dessous pour réserver votre place',
+    step2Title: 'Partagez avec vos amis',
+    step2Desc: 'Plus il y a de participants, plus l’offre s’active vite',
+    step3Title: 'L’offre s’active',
+    step3Desc: (n: number, pct: number) => `Lorsque ${n} personnes rejoignent, tout le monde bénéficie de ${pct} % de réduction`,
+    step4Title: 'Payer et recevoir',
+    step4Desc: 'Le paiement est collecté et la commande est passée ensemble',
+    joinedDeal: 'Vous avez rejoint cette offre !',
+    joinedDealSubtitle: 'Nous vous informerons lorsque l’offre sera activée.',
+    shareThisDeal: 'Partager cette offre',
+    joinGroupDeal: (pct: number) => `Rejoindre l’offre groupée ? Économisez ${pct} %`,
+    joining: 'En cours...',
+    loading: 'Chargement',
+  },
+  ar: {
+    back: 'رجوع',
+    dealNotFound: 'العرض غير موجود',
+    browseGroupDeals: 'تصفح العروض الجماعية',
+    goBack: 'رجوع',
+    linkCopied: 'تم نسخ الرابط',
+    copyLink: 'نسخ الرابط',
+    categoryLabel: 'الفئة',
+    save: 'التوفير',
+    joined: 'انضموا',
+    peopleNeeded: (n: number) => `تحتاج ${n} ${n === 1 ? 'شخصًا' : 'أشخاص'} إضافيًا لتفعيل العرض`,
+    dealActivated: 'تم تفعيل العرض!',
+    youSave: 'توفّر',
+    timeLeft: 'الوقت المتبقي',
+    aboutThisDeal: 'حول هذا العرض',
+    howGroupBuyingWorks: 'كيف يعمل الشراء الجماعي',
+    step1Title: 'انضم إلى العرض',
+    step1Desc: 'اضغط على انضم بالأسفل لحجز مكانك',
+    step2Title: 'شاركه مع الأصدقاء',
+    step2Desc: 'كلما زاد عدد المشاركين، تفعّل العرض أسرع',
+    step3Title: 'تفعيل العرض',
+    step3Desc: (n: number, pct: number) => `عندما ينضم ${n} أشخاص، يحصل الجميع على خصم ${pct}%`,
+    step4Title: 'ادفع واستلم',
+    step4Desc: 'يتم جمع الدفعة وطلب المنتج معًا',
+    joinedDeal: 'لقد انضممت إلى هذا العرض!',
+    joinedDealSubtitle: 'سنخطرك عندما يتم تفعيل العرض.',
+    shareThisDeal: 'مشاركة هذا العرض',
+    joinGroupDeal: (pct: number) => `انضم إلى العرض الجماعي ? وفّر ${pct}%`,
+    joining: 'جارٍ الانضمام؟',
+    loading: 'جارٍ التحميل',
+  },
+  pidgin: {
+    back: 'Back',
+    dealNotFound: 'Deal no dey',
+    browseGroupDeals: 'Browse group deals',
+    goBack: 'Go back',
+    linkCopied: 'Link don copy',
+    copyLink: 'Copy link',
+    categoryLabel: 'Category',
+    save: 'Money wey you save',
+    joined: 'don join',
+    peopleNeeded: (n: number) => `${n} more ${n === 1 ? 'person' : 'people'} still needed make deal start`,
+    dealActivated: 'Deal don start!',
+    youSave: 'You save',
+    timeLeft: 'Time left',
+    aboutThisDeal: 'About this deal',
+    howGroupBuyingWorks: 'How group buying dey work',
+    step1Title: 'Join the deal',
+    step1Desc: 'Tap Join below make you reserve your spot',
+    step2Title: 'Share with friends',
+    step2Desc: 'More people join = deal go start faster',
+    step3Title: 'Deal activates',
+    step3Desc: (n: number, pct: number) => `When ${n} people join, everybody go get ${pct}% off`,
+    step4Title: 'Pay & receive',
+    step4Desc: 'Payment collect and order place together',
+    joinedDeal: 'You don join this deal!',
+    joinedDealSubtitle: 'We go tell you when the deal start.',
+    shareThisDeal: 'Share this deal',
+    joinGroupDeal: (pct: number) => `Join group deal ? save ${pct}%`,
+    joining: 'Dey join?',
+    loading: 'Dey load',
+  },
+  ful: {
+    back: 'Rutto',
+    dealNotFound: 'Ofa woodaa',
+    browseGroupDeals: 'Yiylo bandiraaɗe ɓurɗe',
+    goBack: 'Rutto',
+    linkCopied: 'Link ɗoo copiyii',
+    copyLink: 'Copiy link',
+    categoryLabel: 'Kilaaɗe',
+    save: 'Jafinaande',
+    joined: 'naatnii',
+    peopleNeeded: (n: number) => `${n} ${n === 1 ? 'ɓiɗɗo' : 'yimɓe'} ɓuri ngam bandiraaɗo oo haɓɓude`,
+    dealActivated: 'Bandiraaɗo oo haɓɓii!',
+    youSave: 'A jafini',
+    timeLeft: 'Heddeerde waqti',
+    aboutThisDeal: 'Hakkunde bandiraaɗo oo',
+    howGroupBuyingWorks: 'No bandiraaɗo oo ɗoo wayi',
+    step1Title: 'Naatnu e bandiraaɗo',
+    step1Desc: 'Naatnu e Join wonde ndee ngam ndee fuɗɗo',
+    step2Title: 'Faw e ɓe heddii',
+    step2Desc: 'Ɓe ɓuri naatde = bandiraaɗo oo goɗɗo',
+    step3Title: 'Bandiraaɗo oo haɓɓii',
+    step3Desc: (n: number, pct: number) => `So ${n} yimɓe naatnii, kala wonde goɗɗum goɗɗum heɓa ${pct}%`,
+    step4Title: 'Fey e heɓ',
+    step4Desc: 'Feyde e ɗaɓɓitoore naatnataa e order ɗoo e mum',
+    joinedDeal: 'A naatnii bandiraaɗo oo!',
+    joinedDealSubtitle: 'Min ngoonde hollude ma so bandiraaɗo oo haɓɓii.',
+    shareThisDeal: 'Faw bandiraaɗo oo',
+    joinGroupDeal: (pct: number) => `Naatnu e bandiraaɗo bandiraaɗo ? jafina ${pct}%`,
+    joining: 'Dey naatnde?',
+    loading: 'Dey loowde',
+  },
+};
+
 const DEMO_DEALS: Record<string, GroupDeal> = {
   s1: {
     id: 's1', name: 'Samsung Galaxy A54 Group Deal',
@@ -51,7 +209,7 @@ export default function GroupBuyingDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const lang = useLang();
-  const _isRtl = lang === "ar";
+  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
 
   const [deal, setDeal] = useState<GroupDeal | null>(null);
   const [loading, setLoading] = useState(true);
@@ -185,13 +343,13 @@ export default function GroupBuyingDetail() {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-teal-600 mb-6">
-          <ArrowLeft className="w-5 h-5" /> Back
+          <ArrowLeft className="w-5 h-5" /> {ui.back}
         </button>
         <div className="text-center py-16 text-gray-500">
           <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-          <p className="font-semibold">Deal not found</p>
+          <p className="font-semibold">{ui.dealNotFound}</p>
           <button onClick={() => navigate('/group-buying')} className="mt-4 text-teal-600 underline text-sm">
-            Browse group deals
+            {ui.browseGroupDeals}
           </button>
         </div>
       </div>
@@ -208,11 +366,11 @@ export default function GroupBuyingDetail() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-xl" aria-label="Go back">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-xl" aria-label={ui.goBack}>
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h2 className="font-semibold text-gray-900 flex-1 truncate">{deal.name}</h2>
-        <button onClick={copyLink} className="p-2 hover:bg-gray-100 rounded-xl" aria-label={copied ? 'Link copied' : 'Copy link'}>
+        <button onClick={copyLink} className="p-2 hover:bg-gray-100 rounded-xl" aria-label={copied ? ui.linkCopied : ui.copyLink}>
           {copied ? <Check className="w-5 h-5 text-teal-600" /> : <Copy className="w-5 h-5 text-gray-500" />}
         </button>
       </div>
@@ -228,28 +386,28 @@ export default function GroupBuyingDetail() {
             <div className="text-right flex-shrink-0">
               <p className="text-white/60 text-xs line-through">{deal.originalPrice.toLocaleString()} XAF</p>
               <p className="text-2xl font-bold">{deal.groupPrice.toLocaleString()}</p>
-              <p className="text-xs text-teal-100">XAF ? Save {savingsPct}%</p>
+              <p className="text-xs text-teal-100">XAF ? {ui.save} {savingsPct}%</p>
             </div>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-teal-100">{deal.currentBuyers}/{deal.minParticipants} joined</span>
+              <span className="text-teal-100">{deal.currentBuyers}/{deal.minParticipants} {ui.joined}</span>
               <span className="font-semibold">{pct}%</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-2.5">
               <div className="bg-white h-2.5 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
             </div>
             <p className="text-xs text-teal-100 mt-2">
-              {spotsLeft > 0 ? `${spotsLeft} more ${spotsLeft === 1 ? 'person' : 'people'} needed to activate deal` : '?? Deal activated!'}
+              {spotsLeft > 0 ? ui.peopleNeeded(spotsLeft) : ui.dealActivated}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           {[
-            [savings.toLocaleString() + ' XAF', 'You Save', 'text-green-600'],
-            [daysLeft + 'd', 'Time Left', daysLeft <= 1 ? 'text-red-600' : 'text-gray-900'],
-            [deal.currentBuyers.toString(), 'Joined', 'text-blue-600'],
+            [savings.toLocaleString() + ' XAF', ui.youSave, 'text-green-600'],
+            [daysLeft + 'd', ui.timeLeft, daysLeft <= 1 ? 'text-red-600' : 'text-gray-900'],
+            [deal.currentBuyers.toString(), ui.joined, 'text-blue-600'],
           ].map(([v, l, col]) => (
             <div key={String(l)} className="bg-white rounded-2xl p-3 shadow-sm border text-center">
               <p className={`text-lg font-bold ${col}`}>{v}</p>
@@ -259,17 +417,17 @@ export default function GroupBuyingDetail() {
         </div>
 
         <div className="bg-white rounded-2xl p-4 shadow-sm border">
-          <h3 className="font-semibold text-gray-900 mb-2">About this Deal</h3>
+          <h3 className="font-semibold text-gray-900 mb-2">{ui.aboutThisDeal}</h3>
           <p className="text-sm text-gray-700 leading-relaxed">{deal.description}</p>
         </div>
 
         <div className="bg-white rounded-2xl p-4 shadow-sm border">
-          <h3 className="font-semibold text-gray-900 mb-3">How Group Buying Works</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">{ui.howGroupBuyingWorks}</h3>
           {([
-            ['Join the deal', 'Tap Join below to reserve your spot'],
-            ['Share with friends', 'More participants = deal activates sooner'],
-            ['Deal activates', `When ${deal.minParticipants} people join, everyone gets ${savingsPct}% off`],
-            ['Pay & receive', 'Payment collected and order placed together'],
+            [ui.step1Title, ui.step1Desc],
+            [ui.step2Title, ui.step2Desc],
+            [ui.step3Title, ui.step3Desc(deal.minParticipants, savingsPct)],
+            [ui.step4Title, ui.step4Desc],
           ] as [string, string][]).map(([title, desc], i) => (
             <div key={title} className="flex gap-3 mb-3 last:mb-0">
               <div className="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
@@ -287,8 +445,8 @@ export default function GroupBuyingDetail() {
           <div className="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3">
             <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-green-800">You have joined this deal!</p>
-              <p className="text-sm text-green-600">We'll notify you when the deal activates.</p>
+              <p className="font-semibold text-green-800">{ui.joinedDeal}</p>
+              <p className="text-sm text-green-600">{ui.joinedDealSubtitle}</p>
             </div>
           </div>
         )}
@@ -298,7 +456,7 @@ export default function GroupBuyingDetail() {
           className="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 transition"
         >
           <Share2 className="w-4 h-4" />
-          {copied ? 'Link Copied!' : 'Share This Deal'}
+          {copied ? ui.linkCopied : ui.shareThisDeal}
         </button>
       </div>
 
@@ -309,11 +467,10 @@ export default function GroupBuyingDetail() {
             disabled={joining}
             className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-teal-700 transition"
           >
-            {joining ? <><Loader2 className="w-5 h-5 animate-spin" />Joining?</> : <><Users className="w-5 h-5" />Join Group Deal ? Save {savingsPct}%</>}
+            {joining ? <><Loader2 className="w-5 h-5 animate-spin" />{ui.joining}</> : <><Users className="w-5 h-5" />{ui.joinGroupDeal(savingsPct)}</>}
           </button>
         </div>
       )}
     </div>
   );
 }
-

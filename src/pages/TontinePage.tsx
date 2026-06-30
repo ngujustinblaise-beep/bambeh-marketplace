@@ -27,7 +27,6 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useLang } from '@/hooks/useAppLang';
 
-// -- i18n strings (local table, keyed by the live language code) -------------
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 
 const T: Record<Lang, {
@@ -61,17 +60,17 @@ const T: Record<Lang, {
   fr: {
     title: "Tontine / Njangi", newGroup: "Nouveau groupe", refresh: "Actualiser",
     statMyGroups: "Mes groupes", statPool: "Cagnotte (XAF)", statActive: "Actifs",
-    tabMy: "Mes groupes", tabDiscover: "D?couvrir",
+    tabMy: "Mes groupes", tabDiscover: "Découvrir",
     emptyMyTitle: "Vous n'avez rejoint aucun groupe",
     emptyDiscoverTitle: "Aucun groupe ouvert pour le moment",
-    emptyMyBody: "Cr?ez votre propre groupe Njangi et invitez vos amis et votre famille.",
-    emptyDiscoverBody: "Revenez plus tard ou cr?ez votre propre groupe.",
-    createBtn: "Cr?er un groupe Njangi", viewMine: "Voir plut?t mes groupes",
+    emptyMyBody: "Créez votre propre groupe Njangi et invitez vos amis et votre famille.",
+    emptyDiscoverBody: "Revenez plus tard ou créez votre propre groupe.",
+    createBtn: "Créer un groupe Njangi", viewMine: "Voir plutôt mes groupes",
     members: "membres", perMonth: "mois", perWeek: "sem",
-    secureTitle: "S?curis? et transparent",
-    secureBody: "Toutes les transactions de la tontine sont enregistr?es et visibles par tous les membres du groupe, sur tous les appareils.",
-    createFab: "Cr?er",
-    stOpen: "ouvert", stActive: "actif", stCompleted: "termin?", stPaused: "en pause",
+    secureTitle: "Sécurisé et transparent",
+    secureBody: "Toutes les transactions de la tontine sont enregistrées et visibles par tous les membres du groupe, sur tous les appareils.",
+    createFab: "Créer",
+    stOpen: "ouvert", stActive: "actif", stCompleted: "terminé", stPaused: "en pause",
     spotsLeft: (n) => `${n} place${n !== 1 ? "s" : ""} restante${n !== 1 ? "s" : ""} ? Rejoignez !`,
   },
   pidgin: {
@@ -91,20 +90,20 @@ const T: Record<Lang, {
     spotsLeft: (n) => `${n} spot${n !== 1 ? "s" : ""} remain ? Join Now!`,
   },
   ar: {
-    title: "Tontine / Njangi", newGroup: "?????? ?????", refresh: "?????",
-    statMyGroups: "????????", statPool: "??????? (XAF)", statActive: "?????",
-    tabMy: "????????", tabDiscover: "?????",
-    emptyMyTitle: "?? ???? ??? ?? ?????? ???",
-    emptyDiscoverTitle: "?? ???? ??????? ?????? ???????? ????",
-    emptyMyBody: "???? ?????? ?????? ???? ?? ????? ??????? ???????.",
-    emptyDiscoverBody: "???? ?????? ?? ???? ??????? ??????.",
-    createBtn: "????? ?????? ??????", viewMine: "??? ???????? ????? ?? ???",
-    members: "?????", perMonth: "???", perWeek: "?????",
-    secureTitle: "??? ??????",
-    secureBody: "??????? ???? ??????? ???????? ????? ????? ????? ????? ???????? ??? ?? ???????.",
-    createFab: "?????",
-    stOpen: "??????", stActive: "?????", stCompleted: "??????", stPaused: "???????",
-    spotsLeft: (n) => `??? ${n} ???? ? ???? ????!`,
+    title: "Tontine / Njangi", newGroup: "مجموعة جديدة", refresh: "تحديث",
+    statMyGroups: "مجموعاتي", statPool: "الصندوق (XAF)", statActive: "نشطة",
+    tabMy: "مجموعاتي", tabDiscover: "استكشاف",
+    emptyMyTitle: "لم تنضم إلى أي مجموعة بعد",
+    emptyDiscoverTitle: "لا توجد مجموعات مفتوحة للانضمام الآن",
+    emptyMyBody: "أنشئ مجموعة Njangi الخاصة بك وادعُ أصدقاءك وعائلتك.",
+    emptyDiscoverBody: "تحقق لاحقًا أو أنشئ مجموعتك الخاصة.",
+    createBtn: "إنشاء مجموعة Njangi", viewMine: "عرض مجموعاتي بدلًا من ذلك",
+    members: "الأعضاء", perMonth: "شهر", perWeek: "أسبوع",
+    secureTitle: "آمن وشفاف",
+    secureBody: "تُسجَّل جميع معاملات التومبين وتكون مرئية لجميع أعضاء المجموعة على كل الأجهزة.",
+    createFab: "إنشاء",
+    stOpen: "مفتوح", stActive: "نشط", stCompleted: "مكتمل", stPaused: "متوقف",
+    spotsLeft: (n) => `بقي ${n} مكان? انضم الآن!`,
   },
   ff: {
     title: "Tontine / Njangi", newGroup: "Fedde hesere", refresh: "Hes?itin",
@@ -131,34 +130,33 @@ interface TontineGroup {
 }
 
 const DEMO_GROUPS: TontineGroup[] = [
-  { id:"demo1", name:"Tech Workers Njangi",    contributionXaf:25000, frequency:"monthly", currentMembers:10, maxMembers:10, totalPoolXaf:250000, nextPayoutDate:"2026-06-15", status:"active", isMine:true,  adminId:"demo" },
-  { id:"demo2", name:"Market Women Group",     contributionXaf:10000, frequency:"weekly",  currentMembers:6,  maxMembers:8,  totalPoolXaf:60000,  nextPayoutDate:"2026-05-28", status:"active", isMine:true,  adminId:"demo" },
-  { id:"demo3", name:"Yaound? Professionals",  contributionXaf:50000, frequency:"monthly", currentMembers:3,  maxMembers:12, totalPoolXaf:150000, nextPayoutDate:null,          status:"open",   isMine:false, adminId:"demo" },
+  { id:"demo1", name:"Tech Workers Njangi", contributionXaf:25000, frequency:"monthly", currentMembers:10, maxMembers:10, totalPoolXaf:250000, nextPayoutDate:"2026-06-15", status:"active", isMine:true, adminId:"demo" },
+  { id:"demo2", name:"Market Women Group", contributionXaf:10000, frequency:"weekly", currentMembers:6, maxMembers:8, totalPoolXaf:60000, nextPayoutDate:"2026-05-28", status:"active", isMine:true, adminId:"demo" },
+  { id:"demo3", name:"Yaound? Professionals", contributionXaf:50000, frequency:"monthly", currentMembers:3, maxMembers:12, totalPoolXaf:150000, nextPayoutDate:null, status:"open", isMine:false, adminId:"demo" },
 ];
 
 export default function TontinePage() {
   const currentLang = useLang();
-    const lang: Lang = (currentLang in T ? currentLang : "en") as Lang;
-    const s = T[lang];
-    const isRtl = lang === "ar";
+  const lang: Lang = (currentLang in T ? currentLang : "en") as Lang;
+  const s = T[lang];
+  const isRtl = lang === "ar";
   const dateLocale = lang === "fr" ? "fr-CM" : "en-GB";
 
-  // Pure status ? localized label
   const statusLabel = (status: string): string => {
     switch (status) {
-      case "active":    return s.stActive;
-      case "open":      return s.stOpen;
+      case "active": return s.stActive;
+      case "open": return s.stOpen;
       case "completed": return s.stCompleted;
-      case "paused":    return s.stPaused;
-      default:          return status;
+      case "paused": return s.stPaused;
+      default: return status;
     }
   };
 
   const navigate = useNavigate();
-  const [groups,  setGroups]  = useState<TontineGroup[]>([]);
+  const [groups, setGroups] = useState<TontineGroup[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId,  setUserId]  = useState<string | null>(null);
-  const [tab,     setTab]     = useState<"my" | "discover">("my");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"my" | "discover">("my");
 
   async function fetchGroups() {
     setLoading(true);
@@ -185,17 +183,17 @@ export default function TontinePage() {
 
       if (groupData && groupData.length > 0) {
         setGroups(groupData.map(g => ({
-          id:              g.id,
-          name:            g.name,
+          id: g.id,
+          name: g.name,
           contributionXaf: g.contribution_xaf,
-          frequency:       g.frequency,
-          currentMembers:  g.current_members || 0,
-          maxMembers:      g.max_members,
-          totalPoolXaf:    g.total_pool_xaf  || 0,
-          nextPayoutDate:  g.next_payout_date || null,
-          status:          g.status,
-          isMine:          uid ? (g.admin_id === uid || myGroupIds.has(g.id)) : false,
-          adminId:         g.admin_id,
+          frequency: g.frequency,
+          currentMembers: g.current_members || 0,
+          maxMembers: g.max_members,
+          totalPoolXaf: g.total_pool_xaf || 0,
+          nextPayoutDate: g.next_payout_date || null,
+          status: g.status,
+          isMine: uid ? (g.admin_id === uid || myGroupIds.has(g.id)) : false,
+          adminId: g.admin_id,
         })));
       } else {
         setGroups(DEMO_GROUPS);
@@ -216,44 +214,34 @@ export default function TontinePage() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const myGroups       = groups.filter(g => g.isMine);
+  const myGroups = groups.filter(g => g.isMine);
   const discoverGroups = groups.filter(g => !g.isMine && g.status === "open" && g.currentMembers < g.maxMembers);
-  const display        = tab === "my" ? myGroups : discoverGroups;
+  const display = tab === "my" ? myGroups : discoverGroups;
 
-  const totalSaved  = myGroups.reduce((acc, g) => acc + g.totalPoolXaf, 0);
+  const totalSaved = myGroups.reduce((acc, g) => acc + g.totalPoolXaf, 0);
   const activeCount = myGroups.filter(g => g.status === "active").length;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-32" dir={isRtl ? "rtl" : "ltr"}>
-
-      {/* Header */}
       <div className="bg-gradient-to-br from-purple-700 to-purple-800 px-4 pt-8 pb-16">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-white font-bold text-xl flex items-center gap-2">
             <Users className="w-6 h-6" /> {s.title}
           </h1>
           <div className="flex gap-2">
-            <button
-              onClick={fetchGroups}
-              className="bg-white/20 text-white p-2 rounded-xl"
-              aria-label={s.refresh}
-            >
+            <button onClick={fetchGroups} className="bg-white/20 text-white p-2 rounded-xl" aria-label={s.refresh}>
               <RefreshCw className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => navigate("/tontine/create")}
-              className="bg-white/20 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1"
-            >
+            <button onClick={() => navigate("/tontine/create")} className="bg-white/20 text-white px-3 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1">
               <Plus className="w-4 h-4" /> {s.newGroup}
             </button>
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
           {[
             [myGroups.length.toString(), s.statMyGroups, "??"],
-            [totalSaved > 0 ? `${Math.round(totalSaved/1000)}k` : "0", s.statPool, "??"],
+            [totalSaved > 0 ? `${Math.round(totalSaved / 1000)}k` : "0", s.statPool, "??"],
             [activeCount.toString(), s.statActive, "?"],
           ].map(([v, l, e]) => (
             <div key={String(l)} className="bg-white/10 rounded-xl p-2.5 text-center">
@@ -265,7 +253,6 @@ export default function TontinePage() {
       </div>
 
       <div className="px-4 -mt-6">
-        {/* Tabs */}
         <div className="flex gap-2 mb-4">
           {(["my", "discover"] as const).map(tk => (
             <button
@@ -280,14 +267,12 @@ export default function TontinePage() {
           ))}
         </div>
 
-        {/* Loading */}
         {loading && (
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
           </div>
         )}
 
-        {/* Empty state ? with a big obvious CREATE button */}
         {!loading && display.length === 0 && (
           <div className="text-center py-10">
             <Users className="w-14 h-14 mx-auto mb-4 text-gray-200" />
@@ -317,7 +302,6 @@ export default function TontinePage() {
           </div>
         )}
 
-        {/* Group cards */}
         {!loading && display.length > 0 && (
           <div className="space-y-3">
             {display.map(group => {
@@ -338,14 +322,13 @@ export default function TontinePage() {
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
                       group.status === "active" ? "bg-green-50 text-green-700" :
-                      group.status === "open"   ? "bg-yellow-50 text-yellow-700" :
-                                                  "bg-gray-100 text-gray-500"
+                      group.status === "open" ? "bg-yellow-50 text-yellow-700" :
+                      "bg-gray-100 text-gray-500"
                     }`}>
                       {statusLabel(group.status)}
                     </span>
                   </div>
 
-                  {/* Member progress bar */}
                   <div className="bg-gray-100 rounded-full h-1.5 mb-3">
                     <div className="bg-purple-600 h-1.5 rounded-full" style={{ width: `${progressPct}%` }}/>
                   </div>
@@ -361,7 +344,7 @@ export default function TontinePage() {
                       {group.nextPayoutDate && (
                         <>
                           <Calendar className="w-3 h-3" />
-                          {new Date(group.nextPayoutDate).toLocaleDateString(dateLocale, { day:"numeric", month:"short" })}
+                          {new Date(group.nextPayoutDate).toLocaleDateString(dateLocale, { day: "numeric", month: "short" })}
                         </>
                       )}
                       <ChevronRight className="w-4 h-4 ml-1" />
@@ -379,7 +362,6 @@ export default function TontinePage() {
           </div>
         )}
 
-        {/* Security note */}
         <div className="mt-4 bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3">
           <Shield className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
           <div>
@@ -389,7 +371,6 @@ export default function TontinePage() {
         </div>
       </div>
 
-      {/* Floating "Create Group" button */}
       <div className="fixed bottom-20 right-4 z-40">
         <button
           onClick={() => navigate("/tontine/create")}
@@ -406,8 +387,3 @@ export default function TontinePage() {
     </div>
   );
 }
-
-
-
-
-

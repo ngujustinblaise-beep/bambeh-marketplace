@@ -1,8 +1,9 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Modal } from '../components/Modal';
 import { escrowCopy, langLabels, Lang } from '../i18n/escrow';
 import { useEscrow } from '../hooks/useEscrow';
+import { useLang, setLang as setAppLang } from '../hooks/useAppLang';
 
 export default function EscrowPage() {
   const { orderId } = useParams<{ orderId: string }>();
@@ -11,7 +12,8 @@ export default function EscrowPage() {
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [disputeReason, setDisputeReason] = useState('');
   const [message, setMessage] = useState<string | null>(null);
-  const [lang, setLang] = useState<Lang>('en');
+  const appLang = useLang();
+  const lang = (((appLang as string) in escrowCopy) ? appLang : 'en') as unknown as Lang;
 
   const copy = escrowCopy[lang];
   const statusLabel = useMemo(() => {
@@ -74,8 +76,8 @@ export default function EscrowPage() {
             </Link>
 
             <select
-              value={lang}
-              onChange={e => setLang(e.target.value as Lang)}
+              value={lang as unknown as string}
+              onChange={e => setAppLang(e.target.value)}
               className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm"
               aria-label="Language"
             >

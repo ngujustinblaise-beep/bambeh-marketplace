@@ -7,6 +7,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useLang } from '@/hooks/useAppLang';
 import {
   Bot, Send, User, Sparkles, RefreshCw, ThumbsUp, ThumbsDown,
   MessageSquare, Zap, X, Minimize2, Maximize2,

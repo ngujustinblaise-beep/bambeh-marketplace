@@ -23,8 +23,6 @@ import {
 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";
 
-// --- Types -----------------------------------------------------------------
-
 interface Product {
   id: string;
   name: string;
@@ -41,12 +39,183 @@ interface Product {
   valueScore: number;
   qualityScore: number;
   sellerRating: number;
-  source?: string;      // URL or "Bambeh Marketplace"
-  sourceLabel?: string; // human readable
-  fetchedAt?: number;   // timestamp for cache busting
+  source?: string;
+  sourceLabel?: string;
+  fetchedAt?: number;
 }
 
-// --- Sample local products -------------------------------------------------
+const COPY = {
+  en: {
+    compareProducts: 'Compare Products',
+    clearAll: 'Clear all',
+    addProduct: 'Add Product',
+    addAtLeastTwo: 'Add at least 2 products to compare',
+    addProducts: 'Add Products',
+    searchOnline: 'Search Online (Live Prices)',
+    searchOnlineBtn: 'Search Online for Live Prices',
+    searchOnlinePlaceholder: 'e.g. Samsung Galaxy A54 price Cameroon',
+    searchProductOnline: 'Search product online',
+    search: 'Search',
+    closeOnlineSearch: 'Close online search',
+    closePicker: 'Close picker',
+    loadingLivePrices: 'Searching the web for live prices...',
+    couldNotReachServer: 'Could not reach the server. Check your internet connection.',
+    noResultsFoundDifferent: 'No results found. Try a different search term.',
+    noResultsFound: 'No results found',
+    sources: 'Sources:',
+    addAProductToCompare: 'Add a product to compare',
+    searchFromBambeh: 'Search from Bambeh listings...',
+    noLocalProductsFound: 'No local products found',
+    scoreComparison: 'Score Comparison',
+    specifications: 'Specifications',
+    spec: 'Spec',
+    bestPrice: 'Best Price',
+    topRated: 'Top Rated',
+    bestValue: 'Best Value',
+    onlinePricesNotice:
+      'Online prices are fetched live and may differ from final vendor pricing. Always verify before purchasing.',
+    removeProduct: (name: string) => `Remove ${name}`,
+    goBack: 'Go back',
+    searchLocalProducts: 'Search local products',
+    clearAllProducts: 'Clear all products',
+  },
+  fr: {
+    compareProducts: 'Comparer les produits',
+    clearAll: 'Tout effacer',
+    addProduct: 'Ajouter un produit',
+    addAtLeastTwo: 'Ajoutez au moins 2 produits pour comparer',
+    addProducts: 'Ajouter des produits',
+    searchOnline: 'Recherche en ligne (prix en direct)',
+    searchOnlineBtn: 'Rechercher les prix en direct en ligne',
+    searchOnlinePlaceholder: 'ex. prix Samsung Galaxy A54 Cameroun',
+    searchProductOnline: 'Rechercher un produit en ligne',
+    search: 'Rechercher',
+    closeOnlineSearch: 'Fermer la recherche en ligne',
+    closePicker: 'Fermer le sélecteur',
+    loadingLivePrices: 'Recherche des prix en direct sur le web...',
+    couldNotReachServer: "Impossible d'atteindre le serveur. Vérifiez votre connexion Internet.",
+    noResultsFoundDifferent: 'Aucun résultat trouvé. Essayez un autre terme de recherche.',
+    noResultsFound: 'Aucun résultat trouvé',
+    sources: 'Sources :',
+    addAProductToCompare: 'Ajouter un produit à comparer',
+    searchFromBambeh: 'Rechercher dans les annonces Bambeh...',
+    noLocalProductsFound: 'Aucun produit local trouvé',
+    scoreComparison: 'Comparaison des scores',
+    specifications: 'Caractéristiques',
+    spec: 'Caract.',
+    bestPrice: 'Meilleur prix',
+    topRated: 'Mieux noté',
+    bestValue: 'Meilleur rapport qualité-prix',
+    onlinePricesNotice:
+      'Les prix en ligne sont récupérés en direct et peuvent différer du tarif final du vendeur. Vérifiez toujours avant d’acheter.',
+    removeProduct: (name: string) => `Supprimer ${name}`,
+    goBack: 'Retour',
+    searchLocalProducts: 'Rechercher des produits locaux',
+    clearAllProducts: 'Effacer tous les produits',
+  },
+  ar: {
+    compareProducts: 'مقارنة المنتجات',
+    clearAll: 'مسح الكل',
+    addProduct: 'إضافة منتج',
+    addAtLeastTwo: 'أضف منتجين على الأقل للمقارنة',
+    addProducts: 'إضافة منتجات',
+    searchOnline: 'بحث عبر الإنترنت (أسعار مباشرة)',
+    searchOnlineBtn: 'البحث عن الأسعار المباشرة عبر الإنترنت',
+    searchOnlinePlaceholder: 'مثال: سعر Samsung Galaxy A54 في الكاميرون',
+    searchProductOnline: 'ابحث عن المنتج عبر الإنترنت',
+    search: 'بحث',
+    closeOnlineSearch: 'إغلاق البحث عبر الإنترنت',
+    closePicker: 'إغلاق النافذة',
+    loadingLivePrices: 'جارٍ البحث في الويب عن الأسعار المباشرة...',
+    couldNotReachServer: 'تعذر الوصول إلى الخادم. تحقق من اتصالك بالإنترنت.',
+    noResultsFoundDifferent: 'لم يتم العثور على نتائج. جرّب عبارة بحث مختلفة.',
+    noResultsFound: 'لم يتم العثور على نتائج',
+    sources: 'المصادر:',
+    addAProductToCompare: 'أضف منتجًا للمقارنة',
+    searchFromBambeh: 'ابحث ضمن إعلانات Bambeh...',
+    noLocalProductsFound: 'لم يتم العثور على منتجات محلية',
+    scoreComparison: 'مقارنة التقييمات',
+    specifications: 'المواصفات',
+    spec: 'المواصفة',
+    bestPrice: 'أفضل سعر',
+    topRated: 'الأعلى تقييمًا',
+    bestValue: 'أفضل قيمة',
+    onlinePricesNotice:
+      'يتم جلب الأسعار عبر الإنترنت مباشرة وقد تختلف عن السعر النهائي لدى البائع. تحقق دائمًا قبل الشراء.',
+    removeProduct: (name: string) => `إزالة ${name}`,
+    goBack: 'رجوع',
+    searchLocalProducts: 'البحث عن منتجات محلية',
+    clearAllProducts: 'مسح جميع المنتجات',
+  },
+  pidgin: {
+    compareProducts: 'Compare products',
+    clearAll: 'Clear all',
+    addProduct: 'Add product',
+    addAtLeastTwo: 'Add at least 2 products make we compare',
+    addProducts: 'Add products',
+    searchOnline: 'Search Online (Live Prices)',
+    searchOnlineBtn: 'Search online for live prices',
+    searchOnlinePlaceholder: 'e.g. Samsung Galaxy A54 price Cameroon',
+    searchProductOnline: 'Search product online',
+    search: 'Search',
+    closeOnlineSearch: 'Close online search',
+    closePicker: 'Close picker',
+    loadingLivePrices: 'Dey search the web for live prices...',
+    couldNotReachServer: 'We no fit reach the server. Check your internet connection.',
+    noResultsFoundDifferent: 'No result. Try another search word.',
+    noResultsFound: 'No results found',
+    sources: 'Sources:',
+    addAProductToCompare: 'Add product to compare',
+    searchFromBambeh: 'Search from Bambeh listings...',
+    noLocalProductsFound: 'No local products found',
+    scoreComparison: 'Score comparison',
+    specifications: 'Specifications',
+    spec: 'Spec',
+    bestPrice: 'Best price',
+    topRated: 'Top rated',
+    bestValue: 'Best value',
+    onlinePricesNotice:
+      'Online prices dey come live and fit no match final seller price. Always verify before you buy.',
+    removeProduct: (name: string) => `Remove ${name}`,
+    goBack: 'Go back',
+    searchLocalProducts: 'Search local products',
+    clearAllProducts: 'Clear all products',
+  },
+  ful: {
+    compareProducts: 'Nana heɓugol ceŋol',
+    clearAll: 'Momtu fuu',
+    addProduct: 'Añdu hoto',
+    addAtLeastTwo: 'Añdu ko 2 hoto e ɓuri ngam ceŋol',
+    addProducts: 'Añdu hotoɓe',
+    searchOnline: 'Yiylo e internet (priis ɗi haani)',
+    searchOnlineBtn: 'Yiylo priis ɗi haani e internet',
+    searchOnlinePlaceholder: 'misal: priis Samsung Galaxy A54 Cameroon',
+    searchProductOnline: 'Yiylo hoto e internet',
+    search: 'Yiylo',
+    closeOnlineSearch: 'Suumde yiylugo internet',
+    closePicker: 'Suumde cuɓoraaɗe',
+    loadingLivePrices: 'Dey yiylugo internet ngam priis ɗi haani...',
+    couldNotReachServer: 'Mi waawi alaa naatde to sarver. Ƴeewto internet maa.',
+    noResultsFoundDifferent: 'Alaa natnude. Ƴeewto aadi goɗɗo.',
+    noResultsFound: 'Alaa natnude',
+    sources: 'Moolere:',
+    addAProductToCompare: 'Añdu hoto ngam ceŋol',
+    searchFromBambeh: 'Yiylo e listi Bambeh...',
+    noLocalProductsFound: 'Alaa hoto lokal',
+    scoreComparison: 'Ceŋol noddowka',
+    specifications: 'Nanaaji',
+    spec: 'Nanaa',
+    bestPrice: 'Priis ɓuri',
+    topRated: 'Nodditaaɗo ɓuri',
+    bestValue: 'Kadi ɗum ɓuri',
+    onlinePricesNotice:
+      'Priis ɗi internet ɗe ummii jooni e ɗum wanaa ko kadi seller waɗi. Ƴeewto wonde ɗi laaɓi ɓuri ɗum feere.',
+    removeProduct: (name: string) => `Momtu ${name}`,
+    goBack: 'Rutto',
+    searchLocalProducts: 'Yiylo hoto lokal',
+    clearAllProducts: 'Momtu hotoɓe fuu',
+  },
+};
 
 const SAMPLE: Product[] = [
   {
@@ -67,8 +236,6 @@ const SAMPLE: Product[] = [
   },
 ];
 
-// --- Anthropic-powered search ----------------------------------------------
-
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
   || 'https://bambeh-backend-production-6bca.up.railway.app';
 
@@ -88,19 +255,14 @@ async function searchProductOnline(query: string): Promise<{
     if (!res.ok) throw new Error(`Backend ${res.status}`);
     const data = await res.json();
 
-    // Backend returns: { products: Product[], sources: [{label, url}] }
     if (Array.isArray(data.products) && data.products.length > 0) {
       return { products: data.products, sources: data.sources || [] };
     }
     throw new Error('No products returned');
   } catch (err) {
-    // Fallback: call Anthropic directly from the browser if backend is down
-    // (CORS is allowed for claude.ai domains in artifact context)
     return { products: [], sources: [], error: String(err) };
   }
 }
-
-// --- Source Badge ----------------------------------------------------------
 
 function SourceBadge({ product }: { product: Product }) {
   const lang = useLang();
@@ -120,8 +282,6 @@ function SourceBadge({ product }: { product: Product }) {
   );
 }
 
-// --- Skeleton loader -------------------------------------------------------
-
 function ProductSkeleton() {
   return (
     <div className="bg-white rounded-2xl p-3 shadow-sm border animate-pulse">
@@ -132,14 +292,14 @@ function ProductSkeleton() {
   );
 }
 
-// --- Online Search Panel ---------------------------------------------------
-
 interface OnlineSearchPanelProps {
   onAdd: (p: Product) => void;
   onClose: () => void;
 }
 
 function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
+  const lang = useLang();
+  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [sources, setSources] = useState<{ label: string; url: string }[]>([]);
@@ -159,24 +319,24 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
     if (err || products.length === 0) {
       setError(
         err?.includes('Failed to fetch')
-          ? 'Could not reach the server. Check your internet connection.'
-          : 'No results found. Try a different search term.',
+          ? ui.couldNotReachServer
+          : ui.noResultsFoundDifferent,
       );
       setResults([]);
     } else {
       setResults(products);
       setSources(srcs);
     }
-  }, [query]);
+  }, [query, ui]);
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border mb-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Globe className="w-4 h-4 text-blue-600" />
-          <h3 className="font-semibold text-gray-900 text-sm">Search Online (Live Prices)</h3>
+          <h3 className="font-semibold text-gray-900 text-sm">{ui.searchOnline}</h3>
         </div>
-        <button onClick={onClose} aria-label="Close online search">
+        <button onClick={onClose} aria-label={ui.closeOnlineSearch}>
           <X className="w-4 h-4 text-gray-400" />
         </button>
       </div>
@@ -186,31 +346,29 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && doSearch()}
-          placeholder="e.g. Samsung Galaxy A54 price Cameroon"
+          placeholder={ui.searchOnlinePlaceholder}
           className="flex-1 border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
-          aria-label="Search product online"
+          aria-label={ui.searchProductOnline}
         />
         <button
           onClick={doSearch}
           disabled={loading || !query.trim()}
           className="bg-teal-600 text-white px-3 py-2 rounded-xl disabled:opacity-50 hover:bg-teal-700 transition"
-          aria-label="Search"
+          aria-label={ui.search}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
         </button>
       </div>
 
-      {/* Loading */}
       {loading && (
         <div className="space-y-2">
           {[1, 2].map(i => <ProductSkeleton key={i} />)}
           <p className="text-xs text-gray-400 text-center animate-pulse">
-            ?? Searching the web for live prices?
+            {ui.loadingLivePrices}
           </p>
         </div>
       )}
 
-      {/* Error */}
       {!loading && error && (
         <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl p-3">
           <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
@@ -218,7 +376,6 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
         </div>
       )}
 
-      {/* Results */}
       {!loading && results.length > 0 && (
         <>
           <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -241,10 +398,9 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
             ))}
           </div>
 
-          {/* Source attribution */}
           {sources.length > 0 && (
             <div className="mt-3 pt-2 border-t border-gray-100">
-              <p className="text-[10px] text-gray-400 mb-1">Sources:</p>
+              <p className="text-[10px] text-gray-400 mb-1">{ui.sources}</p>
               <div className="flex flex-wrap gap-1">
                 {sources.map(s => (
                   <a
@@ -264,13 +420,11 @@ function OnlineSearchPanel({ onAdd, onClose }: OnlineSearchPanelProps) {
       )}
 
       {!loading && searched && results.length === 0 && !error && (
-        <p className="text-sm text-gray-500 text-center py-3">No results found</p>
+        <p className="text-sm text-gray-500 text-center py-3">{ui.noResultsFound}</p>
       )}
     </div>
   );
 }
-
-// --- Manual Add Panel ------------------------------------------------------
 
 interface ManualPickerProps {
   available: Product[];
@@ -280,6 +434,8 @@ interface ManualPickerProps {
 }
 
 function ManualPicker({ available, onAdd, onClose, onOpenOnline }: ManualPickerProps) {
+  const lang = useLang();
+  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
   const [search, setSearch] = useState('');
 
   const filtered = available.filter(
@@ -289,24 +445,23 @@ function ManualPicker({ available, onAdd, onClose, onOpenOnline }: ManualPickerP
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border mb-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-gray-900 text-sm">Add a product to compare</h3>
-        <button onClick={onClose} aria-label="Close picker"><X className="w-4 h-4 text-gray-400" /></button>
+        <h3 className="font-semibold text-gray-900 text-sm">{ui.addAProductToCompare}</h3>
+        <button onClick={onClose} aria-label={ui.closePicker}><X className="w-4 h-4 text-gray-400" /></button>
       </div>
 
-      {/* Search online button */}
       <button
         onClick={onOpenOnline}
         className="w-full flex items-center justify-center gap-2 py-2 mb-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-sm font-semibold hover:bg-blue-100 transition"
       >
-        <Globe className="w-4 h-4" /> Search Online for Live Prices
+        <Globe className="w-4 h-4" /> {ui.searchOnlineBtn}
       </button>
 
       <input
         value={search}
         onChange={e => setSearch(e.target.value)}
-        placeholder="Search from Bambeh listings..."
+        placeholder={ui.searchFromBambeh}
         className="w-full border rounded-xl px-3 py-2 text-sm mb-3 focus:ring-2 focus:ring-teal-500 outline-none"
-        aria-label="Search local products"
+        aria-label={ui.searchLocalProducts}
       />
       <div className="space-y-2 max-h-48 overflow-y-auto">
         {filtered.map(p => (
@@ -325,7 +480,7 @@ function ManualPicker({ available, onAdd, onClose, onOpenOnline }: ManualPickerP
           </button>
         ))}
         {filtered.length === 0 && (
-          <p className="text-sm text-gray-500 text-center py-3">No local products found</p>
+          <p className="text-sm text-gray-500 text-center py-3">{ui.noLocalProductsFound}</p>
         )}
       </div>
     </div>
@@ -337,16 +492,15 @@ function ManualPicker({ available, onAdd, onClose, onOpenOnline }: ManualPickerP
   }
 }
 
-// --- Main Component --------------------------------------------------------
-
 export default function ComparisonTool() {
   const navigate = useNavigate();
+  const lang = useLang();
+  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
   const [products, setProducts] = useState<Product[]>(SAMPLE.slice(0, 2));
   const [localProducts, setLocalProducts] = useState<Product[]>([]);
   const [showPicker, setShowPicker] = useState(false);
   const [showOnline, setShowOnline] = useState(false);
 
-  // Read Bambeh listings from localStorage safely
   useEffect(() => {
     try {
       const stored = localStorage.getItem('bambeh_marketplace_items');
@@ -374,7 +528,6 @@ export default function ComparisonTool() {
       }));
       setLocalProducts(mapped);
     } catch {
-      // localStorage malformed ? silently ignore
     }
   }, []);
 
@@ -392,10 +545,8 @@ export default function ComparisonTool() {
     setProducts(prev => prev.filter(p => p.id !== id));
   }
 
-  // All unique spec keys across all compared products
   const allSpecs = Array.from(new Set(products.flatMap(p => Object.keys(p.specs))));
 
-  // -- Winner detection --
   const bestPrice = products.length >= 2
     ? products.reduce((b, p) => p.price < b.price ? p : b).id
     : null;
@@ -410,37 +561,35 @@ export default function ComparisonTool() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
           className="p-2 hover:bg-gray-100 rounded-xl"
-          aria-label="Go back"
+          aria-label={ui.goBack}
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="font-semibold text-gray-900 flex-1">Compare Products</h2>
+        <h2 className="font-semibold text-gray-900 flex-1">{ui.compareProducts}</h2>
         <TrendingUp className="w-5 h-5 text-teal-600" />
         {products.length > 0 && (
           <button
             onClick={() => setProducts([])}
             className="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition"
-            aria-label="Clear all products"
+            aria-label={ui.clearAllProducts}
           >
-            Clear all
+            {ui.clearAll}
           </button>
         )}
       </div>
 
       <div className="p-4">
-        {/* Product slots */}
         <div className={`grid gap-3 mb-4 ${colClass}`}>
           {products.map(p => (
             <div key={p.id} className="bg-white rounded-2xl p-3 shadow-sm border relative">
               <button
                 onClick={() => removeProduct(p.id)}
                 className="absolute top-2 right-2 w-5 h-5 bg-gray-100 hover:bg-red-100 rounded-full flex items-center justify-center transition"
-                aria-label={`Remove ${p.name}`}
+                aria-label={ui.removeProduct(p.name)}
               >
                 <X className="w-3 h-3 text-gray-500" />
               </button>
@@ -458,17 +607,17 @@ export default function ComparisonTool() {
               <div className="flex flex-wrap gap-1 mt-1">
                 {p.id === bestPrice && (
                   <span className="text-xs bg-green-50 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">
-                    Best Price
+                    {ui.bestPrice}
                   </span>
                 )}
                 {p.id === bestRating && (
                   <span className="text-xs bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded-full font-semibold">
-                    Top Rated
+                    {ui.topRated}
                   </span>
                 )}
                 {p.id === bestValue && (
                   <span className="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full font-semibold">
-                    Best Value
+                    {ui.bestValue}
                   </span>
                 )}
               </div>
@@ -479,15 +628,14 @@ export default function ComparisonTool() {
             <button
               onClick={() => setShowPicker(true)}
               className="bg-white rounded-2xl p-3 shadow-sm border border-dashed border-teal-300 flex flex-col items-center justify-center gap-2 min-h-[120px] hover:bg-teal-50 transition"
-              aria-label="Add product to compare"
+              aria-label={ui.addProduct}
             >
               <Plus className="w-6 h-6 text-teal-500" />
-              <span className="text-xs text-teal-600 font-medium">Add Product</span>
+              <span className="text-xs text-teal-600 font-medium">{ui.addProduct}</span>
             </button>
           )}
         </div>
 
-        {/* Pickers */}
         {showOnline && (
           <OnlineSearchPanel
             onAdd={addProduct}
@@ -506,9 +654,8 @@ export default function ComparisonTool() {
 
         {products.length >= 2 && (
           <>
-            {/* Score comparison */}
             <div className="bg-white rounded-2xl p-4 shadow-sm border mb-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Score Comparison</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{ui.scoreComparison}</h3>
               {(
                 [
                   ['Value Score', 'valueScore', 100],
@@ -540,10 +687,9 @@ export default function ComparisonTool() {
               ))}
             </div>
 
-            {/* Specs table */}
             {allSpecs.length > 0 && (
               <div className="bg-white rounded-2xl p-4 shadow-sm border mb-4 overflow-hidden">
-                <h3 className="font-semibold text-gray-900 mb-3">Specifications</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">{ui.specifications}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs" role="table">
                     <thead>
@@ -552,7 +698,7 @@ export default function ComparisonTool() {
                           scope="col"
                           className="text-left py-2 pr-3 text-gray-500 font-medium min-w-[60px]"
                         >
-                          Spec
+                          {ui.spec}
                         </th>
                         {products.map(p => (
                           <th
@@ -585,7 +731,6 @@ export default function ComparisonTool() {
               </div>
             )}
 
-            {/* Pros / Cons */}
             <div className={`grid gap-3 ${colClass}`}>
               {products.map(p => (
                 <div key={p.id} className="bg-white rounded-2xl p-3 shadow-sm border">
@@ -608,9 +753,8 @@ export default function ComparisonTool() {
               ))}
             </div>
 
-            {/* Data freshness notice */}
             <p className="text-[10px] text-gray-400 text-center mt-4">
-              Online prices are fetched live and may differ from final vendor pricing. Always verify before purchasing.
+              {ui.onlinePricesNotice}
             </p>
           </>
         )}
@@ -618,12 +762,12 @@ export default function ComparisonTool() {
         {products.length === 0 && (
           <div className="text-center py-16 text-gray-400">
             <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-200" />
-            <p className="font-medium text-gray-500">Add at least 2 products to compare</p>
+            <p className="font-medium text-gray-500">{ui.addAtLeastTwo}</p>
             <button
               onClick={() => setShowPicker(true)}
               className="mt-3 bg-teal-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm"
             >
-              Add Products
+              {ui.addProducts}
             </button>
           </div>
         )}
@@ -631,8 +775,3 @@ export default function ComparisonTool() {
     </div>
   );
 }
-
-
-
-
-
