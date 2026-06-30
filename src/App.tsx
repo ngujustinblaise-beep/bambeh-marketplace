@@ -154,7 +154,6 @@ import VendorLayout from "@/components/layout/VendorLayout";
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
 import AuthPage from "@/pages/auth/AuthPage";
-import BiometricLogin from "@/pages/auth/BiometricLogin";
 
 // ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
@@ -162,6 +161,7 @@ const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
 const Login             = lazy(() => import("@/pages/auth/Login"));
 const Register          = lazy(() => import("@/pages/auth/Register"));
+const BiometricLogin    = lazy(() => import("@/pages/auth/BiometricLogin"));
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));

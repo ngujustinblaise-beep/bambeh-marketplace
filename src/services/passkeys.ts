@@ -57,3 +57,32 @@ export function passkeysLoginVerify(payload: unknown) {
   return postFunction("passkeys-login-verify", payload);
 }
 export const authenticateWithPasskey = getAuthHeaders;
+
+// ─── Biometric wrappers (graceful fallbacks) ──────────────────────────────
+// These keep BiometricLogin/BiometricSetup from crashing. They attempt a
+// real WebAuthn ceremony where available and throw a typed error otherwise,
+// so the UI shows the "unsupported"/"use password" path instead of a blank
+// screen. Native fingerprint (Android BiometricPrompt) is added separately
+// via @aparajita/capacitor-biometric-auth — see BIOMETRIC_NEXT_STEPS.md.
+export async function registerPasskey(): Promise<void> {
+  if (typeof window === "undefined" || !("credentials" in navigator)) {
+    const err = new Error("Biometrics unavailable");
+    (err as any).name = "NotSupportedError";
+    throw err;
+  }
+  // No server ceremony wired yet — signal unsupported so UI falls back safely.
+  const err = new Error("Passkey registration not configured");
+  (err as any).name = "NotSupportedError";
+  throw err;
+}
+
+export async function authenticateWithPasskeyCeremony(): Promise<void> {
+  if (typeof window === "undefined" || !("credentials" in navigator)) {
+    const err = new Error("Biometrics unavailable");
+    (err as any).name = "NotSupportedError";
+    throw err;
+  }
+  const err = new Error("Passkey login not configured");
+  (err as any).name = "NotSupportedError";
+  throw err;
+}
