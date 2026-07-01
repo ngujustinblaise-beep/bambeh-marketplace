@@ -1,4 +1,3 @@
-import "@/lib/net-interceptor";
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
@@ -115,21 +114,8 @@ const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children })
         applyDom(next);
       }
     };
-    // Also react to same-tab language changes broadcast by useAppLang and pages
-    const onLangChange = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (typeof detail === "string") {
-        const next = _resolveCode(detail);
-        setLangState(next);
-        applyDom(next);
-      }
-    };
     window.addEventListener("storage", onStorage);
-    window.addEventListener("bambeh:langchange", onLangChange);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("bambeh:langchange", onLangChange);
-    };
+    return () => window.removeEventListener("storage", onStorage);
   }, [language, applyDom]);
 
   const setLanguage = useCallback((lang: string) => {
@@ -161,6 +147,7 @@ const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children })
 // ─── 6. Layouts (Eager — used on nearly every route) ─────────────────────────
 import MainLayout from "@/components/layout/MainLayout";
 import AuthLayout from "@/components/layout/AuthLayout";
+import VendorLayout from "@/components/layout/VendorLayout";
 
 // ─── 7. Eager Page Imports (first-screen only) ────────────────────────────────
 import LanguageSelection from "@/pages/LanguageSelection";
@@ -172,9 +159,12 @@ import BiometricLogin from "@/pages/auth/BiometricLogin";
 // AUTH
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
+const Login             = lazy(() => import("@/pages/auth/Login"));
+const Register          = lazy(() => import("@/pages/auth/Register"));
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
+const CorporatePage   = lazy(() => import("@/features/corporate/CorporatePage"));
 const Jobs            = lazy(() => import("@/routes/groups/marketplace/Jobs"));
 const Marketplace     = lazy(() => import("@/routes/groups/marketplace/Marketplace"));
 const Services        = lazy(() => import("@/routes/groups/marketplace/Services"));
@@ -247,10 +237,48 @@ const ReportIssuePage = lazy(() => import("@/pages/ReportIssuePage"));
 // 404
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
-// CORPORATE (replaces the old vendor section)
-const CorporatePage   = lazy(() => import("@/features/corporate/CorporatePage"));
-// BIOMETRIC SETUP (post-signup passkey enrollment)
-const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
+// VENDOR PAGES
+const VendorPortal                    = lazy(() => import("@/routes/groups/vendor/VendorPortal"));
+const VendorHome                      = lazy(() => import("@/routes/groups/vendor/VendorHome"));
+const VendorSignIn                    = lazy(() => import("@/routes/groups/vendor/VendorSignIn"));
+const VendorRegistration              = lazy(() => import("@/components/vendor/VendorRegistration"));
+const VendorAuthPage                  = lazy(() => import("@/routes/groups/vendor/VendorAuthPage"));
+const VendorSubscriptionPlans         = lazy(() => import("@/routes/groups/vendor/VendorSubscriptionPlans"));
+const VendorSubscriptionPlansExclusive = lazy(() => import("@/routes/groups/vendor/VendorSubscriptionPlansExclusive"));
+const VendorSecureDashboard           = lazy(() => import("@/routes/groups/vendor/VendorSecureDashboard"));
+const VendorAnalyticsEnhanced         = lazy(() => import("@/routes/groups/vendor/VendorAnalyticsEnhanced"));
+const VendorManageListings            = lazy(() => import("@/routes/groups/vendor/VendorManageListings"));
+const VendorMessagesPage              = lazy(() => import("@/routes/groups/vendor/VendorMessagesPage"));
+const VendorSettingsComplete          = lazy(() => import("@/routes/groups/vendor/VendorSettingsComplete"));
+const VendorProfile                   = lazy(() => import("@/components/vendor/VendorProfile"));
+const VendorFilter                    = lazy(() => import("@/routes/groups/vendor/VendorFilter"));
+const VendorCustomers                 = lazy(() => import("@/routes/groups/vendor/VendorCustomers"));
+const VendorRecommendations           = lazy(() => import("@/routes/groups/vendor/VendorRecommendations"));
+const VendorVerification              = lazy(() => import("@/components/vendor/VendorVerification"));
+const VendorNotifications             = lazy(() => import("@/routes/groups/vendor/VendorNotifications"));
+const VendorPremiumToolsEnhanced      = lazy(() => import("@/routes/groups/vendor/VendorPremiumToolsEnhanced"));
+const VendorSubscriptionPayment       = lazy(() => import("@/routes/groups/vendor/VendorSubscriptionPayment"));
+const VendorOrders                    = lazy(() => import("@/routes/groups/vendor/VendorOrders"));
+const VendorReviews                   = lazy(() => import("@/routes/groups/vendor/VendorReviews"));
+const VendorPayments                  = lazy(() => import("@/routes/groups/vendor/VendorPayments"));
+const VendorWithdraw                  = lazy(() => import("@/routes/groups/vendor/VendorWithdraw"));
+const VendorProducts                  = lazy(() => import("@/routes/groups/vendor/VendorProducts"));
+const VendorOnboardingChecklist       = lazy(() => import("@/routes/groups/vendor/VendorOnboardingChecklist"));
+const VendorSettingsAccountProfile    = lazy(() => import("@/pages/vendor/settings/VendorSettingsAccountProfile"));
+const VendorSettingsStore             = lazy(() => import("@/pages/vendor/settings/VendorSettingsStore"));
+const VendorSettingsNotification      = lazy(() => import("@/pages/vendor/settings/VendorSettingsNotification"));
+const VendorSettingsPayment           = lazy(() => import("@/pages/vendor/settings/VendorSettingsPayment"));
+const VendorSettingsSecurity          = lazy(() => import("@/pages/vendor/settings/VendorSettingsSecurity"));
+const VendorSettingsShipping          = lazy(() => import("@/pages/vendor/settings/VendorSettingsShipping"));
+const VendorSettingsBusinessHours     = lazy(() => import("@/pages/vendor/settings/VendorSettingsBusinessHours"));
+const VendorSettingsLanguage          = lazy(() => import("@/pages/vendor/settings/VendorSettingsLanguage"));
+const AnalyticsPro                    = lazy(() => import("@/pages/vendor/premium/AnalyticsPro"));
+const FeaturedListings                = lazy(() => import("@/pages/vendor/premium/FeaturedListings"));
+const BulkUpload                      = lazy(() => import("@/pages/vendor/premium/BulkUpload"));
+const PrioritySupport                 = lazy(() => import("@/pages/vendor/premium/PrioritySupport"));
+const VerifiedSeller                  = lazy(() => import("@/pages/vendor/premium/VerifiedSeller"));
+const AutoMessaging                   = lazy(() => import("@/pages/vendor/premium/AutoMessaging"));
+const VendorPublicProfile             = lazy(() => import("@/routes/groups/vendor/VendorPublicProfile"));
 
 // ADMIN PAGES
 const AdminLogin                  = lazy(() => import("@/routes/groups/admin/AdminLogin"));
@@ -438,6 +466,8 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
   // browsing public content before completing onboarding.
   const publicPrefixes = [
     "/login",
+    "/signin",
+    "/biometric-login",
     "/register",
     "/forgot-password",
     "/forgot-credentials",
@@ -446,7 +476,9 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/help",
     "/about",
     "/privacy",
-    "/corporate",
+    "/vendor",
+    "/vendorsignin",
+    "/vendor-signin",
     "/report-issue",
     "/admin",
     "/splash",
@@ -476,7 +508,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     const hasLang    = localStorage.getItem("Bambeh_language");
     const hasTerms   = localStorage.getItem("Bambeh_terms_accepted");
     // FIX: Read from localStorage (not sessionStorage) to match WelcomeWrapper.
-    const hasWelcome = localStorage.getItem("Bambeh_welcome_shown") || localStorage.getItem("Bambeh_welcome_completed");
+    const hasWelcome = localStorage.getItem("Bambeh_welcome_shown");
 
     if (!hasLang && location.pathname !== "/language") {
       return <Navigate to="/language" replace />;
@@ -599,7 +631,6 @@ const WelcomeWrapper = React.memo(function WelcomeWrapper() {
     // FIX: Use localStorage (not sessionStorage) so the welcome screen is not
     // re-shown when Android kills and restores the WebView background session.
     localStorage.setItem("Bambeh_welcome_shown", "true");
-    localStorage.setItem("Bambeh_welcome_completed", "true"); // compat with recovery router key
   }, []);
   return <BambehWelcomeScreen />;
 });
@@ -677,7 +708,9 @@ export default function App() {
 
                         {/* ── 2. AUTH ─────────────────────────────────────────────── */}
                         <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
-                        <Route path="/register" element={<Navigate to="/login" replace />} />
+                        <Route path="/signin" element={<AuthLayout><Login /></AuthLayout>} />
+                        <Route path="/biometric-login" element={<AuthLayout><BiometricLogin /></AuthLayout>} />
+                        <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}
@@ -686,19 +719,10 @@ export default function App() {
                           path="/forgot-credentials"
                           element={<AuthLayout><ForgotCredentials /></AuthLayout>}
                         />
-                        <Route path="/biometric-login" element={<AuthLayout><BiometricLogin /></AuthLayout>} />
-                        <Route path="/biometric-setup" element={<AuthLayout><BiometricSetup /></AuthLayout>} />
-                        <Route path="/enable-biometrics" element={<Navigate to="/biometric-setup" replace />} />
-
-                        {/* Legacy onboarding paths from the recovery router - keep old links alive */}
-                        <Route path="/select-language" element={<Navigate to="/language" replace />} />
-                        <Route path="/terms" element={<Navigate to="/terms-acceptance" replace />} />
-
-                        {/* ── CORPORATE (replaces vendor) ────────────────────────── */}
-                        <Route path="/corporate" element={<MainLayout><CorporatePage /></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+                        <Route path="/corporate" element={<MainLayout><CorporatePage /></MainLayout>} />
                         <Route path="/home" element={<Navigate to="/" replace />} />
                         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
                         <Route path="/marketplace" element={<MainLayout><Marketplace /></MainLayout>} />
@@ -1051,6 +1075,61 @@ export default function App() {
                         {/* Legacy redirects — keeps old links alive */}
                         <Route path="/coins/purchase"  element={<Navigate to="/coins/buy" replace />} />
                         <Route path="/zerm/purchase"   element={<Navigate to="/coins/buy" replace />} />
+
+                        {/* ── 9. VENDOR PUBLIC ───────────────────────────────────── */}
+                        <Route path="/vendor" element={<Navigate to="/vendor/home" replace />} />
+                        <Route path="/vendor/portal" element={<VendorLayout><VendorPortal /></VendorLayout>} />
+                        <Route path="/vendor/home" element={<VendorLayout><VendorHome /></VendorLayout>} />
+                        <Route path="/vendor/login" element={<VendorLayout><VendorSignIn /></VendorLayout>} />
+                        <Route path="/vendor/register" element={<VendorLayout><VendorRegistration /></VendorLayout>} />
+                        <Route path="/vendor/auth" element={<VendorLayout><VendorAuthPage /></VendorLayout>} />
+                        <Route path="/vendor/subscription-plans" element={<VendorLayout><VendorSubscriptionPlans /></VendorLayout>} />
+                        <Route path="/vendor/subscription-plans-exclusive" element={<VendorLayout><VendorSubscriptionPlansExclusive /></VendorLayout>} />
+                        <Route path="/vendor/profile/:vendorId" element={<MainLayout><VendorPublicProfile /></MainLayout>} />
+                        <Route path="/vendor/plans" element={<Navigate to="/vendor/subscription-plans" replace />} />
+                        <Route path="/vendor/pricing" element={<Navigate to="/vendor/subscription-plans" replace />} />
+                        <Route path="/vendor/subscribe" element={<Navigate to="/vendor/subscription-plans" replace />} />
+                        <Route path="/vendor/secure-dashboard" element={<Navigate to="/vendor/dashboard" replace />} />
+                        <Route path="/vendor/subscription-payment" element={<Navigate to="/vendor/subscription" replace />} />
+                        
+                        <Route path="/vendorsignin" element={<Navigate to="/vendor/login" replace />} />
+                        <Route path="/vendor-signin" element={<Navigate to="/vendor/login" replace />} />
+                        <Route path="/vendor/manage-listings" element={<Navigate to="/vendor/listings" replace />} />
+
+                        {/* ── 10. VENDOR PROTECTED ───────────────────────────────── */}
+                        <Route path="/vendor/dashboard" element={<AuthGate require="vendor"><VendorLayout><VendorSecureDashboard /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/analytics" element={<AuthGate require="vendor"><VendorLayout><VendorAnalyticsEnhanced /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/listings" element={<AuthGate require="vendor"><VendorLayout><VendorManageListings /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/messages" element={<AuthGate require="vendor"><VendorLayout><VendorMessagesPage /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsComplete /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/profile" element={<AuthGate require="vendor"><VendorLayout><VendorProfile /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/filter" element={<AuthGate require="vendor"><VendorLayout><VendorFilter /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/customers" element={<AuthGate require="vendor"><VendorLayout><VendorCustomers /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/recommendations" element={<AuthGate require="vendor"><VendorLayout><VendorRecommendations /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/verification" element={<AuthGate require="vendor"><VendorLayout><VendorVerification /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/notifications" element={<AuthGate require="vendor"><VendorLayout><VendorNotifications /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium-tools" element={<AuthGate require="vendor"><VendorLayout><VendorPremiumToolsEnhanced /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/subscription" element={<AuthGate require="vendor"><VendorLayout><VendorSubscriptionPayment /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/orders" element={<AuthGate require="vendor"><VendorLayout><VendorOrders /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/reviews" element={<AuthGate require="vendor"><VendorLayout><VendorReviews /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/payments" element={<AuthGate require="vendor"><VendorLayout><VendorPayments /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/payments/withdraw" element={<AuthGate require="vendor"><VendorLayout><VendorWithdraw /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/products" element={<AuthGate require="vendor"><VendorLayout><VendorProducts /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/onboarding" element={<AuthGate require="vendor"><VendorLayout><VendorOnboardingChecklist /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/account" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsAccountProfile /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/store" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsStore /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/notifications" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsNotification /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/payment" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsPayment /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/security" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsSecurity /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/shipping" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsShipping /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/business-hours" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsBusinessHours /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/settings/language" element={<AuthGate require="vendor"><VendorLayout><VendorSettingsLanguage /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium/analytics-pro" element={<AuthGate require="vendor"><VendorLayout><AnalyticsPro /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium/featured-listings" element={<AuthGate require="vendor"><VendorLayout><FeaturedListings /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium/bulk-upload" element={<AuthGate require="vendor"><VendorLayout><BulkUpload /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium/priority-support" element={<AuthGate require="vendor"><VendorLayout><PrioritySupport /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium/verified-seller" element={<AuthGate require="vendor"><VendorLayout><VerifiedSeller /></VendorLayout></AuthGate>} />
+                        <Route path="/vendor/premium/auto-messaging" element={<AuthGate require="vendor"><VendorLayout><AutoMessaging /></VendorLayout></AuthGate>} />
 
                         {/* ── 11. ADMIN ─────────────────────────────────────────── */}
                         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
