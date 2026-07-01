@@ -1,8 +1,9 @@
 /**
  * BAMBEH Corporate - front-end scaffold (preview).
  * Self-contained: plain React + Tailwind + inline SVG. No emoji, no external
- * contexts, no lucide brand icons. Placeholder data is labelled. The register
- * form does not submit yet - backend wiring is a later step.
+ * contexts. Rendered inside MainLayout by the router, so no nav/back button
+ * here. Placeholder data is labelled. The register form does not submit yet -
+ * backend wiring is a later step.
  */
 import { useState } from "react";
 
@@ -99,6 +100,10 @@ export default function CorporatePage() {
           ))}
         </div>
       </section>
+
+      <footer className="max-w-5xl mx-auto px-6 pb-10 text-center text-xs text-gray-400">
+        BAMBEH SARL &middot; RCCM: CM-NSI-02-2026-B13-00179 &middot; NIU: M022618405804C &middot; D-U-N-S: 850379853
+      </footer>
 
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onClick={() => setShowForm(false)}>
