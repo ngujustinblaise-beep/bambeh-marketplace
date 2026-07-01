@@ -164,6 +164,7 @@ const Register          = lazy(() => import("@/pages/auth/Register"));
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
+const CorporatePage   = lazy(() => import("@/features/corporate/CorporatePage"));
 const Jobs            = lazy(() => import("@/routes/groups/marketplace/Jobs"));
 const Marketplace     = lazy(() => import("@/routes/groups/marketplace/Marketplace"));
 const Services        = lazy(() => import("@/routes/groups/marketplace/Services"));
@@ -721,6 +722,7 @@ export default function App() {
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+                        <Route path="/corporate" element={<MainLayout><CorporatePage /></MainLayout>} />
                         <Route path="/home" element={<Navigate to="/" replace />} />
                         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
                         <Route path="/marketplace" element={<MainLayout><Marketplace /></MainLayout>} />
