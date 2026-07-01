@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MakeOfferPage.tsx ? Bambeh Marketplace
  * ? 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -33,7 +33,7 @@ import {
   CheckCheck,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useSupabaseAuth } from "@/providers/SupabaseAuthProvider";
+import { useAuth } from "@/contexts/AuthContext";
 import { logger } from "@/utils/logger";
 import { BambehImage } from "@/components/ui/BambehImage";
 import { useLang, t } from "@/hooks/useAppLang";
@@ -229,7 +229,7 @@ export default function MakeOfferPage() {
   const isRtl = lang === "ar";
   const { listingId } = useParams();
   const navigate = useNavigate();
-  const { user, profile } = useSupabaseAuth() as any;
+  const { user, profile } = useAuth();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [existingOffer, setExistingOffer] = useState<Offer | null>(null);
@@ -772,6 +772,7 @@ export default function MakeOfferPage() {
     </div>
   );
 }
+
 
 
 

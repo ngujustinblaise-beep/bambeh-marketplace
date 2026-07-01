@@ -1,32 +1,16 @@
-﻿/**
- * src/lib/net-interceptor.ts � Bambeh
- *
- * FIX: super() call was missing backticks around the template literal.
- * Original broken line:  super(Network request failed: + url);
- * Fixed line:            super(`Network request failed: ${url}`);
- */
+﻿export type NetInterceptorOptions = {
+  enabled?: boolean;
+  onRequest?: (input: RequestInfo | URL, init?: RequestInit) => void;
+  onResponse?: (response: Response) => void;
+};
 
-export class NetworkError extends Error {
-  constructor(public url: string, public cause?: unknown) {
-    super(`Network request failed: ${url}`);
-    this.name = "NetworkError";
-  }
+let initialized = false;
+
+export function initNetInterceptor(options: NetInterceptorOptions = {}): void {
+  if (initialized || options.enabled === false) return;
+  initialized = true;
 }
 
-/**
- * Wraps fetch() and throws NetworkError on network failure.
- * HTTP error status codes (4xx, 5xx) are NOT thrown � callers
- * must check response.ok themselves if needed.
- */
-export async function fetchWithInterceptor(
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): Promise<Response> {
-  const url = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request).url;
-  try {
-    return await fetch(input, init);
-  } catch (err) {
-    throw new NetworkError(url, err);
-  }
+export function isNetInterceptorInitialized(): boolean {
+  return initialized;
 }
-

@@ -1,4 +1,3 @@
-import "@/lib/net-interceptor";
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
@@ -154,6 +153,7 @@ import VendorLayout from "@/components/layout/VendorLayout";
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
 import AuthPage from "@/pages/auth/AuthPage";
+import BiometricLogin from "@/pages/auth/BiometricLogin";
 
 // ─── 8. Lazy Page Imports ─────────────────────────────────────────────────────
 // AUTH
@@ -161,7 +161,6 @@ const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
 const Login             = lazy(() => import("@/pages/auth/Login"));
 const Register          = lazy(() => import("@/pages/auth/Register"));
-const BiometricLogin    = lazy(() => import("@/pages/auth/BiometricLogin"));
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
@@ -230,7 +229,6 @@ const TermsOfService  = lazy(() => import("@/pages/TermsOfService"));
 const DonatePremium   = lazy(() => import("@/pages/DonatePremium"));
 const ReferralProgram = lazy(() => import("@/pages/ReferralProgram"));
 const Chat            = lazy(() => import("@/pages/Chat"));
-const MessagesPage    = lazy(() => import("@/pages/MessagesPage"));
 const SearchResults   = lazy(() => import("@/pages/SearchResults"));
 const SavedSearches   = lazy(() => import("@/pages/SavedSearches"));
 const ReportIssuePage = lazy(() => import("@/pages/ReportIssuePage"));
@@ -1091,7 +1089,7 @@ export default function App() {
                         <Route path="/vendor/subscribe" element={<Navigate to="/vendor/subscription-plans" replace />} />
                         <Route path="/vendor/secure-dashboard" element={<Navigate to="/vendor/dashboard" replace />} />
                         <Route path="/vendor/subscription-payment" element={<Navigate to="/vendor/subscription" replace />} />
-                        <Route path="/vendor/login" element={<Navigate to="/vendor/login" replace />} />
+                        
                         <Route path="/vendorsignin" element={<Navigate to="/vendor/login" replace />} />
                         <Route path="/vendor-signin" element={<Navigate to="/vendor/login" replace />} />
                         <Route path="/vendor/manage-listings" element={<Navigate to="/vendor/listings" replace />} />
@@ -1171,7 +1169,6 @@ export default function App() {
 
                         {/* ── 13. GENERAL PAGES ──────────────────────────────────── */}
                         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
-                        <Route path="/messages" element={<MainLayout><MessagesPage /></MainLayout>} />
                         <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
                         <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
                         <Route path="/terms-of-service" element={<MainLayout><TermsOfService /></MainLayout>} />

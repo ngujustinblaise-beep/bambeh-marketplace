@@ -1,4 +1,5 @@
 import React from "react";
+import "./i18n"; // initialize react-i18next engine once at startup
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import AppErrorBoundary from "./components/AppErrorBoundary";
