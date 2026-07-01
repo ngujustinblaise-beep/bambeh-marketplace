@@ -8,35 +8,47 @@ import { trackPageView } from '@/utils/analytics/AnalyticsInit';
 import { RefreshCw, AlertTriangle, Home } from 'lucide-react';
 
 interface ErrorBoundaryProps { children: ReactNode; }
-interface ErrorBoundaryState { hasError: boolean; error: Error | null; }
+interface ErrorBoundaryState { hasError: boolean; error: Error | null; info: ErrorInfo | null; }
 
 export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, info: null };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('?? App Error:', error, errorInfo);
+    this.setState({ info: errorInfo });
+    console.error('App Error:', error, errorInfo);
     try {
       import('@sentry/react').then(({ captureException }) => { captureException(error, { extra: { errorInfo } }); }).catch(() => {});
     } catch {}
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, info: null });
     window.location.href = '/';
   };
 
   render() {
     if (this.state.hasError) {
+      const e = this.state.error;
+      const details = [
+        (e && e.name ? e.name : 'Error') + ': ' + (e && e.message ? e.message : '(no message)'),
+        '',
+        'STACK:',
+        (e && e.stack ? e.stack : '(no stack)'),
+        '',
+        'COMPONENT STACK:',
+        (this.state.info && this.state.info.componentStack ? this.state.info.componentStack : '(none)'),
+      ].join('\n');
+
       return (
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
             <div className="flex justify-center mb-6"><div className="bg-red-100 rounded-full p-6"><AlertTriangle className="w-16 h-16 text-red-600" /></div></div>
             <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">Please refresh or contact support.</h1>
             <p className="text-gray-600 text-center mb-8">We're sorry for the inconvenience. Please try refreshing the page.</p>
@@ -44,6 +56,12 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
               <button onClick={() => window.location.reload()} className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-semibold"><RefreshCw className="w-5 h-5" />Reload</button>
               <button onClick={this.handleReset} className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold"><Home className="w-5 h-5" />Go Home</button>
             </div>
+
+            {/* TEMPORARY DIAGNOSTIC - shows the real error so it can be fixed. Remove later. */}
+            <details open className="mt-6 text-left">
+              <summary className="text-xs text-gray-500 cursor-pointer">Technical details (for debugging)</summary>
+              <pre className="mt-2 text-xs bg-gray-50 rounded-lg p-3 overflow-auto text-red-700 border border-red-100 max-h-72 whitespace-pre-wrap">{details}</pre>
+            </details>
           </div>
         </div>
       );
@@ -75,8 +93,8 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
       try {
         const observer = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            if (entry.entryType === 'largest-contentful-paint') console.log('?? LCP:', Math.round(entry.startTime), 'ms');
-            if (entry.entryType === 'first-input') console.log('?? FID:', Math.round((entry as any).processingStart - entry.startTime), 'ms');
+            if (entry.entryType === 'largest-contentful-paint') console.log('LCP:', Math.round(entry.startTime), 'ms');
+            if (entry.entryType === 'first-input') console.log('FID:', Math.round((entry as any).processingStart - entry.startTime), 'ms');
           }
         });
         observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
@@ -86,8 +104,8 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
       try {
         const [navEntry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
         if (navEntry) {
-          if (navEntry.loadEventEnd > 0) console.log('?? Page Load Time:', Math.round(navEntry.loadEventEnd - navEntry.startTime), 'ms');
-          else console.log('?? Page Load Time (approx):', Math.round(performance.now()), 'ms');
+          if (navEntry.loadEventEnd > 0) console.log('Page Load Time:', Math.round(navEntry.loadEventEnd - navEntry.startTime), 'ms');
+          else console.log('Page Load Time (approx):', Math.round(performance.now()), 'ms');
         }
       } catch {}
     };
@@ -98,9 +116,3 @@ export const PerformanceMonitor: React.FC<{ children: ReactNode }> = ({ children
 };
 
 export default { AppErrorBoundary, RouteTracker, PerformanceMonitor };
-
-
-
-
-
-
