@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, MessageCircle, Send, Facebook, Twitter, Linkedin, Mail, Copy, Check } from 'lucide-react';
+import { X, MessageCircle, Send, Linkedin, Mail, Copy, Check } from "lucide-react";
+import { Facebook, Twitter } from "@/components/icons/BrandIcons";
 
 interface CompactShareModalProps {
   isOpen: boolean; onClose: () => void; shareUrl: string;

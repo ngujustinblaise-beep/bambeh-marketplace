@@ -18,28 +18,8 @@
  */
 
 import { Link } from "react-router-dom";
-import {
-  Store,
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
-  HelpCircle,
-  FileText,
-  Shield,
-  CreditCard,
-  Headphones,
-  MessageSquare,
-  Crown,
-  Users,
-  BarChart3,
-  Package,
-  Zap,
-  BadgeCheck
-} from "lucide-react";
+import { Store, Mail, Phone, MapPin, Youtube, HelpCircle, FileText, Shield, CreditCard, Headphones, MessageSquare, Crown, Users, BarChart3, Package, Zap, BadgeCheck } from "lucide-react";
+import { Facebook, Twitter, Instagram } from "@/components/icons/BrandIcons";
 
 export default function VendorFooter() {
   return (

@@ -13,21 +13,8 @@
  */
 
 import { Link } from 'react-router-dom';
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Mail, 
-  Phone, 
-  MapPin,
-  Heart,
-  ArrowLeftRight,
-  Briefcase,
-  ShoppingBag,
-  Wrench,
-  Home as HomeIcon,
-  Car
-} from 'lucide-react';
+import { Mail, Phone, MapPin, Heart, ArrowLeftRight, Briefcase, ShoppingBag, Wrench, Home as HomeIcon, Car } from "lucide-react";
+import { Facebook, Twitter, Instagram } from "@/components/icons/BrandIcons";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

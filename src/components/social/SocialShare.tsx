@@ -5,15 +5,8 @@
  */
 
 import React, { useState, useCallback } from "react";
-import {
-  Share2,
-  Copy,
-  MessageCircle,
-  Facebook,
-  Twitter,
-  Check,
-  X,
-} from "lucide-react";
+import { Share2, Copy, MessageCircle, Check, X } from "lucide-react";
+import { Facebook, Twitter } from "@/components/icons/BrandIcons";
 
 interface SocialShareProps {
   url: string;

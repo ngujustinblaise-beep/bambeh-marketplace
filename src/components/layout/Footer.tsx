@@ -14,6 +14,7 @@ import {
   ArrowLeftRight, Briefcase, ShoppingBag, Wrench, Home as HomeIcon, Car,
 } from "lucide-react";
 import { useLang } from "@/hooks/useAppLang";
+import { Facebook, Twitter, Instagram } from "@/components/icons/BrandIcons";
 
 // ── Translations ──────────────────────────────────────────────────────────────
 const FOOTER_T = {
