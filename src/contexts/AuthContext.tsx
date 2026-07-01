@@ -1,144 +1,55 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useSupabaseAuth } from "@/providers/SupabaseAuthProvider";
+/**
+ * src/contexts/AuthContext.tsx
+ * SINGLE source of truth for auth in Bambeh.
+ * The real Supabase logic lives in @/hooks/useSupabaseAuth; this wraps it in ONE
+ * React context that the whole app reads. useAuth() NEVER throws - if a provider
+ * is somehow not mounted, it returns safe defaults so the app can't white-screen.
+ */
+import React, { createContext, useContext } from "react";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
-export type AuthUser = {
-  id: string;
-  email?: string | null;
-  name?: string | null;
-  role?: string | null;
-  phone?: string | null;
-  avatarUrl?: string | null;
-};
+// The context value is exactly what useSupabaseAuth returns, so the shape always
+// matches what your components already expect (user, isVendor, isAdmin, loading, ...).
+export type AuthContextValue = ReturnType<typeof useSupabaseAuth>;
+export type AuthUser = NonNullable<AuthContextValue["user"]>;
 
-export interface AuthContextValue {
-  user: AuthUser | null;
-  currentUser: AuthUser | null;
-  loading: boolean;
-  authReady: boolean;
-  isAdmin: boolean;
-  isVendor: boolean;
-  login: (email: string, password: string) => Promise<{ error: string | null }>;
-  register: (email: string, password: string, name?: string) => Promise<{ error: string | null }>;
-  logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-function mapUser(sessionUser: any): AuthUser | null {
-  if (!sessionUser) return null;
-
-  const metadata = sessionUser.user_metadata ?? {};
-  return {
-    id: sessionUser.id,
-    email: sessionUser.email ?? null,
-    name: metadata.full_name ?? metadata.name ?? metadata.display_name ?? null,
-    role: metadata.role ?? null,
-    phone: metadata.phone ?? null,
-    avatarUrl: metadata.avatar_url ?? null,
-  };
-}
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user: supabaseUser, loading: supabaseLoading, refreshSession } = useSupabaseAuth();
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [authReady, setAuthReady] = useState(false);
-
-  const refreshUser = useCallback(async () => {
-    setLoading(true);
-    try {
-      await refreshSession();
-      const { data } = await supabase.auth.getSession();
-      const sessionUser = data.session?.user ?? null;
-      setUser(mapUser(sessionUser));
-    } finally {
-      setLoading(false);
-      setAuthReady(true);
-      setAuthReady(true);
-    }
-  }, [refreshSession]);
-
-  useEffect(() => {
-    setUser(mapUser(supabaseUser));
-    setLoading(supabaseLoading);
-  }, [supabaseUser, supabaseLoading]);
-
-  useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(mapUser(session?.user ?? null));
-      setLoading(false);
-      setAuthReady(true);
-      setAuthReady(true);
-    });
-
-    return () => {
-      data.subscription.unsubscribe();
-    };
-  }, []);
-
-  const login = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (!error) {
-      const { data } = await supabase.auth.getSession();
-      setUser(mapUser(data.session?.user ?? null));
-    }
-    return { error: error?.message ?? null };
-  }, []);
-
-  const register = useCallback(async (email: string, password: string, name?: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name ?? "",
-          name: name ?? "",
-        },
-      },
-    });
-
-    if (!error) {
-      const { data } = await supabase.auth.getSession();
-      setUser(mapUser(data.session?.user ?? null));
-    }
-
-    return { error: error?.message ?? null };
-  }, []);
-
-  const logout = useCallback(async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  }, []);
-
-  const value = useMemo<AuthContextValue>(() => {
-    const isAdmin = (user?.role ?? "").toLowerCase() === "admin";
-    const isVendor = (user?.role ?? "").toLowerCase() === "vendor";
-
-    return {
-      user,
-      currentUser: user,
-      loading,
-    authReady,
-      isAdmin,
-      isVendor,
-      login,
-      register,
-      logout,
-      refreshUser,
-    };
-  }, [user, loading, login, register, logout, refreshUser]);
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const auth = useSupabaseAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
+
+// Safe fallback used ONLY if no provider is mounted (prevents crashes).
+const SAFE_DEFAULT = {
+  user: null,
+  session: null,
+  profile: null,
+  loading: false,
+  authReady: true,
+  isAuthenticated: false,
+  isVendor: false,
+  isAdmin: false,
+  isSubscribed: false,
+  signIn: async () => {},
+  signInWithPassword: async () => {},
+  signUp: async () => {},
+  signOut: async () => {},
+  logout: async () => {},
+  refreshUser: async () => {},
+  updateProfile: async () => {},
+  resetPassword: async () => {},
+} as unknown as AuthContextValue;
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  if (!ctx) {
+    if (typeof console !== "undefined") {
+      console.warn("useAuth(): no <AuthProvider> mounted - using safe defaults.");
+    }
+    return SAFE_DEFAULT;
+  }
   return ctx;
 }
 
-export default AuthContext;
-
-
+export default useAuth;
