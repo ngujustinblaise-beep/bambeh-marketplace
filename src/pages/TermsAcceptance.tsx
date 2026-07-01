@@ -739,9 +739,7 @@ export default function TermsAcceptance() {
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full mb-4 shadow-xl">
-            <span className="text-4xl font-bold text-white">B</span>
-          </div>
+          <img src="/bambeh-logo.png" alt="Bambeh" className="w-24 h-24 object-contain mx-auto mb-4 drop-shadow-xl" />
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             {tr.headerWelcome} <span className="text-teal-600">Bambeh</span>
           </h1>
