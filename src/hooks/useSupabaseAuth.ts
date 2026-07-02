@@ -34,7 +34,10 @@ export interface SupabaseAuthState {
   /** True while the initial JWT verification is in flight — gate UI on this */
   loading:    boolean;
   /** Exposed so components can manually refresh (e.g. after sign-in) */
+  authReady:  boolean;
   refresh:    () => Promise<void>;
+  login:      (email: string, password: string) => Promise<{ error: string | null }>;
+  logout:     () => Promise<void>;
 }
 
 // ── Profile cache (avoids hammering DB on every re-render) ────────────────────
@@ -59,6 +62,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     isAdmin:  false,
     loading:  true,
   });
+  const [authReady, setAuthReady] = useState(false);
 
   /**
    * Resolve roles from DB (with cache).
@@ -124,12 +128,30 @@ export function useSupabaseAuth(): SupabaseAuthState {
     await resolveSession(session);
   }, [resolveSession]);
 
+  // ── Email + password sign-in / sign-out ───────────────────────────────────
+  const login = useCallback(
+    async (email: string, password: string): Promise<{ error: string | null }> => {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return { error: error.message };
+      const { data: { session } } = await supabase.auth.getSession();
+      await resolveSession(session);
+      return { error: null };
+    },
+    [resolveSession],
+  );
+
+  const logout = useCallback(async (): Promise<void> => {
+    await supabase.auth.signOut();
+    profileCache = null;
+    await resolveSession(null);
+  }, [resolveSession]);
+
   // ── Bootstrap on mount ────────────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) resolveSession(session);
+      if (mounted) resolveSession(session).finally(() => { if (mounted) setAuthReady(true); });
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -144,7 +166,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     };
   }, [resolveSession]);
 
-  return { ...state, refresh };
+  return { ...state, authReady, refresh, login, logout };
 }
 
 // ── Context (for use in AuthProvider) ────────────────────────────────────────

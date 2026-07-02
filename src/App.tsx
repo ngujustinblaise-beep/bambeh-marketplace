@@ -251,6 +251,7 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const CorporatePage   = lazy(() => import("@/features/corporate/CorporatePage"));
 // BIOMETRIC SETUP (post-signup passkey enrollment)
 const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
+const LoginForm       = lazy(() => import("@/pages/auth/Login"));
 
 // ADMIN PAGES
 const AdminLogin                  = lazy(() => import("@/routes/groups/admin/AdminLogin"));
@@ -676,7 +677,7 @@ export default function App() {
                         <Route path="/terms-acceptance" element={<TermsAcceptance />} />
 
                         {/* ── 2. AUTH ─────────────────────────────────────────────── */}
-                        <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
+                        <Route path="/login" element={<AuthLayout><LoginForm /></AuthLayout>} />
                         <Route path="/signin" element={<Navigate to="/login" replace />} />
                         <Route path="/sign-in" element={<Navigate to="/login" replace />} />
                         <Route path="/register" element={<Navigate to="/login" replace />} />
