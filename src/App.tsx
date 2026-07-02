@@ -677,6 +677,8 @@ export default function App() {
 
                         {/* ── 2. AUTH ─────────────────────────────────────────────── */}
                         <Route path="/login" element={<AuthLayout><AuthPage /></AuthLayout>} />
+                        <Route path="/signin" element={<Navigate to="/login" replace />} />
+                        <Route path="/sign-in" element={<Navigate to="/login" replace />} />
                         <Route path="/register" element={<Navigate to="/login" replace />} />
                         <Route
                           path="/forgot-password"

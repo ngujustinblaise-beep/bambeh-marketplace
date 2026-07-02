@@ -49,7 +49,7 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
 
   const isSubscribed = true;
 
-  if (loading || !authReady) {
+  if (loading || authReady === false) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3 text-gray-600">

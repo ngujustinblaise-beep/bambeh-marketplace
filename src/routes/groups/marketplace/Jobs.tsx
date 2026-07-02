@@ -268,14 +268,14 @@ export default function Jobs() {
     setError(null);
     try {
       const result = await getJobs({ pageSize: 80 });
-      if (result.error) { setError(t("jobError")); setJobs([]); }
+      if (result.error) { setError("jobError"); setJobs([]); }
       else               { setJobs(result.data); }
     } catch {
-      setError(t("jobError")); setJobs([]);
+      setError("jobError"); setJobs([]);
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     void fetchJobs();
@@ -487,7 +487,7 @@ export default function Jobs() {
         {!loading && error && (
           <div className="text-center py-16">
             <p className="text-4xl mb-3">⚠ï¸</p>
-            <p className="font-semibold text-gray-600 dark:text-gray-400">{error}</p>
+            <p className="font-semibold text-gray-600 dark:text-gray-400">{t(error)}</p>
             <button onClick={() => void fetchJobs()}
               className="mt-4 bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
               {t("tryAgain")}
