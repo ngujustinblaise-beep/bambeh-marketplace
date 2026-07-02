@@ -24,7 +24,7 @@ import { useState } from "react";
 import { X, Calendar, Clock, MessageSquare, Car, CheckCircle2, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AfricanPhoneInput from "@/components/AfricanPhoneInput";
-import { sendBookingMessage } from "@/utils/sendBookingMessage";
+import { sendBookingMessage } from "@/utils/SendBookingMessage";
 
 interface Props {
   vehicleId:    string;

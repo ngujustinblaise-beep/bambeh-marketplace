@@ -25,13 +25,11 @@ import { useLang, t } from "@/hooks/useAppLang";
 // --- Helpers ------------------------------------------------------------------
 
 const BAMBEH_FEE_RATE = 0.01;
-const GOV_TAX_RATE    = 0.00002;
+const GOV_TAX_FLAT    = 4; // flat 4 FCFA government tax per transaction
 
 function calcFees(subtotal: number) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   const appFee = Math.round(subtotal * BAMBEH_FEE_RATE);
-  const govTax = Math.round(subtotal * GOV_TAX_RATE);
+  const govTax = subtotal > 0 ? GOV_TAX_FLAT : 0;
   return { appFee, govTax, total: subtotal + appFee + govTax };
 }
 
@@ -324,15 +322,15 @@ export default function Cart() {
         const { data: { session } } = await supabase.auth.getSession();
         const orderId = `ORD_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
         await supabase.from('orders').insert({
-          id:           orderId,
-          user_id:      session?.user?.id ?? null,
-          items:        items,
-          subtotal,
-          delivery_fee: 0,
-          total,
-          reference:    ref,
-          status:       'paid',
-          paid_at:      new Date().toISOString(),
+          order_number:      orderId,
+          user_id:           session?.user?.id ?? null,
+          buyer_id:          session?.user?.id ?? null,
+          status:            'paid',
+          total_xaf:         total,             // subtotal + 1% fee + 4 FCFA tax
+          platform_fee_xaf:  appFee + govTax,   // what Bambeh collects
+          seller_payout_xaf: subtotal,          // what the seller receives
+          payment_method:    'campay',
+          payment_reference: ref,
         });
       } catch (e) {
         // Non-critical ? payment succeeded even if order record fails
@@ -523,8 +521,8 @@ export default function Cart() {
             <FeeRow label="Subtotal" amount={`${fmt(subtotal)} XAF`} />
             <FeeRow label="Bambeh Fee (1%)" amount={`${fmt(appFee)} XAF`} muted
               tooltip="A 1% platform fee that keeps Bambeh running and supports local sellers." />
-            <FeeRow label="Government Tax (0.002%)" amount={`${fmt(govTax)} XAF`} muted
-              tooltip="Statutory 0.002% digital tax levied by the Government of Cameroon." />
+            <FeeRow label="Government Tax (4 FCFA)" amount={`${fmt(govTax)} XAF`} muted
+              tooltip="A flat 4 FCFA tax levied by the Government of Cameroon on each transaction." />
             <div className="border-t border-gray-100 my-3"/>
             <FeeRow label="Total" amount={`${fmt(total)} XAF`} bold />
           </div>

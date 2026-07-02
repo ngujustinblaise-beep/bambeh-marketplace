@@ -21,7 +21,12 @@ export interface Division {
   subdivisions: Subdivision[];
 }
 
-
+export interface Region {
+  name: string;
+  nameFr: string;
+  capital: string;
+  divisions: Division[];
+}
 
 // ==================== LOCATION DETAILS ====================
 
@@ -98,7 +103,7 @@ export interface LocationValidation {
 /**
  * Extended region information with metadata
  */
-export interface RegionInfo {
+export interface RegionInfo extends Region {
   population?: number;
   area?: number; // in square kilometers
   economicActivities?: string[];
@@ -178,7 +183,7 @@ export const _REGIONS_FR = [
   "Adamaoua",
   "Centre",
   "Est",
-  "Extr�me-Nord",
+  "Extrême-Nord",
   "Littoral",
   "Nord",
   "Nord-Ouest",
@@ -212,7 +217,5 @@ export interface LocationChangeEvent {
   value: string;
   location: Partial<LocationDetails>;
 }
-
-
 
 

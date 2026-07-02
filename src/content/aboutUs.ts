@@ -1,4 +1,4 @@
-﻿export const aboutUsContent = {
+export const aboutUsContent = {
   en: {
     title: "The Bambeh Chronicle: A Royal Invitation",
     sections: [
@@ -28,18 +28,17 @@ Here, you are not a number; you are the **Supreme King and Queen** whose prosper
       },
     ],
     footer:
-      "With boundless love and commitment to your royal journey,\n\nNgu J. Blaise,\nFounder of Bambeh\n\n� 2025 Bambeh. All Rights Reserved.",
+      "With boundless love and commitment to your royal journey,\n\nNgu J. Blaise,\nFounder of Bambeh\n\n© 2025 Bambeh. All Rights Reserved.",
   },
   fr: {
     title: "La Chronique Bambeh : Une Invitation Royale",
     sections: [
       {
-        heading: "Bienvenue, Utilisateur Supr�me",
-        content: `�loignez-vous du tumulte du march� commun et entrez dans l'espace sacr� de **Bambeh**. Ce n'est pas seulement une application ; c'est une **tapisserie c�leste** tiss�e d'opportunit�, de s�curit� et d'admiration sans bornes pour **vous**.`,
+        heading: "Bienvenue, Utilisateur Suprême",
+        content: `Éloignez-vous du tumulte du marché commun et entrez dans l'espace sacré de **Bambeh**. Ce n'est pas seulement une application ; c'est une **tapisserie céleste** tissée d'opportunité, de sécurité et d'admiration sans bornes pour **vous**.`,
       },
     ],
     footer:
-      "Avec un amour et un engagement sans limites pour votre voyage royal,\n\nNgu J. Blaise,\nFondateur de Bambeh\n\n� 2025 Bambeh. Tous droits r�serv�s.",
+      "Avec un amour et un engagement sans limites pour votre voyage royal,\n\nNgu J. Blaise,\nFondateur de Bambeh\n\n© 2025 Bambeh. Tous droits réservés.",
   },
 };
-
