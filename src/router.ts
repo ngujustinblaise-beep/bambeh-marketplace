@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * BAMBEH ROUTER — Singleton Navigation Module
+ * BAMBEH ROUTER ï¿½ Singleton Navigation Module
  * ---------------------------------------------------------------------------
  *
  * Why this file exists:
@@ -12,13 +12,13 @@
  * once by NavigationBridge in App.tsx via setNavigator(), then importable
  * anywhere in the codebase.
  *
- * Wiring is handled in App.tsx — NavigationBridge calls both
+ * Wiring is handled in App.tsx ï¿½ NavigationBridge calls both
  * NavigationService.register(nav) AND setNavigator(nav) on mount.
  *
- * Usage — inside a React component:
+ * Usage ï¿½ inside a React component:
  *   import { useNavigate } from 'react-router-dom';   ? always prefer this
  *
- * Usage — outside a React component (services, utils, dynamic imports):
+ * Usage ï¿½ outside a React component (services, utils, dynamic imports):
  *   import navigate from '@/router';
  *   navigate('/home');
  *
@@ -26,7 +26,7 @@
  *   import { navigate, goToListing, goToChat } from '@/router';
  *
  * FILE: src/router.ts
- * © 2026 BAMBEH SARL
+ * ï¿½ 2026 BAMBEH SARL
  * ---------------------------------------------------------------------------
  */
 
@@ -37,7 +37,7 @@ let _navigator: NavigateFunction | null = null;
 
 /**
  * Called once by NavigationBridge (App.tsx) to wire the real React Router
- * navigate function into this singleton. Do not call this directly — it is
+ * navigate function into this singleton. Do not call this directly ï¿½ it is
  * handled automatically by the bridge component.
  */
 export function setNavigator(nav: NavigateFunction): void {
@@ -52,7 +52,7 @@ export function getNavigator(): NavigateFunction | null {
 }
 
 /**
- * Programmatic navigation — safe to call from anywhere in the app.
+ * Programmatic navigation ï¿½ safe to call from anywhere in the app.
  *
  * Falls back to window.location if the React Router navigator has not yet
  * been registered (e.g. very early boot), so navigation never silently fails.
@@ -164,5 +164,5 @@ export default navigate;
 
 
 
-export { router };
+
 
