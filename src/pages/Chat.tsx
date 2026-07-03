@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -67,7 +67,7 @@ const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
         <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </div>
-    <span className="text-xs text-gray-400 mb-1">{name} is typingâ€¦</span>
+    <span className="text-xs text-gray-400 mb-1">{name} is typing…</span>
   </div>
 );
 
@@ -113,7 +113,7 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
         </div>
 
         <p className="text-[10px] text-teal-400 mt-3 pt-2 border-t border-teal-100 italic text-center">
-          This is a booking notification â€” replies are disabled for this message.
+          This is a booking notification — replies are disabled for this message.
         </p>
       </div>
     </div>
@@ -578,7 +578,7 @@ export default function ChatPage() {
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search conversationsâ€¦"
+            placeholder="Search conversations…"
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
           />
         </div>
@@ -672,7 +672,7 @@ export default function ChatPage() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
-              <p className="text-sm text-gray-400">Loading messagesâ€¦</p>
+              <p className="text-sm text-gray-400">Loading messages…</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
@@ -740,7 +740,7 @@ export default function ChatPage() {
                 value={newMessage}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a messageâ€¦"
+                placeholder="Type a message…"
                 className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
               />
             </div>
