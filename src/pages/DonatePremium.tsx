@@ -33,10 +33,38 @@ const MIN_DONATION = 500;
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
 const DONATION_TIERS = [
-  { name: 'Supporter', icon: '💚', min: 500, max: 4999, color: 'from-green-400 to-emerald-600', perks: ['Bronze badge', 'Thank you email', 'Recognition on website'] },
-  { name: 'Champion', icon: '⭐', min: 5000, max: 14999, color: 'from-blue-400 to-indigo-600', perks: ['Silver badge', 'Quarterly newsletter', 'Special mention', 'Early feature access'] },
-  { name: 'Hero', icon: '🏆', min: 15000, max: 49999, color: 'from-purple-400 to-pink-600', perks: ['Gold badge', 'Monthly updates', 'VIP support', 'Name in credits', 'Beta features'] },
-  { name: 'Legend', icon: '👑', min: 50000, max: 999999, color: 'from-yellow-400 to-orange-600', perks: ['Diamond badge', 'Direct access to team', 'Feature voting rights', 'Annual recognition', 'Lifetime VIP'] },
+  {
+    name: 'Supporter',
+    icon: '💚',
+    min: 500,
+    max: 4999,
+    color: 'from-green-400 to-emerald-600',
+    perks: ['Bronze badge', 'Thank you email', 'Recognition on website']
+  },
+  {
+    name: 'Champion',
+    icon: '⭐',
+    min: 5000,
+    max: 14999,
+    color: 'from-blue-400 to-indigo-600',
+    perks: ['Silver badge', 'Quarterly newsletter', 'Special mention', 'Early feature access']
+  },
+  {
+    name: 'Hero',
+    icon: '🏆',
+    min: 15000,
+    max: 49999,
+    color: 'from-purple-400 to-pink-600',
+    perks: ['Gold badge', 'Monthly updates', 'VIP support', 'Name in credits', 'Beta features']
+  },
+  {
+    name: 'Legend',
+    icon: '👑',
+    min: 50000,
+    max: 999999,
+    color: 'from-yellow-400 to-orange-600',
+    perks: ['Diamond badge', 'Direct access to team', 'Feature voting rights', 'Annual recognition', 'Lifetime VIP']
+  },
 ];
 
 type PayMethod = 'mtn' | 'orange' | 'card';
