@@ -1,40 +1,42 @@
-﻿/**
- * src/hooks/useSubscription.ts  -  Bambeh Marketplace
+/**
+ * src/hooks/useSubscription.ts - Bambeh Marketplace (server-truth rebuild)
  *
- * SPEED GUARANTEE:
- * - isLoading is ALWAYS false on first render
- * - isActive decision is made in microseconds from localStorage
- * - Backend check happens silently in background, never blocks UI
- * - Payment  - � -  activateSubscription()  - � -  instant access, zero wait
+ * SECURITY MODEL (script 24):
+ *  - Supabase `subscriptions` table is the ONLY source of truth.
+ *  - Activation happens ONLY on the backend (CamPay webhook -> service role).
+ *  - localStorage holds a CACHE of the last verified server answer, nothing
+ *    more. Editing it cannot grant real access: it is re-verified against
+ *    Supabase on mount, on every refresh event, and every 5 minutes - and
+ *    RLS makes the table itself unwritable from the client.
+ *  - The export surface is IDENTICAL to the old hook so no consumer breaks.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://bambeh-backend-production-6bca.up.railway.app";
+const BACKEND_URL =
+  (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL ||
+  "https://bambeh-backend-production-6bca.up.railway.app";
 
+const CACHE_KEY = "Bambeh_sub_v4_cache";
+const REFRESH_EVENT = "bambeh_sub";
 
-
-//  -  Plan durations  - 
-const PLAN_MS: Record<string, number> = {
-  daily:   24  * 3_600_000,   // 24 hours
-  weekly:  168 * 3_600_000,   // 7 days
-  monthly: 720 * 3_600_000,   // 30 days
-};
-
-const KEY = "Bambeh_sub_v3";
-
-//  -  Types  - 
+// -- Types (unchanged surface) -------------------------------------------------
 export interface SubscriptionStatus {
-  isActive:  boolean;
-  planType:  string | null;
+  isActive: boolean;
+  planType: string | null;
   expiresAt: string | null;
-  isLoading: false;           // ALWAYS false  -  no spinner ever
-  error:     null;
+  isLoading: false; // kept false for compatibility: cache renders instantly
+  error: null;
 }
 
 export interface Plan {
-  id: string; name: string; price: number;
-  currency: string; duration: string; features: string[];
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  duration: string;
+  features: string[];
 }
 
 export interface PaymentResult {
@@ -43,20 +45,20 @@ export interface PaymentResult {
   reference: string;
 }
 
-interface Stored {
-  planType:  string;
+interface CachedSub {
+  planType: string;
   expiresAt: string;
 }
 
-//  -  Synchronous localStorage read  - 
-// This runs in microseconds  -  no network, no async, no waiting
-function readSub(): Stored | null {
+// -- Cache helpers (hint only - server remains the authority) -------------------
+function readCache(): CachedSub | null {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
-    const s: Stored = JSON.parse(raw);
+    const s = JSON.parse(raw) as CachedSub;
+    if (!s || !s.expiresAt) return null;
     if (Date.now() >= new Date(s.expiresAt).getTime()) {
-      localStorage.removeItem(KEY);
+      localStorage.removeItem(CACHE_KEY);
       return null;
     }
     return s;
@@ -65,145 +67,235 @@ function readSub(): Stored | null {
   }
 }
 
-function writeSub(planType: string, expiresAt: string) {
-  localStorage.setItem(KEY, JSON.stringify({ planType, expiresAt }));
+function writeCache(sub: CachedSub | null): void {
+  try {
+    if (sub) localStorage.setItem(CACHE_KEY, JSON.stringify(sub));
+    else localStorage.removeItem(CACHE_KEY);
+  } catch {
+    /* storage unavailable - cache is optional */
+  }
 }
 
-//  -  getActiveSubscription (Vite Build Fix Export)  - 
+function announce(): void {
+  try {
+    window.dispatchEvent(new Event(REFRESH_EVENT));
+  } catch {
+    /* non-browser environment */
+  }
+}
+
+// -- Server verification: the ONLY writer of the cache --------------------------
+async function verifyWithSupabase(userId: string): Promise<CachedSub | null> {
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select("plan_type,status,expires_at")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .gt("expires_at", new Date().toISOString())
+    .order("expires_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    // Offline or transient failure: keep the previous cache (low-bandwidth
+    // tolerance for Cameroon networks) rather than kicking the user out.
+    return readCache();
+  }
+  const sub =
+    data && data.plan_type && data.expires_at
+      ? { planType: String(data.plan_type), expiresAt: String(data.expires_at) }
+      : null;
+  writeCache(sub);
+  return sub;
+}
+
+// -- getActiveSubscription (sync snapshot of last verified answer) --------------
 export function getActiveSubscription(): SubscriptionStatus {
-  const sub = readSub();
+  const sub = readCache();
   return {
-    isActive:  sub !== null,
-    planType:  sub?.planType  ?? null,
-    expiresAt: sub?.expiresAt ?? null,
+    isActive: sub !== null,
+    planType: sub ? sub.planType : null,
+    expiresAt: sub ? sub.expiresAt : null,
     isLoading: false,
-    error:     null,
+    error: null,
   };
 }
 
-//  -  activateSubscription  - 
-// Call this the moment CamPay confirms payment.
-// Access unlocks on the NEXT render cycle  -  effectively instant.
-export function activateSubscription(planType: string, expiresAt?: string) {
-  const ms     = PLAN_MS[planType] ?? PLAN_MS.daily;
-  const expiry = expiresAt || new Date(Date.now() + ms).toISOString();
-  writeSub(planType, expiry);
-  window.dispatchEvent(new Event("bambeh_sub"));
+// -- activateSubscription: NO LONGER A GRANT ------------------------------------
+// The old version wrote an entitlement into localStorage - forgeable by anyone.
+// Activation is now exclusively server-side (webhook). This function only asks
+// every mounted hook to re-verify against Supabase. Signature kept so existing
+// callers compile; parameters are intentionally ignored.
+export function activateSubscription(_planType?: string, _expiresAt?: string): void {
+  announce();
 }
 
-export function clearSubscription() {
-  localStorage.removeItem(KEY);
-  window.dispatchEvent(new Event("bambeh_sub"));
+export function clearSubscription(): void {
+  writeCache(null);
+  announce();
 }
 
-//  -  useSubscription HOOK  - 
-// isLoading is NEVER true. Decision is synchronous from localStorage.
-export function useSubscription(_userId?: string | null): SubscriptionStatus {
-  const [sub, setSub] = useState<Stored | null>(() => readSub());
+// -- useSubscription HOOK --------------------------------------------------------
+export function useSubscription(userId?: string | null): SubscriptionStatus {
+  const [sub, setSub] = useState<CachedSub | null>(() => readCache());
 
   useEffect(() => {
-    const refresh = () => setSub(readSub());
-    window.addEventListener("bambeh_sub", refresh);
-    window.addEventListener("storage",    refresh);
+    let mounted = true;
+
+    const apply = (next: CachedSub | null) => {
+      if (mounted) setSub(next);
+    };
+
+    const verify = () => {
+      if (!userId) {
+        writeCache(null);
+        apply(null);
+        return;
+      }
+      verifyWithSupabase(userId).then(apply).catch(() => apply(readCache()));
+    };
+
+    const onRefresh = () => verify();
+    const onStorage = () => apply(readCache());
+
+    window.addEventListener(REFRESH_EVENT, onRefresh);
+    window.addEventListener("storage", onStorage);
+
+    verify(); // verify immediately on mount
+    const timer = setInterval(verify, 5 * 60_000);
+
     return () => {
-      window.removeEventListener("bambeh_sub", refresh);
-      window.removeEventListener("storage",    refresh);
+      mounted = false;
+      window.removeEventListener(REFRESH_EVENT, onRefresh);
+      window.removeEventListener("storage", onStorage);
+      clearInterval(timer);
     };
-  }, []);
-
-  // Silent background sync with Railway  -  never blocks anything
-  useEffect(() => {
-    if (!_userId) return;
-    const sync = async () => {
-      try {
-        const r = await fetch(`${BACKEND_URL}/api/subscription/${encodeURIComponent(_userId)}`);
-        if (!r.ok) return;
-        const d = await r.json();
-        if (d.isActive && d.expiresAt) {
-          writeSub(d.planType || "daily", d.expiresAt);
-          setSub(readSub());
-        }
-      } catch { /* ignore  localStorage is source of truth */ }
-    };
-    sync();
-    const t = setInterval(sync, 5 * 60_000);
-    return () => clearInterval(t);
-  }, [_userId]);
+  }, [userId]);
 
   return {
-    isActive:  sub !== null,
-    planType:  sub?.planType  ?? null,
-    expiresAt: sub?.expiresAt ?? null,
-    isLoading: false,   //  - � -  NEVER true
-    error:     null,
+    isActive: sub !== null,
+    planType: sub ? sub.planType : null,
+    expiresAt: sub ? sub.expiresAt : null,
+    isLoading: false,
+    error: null,
   };
 }
 
-//  -  pollPaymentStatus  - 
+// -- pollPaymentStatus ------------------------------------------------------------
+// Polls the BACKEND for payment status. On SUCCESSFUL it does NOT self-activate:
+// the webhook activates server-side; we re-verify Supabase until the row appears.
 export function pollPaymentStatus(
   reference: string,
   userId: string,
-  planType: string,
+  _planType: string,
   onSuccess: () => void,
   onTimeout: () => void,
-  onError?: (m: string) => void
+  onError?: (m: string) => void,
 ): () => void {
-  let tries = 0, stopped = false;
-  const t = setInterval(async () => {
+  let tries = 0;
+  let stopped = false;
+
+  const stop = () => {
+    stopped = true;
+    clearInterval(timer);
+  };
+
+  const timer = setInterval(async () => {
     if (stopped) return;
     tries++;
     try {
       const r = await fetch(
-        `${BACKEND_URL}/api/payment/status/${encodeURIComponent(reference)}?userId=${encodeURIComponent(userId)}`
+        BACKEND_URL + "/api/payments/status/" + encodeURIComponent(reference),
       );
       if (r.ok) {
-        const d = await r.json();
-        if (d.status === "SUCCESSFUL") {
-          stopped = true; clearInterval(t);
-          activateSubscription(d.planType || planType, d.expiresAt);
-          onSuccess(); return;
+        const d = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+        const inner = (d.data || {}) as Record<string, unknown>;
+        const status = String(d.status || inner.status || "").toUpperCase();
+
+        if (status === "SUCCESSFUL" || status === "SUCCESS") {
+          stop();
+          // Ask Supabase for the webhook-written row (bounded retries).
+          for (let i = 0; i < 6; i++) {
+            const sub = await verifyWithSupabase(userId);
+            if (sub) break;
+            await new Promise((res) => setTimeout(res, 2000));
+          }
+          announce();
+          onSuccess();
+          return;
         }
-        if (d.status === "FAILED") {
-          stopped = true; clearInterval(t);
-          onError?.("Payment declined by your mobile money provider."); return;
+        if (status === "FAILED" || status === "CANCELLED") {
+          stop();
+          if (onError) onError("Payment declined by your mobile money provider.");
+          return;
         }
       }
-    } catch { /* keep trying */ }
-    if (tries >= 45) { stopped = true; clearInterval(t); onTimeout(); }
+    } catch {
+      /* transient network error - keep polling */
+    }
+    if (tries >= 45) {
+      stop();
+      onTimeout();
+    }
   }, 4000);
-  return () => { stopped = true; clearInterval(t); };
+
+  return stop;
 }
 
-//  -  fetchPlans  - 
+// -- fetchPlans ---------------------------------------------------------------------
 export async function fetchPlans(): Promise<Plan[]> {
   try {
-    const r = await fetch(`${BACKEND_URL}/api/plans`);
-    if (!r.ok) throw new Error();
-    const d = await r.json();
-    return Array.isArray(d) ? d : (d.plans ?? []);
+    const r = await fetch(BACKEND_URL + "/api/plans");
+    if (!r.ok) throw new Error("plans fetch failed");
+    const d = (await r.json()) as unknown;
+    if (Array.isArray(d)) return d as Plan[];
+    const obj = d as { plans?: Plan[] };
+    return obj.plans || [];
   } catch {
     return [
-      { id: "daily",   name: "Daily Pass",   price: 100,  currency: "XAF", duration: "24 hours",          features: ["Full marketplace access", "Browse all listings", "Contact sellers", "Chat"] },
-      { id: "weekly",  name: "Weekly Plan",  price: 500,  currency: "XAF", duration: "7 days (168 hours)", features: ["Everything in Daily", "Flash Deals", "Group Buying", "AI Assistant"] },
-      { id: "monthly", name: "Monthly Plan", price: 1500, currency: "XAF", duration: "30 days (720 hours)",features: ["Everything in Weekly", "Tontine", "FarmFresh", "Community", "Priority Support"] },
+      { id: "daily", name: "Daily Pass", price: 100, currency: "XAF", duration: "24 hours", features: ["Full marketplace access", "Browse all listings", "Contact sellers", "Chat"] },
+      { id: "weekly", name: "Weekly Plan", price: 500, currency: "XAF", duration: "7 days", features: ["Everything in Daily", "Flash Deals", "Group Buying", "AI Assistant"] },
+      { id: "monthly", name: "Monthly Plan", price: 1500, currency: "XAF", duration: "30 days", features: ["Everything in Weekly", "Tontine", "FarmFresh", "Community", "Priority Support"] },
     ];
   }
 }
 
-//  -  initiateSubscription  - 
+// -- initiateSubscription --------------------------------------------------------------
+// Server prices the plan; the client sends only phone + planName + userId.
 export async function initiateSubscription(
-  userId: string, planType: string, phone: string,
-  userEmail: string, userName: string
+  userId: string,
+  planType: string,
+  phone: string,
+  _userEmail: string,
+  _userName: string,
 ): Promise<PaymentResult> {
-  const r = await fetch(`${BACKEND_URL}/api/payment/initiate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ planId: planType, phone: phone.trim(), userId, email: userEmail, name: userName }),
-  });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error((e as any).error || "Payment initiation failed");
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data && data.session ? data.session.access_token : null;
+    if (token) headers["Authorization"] = "Bearer " + token;
+  } catch {
+    /* proceed without token; backend validates userId */
   }
-  return r.json();
-}	
 
+  const r = await fetch(BACKEND_URL + "/api/payments/subscribe", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ phone: phone.trim(), planName: planType, userId }),
+  });
+  const j = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+  if (!r.ok) {
+    const msg = String(j.error || j.message || "Payment initiation failed");
+    throw new Error(msg);
+  }
+  const inner = (j.data || {}) as Record<string, unknown>;
+  const reference = String(
+    j.reference || inner.reference || j.external_reference || inner.external_reference || "",
+  );
+  if (!reference) throw new Error("No payment reference returned");
+  return {
+    reference,
+    paymentUrl: (j.paymentUrl || inner.paymentUrl) as string | undefined,
+    ussd_code: (j.ussd_code || inner.ussd_code) as string | undefined,
+  };
+}

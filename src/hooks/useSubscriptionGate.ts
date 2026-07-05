@@ -1,55 +1,20 @@
-﻿/**
- * useSubscriptionGate.ts
- * ----------------------------------------------------------------------------
- * Central hook that determines whether the current user can access
- * subscription-gated features.
+/**
+ * src/hooks/useSubscriptionGate.ts - Bambeh Marketplace (server-truth rebuild)
  *
- * FILE LOCATION: src/hooks/useSubscriptionGate.ts
- *
- * Returns:
- *   isLoggedIn      � user has a valid session
- *   isSubscribed    � user has an active paid plan
- *   plan            � 'basic' | 'standard' | 'premium' | null
- *   showGate(msg?)  � call this to trigger the subscription modal
- *   GateModal       � render this anywhere; it self-manages visibility
- * ----------------------------------------------------------------------------
+ * SECURITY MODEL (script 25):
+ *  - Login state comes from AuthContext (real Supabase session), NOT from
+ *    forgeable localStorage user blobs.
+ *  - Subscription state comes from the rebuilt useSubscription hook, which is
+ *    verified against the Supabase `subscriptions` table.
+ *  - Return surface is IDENTICAL to the old hook so no consumer breaks.
  */
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 
-// -- Helpers ------------------------------------------------------------------
-
-function getCurrentUser(): Record<string, unknown> | null {
-  try {
-    const keys = ["Bambeh_current_user", "Bambeh_user", "bambeh_user"];
-    for (const k of keys) {
-      const raw = localStorage.getItem(k);
-      if (raw) return JSON.parse(raw);
-    }
-  } catch (e) {
-    /* silent */
-  }
-  return null;
-}
-
-function getSubscription(): { plan: string; active: boolean } | null {
-  try {
-    const raw = localStorage.getItem("Bambeh_subscription");
-    if (raw) {
-      const sub = JSON.parse(raw);
-      if (sub?.plan && sub?.active) return sub;
-    }
-    // Fallback: check user object directly
-    const user = getCurrentUser();
-    if (user?.subscriptionPlan && user?.isSubscribed) { return { plan: String(user.subscriptionPlan), active: true }; }
-  } catch (e) {
-    /* silent */
-  }
-  return null;
-}
-
-// -- Special features requiring subscription -----------------------------------
+// -- Special features requiring subscription (unchanged) ------------------------
 export const GATED_FEATURES = [
   "/farm-fresh",
   "/community",
@@ -62,31 +27,37 @@ export const GATED_FEATURES = [
   "/escrow",
 ] as const;
 
-// -- Hook ---------------------------------------------------------------------
+// -- Hook ------------------------------------------------------------------------
 export function useSubscriptionGate() {
   const navigate = useNavigate();
+  const auth = useAuth() as { user?: { id?: string } | null };
+  const user = auth && auth.user ? auth.user : null;
+  const userId = user && user.id ? user.id : null;
+
+  const { isActive, planType } = useSubscription(userId);
+
   const [gateOpen, setGateOpen] = useState(false);
   const [gateMessage, setGateMessage] = useState<string>("");
 
-  const user = getCurrentUser();
-  const sub = getSubscription();
-
-  const isLoggedIn = !!user?.id;
-  const isSubscribed = !!sub?.active;
-  const plan = (sub?.plan as string) ?? null;
+  const isLoggedIn = !!userId;
+  const isSubscribed = isActive;
+  const plan = planType;
 
   const showGate = useCallback((message?: string) => {
-    setGateMessage(message ?? "");
+    setGateMessage(message || "");
     setGateOpen(true);
   }, []);
 
   const closeGate = useCallback(() => setGateOpen(false), []);
 
   const requireLogin = useCallback(
-    (redirectTo?: string) => {
+    (redirectTo?: string): boolean => {
       if (!isLoggedIn) {
-        if (redirectTo)
-          localStorage.setItem("Bambeh_redirect_after_login", redirectTo);
+        try {
+          if (redirectTo) localStorage.setItem("Bambeh_redirect_after_login", redirectTo);
+        } catch {
+          /* storage unavailable */
+        }
         navigate("/login");
         return false;
       }
@@ -119,7 +90,6 @@ export function useSubscriptionGate() {
     gateOpen,
     gateMessage,
     requireLogin,
-    requireSubscription
+    requireSubscription,
   };
 }
-
