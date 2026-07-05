@@ -62,7 +62,6 @@ import {
   NetworkStatusBar
 } from "@/components/network/NetworkMonitor";
 import MovableChatWidget from "@/components/chat/MovableChatWidget";
-import MovableVoiceControl from "@/components/voice/MovableVoiceControl";
 import {
   useMonthlyFeedback,
   MonthlyFeedbackBanner
@@ -375,7 +374,6 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
   return (
     <>
       <MovableChatWidget defaultPosition="bottom-right" />
-      <MovableVoiceControl />
       <MonthlyFeedbackBanner />
       <BackToTopButton />
       {/* CartDrawer is always available throughout the app */}
