@@ -1,16 +1,4 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-
-export default function Subscription() {
-  const { t } = useTranslation();
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("Subscription")}</CardTitle>
-        </CardHeader>
-      </Card>
-    </div>
-  );
-}
+// Consolidated (script 19): this route now renders the canonical,
+// server-driven, fully translated subscription page. The previous
+// content here was a prototype and must not ship.
+export { default } from "@/components/subscription/SubscriptionPlans";

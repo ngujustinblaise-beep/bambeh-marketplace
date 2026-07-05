@@ -1,4 +1,5 @@
-import "@/lib/safe-storage"; // MUST be first: makes storage writes crash-proof
+import "@/lib/safe-storage";
+import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
 /**
  * App.tsx — Bambeh Online Marketplace
@@ -662,6 +663,7 @@ export default function App() {
             <AppProviders>
               <AppInner />
               <NetworkProvider>
+              <AuthProvider>
               <HashRouter>
                 <NavigationBridge />
                 <ScrollToTop />
@@ -1313,6 +1315,7 @@ export default function App() {
                   </OnboardingFlowGuard>
                 </RouteTracker>
               </HashRouter>
+              </AuthProvider>
             </NetworkProvider>
             </AppProviders>
             </LanguageProvider>

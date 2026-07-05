@@ -1,0 +1,19 @@
+﻿{
+    "root":  "C:\\Dev\\bambe-android",
+    "scanned_files":  1702,
+    "findings":  7476,
+    "critical_hits":  15,
+    "score":  0,
+    "verdict":  "Critical failure",
+    "counts":  {
+                   "TODO_API":  1556,
+                   "MOCK_DATA":  609,
+                   "SECRET_WORD":  2123,
+                   "MOCK_ENDPOINT":  70,
+                   "LOCAL_STORAGE":  2267,
+                   "LOCALHOST_URL":  27,
+                   "TODO_FIXME":  376,
+                   "CLIENT_SIDE_PAYMENT":  15,
+                   "DEV_ENDPOINT":  433
+               }
+}
