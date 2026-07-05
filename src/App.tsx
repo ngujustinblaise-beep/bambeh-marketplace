@@ -1,3 +1,4 @@
+import "@/lib/safe-storage"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
 /**
  * App.tsx — Bambeh Online Marketplace
