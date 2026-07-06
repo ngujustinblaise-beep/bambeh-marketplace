@@ -16,6 +16,7 @@ const STRINGS = {
     createOne: "Create account",
     forgotPassword: "Forgot password?",
     invalid: "Please enter a valid email and password.",
+    failed: "Sign-in failed. Check your details and try again.",
     show: "Show password",
     hide: "Hide password",
     logoAlt: "Bambeh logo",
@@ -28,27 +29,29 @@ const STRINGS = {
     signIn: "Se connecter",
     signingIn: "Connexion...",
     noAccount: "Pas encore de compte ?",
-    createOne: "Cr?er un compte",
-    forgotPassword: "Mot de passe oubli? ?",
+    createOne: "Cr\u00e9er un compte",
+    forgotPassword: "Mot de passe oubli\u00e9 ?",
     invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
+    failed: "\u00c9chec de la connexion. V\u00e9rifiez vos identifiants et r\u00e9essayez.",
     show: "Afficher le mot de passe",
     hide: "Masquer le mot de passe",
     logoAlt: "Logo Bambeh",
   },
   ar: {
-    title: "?????? ??????",
-    subtitle: "???? ?????? ????????.",
-    email: "?????? ??????????",
-    password: "???? ??????",
-    signIn: "????? ??????",
-    signingIn: "???? ????? ??????...",
-    noAccount: "??? ???? ?????",
-    createOne: "????? ????",
-    forgotPassword: "???? ???? ???????",
-    invalid: "???? ????? ???? ???????? ????? ???? ??????.",
-    show: "????? ???? ??????",
-    hide: "????? ???? ??????",
-    logoAlt: "???? Bambeh",
+    title: "\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0639\u0648\u062f\u062a\u0643",
+    subtitle: "\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u0645\u062a\u0627\u0628\u0639\u0629.",
+    email: "\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a",
+    password: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631",
+    signIn: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644",
+    signingIn: "\u062c\u0627\u0631\u064d \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644...",
+    noAccount: "\u0644\u064a\u0633 \u0644\u062f\u064a\u0643 \u062d\u0633\u0627\u0628\u061f",
+    createOne: "\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628",
+    forgotPassword: "\u0647\u0644 \u0646\u0633\u064a\u062a \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061f",
+    invalid: "\u064a\u0631\u062c\u0649 \u0625\u062f\u062e\u0627\u0644 \u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0648\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0635\u062d\u064a\u062d\u064a\u0646.",
+    failed: "\u0641\u0634\u0644 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644. \u062a\u062d\u0642\u0642 \u0645\u0646 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0648\u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u064b\u0627.",
+    show: "\u0625\u0638\u0647\u0627\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631",
+    hide: "\u0625\u062e\u0641\u0627\u0621 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631",
+    logoAlt: "\u0634\u0639\u0627\u0631 Bambeh",
   },
   pidgin: {
     title: "Welcome back",
@@ -61,23 +64,25 @@ const STRINGS = {
     createOne: "Create account",
     forgotPassword: "Forget password?",
     invalid: "Please enter correct email and password.",
+    failed: "Sign in no work. Check your details and try again.",
     show: "Show password",
     hide: "Hide password",
     logoAlt: "Bambeh logo",
   },
   ff: {
-    title: "Jam tan",
-    subtitle: "Se?o e barne.",
-    email: "Njiital email",
-    password: "Mo??ere mo??i",
-    signIn: "Se?o",
-    signingIn: "Ko se?oto...",
-    noAccount: "A adi a waawi fotaade?",
-    createOne: "Sos njiya",
-    forgotPassword: "Nodii mo??ere?",
-    invalid: "Tii?no naatnude email e mo??ere mo??i.",
-    show: "Wa?tude mo??ere",
-    hide: "?ittude mo??ere",
+    title: "Jam weeti",
+    subtitle: "Se\u014bo ngam jokkude.",
+    email: "Email ma",
+    password: "Mo\u01b4\u01b4ere",
+    signIn: "Se\u014bo",
+    signingIn: "Ko se\u014boto...",
+    noAccount: "A alaa konte?",
+    createOne: "Sos konte",
+    forgotPassword: "A yejjitii mo\u01b4\u01b4ere?",
+    invalid: "Naatnu email e mo\u01b4\u01b4ere mo\u01b4\u01b4ii.",
+    failed: "Se\u014baade waawaani. Ndaartu ke\u0253e ma, etto kadi.",
+    show: "Hollu mo\u01b4\u01b4ere",
+    hide: "Suu\u0257u mo\u01b4\u01b4ere",
     logoAlt: "Bambeh logo",
   },
 } as const;
@@ -87,6 +92,7 @@ export default function Login() {
   const { language } = useLanguage();
   const { login } = useAuth();
   const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
+  const isRtl = language === "ar";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -113,13 +119,15 @@ export default function Login() {
         return;
       }
       navigate("/", { replace: true });
+    } catch {
+      setError(t.failed);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-slate-50 px-4 py-10">
+    <main dir={isRtl ? "rtl" : "ltr"} className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-slate-50 px-4 py-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img
@@ -162,7 +170,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
-                  placeholder="????????"
+                  placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
                 />
                 <button
                   type="button"
