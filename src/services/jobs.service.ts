@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/services/jobs.service.ts
  * Bambeh Marketplace — Jobs Service
  * © 2026 Bambeh Marketplace. All rights reserved.
@@ -173,10 +173,10 @@ export async function createJob(
         description: payload.description,
         category:    payload.category,
         location:    payload.location.city,
-        country:     payload.location.country ?? "Cameroon",
+
         price:       payload.salaryMinXAF ?? null,
         status:      payload.status ?? "active",
-        tags:        payload.tags ?? [],
+
         view_count:  0,
         is_featured: false,
         extra: {
@@ -189,6 +189,8 @@ export async function createJob(
           salary_max:        payload.salaryMaxXAF ?? null,
           negotiable:        payload.isSalaryNegotiable,
           region:            payload.location.region ?? payload.location.city,
+          country:           payload.location.country ?? "Cameroon",
+          tags:              payload.tags ?? [],
           is_remote:         payload.isRemote,
           deadline:          payload.applicationDeadline ?? null,
           apply_method:      (payload as any).applyMethod ?? "in_app",

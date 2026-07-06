@@ -253,6 +253,7 @@ const CorporatePage   = lazy(() => import("@/features/corporate/CorporatePage"))
 // BIOMETRIC SETUP (post-signup passkey enrollment)
 const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
 const LoginForm       = lazy(() => import("@/pages/auth/Login"));
+const RegisterForm    = lazy(() => import("@/pages/auth/Register"));
 
 // ADMIN PAGES
 const AdminLogin                  = lazy(() => import("@/routes/groups/admin/AdminLogin"));
@@ -681,7 +682,7 @@ export default function App() {
                         <Route path="/login" element={<AuthLayout><LoginForm /></AuthLayout>} />
                         <Route path="/signin" element={<Navigate to="/login" replace />} />
                         <Route path="/sign-in" element={<Navigate to="/login" replace />} />
-                        <Route path="/register" element={<Navigate to="/login" replace />} />
+                        <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}

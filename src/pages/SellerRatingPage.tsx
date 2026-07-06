@@ -32,39 +32,14 @@ export default function SellerRatingPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Save review to localStorage (simple approach ? can be moved to DB later)
-      const reviews = JSON.parse(localStorage.getItem('bambeh_seller_reviews') || '[]');
-      reviews.unshift({
-        id:         Date.now().toString(),
-        sellerId,
-        reviewerId: session?.user?.id || 'anonymous',
-        rating,
-        comment:    comment.trim(),
-        createdAt:  new Date().toISOString(),
+      if (!session?.user?.id) { throw new Error("Please sign in to rate this seller."); }
+      if (!sellerId) { throw new Error("Seller not found."); }
+      const { error: rpcErr } = await supabase.rpc("submit_review", {
+        p_seller:  sellerId,
+        p_rating:  rating,
+        p_comment: comment.trim(),
       });
-      localStorage.setItem('bambeh_seller_reviews', JSON.stringify(reviews));
-
-      // Also update vendor_profiles rating in Supabase if we can
-      if (sellerId) {
-        try {
-          const { data: vendor } = await supabase
-            .from('vendor_profiles')
-            .select('rating, total_reviews')
-            .eq('user_id', sellerId)
-            .single();
-
-          if (vendor) {
-            const newTotal  = (vendor.total_reviews || 0) + 1;
-            const newRating = ((vendor.rating || 0) * (vendor.total_reviews || 0) + rating) / newTotal;
-            await supabase
-              .from('vendor_profiles')
-              .update({ rating: Math.round(newRating * 10) / 10, total_reviews: newTotal })
-              .eq('user_id', sellerId);
-          }
-        } catch {
-          // Non-critical ? rating saved locally even if DB update fails
-        }
-      }
+      if (rpcErr) { throw new Error(rpcErr.message); }
 
       setDone(true);
     } catch (e: any) {

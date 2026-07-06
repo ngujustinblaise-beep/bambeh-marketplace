@@ -207,7 +207,7 @@ export default function PostMarketplaceItemPage() {
       const { error: upErr } = await supabase.storage
         .from("listings")
         .upload(path, file, { upsert: false, contentType: file.type });
-      if (upErr) { console.warn("Photo upload failed:", upErr.message); continue; }
+      if (upErr) { throw new Error("Photo upload failed: " + upErr.message); }
       const { data: urlData } = supabase.storage.from("listings").getPublicUrl(path);
       if (urlData?.publicUrl) urls.push(urlData.publicUrl);
     }
