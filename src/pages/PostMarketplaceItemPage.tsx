@@ -224,7 +224,7 @@ export default function PostMarketplaceItemPage() {
 
       const imageUrls = await uploadPhotos(user.id);
       const price = parseInt(form.price.replace(/\D/g, ""), 10) || 0;
-      const images = imageUrls.map((url, idx) => ({ id: `img-${Date.now()}-${idx}`, url, order: idx, is_main: idx === 0 }));
+      const images = imageUrls;
 
       const { error: insertErr } = await supabase.from("listings").insert({
         seller_id:    user.id,
@@ -268,7 +268,7 @@ export default function PostMarketplaceItemPage() {
 
       const imageUrls = await uploadPhotos(user.id);
       const price = parseInt(form.price.replace(/\D/g, ""), 10);
-      const images = imageUrls.map((url, idx) => ({ id: `img-${Date.now()}-${idx}`, url, order: idx, is_main: idx === 0 }));
+      const images = imageUrls;
 
       const { error: insertErr } = await supabase.from("listings").insert({
         seller_id:    user.id,

@@ -11,7 +11,7 @@ import {
   Loader2, ArrowLeft, Share2, Heart, MapPin,
   Gauge, Fuel, Cog, Calendar, Users, Palette,
   Eye, CalendarDays, ShieldCheck, Star, Bell, Phone, MessageCircle,
-  AlertTriangle,
+  AlertTriangle, Car,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -450,7 +450,7 @@ const VehicleDetails: React.FC = () => {
             </>
           ) : (
             <div className="h-64 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
-              <span className="text-7xl">??</span>
+              <Car className="w-20 h-20 text-gray-300" />
             </div>
           )}
 

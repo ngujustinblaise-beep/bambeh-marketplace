@@ -418,7 +418,7 @@ export default function VehicleRentals() {
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
                   ) : (
-                    <span className="text-5xl">??</span>
+                    <Car className="w-16 h-16 text-gray-300" />
                   )}
                   {v.isDemo && <DemoBadge />}
                   {expiringWithin(v.expires_at, 3) && (
