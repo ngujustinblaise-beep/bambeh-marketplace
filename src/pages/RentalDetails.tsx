@@ -153,9 +153,9 @@ export default function RentalDetails() {
 
     try {
       const { data, error } = await supabase
-        .from("rentals")
+        .from("listings")
         .select("*")
-        .eq("id", id)
+        .eq("id", id).eq("type", "rental")
         .single();
 
       if (!error && data) {
@@ -163,20 +163,20 @@ export default function RentalDetails() {
         setListing({
           id: String(d.id),
           title: d.title || "Untitled Property",
-          type: d.type || "Apartment",
+          type: d.extra?.property_type ?? d.extra?.type ?? "Apartment",
           price: Number(d.price ?? 0),
           location: d.location || "",
-          quartier: d.quartier || "",
-          region: d.region || "",
-          bedrooms: String(d.bedrooms ?? "?"),
-          bathrooms: String(d.bathrooms ?? "?"),
-          area: d.area,
+          quartier: d.extra?.quartier ?? d.quartier ?? "",
+          region: d.extra?.region ?? d.region ?? "",
+          bedrooms: String(d.extra?.bedrooms ?? d.bedrooms ?? "?"),
+          bathrooms: String(d.extra?.bathrooms ?? d.bathrooms ?? "?"),
+          area: d.extra?.area ?? d.area,
           description: d.description || "",
           images: Array.isArray(d.images) ? d.images : [],
-          isFurnished: !!d.is_furnished,
-          amenities: Array.isArray(d.amenities) ? d.amenities : [],
-          contactPhone: d.contact_phone || "",
-          contactName: d.contact_name || "",
+          isFurnished: !!(d.extra?.is_furnished ?? d.extra?.furnished ?? d.is_furnished),
+          amenities: Array.isArray(d.extra?.amenities) ? d.extra.amenities : (Array.isArray(d.amenities) ? d.amenities : []),
+          contactPhone: d.extra?.contact_phone ?? d.phone ?? "",
+          contactName: d.extra?.contact_name ?? "",
           postedAt: d.created_at || new Date().toISOString(),
           expiresAt: d.expires_at || undefined,
           view_count: Number(d.view_count ?? 0),

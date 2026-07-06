@@ -639,11 +639,11 @@ export default function Services() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('farm-images')
+        .from('listings')
         .select(`
           id, title, category, price, location, description,
           phone, created_at, view_count,
-          seller_id, user_id, vendor_id
+          seller_id, user_id
         `)
         .eq('type', 'service')
         .eq('status', 'active')

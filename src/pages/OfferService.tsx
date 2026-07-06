@@ -633,20 +633,7 @@ export default function OfferService() {
       const location  = [d.city.trim(), d.region].filter(Boolean).join(', ');
       const priceNum  = Number(d.price);
 
-      // Write to services table (legacy support)
-      await supabase.from('services').insert({
-        seller_id:   user.id,
-        user_id:     user.id,
-        title:       sanitiseText(d.title.trim()),
-        category:    d.category,
-        location,
-        price:       priceNum,
-        price_type:  d.priceType,
-        description: sanitiseText(d.description.trim()),
-        phone:       d.phone.replace(/\D/g, '').slice(0, 15),
-        status:      'active',
-        images:      imageUrls,
-      });
+      // (legacy services-table write removed by fix 37 - listings is canonical)
 
       // Canonical write to listings table (main feed)
       const { data, error: lstErr } = await supabase.from('listings').insert({

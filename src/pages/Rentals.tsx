@@ -178,9 +178,9 @@ export default function Rentals() {
     setError(null);
     try {
       const { data, error: sbError } = await supabase
-        .from("rentals")
+        .from("listings")
         .select("*")
-        .eq("status", "active")
+        .eq("status", "active").eq("type", "rental")
         .order("created_at", { ascending: false })
         .limit(40);
 
@@ -191,15 +191,15 @@ export default function Rentals() {
         setProperties(rows.map((d) => ({
           id: String(d.id),
           title: d.title || "Untitled Property",
-          type: d.type || "Apartment",
+          type: d.extra?.property_type ?? d.extra?.type ?? "Apartment",
           price: Number(d.price ?? 0),
           location: d.location || "",
-          quartier: d.quartier || "",
-          bedrooms: String(d.bedrooms ?? "?"),
-          bathrooms: String(d.bathrooms ?? "?"),
+          quartier: d.extra?.quartier ?? d.quartier ?? "",
+          bedrooms: String(d.extra?.bedrooms ?? d.bedrooms ?? "?"),
+          bathrooms: String(d.extra?.bathrooms ?? d.bathrooms ?? "?"),
           description: d.description || "",
           images: Array.isArray(d.images) ? d.images : [],
-          isFurnished: !!d.is_furnished,
+          isFurnished: !!(d.extra?.is_furnished ?? d.extra?.furnished ?? d.is_furnished),
           postedAt: d.created_at || new Date().toISOString(),
           expiresAt: d.expires_at || undefined,
           view_count: Number(d.view_count ?? 0),
@@ -221,7 +221,7 @@ export default function Rentals() {
   useEffect(() => {
     const channel = supabase
       .channel("rentals_realtime_feed")
-      .on("postgres_changes", { event: "*", schema: "public", table: "rentals" }, fetchProperties)
+      .on("postgres_changes", { event: "*", schema: "public", table: "listings" }, fetchProperties)
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [fetchProperties]);

@@ -401,8 +401,8 @@ export default function ServiceDetails() {
     setLoading(true); setError(null);
     try {
       const { data: row, error: fetchErr } = await supabase
-        .from('farm-images')
-        .select('id, title, category, price, location, description, phone, created_at, status, view_count, seller_id, user_id, vendor_id, images')
+        .from('listings')
+        .select('id, title, category, price, location, description, phone, created_at, status, view_count, seller_id, user_id, images')
         .eq('id', id)
         .eq('type', 'service')
         .single();
@@ -411,7 +411,7 @@ export default function ServiceDetails() {
       setService(row as ServiceRow);
 
       // Increment view count (fire-and-forget)
-      supabase.from('farm-images').update({ view_count: (row.view_count ?? 0) + 1 }).eq('id', id).then(() => {});
+      supabase.from('listings').update({ view_count: (row.view_count ?? 0) + 1 }).eq('id', id).then(() => {});
 
       // Provider profile
       const pid = row.seller_id ?? row.user_id ?? row.vendor_id;
@@ -427,7 +427,7 @@ export default function ServiceDetails() {
       // Related services
       if (row.category) {
         const { data: rel } = await supabase
-          .from('farm-images')
+          .from('listings')
           .select('id, title, price, location')
           .eq('type', 'service')
           .eq('status', 'active')
