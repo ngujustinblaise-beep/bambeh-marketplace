@@ -228,6 +228,7 @@ export default function PostMarketplaceItemPage() {
 
       const { error: insertErr } = await supabase.from("listings").insert({
         seller_id:    user.id,
+        user_id:      user.id,
         type:         "marketplace",
         title:        form.title.trim() || "(Draft)",
         description:  form.description.trim(),
@@ -271,6 +272,7 @@ export default function PostMarketplaceItemPage() {
 
       const { error: insertErr } = await supabase.from("listings").insert({
         seller_id:    user.id,
+        user_id:      user.id,
         type:         "marketplace",
         title:        form.title.trim(),
         description:  form.description.trim(),
