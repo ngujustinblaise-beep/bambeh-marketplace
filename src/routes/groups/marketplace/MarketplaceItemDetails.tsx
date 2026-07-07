@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX59_CLEAN
 /**
  * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
  *
@@ -662,28 +663,8 @@ export default function MarketplaceItemDetails() {
           </div>
 
           <div className="flex gap-2">
-            {phone && (
-              <>
-                <a
-                  href={`https://wa.me/${phone.replace(/\D/g, "")}?text=${whatsappText}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 active:scale-95 transition"
-                  aria-label={`Contact seller via WhatsApp: ${listing.sellerName}`}
-                >
-                  <MessageCircle className="w-4 h-4" />{t("whatsapp")}
-                </a>
-                <a
-                  href={`tel:${phone}`}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-blue-500 text-white rounded-xl text-sm font-semibold hover:bg-blue-600 active:scale-95 transition"
-                  aria-label={`Call seller: ${listing.sellerName}`}
-                >
-                  <Phone className="w-4 h-4" />{t("call")}
-                </a>
-              </>
-            )}
             <button
-              onClick={() => navigate("/chat")}
+              onClick={() => navigate(`/chat?userId=${listing.sellerId}&listingTitle=${encodeURIComponent(listing.title)}`)}
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 active:scale-95 transition"
               aria-label={`Chat with seller: ${listing.sellerName}`}
             >
@@ -756,6 +737,4 @@ export default function MarketplaceItemDetails() {
   );
 }
 
-
-
-
+// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX59__COMPLETE

@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__CHAT_FIX58_CLEAN
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -261,6 +262,29 @@ export default function ChatPage() {
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
+
+  // Open (or create) a conversation when arriving via ?userId= from a
+  // "Contact seller" / "Chat" button. Uses the existing startChat() helper,
+  // then rewrites the URL to ?chat=<id> so a refresh won't recreate it.
+  useEffect(() => {
+    const otherId = searchParams.get('userId');
+    if (!otherId || !user?.id || otherId === user.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const title = searchParams.get('listingTitle') ?? undefined;
+        const image = searchParams.get('listingImage') ?? undefined;
+        const convId = await startChat(user.id, otherId, title, image);
+        if (!cancelled) {
+          setSelectedChatId(convId);
+          navigate(`/chat?chat=${convId}`, { replace: true });
+        }
+      } catch (e) {
+        logger.warn('Could not start conversation from userId param:', e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [searchParams, user?.id, navigate]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -828,3 +852,4 @@ export async function startChat(
   return data.id;
 }
 
+// BAMBEH_END_TOKEN__CHAT_FIX58__COMPLETE
