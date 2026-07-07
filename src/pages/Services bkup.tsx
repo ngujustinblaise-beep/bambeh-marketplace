@@ -280,6 +280,14 @@ interface Toast { id: number; message: string; type: 'error' | 'success' }
 // ─────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────
+const SAMPLE_SERVICES: Service[] = [
+  { id: 's1', title: 'Professional House Cleaning',      category: 'Cleaning',    price: 15000,  location: 'Yaoundé',  description: 'Deep cleaning for homes and offices. All equipment provided.',    created_at: new Date().toISOString(), view_count: 0, isDemo: true, phone: null },
+  { id: 's2', title: 'Plumbing Repairs & Installation',  category: 'Plumbing',    price: 25000,  location: 'Douala',   description: 'Expert plumbing — pipes, water heaters, taps. Emergency callouts.', created_at: new Date().toISOString(), view_count: 0, isDemo: true, phone: null },
+  { id: 's3', title: 'Electrical Services',              category: 'Electrical',  price: 20000,  location: 'Yaoundé',  description: 'Wiring, installations, repairs. Licensed electrician.',              created_at: new Date().toISOString(), view_count: 0, isDemo: true, phone: null },
+  { id: 's4', title: 'Web Development & Design',         category: 'IT & Tech',   price: 150000, location: 'Bambili',  description: 'Custom websites, React apps, and mobile apps. Portfolio on request.', created_at: new Date().toISOString(), view_count: 0, isDemo: true, phone: null },
+  { id: 's5', title: 'Photography & Videography',        category: 'Photography', price: 50000,  location: 'Yaoundé',  description: 'Events, portraits, commercial photography. Same-day delivery.',     created_at: new Date().toISOString(), view_count: 0, isDemo: true, phone: null },
+  { id: 's6', title: 'Private Tutoring (Math/Sciences)', category: 'Tutoring',    price: 10000,  location: 'Buea',     description: 'Tutoring for secondary and university students. Results guaranteed.', created_at: new Date().toISOString(), view_count: 0, isDemo: true, phone: null },
+];
 
 const SVC_CAT_T: Record<string, Record<string, string>> = {
   en:{'All':'All','IT & Tech':'IT & Tech','Cleaning':'Cleaning','Plumbing':'Plumbing','Electrical':'Electrical','Photography':'Photography','Tutoring':'Tutoring','Catering':'Catering','Transport':'Transport','Beauty':'Beauty','Other':'Other'},
@@ -645,7 +653,7 @@ export default function Services() {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        setServices([]);
+        setServices(SAMPLE_SERVICES);
         return;
       }
 
@@ -678,7 +686,7 @@ export default function Services() {
         })
       );
     } catch {
-      setServices([]);
+      setServices(SAMPLE_SERVICES);
       addToast(s.fetch_error, 'error');
     } finally {
       setLoading(false);
