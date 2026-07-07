@@ -1,397 +1,874 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw, Eye, AlertCircle, Clock } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
-import { DemoBadge } from "@/components/listings/DemoBadge";
-import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
-import { useLanguage } from "@/context/LanguageContext";
+/**
+ * RENTALS PAGE - ENHANCED
+ * 
+ * Complete rental properties marketplace with all features
+ * 
+ * Features:
+ * - Rental categories (7 categories)
+ * - Property type filters (13 types)
+ * - Price range filter (per day, week, month, year)
+ * - Bedrooms/bathrooms filters
+ * - Furnished/unfurnished filter
+ * - Location hierarchy filter
+ * - Keywords search
+ * - Subscription gate for contact
+ * - Review integration
+ * - Amenities display
+ * - House rules display
+ * - Image gallery
+ * - Responsive grid layout
+ * - Loading and empty states
+ * - Owner verification badges
+ * 
+ * IMPORTANT: Update your RentalItem type definition in @/types/items to include:
+ * owner: {
+ *   id: string;
+ *   name: string;
+ *   phone: string;
+ *   email: string;
+ *   isVerified: boolean;        // ADD THIS - Shows verified badge
+ *   isTrusted?: boolean;        // ADD THIS - Shows premium landlord badge
+ *   rating?: number;            // ADD THIS - Owner rating
+ *   verificationLevel?: string; // ADD THIS - Verification level details
+ * }
+ */
 
-const RENT_T: Record<string, Record<string, string>> = {
-  en: {
-    "rentals.title": "Rentals",
-    "rentals.listProperty": "List Property",
-    "rentals.refresh": "Refresh",
-    "rentals.search": "Search by name or neighbourhood?",
-    "rentals.maxRent": "Max Rent",
-    "rentals.allCities": "All Cities",
-    "rentals.allTypes": "All Types",
-    "rentals.perMonth": "XAF/mo",
-    "rentals.furnished": "Furnished",
-    "rentals.views": "views",
-    "rentals.view": "view",
-    "rentals.sampleListing": "Sample ? not a real listing",
-    "rentals.expiringSoon": "Expiring soon",
-    "rentals.propertiesFound": "{{count}} propert{{suffix}} found",
-    "rentals.loading": "Loading properties?",
-    "rentals.error": "Could not load listings. Showing demo data.",
-    "rentals.noPropertiesTitle": "No properties found",
-    "rentals.noPropertiesHint": "Try widening your filters or list your own property."
-  },
-  fr: {
-    "rentals.title": "Locations",
-    "rentals.listProperty": "Publier une location",
-    "rentals.refresh": "Actualiser",
-    "rentals.search": "Rechercher par nom ou quartier?",
-    "rentals.maxRent": "Loyer max",
-    "rentals.allCities": "Toutes les villes",
-    "rentals.allTypes": "Tous les types",
-    "rentals.perMonth": "XAF/mois",
-    "rentals.furnished": "Meubl?",
-    "rentals.views": "vues",
-    "rentals.view": "vue",
-    "rentals.sampleListing": "Exemple ? annonce fictive",
-    "rentals.expiringSoon": "Bient?t expir?",
-    "rentals.propertiesFound": "{{count}} propri?t?{{suffix}} trouv?e{{suffix}}",
-    "rentals.loading": "Chargement des propri?t?s?",
-    "rentals.error": "Impossible de charger les annonces. Affichage des donn?es de d?monstration.",
-    "rentals.noPropertiesTitle": "Aucune propri?t? trouv?e",
-    "rentals.noPropertiesHint": "?largissez vos filtres ou publiez votre propri?t?."
-  },
-  ar: {
-    "rentals.title": "?????????",
-    "rentals.listProperty": "??? ??????",
-    "rentals.refresh": "?????",
-    "rentals.search": "???? ?????? ?? ?????",
-    "rentals.maxRent": "???? ?????",
-    "rentals.allCities": "?? ?????",
-    "rentals.allTypes": "?? ???????",
-    "rentals.perMonth": "XAF/???",
-    "rentals.furnished": "?????",
-    "rentals.views": "???????",
-    "rentals.view": "??????",
-    "rentals.sampleListing": "???? ? ??? ??????? ???????",
-    "rentals.expiringSoon": "????? ??????",
-    "rentals.propertiesFound": "?? ?????? ??? {{count}} ????",
-    "rentals.loading": "???? ????? ?????????",
-    "rentals.error": "???? ????? ?????????. ??? ??? ?????? ???????.",
-    "rentals.noPropertiesTitle": "?? ???? ??????",
-    "rentals.noPropertiesHint": "???? ???? ????? ??????? ?? ???? ?????."
-  },
-  ff: {
-    "rentals.title": "Luwaaji",
-    "rentals.listProperty": "Windude suudu",
-    "rentals.refresh": "Hes?itin",
-    "rentals.search": "Yiilo innde wala wuro?",
-    "rentals.maxRent": "Coggu ?urtu?o",
-    "rentals.allCities": "Gure fof",
-    "rentals.allTypes": "Sifaaji fof",
-    "rentals.perMonth": "XAF/lewru",
-    "rentals.furnished": "Hee?aa?o",
-    "rentals.views": "njiyaali",
-    "rentals.view": "njiyaa",
-    "rentals.sampleListing": "Misal ? wonaa bayyinaango goonga",
-    "rentals.expiringSoon": "Aray timmude",
-    "rentals.propertiesFound": "{{count}} cuu?i ke?aama",
-    "rentals.loading": "Loowugol cuu?i?",
-    "rentals.error": "Ro?ki loowude bayyinaali. Hollirde ke?e ndaar?e.",
-    "rentals.noPropertiesTitle": "Cuu?i alaa",
-    "rentals.noPropertiesHint": "Yaaju filtaaji maa, walla windu suudu maa."
-  },
-  pidgin: {
-    "rentals.title": "Rentals",
-    "rentals.listProperty": "Post House",
-    "rentals.refresh": "Refresh",
-    "rentals.search": "Find by name or quarter?",
-    "rentals.maxRent": "Max Rent",
-    "rentals.allCities": "All Towns",
-    "rentals.allTypes": "All Types",
-    "rentals.perMonth": "XAF/month",
-    "rentals.furnished": "Get furniture",
-    "rentals.views": "views",
-    "rentals.view": "view",
-    "rentals.sampleListing": "Sample ? no be real listing",
-    "rentals.expiringSoon": "E go soon finish",
-    "rentals.propertiesFound": "{{count}} house dem dey",
-    "rentals.loading": "E dey load houses?",
-    "rentals.error": "E no fit load listings. We dey show demo.",
-    "rentals.noPropertiesTitle": "No house dey",
-    "rentals.noPropertiesHint": "Open your filter small, or post your own house."
-  },
-};
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import {
+  Search,
+  Home,
+  MapPin,
+  DollarSign,
+  Filter,
+  Plus,
+  X,
+  Lock,
+  Bed,
+  Bath,
+  Maximize,
+  Check,
+  Phone,
+  MessageSquare,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import LocationSelector from '@/components/location/LocationSelector';
+import ItemCard from '@/components/items/ItemCard';
+import ReviewList from '@/components/reviews/ReviewList';
+import StarRating from '@/components/reviews/StarRating';
+import TrustedBadge from '@/components/TrustedBadge';
+import { RentalItem, RentalCategory, PropertyType, RentalPeriod } from '@/types/items';
+import { LocationDetails } from '@/types/location';
+import { collection, query, where, orderBy, limit, getDocs, QueryConstraint } from 'firebase/firestore';
+import { db } from '@/config/firebase';
+import { useAuth } from '@/contexts/AuthContext';
+import { isSubscribed } from '@/utils/subscriptionUtils';
 
-const normLang = (l: string): string => {
-  const v = String(l || "en").toLowerCase();
-  if (v.startsWith("fr")) return "fr";
-  if (v.startsWith("ar")) return "ar";
-  if (v === "ff" || v.startsWith("ful")) return "ff";
-  if (v === "pcm" || v === "pidgin") return "pidgin";
-  return "en";
-};
-
-interface Property {
-  id: string;
-  title: string;
-  type: string;
-  price: number;
-  location: string;
-  quartier?: string;
-  bedrooms: string;
-  bathrooms: string;
-  description: string;
-  images?: string[];
-  postedAt: string;
-  expiresAt?: string;
-  isFurnished?: boolean;
-  isDemo?: boolean;
-  view_count?: number;
-}
-
-const SAMPLE: Property[] = [
-  { id: "demo-1", title: "Modern 2-bed apartment in Bastos", type: "Apartment", price: 150000, location: "Yaound?", quartier: "Bastos", bedrooms: "2", bathrooms: "1", description: "Furnished apartment with balcony and security.", postedAt: new Date().toISOString(), isDemo: true },
-  { id: "demo-2", title: "Spacious villa in Bonamoussadi", type: "Villa", price: 350000, location: "Douala", quartier: "Bonamoussadi", bedrooms: "4", bathrooms: "3", description: "4-bedroom villa with garden and parking.", postedAt: new Date().toISOString(), isDemo: true },
-  { id: "demo-3", title: "Studio near University of Yaound?", type: "Studio", price: 60000, location: "Yaound?", quartier: "Ngoa-Ek?l?", bedrooms: "Studio", bathrooms: "1", description: "Clean studio, ideal for students.", postedAt: new Date().toISOString(), isDemo: true },
-  { id: "demo-4", title: "Professional office space in Akwa", type: "Office", price: 200000, location: "Douala", quartier: "Akwa", bedrooms: "N/A", bathrooms: "1", description: "Professional office space in prime location.", postedAt: new Date().toISOString(), isDemo: true },
-];
-
-const CITIES = ["allCities", "Yaound?", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaound?r?", "Bertoua", "Ebolowa", "Kumba"];
-const TYPES = ["allTypes", "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop"];
-
-function expiringWithin(expiresAt: string | undefined, days: number): boolean {
-  if (!expiresAt) return false;
-  const diff = new Date(expiresAt).getTime() - Date.now();
-  return diff > 0 && diff <= days * 86400000;
-}
-
-export default function Rentals() {
+export default function RentalsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { language } = useLanguage();
-  const lang = normLang(language);
+  const { currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
 
-  const t = useCallback((k: string, o?: Record<string, any>) => {
-    let v = ((RENT_T[lang] || RENT_T.en)[k]) ?? RENT_T.en[k] ?? k;
-    if (o) for (const p in o) v = v.split(`{{${p}}}`).join(String(o[p]));
-    return v;
-  }, [lang]);
-
-  const [properties, setProperties] = useState<Property[]>([]);
+  // State
+  const [rentals, setRentals] = useState<RentalItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [city, setCity] = useState("allCities");
-  const [type, setType] = useState("allTypes");
-  const [maxPrice, setMaxPrice] = useState(1000000);
-  const [locationFilters, setLocationFilters] = useState<LocationFilters>(EMPTY_LOCATION);
+  const [selectedRental, setSelectedRental] = useState<RentalItem | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  const fetchProperties = useCallback(async () => {
+  // Filters
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [selectedLocation, setSelectedLocation] = useState<LocationDetails | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedPropertyType, setSelectedPropertyType] = useState<string>('all');
+  const [selectedPricePeriod, setSelectedPricePeriod] = useState<string>('all');
+  const [minPrice, setMinPrice] = useState<string>('');
+  const [maxPrice, setMaxPrice] = useState<string>('');
+  const [minBedrooms, setMinBedrooms] = useState<string>('');
+  const [minBathrooms, setMinBathrooms] = useState<string>('');
+  const [furnishedOnly, setFurnishedOnly] = useState(false);
+  const [selectedAmenity, setSelectedAmenity] = useState<string>('');
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+  const [keywordInput, setKeywordInput] = useState('');
+
+  const rentalCategories: RentalCategory[] = [
+    'residential', 'commercial', 'land', 'vehicle',
+    'equipment', 'event-space', 'storage'
+  ];
+
+  const propertyTypes: PropertyType[] = [
+    'apartment', 'house', 'studio', 'room', 'villa',
+    'office', 'shop', 'warehouse', 'land', 'parking',
+    'car', 'truck', 'equipment'
+  ];
+
+  const pricePeriods: RentalPeriod[] = ['day', 'week', 'month', 'year'];
+
+  /**
+   * Fetch rentals from Firestore
+   */
+  const fetchRentals = async () => {
     setLoading(true);
-    setError(null);
     try {
-      const { data, error: sbError } = await supabase
-        .from("rentals")
-        .select("*")
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(40);
+      const constraints: QueryConstraint[] = [
+        where('type', '==', 'rental'),
+        where('status', '==', 'active'),
+      ];
 
-      if (sbError) throw sbError;
-
-      const rows = (data ?? []) as any[];
-      if (rows.length > 0) {
-        setProperties(rows.map((d) => ({
-          id: String(d.id),
-          title: d.title || "Untitled Property",
-          type: d.type || "Apartment",
-          price: Number(d.price ?? 0),
-          location: d.location || "",
-          quartier: d.quartier || "",
-          bedrooms: String(d.bedrooms ?? "?"),
-          bathrooms: String(d.bathrooms ?? "?"),
-          description: d.description || "",
-          images: Array.isArray(d.images) ? d.images : [],
-          isFurnished: !!d.is_furnished,
-          postedAt: d.created_at || new Date().toISOString(),
-          expiresAt: d.expires_at || undefined,
-          view_count: Number(d.view_count ?? 0),
-          isDemo: false,
-        })));
-      } else {
-        setProperties(SAMPLE);
+      // Category filter
+      if (selectedCategory && selectedCategory !== 'all') {
+        constraints.push(where('category', '==', selectedCategory));
       }
-    } catch {
-      setError(t("rentals.error"));
-      setProperties(SAMPLE);
+
+      // Property type filter
+      if (selectedPropertyType && selectedPropertyType !== 'all') {
+        constraints.push(where('propertyType', '==', selectedPropertyType));
+      }
+
+      // Price period filter
+      if (selectedPricePeriod && selectedPricePeriod !== 'all') {
+        constraints.push(where('price.period', '==', selectedPricePeriod));
+      }
+
+      // Location filter (by region)
+      if (selectedLocation?.region) {
+        constraints.push(where('location.region', '==', selectedLocation.region));
+      }
+
+      // Order by creation date
+      constraints.push(orderBy('createdAt', 'desc'));
+      constraints.push(limit(50));
+
+      const q = query(collection(db, 'items'), ...constraints);
+      const querySnapshot = await getDocs(q);
+
+      let rentalsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as RentalItem[];
+
+      // Client-side filters
+      if (searchQuery) {
+        const searchLower = searchQuery.toLowerCase();
+        rentalsData = rentalsData.filter(
+          rental =>
+            rental.title.toLowerCase().includes(searchLower) ||
+            rental.description.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Keyword filter
+      if (selectedKeywords.length > 0) {
+        rentalsData = rentalsData.filter(rental =>
+          selectedKeywords.some(keyword =>
+            rental.keywords.some(k => k.toLowerCase().includes(keyword.toLowerCase()))
+          )
+        );
+      }
+
+      // Location hierarchy filter
+      if (selectedLocation) {
+        if (selectedLocation.village) {
+          rentalsData = rentalsData.filter(
+            rental => rental.location.village === selectedLocation.village
+          );
+        } else if (selectedLocation.subdivision) {
+          rentalsData = rentalsData.filter(
+            rental => rental.location.subdivision === selectedLocation.subdivision
+          );
+        } else if (selectedLocation.division) {
+          rentalsData = rentalsData.filter(
+            rental => rental.location.division === selectedLocation.division
+          );
+        }
+      }
+
+      // Price range filter
+      if (minPrice || maxPrice) {
+        rentalsData = rentalsData.filter(rental => {
+          const price = rental.price.amount;
+          const filterMin = minPrice ? parseInt(minPrice) : 0;
+          const filterMax = maxPrice ? parseInt(maxPrice) : Infinity;
+
+          return price >= filterMin && price <= filterMax;
+        });
+      }
+
+      // Bedrooms filter
+      if (minBedrooms) {
+        const min = parseInt(minBedrooms);
+        rentalsData = rentalsData.filter(
+          rental => rental.bedrooms && rental.bedrooms >= min
+        );
+      }
+
+      // Bathrooms filter
+      if (minBathrooms) {
+        const min = parseInt(minBathrooms);
+        rentalsData = rentalsData.filter(
+          rental => rental.bathrooms && rental.bathrooms >= min
+        );
+      }
+
+      // Furnished filter
+      if (furnishedOnly) {
+        rentalsData = rentalsData.filter(rental => rental.furnished === true);
+      }
+
+      // Amenity filter
+      if (selectedAmenity) {
+        rentalsData = rentalsData.filter(rental =>
+          rental.amenities?.some(amenity =>
+            amenity.toLowerCase().includes(selectedAmenity.toLowerCase())
+          )
+        );
+      }
+
+      setRentals(rentalsData);
+    } catch (error) {
+      console.error('Error fetching rentals:', error);
     } finally {
       setLoading(false);
     }
-  }, [t]);
-
-  useEffect(() => { fetchProperties(); }, [fetchProperties]);
+  };
 
   useEffect(() => {
-    const channel = supabase
-      .channel("rentals_realtime_feed")
-      .on("postgres_changes", { event: "*", schema: "public", table: "rentals" }, fetchProperties)
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [fetchProperties]);
+    fetchRentals();
+  }, [
+    selectedCategory,
+    selectedPropertyType,
+    selectedPricePeriod,
+    selectedLocation,
+    searchQuery,
+    selectedKeywords,
+    minPrice,
+    maxPrice,
+    minBedrooms,
+    minBathrooms,
+    furnishedOnly,
+    selectedAmenity,
+  ]);
 
-  const filtered = [...properties]
-    .filter((p) => {
-      if (search) {
-        const q = search.toLowerCase();
-        if (!p.title.toLowerCase().includes(q) && !(p.quartier || "").toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false;
-      }
-      if (city !== "allCities" && !p.location.toLowerCase().includes(city.toLowerCase())) return false;
-      if (type !== "allTypes" && p.type !== type) return false;
-      if (p.price > maxPrice) return false;
-      const loc = `${p.location} ${p.quartier || ""}`.toLowerCase();
-      if (locationFilters.region && !loc.includes(locationFilters.region.toLowerCase())) return false;
-      if (locationFilters.city && !loc.includes(locationFilters.city.toLowerCase())) return false;
-      if (locationFilters.quarter && !loc.includes(locationFilters.quarter.toLowerCase())) return false;
-      if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      if (a.isDemo !== b.isDemo) return a.isDemo ? 1 : -1;
-      return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
-    });
+  /**
+   * Handle rental card click
+   */
+  const handleRentalClick = (rental: RentalItem) => {
+    setSelectedRental(rental);
+    setSelectedImageIndex(0);
+  };
 
-  const count = filtered.length;
-  const suffix = count === 1 ? "" : "s";
+  /**
+   * Handle add keyword
+   */
+  const handleAddKeyword = () => {
+    if (keywordInput.trim() && !selectedKeywords.includes(keywordInput.trim())) {
+      setSelectedKeywords([...selectedKeywords, keywordInput.trim()]);
+      setKeywordInput('');
+    }
+  };
+
+  /**
+   * Handle remove keyword
+   */
+  const handleRemoveKeyword = (keyword: string) => {
+    setSelectedKeywords(selectedKeywords.filter(k => k !== keyword));
+  };
+
+  /**
+   * Clear all filters
+   */
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedLocation(null);
+    setSelectedCategory('all');
+    setSelectedPropertyType('all');
+    setSelectedPricePeriod('all');
+    setMinPrice('');
+    setMaxPrice('');
+    setMinBedrooms('');
+    setMinBathrooms('');
+    setFurnishedOnly(false);
+    setSelectedAmenity('');
+    setSelectedKeywords([]);
+  };
+
+  /**
+   * Check if user can view contact
+   */
+  const canViewContact = () => {
+    if (!currentUser) return false;
+    return isSubscribed(currentUser);
+  };
+
+  /**
+   * Active filters count
+   */
+  const activeFiltersCount = [
+    searchQuery,
+    selectedLocation,
+    selectedCategory !== 'all' ? selectedCategory : null,
+    selectedPropertyType !== 'all' ? selectedPropertyType : null,
+    selectedPricePeriod !== 'all' ? selectedPricePeriod : null,
+    minPrice,
+    maxPrice,
+    minBedrooms,
+    minBathrooms,
+    furnishedOnly ? 'furnished' : null,
+    selectedAmenity,
+    ...selectedKeywords,
+  ].filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 pb-28">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Home className="w-6 h-6 text-orange-500" />
-            {t("rentals.title")}
-          </h1>
-          <div className="flex gap-2">
-            <button onClick={fetchProperties} disabled={loading} className="p-2 text-gray-400 hover:text-orange-500 rounded-xl hover:bg-gray-100 disabled:opacity-40" aria-label={t("rentals.refresh")}>
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-            </button>
-            <button onClick={() => navigate("/rentals/list")} className="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-1 transition-all">
-              <Plus className="w-4 h-4" />
-              {t("rentals.listProperty")}
-            </button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <Home className="w-8 h-8 text-teal-600" />
+                {t('rentals.title', 'Rentals')}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {rentals.length} {t('rentals.available', 'properties available')}
+              </p>
+            </div>
 
-        {error && (
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-4 py-3 mb-4 text-sm">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            {error}
-          </div>
-        )}
-
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("rentals.search")} className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm bg-white" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm bg-white">
-            {CITIES.map((c) => <option key={c} value={c}>{c === "allCities" ? t("rentals.allCities") : c}</option>)}
-          </select>
-          <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm bg-white">
-            {TYPES.map((tp) => <option key={tp} value={tp}>{tp === "allTypes" ? t("rentals.allTypes") : tp}</option>)}
-          </select>
-        </div>
-
-        <div className="mb-4 bg-white rounded-xl p-3 border">
-          <div className="flex justify-between text-sm text-gray-600 mb-1">
-            <span>{t("rentals.maxRent")}</span>
-            <span className="font-semibold text-orange-600">{maxPrice.toLocaleString()} {t("rentals.perMonth")}</span>
-          </div>
-          <input type="range" min={30000} max={1000000} step={10000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="w-full accent-orange-500" />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>30,000</span><span>1,000,000</span>
-          </div>
-        </div>
-
-        <LocationFilter onFilterChange={setLocationFilters} />
-        <FeaturedAdsStrip category="rentals" showHeader={false} maxVisible={20} />
-
-        {loading && (
-          <div className="flex flex-col items-center py-16 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-            <p className="text-sm text-gray-400">{t("rentals.loading")}</p>
-          </div>
-        )}
-
-        {!loading && filtered.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            <Home className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="font-semibold text-gray-700">{t("rentals.noPropertiesTitle")}</p>
-            <p className="text-sm text-gray-400 mt-1 mb-4">{t("rentals.noPropertiesHint")}</p>
-            <button onClick={() => navigate("/rentals/list")} className="bg-orange-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-orange-600 active:scale-95 transition-all">
-              {t("rentals.listProperty")}
-            </button>
-          </div>
-        )}
-
-        {!loading && filtered.length > 0 && (
-          <div className="space-y-3">
-            <p className="text-xs text-gray-400">{t("rentals.propertiesFound", { count, suffix })}</p>
-            {filtered.map((p) => (
-              <div
-                key={p.id}
-                onClick={() => !p.isDemo && navigate(`/rentals/${p.id}`)}
-                className={`bg-white rounded-2xl overflow-hidden shadow-sm border transition-all ${!p.isDemo ? "cursor-pointer hover:shadow-md active:scale-[0.99]" : "opacity-90"}`}
+            {/* List Property Button */}
+            {currentUser && (
+              <Button
+                onClick={() => navigate('/list-property')}
+                className="bg-teal-600 hover:bg-teal-700"
               >
-                <div className="h-40 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center relative overflow-hidden">
-                  {p.images && p.images[0] ? (
-                    <img
-                      src={p.images[0]}
-                      alt={p.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                  ) : (
-                    <Home className="w-12 h-12 text-orange-300" />
-                  )}
-                  {p.isDemo && <DemoBadge />}
-                  {expiringWithin(p.expiresAt, 3) && (
-                    <div className="absolute bottom-2 left-2 bg-red-500/90 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 backdrop-blur-sm">
-                      <Clock className="w-3 h-3" />
-                      {t("rentals.expiringSoon")}
-                    </div>
-                  )}
-                </div>
+                <Plus className="w-4 h-4 mr-2" />
+                {t('rentals.list', 'List Property')}
+              </Button>
+            )}
+          </div>
 
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-semibold text-gray-900 flex-1 pr-2 text-sm leading-snug">{p.title}</h3>
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <span className="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full whitespace-nowrap">{p.type}</span>
-                      {p.isFurnished && <span className="text-xs bg-teal-50 text-teal-600 px-2 py-0.5 rounded-full">{t("rentals.furnished")}</span>}
-                    </div>
-                  </div>
+          {/* Search Bar */}
+          <div className="mt-6 flex gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('rentals.search', 'Search properties by title or description...')}
+                className="pl-10"
+              />
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="relative"
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              {t('common.filters', 'Filters')}
+              {activeFiltersCount > 0 && (
+                <Badge className="ml-2 bg-teal-600">{activeFiltersCount}</Badge>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
 
-                  <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
-                    <MapPin className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate">{p.location}{p.quartier ? `, ${p.quartier}` : ""}</span>
-                  </div>
+      {/* Filters Panel */}
+      {showFilters && (
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Location Filter - Enhanced */}
+              <div className="space-y-2 lg:col-span-2">
+                <Label className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {t('common.location', 'Location')} - {t('rentals.locationHelp', 'Select from region to village')}
+                </Label>
+                <LocationSelector
+                  value={selectedLocation}
+                  onChange={setSelectedLocation}
+                />
+                {selectedLocation && (
+                  <p className="text-xs text-gray-600">
+                    {t('rentals.searching', 'Searching in')}:{' '}
+                    {selectedLocation.village && `${selectedLocation.village}, `}
+                    {selectedLocation.subdivision && `${selectedLocation.subdivision}, `}
+                    {selectedLocation.division && `${selectedLocation.division}, `}
+                    {selectedLocation.region}
+                  </p>
+                )}
+              </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
-                      <span className="flex items-center gap-1"><Bed className="w-3 h-3" /> {p.bedrooms}</span>
-                      <span className="flex items-center gap-1"><Bath className="w-3 h-3" /> {p.bathrooms}</span>
-                    </div>
-                    <span className="font-bold text-orange-600 flex items-center gap-0.5 text-sm">
-                      <DollarSign className="w-3 h-3" />
-                      {p.price.toLocaleString()} {t("rentals.perMonth")}
-                    </span>
-                  </div>
+              {/* Category Filter */}
+              <div className="space-y-2">
+                <Label>{t('rentals.category', 'Category')}</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all', 'All Categories')}</SelectItem>
+                    {rentalCategories.map(category => (
+                      <SelectItem key={category} value={category} className="capitalize">
+                        {category.replace('-', ' ')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  {p.isDemo ? (
-                    <p className="text-xs text-yellow-600 mt-2 italic">{t("rentals.sampleListing")}</p>
-                  ) : (
-                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
-                      <Eye className="w-3 h-3" />
-                      {p.view_count ?? 0}&nbsp;{p.view_count === 1 ? t("rentals.view") : t("rentals.views")}
-                    </div>
-                  )}
+              {/* Property Type Filter */}
+              <div className="space-y-2">
+                <Label>{t('rentals.propertyType', 'Property Type')}</Label>
+                <Select value={selectedPropertyType} onValueChange={setSelectedPropertyType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all', 'All Types')}</SelectItem>
+                    {propertyTypes.map(type => (
+                      <SelectItem key={type} value={type} className="capitalize">
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Price Period Filter */}
+              <div className="space-y-2">
+                <Label>{t('rentals.pricePeriod', 'Price Period')}</Label>
+                <Select value={selectedPricePeriod} onValueChange={setSelectedPricePeriod}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all', 'All Periods')}</SelectItem>
+                    {pricePeriods.map(period => (
+                      <SelectItem key={period} value={period} className="capitalize">
+                        Per {period}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Price Range */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
+                  {t('rentals.minPrice', 'Min Price (XAF)')}
+                </Label>
+                <Input
+                  type="number"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
+                  {t('rentals.maxPrice', 'Max Price (XAF)')}
+                </Label>
+                <Input
+                  type="number"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  placeholder="No limit"
+                />
+              </div>
+
+              {/* Bedrooms/Bathrooms */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Bed className="w-4 h-4" />
+                  {t('rentals.minBedrooms', 'Min Bedrooms')}
+                </Label>
+                <Input
+                  type="number"
+                  value={minBedrooms}
+                  onChange={(e) => setMinBedrooms(e.target.value)}
+                  placeholder="Any"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Bath className="w-4 h-4" />
+                  {t('rentals.minBathrooms', 'Min Bathrooms')}
+                </Label>
+                <Input
+                  type="number"
+                  value={minBathrooms}
+                  onChange={(e) => setMinBathrooms(e.target.value)}
+                  placeholder="Any"
+                />
+              </div>
+
+              {/* Amenity Search */}
+              <div className="space-y-2">
+                <Label>{t('rentals.amenity', 'Amenity')}</Label>
+                <Input
+                  value={selectedAmenity}
+                  onChange={(e) => setSelectedAmenity(e.target.value)}
+                  placeholder="e.g., WiFi, Parking, Pool"
+                />
+              </div>
+
+              {/* Keywords */}
+              <div className="space-y-2">
+                <Label>{t('common.keywords', 'Keywords')}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={keywordInput}
+                    onChange={(e) => setKeywordInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddKeyword()}
+                    placeholder={t('common.addKeyword', 'Add keyword')}
+                  />
+                  <Button type="button" onClick={handleAddKeyword} variant="outline">
+                    {t('common.add', 'Add')}
+                  </Button>
                 </div>
               </div>
+
+              {/* Furnished Filter */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="furnishedOnly"
+                  checked={furnishedOnly}
+                  onChange={(e) => setFurnishedOnly(e.target.checked)}
+                  className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+                />
+                <Label htmlFor="furnishedOnly" className="cursor-pointer">
+                  {t('rentals.furnished', 'Furnished only')}
+                </Label>
+              </div>
+            </div>
+
+            {/* Selected Keywords */}
+            {selectedKeywords.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {selectedKeywords.map((keyword, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
+                    {keyword}
+                    <button
+                      onClick={() => handleRemoveKeyword(keyword)}
+                      className="hover:text-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            {/* Clear Filters */}
+            {activeFiltersCount > 0 && (
+              <div className="mt-4 flex justify-end">
+                <Button variant="ghost" onClick={clearFilters}>
+                  <X className="w-4 h-4 mr-2" />
+                  {t('common.clearFilters', 'Clear All Filters')}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Rentals Grid */}
+      <div className="container mx-auto px-4 py-8">
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600" />
+          </div>
+        ) : rentals.length === 0 ? (
+          <div className="text-center py-12">
+            <Home className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('rentals.noResults', 'No properties found')}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t('rentals.tryDifferent', 'Try adjusting your filters or search query')}
+            </p>
+            {activeFiltersCount > 0 && (
+              <Button variant="outline" onClick={clearFilters}>
+                {t('common.clearFilters', 'Clear Filters')}
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rentals.map((rental) => (
+              <ItemCard
+                key={rental.id}
+                item={rental}
+                onClick={() => handleRentalClick(rental)}
+              />
             ))}
           </div>
         )}
       </div>
+
+      {/* Rental Details Modal */}
+      {selectedRental && (
+        <Dialog open={!!selectedRental} onOpenChange={() => setSelectedRental(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl">{selectedRental.title}</DialogTitle>
+              <DialogDescription>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <span>{selectedRental.userName}</span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {selectedRental.location.village || selectedRental.location.subdivision}
+                    , {selectedRental.location.region}
+                  </span>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              {/* Image Gallery */}
+              {selectedRental.images.length > 0 && (
+                <div className="space-y-2">
+                  <img
+                    src={selectedRental.images[selectedImageIndex]}
+                    alt={selectedRental.title}
+                    className="w-full h-96 object-cover rounded-lg border"
+                  />
+                  {selectedRental.images.length > 1 && (
+                    <div className="grid grid-cols-4 gap-2">
+                      {selectedRental.images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`${selectedRental.title} ${index + 1}`}
+                          className={`w-full h-24 object-cover rounded cursor-pointer border-2 ${
+                            index === selectedImageIndex
+                              ? 'border-teal-600'
+                              : 'border-transparent'
+                          }`}
+                          onClick={() => setSelectedImageIndex(index)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Price */}
+              <div>
+                <p className="text-3xl font-bold text-teal-600">
+                  {selectedRental.price.amount.toLocaleString()} XAF
+                </p>
+                <p className="text-sm text-gray-600 capitalize">
+                  Per {selectedRental.price.period}
+                </p>
+              </div>
+
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="capitalize">
+                  {selectedRental.category.replace('-', ' ')}
+                </Badge>
+                <Badge variant="outline" className="capitalize">
+                  {selectedRental.propertyType}
+                </Badge>
+                {selectedRental.furnished && (
+                  <Badge className="bg-purple-100 text-purple-800">
+                    Furnished
+                  </Badge>
+                )}
+                {selectedRental.bedrooms && (
+                  <Badge variant="outline">
+                    <Bed className="w-3 h-3 mr-1" />
+                    {selectedRental.bedrooms} Bed
+                  </Badge>
+                )}
+                {selectedRental.bathrooms && (
+                  <Badge variant="outline">
+                    <Bath className="w-3 h-3 mr-1" />
+                    {selectedRental.bathrooms} Bath
+                  </Badge>
+                )}
+                {selectedRental.squareMeters && (
+                  <Badge variant="outline">
+                    <Maximize className="w-3 h-3 mr-1" />
+                    {selectedRental.squareMeters}m²
+                  </Badge>
+                )}
+              </div>
+
+              {/* Rating - Reviews Integration */}
+              {selectedRental.reviewCount > 0 && (
+                <div className="flex items-center gap-2">
+                  <StarRating rating={selectedRental.averageRating} readonly />
+                  <span className="text-sm text-gray-600">
+                    ({selectedRental.reviewCount}{' '}
+                    {selectedRental.reviewCount === 1 ? 'review' : 'reviews'})
+                  </span>
+                </div>
+              )}
+
+              {/* Description */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  {t('rentals.description', 'Description')}
+                </h3>
+                <p className="text-gray-700 whitespace-pre-wrap">
+                  {selectedRental.description}
+                </p>
+              </div>
+
+              {/* Amenities */}
+              {selectedRental.amenities && selectedRental.amenities.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {t('rentals.amenities', 'Amenities')}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selectedRental.amenities.map((amenity, index) => (
+                      <div key={index} className="flex items-center gap-2 text-gray-700">
+                        <Check className="w-4 h-4 text-green-600" />
+                        {amenity}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* House Rules */}
+              {selectedRental.rules && selectedRental.rules.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {t('rentals.rules', 'House Rules')}
+                  </h3>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700">
+                    {selectedRental.rules.map((rule, index) => (
+                      <li key={index}>{rule}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Owner Contact - Subscription Gate */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  {t('rentals.contact', 'Contact Owner')}
+                </h3>
+                {!canViewContact() ? (
+                  <Card className="bg-gradient-to-br from-teal-50 to-blue-50 border-teal-200">
+                    <CardContent className="p-6 text-center">
+                      <Lock className="w-12 h-12 text-teal-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {t('subscription.unlockContact', 'Unlock Owner Contact')}
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        {t(
+                          'subscription.contactMessage',
+                          'Subscribe to view owner phone numbers and contact directly'
+                        )}
+                      </p>
+                      <Button
+                        onClick={() => navigate('/subscription')}
+                        className="bg-teal-600 hover:bg-teal-700"
+                      >
+                        {t('subscription.viewPlans', 'View Subscription Plans')}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+                    <div>
+                      <p className="text-gray-700 mb-2">
+                        <strong>{t('rentals.owner', 'Owner')}:</strong>{' '}
+                        {selectedRental.userName}
+                      </p>
+                      {/* Owner Badges */}
+                      <div className="flex gap-1 flex-wrap">
+                        {selectedRental.owner?.isVerified && (
+                          <TrustedBadge type="verified" size="sm" />
+                        )}
+                        {selectedRental.owner?.isTrusted && (
+                          <TrustedBadge type="premium-landlord" size="sm" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-700 flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      <a
+                        href={`tel:${selectedRental.userPhone}`}
+                        className="text-teal-600 hover:underline"
+                      >
+                        {selectedRental.userPhone}
+                      </a>
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate(`/chat?user=${selectedRental.userId}`)}
+                      className="w-full"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      {t('rentals.message', 'Send Message')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Keywords */}
+              {selectedRental.keywords.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {t('common.keywords', 'Keywords')}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedRental.keywords.map((keyword, index) => (
+                      <Badge key={index} variant="secondary">
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reviews Integration */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-4">
+                  {t('reviews.title', 'Reviews')}
+                </h3>
+                <ReviewList itemId={selectedRental.id} itemType="rental" />
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
-
-
