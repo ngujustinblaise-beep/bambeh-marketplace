@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX62_CLEAN
 /**
  * src/pages/FarmFreshDetail.tsx ? Bambeh Marketplace
  *
@@ -358,12 +357,13 @@ const FarmFreshDetail: React.FC = () => {
                 </div>
               </div>
             </div>
-            {product.seller_id && (
-              <button
-                onClick={() => navigate(`/chat?userId=${product.seller_id}&listingTitle=${encodeURIComponent(product.title)}`)}
-                className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-colors">
-                <MessageCircle className="w-4 h-4" />Chat with Farmer
-              </button>
+            {product.seller_phone && (
+              <a
+                href={`https://wa.me/${product.seller_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I saw your listing for ${product.title} on Bambeh. I'm interested!`)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm hover:bg-[#1da851] transition-colors">
+                <MessageCircle className="w-4 h-4" />{t("whatsappSeller", lang) || "WhatsApp Farmer"}
+              </a>
             )}
           </div>
         )}
@@ -470,4 +470,10 @@ const FarmFreshDetail: React.FC = () => {
 
 export default FarmFreshDetail;
 
-// BAMBEH_END_TOKEN__FARMFRESHDETAIL_FIX62__COMPLETE
+
+
+
+
+
+
+

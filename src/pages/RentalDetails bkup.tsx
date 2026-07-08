@@ -1,7 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__RENTALDETAILS_FIX62_CLEAN
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Loader2, ArrowLeft, Share2, Heart, Home, AlertTriangle, MapPin, Bed, Bath, Eye, Phone, MessageCircle } from "lucide-react";
+import { Loader2, ArrowLeft, Share2, Heart, Home, AlertTriangle, MapPin, Bed, Bath, Eye, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -299,11 +298,11 @@ export default function RentalDetails() {
                   <p className="font-medium text-gray-900">{listing.contactName || "Owner"}</p>
                   <p className="text-sm text-gray-500">{listing.contactPhone || "No phone available"}</p>
                 </div>
-                {listing.user_id ? (
-                  <button onClick={() => navigate(`/chat?userId=${listing.user_id}&listingTitle=${encodeURIComponent(listing.title || "Rental")}`)} className="bg-orange-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4" />
-                    Chat
-                  </button>
+                {listing.contactPhone ? (
+                  <a href={`tel:${listing.contactPhone}`} className="bg-orange-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    {t("rental.call")}
+                  </a>
                 ) : null}
               </div>
             </div>
@@ -318,4 +317,4 @@ export default function RentalDetails() {
   );
 }
 
-// BAMBEH_END_TOKEN__RENTALDETAILS_FIX62__COMPLETE
+

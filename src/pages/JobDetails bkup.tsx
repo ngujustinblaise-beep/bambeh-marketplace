@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX62_CLEAN
 /**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
@@ -147,7 +146,28 @@ const JobDetails: React.FC = () => {
 
     const userId = sessionData.session.user.id;
 
-    // In-app application only (external whatsapp/call/email removed)
+    // WhatsApp / call / email — open external link
+    if (job.applyMethod === "whatsapp" && job.applyContact) {
+      const msg = encodeURIComponent(`Hello, I'm applying for the ${job.title} position at ${job.company ?? "your company"} posted on Bambeh.`);
+      const phone = job.applyContact.replace(/\D/g, "");
+      window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+      setApplied(true);
+      return;
+    }
+    if (job.applyMethod === "call" && job.applyContact) {
+      window.open(`tel:${job.applyContact}`, "_blank");
+      setApplied(true);
+      return;
+    }
+    if (job.applyMethod === "email" && job.applyContact) {
+      const subject = encodeURIComponent(`Job Application: ${job.title}`);
+      const body = encodeURIComponent(`Dear Hiring Manager,\n\nI am applying for the ${job.title} position at ${job.company ?? "your company"} posted on Bambeh.\n\nThank you.`);
+      window.open(`mailto:${job.applyContact}?subject=${subject}&body=${body}`, "_blank");
+      setApplied(true);
+      return;
+    }
+
+    // In-app application
     setApplying(true);
     try {
       const result = await applyForJob(job.id, userId);
@@ -242,7 +262,10 @@ const JobDetails: React.FC = () => {
   const closingSoon = daysLeft !== null && daysLeft <= 3 && daysLeft >= 0;
 
   // Apply button label
-  const applyBtnLabel = s("applyNow", lang);
+  let applyBtnLabel = s("applyNow", lang);
+  if (job.applyMethod === "whatsapp") applyBtnLabel = s("applyWhatsApp", lang);
+  else if (job.applyMethod === "call") applyBtnLabel = s("applyCall", lang);
+  else if (job.applyMethod === "email") applyBtnLabel = s("applyEmail", lang);
 
   return (
     <div className="max-w-lg mx-auto pb-32" dir={dir}>
@@ -490,4 +513,5 @@ const JobDetails: React.FC = () => {
 
 export default JobDetails;
 
-// BAMBEH_END_TOKEN__JOBDETAILS_FIX62__COMPLETE
+
+

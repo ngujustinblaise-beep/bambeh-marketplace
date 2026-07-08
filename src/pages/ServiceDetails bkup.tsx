@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX62_CLEAN
 /**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
@@ -29,7 +28,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, MapPin, Phone, Share2, Calendar, MessageCircle,
+  ArrowLeft, MapPin, Phone, Share2, Calendar,
   Wrench, Clock, Tag, Eye, AlertCircle, Flag,
   CheckCircle, User, Star, Shield, Edit3,
 } from 'lucide-react';
@@ -667,10 +666,10 @@ export default function ServiceDetails() {
       {/* ── Sticky action bar ── */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
         <div className="max-w-2xl mx-auto flex gap-3">
-          {providerId && !isOwner && (
-            <button onClick={() => navigate(`/chat?userId=${providerId}&listingTitle=${encodeURIComponent(service.title)}`)} aria-label="Chat"
+          {service.phone && (
+            <button onClick={handleCall} aria-label={s.call}
               className="flex-1 flex items-center justify-center gap-2 border-2 border-purple-200 text-purple-600 rounded-xl py-3 font-semibold text-sm hover:bg-purple-50 transition-colors">
-              <MessageCircle className="w-4 h-4" /> Chat
+              <Phone className="w-4 h-4" /> {s.call}
             </button>
           )}
           <button onClick={handleBook}
@@ -699,4 +698,5 @@ export default function ServiceDetails() {
   );
 }
 
-// BAMBEH_END_TOKEN__SERVICEDETAILS_FIX62__COMPLETE
+
+

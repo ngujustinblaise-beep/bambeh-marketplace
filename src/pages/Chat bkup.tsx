@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CHAT_FIX61_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CHAT_FIX58_CLEAN
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -292,7 +292,7 @@ export default function ChatPage() {
     const fetchConversations = async () => {
       const { data, error } = await supabase
         .from('conversations')
-        .select('id, participant_ids, last_message, last_message_at, listing_title, listing_image, unread_counts')
+        .select('id, participants, last_message, last_message_at, listing_title, listing_image, unread_counts, conversation_participants(user_id, profiles(id, full_name, avatar_url, last_seen))')
         .contains('participant_ids', [user.id])
         .order('last_message_at', { ascending: false });
 
@@ -301,39 +301,22 @@ export default function ChatPage() {
         return;
       }
 
-      const rows = data ?? [];
-
-      // Participants live in the participant_ids array. Fetch their profiles
-      // in one query (no separate join table exists in this schema).
-      const ids = Array.from(new Set(rows.flatMap((r: any) => r.participant_ids ?? []))) as string[];
-      const profileMap: Record<string, any> = {};
-      if (ids.length) {
-        const { data: profs } = await supabase
-          .from('profiles')
-          .select('*')
-          .in('id', ids);
-        for (const p of profs ?? []) profileMap[p.id] = p;
-      }
-
       setConversations(
-        rows.map((row: any) => ({
+        (data ?? []).map((row: any) => ({
           id: row.id,
-          participants: row.participant_ids ?? [],
+          participants: row.participants ?? [],
           lastMessage: row.last_message ?? '',
           lastMessageAt: row.last_message_at ?? '',
           unreadCount: row.unread_counts?.[user.id] ?? 0,
           listingTitle: row.listing_title,
           listingImage: row.listing_image,
-          participantDetails: (row.participant_ids ?? []).map((pid: string) => {
-            const p = profileMap[pid];
-            return {
-              id: pid,
-              name: p?.full_name ?? p?.display_name ?? p?.username ?? 'User',
-              avatar: p?.avatar_url ?? p?.avatar ?? undefined,
-              isOnline: false,
-              lastSeen: p?.last_seen,
-            };
-          }),
+          participantDetails: (row.conversation_participants ?? []).map((cp: any) => ({
+            id: cp.profiles?.id ?? cp.user_id,
+            name: cp.profiles?.full_name ?? 'User',
+            avatar: cp.profiles?.avatar_url ?? undefined,
+            isOnline: false,
+            lastSeen: cp.profiles?.last_seen,
+          })),
         }))
       );
     };
@@ -861,7 +844,12 @@ export async function startChat(
     throw new Error(`Failed to create conversation: ${error.message}`);
   }
 
+  await supabase.from('conversation_participants').insert([
+    { conversation_id: data.id, user_id: currentUserId },
+    { conversation_id: data.id, user_id: otherUserId },
+  ]);
+
   return data.id;
 }
 
-// BAMBEH_END_TOKEN__CHAT_FIX61__COMPLETE
+// BAMBEH_END_TOKEN__CHAT_FIX58__COMPLETE

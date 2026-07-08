@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__VEHICLEDETAILS_FIX62_CLEAN
 /**
  * src/pages/VehicleDetails.tsx ? Bambeh Marketplace
  * Full vehicle detail page: multilingual, Supabase, image gallery,
@@ -12,7 +11,7 @@ import {
   Loader2, ArrowLeft, Share2, Heart, MapPin,
   Gauge, Fuel, Cog, Calendar, Users, Palette,
   Eye, CalendarDays, ShieldCheck, Star, Bell, Phone, MessageCircle,
-  AlertTriangle, Car,
+  AlertTriangle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -451,7 +450,7 @@ const VehicleDetails: React.FC = () => {
             </>
           ) : (
             <div className="h-64 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
-              <Car className="w-20 h-20 text-gray-300" />
+              <span className="text-7xl">??</span>
             </div>
           )}
 
@@ -563,16 +562,24 @@ const VehicleDetails: React.FC = () => {
         </div>
 
         {/* -- Bottom CTA bar ? real listing -- */}
-        {vehicle.status !== "demo" && !isOwner && vehicle.user_id && (
+        {vehicle.status !== "demo" && vehicle.contact_phone && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-lg px-4 pt-3 pb-6">
-            <div className="max-w-2xl mx-auto">
+            <div className={`max-w-2xl mx-auto grid grid-cols-2 gap-3 ${isRtl ? "dir-rtl" : ""}`}>
               <button
-                onClick={() => navigate(`/chat?userId=${vehicle.user_id}&listingTitle=${encodeURIComponent(vehicle.title)}`)}
-                className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white
-                           py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 active:scale-95 transition-all"
+                onClick={handleCall}
+                className="flex items-center justify-center gap-2 bg-gray-900 text-white
+                           py-3 rounded-xl font-semibold text-sm hover:bg-gray-800 active:scale-95 transition-all"
+              >
+                <Phone className="w-4 h-4" />
+                {tr("callSeller")}
+              </button>
+              <button
+                onClick={handleWhatsApp}
+                className="flex items-center justify-center gap-2 bg-green-500 text-white
+                           py-3 rounded-xl font-semibold text-sm hover:bg-green-600 active:scale-95 transition-all"
               >
                 <MessageCircle className="w-4 h-4" />
-                Chat with Seller
+                {tr("whatsapp")}
               </button>
             </div>
           </div>
@@ -600,4 +607,7 @@ const VehicleDetails: React.FC = () => {
 
 export default VehicleDetails;
 
-// BAMBEH_END_TOKEN__VEHICLEDETAILS_FIX62__COMPLETE
+
+
+
+
