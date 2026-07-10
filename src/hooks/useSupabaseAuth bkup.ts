@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX71_CLEAN
 /**
  * ═══════════════════════════════════════════════════════════════════════
  * src/hooks/useSupabaseAuth.ts
@@ -7,19 +6,19 @@
  * SECURITY FIX: Replaces localStorage-only auth checks with
  * cryptographically verified Supabase JWT validation.
  *
- * FIX71: Added the missing register() function. Register.tsx calls
- *        useAuth().register(...) — which was undefined, so signup threw
- *        silently (false "account created" + no redirect). register() now
- *        calls supabase.auth.signUp and, when a session is returned
- *        (email-confirmation OFF), signs the user straight in.
+ * Architecture:
+ *   ✅ supabase.auth.getUser()  → validates JWT with Supabase server
+ *   ✅ onAuthStateChange()       → reacts to session expiry / sign-out
+ *   ✅ roles fetched from DB     → isVendor / isAdmin cannot be spoofed
+ *   ✅ loading state             → protected routes wait for verification
  *
  * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { useState, useEffect, useCallback, createContext } from 'react';
-import type { Session, User }                              from '@supabase/supabase-js';
-import { supabase }                                        from '@/lib/supabase';
+import { useState, useEffect, useCallback, useContext, createContext } from 'react';
+import type { Session, User }                                           from '@supabase/supabase-js';
+import { supabase }                                                     from '@/lib/supabase';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -38,7 +37,6 @@ export interface SupabaseAuthState {
   authReady:  boolean;
   refresh:    () => Promise<void>;
   login:      (email: string, password: string) => Promise<{ error: string | null }>;
-  register:   (email: string, password: string, fullName?: string) => Promise<{ error: string | null }>;
   logout:     () => Promise<void>;
 }
 
@@ -57,13 +55,12 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 // ── Core hook ─────────────────────────────────────────────────────────────────
 
 export function useSupabaseAuth(): SupabaseAuthState {
-  const [state, setState] = useState<Omit<SupabaseAuthState, 'refresh' | 'login' | 'register' | 'logout'>>({
+  const [state, setState] = useState<Omit<SupabaseAuthState, 'refresh'>>({
     user:    null,
     session: null,
     isVendor: false,
     isAdmin:  false,
     loading:  true,
-    authReady: false,
   });
   const [authReady, setAuthReady] = useState(false);
 
@@ -75,7 +72,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     // ── No session ──────────────────────────────────────────────────────────
     if (!session) {
       profileCache = null;
-      setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
+      setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false });
       return;
     }
 
@@ -87,7 +84,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
       // Token is invalid / expired — force sign out
       await supabase.auth.signOut();
       profileCache = null;
-      setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
+      setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false });
       return;
     }
 
@@ -104,7 +101,6 @@ export function useSupabaseAuth(): SupabaseAuthState {
         isVendor: profileCache.isVendor,
         isAdmin:  profileCache.isAdmin,
         loading:  false,
-        authReady: true,
       });
       return;
     }
@@ -122,7 +118,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
 
     profileCache = { userId: user.id, isVendor, isAdmin, fetchedAt: now };
 
-    setState({ user, session, isVendor, isAdmin, loading: false, authReady: true });
+    setState({ user, session, isVendor, isAdmin, loading: false });
   }, []);
 
   // ── Expose a manual refresh ────────────────────────────────────────────────
@@ -132,33 +128,13 @@ export function useSupabaseAuth(): SupabaseAuthState {
     await resolveSession(session);
   }, [resolveSession]);
 
-  // ── Email + password sign-in ──────────────────────────────────────────────
+  // ── Email + password sign-in / sign-out ───────────────────────────────────
   const login = useCallback(
     async (email: string, password: string): Promise<{ error: string | null }> => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { error: error.message };
       const { data: { session } } = await supabase.auth.getSession();
       await resolveSession(session);
-      return { error: null };
-    },
-    [resolveSession],
-  );
-
-  // ── Email + password sign-up (FIX71) ──────────────────────────────────────
-  const register = useCallback(
-    async (email: string, password: string, fullName?: string): Promise<{ error: string | null }> => {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: fullName ? { data: { full_name: fullName } } : undefined,
-      });
-      if (error) return { error: error.message };
-      // When "Confirm email" is OFF, signUp returns a live session → log the
-      // user straight in. When it is ON, session is null and the user must
-      // confirm first — the caller can route them to /login.
-      if (data.session) {
-        await resolveSession(data.session);
-      }
       return { error: null };
     },
     [resolveSession],
@@ -190,7 +166,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     };
   }, [resolveSession]);
 
-  return { ...state, authReady, refresh, login, register, logout };
+  return { ...state, authReady, refresh, login, logout };
 }
 
 // ── Context (for use in AuthProvider) ────────────────────────────────────────
@@ -201,13 +177,9 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
   isVendor: false,
   isAdmin:  false,
   loading:  true,
-  authReady: false,
   refresh:  async () => {},
-  login:    async () => ({ error: null }),
-  register: async () => ({ error: null }),
-  logout:   async () => {},
 });
 
 /** Convenience hook — use this in components instead of prop drilling */
 export { useAuth } from "@/contexts/AuthContext";
-// BAMBEH_END_TOKEN__USESUPABASEAUTH__COMPLETE
+

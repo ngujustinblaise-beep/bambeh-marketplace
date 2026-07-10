@@ -1,28 +1,22 @@
+// BAMBEH_DEPLOY_TOKEN__TONTINEDETAIL_FIX67_CLEAN
 /**
- * src/pages/TontineDetail.tsx ? Bambeh Marketplace
+ * src/routes/groups/community/TontineDetail.tsx - Bambeh Marketplace
  *
- * FIXES applied:
- *  ? supabase .single() replaced with .maybeSingle() to avoid PGRST116 error
- *     when no row exists ? was throwing uncaught exception.
- *  ? handleJoin: navigate('/login') has explicit return ? no supabase call without user.
- *  ? handleJoin: supabase.from('tontine_groups').update() now uses RPC increment
- *     or a safe +1 strategy to avoid overwriting concurrent joins.
- *  ? loadGroup called with correct id (group.id not stale) after join.
- *  ? Demo group shown when ID is non-UUID (dev/preview mode).
- *  ? Date formatting: toLocaleDateString with explicit locale to avoid hydration mismatch.
- *  ? Member list: profiles join uses correct syntax; full_name fallback is 'Member'.
- *  ? Loader2 replaced with consistent spinner style.
- *  ? "Back to Tontine" link uses navigate() not window.location.
+ * fix67: adds "Message Organizer" (in-app chat only) button that opens a
+ *        conversation with the group organizer (admin_id).
+ * ALSO FIXED: isUUID() was calling useLang() inside a plain helper (illegal
+ *        React hook usage -> runtime "Invalid hook call" crash). Removed.
+ *        Cleaned mojibake in labels.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Users, DollarSign, Calendar, CheckCircle,
-  Clock, Loader2, AlertCircle, Plus, Shield,
+  Clock, Loader2, AlertCircle, Plus, Shield, MessageCircle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { useLang, t } from "@/hooks/useAppLang";
+import { useLang } from '@/hooks/useAppLang';
 
 interface Group {
   id:              string;
@@ -60,15 +54,26 @@ const DEMO_GROUP: Group = {
   status:          'active',
 };
 
+// Plain helper — must NOT call hooks.
 function isUUID(s: string) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
+
+const ORG_LABEL: Record<string, string> = {
+  en:      'Message Organizer',
+  fr:      "Contacter l'organisateur",
+  pidgin:  'Message di Organizer',
+  ar:      'مراسلة المنظم',
+  ff:      'Neldu jofngeteeɗo',
+};
 
 export default function TontineDetail() {
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const langRaw = useLang() as unknown;
+  const lang = typeof langRaw === 'string' ? langRaw : (langRaw as { lang?: string })?.lang || 'en';
+  const messageOrganizerLabel = ORG_LABEL[lang] || ORG_LABEL.en;
 
   const [group,    setGroup]    = useState<Group | null>(null);
   const [members,  setMembers]  = useState<Member[]>([]);
@@ -92,7 +97,6 @@ export default function TontineDetail() {
         return;
       }
 
-      // FIX: maybeSingle() instead of single() ? no error when row missing
       const { data, error: dbErr } = await supabase
         .from('tontine_groups')
         .select('*')
@@ -116,7 +120,6 @@ export default function TontineDetail() {
         status:          data.status,
       });
 
-      // Load members with profile join
       const { data: memberData } = await supabase
         .from('tontine_members')
         .select('user_id, joined_at, payout_position, has_paid_current_round, profiles:user_id(full_name)')
@@ -146,7 +149,7 @@ export default function TontineDetail() {
   }, [id, loadGroup]);
 
   async function handleJoin() {
-    if (!userId) { navigate('/login'); return; } // FIX: explicit return
+    if (!userId) { navigate('/login'); return; }
     if (!group || !isUUID(group.id) || joining) return;
     setJoining(true);
     try {
@@ -158,7 +161,6 @@ export default function TontineDetail() {
         has_paid_current_round: false,
       });
 
-      // FIX: try RPC increment; fallback to direct update
       await supabase.rpc('increment_tontine_members', { group_id: group.id })
         .then(() => {}, () =>
           supabase
@@ -170,13 +172,21 @@ export default function TontineDetail() {
       setIsMember(true);
       loadGroup(group.id);
     } catch {
-      // silent ? user can try again
+      // silent - user can try again
     } finally {
       setJoining(false);
     }
   }
 
+  function messageOrganizer() {
+    if (!group) return;
+    navigate(`/chat?userId=${group.adminId}&listingTitle=${encodeURIComponent(group.name)}`);
+  }
+
   const fmt = (n: number) => `${n.toLocaleString('fr-CM')} XAF`;
+
+  const canMessageOrganizer =
+    !!group && isUUID(group.id) && !!group.adminId && group.adminId !== 'demo' && userId !== group.adminId;
 
   if (loading) {
     return (
@@ -244,6 +254,17 @@ export default function TontineDetail() {
           </div>
         </div>
 
+        {/* Message Organizer (in-app chat only) */}
+        {canMessageOrganizer && (
+          <button
+            onClick={messageOrganizer}
+            className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-2xl transition"
+          >
+            <MessageCircle className="w-5 h-5" />
+            {messageOrganizerLabel}
+          </button>
+        )}
+
         {/* Description */}
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <h3 className="font-bold text-gray-900 mb-1">About</h3>
@@ -306,19 +327,12 @@ export default function TontineDetail() {
             className="w-full bg-purple-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-purple-800 transition"
           >
             {joining
-              ? <><Loader2 className="w-4 h-4 animate-spin" />Joining?</>
-              : <><Plus className="w-4 h-4" />Join ? {fmt(group.contributionXaf)}/{group.frequency}</>}
+              ? <><Loader2 className="w-4 h-4 animate-spin" />Joining...</>
+              : <><Plus className="w-4 h-4" />Join - {fmt(group.contributionXaf)}/{group.frequency}</>}
           </button>
         </div>
       )}
     </div>
   );
 }
-
-
-
-
-
-
-
-
+// BAMBEH_END_TOKEN__TONTINEDETAIL__COMPLETE
