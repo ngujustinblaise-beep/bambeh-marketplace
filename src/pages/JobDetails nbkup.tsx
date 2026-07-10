@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX77_CLEAN
+// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX62_CLEAN
 /**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
@@ -8,7 +8,7 @@
  *  ✅ Uses listings table (correct Bambeh schema) via jobs.service
  *  ✅ Company logo displayed if uploaded
  *  ✅ Full multilingual: EN / FR / HA / AR / PCM / FUL
- *  FIX77: in-app apply ONLY; legacy contact display removed
+ *  ✅ All apply methods: in_app, whatsapp, call, email
  *  ✅ Duplicate-application detection
  *  ✅ Share + Bookmark working
  *  ✅ Deadline expiry banner
@@ -17,7 +17,12 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Briefcase, DollarSign, Calendar, Clock, Users, Globe, Bookmark, Share2, RefreshCw, AlertCircle, CheckCircle, Building2, Eye } from "lucide-react";
+import {
+  ArrowLeft, MapPin, Briefcase, DollarSign, Calendar,
+  Clock, Users, Globe, Bookmark, Share2, RefreshCw,
+  AlertCircle, CheckCircle, Building2, Phone, Mail,
+  MessageCircle, Eye,
+} from "lucide-react";
 import { getJobById, incrementJobView, applyForJob } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { useLang } from "@/hooks/useAppLang";
@@ -419,6 +424,16 @@ const JobDetails: React.FC = () => {
           </div>
         )}
 
+        {/* Contact info (for non-in_app) */}
+        {job.applyMethod !== "in_app" && job.applyContact && (
+          <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm">
+            {job.applyMethod === "whatsapp" && <MessageCircle className="w-4 h-4 text-green-500 flex-shrink-0" />}
+            {job.applyMethod === "call"     && <Phone          className="w-4 h-4 text-blue-500 flex-shrink-0"  />}
+            {job.applyMethod === "email"    && <Mail           className="w-4 h-4 text-teal-500 flex-shrink-0"  />}
+            <span className="text-gray-700 dark:text-gray-300">{job.applyContact}</span>
+          </div>
+        )}
+
         {/* Apply error */}
         {applyError && (
           <div className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl">
@@ -459,7 +474,10 @@ const JobDetails: React.FC = () => {
               <><RefreshCw className="w-4 h-4 animate-spin" /> {s("applying", lang)}</>
             ) : (
               <>
-                <Briefcase className="w-4 h-4" />
+                {job.applyMethod === "whatsapp" && <MessageCircle className="w-4 h-4" />}
+                {job.applyMethod === "call"     && <Phone          className="w-4 h-4" />}
+                {job.applyMethod === "email"    && <Mail           className="w-4 h-4" />}
+                {job.applyMethod === "in_app"   && <Briefcase      className="w-4 h-4" />}
                 {applyBtnLabel}
               </>
             )}
@@ -472,4 +490,4 @@ const JobDetails: React.FC = () => {
 
 export default JobDetails;
 
-// BAMBEH_END_TOKEN__JOBDETAILS__COMPLETE
+// BAMBEH_END_TOKEN__JOBDETAILS_FIX62__COMPLETE

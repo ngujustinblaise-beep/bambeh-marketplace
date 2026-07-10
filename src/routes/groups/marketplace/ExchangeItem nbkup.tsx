@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__EXCHANGEITEM_FIX76_CLEAN
+// BAMBEH_DEPLOY_TOKEN__EXCHANGEITEM_FIX56_CLEAN
 /**
  * src/pages/ExchangeItem.tsx — Bambeh Marketplace
  *
@@ -631,7 +631,7 @@ const ExchangeItem: React.FC = () => {
         ) : (
           <>
             <button type="button"
-              onClick={() => navigate(`/chat?userId=${item.userId}&listingTitle=${encodeURIComponent(item.title || 'Exchange item')}`)}
+              onClick={() => navigate(`/chat?userId=${item.userId}&listingId=${item.id}&type=exchange`)}
               className="flex-1 py-3 border border-teal-300 text-teal-700 rounded-xl font-semibold
                 flex items-center justify-center gap-2 hover:bg-teal-50 transition-colors">
               <MessageCircle className="w-4 h-4" />{s.chat}
@@ -650,4 +650,6 @@ const ExchangeItem: React.FC = () => {
 };
 
 export default ExchangeItem;
-// BAMBEH_END_TOKEN__EXCHANGEITEM__COMPLETE
+
+
+

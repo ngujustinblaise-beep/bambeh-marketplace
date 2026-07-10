@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CHAT_FIX74_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CHAT_FIX64_CLEAN
 // FIX64: (1) conversation list reads participant_ids + a single separate profiles
 //        fetch (the conversation_participants embed hit a table that does not
 //        exist, so names/avatars were blank). (2) sendMessage now updates the
@@ -243,7 +243,6 @@ export default function ChatPage() {
 
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(searchParams.get('chat') ?? null);
-  const [startError, setStartError] = useState<string | null>(null); // FIX74: surface startChat failures instead of a silent blank screen
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
@@ -288,7 +287,6 @@ export default function ChatPage() {
         }
       } catch (e) {
         logger.warn('Could not start conversation from userId param:', e);
-        if (!cancelled) setStartError(e instanceof Error ? e.message : 'Could not open this chat. Please try again.');
       }
     })();
     return () => { cancelled = true; };
@@ -684,11 +682,6 @@ export default function ChatPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {startError && (
-          <div className="mx-4 mt-3 p-3 rounded-xl border border-red-200 bg-red-50 text-sm text-red-700">
-            {startError}
-          </div>
-        )}
         {filteredConvs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
             <MessageSquare className="w-12 h-12 text-gray-300 mb-3" />
@@ -895,28 +888,22 @@ export async function startChat(
   listingTitle?: string,
   listingImage?: string
 ): Promise<string> {
-  // FIX74: limit(1) instead of maybeSingle - duplicate conversations from
-  // earlier testing made maybeSingle throw ("multiple rows"), which silently
-  // blanked the chat screen (no input box).
-  const { data: existingRows, error: existingError } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from('conversations')
     .select('id')
     .contains('participant_ids', [currentUserId, otherUserId])
-    .order('last_message_at', { ascending: false })
-    .limit(1);
+    .maybeSingle();
 
   if (existingError) {
     throw new Error(`Failed to find conversation: ${existingError.message}`);
   }
 
-  if (existingRows && existingRows.length > 0) return existingRows[0].id;
+  if (existing?.id) return existing.id;
 
   const { data, error } = await supabase
     .from('conversations')
     .insert({
       participant_ids: [currentUserId, otherUserId],
-      buyer_id: currentUserId,
-      seller_id: otherUserId,
       last_message: '',
       last_message_at: new Date().toISOString(),
       listing_title: listingTitle ?? null,
@@ -935,4 +922,4 @@ export async function startChat(
   return data.id;
 }
 
-// BAMBEH_END_TOKEN__CHAT_FIX74__COMPLETE
+// BAMBEH_END_TOKEN__CHAT_FIX64__COMPLETE

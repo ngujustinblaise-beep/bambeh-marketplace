@@ -1,9 +1,8 @@
-// BAMBEH_DEPLOY_TOKEN__BOOKSERVICEMODAL_FIX78_CLEAN
 /**
  * src/components/services/BookServiceModal.tsx — Bambeh Marketplace
  *
  * CHANGES IN THIS VERSION:
- * FIX78: phone field removed (platform is in-app chat only)
+ * ✅ AfricanPhoneInput added for visitor callback number (Cameroon default,
  *    full Central + West Africa country picker)
  * ✅ sendBookingMessage called after Supabase insert — sends a non-repliable
  *    in-app message to the service provider so they see a booking card in Chat.
@@ -19,6 +18,7 @@
  *   booking_date date not null,
  *   booking_time text not null,
  *   message      text,
+ *   client_phone text,
  *   status       text not null default 'pending',
  *   created_at   timestamptz not null default now()
  * );
@@ -30,8 +30,9 @@
  */
 
 import { useState } from 'react';
-import { X, CalendarDays, Clock, MessageCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { X, CalendarDays, Clock, MessageCircle, CheckCircle, Loader2, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import AfricanPhoneInput from '@/components/AfricanPhoneInput';
 import { sendBookingMessage } from '@/utils/SendBookingMessage';
 
 interface Props {
@@ -78,6 +79,8 @@ export default function BookServiceModal({
   const [date,         setDate]         = useState('');
   const [time,         setTime]         = useState('');
   const [message,      setMessage]      = useState('');
+  const [clientPhone,  setClientPhone]  = useState('');
+  const [phoneValid,   setPhoneValid]   = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [done,         setDone]         = useState(false);
   const [error,        setError]        = useState<string | null>(null);
@@ -87,6 +90,9 @@ export default function BookServiceModal({
   async function handleBook() {
     if (!date) { setError('Please select a date.'); return; }
     if (!time) { setError('Please select a time.'); return; }
+    if (clientPhone && !phoneValid) {
+      setError('Please enter a valid phone number.'); return;
+    }
     setError(null);
     setLoading(true);
 
@@ -106,6 +112,7 @@ export default function BookServiceModal({
         booking_date: date,
         booking_time: time,
         message:      message.trim() || null,
+        client_phone: clientPhone    || null,
         status:       'pending',
       });
 
@@ -121,6 +128,7 @@ export default function BookServiceModal({
           date,
           time,
           visitorNote:  message.trim()  || undefined,
+          visitorPhone: clientPhone     || undefined,
         });
       }
 
@@ -134,6 +142,7 @@ export default function BookServiceModal({
 
   function handleClose() {
     setDate(''); setTime(''); setMessage('');
+    setClientPhone(''); setPhoneValid(false);
     setDone(false); setError(null);
     onClose();
   }
@@ -247,6 +256,19 @@ export default function BookServiceModal({
               </div>
             </div>
 
+            {/* ── AfricanPhoneInput — client's callback number ── */}
+            <div>
+              <AfricanPhoneInput
+                label="Your contact number"
+                value={clientPhone}
+                onChange={(full, valid) => { setClientPhone(full); setPhoneValid(valid); }}
+              />
+              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                <Phone className="w-3 h-3" />
+                So the provider can reach you to confirm. Tap the flag to change country.
+              </p>
+            </div>
+
             {/* Message */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
@@ -270,13 +292,14 @@ export default function BookServiceModal({
                 {date && <p>📅 {dateOptions.find(d => d.value === date)?.label}</p>}
                 {time && <p>🕐 {fmt12(time)}</p>}
                 <p>👤 Provider: {providerName}</p>
+                {clientPhone && <p>📞 Your number: {clientPhone}</p>}
               </div>
             )}
 
             {/* CTA */}
             <button
               onClick={handleBook}
-              disabled={loading || !date || !time}
+              disabled={loading || !date || !time || (!!clientPhone && !phoneValid)}
               className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold text-sm
                 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2
                 hover:bg-teal-700 active:scale-[0.98] transition-all"
@@ -296,4 +319,6 @@ export default function BookServiceModal({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__BOOKSERVICEMODAL__COMPLETE
+
+
+

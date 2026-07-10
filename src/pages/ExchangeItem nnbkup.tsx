@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__EXCHANGEITEM_FIX76_CLEAN
 /**
  * src/pages/ExchangeItem.tsx — Bambeh Marketplace
  *
@@ -288,30 +287,18 @@ const ExchangeItem: React.FC = () => {
     try {
       const { data, error: dbErr } = await supabase
         .from('exchange_items')
-        .select('*')
+        .select('*, profiles:user_id (display_name, avatar_url)')
         .eq('id', id)
         .single();
 
       if (dbErr || !data) { setError(s.noLongerExists); return; }
 
-      // Owner profile fetched SEPARATELY. Embedding profiles:user_id needs a FK
-      // relationship that may not exist; PostgREST turns that into an error that
-      // was wrongly showing "item no longer exists". This is best-effort now:
-      // the item always displays even if the profile lookup fails.
-      let profile: any = null;
-      try {
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user_id)
-          .maybeSingle();
-        profile = prof;
-      } catch { /* non-fatal */ }
+      const profile = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
       setItem({
         id:                  data.id as string,
         userId:              data.user_id as string,
-        ownerName:           profile?.display_name ?? profile?.full_name ?? profile?.username ?? 'Bambeh User',
-        ownerAvatar:         profile?.avatar_url ?? profile?.avatar ?? undefined,
+        ownerName:           (profile?.display_name as string) ?? 'Bambeh User',
+        ownerAvatar:         profile?.avatar_url as string | undefined,
         title:               data.title as string,
         description:         (data.description as string) ?? '',
         category:            data.category as string,
@@ -631,7 +618,7 @@ const ExchangeItem: React.FC = () => {
         ) : (
           <>
             <button type="button"
-              onClick={() => navigate(`/chat?userId=${item.userId}&listingTitle=${encodeURIComponent(item.title || 'Exchange item')}`)}
+              onClick={() => navigate(`/chat?userId=${item.userId}&listingId=${item.id}&type=exchange`)}
               className="flex-1 py-3 border border-teal-300 text-teal-700 rounded-xl font-semibold
                 flex items-center justify-center gap-2 hover:bg-teal-50 transition-colors">
               <MessageCircle className="w-4 h-4" />{s.chat}
@@ -650,4 +637,6 @@ const ExchangeItem: React.FC = () => {
 };
 
 export default ExchangeItem;
-// BAMBEH_END_TOKEN__EXCHANGEITEM__COMPLETE
+
+
+

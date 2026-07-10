@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX75_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX62_CLEAN
 /**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
@@ -6,7 +6,7 @@
  *
  * SECURITY:
  *   ✅ getUser() — no JWT spoofing
- *   FIX75: tel: path removed (in-app chat only)
+ *   ✅ Phone URI sanitised before tel: scheme
  *   ✅ No sensitive fields in SELECT (no email, no hashed data)
  *   ✅ Owner-only edit button (server RLS enforces too)
  *   ✅ Report flow via secure backend; reporter_id server-resolved
@@ -29,7 +29,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, MapPin, Share2, Calendar, MessageCircle,
+  ArrowLeft, MapPin, Phone, Share2, Calendar, MessageCircle,
   Wrench, Clock, Tag, Eye, AlertCircle, Flag,
   CheckCircle, User, Star, Shield, Edit3,
 } from 'lucide-react';
@@ -459,6 +459,11 @@ export default function ServiceDetails() {
     } catch { /* silent */ }
   }, [service, id]);
 
+  const handleCall = useCallback(() => {
+    if (!service?.phone) return;
+    window.location.href = `tel:${service.phone.replace(/[^+\d]/g, '')}`;
+  }, [service]);
+
   const handleBook = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate('/login'); return; }
@@ -694,4 +699,4 @@ export default function ServiceDetails() {
   );
 }
 
-// BAMBEH_END_TOKEN__SERVICEDETAILS__COMPLETE
+// BAMBEH_END_TOKEN__SERVICEDETAILS_FIX62__COMPLETE
