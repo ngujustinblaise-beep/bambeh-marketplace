@@ -1,301 +1,578 @@
-/**
- * SellerProfilePage.tsx ? BAMBEH MARKETPLACE
- * Route: /seller/:id
- * ? 2026 Bambeh Marketplace
- */
-import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, MapPin, CheckCircle, MessageSquare, Share2, Copy, MessageCircle, ShieldCheck, Clock, UserPlus } from 'lucide-react';
-import { useLang, t } from "@/hooks/useAppLang";
+// BAMBEH_DEPLOY_TOKEN__SellerProfilePage_FIX68_CLEAN
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Star,
+  MessageCircle,
+  MapPin,
+  Package,
+  Loader2,
+  ArrowLeft,
+  ShieldCheck,
+  Clock,
+} from 'lucide-react';
 
-interface Listing { id: string; title: string; price: number; image: string; category: string; condition?: string }
-interface Review { id: string; reviewerName: string; reviewerAvatar: string; rating: number; comment: string; date: string; itemBought?: string }
-interface SellerData {
-  id: string; name: string; avatar: string; coverEmoji: string;
-  bio: string; location: string; memberSince: string;
-  verified: boolean; responseRate: number; avgResponseTime: string;
-  totalSales: number; rating: number; reviewCount: number;
-  ratingDistribution: number[];
-  listings: Listing[];
-  reviews: Review[];
-  categories: string[];
+/* ============================================================
+   ⚠️  VERIFY THESE 3 IMPORT PATHS AGAINST YOUR REPO BEFORE BUILD
+   Run the recon command I gave you, then fix any line below that
+   does not match. Everything else in this file is path-safe.
+   ============================================================ */
+import { supabase } from '@/lib/supabase';
+import { useLang } from '@/hooks/useLang';
+import { useAuth } from '@/contexts/AuthContext';
+/* ============================================================ */
+
+// ---- Inline i18n (per-component dict, EN fallback) ----------
+const STR: Record<string, Record<string, string>> = {
+  en: {
+    back: 'Back',
+    seller: 'Seller',
+    notFound: 'Seller not found.',
+    verified: 'Verified',
+    member: 'Member',
+    anon: 'Bambeh User',
+    reviewsTitle: 'Reviews & Ratings',
+    noReviews: 'No reviews yet.',
+    listingsTitle: 'Listings',
+    noListings: 'No active listings.',
+    message: 'Message Seller',
+    ratingWord: 'rating',
+    ratingsWord: 'ratings',
+    itemsWord: 'items',
+    seller_reply: 'Seller replied',
+    lastSeen: 'Last seen',
+  },
+  fr: {
+    back: 'Retour',
+    seller: 'Vendeur',
+    notFound: 'Vendeur introuvable.',
+    verified: 'Vérifié',
+    member: 'Membre',
+    anon: 'Utilisateur Bambeh',
+    reviewsTitle: 'Avis et notes',
+    noReviews: 'Aucun avis pour le moment.',
+    listingsTitle: 'Annonces',
+    noListings: 'Aucune annonce active.',
+    message: 'Contacter le vendeur',
+    ratingWord: 'note',
+    ratingsWord: 'notes',
+    itemsWord: 'articles',
+    seller_reply: 'Le vendeur a répondu',
+    lastSeen: 'Vu pour la dernière fois',
+  },
+  pidgin: {
+    back: 'Go back',
+    seller: 'Seller',
+    notFound: 'We no fit find dis seller.',
+    verified: 'Verified',
+    member: 'Member',
+    anon: 'Bambeh User',
+    reviewsTitle: 'Review dem & Rating',
+    noReviews: 'No review dey yet.',
+    listingsTitle: 'Wetin dem dey sell',
+    noListings: 'No active listing dey.',
+    message: 'Message di Seller',
+    ratingWord: 'rating',
+    ratingsWord: 'ratings',
+    itemsWord: 'items',
+    seller_reply: 'Seller don reply',
+    lastSeen: 'Last time we see am',
+  },
+  ar: {
+    back: 'رجوع',
+    seller: 'البائع',
+    notFound: 'لم يتم العثور على البائع.',
+    verified: 'موثّق',
+    member: 'عضو',
+    anon: 'مستخدم Bambeh',
+    reviewsTitle: 'التقييمات والمراجعات',
+    noReviews: 'لا توجد مراجعات بعد.',
+    listingsTitle: 'الإعلانات',
+    noListings: 'لا توجد إعلانات نشطة.',
+    message: 'مراسلة البائع',
+    ratingWord: 'تقييم',
+    ratingsWord: 'تقييمات',
+    itemsWord: 'عناصر',
+    seller_reply: 'رد البائع',
+    lastSeen: 'آخر ظهور',
+  },
+  ff: {
+    back: 'Rutto',
+    seller: 'Njeeygotooɗo',
+    notFound: 'Njeeygotooɗo o heɓaaka.',
+    verified: 'Goongɗinaaɗo',
+    member: 'Terɗe',
+    anon: 'Kuɓtodinoowo Bambeh',
+    reviewsTitle: 'Miijooji & Njeñtudi',
+    noReviews: 'Miijo alaa tawo.',
+    listingsTitle: 'Njeeygu',
+    noListings: 'Njeeygu ngaadu alaa.',
+    message: 'Neldu njeeygotooɗo',
+    ratingWord: 'njeñtudi',
+    ratingsWord: 'njeñtudi',
+    itemsWord: 'kuutee',
+    seller_reply: 'Njeeygotooɗo jaabii',
+    lastSeen: 'Sakkitii yiyeede',
+  },
+};
+
+function tr(lang: string, key: string): string {
+  return (STR[lang] && STR[lang][key]) || STR.en[key] || key;
 }
 
-const normKey = (s: string) => decodeURIComponent(s).toLowerCase().replace(/\s+/g, '-');
+// ---- Types --------------------------------------------------
+interface ListingRow {
+  id: string;
+  title?: string;
+  name?: string;
+  price?: number;
+  currency?: string;
+  type?: string;
+  images?: string[];
+  location?: string;
+  created_at?: string;
+}
+interface ReviewRow {
+  id: string;
+  reviewer_id?: string;
+  rating?: number;
+  comment?: string;
+  response?: string;
+  created_at?: string;
+}
+interface ProfileRow {
+  id: string;
+  full_name?: string;
+  display_name?: string;
+  username?: string;
+  avatar_url?: string;
+  location?: string;
+  is_verified?: boolean;
+  last_seen?: string;
+  created_at?: string;
+}
 
-const MOCK_SELLERS: Record<string, SellerData> = {
-  'techshop-yaound?': {
-    id: 'techshop-yaound?', name: 'TechShop Yaound?', avatar: '???', coverEmoji: '??',
-    bio: "Yaound?'s most trusted electronics retailer since 2018. Authorised reseller for Samsung, HP, and Sony. All products come with genuine manufacturer warranties.",
-    location: 'Centre-ville, Yaound?', memberSince: 'March 2018',
-    verified: true, responseRate: 98, avgResponseTime: '< 1 hour',
-    totalSales: 1243, rating: 4.9, reviewCount: 312,
-    ratingDistribution: [89, 8, 2, 1, 0],
-    categories: ['Electronics', 'Phones', 'Laptops', 'Accessories'],
-    listings: [
-      { id: 'l1', title: 'Samsung Galaxy A54 128GB', price: 159000, image: '??', category: 'Phones', condition: 'New' },
-      { id: 'l2', title: 'HP Laptop Core i5 256GB SSD', price: 285000, image: '??', category: 'Laptops', condition: 'New' },
-      { id: 'l3', title: 'AirPods Pro 2nd Gen', price: 65000, image: '??', category: 'Accessories', condition: 'New' },
-      { id: 'l4', title: 'Samsung 43" Smart TV', price: 180000, image: '??', category: 'Electronics', condition: 'New' },
-    ],
-    reviews: [
-      { id: 'r1', reviewerName: 'Paul Ateba', reviewerAvatar: '????', rating: 5, comment: 'Excellent service! Phone was exactly as described, came sealed with all accessories. Delivered same day to Bastos.', date: '3 days ago', itemBought: 'Samsung Galaxy A54' },
-      { id: 'r2', reviewerName: 'Fatima Bello', reviewerAvatar: '????', rating: 5, comment: 'Very professional. Offered me a genuine receipt and warranty card. Will definitely buy again!', date: '1 week ago', itemBought: 'HP Laptop Core i5' },
-      { id: 'r3', reviewerName: 'Eric Tamba', reviewerAvatar: '??', rating: 4, comment: 'Good quality product, delivery took slightly longer than promised but communication was great throughout.', date: '2 weeks ago', itemBought: 'AirPods Pro' },
-    ],
-  },
-  'natural-': {
-    id: 'natural-', name: 'Natural ', avatar: '??', coverEmoji: '??',
-    bio: 'Handcrafted natural beauty products made from ian raw materials. Cold-pressed shea butter, palm oil, and moringa from West and Adamawa Regions.',
-    location: 'Bafoussam, West Region', memberSince: 'June 2020',
-    verified: true, responseRate: 95, avgResponseTime: '< 3 hours',
-    totalSales: 2876, rating: 5.0, reviewCount: 891,
-    ratingDistribution: [97, 2, 1, 0, 0],
-    categories: ['Beauty', 'Skincare', 'Haircare', 'Natural Foods'],
-    listings: [
-      { id: 'l1', title: 'Shea Butter Gift Set (6 items)', price: 19500, image: '??', category: 'Beauty', condition: 'New' },
-      { id: 'l2', title: 'Raw Shea Butter 500g', price: 8000, image: '??', category: 'Skincare', condition: 'New' },
-    ],
-    reviews: [
-      { id: 'r1', reviewerName: 'Sophie Mvodo', reviewerAvatar: '?????', rating: 5, comment: "The best shea butter I've ever used. Completely transformed my skin in two weeks. Authentic and pure!", date: '1 day ago', itemBought: 'Raw Shea Butter 500g' },
-    ],
-  },
-  'heritage-fabrics': {
-    id: 'heritage-fabrics', name: 'Heritage Fabrics', avatar: '??', coverEmoji: '??',
-    bio: "Preserving 's weaving traditions since 2015. Our master weavers from Foumban create authentic Kente, Ndop, and Toghu textiles.",
-    location: 'Foumban, West Region', memberSince: 'January 2015',
-    verified: true, responseRate: 87, avgResponseTime: '< 12 hours',
-    totalSales: 312, rating: 5.0, reviewCount: 78,
-    ratingDistribution: [100, 0, 0, 0, 0],
-    categories: ['Fashion', 'Traditional Wear', 'Home Decor'],
-    listings: [
-      { id: 'l1', title: 'Traditional Kente Cloth (5m)', price: 32000, image: '??', category: 'Fashion', condition: 'New' },
-    ],
-    reviews: [
-      { id: 'r1', reviewerName: 'Alain Fouda', reviewerAvatar: '????', rating: 5, comment: 'Absolutely stunning Kente. The colours are vibrant and the weave quality is exceptional.', date: '2 weeks ago', itemBought: 'Traditional Kente Cloth' },
-    ],
-  },
-};
+// ---- Small presentational helpers ---------------------------
+function StarRow({ value, size = 16 }: { value: number; size?: number }) {
+  const rounded = Math.round(value * 2) / 2;
+  return (
+    <span style={{ display: 'inline-flex', gap: 2 }}>
+      {[1, 2, 3, 4, 5].map((i) => {
+        const filled = i <= Math.floor(rounded);
+        const half = !filled && i - 0.5 === rounded;
+        return (
+          <Star
+            key={i}
+            size={size}
+            className={filled || half ? 'text-amber-400' : 'text-gray-300'}
+            fill={filled ? 'currentColor' : half ? 'url(#half)' : 'none'}
+          />
+        );
+      })}
+    </span>
+  );
+}
 
-const SellerProfilePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+export default function SellerProfilePage() {
+  const params = useParams();
+  const sellerId =
+    (params.id as string) ||
+    (params.sellerId as string) ||
+    (params.userId as string) ||
+    '';
   const navigate = useNavigate();
-  const key = normKey(id || '');
-  const seller = MOCK_SELLERS[key] || MOCK_SELLERS[id || ''];
 
-  const [followed, setFollowed] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'listings' | 'reviews'>('listings');
+  // defensive: useLang may return a string or an object
+  const langRaw: any = useLang();
+  const lang: string =
+    typeof langRaw === 'string' ? langRaw : langRaw?.lang || 'en';
 
-  const fmtXAF = (n: number) => `${n.toLocaleString('fr-CM')} XAF`;
-  const shareUrl = `https://bambeh.cm/seller/${id}`;
+  const auth: any = useAuth();
+  const me = auth?.currentUser || auth?.user || null;
 
-  if (!seller) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="text-center">
-        <div className="text-6xl mb-4">??</div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Seller Not Found</h2>
-        <p className="text-gray-500 mb-6">This seller profile doesn't exist or has been removed.</p>
-        <Link to="/marketplace" className="px-6 py-3 bg-teal-600 text-white rounded-xl font-bold">Browse Marketplace</Link>
-      </div>
-    </div>
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<ProfileRow | null>(null);
+  const [listings, setListings] = useState<ListingRow[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
+  const [reviewerMap, setReviewerMap] = useState<Record<string, ProfileRow>>({});
+
+  useEffect(() => {
+    if (sellerId) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sellerId]);
+
+  async function load() {
+    setLoading(true);
+    try {
+      // 1) seller profile
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', sellerId)
+        .maybeSingle();
+      setProfile((prof as ProfileRow) || null);
+
+      // 2) their live listings (single listings table) + exchange_items
+      const { data: lst } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('user_id', sellerId)
+        .order('created_at', { ascending: false });
+
+      let exchange: ListingRow[] = [];
+      const { data: exch } = await supabase
+        .from('exchange_items')
+        .select('*')
+        .eq('user_id', sellerId)
+        .order('created_at', { ascending: false });
+      exchange = (exch || []).map((e: any) => ({ ...e, type: 'exchange' }));
+
+      setListings([...((lst as ListingRow[]) || []), ...exchange]);
+
+      // 3) seller reviews
+      const { data: rev } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('target_id', sellerId)
+        .eq('target_type', 'seller')
+        .order('created_at', { ascending: false });
+      const reviewRows = (rev as ReviewRow[]) || [];
+      setReviews(reviewRows);
+
+      // 4) reviewer profiles (separate fetch — proven-safe pattern, no embed)
+      const ids = Array.from(
+        new Set(reviewRows.map((r) => r.reviewer_id).filter(Boolean))
+      ) as string[];
+      if (ids.length) {
+        const { data: rp } = await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', ids);
+        const map: Record<string, ProfileRow> = {};
+        (rp || []).forEach((p: any) => {
+          map[p.id] = p;
+        });
+        setReviewerMap(map);
+      }
+    } catch (err) {
+      // network / transient — leave empty states rather than crash
+      // eslint-disable-next-line no-console
+      console.error('SellerProfile load error', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ---- derived rating stats ----
+  const count = reviews.length;
+  const avg = count
+    ? reviews.reduce((s, r) => s + (Number(r.rating) || 0), 0) / count
+    : 0;
+  const dist = [5, 4, 3, 2, 1].map(
+    (star) =>
+      reviews.filter((r) => Math.round(Number(r.rating) || 0) === star).length
   );
 
-  const StarRow = ({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' | 'lg' }) => {
-    const s = size === 'lg' ? 'w-5 h-5' : size === 'md' ? 'w-4 h-4' : 'w-3.5 h-3.5';
+  const nameOf = (p: ProfileRow | null | undefined) =>
+    p?.display_name || p?.full_name || p?.username || tr(lang, 'anon');
+
+  const isOwn = !!me && String(me.id) === String(sellerId);
+
+  function messageSeller() {
+    navigate(
+      `/chat?userId=${sellerId}&listingTitle=${encodeURIComponent(
+        nameOf(profile)
+      )}`
+    );
+  }
+
+  if (loading) {
     return (
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map(i => (
-          <Star key={i} className={`${s} ${i <= rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}`} />
-        ))}
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     );
-  };
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
+        <Package className="w-12 h-12 text-gray-300 mb-3" />
+        <p className="text-gray-600">{tr(lang, 'notFound')}</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-4 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm"
+        >
+          {tr(lang, 'back')}
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-10">
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-            <ArrowLeft className="w-5 h-5" /><span className="text-sm font-medium">Back</span>
+    <div className="min-h-screen bg-gray-50 pb-16">
+      {/* hidden gradient def for half-stars */}
+      <svg width="0" height="0" className="absolute">
+        <defs>
+          <linearGradient id="half">
+            <stop offset="50%" stopColor="currentColor" />
+            <stop offset="50%" stopColor="transparent" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* header bar */}
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
+        <div className="max-w-3xl mx-auto flex items-center gap-3 px-4 py-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 -ml-2 rounded-lg hover:bg-gray-100"
+            aria-label={tr(lang, 'back')}
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <button onClick={() => setShareOpen(true)} className="p-2.5 rounded-xl border border-gray-200">
-            <Share2 className="w-5 h-5 text-gray-500" />
-          </button>
+          <h1 className="font-semibold text-gray-900">{tr(lang, 'seller')}</h1>
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-teal-600 to-blue-700 text-white pt-6 pb-14 px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-start gap-5">
-            <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center text-4xl flex-shrink-0">{seller.avatar}</div>
-            <div className="flex-1">
+      <div className="max-w-3xl mx-auto px-4">
+        {/* profile card */}
+        <div className="bg-white rounded-2xl shadow-sm mt-4 p-5">
+          <div className="flex items-start gap-4">
+            {profile.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={nameOf(profile)}
+                className="w-20 h-20 rounded-full object-cover border border-gray-100"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center text-2xl font-bold text-emerald-700">
+                {nameOf(profile).charAt(0).toUpperCase()}
+              </div>
+            )}
+
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-black">{seller.name}</h1>
-                {seller.verified && (
-                  <span className="flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                    <CheckCircle className="w-3 h-3" />Verified
+                <h2 className="text-lg font-bold text-gray-900 truncate">
+                  {nameOf(profile)}
+                </h2>
+                {profile.is_verified && (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    <ShieldCheck className="w-3 h-3" />
+                    {tr(lang, 'verified')}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1.5 mt-1 text-teal-200 text-sm">
-                <MapPin className="w-3.5 h-3.5" />{seller.location}
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <StarRow rating={Math.round(seller.rating)} size="sm" />
-                <span className="font-bold text-sm">{seller.rating}</span>
-                <span className="text-teal-200 text-sm">({seller.reviewCount} reviews)</span>
-              </div>
+
+              {count > 0 && (
+                <div className="flex items-center gap-2 mt-1">
+                  <StarRow value={avg} size={16} />
+                  <span className="text-sm font-semibold text-gray-900">
+                    {avg.toFixed(1)}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    ({count}{' '}
+                    {count === 1
+                      ? tr(lang, 'ratingWord')
+                      : tr(lang, 'ratingsWord')}
+                    )
+                  </span>
+                </div>
+              )}
+
+              {profile.location && (
+                <p className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                  <MapPin className="w-3.5 h-3.5" />
+                  {profile.location}
+                </p>
+              )}
+              {profile.last_seen && (
+                <p className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                  <Clock className="w-3 h-3" />
+                  {tr(lang, 'lastSeen')}:{' '}
+                  {new Date(profile.last_seen).toLocaleDateString()}
+                </p>
+              )}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 mt-5">
-            {[
-              { v: seller.totalSales.toLocaleString(), l: 'Sales', e: '??' },
-              { v: `${seller.responseRate}%`, l: 'Response rate', e: '??' },
-              { v: seller.avgResponseTime, l: 'Avg response', e: '?' },
-            ].map(s => (
-              <div key={s.l} className="bg-white/15 rounded-xl p-3 text-center">
-                <div className="font-bold text-sm">{s.e} {s.v}</div>
-                <div className="text-teal-200 text-xs mt-0.5">{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      <div className="max-w-2xl mx-auto px-4 -mt-6 space-y-4">
-        <div className="bg-white rounded-2xl shadow-md p-4 flex gap-3">
-          <Link to="/chat" className="flex-1 flex items-center justify-center gap-2 py-3 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-colors">
-            <MessageSquare className="w-4 h-4" />Message
-          </Link>
-          <button onClick={() => setFollowed(!followed)}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border transition-colors ${followed ? 'border-teal-300 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
-            <UserPlus className="w-4 h-4" />{followed ? 'Following ?' : 'Follow'}
-          </button>
-          <Link to={`/seller/${id}/rating`} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-bold text-sm">
-            <Star className="w-4 h-4 text-amber-400" />Rate
-          </Link>
+          {!isOwn && (
+            <button
+              onClick={messageSeller}
+              className="mt-4 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+              {tr(lang, 'message')}
+            </button>
+          )}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="font-bold text-gray-900 mb-2">About This Seller</h2>
-          <p className="text-gray-600 text-sm leading-relaxed">{seller.bio}</p>
-          <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />Member since {seller.memberSince}</span>
-            <span>{seller.categories.slice(0, 3).map((c, i) => <span key={i} className="bg-gray-100 px-2 py-0.5 rounded-full mr-1">{c}</span>)}</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-md p-1 flex gap-1">
-          <button onClick={() => setActiveTab('listings')}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${activeTab === 'listings' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
-            ?? Listings ({seller.listings.length})
-          </button>
-          <button onClick={() => setActiveTab('reviews')}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${activeTab === 'reviews' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
-            ? Reviews ({seller.reviewCount})
-          </button>
-        </div>
-
-        {activeTab === 'listings' && (
-          <div className="grid grid-cols-2 gap-3">
-            {seller.listings.map(l => (
-              <Link key={l.id} to={`/marketplace/${l.id}`} className="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-shadow">
-                <div className="text-4xl mb-3 text-center">{l.image}</div>
-                <p className="font-semibold text-gray-900 text-sm leading-snug">{l.title}</p>
-                <p className="text-gray-400 text-xs mt-0.5">{l.category}</p>
-                {l.condition && (
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full mt-1 inline-block ${l.condition === 'New' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                    {l.condition}
-                  </span>
-                )}
-                <div className="text-teal-700 font-black mt-2">{fmtXAF(l.price)}</div>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'reviews' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl shadow-sm p-5">
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-5xl font-black text-gray-900">{seller.rating}</div>
-                  <StarRow rating={Math.round(seller.rating)} size="md" />
-                  <p className="text-gray-400 text-xs mt-1">{seller.reviewCount} reviews</p>
+        {/* rating distribution */}
+        {count > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm mt-4 p-5">
+            <h3 className="font-semibold text-gray-900 mb-3">
+              {tr(lang, 'reviewsTitle')}
+            </h3>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900">
+                  {avg.toFixed(1)}
                 </div>
-                <div className="flex-1 space-y-1.5">
-                  {[5, 4, 3, 2, 1].map((star, i) => (
+                <StarRow value={avg} size={14} />
+                <div className="text-xs text-gray-500 mt-1">
+                  {count}{' '}
+                  {count === 1
+                    ? tr(lang, 'ratingWord')
+                    : tr(lang, 'ratingsWord')}
+                </div>
+              </div>
+              <div className="flex-1 space-y-1">
+                {[5, 4, 3, 2, 1].map((star, idx) => {
+                  const n = dist[idx];
+                  const pct = count ? (n / count) * 100 : 0;
+                  return (
                     <div key={star} className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 w-4">{star}</span>
-                      <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                      <span className="text-xs text-gray-500 w-3">{star}</span>
+                      <Star className="w-3 h-3 text-amber-400" fill="currentColor" />
                       <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-amber-400 rounded-full" style={{ width: `${seller.ratingDistribution[i]}%` }}/>
+                        <div
+                          className="h-full bg-amber-400 rounded-full"
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
-                      <span className="text-xs text-gray-400 w-7 text-right">{seller.ratingDistribution[i]}%</span>
+                      <span className="text-xs text-gray-400 w-6 text-right">
+                        {n}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </div>
-            {seller.reviews.map(r => (
-              <div key={r.id} className="bg-white rounded-2xl shadow-sm p-5">
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">{r.reviewerAvatar}</span>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-900 text-sm">{r.reviewerName}</span>
-                      <span className="text-gray-400 text-xs">{r.date}</span>
-                    </div>
-                    <StarRow rating={r.rating} size="sm" />
-                    {r.itemBought && <p className="text-gray-400 text-xs mt-0.5">Purchased: {r.itemBought}</p>}
-                    <p className="text-gray-700 text-sm mt-2 leading-relaxed">{r.comment}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <Link to={`/seller/${id}/rating`} className="block w-full py-3 bg-white border border-teal-200 text-teal-700 rounded-2xl font-bold text-center hover:bg-teal-50 transition-colors">
-              Leave a Review ?
-            </Link>
           </div>
         )}
 
-        <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 flex gap-3">
-          <ShieldCheck className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold text-teal-800 text-sm">Bambeh Escrow Protection</p>
-            <p className="text-teal-700 text-xs mt-0.5">All purchases through Bambeh are protected by escrow. Your payment is only released when you confirm delivery.</p>
-          </div>
+        {/* review list */}
+        <div className="bg-white rounded-2xl shadow-sm mt-4 p-5">
+          <h3 className="font-semibold text-gray-900 mb-3">
+            {tr(lang, 'reviewsTitle')}
+          </h3>
+          {reviews.length === 0 ? (
+            <p className="text-sm text-gray-500 py-4 text-center">
+              {tr(lang, 'noReviews')}
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((r) => {
+                const rp = r.reviewer_id ? reviewerMap[r.reviewer_id] : null;
+                return (
+                  <div
+                    key={r.id}
+                    className="border-b border-gray-50 last:border-0 pb-4 last:pb-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      {rp?.avatar_url ? (
+                        <img
+                          src={rp.avatar_url}
+                          alt=""
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-500">
+                          {nameOf(rp).charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {nameOf(rp)}
+                        </p>
+                        <StarRow value={Number(r.rating) || 0} size={12} />
+                      </div>
+                      {r.created_at && (
+                        <span className="text-xs text-gray-400">
+                          {new Date(r.created_at).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                    {r.comment && (
+                      <p className="text-sm text-gray-700 mt-2 whitespace-pre-line">
+                        {r.comment}
+                      </p>
+                    )}
+                    {r.response && (
+                      <div className="mt-2 ml-4 pl-3 border-l-2 border-emerald-200 bg-emerald-50/40 rounded-r-lg py-2 pr-2">
+                        <p className="text-xs font-medium text-emerald-700">
+                          {tr(lang, 'seller_reply')}
+                        </p>
+                        <p className="text-sm text-gray-700 whitespace-pre-line">
+                          {r.response}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* seller listings */}
+        <div className="bg-white rounded-2xl shadow-sm mt-4 p-5">
+          <h3 className="font-semibold text-gray-900 mb-3">
+            {tr(lang, 'listingsTitle')}{' '}
+            <span className="text-sm font-normal text-gray-400">
+              ({listings.length} {tr(lang, 'itemsWord')})
+            </span>
+          </h3>
+          {listings.length === 0 ? (
+            <p className="text-sm text-gray-500 py-4 text-center">
+              {tr(lang, 'noListings')}
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {listings.map((l) => {
+                const img =
+                  Array.isArray(l.images) && l.images.length ? l.images[0] : '';
+                return (
+                  <div
+                    key={`${l.type}-${l.id}`}
+                    className="rounded-xl border border-gray-100 overflow-hidden bg-white"
+                  >
+                    <div className="aspect-square bg-gray-100">
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={l.title || l.name || ''}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-6 h-6 text-gray-300" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2">
+                      <p className="text-xs font-medium text-gray-900 truncate">
+                        {l.title || l.name || '-'}
+                      </p>
+                      {typeof l.price === 'number' && l.price > 0 && (
+                        <p className="text-xs text-emerald-600 font-semibold mt-0.5">
+                          {l.price.toLocaleString()} {l.currency || 'FCFA'}
+                        </p>
+                      )}
+                      {l.type && (
+                        <span className="inline-block mt-1 text-[10px] uppercase tracking-wide text-gray-400">
+                          {l.type}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
-
-      {shareOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end px-4 pb-6" onClick={() => setShareOpen(false)}>
-          <div className="bg-white rounded-3xl w-full max-w-md mx-auto p-5" onClick={e => e.stopPropagation()}>
-            <h3 className="font-bold text-gray-900 text-lg mb-4">Share Seller Profile</h3>
-            <div className="space-y-3">
-              <a href={`https://wa.me/?text=${encodeURIComponent(`Check out ${seller.name} on Bambeh! ${shareUrl}`)}`} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-2xl text-[#128C7E] font-semibold">
-                <MessageCircle className="w-5 h-5" />Share on WhatsApp
-              </a>
-              <button onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                className="w-full flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-700 font-semibold">
-                <Copy className="w-5 h-5 text-gray-400" />{copied ? '? Copied!' : 'Copy Profile Link'}
-              </button>
-            </div>
-            <button onClick={() => setShareOpen(false)} className="w-full mt-3 py-3 text-gray-500 text-sm">Cancel</button>
-          </div>
-        </div>
-      )}
     </div>
   );
-};
-
-export default SellerProfilePage;
-
-
-
-
-
-
+}
+// BAMBEH_END_TOKEN__SellerProfilePage__COMPLETE
