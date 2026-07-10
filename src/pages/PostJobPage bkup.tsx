@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__POSTJOBPAGE_FIX73_CLEAN
 /**
  * src/pages/PostJobPage.tsx
  * Bambeh Marketplace — Post a Job
@@ -6,7 +5,7 @@
  *
  * ✅ Full i18n — EN / FR / HA / AR / PCM / FUL
  * ✅ Auth-gated — redirects to /login if not signed in
- * ✅ Apply method: In-app Bambeh chat ONLY (platform contact policy)
+ * ✅ Apply methods: WhatsApp, Phone call, Email, In-app platform
  * ✅ Writes to listings table (type='job') via jobs.service
  * ✅ After posting, redirects to the new job's detail page
  * ✅ Zero external dependencies beyond what Bambeh already uses
@@ -49,6 +48,10 @@ const STR: Record<string, Record<string, string>> = {
   tagsPh:          { en:"React, Node.js, Marketing, Excel…", fr:"React, Node.js, Marketing, Excel…", ha:"React, Node.js, Marketing, Excel…", ar:"React, Node.js, تسويق…", pcm:"React, Node.js, Marketing…", ful:"React, Node.js…" },
   applyMethod:     { en:"How should candidates apply?", fr:"Comment les candidats doivent-ils postuler ?", ha:"Ta yaya masu nema za su yi nema?", ar:"كيÙ يتقدم المرشحون؟", pcm:"How dem go apply?", ful:"No jokkorɗe poti jokkude?" },
   inApp:           { en:"📱 Through Bambeh Platform", fr:"📱 Via la plateforme Bambeh", ha:"📱 Ta hanyar Bambeh", ar:"📱 عبر منصة بامبيه", pcm:"📱 Through Bambeh", ful:"📱 E Bambeh" },
+  whatsapp:        { en:"💬 WhatsApp", fr:"💬 WhatsApp", ha:"💬 WhatsApp", ar:"💬 واتساب", pcm:"💬 WhatsApp", ful:"💬 WhatsApp" },
+  phoneCall:       { en:"📞 Phone Call", fr:"📞 Appel téléphonique", ha:"📞 Kiran Waya", ar:"📞 مكالمة هاتÙية", pcm:"📞 Phone call", ful:"📞 Noddaare" },
+  email:           { en:"📧 Email", fr:"📧 Email", ha:"📧 Imel", ar:"📧 البريد الإلكتروني", pcm:"📧 Email", ful:"📧 Imeel" },
+  contactPh:       { en:"Enter phone number or email for applications", fr:"Entrez le numéro ou email pour les candidatures", ha:"Shigar da lamba ko imel don nema", ar:"أدخل الرقم أو البريد الإلكتروني", pcm:"Enter number or email", ful:"Naatnu numeerol maa imeel" },
   posting:         { en:"Publishing your job…", fr:"Publication en cours…", ha:"Ana wallafa aikin…", ar:"جارÙ النشر…", pcm:"Dey post your work…", ful:"Fewtinaama…" },
   posted:          { en:"Job posted successfully!", fr:"Offre publiée avec succès!", ha:"An wallafa aiki cikin nasara!", ar:"تم نشر الوظيÙة بنجاح!", pcm:"Your work don post!", ful:"Golle fewtiima!" },
   postBtn:         { en:"Publish Job", fr:"Publier l'offre", ha:"Wallafa Aiki", ar:"نشر الوظيÙة", pcm:"Post the work", ful:"Fewtu Golle" },
@@ -376,9 +379,12 @@ export default function PostJobPage() {
           <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
             {s("applyMethod", lang)}
           </label>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {[
               { value:"in_app",   label: s("inApp", lang) },
+              { value:"whatsapp", label: s("whatsapp", lang) },
+              { value:"call",     label: s("phoneCall", lang) },
+              { value:"email",    label: s("email", lang) },
             ].map((opt) => (
               <button key={opt.value} type="button"
                 onClick={() => setForm((p) => ({ ...p, applyMethod: opt.value }))}
@@ -391,6 +397,14 @@ export default function PostJobPage() {
             ))}
           </div>
 
+          {form.applyMethod !== "in_app" && (
+            <input
+              value={form.applyContact}
+              onChange={set("applyContact")}
+              placeholder={s("contactPh", lang)}
+              className={`${inputCls} mt-3`}
+            />
+          )}
         </div>
 
       </div>
@@ -430,4 +444,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </div>
   );
 }
-// BAMBEH_END_TOKEN__POSTJOBPAGE__COMPLETE
+
+
+

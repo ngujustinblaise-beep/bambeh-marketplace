@@ -1,340 +1,250 @@
+// BAMBEH_DEPLOY_TOKEN__VEHICLEDETAILS_FIX65_CLEAN
+// FIX65: Rebuilt from the dead Firebase page (getVehicleById → "not found")
+//        to read the real Supabase `listings` row (type='vehicle', specs in
+//        `extra`). Contact is CHAT-ONLY (no phone/email). "Message Seller" +
+//        "Request Test Ride" both open in-app chat with the seller.
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Mail, Share2, Heart, AlertCircle, Check, Car, Fuel, Gauge, Calendar, Cog } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { toast } from '@/components/ui/use-toast';
-import { useTranslation } from 'react-i18next';
-import { getVehicleById } from '@/lib/firebaseQueries';
+import {
+  ArrowLeft, MapPin, Share2, AlertCircle, Check, MessageCircle,
+  Fuel, Gauge, Calendar, Cog, Car, Loader2,
+} from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLang } from '@/hooks/useAppLang';
 
-interface Vehicle {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  price: number;
-  currency: string;
-  negotiable: boolean;
-  images: string[];
-  mileage: number;
-  fuelType: string; // petrol, diesel, electric, hybrid
-  transmission: string; // manual, automatic
-  condition: string; // new, used, certified
-  color: string;
-  engineSize: string;
-  features: string[];
-  description: string;
-  sellerName: string;
-  sellerAvatar?: string;
-  sellerPhone: string;
-  sellerEmail: string;
-  location: string;
-  verified: boolean;
-  postedDate: string;
-  views: number;
-  vehicleType: string; // sedan, suv, truck, motorcycle, etc.
-}
+const STR: Record<string, Record<string, string>> = {
+  en: { back: 'Back', notFound: 'Vehicle not found.', backToList: 'Back to Vehicles', verified: 'Verified',
+        negotiable: 'Negotiable', mileage: 'Mileage', year: 'Year', fuel: 'Fuel', transmission: 'Transmission',
+        details: 'Vehicle Details', color: 'Color', engine: 'Engine', views: 'Views', posted: 'Posted',
+        description: 'Description', features: 'Features', seller: 'Seller', message: 'Message Seller',
+        testRide: 'Request Test Ride', share: 'Share', linkCopied: 'Link copied' },
+  fr: { back: 'Retour', notFound: 'Véhicule introuvable.', backToList: 'Retour aux véhicules', verified: 'Vérifié',
+        negotiable: 'Négociable', mileage: 'Kilométrage', year: 'Année', fuel: 'Carburant', transmission: 'Boîte',
+        details: 'Détails du véhicule', color: 'Couleur', engine: 'Moteur', views: 'Vues', posted: 'Publié',
+        description: 'Description', features: 'Équipements', seller: 'Vendeur', message: 'Contacter le vendeur',
+        testRide: 'Demander un essai', share: 'Partager', linkCopied: 'Lien copié' },
+  pidgin: { back: 'Go back', notFound: 'We no fit find dis vehicle.', backToList: 'Back to Vehicles', verified: 'Verified',
+        negotiable: 'Negotiable', mileage: 'Mileage', year: 'Year', fuel: 'Fuel', transmission: 'Gear',
+        details: 'Vehicle Details', color: 'Color', engine: 'Engine', views: 'Views', posted: 'Posted',
+        description: 'Description', features: 'Features', seller: 'Seller', message: 'Message di Seller',
+        testRide: 'Ask for Test Ride', share: 'Share', linkCopied: 'Link copied' },
+  ar: { back: 'رجوع', notFound: 'المركبة غير موجودة.', backToList: 'العودة إلى المركبات', verified: 'موثّق',
+        negotiable: 'قابل للتفاوض', mileage: 'المسافة', year: 'السنة', fuel: 'الوقود', transmission: 'ناقل الحركة',
+        details: 'تفاصيل المركبة', color: 'اللون', engine: 'المحرك', views: 'المشاهدات', posted: 'نُشر',
+        description: 'الوصف', features: 'المزايا', seller: 'البائع', message: 'مراسلة البائع',
+        testRide: 'طلب تجربة قيادة', share: 'مشاركة', linkCopied: 'تم نسخ الرابط' },
+  ff: { back: 'Rutto', notFound: 'Otomobil o heɓaaka.', backToList: 'Rutto e otooji', verified: 'Goongɗinaaɗo',
+        negotiable: 'Ina waawi yeeyeede', mileage: 'Njaajeendi', year: 'Hitaande', fuel: 'Karmedian', transmission: 'Waylo',
+        details: 'Fannuuji otomobil', color: 'Noorder', engine: 'Motoor', views: 'Njiyaali', posted: 'Winndaama',
+        description: 'Sifa', features: 'Keɓe', seller: 'Njeeygotooɗo', message: 'Neldu njeeygotooɗo',
+        testRide: 'Ɗaɓɓu ndaarndagol', share: 'Lolluɗe', linkCopied: 'Ceŋngal loowaama' },
+};
+function tr(lang: string, k: string) { return (STR[lang] && STR[lang][k]) || STR.en[k] || k; }
+
+interface Row { [key: string]: any; }
 
 export default function VehicleDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  
-  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const langRaw: any = useLang();
+  const lang: string = typeof langRaw === 'string' ? langRaw : langRaw?.lang || 'en';
+  const auth: any = useAuth();
+  const me = auth?.currentUser || auth?.user || null;
+
+  const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
-    fetchVehicleDetails();
-  }, [id]);
-
-  const fetchVehicleDetails = async () => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    try {
+    let cancelled = false;
+    (async () => {
+      if (!id) { setLoading(false); return; }
       setLoading(true);
-      
-      // Firebase query to get vehicle by ID
-      const vehicleData = await getVehicleById(id);
-      
-      if (vehicleData) {
-        setVehicle(vehicleData as Vehicle);
-      } else {
-        setVehicle(null);
-      }
-      
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching vehicle details:', error);
-      toast({
-        title: t('error'),
-        description: 'Failed to load vehicle details',
-        variant: 'destructive',
-      });
-      setLoading(false);
-    }
-  };
-
-  const handleContact = (method: 'phone' | 'email') => {
-    if (!vehicle) return;
-
-    if (method === 'phone') {
-      window.location.href = `tel:${vehicle.sellerPhone}`;
-    } else {
-      window.location.href = `mailto:${vehicle.sellerEmail}?subject=Inquiry about ${vehicle.year} ${vehicle.make} ${vehicle.model}`;
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: `${vehicle?.year} ${vehicle?.make} ${vehicle?.model}`,
-          text: `Check out this vehicle: ${vehicle?.year} ${vehicle?.make} ${vehicle?.model}`,
-          url: window.location.href,
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: 'Link Copied',
-          description: 'Vehicle link copied to clipboard',
-        });
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  };
-
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    toast({
-      title: isFavorite ? 'Removed from favorites' : 'Added to favorites',
-      description: isFavorite ? 'Vehicle removed from your favorites' : 'Vehicle saved to your favorites',
-    });
-  };
+      const { data } = await supabase.from('listings').select('*').eq('id', id).maybeSingle();
+      if (!cancelled) { setRow(data || null); setLoading(false); }
+    })();
+    return () => { cancelled = true; };
+  }, [id]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
   }
 
-  if (!vehicle) {
+  if (!row) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <AlertCircle className="h-16 w-16 text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Vehicle Not Found</h2>
-        <p className="text-muted-foreground mb-4">The vehicle you're looking for doesn't exist.</p>
-        <Button onClick={() => navigate('/vehicles')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Vehicles
-        </Button>
+        <AlertCircle className="h-14 w-14 text-gray-300 mb-3" />
+        <h2 className="text-xl font-bold mb-2">{tr(lang, 'notFound')}</h2>
+        <button onClick={() => navigate('/vehicles')} className="mt-2 flex items-center gap-2 text-teal-600">
+          <ArrowLeft className="h-4 w-4" /> {tr(lang, 'backToList')}
+        </button>
       </div>
     );
   }
 
+  const extra: Row = row.extra || {};
+  const images: string[] = Array.isArray(row.images) ? row.images : [];
+  const make = extra.make || '';
+  const model = extra.model || '';
+  const year = extra.year || '';
+  const heading = (make || model)
+    ? `${year ? year + ' ' : ''}${make} ${model}`.trim()
+    : (row.title || 'Vehicle');
+  const currency = row.currency || 'XAF';
+  const sellerId = row.user_id || row.seller_id;
+  const isOwn = me && sellerId && String(me.id) === String(sellerId);
+
+  const specs = [
+    extra.mileage && { icon: Gauge, label: tr(lang, 'mileage'), value: String(extra.mileage) },
+    year && { icon: Calendar, label: tr(lang, 'year'), value: String(year) },
+    extra.fuel && { icon: Fuel, label: tr(lang, 'fuel'), value: String(extra.fuel) },
+    extra.transmission && { icon: Cog, label: tr(lang, 'transmission'), value: String(extra.transmission) },
+  ].filter(Boolean) as { icon: any; label: string; value: string }[];
+
+  const shareLink = async () => {
+    try {
+      if (navigator.share) await navigator.share({ title: heading, url: window.location.href });
+      else await navigator.clipboard.writeText(window.location.href);
+    } catch { /* user cancelled */ }
+  };
+
+  const openChat = (prefix?: string) => {
+    if (!sellerId) return;
+    const title = prefix ? `${prefix}: ${heading}` : heading;
+    navigate(`/chat?userId=${sellerId}&listingTitle=${encodeURIComponent(title)}`);
+  };
+
+  const features: string[] = Array.isArray(extra.features) ? extra.features : [];
+
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+      <div className="sticky top-0 z-10 bg-white border-b">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-gray-100" aria-label={tr(lang, 'back')}>
             <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={handleShare}>
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleFavorite}
-              className={isFavorite ? 'text-red-500' : ''}
-            >
-              <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
-            </Button>
-          </div>
+          </button>
+          <button onClick={shareLink} className="p-2 rounded-xl hover:bg-gray-100" aria-label={tr(lang, 'share')}>
+            <Share2 className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className="relative">
-        <div className="aspect-video bg-muted">
-          <img
-            src={vehicle.images[currentImageIndex]}
-            alt={`${vehicle.make} ${vehicle.model}`}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-          {vehicle.images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Condition Badge */}
-        <div className="absolute top-4 left-4">
-          <Badge variant="outline" className="bg-white/90 capitalize">
-            {vehicle.condition}
-          </Badge>
-        </div>
+      {/* Gallery */}
+      <div className="relative bg-gray-100 aspect-video max-w-3xl mx-auto">
+        {images.length ? (
+          <img src={images[imgIndex]} alt={heading} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Car className="h-12 w-12 text-gray-300" />
+          </div>
+        )}
+        {images.length > 1 && (
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+            {images.map((_, i) => (
+              <button key={i} onClick={() => setImgIndex(i)}
+                className={`h-2 rounded-full transition-all ${i === imgIndex ? 'bg-white w-6' : 'bg-white/50 w-2'}`} />
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Vehicle Header */}
-        <div className="mb-6">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <Badge variant="outline" className="mb-2 capitalize">{vehicle.vehicleType}</Badge>
-              <h1 className="text-2xl font-bold">
-                {vehicle.year} {vehicle.make} {vehicle.model}
-              </h1>
-            </div>
-            {vehicle.verified && (
-              <Badge variant="default" className="bg-green-500">
-                <Check className="h-3 w-3 mr-1" />
-                Verified
-              </Badge>
-            )}
-          </div>
-          
-          <div className="flex items-center text-muted-foreground mb-3">
-            <MapPin className="h-4 w-4 mr-1" />
-            {vehicle.location}
-          </div>
-
-          <div className="text-3xl font-bold text-primary">
-            {vehicle.price.toLocaleString()} {vehicle.currency}
-            {vehicle.negotiable && (
-              <Badge variant="outline" className="ml-3 text-sm">Negotiable</Badge>
-            )}
-          </div>
-        </div>
-
-        {/* Key Specifications */}
-        <Card className="p-4 mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <Gauge className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <div className="font-semibold">{vehicle.mileage.toLocaleString()} km</div>
-              <div className="text-sm text-muted-foreground">Mileage</div>
-            </div>
-            <div className="text-center">
-              <Calendar className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <div className="font-semibold">{vehicle.year}</div>
-              <div className="text-sm text-muted-foreground">Year</div>
-            </div>
-            <div className="text-center">
-              <Fuel className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <div className="font-semibold capitalize">{vehicle.fuelType}</div>
-              <div className="text-sm text-muted-foreground">Fuel Type</div>
-            </div>
-            <div className="text-center">
-              <Cog className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-              <div className="font-semibold capitalize">{vehicle.transmission}</div>
-              <div className="text-sm text-muted-foreground">Transmission</div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Additional Details */}
-        <Card className="p-4 mb-6">
-          <h2 className="font-semibold text-lg mb-3">Vehicle Details</h2>
-          <div className="grid md:grid-cols-2 gap-3 text-sm">
-            <div>
-              <span className="text-muted-foreground">Color:</span>
-              <span className="ml-2 font-medium">{vehicle.color}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Engine Size:</span>
-              <span className="ml-2 font-medium">{vehicle.engineSize}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Views:</span>
-              <span className="ml-2 font-medium">{vehicle.views}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Posted:</span>
-              <span className="ml-2 font-medium">
-                {new Date(vehicle.postedDate).toLocaleDateString()}
+      <div className="max-w-3xl mx-auto px-4 py-5 space-y-4">
+        {/* Title + price */}
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-2xl font-bold text-gray-900">{heading}</h1>
+            {row.verified && (
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                <Check className="h-3 w-3" /> {tr(lang, 'verified')}
               </span>
-            </div>
+            )}
           </div>
-        </Card>
+          {row.location && (
+            <p className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+              <MapPin className="h-4 w-4" /> {row.location}
+            </p>
+          )}
+          <div className="text-3xl font-bold text-teal-600 mt-2">
+            {Number(row.price || 0).toLocaleString()} {currency}
+            {extra.negotiable && (
+              <span className="ml-2 align-middle text-xs font-medium text-gray-500 border border-gray-200 rounded-full px-2 py-0.5">
+                {tr(lang, 'negotiable')}
+              </span>
+            )}
+          </div>
+        </div>
 
-        {/* Description */}
-        <Card className="p-4 mb-6">
-          <h2 className="font-semibold text-lg mb-3">Description</h2>
-          <p className="text-muted-foreground whitespace-pre-line">{vehicle.description}</p>
-        </Card>
-
-        {/* Features */}
-        <Card className="p-4 mb-6">
-          <h2 className="font-semibold text-lg mb-3">Features</h2>
-          <div className="grid md:grid-cols-2 gap-2">
-            {vehicle.features.map((feature, index) => (
-              <div key={index} className="flex items-center">
-                <Check className="h-4 w-4 mr-2 text-green-500" />
-                <span className="text-sm">{feature}</span>
+        {/* Specs */}
+        {specs.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {specs.map((s, i) => (
+              <div key={i} className="text-center">
+                <s.icon className="h-5 w-5 mx-auto mb-1 text-gray-400" />
+                <div className="font-semibold text-sm text-gray-900 capitalize">{s.value}</div>
+                <div className="text-xs text-gray-400">{s.label}</div>
               </div>
             ))}
           </div>
-        </Card>
+        )}
 
-        {/* Seller Information */}
-        <Card className="p-4">
-          <h2 className="font-semibold text-lg mb-3">Seller Information</h2>
-          <div className="flex items-start gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={vehicle.sellerAvatar} alt={vehicle.sellerName} />
-              <AvatarFallback>{vehicle.sellerName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-semibold">{vehicle.sellerName}</h3>
-              <div className="flex items-center text-sm text-muted-foreground mt-1">
-                <MapPin className="h-3 w-3 mr-1" />
-                {vehicle.location}
-              </div>
+        {/* Extra details */}
+        {(extra.color || extra.engine || extra.engine_size || row.view_count != null || row.created_at) && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-4">
+            <h2 className="font-semibold text-gray-900 mb-3">{tr(lang, 'details')}</h2>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              {extra.color && <div><span className="text-gray-400">{tr(lang, 'color')}:</span> <span className="font-medium">{extra.color}</span></div>}
+              {(extra.engine || extra.engine_size) && <div><span className="text-gray-400">{tr(lang, 'engine')}:</span> <span className="font-medium">{extra.engine || extra.engine_size}</span></div>}
+              {row.view_count != null && <div><span className="text-gray-400">{tr(lang, 'views')}:</span> <span className="font-medium">{row.view_count}</span></div>}
+              {row.created_at && <div><span className="text-gray-400">{tr(lang, 'posted')}:</span> <span className="font-medium">{new Date(row.created_at).toLocaleDateString()}</span></div>}
             </div>
           </div>
-        </Card>
+        )}
+
+        {/* Description */}
+        {(extra.description || row.description) && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-4">
+            <h2 className="font-semibold text-gray-900 mb-2">{tr(lang, 'description')}</h2>
+            <p className="text-sm text-gray-600 whitespace-pre-line">{extra.description || row.description}</p>
+          </div>
+        )}
+
+        {/* Features */}
+        {features.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-4">
+            <h2 className="font-semibold text-gray-900 mb-2">{tr(lang, 'features')}</h2>
+            <div className="grid grid-cols-2 gap-2">
+              {features.map((f, i) => (
+                <div key={i} className="flex items-center text-sm">
+                  <Check className="h-4 w-4 mr-2 text-emerald-500" /> {f}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            onClick={() => handleContact('phone')}
-            className="w-full"
-          >
-            <Phone className="mr-2 h-4 w-4" />
-            Call Seller
-          </Button>
-          <Button
-            onClick={() => handleContact('email')}
-            className="w-full"
-          >
-            <Mail className="mr-2 h-4 w-4" />
-            Email Inquiry
-          </Button>
+      {/* Fixed chat-only actions */}
+      {!isOwn && sellerId && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
+          <div className="max-w-3xl mx-auto grid grid-cols-2 gap-3">
+            <button onClick={() => openChat(tr(lang, 'testRide'))}
+              className="w-full flex items-center justify-center gap-2 border border-teal-200 text-teal-700 hover:bg-teal-50 font-semibold py-3 rounded-xl transition-colors">
+              <Car className="h-4 w-4" /> {tr(lang, 'testRide')}
+            </button>
+            <button onClick={() => openChat()}
+              className="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl transition-colors">
+              <MessageCircle className="h-4 w-4" /> {tr(lang, 'message')}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
+// BAMBEH_END_TOKEN__VEHICLEDETAILS__COMPLETE
