@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX59_CLEAN
+// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX82_CLEAN
 /**
  * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
  *
@@ -664,7 +664,7 @@ export default function MarketplaceItemDetails() {
 
           <div className="flex gap-2">
             <button
-              onClick={() => navigate(`/chat?userId=${listing.sellerId}&listingTitle=${encodeURIComponent(listing.title)}`)}
+              onClick={() => navigate(`/chat?userId=${listing.sellerId}&listingId=${listing.id}&listingTitle=${encodeURIComponent(listing.title)}&listingImage=${encodeURIComponent(listing.images?.[0] ?? '')}`)}
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 active:scale-95 transition"
               aria-label={`Chat with seller: ${listing.sellerName}`}
             >
@@ -737,4 +737,4 @@ export default function MarketplaceItemDetails() {
   );
 }
 
-// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX59__COMPLETE
+// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX82__COMPLETE

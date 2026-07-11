@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CHAT_FIX82_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CHAT_FIX74_CLEAN
 // FIX64: (1) conversation list reads participant_ids + a single separate profiles
 //        fetch (the conversation_participants embed hit a table that does not
 //        exist, so names/avatars were blank). (2) sendMessage now updates the
@@ -281,8 +281,7 @@ export default function ChatPage() {
       try {
         const title = searchParams.get('listingTitle') ?? undefined;
         const image = searchParams.get('listingImage') ?? undefined;
-        const listingId = searchParams.get('listingId') ?? undefined;
-        const convId = await startChat(user.id, otherId, title, image, listingId);
+        const convId = await startChat(user.id, otherId, title, image);
         if (!cancelled) {
           setSelectedChatId(convId);
           navigate(`/chat?chat=${convId}`, { replace: true });
@@ -894,24 +893,15 @@ export async function startChat(
   currentUserId: string,
   otherUserId: string,
   listingTitle?: string,
-  listingImage?: string,
-  listingId?: string
+  listingImage?: string
 ): Promise<string> {
   // FIX74: limit(1) instead of maybeSingle - duplicate conversations from
   // earlier testing made maybeSingle throw ("multiple rows"), which silently
   // blanked the chat screen (no input box).
-  // FIX82: per-item chats. Match on the item so each listing gets its own
-  // thread between the same two people. When no listingId is supplied (a
-  // generic contact) match the legacy null-listing thread instead of
-  // grabbing whichever item-specific thread happens to be newest.
-  let existingQuery = supabase
+  const { data: existingRows, error: existingError } = await supabase
     .from('conversations')
     .select('id')
-    .contains('participant_ids', [currentUserId, otherUserId]);
-  existingQuery = listingId
-    ? existingQuery.eq('listing_id', listingId)
-    : existingQuery.is('listing_id', null);
-  const { data: existingRows, error: existingError } = await existingQuery
+    .contains('participant_ids', [currentUserId, otherUserId])
     .order('last_message_at', { ascending: false })
     .limit(1);
 
@@ -929,7 +919,6 @@ export async function startChat(
       seller_id: otherUserId,
       last_message: '',
       last_message_at: new Date().toISOString(),
-      listing_id: listingId ?? null,
       listing_title: listingTitle ?? null,
       listing_image: listingImage ?? null,
       unread_counts: { [currentUserId]: 0, [otherUserId]: 0 },
@@ -946,4 +935,4 @@ export async function startChat(
   return data.id;
 }
 
-// BAMBEH_END_TOKEN__CHAT_FIX82__COMPLETE
+// BAMBEH_END_TOKEN__CHAT_FIX74__COMPLETE
