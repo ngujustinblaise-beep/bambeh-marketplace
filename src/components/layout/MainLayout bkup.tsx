@@ -27,7 +27,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
-import PushInit from "@/components/PushInit";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -340,7 +339,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <PushInit />
       {shouldShowAds && <FeaturedAdsStrip showHeader maxVisible={20} />}
       <main className="flex-1 pt-0 pb-20 md:pb-8">
         {children || <Outlet />}
