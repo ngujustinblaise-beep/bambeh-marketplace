@@ -1,8 +1,10 @@
-// BAMBEH_DEPLOY_TOKEN__VEHICLEDETAILS_FIX65_CLEAN
+// BAMBEH_DEPLOY_TOKEN__VEHICLEDETAILS_FIX83_CLEAN
+// FIX83: Per-item chat (listingId passed to /chat) + real "Request Test Ride"
+//        now opens BookTestDriveModal (date/time/phone/note → booking-card
+//        message in chat). "Message Seller" stays chat.
 // FIX65: Rebuilt from the dead Firebase page (getVehicleById → "not found")
 //        to read the real Supabase `listings` row (type='vehicle', specs in
-//        `extra`). Contact is CHAT-ONLY (no phone/email). "Message Seller" +
-//        "Request Test Ride" both open in-app chat with the seller.
+//        `extra`). Contact is CHAT-ONLY (no phone/email).
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -12,6 +14,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLang } from '@/hooks/useAppLang';
+import BookTestDriveModal from '@/components/booking/BookTestDriveModal';
 
 const STR: Record<string, Record<string, string>> = {
   en: { back: 'Back', notFound: 'Vehicle not found.', backToList: 'Back to Vehicles', verified: 'Verified',
@@ -55,6 +58,7 @@ export default function VehicleDetails() {
   const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(true);
   const [imgIndex, setImgIndex] = useState(0);
+  const [showBook, setShowBook] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,7 +120,7 @@ export default function VehicleDetails() {
   const openChat = (prefix?: string) => {
     if (!sellerId) return;
     const title = prefix ? `${prefix}: ${heading}` : heading;
-    navigate(`/chat?userId=${sellerId}&listingTitle=${encodeURIComponent(title)}`);
+    navigate(`/chat?userId=${sellerId}&listingId=${row.id}&listingTitle=${encodeURIComponent(title)}&listingImage=${encodeURIComponent(images[0] ?? '')}`);
   };
 
   const features: string[] = Array.isArray(extra.features) ? extra.features : [];
@@ -229,11 +233,11 @@ export default function VehicleDetails() {
         )}
       </div>
 
-      {/* Fixed chat-only actions */}
+      {/* Fixed actions */}
       {!isOwn && sellerId && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
           <div className="max-w-3xl mx-auto grid grid-cols-2 gap-3">
-            <button onClick={() => openChat(tr(lang, 'testRide'))}
+            <button onClick={() => setShowBook(true)}
               className="w-full flex items-center justify-center gap-2 border border-teal-200 text-teal-700 hover:bg-teal-50 font-semibold py-3 rounded-xl transition-colors">
               <Car className="h-4 w-4" /> {tr(lang, 'testRide')}
             </button>
@@ -244,7 +248,10 @@ export default function VehicleDetails() {
           </div>
         </div>
       )}
+
+      {/* Request Test Ride modal */}
+      <BookTestDriveModal isOpen={showBook} onClose={() => setShowBook(false)} listing={row} />
     </div>
   );
 }
-// BAMBEH_END_TOKEN__VEHICLEDETAILS__COMPLETE
+// BAMBEH_END_TOKEN__VEHICLEDETAILS_FIX83__COMPLETE

@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX77_CLEAN
+// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX85_CLEAN
 /**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
@@ -21,6 +21,7 @@ import { ArrowLeft, MapPin, Briefcase, DollarSign, Calendar, Clock, Users, Globe
 import { getJobById, incrementJobView, applyForJob } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { useLang } from "@/hooks/useAppLang";
+import JobApplyModal from "@/components/Jobs/JobApplyModal";
 
 // ─── i18n ──────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
@@ -105,6 +106,7 @@ const JobDetails: React.FC = () => {
   const [applied,    setApplied]    = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
   const [toast,      setToast]      = useState<string | null>(null);
+  const [showApply,  setShowApply]  = useState(false);
 
   // ── Load job ─────────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -450,8 +452,7 @@ const JobDetails: React.FC = () => {
         ) : (
           <button
             type="button"
-            onClick={handleApply}
-            disabled={applying}
+            onClick={() => setShowApply(true)}
             className="w-full py-3.5 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 disabled:opacity-70
                        text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors text-sm"
           >
@@ -466,6 +467,14 @@ const JobDetails: React.FC = () => {
           </button>
         )}
       </div>
+
+      <JobApplyModal
+        isOpen={showApply}
+        onClose={() => setShowApply(false)}
+        jobId={job.id}
+        employerId={job.employerId}
+        jobTitle={job.title}
+      />
     </div>
   );
 };

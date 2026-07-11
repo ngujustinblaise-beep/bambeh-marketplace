@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX75_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX83_CLEAN
 /**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
@@ -663,7 +663,7 @@ export default function ServiceDetails() {
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
         <div className="max-w-2xl mx-auto flex gap-3">
           {providerId && !isOwner && (
-            <button onClick={() => navigate(`/chat?userId=${providerId}&listingTitle=${encodeURIComponent(service.title)}`)} aria-label="Chat"
+            <button onClick={() => navigate(`/chat?userId=${providerId}&listingId=${service.id}&listingTitle=${encodeURIComponent(service.title)}&listingImage=${encodeURIComponent(service.images?.[0] ?? '')}`)} aria-label="Chat"
               className="flex-1 flex items-center justify-center gap-2 border-2 border-purple-200 text-purple-600 rounded-xl py-3 font-semibold text-sm hover:bg-purple-50 transition-colors">
               <MessageCircle className="w-4 h-4" /> Chat
             </button>

@@ -1,9 +1,11 @@
-// BAMBEH_DEPLOY_TOKEN__RENTALDETAILS_FIX65_CLEAN
+// BAMBEH_DEPLOY_TOKEN__RENTALDETAILS_FIX83_CLEAN
+// FIX83: Per-item chat (listingId passed to /chat) + real "Book Site Visit"
+//        now opens BookVisitModal (date/time/phone/note → booking-card message
+//        in chat) instead of a plain chat prefix. "Message Owner" stays chat.
 // FIX65: Rebuilt from the dead Firebase page (getRentalById → "Rental not
 //        found" because Firebase has no data) to read the real Supabase
 //        `listings` row (type='rental', details in `extra`). Contact is
-//        CHAT-ONLY (no phone/email). "Book Site Visit" + "Message Owner"
-//        both open in-app chat with the owner.
+//        CHAT-ONLY (no phone/email).
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -13,6 +15,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLang } from '@/hooks/useAppLang';
+import BookVisitModal from '@/components/booking/BookVisitModal';
 
 const STR: Record<string, Record<string, string>> = {
   en: { back: 'Back', notFound: 'Rental not found.', backToList: 'Back to Rentals', verified: 'Verified',
@@ -57,6 +60,7 @@ export default function RentalDetails() {
   const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(true);
   const [imgIndex, setImgIndex] = useState(0);
+  const [showBook, setShowBook] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -119,7 +123,7 @@ export default function RentalDetails() {
   const openChat = (prefix?: string) => {
     if (!ownerId) return;
     const title = prefix ? `${prefix}: ${row.title || 'Rental'}` : (row.title || 'Rental');
-    navigate(`/chat?userId=${ownerId}&listingTitle=${encodeURIComponent(title)}`);
+    navigate(`/chat?userId=${ownerId}&listingId=${row.id}&listingTitle=${encodeURIComponent(title)}&listingImage=${encodeURIComponent(images[0] ?? '')}`);
   };
 
   return (
@@ -226,11 +230,11 @@ export default function RentalDetails() {
         )}
       </div>
 
-      {/* Fixed chat-only actions */}
+      {/* Fixed actions */}
       {!isOwn && ownerId && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
           <div className="max-w-3xl mx-auto grid grid-cols-2 gap-3">
-            <button onClick={() => openChat(tr(lang, 'book'))}
+            <button onClick={() => setShowBook(true)}
               className="w-full flex items-center justify-center gap-2 border border-teal-200 text-teal-700 hover:bg-teal-50 font-semibold py-3 rounded-xl transition-colors">
               <CalendarCheck className="h-4 w-4" /> {tr(lang, 'book')}
             </button>
@@ -241,7 +245,10 @@ export default function RentalDetails() {
           </div>
         </div>
       )}
+
+      {/* Book Site Visit modal */}
+      <BookVisitModal isOpen={showBook} onClose={() => setShowBook(false)} listing={row} />
     </div>
   );
 }
-// BAMBEH_END_TOKEN__RENTALDETAILS__COMPLETE
+// BAMBEH_END_TOKEN__RENTALDETAILS_FIX83__COMPLETE
