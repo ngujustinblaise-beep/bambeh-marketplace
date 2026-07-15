@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICES_FIX94_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICES_FIX54_CLEAN
 /**
  * src/pages/Services.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
@@ -44,7 +44,6 @@ import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
 import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
 import { useLang, t } from '@/hooks/useAppLang';
-import { useSubscription } from '@/hooks/useSubscription';
 
 // ─────────────────────────────────────────────
 // i18n strings
@@ -604,7 +603,6 @@ export default function Services() {
   const [reportId,        setReportId]        = useState<string | null>(null);
   const [toasts,          setToasts]          = useState<Toast[]>([]);
   const [currentUserId,   setCurrentUserId]   = useState<string | null>(null);
-  const { isActive }      = useSubscription(currentUserId);
   const toastId = useRef(0);
 
   // ── Auth check (secure: getUser not getSession) ──
@@ -715,13 +713,12 @@ export default function Services() {
     } catch { /* silent */ }
   }, [addToast]);
 
-  // ── Book handler (requires auth + active subscription) ──
+  // ── Book handler (requires auth) ──
   const handleBook = useCallback(async (service: Service) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate('/login'); return; }
-    if (!isActive) { navigate('/subscription'); return; }
     setBookingService(service);
-  }, [navigate, isActive]);
+  }, [navigate]);
 
   // ── Filter ──
   const filtered = (() => {
@@ -918,4 +915,3 @@ export default function Services() {
 
 
 
-// BAMBEH_END_TOKEN__SERVICES_FIX94__COMPLETE
