@@ -1,82 +1,70 @@
-// BAMBEH_DEPLOY_TOKEN__SUBSCRIPTIONGUARD_FIX93_CLEAN
-// FILE LOCATION: src/components/security/SubscriptionGuard.tsx  (replaces fix90)
+// BAMBEH_DEPLOY_TOKEN__SUBSCRIPTIONGUARD_FIX90_CLEAN
+// FILE LOCATION: src/components/security/SubscriptionGuard.tsx
 //
-// FIX93 — LIMITED VIEW (Big's rule, 07-14):
-//   Signed-in but UNSUBSCRIBED users may:
-//     • BROWSE the list pages (marketplace, jobs, services, rentals, vehicles,
-//       exchange, home) — EXACT paths only, so every deeper path (details,
-//       chat, cart, profile, modules) stays locked;
-//     • POST listings, visit /subscription, and /donate.
-//   Anything else → /subscription (plans page, in their language).
-//   Signed-out visitors → /login.
-//   Active subscribers → everything.
+// BATCH 6 — the ONE gate. Rendered once inside MainLayout, it locks the whole
+// app behind an active subscription. Only these stay open:
+//   • posting a listing (free for any signed-in user)
+//   • the plans page (/subscription) and donations (/donate)
+// Everything else (messages, notifications, cart, profile, all modules) sends a
+// non-subscriber to /subscription. A signed-out visitor goes to /login.
 //
-// Reuses the canonical Supabase-only hooks. No localStorage. No stubs.
+// Reuses the canonical hooks (no new subscription logic, no stubs):
+//   useAuth().currentUser  +  useSubscription(uid).isActive (Supabase source of truth)
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 
-// Prefix-matched: posting, plans, donations — open to any signed-in user.
-const FREE_PREFIXES = [
+// Prefix match. Posting is free for signed-in users; plans + donate are open.
+const FREE_PATHS = [
   "/subscription",
   "/donate",
+  // posters + their redirect aliases (from App.tsx)
   "/jobs/post", "/marketplace/sell", "/services/offer", "/services/post",
   "/offer-service", "/rentals/list", "/rentals/post", "/list-property",
   "/vehicles/sell", "/post-ad", "/exchange/post", "/exchange/offer",
   "/tontine/create", "/farm-fresh/sell", "/sell-item", "/post-job", "/make-offer",
 ];
 
-// EXACT-matched: browse-only list pages. Deeper paths (details) are NOT here,
-// so "/marketplace" opens but "/marketplace/item/xyz" gates to /subscription.
-const BROWSE_EXACT = new Set([
-  "/", "/home",
-  "/marketplace", "/jobs", "/services", "/rentals", "/vehicles", "/exchange",
-]);
-
 function isFreePath(path: string): boolean {
-  return FREE_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
-}
-
-function normalize(path: string): string {
-  return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+  return FREE_PATHS.some((p) => path === p || path.startsWith(p + "/"));
 }
 
 export default function SubscriptionGuard({ children }: { children: ReactNode }) {
   const location = useLocation();
-  const path = normalize(location.pathname);
   const { currentUser } = useAuth();
   const uid = currentUser?.id ?? null;
-  const { isActive, isLoading } = useSubscription(uid);
+  const { isActive } = useSubscription(uid);
 
-  // Safety net over isLoading: even if a verification hangs, never block a
-  // route decision longer than 4s, and never bounce a paying member during
-  // the brief verify window after navigation.
+  // The hook verifies against Supabase asynchronously; a genuinely subscribed
+  // user whose local cache is empty reads isActive=false for a moment. Hold
+  // briefly before redirecting so we NEVER bounce a paying member to the plans
+  // page by mistake.
   const [graceOver, setGraceOver] = useState(false);
   useEffect(() => {
     setGraceOver(false);
-    const t = setTimeout(() => setGraceOver(true), 4000);
+    const t = setTimeout(() => setGraceOver(true), 1500);
     return () => clearTimeout(t);
-  }, [path, uid]);
+  }, [location.pathname, uid]);
 
-  // 1) Signed out → login.
+  // Not signed in → log in first.
   if (!currentUser) {
-    return <Navigate to="/login" replace state={{ from: path }} />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  // 2) Free actions for any signed-in user: post, plans, donate, browse lists.
-  if (isFreePath(path) || BROWSE_EXACT.has(path)) {
+  // Posting / plans / donate → always allowed.
+  if (isFreePath(location.pathname)) {
     return <>{children}</>;
   }
 
-  // 3) Active subscriber → everything.
+  // Active subscription → full access.
   if (isActive) {
     return <>{children}</>;
   }
 
-  // 4) Subscription still being verified → brief spinner, never a wrong bounce.
-  if (isLoading && !graceOver) {
+  // Signed in, gated route, not yet confirmed active → wait out the grace window.
+  if (!graceOver) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
@@ -84,7 +72,7 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
     );
   }
 
-  // 5) Confirmed unsubscribed on a gated page → plans.
-  return <Navigate to="/subscription" replace state={{ from: path }} />;
+  // Confirmed: no active subscription → to the plans page.
+  return <Navigate to="/subscription" replace state={{ from: location.pathname }} />;
 }
-// BAMBEH_END_TOKEN__SUBSCRIPTIONGUARD_FIX93__COMPLETE
+// BAMBEH_END_TOKEN__SUBSCRIPTIONGUARD_FIX90__COMPLETE
