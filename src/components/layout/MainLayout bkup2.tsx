@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX92_CLEAN
 /**
  * MainLayout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/layout/MainLayout.tsx
@@ -29,7 +28,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 import PushInit from "@/components/PushInit";
-import SubscriptionGuard from "@/components/security/SubscriptionGuard";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -345,9 +343,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <PushInit />
       {shouldShowAds && <FeaturedAdsStrip showHeader maxVisible={20} />}
       <main className="flex-1 pt-0 pb-20 md:pb-8">
-        <SubscriptionGuard>
-          {children || <Outlet />}
-        </SubscriptionGuard>
+        {children || <Outlet />}
       </main>
       <Footer />
       {renderMobileBottomNav()}
@@ -365,4 +361,3 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 };
 
 export default MainLayout;
-// BAMBEH_END_TOKEN__MAINLAYOUT_FIX92__COMPLETE
