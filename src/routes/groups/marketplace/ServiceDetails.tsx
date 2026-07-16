@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX99_CLEAN
 // BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX83_CLEAN
 /**
  * src/pages/ServiceDetails.tsx — Bambeh Marketplace
@@ -256,18 +257,16 @@ function ReportModal({ serviceId, s, onClose }: { serviceId: string; s: S; onClo
     setLoading(true); setErr('');
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL ?? ''}/api/report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          listing_id:   serviceId,
-          listing_type: 'service',
-          reason:       reason.slice(0, 100),
-          details:      details.slice(0, 500),
-          reporter_id:  user?.id ?? 'anonymous',
-        }),
+      // FIX99: reports are saved directly to the Supabase `reports` table
+      // (the old /api/report backend no longer exists).
+      const { error: insErr } = await supabase.from('reports').insert({
+        listing_id:   serviceId,
+        listing_type: 'service',
+        reason:       reason.slice(0, 100),
+        details:      details.slice(0, 500),
+        reporter_id:  user?.id ?? null,
       });
-      if (!res.ok) throw new Error('Server error');
+      if (insErr) throw insErr;
       setDone(true);
     } catch {
       setErr(s.report_error);
@@ -693,5 +692,7 @@ export default function ServiceDetails() {
     </div>
   );
 }
+
+// BAMBEH_END_TOKEN__SERVICEDETAILS__COMPLETE
 
 // BAMBEH_END_TOKEN__SERVICEDETAILS__COMPLETE

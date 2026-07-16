@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__SERVICES_FIX99_CLEAN
 // BAMBEH_DEPLOY_TOKEN__SERVICES_FIX54_CLEAN
 /**
  * src/pages/Services.tsx — Bambeh Marketplace
@@ -23,7 +24,7 @@
  *   ✅ Skeleton loaders, empty states
  *   ✅ Expiry warning banners on provider's own listings
  *   ✅ View count, like count, book CTA
- *   ✅ Report service modal (sends to /api/report)
+ *   ✅ Report service modal (saves to Supabase `reports` table)
  *   ✅ Share button (Web Share API + clipboard fallback)
  *   ✅ Pull-to-refresh on mobile
  *   ✅ Toast notification system
@@ -345,18 +346,16 @@ function ReportModal({ serviceId, onClose, s }: ReportModalProps) {
     setLoading(true); setErr('');
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL ?? ''}/api/report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          listing_id:   serviceId,
-          listing_type: 'service',
-          reason:       sanitiseText(reason),
-          details:      sanitiseText(details.slice(0, 500)),
-          reporter_id:  user?.id ?? 'anonymous',
-        }),
+      // FIX99: reports are saved directly to the Supabase `reports` table
+      // (the old /api/report backend no longer exists).
+      const { error: insErr } = await supabase.from('reports').insert({
+        listing_id:   serviceId,
+        listing_type: 'service',
+        reason:       sanitiseText(reason),
+        details:      sanitiseText(details.slice(0, 500)),
+        reporter_id:  user?.id ?? null,
       });
-      if (!res.ok) throw new Error('Server error');
+      if (insErr) throw insErr;
       setDone(true);
     } catch {
       setErr(s.report_error);
@@ -915,3 +914,5 @@ export default function Services() {
 
 
 
+
+// BAMBEH_END_TOKEN__SERVICES__COMPLETE
