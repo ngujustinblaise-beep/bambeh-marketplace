@@ -1,30 +1,25 @@
+// BAMBEH_DEPLOY_TOKEN__DONATEPREMIUM_FIX98_CLEAN
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * DONATION PAGE - PREMIUM EDITION
+ * DONATION PAGE - BAMBEH
  * ═══════════════════════════════════════════════════════════════════════════
- * 
- * ✨ FEATURES:
- * - Beautiful gradient UI with animations
- * - Multiple payment methods (MTN, Orange, Card, Crypto)
- * - One-time and monthly donations
- * - Impact visualization
- * - Donor recognition tiers
- * - Social proof (recent donors)
- * - Goal tracking
- * - Tax receipt option
- * - Thank you animations
- * 
+ *
+ * Supports:
+ * - MTN / Orange Mobile Money via CamPay
+ * - Card payments for foreign users when enabled on the payment server
+ * - Minimum donation: 500 XAF
+ * - Quick amounts + custom amount
+ * - Cameroon phone default (+237)
+ *
  * © 2025 Bambeh. Support Our Mission
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { useState } from 'react';
-import { 
-  Heart, 
-  CreditCard, 
+import { useMemo, useState } from 'react';
+import {
+  Heart,
+  CreditCard,
   Smartphone,
-  Bitcoin,
-  Check,
   TrendingUp,
   Users,
   Zap,
@@ -32,19 +27,17 @@ import {
   Award,
   Sparkles,
   Target,
-  Crown,
-  Star,
-  Calendar,
-  Download,
-  Share2
+  Calendar
 } from 'lucide-react';
 
-// Donation tiers with perks
+const MIN_DONATION = 500;
+const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
+
 const DONATION_TIERS = [
   {
     name: 'Supporter',
     icon: '💚',
-    min: 1000,
+    min: 500,
     max: 4999,
     color: 'from-green-400 to-emerald-600',
     perks: ['Bronze badge', 'Thank you email', 'Recognition on website']
@@ -75,68 +68,104 @@ const DONATION_TIERS = [
   },
 ];
 
-const QUICK_AMOUNTS = [1000, 5000, 10000, 25000, 50000];
+type PayMethod = 'mtn' | 'orange' | 'card';
 
 export default function DonatePremium() {
   const [amount, setAmount] = useState('');
   const [customAmount, setCustomAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'mtn' | 'orange' | 'card' | 'crypto'>('mtn');
+  const [paymentMethod, setPaymentMethod] = useState<PayMethod>('mtn');
   const [donationType, setDonationType] = useState<'once' | 'monthly'>('once');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+237');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [serverMessage, setServerMessage] = useState('');
 
-  const selectedAmount = parseInt(amount || customAmount || '0');
-  const selectedTier = DONATION_TIERS.find(tier => selectedAmount >= tier.min && selectedAmount <= tier.max);
+  const selectedAmount = Number(amount || customAmount || 0);
+  const isValidAmount = selectedAmount >= MIN_DONATION;
+  const selectedTier = useMemo(
+    () => DONATION_TIERS.find(tier => selectedAmount >= tier.min && selectedAmount <= tier.max),
+    [selectedAmount]
+  );
 
-  // Mock data for impact display
   const impactStats = {
-    goal: 5000000, // 5 million XAF,
-    raised: 3247000, // 3.2 million XAF raised,
+    goal: 5000000,
+    raised: 3247000,
     donors: 1247,
     avgDonation: 2600
   };
 
   const progressPercent = (impactStats.raised / impactStats.goal) * 100;
 
-  // Recent donors (mock)
-  const recentDonors = [
-    { name: 'John D.', amount: 25000, time: '5 min ago', badge: '🏆' },
-    { name: 'Anonymous', amount: 10000, time: '12 min ago', badge: '⭐' },
-    { name: 'Mary K.', amount: 50000, time: '1 hour ago', badge: '👑' },
-  ];
+  const normalizePhone = (value: string) => {
+    const cleaned = value.replace(/\s+/g, '');
+    if (cleaned.startsWith('6') && cleaned.length === 9) return `+237${cleaned}`;
+    return cleaned;
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const canPay = isValidAmount && phone.trim().length >= 8 && (isAnonymous || name.trim()) && (isAnonymous || email.trim());
+
+  const handleAmountSelect = (value: number) => {
+    setAmount(String(value));
+    setCustomAmount('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const donationAmount = amount || customAmount;
-    
-    if (!donationAmount || parseInt(donationAmount) < 500) {
-      alert('Minimum donation is 500 XAF');
-      return;
-    }
+    if (!isValidAmount) return alert('Minimum donation is 500 XAF');
+    if (!phone.trim()) return alert('Please enter your phone number');
 
-    // Show success animation
-    setShowThankYou(true);
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      console.log('Donation processed:', { 
-        amount: donationAmount, 
-        paymentMethod, 
+    setIsProcessing(true);
+    setServerMessage('');
+
+    try {
+      const payload = {
+        amount: selectedAmount,
+        currency: 'XAF',
+        paymentMethod,
         donationType,
-        name: isAnonymous ? 'Anonymous' : name,
-        email,
-        phone 
+        donorName: isAnonymous ? 'Anonymous' : name.trim(),
+        email: isAnonymous ? '' : email.trim(),
+        phone: normalizePhone(phone),
+        anonymous: isAnonymous,
+        source: 'donation-page'
+      };
+
+      // FIX98: donations go to the Supabase 'payments' Edge Function (Render/Railway dead)
+      const res = await fetch('https://rbjbdxefwzvgmioearie.supabase.co/functions/v1/payments/api/payments/donate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
-      
-      // Reset form or redirect
-      setTimeout(() => {
-        setShowThankYou(false);
-        // You can redirect or keep on page
-      }, 3000);
-    }, 1500);
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(data?.message || 'Payment initiation failed');
+      }
+
+      if (data?.message) setServerMessage(data.message);
+
+      if (data?.checkoutUrl) {
+        window.location.assign(data.checkoutUrl);
+        return;
+      }
+
+      if (data?.reference || data?.transactionId) {
+        setShowThankYou(true);
+        return;
+      }
+
+      throw new Error('No payment reference returned by server');
+    } catch (error: any) {
+      console.error(error);
+      alert(error?.message || 'Payment prompt failed to reach the phone');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (showThankYou) {
     return (
@@ -147,340 +176,159 @@ export default function DonatePremium() {
               <Heart className="w-16 h-16 text-white" />
             </div>
           </div>
-          <h1 className="text-5xl font-bold mb-4">Thank You! 🎉</h1>
+          <h1 className="text-5xl font-bold mb-4">Payment Started 🎉</h1>
           <p className="text-2xl text-purple-100 mb-8">
-            Your generous donation of {(amount || customAmount).toLocaleString()} XAF means the world to us!
+            Check your phone and approve the payment prompt.
           </p>
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8">
-            <p className="text-lg mb-2">You've unlocked:</p>
+            <p className="text-lg mb-2">Donation:</p>
             <div className="flex items-center justify-center gap-3 text-3xl">
-              {selectedTier?.icon} <span className="font-bold">{selectedTier?.name} Badge!</span>
+              {selectedTier?.icon} <span className="font-bold">{selectedTier?.name}</span>
             </div>
           </div>
-          <p className="text-purple-200">Receipt sent to {email}</p>
-          <div className="mt-8">
-            <div className="animate-pulse text-6xl">💚🇨🇲</div>
-          </div>
+          <p className="text-purple-200">{serverMessage}</p>
         </div>
       </div>
     );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        
-        {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-3xl p-8 md:p-12 mb-8 text-white">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32" />
-          
           <div className="relative z-10 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-6">
               <Heart className="w-10 h-10" />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-4">Support Bambeh</h1>
             <p className="text-xl md:text-2xl text-purple-100 mb-8 max-w-3xl mx-auto">
-              Help us keep Bambeh free and accessible for all Cameroonians 🇨🇲
+              Help us keep Bambeh free and accessible for all users worldwide
             </p>
-
-            {/* Impact Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="text-sm">Total Raised</span>
-                </div>
+                <div className="flex items-center justify-center gap-2 mb-2"><TrendingUp className="w-5 h-5" /><span className="text-sm">Total Raised</span></div>
                 <p className="text-3xl font-bold">{(impactStats.raised / 1000000).toFixed(1)}M</p>
                 <p className="text-xs text-purple-200">XAF</p>
               </div>
-              
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Users className="w-5 h-5" />
-                  <span className="text-sm">Donors</span>
-                </div>
+                <div className="flex items-center justify-center gap-2 mb-2"><Users className="w-5 h-5" /><span className="text-sm">Donors</span></div>
                 <p className="text-3xl font-bold">{impactStats.donors.toLocaleString()}</p>
               </div>
-              
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Target className="w-5 h-5" />
-                  <span className="text-sm">Goal Progress</span>
-                </div>
+                <div className="flex items-center justify-center gap-2 mb-2"><Target className="w-5 h-5" /><span className="text-sm">Goal Progress</span></div>
                 <p className="text-3xl font-bold">{progressPercent.toFixed(0)}%</p>
               </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mt-6 max-w-4xl mx-auto">
-              <div className="h-4 bg-white/20 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-1000"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <p className="text-sm text-purple-100 mt-2">
-                {(impactStats.raised / 1000).toLocaleString()}K / {(impactStats.goal / 1000).toLocaleString()}K XAF
-              </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Main Donation Form */}
-          <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-xl p-6 md:p-8">
-              
-              {/* Donation Type Toggle */}
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
-                  <Calendar className="w-4 h-4 inline mr-2" />
-                  Donation Frequency
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setDonationType('once')}
-                    className={`px-6 py-4 rounded-2xl font-bold transition-all ${
-                      donationType === 'once'
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Zap className="w-5 h-5 inline mr-2" />
-                    One-Time
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl p-6 md:p-8">
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-3">
+                <Calendar className="w-4 h-4 inline mr-2" />
+                Donation Frequency
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button type="button" onClick={() => setDonationType('once')} className={`px-6 py-4 rounded-2xl font-bold transition-all ${donationType === 'once' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  <Zap className="w-5 h-5 inline mr-2" /> One-Time
+                </button>
+                <button type="button" onClick={() => setDonationType('monthly')} className={`px-6 py-4 rounded-2xl font-bold transition-all ${donationType === 'monthly' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  <TrendingUp className="w-5 h-5 inline mr-2" /> Monthly
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-3">Select Amount (XAF)</label>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
+                {QUICK_AMOUNTS.map((amt) => (
+                  <button key={amt} type="button" onClick={() => handleAmountSelect(amt)} className={`px-4 py-4 rounded-2xl font-bold transition-all ${amount === String(amt) ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg scale-105' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'}`}>
+                    {amt.toLocaleString()}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setDonationType('monthly')}
-                    className={`px-6 py-4 rounded-2xl font-bold transition-all ${
-                      donationType === 'monthly'
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <TrendingUp className="w-5 h-5 inline mr-2" />
-                    Monthly
-                  </button>
-                </div>
-                {donationType === 'monthly' && (
-                  <p className="text-sm text-green-600 mt-2 font-medium">
-                    ✨ Recurring donors get 20% more impact credits!
-                  </p>
-                )}
+                ))}
+              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Or Enter Custom Amount</label>
+              <input
+                type="number"
+                value={customAmount}
+                onChange={(e) => {
+                  setCustomAmount(e.target.value);
+                  setAmount('');
+                }}
+                placeholder="Enter amount..."
+                min={MIN_DONATION}
+                className="w-full px-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 font-semibold text-lg"
+              />
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-700 mb-3">Payment Method</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button type="button" onClick={() => setPaymentMethod('mtn')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'mtn' ? 'bg-yellow-500 text-black ring-4 ring-yellow-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-yellow-50'}`}>
+                  <Smartphone className="w-6 h-6 mx-auto mb-2" /> MTN MoMo
+                </button>
+                <button type="button" onClick={() => setPaymentMethod('orange')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'orange' ? 'bg-orange-500 text-white ring-4 ring-orange-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-orange-50'}`}>
+                  <Smartphone className="w-6 h-6 mx-auto mb-2" /> Orange Money
+                </button>
+                <button type="button" onClick={() => setPaymentMethod('card')} className={`p-4 rounded-2xl font-bold transition-all ${paymentMethod === 'card' ? 'bg-blue-600 text-white ring-4 ring-blue-300 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}>
+                  <CreditCard className="w-6 h-6 mx-auto mb-2" /> Card
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <input type="checkbox" id="anonymous" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500" />
+                <label htmlFor="anonymous" className="text-sm font-medium text-gray-700">Donate anonymously</label>
               </div>
 
-              {/* Amount Selection */}
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
-                  Select Amount (XAF)
-                </label>
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
-                  {QUICK_AMOUNTS.map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => {
-                        setAmount(amt.toString());
-                        setCustomAmount('');}
-                      className={`px-4 py-4 rounded-2xl font-bold transition-all ${
-                        amount === amt.toString()
-                          ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg scale-105'
-                          : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
-                      }`}
-                    >
-                      {(amt / 1000).toFixed(0)}K
-                    </button>
-                  ))}
-                </div>
-
-                {/* Custom Amount */}
-                <div className="relative">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Or Enter Custom Amount
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">XAF</span>
-                    <input
-                      type="number"
-                      value={customAmount}
-                      onChange={(e) => {
-                        setCustomAmount(e.target.value);
-                        setAmount('');}
-                      placeholder="Enter amount..."
-      className="w-full pl-16 pr-4 py-4 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 font-semibold text-lg"
-                      min="500"
-                    />
+              {!isAnonymous && (
+                <>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Your Name *</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name..." className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Minimum: 500 XAF</p>
-                </div>
-
-                {/* Tier Preview */}
-                {selectedTier && selectedAmount >= 1000 && (
-                  <div className={`mt-4 p-4 rounded-2xl bg-gradient-to-r ${selectedTier.color} text-white`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">{selectedTier.icon}</span>
-                      <div>
-                        <p className="font-bold text-lg">{selectedTier.name} Tier!</p>
-                        <p className="text-sm opacity-90">Unlock exclusive perks</p>
-                      </div>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500" required />
                   </div>
-                )}
+                </>
+              )}
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number *</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+237 6XXXXXXXX"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500"
+                  required
+                />
               </div>
+            </div>
 
-              {/* Payment Method */}
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
-                  Payment Method
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('mtn')}
-                    className={`p-4 rounded-2xl font-bold transition-all ${
-                      paymentMethod === 'mtn'
-                        ? 'bg-yellow-500 text-black ring-4 ring-yellow-300 scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-yellow-50'
-                    }`}
-                  >
-                    <Smartphone className="w-6 h-6 mx-auto mb-2" />
-                    MTN MoMo
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('orange')}
-                    className={`p-4 rounded-2xl font-bold transition-all ${
-                      paymentMethod === 'orange'
-                        ? 'bg-orange-500 text-white ring-4 ring-orange-300 scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-orange-50'
-                    }`}
-                  >
-                    <Smartphone className="w-6 h-6 mx-auto mb-2" />
-                    Orange Money
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('card')}
-                    className={`p-4 rounded-2xl font-bold transition-all ${
-                      paymentMethod === 'card'
-                        ? 'bg-blue-600 text-white ring-4 ring-blue-300 scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-blue-50'
-                    }`}
-                  >
-                    <CreditCard className="w-6 h-6 mx-auto mb-2" />
-                    Card
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('crypto')}
-                    className={`p-4 rounded-2xl font-bold transition-all ${
-                      paymentMethod === 'crypto'
-                        ? 'bg-purple-600 text-white ring-4 ring-purple-300 scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-purple-50'
-                    }`}
-                  >
-                    <Bitcoin className="w-6 h-6 mx-auto mb-2" />
-                    Crypto
-                  </button>
-                </div>
-              </div>
-
-              {/* Donor Information */}
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <input
-                    type="checkbox"
-                    id="anonymous"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
-                  />
-                  <label htmlFor="anonymous" className="text-sm font-medium text-gray-700">
-                    Donate anonymously
-                  </label>
-                </div>
-
-                {!isAnonymous && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Full name..."
-      className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500"
-                        required={!isAnonymous}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
-      className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">For receipt and updates</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+237 XXX XXX XXX"
-      className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={!selectedAmount || selectedAmount < 500 || !email || !phone || (!isAnonymous && !name)}
-                className="w-full px-8 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white rounded-2xl hover:shadow-2xl font-bold text-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
-              >
-                <Heart className="w-6 h-6 inline mr-3" />
-                Donate {selectedAmount ? `${selectedAmount.toLocaleString()} XAF` : ''},
-                {donationType === 'monthly' && ' /month'}
-              </button>
-
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-600">
-                <Shield className="w-4 h-4 text-green-600" />
-                <span>Secure payment · Tax receipt included · Cancel anytime</span>
-              </div>
-            </form>
+            <button
+              type="submit"
+              disabled={!canPay || isProcessing}
+              className={`w-full px-8 py-5 rounded-2xl font-bold text-xl transition-all ${canPay && !isProcessing ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl hover:scale-105' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            >
+              <Heart className="w-6 h-6 inline mr-3" />
+              {isProcessing ? 'Sending payment prompt...' : `Pay ${selectedAmount ? selectedAmount.toLocaleString() : ''} XAF`}
+            </button>
+            {serverMessage && <p className="mt-3 text-center text-sm text-gray-600">{serverMessage}</p>}
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            
-            {/* Why Donate */}
             <div className="bg-white rounded-3xl shadow-xl p-6">
               <h3 className="font-bold text-gray-900 text-xl mb-4">Why Donate?</h3>
               <div className="space-y-3">
                 {[
                   { icon: '🚀', text: 'Keep Bambeh free for all users' },
-                  { icon: '⚡', text: 'Maintain 1% transaction fee' },
+                  { icon: '⚡', text: 'Maintain platform operations' },
                   { icon: '💪', text: 'Support local entrepreneurs' },
                   { icon: '🎨', text: 'Fund new features' },
                   { icon: '🛡️', text: 'Improve security & safety' },
@@ -492,55 +340,10 @@ export default function DonatePremium() {
                 ))}
               </div>
             </div>
-
-            {/* Donor Tiers */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-6 border-2 border-purple-200">
-              <h3 className="font-bold text-gray-900 text-xl mb-4">
-                <Award className="w-5 h-5 inline mr-2" />
-                Donor Tiers
-              </h3>
-              <div className="space-y-3">
-                {DONATION_TIERS.map((tier, i) => (
-                  <div key={i} className={`p-3 rounded-2xl bg-gradient-to-r ${tier.color} text-white`}>
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{tier.icon}</span>
-                        <span className="font-bold">{tier.name}</span>
-                      </div>
-                      <span className="text-sm">{(tier.min / 1000).toFixed(0)}K+</span>
-                    </div>
-                    <p className="text-xs opacity-90">{tier.perks[0]}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Donors */}
-            <div className="bg-white rounded-3xl shadow-xl p-6">
-              <h3 className="font-bold text-gray-900 text-xl mb-4">
-                <Sparkles className="w-5 h-5 inline mr-2" />
-                Recent Donors
-              </h3>
-              <div className="space-y-3">
-                {recentDonors.map((donor, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{donor.badge}</span>
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{donor.name}</p>
-                        <p className="text-xs text-gray-600">{donor.time}</p>
-                      </div>
-                    </div>
-                    <p className="font-bold text-purple-600">{(donor.amount / 1000).toFixed(0)}K</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
 }
-
-export default DonatePremium;
+// BAMBEH_END_TOKEN__DONATEPREMIUM__COMPLETE
