@@ -1,4 +1,3 @@
-// BAMBEH_DEPLOY_TOKEN__SUBPLANS_FIX98_CLEAN
 /**
  * SubscriptionPlans.tsx - Bambeh Marketplace (canonical subscription page)
  *
@@ -19,11 +18,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { useLang } from "@/hooks/useAppLang";
 
-// FIX98: subscriptions are served by the Supabase 'payments' Edge Function
-// (Railway is dead). VITE_API_URL can still override for testing.
 const API_BASE =
   ((import.meta as any).env && (import.meta as any).env.VITE_API_URL) ||
-  "https://rbjbdxefwzvgmioearie.supabase.co/functions/v1/payments";
+  "https://bambeh-backend-production-6bca.up.railway.app";
 
 type LangCode = "en" | "fr" | "pcm" | "ar" | "ff";
 
@@ -559,5 +556,3 @@ export default function SubscriptionPlans() {
     </div>
   );
 }
-
-// BAMBEH_END_TOKEN__SUBPLANS__COMPLETE
