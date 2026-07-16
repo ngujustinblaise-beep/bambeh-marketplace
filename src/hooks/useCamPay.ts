@@ -1,275 +1,351 @@
 /**
- * src/hooks/useCamPay.ts - Bambeh Marketplace
- * FILE LOCATION: src/hooks/useCamPay.ts
+ * useCamPay.ts — Payment Hook for Frontend
+ * Bambeh SARL · https://bambeh.com
  *
- * ORDER-FIRST UPGRADE:
- *  - initPayment(...) is UNCHANGED - every existing caller keeps working.
- *  - NEW initCartPayment(...) sends the cart to POST /api/payments/cart with
- *    the buyer's Supabase access token. The SERVER verifies prices, reserves
- *    stock, creates the order as 'pending', and initiates CamPay. The
- *    signature-verified webhook flips it to 'paid' and opens escrow.
- *  - Both share the same status/polling machinery, so the payment modal UX
- *    is identical.
+ * Hardened features:
+ *  - Request timeout (30 s) + AbortController cleanup on unmount
+ *  - Automatic retry with exponential back-off (handles Render cold-starts)
+ *  - Strict HTTP error handling (4xx / 5xx surfaces server message)
+ *  - Client-generated reference for both pay() and donate()
+ *  - Async status polling for CamPay confirmation (mobile money is async)
+ *  - Typed error codes for UI-level branching
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL
-  ?? 'https://bambeh-backend-production-6bca.up.railway.app';
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-export type PaymentStatus = 'idle' | 'submitting' | 'waiting' | 'success' | 'failed' | 'timeout';
+const PAYMENT_SERVER = 'https://bambeh-payment-server.onrender.com';
 
-interface UseCamPayOptions {
-  onSuccess?: (reference: string, data: unknown) => void | Promise<void>;
-  onFailure?: (message: string) => void;
+/** Render free tier can cold-start; retry up to 3 times with back-off. */
+const MAX_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 1_500; // 1.5 s, doubles each attempt
+
+/** Abort a single fetch after this many ms (covers slow Render wake-ups). */
+const REQUEST_TIMEOUT_MS = 30_000;
+
+/** Poll for payment confirmation every N ms, up to POLL_MAX_ATTEMPTS times. */
+const POLL_INTERVAL_MS = 4_000;
+const POLL_MAX_ATTEMPTS = 15; // 60 s total window
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type PaymentStatus =
+  | 'idle'
+  | 'initiating'
+  | 'pending'       // initiation succeeded; waiting for mobile-money confirmation
+  | 'confirmed'     // CamPay confirmed the transaction
+  | 'failed'
+  | 'timeout';      // polling window exhausted without confirmation
+
+export type PaymentErrorCode =
+  | 'NETWORK_ERROR'
+  | 'SERVER_ERROR'
+  | 'VALIDATION_ERROR'
+  | 'TIMEOUT'
+  | 'UNKNOWN';
+
+export interface PaymentBreakdown {
+  subtotal: number;
+  appFee: number;
+  govTax: number;
+  total: number;
 }
 
-interface InitPaymentParams {
-  amount: number;
-  phone: string;
-  description: string;
-  externalRef?: string;
-  metadata?: Record<string, unknown>;
+export interface PaymentResult {
+  success: boolean;
+  reference?: string;
+  status?: PaymentStatus;
+  error?: string;
+  errorCode?: PaymentErrorCode;
+  breakdown?: PaymentBreakdown;
 }
 
-export interface CartCheckoutItem {
-  listingId?: string | null;
-  listingType?: string | null;
-  sellerId?: string | null;
-  title: string;
-  priceXAF: number;
-  quantity: number;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function generateRef(): string {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
+  return `BEH-${ts}-${rand}`;
 }
 
-interface InitCartPaymentParams {
-  items: CartCheckoutItem[];
-  phone: string;
-  description: string;
-  /** Supabase session access token - checkout requires a signed-in buyer. */
-  accessToken: string;
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const MTN_PREFIXES = [
-  '650','651','652','653','654',
-  '670','671','672','673','674','675','676','677','678','679',
-  '680','681','682','683','684','685','686','687','688','689',
-];
+/**
+ * Fetch with a per-request AbortController timeout.
+ * Passes an external signal too (for component-unmount cleanup).
+ */
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  externalSignal?: AbortSignal,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-const ORANGE_PREFIXES = [
-  '655','656','657','658','659',
-  '690','691','692','693','694','695','696','697','698','699',
-];
+  // Propagate external abort (e.g. component unmounted)
+  externalSignal?.addEventListener('abort', () => controller.abort());
 
-export type Operator = 'mtn' | 'orange' | null;
-
-export function normalizePhone(raw: string): string {
-  const digits = raw.replace(/\D/g, '');
-  if (digits.startsWith('237') && digits.length === 12) return digits.slice(3);
-  if (digits.startsWith('0') && digits.length === 10) return digits.slice(1);
-  return digits;
-}
-
-export function detectOperator(phone9: string): Operator {
-  const prefix = phone9.slice(0, 3);
-  if (MTN_PREFIXES.includes(prefix)) return 'mtn';
-  if (ORANGE_PREFIXES.includes(prefix)) return 'orange';
-  return null;
-}
-
-export function validateCamPhone(rawPhone: string): string | null {
-  const phone9 = normalizePhone(rawPhone);
-  if (phone9.length !== 9) return 'Enter your 9-digit MTN or Orange number (e.g. 670757326).';
-  const op = detectOperator(phone9);
-  if (!op) {
-    return `"${phone9}" is not a recognized MTN or Orange number.`;
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
   }
-  return null;
 }
 
-export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
-  const [status,    setStatus]    = useState<PaymentStatus>('idle');
-  const [errorMsg,  setErrorMsg]  = useState<string>('');
-  const [reference, setReference] = useState<string>('');
-  const [countdown, setCountdown] = useState<number>(0);
+/**
+ * POST with retry + exponential back-off.
+ * Retries on network errors and 5xx responses (not 4xx — those are client errors).
+ */
+async function postWithRetry(
+  url: string,
+  body: Record<string, unknown>,
+  externalSignal?: AbortSignal,
+): Promise<unknown> {
+  let lastError: Error | null = null;
 
-  const timerRef     = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pollRef      = useRef<ReturnType<typeof setInterval> | null>(null);
-  const cancelledRef = useRef(false);
-  const attemptRef   = useRef(0);
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    if (externalSignal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
-  const clearTimers = () => {
-    if (timerRef.current)  clearInterval(timerRef.current);
-    if (pollRef.current)   clearInterval(pollRef.current);
+    try {
+      const res = await fetchWithTimeout(
+        url,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        },
+        externalSignal,
+      );
+
+      // 4xx → client error, no retry
+      if (res.status >= 400 && res.status < 500) {
+        const payload = await res.json().catch(() => ({}));
+        const message = (payload as any)?.error ?? `HTTP ${res.status}`;
+        const code: PaymentErrorCode =
+          res.status === 422 || res.status === 400 ? 'VALIDATION_ERROR' : 'SERVER_ERROR';
+        const err = Object.assign(new Error(message), { code });
+        throw err;
+      }
+
+      // 5xx → server error, retry
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error((payload as any)?.error ?? `HTTP ${res.status}`);
+      }
+
+      return await res.json();
+    } catch (err: any) {
+      if (err.name === 'AbortError') throw err;           // never retry aborts
+      if (err.code === 'VALIDATION_ERROR') throw err;    // never retry 4xx
+      lastError = err;
+
+      if (attempt < MAX_RETRIES - 1) {
+        const delay = RETRY_BASE_DELAY_MS * 2 ** attempt;
+        await sleep(delay);
+      }
+    }
+  }
+
+  throw lastError ?? new Error('Request failed after retries');
+}
+
+/**
+ * Poll the server for CamPay confirmation of a given reference.
+ * Resolves once confirmed, or rejects after the polling window.
+ */
+async function pollForConfirmation(
+  reference: string,
+  onStatusChange: (s: PaymentStatus) => void,
+  externalSignal?: AbortSignal,
+): Promise<PaymentResult> {
+  for (let i = 0; i < POLL_MAX_ATTEMPTS; i++) {
+    if (externalSignal?.aborted) {
+      return { success: false, error: 'Cancelled', errorCode: 'UNKNOWN' };
+    }
+
+    await sleep(POLL_INTERVAL_MS);
+
+    try {
+      const res = await fetchWithTimeout(
+        `${PAYMENT_SERVER}/api/payments/status/${encodeURIComponent(reference)}`,
+        { method: 'GET' },
+        externalSignal,
+      );
+
+      if (!res.ok) continue; // transient server error; keep polling
+
+      const data = (await res.json()) as any;
+
+      if (data?.status === 'SUCCESSFUL' || data?.confirmed === true) {
+        onStatusChange('confirmed');
+        return { success: true, reference, status: 'confirmed', breakdown: data.breakdown };
+      }
+
+      if (data?.status === 'FAILED') {
+        onStatusChange('failed');
+        return {
+          success: false,
+          reference,
+          status: 'failed',
+          error: data.error ?? 'Payment was declined',
+          errorCode: 'SERVER_ERROR',
+        };
+      }
+
+      // Still pending — keep polling
+      onStatusChange('pending');
+    } catch {
+      // Network hiccup during poll — keep going
+    }
+  }
+
+  onStatusChange('timeout');
+  return {
+    success: false,
+    reference,
+    status: 'timeout',
+    error: 'Payment confirmation timed out. Check your Mobile Money for the deduction.',
+    errorCode: 'TIMEOUT',
   };
+}
 
-  const reset = useCallback(() => {
-    cancelledRef.current = true;
-    clearTimers();
-    setStatus('idle');
-    setErrorMsg('');
-    setReference('');
-    setCountdown(0);
-    attemptRef.current++;
-    cancelledRef.current = false;
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
+export function useCamPay() {
+  const [status, setStatus] = useState<PaymentStatus>('idle');
+  const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<PaymentErrorCode | null>(null);
+
+  // AbortController persists across renders; aborted on unmount
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Cancel any in-flight request when the component using this hook unmounts
+      abortRef.current?.abort();
+    };
   }, []);
 
-  // -- Shared machinery ----------------------------------------------------------
+  function getSignal(): AbortSignal {
+    abortRef.current?.abort(); // cancel any prior request
+    const controller = new AbortController();
+    abortRef.current = controller;
+    return controller.signal;
+  }
 
-  /** Sends the initiation request; returns the CamPay reference or throws. */
-  const requestReference = async (
-    url: string,
-    body: Record<string, unknown>,
-    accessToken?: string,
-  ): Promise<string> => {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+  function handleError(err: any): PaymentResult {
+    const message: string = err?.message ?? 'An unexpected error occurred';
+    const code: PaymentErrorCode =
+      err?.code in ['VALIDATION_ERROR', 'SERVER_ERROR', 'TIMEOUT']
+        ? err.code
+        : err?.name === 'AbortError'
+        ? 'UNKNOWN'
+        : 'NETWORK_ERROR';
 
-    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+    setError(message);
+    setErrorCode(code);
+    setStatus('failed');
+    return { success: false, error: message, errorCode: code, status: 'failed' };
+  }
 
-    if (!res.ok) {
-      const resBody = await res.json().catch(() => ({}));
-      throw new Error(resBody?.error ?? `Server error ${res.status}`);
-    }
+  /** Initiate a product/service payment. Returns after CamPay confirmation (or timeout). */
+  const pay = useCallback(
+    async (amount: number, phone: string, description: string): Promise<PaymentResult> => {
+      setStatus('initiating');
+      setError(null);
+      setErrorCode(null);
 
-    const data = await res.json();
-    const ref = data?.data?.reference ?? data?.reference;
-    if (!ref) throw new Error('No payment reference returned by server.');
-    return ref;
-  };
-
-  /** Countdown + status polling until SUCCESSFUL / FAILED / timeout. */
-  const startPolling = (ref: string, currentAttempt: number) => {
-    setReference(ref);
-    setStatus('waiting');
-
-    const MAX_SECONDS = 300;
-    setCountdown(MAX_SECONDS);
-
-    timerRef.current = setInterval(() => {
-      if (currentAttempt !== attemptRef.current) return;
-      setCountdown(prev => {
-        if (prev <= 1) { clearInterval(timerRef.current!); return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-
-    let attempts = 0;
-    const MAX_ATTEMPTS = Math.floor(MAX_SECONDS / 8);
-
-    pollRef.current = setInterval(async () => {
-      if (currentAttempt !== attemptRef.current) { clearTimers(); return; }
-      if (cancelledRef.current) { clearTimers(); return; }
-      attempts++;
+      const signal = getSignal();
+      const reference = generateRef();
 
       try {
-        const res = await fetch(`${BACKEND}/api/payments/status/${ref}`);
-        if (!res.ok) return;
+        const data = (await postWithRetry(
+          `${PAYMENT_SERVER}/api/payments/pay`,
+          { amount, phone, description, ref: reference },
+          signal,
+        )) as any;
 
-        const body = await res.json();
-        const campayStatus = (body?.data?.status ?? body?.status ?? '').toUpperCase();
-
-        if (currentAttempt !== attemptRef.current) { clearTimers(); return; }
-
-        if (campayStatus === 'SUCCESSFUL') {
-          clearTimers();
-          if (cancelledRef.current) return;
-          setStatus('success');
-          await onSuccess?.(ref, body?.data ?? body);
-          return;
+        if (!data?.success) {
+          return handleError(new Error(data?.error ?? 'Initiation failed'));
         }
 
-        if (campayStatus === 'FAILED') {
-          clearTimers();
-          if (cancelledRef.current) return;
-          const msg = body?.data?.message ?? 'Payment was declined. Please check your balance and try again.';
-          setStatus('failed');
-          setErrorMsg(msg);
-          onFailure?.(msg);
-          return;
+        // Initiation OK — now wait for mobile-money confirmation
+        setStatus('pending');
+        return await pollForConfirmation(
+          data.reference ?? reference,
+          setStatus,
+          signal,
+        );
+      } catch (err: any) {
+        if (err?.name === 'AbortError') {
+          setStatus('idle');
+          return { success: false, error: 'Cancelled', errorCode: 'UNKNOWN' };
         }
-
-        if (attempts >= MAX_ATTEMPTS) {
-          clearTimers();
-          if (cancelledRef.current) return;
-          setStatus('timeout');
-          const msg = 'Payment timed out. If you approved the USSD prompt, wait 5 minutes and check your wallet.';
-          setErrorMsg(msg);
-          onFailure?.(msg);
-        }
-      } catch {
-        // Network error during poll
+        return handleError(err);
       }
-    }, 8000);
+    },
+    [],
+  );
+
+  /** Initiate a donation. Returns after CamPay confirmation (or timeout). */
+  const donate = useCallback(
+    async (amount: number, phone: string): Promise<PaymentResult> => {
+      setStatus('initiating');
+      setError(null);
+      setErrorCode(null);
+
+      const signal = getSignal();
+      const reference = generateRef();
+
+      try {
+        const data = (await postWithRetry(
+          `${PAYMENT_SERVER}/api/payments/donate`,
+          { amount, phone, ref: reference },
+          signal,
+        )) as any;
+
+        if (!data?.success) {
+          return handleError(new Error(data?.error ?? 'Donation initiation failed'));
+        }
+
+        setStatus('pending');
+        return await pollForConfirmation(
+          data.reference ?? reference,
+          setStatus,
+          signal,
+        );
+      } catch (err: any) {
+        if (err?.name === 'AbortError') {
+          setStatus('idle');
+          return { success: false, error: 'Cancelled', errorCode: 'UNKNOWN' };
+        }
+        return handleError(err);
+      }
+    },
+    [],
+  );
+
+  /** Cancel any in-flight payment request. */
+  const cancel = useCallback(() => {
+    abortRef.current?.abort();
+    setStatus('idle');
+    setError(null);
+    setErrorCode(null);
+  }, []);
+
+  return {
+    pay,
+    donate,
+    cancel,
+    status,
+    error,
+    errorCode,
+    /** Convenience booleans for UI binding */
+    loading: status === 'initiating' || status === 'pending',
+    isConfirmed: status === 'confirmed',
+    isFailed: status === 'failed' || status === 'timeout',
   };
-
-  const beginAttempt = (): number => {
-    attemptRef.current++;
-    const currentAttempt = attemptRef.current;
-    setStatus('submitting');
-    setErrorMsg('');
-    cancelledRef.current = false;
-    return currentAttempt;
-  };
-
-  const failWith = (msg: string) => {
-    setStatus('failed');
-    setErrorMsg(msg);
-    onFailure?.(msg);
-  };
-
-  // -- Public: open-ended collect (UNCHANGED behavior) ----------------------------
-  const initPayment = useCallback(async (params: InitPaymentParams) => {
-    const { amount, phone, description, externalRef, metadata } = params;
-
-    const phone9      = normalizePhone(phone);
-    const phoneForApi = `237${phone9}`;
-
-    const currentAttempt = beginAttempt();
-
-    let ref: string;
-    try {
-      ref = await requestReference(`${BACKEND}/api/payments/collect`, {
-        amount,
-        phone:       phoneForApi,
-        description,
-        externalRef: externalRef ?? `BAMBEH_${Date.now()}_${Math.random().toString(36).substring(2,10)}`,
-        metadata,
-      });
-    } catch (err: unknown) {
-      failWith(err instanceof Error ? err.message : 'Failed to reach payment server.');
-      return;
-    }
-
-    if (currentAttempt !== attemptRef.current) return;
-    startPolling(ref, currentAttempt);
-  }, [onSuccess, onFailure]);
-
-  // -- Public: ORDER-FIRST cart checkout -------------------------------------------
-  // The server verifies prices, reserves stock, creates the pending order,
-  // and initiates CamPay. The client never sends an amount.
-  const initCartPayment = useCallback(async (params: InitCartPaymentParams) => {
-    const { items, phone, description, accessToken } = params;
-
-    const phone9      = normalizePhone(phone);
-    const phoneForApi = `237${phone9}`;
-
-    const currentAttempt = beginAttempt();
-
-    let ref: string;
-    try {
-      ref = await requestReference(
-        `${BACKEND}/api/payments/cart`,
-        { phone: phoneForApi, items, summary: description },
-        accessToken,
-      );
-    } catch (err: unknown) {
-      failWith(err instanceof Error ? err.message : 'Failed to reach payment server.');
-      return;
-    }
-
-    if (currentAttempt !== attemptRef.current) return;
-    startPolling(ref, currentAttempt);
-  }, [onSuccess, onFailure]);
-
-  return { status, errorMsg, reference, countdown, initPayment, initCartPayment, reset };
 }
