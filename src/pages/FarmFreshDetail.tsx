@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX105_CLEAN
 /**
  * src/pages/FarmFreshDetail.tsx ? Bambeh Marketplace
  *
@@ -46,17 +47,7 @@ interface RealProduct {
   created_at?: string;
 }
 
-// -- Demo products (s1-s8 fallback) --------------------------------------------
-const DEMO_PRODUCTS: Record<string, RealProduct> = {
-  s1: { id: "s1", title: "Fresh Tomatoes",      description: "Sun-ripened organic tomatoes from highland farms.", price_per_unit_xaf: 500,  unit: "kg",    category: "Vegetables", location: "Bafoussam, West",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80", seller_name: "Fon's Farm",           seller_phone: "+237671234567" },
-  s2: { id: "s2", title: "Plantains (1 bunch)",  description: "Fresh ripe plantains, 12?15 fingers per bunch.",    price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaound?, Centre",      is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", seller_name: "Mama Ngo's Produce",   seller_phone: "+237682345678" },
-  s3: { id: "s3", title: "Cocoyams (Macabo)",    description: "Fresh macabo cocoyams for Eru and Ndol?.",          price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", seller_name: "Douala Fresh",         seller_phone: "+237693456789" },
-  s4: { id: "s4", title: "Fresh Maize (Corn)",   description: "Sweet, juicy corn on the cob from Bamenda.",        price_per_unit_xaf: 300,  unit: "cob",   category: "Grains",     location: "Bamenda, NW Region",   is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80", seller_name: "NW Farm Co-op",        seller_phone: "+237654567890" },
-  s5: { id: "s5", title: "Groundnuts (1kg bag)", description: "Premium shelled groundnuts from the Adamaoua.",     price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaound?r?, Adamaoua", is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", seller_name: "Adamaoua Nuts",        seller_phone: "+237665678901" },
-  s6: { id: "s6", title: "Bitter Leaf (Ndol?)",  description: "Fresh bitter leaf for authentic Ndol?.",            price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaound?, Centre",      is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", seller_name: "Centre Fresh Greens",  seller_phone: "+237676789012" },
-  s7: { id: "s7", title: "Fresh Avocados",        description: "Hand-picked highland avocados, creamy and nutritious.", price_per_unit_xaf: 800, unit: "kg", category: "Fruits",     location: "Dschang, West",        is_organic: true,  is_available: true, image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80", seller_name: "Highlands Harvest",    seller_phone: "+237687890123" },
-  s8: { id: "s8", title: "Pineapples (Large)",    description: "Sweet, extra-large pineapples from coastal farms.", price_per_unit_xaf: 600, unit: "piece", category: "Fruits",     location: "Edea, Littoral",       is_organic: false, is_available: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", seller_name: "Littoral Tropicals",   seller_phone: "+237698901234" },
-};
+// FIX105: demo products removed — detail loads real DB rows only.
 
 function isUUID(s: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
@@ -90,17 +81,6 @@ const FarmFreshDetail: React.FC = () => {
 
   async function loadProduct(pid: string) {
     setLoading(true);
-
-    // 1. Check demo map first (s1?s8)
-    if (DEMO_PRODUCTS[pid]) {
-      setProduct(DEMO_PRODUCTS[pid]);
-      setIsDemo(true);
-      setLoading(false);
-      // Load related demo products
-      const others = Object.values(DEMO_PRODUCTS).filter(p => p.id !== pid).slice(0, 3);
-      setRelatedItems(others);
-      return;
-    }
 
     // 2. Try Supabase DB
     if (isUUID(pid)) {
@@ -158,8 +138,7 @@ const FarmFreshDetail: React.FC = () => {
                   is_organic: false, is_available: true,
                 })));
               } else {
-                // Fall back to demo related
-                setRelatedItems(Object.values(DEMO_PRODUCTS).slice(0, 3));
+                setRelatedItems([]);
               }
             });
           return;
@@ -272,7 +251,7 @@ const FarmFreshDetail: React.FC = () => {
                 </span>
               )}
               <span className="bg-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{product.category}</span>
-              {isDemo && <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full">DEMO</span>}
+              
             </div>
             <h1 className="text-xl font-black leading-snug">{product.title}</h1>
             {product.description && <p className="text-green-100 text-sm mt-1 line-clamp-2">{product.description}</p>}
@@ -477,3 +456,5 @@ export default FarmFreshDetail;
 
 
 
+
+// BAMBEH_END_TOKEN__FARMFRESHDETAIL__COMPLETE

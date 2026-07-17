@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__FARMFRESHPAGE_FIX105_CLEAN
 /**
  * src/pages/FarmFreshPage.tsx — Bambeh Marketplace
  *
@@ -54,17 +55,7 @@ interface AdSlot {
   emoji: string;
 }
 
-// ─── Demo data (shown when DB is empty) ───────────────────────────────────────
-const DEMO_PRODUCTS: FarmProduct[] = [
-  { id: "s1", title: "Fresh Tomatoes",      price_per_unit_xaf: 500,  unit: "kg",    category: "Vegetables", location: "Bafoussam, West",      is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1546470427-e212876f0173?w=400&q=80", sellerName: "Fon's Farm",         sellerPhone: "+237671234567", view_count: 24 },
-  { id: "s2", title: "Plantains (1 bunch)", price_per_unit_xaf: 1500, unit: "bunch", category: "Fruits",     location: "Yaoundé, Centre",      is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80", sellerName: "Mama Ngo's Produce", sellerPhone: "+237682345678", view_count: 41 },
-  { id: "s3", title: "Cocoyams (Macabo)",   price_per_unit_xaf: 800,  unit: "kg",    category: "Tubers",     location: "Douala, Littoral",     is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80", sellerName: "Douala Fresh",       sellerPhone: "+237693456789", view_count: 18 },
-  { id: "s4", title: "Fresh Maize (Corn)",  price_per_unit_xaf: 300,  unit: "cob",   category: "Grains",     location: "Bamenda, NW Region",   is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80", sellerName: "NW Farm Co-op",      sellerPhone: "+237654567890", view_count: 33 },
-  { id: "s5", title: "Groundnuts (1kg bag)",price_per_unit_xaf: 1200, unit: "kg",    category: "Legumes",    location: "Ngaoundéré, Adamaoua", is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&q=80", sellerName: "Adamaoua Nuts",      sellerPhone: "+237665678901", view_count: 12 },
-  { id: "s6", title: "Bitter Leaf (Ndolé)", price_per_unit_xaf: 200,  unit: "bunch", category: "Vegetables", location: "Yaoundé, Centre",      is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80", sellerName: "Centre Greens",      sellerPhone: "+237676789012", view_count: 57 },
-  { id: "s7", title: "Fresh Avocados",       price_per_unit_xaf: 800,  unit: "kg",    category: "Fruits",     location: "Dschang, West",        is_organic: true,  is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80", sellerName: "Highlands Harvest",  sellerPhone: "+237687890123", view_count: 29 },
-  { id: "s8", title: "Pineapples (Large)",   price_per_unit_xaf: 600,  unit: "piece", category: "Fruits",     location: "Edea, Littoral",       is_organic: false, is_available: true, seller_id: "demo", created_at: new Date().toISOString(), isDemo: true, image_url: "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=400&q=80", sellerName: "Littoral Tropicals", sellerPhone: "+237698901234", view_count: 16 },
-];
+// FIX105: demo/sample products removed — Farm Fresh shows real listings only.
 
 // ─── Category definitions ─────────────────────────────────────────────────────
 // Key = i18n key → used to get translated label
@@ -137,15 +128,14 @@ export default function FarmFreshPage() {
             }))
           : [];
 
-      // Real products with photos first, then without, then demo samples
+      // FIX105: real products only — photos first, then without photos
       const realWithPhoto    = realItems.filter(hasImage);
       const realWithoutPhoto = realItems.filter((p) => !hasImage(p));
-      const demoWithPhoto    = DEMO_PRODUCTS.filter(hasImage);
 
-      setProducts([...realWithPhoto, ...realWithoutPhoto, ...demoWithPhoto]);
+      setProducts([...realWithPhoto, ...realWithoutPhoto]);
     } catch {
       setFetchErr(t("error") as string);
-      setProducts(DEMO_PRODUCTS.filter(hasImage));
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -318,7 +308,7 @@ export default function FarmFreshPage() {
       {fetchErr && (
         <div className="mx-4 mb-3 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl px-3 py-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>{fetchErr} — Showing {DEMO_PRODUCTS.length} sample listings</span>
+          <span>{fetchErr}</span>
         </div>
       )}
 
@@ -327,9 +317,7 @@ export default function FarmFreshPage() {
         {/* Count badge */}
         {!loading && (
           <p className="mb-3 text-xs text-gray-500">
-            {realCount > 0
-              ? `${realCount} listing${realCount !== 1 ? "s" : ""} from local farmers`
-              : `Showing ${DEMO_PRODUCTS.length} sample listings`}
+            {`${realCount} listing${realCount !== 1 ? "s" : ""} from local farmers`}
           </p>
         )}
 
@@ -418,11 +406,6 @@ export default function FarmFreshPage() {
                         )}
                       </div>
                     )}
-                    {p.isDemo && (
-                      <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">
-                        DEMO
-                      </div>
-                    )}
                     {p.is_organic && (
                       <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                         {t("organic") as string}
@@ -502,3 +485,5 @@ function CartFloater({ lang }: { lang: string }) {
 
 
 
+
+// BAMBEH_END_TOKEN__FARMFRESHPAGE__COMPLETE
