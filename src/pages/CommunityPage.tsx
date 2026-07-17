@@ -1,784 +1,420 @@
+// BAMBEH_DEPLOY_TOKEN__COMMUNITYPAGE_FIX101_CLEAN
 /**
- * src/pages/CommunityPage.tsx ? Bambeh Marketplace
- *
- * FIXED:
- *  ? Create Group opens an INLINE MODAL ? no page redirect
- *  ? Created groups immediately appear in the list
- *  ? Share button is compact icon, never blocks UI
- *  ? Beautiful Unsplash group cover images
- *  ? West & Central Africa country codes in create form
+ * CommunityPage — FIX101 (REAL data)
+ * ──────────────────────────────────
+ * Replaces the mock page (hardcoded INITIAL_GROUPS, state-only "groups").
+ *  • Groups load from Supabase `community_groups` (live member counts)
+ *  • Create Group saves a real row (creator auto-joins as admin via trigger)
+ *  • Join / Leave writes `community_members` (counters kept by DB triggers)
+ *  • Search + category filter, EN/FR, loading/empty/error states
+ *  • Chat-only: no external share buttons
  */
-
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Users, Search, Plus, X, ArrowRight, Globe, Lock,
-  ChevronRight, Share2, Check, MessageCircle, Copy,
+  Users, Plus, Search, MapPin, Loader2, AlertCircle, X, Lock, ChevronRight,
 } from 'lucide-react';
-import { useLang, t } from "@/hooks/useAppLang";
-
-// --- Types --------------------------------------------------------------------
+import { supabase } from '@/lib/supabase';
+import { useLanguage } from '@/App';
 
 interface Group {
   id: string;
   name: string;
-  description: string;
-  category: string;
-  emoji: string;
-  coverUrl?: string;
-  members: number;
-  isJoined: boolean;
-  isPublic: boolean;
-  isUserCreated?: boolean;
+  description: string | null;
+  category: string | null;
+  city: string | null;
+  emoji: string | null;
+  member_count: number | null;
+  members_count: number | null;
+  post_count: number | null;
+  creator_id: string | null;
+  is_private: boolean | null;
+  is_active: boolean | null;
+  created_at: string;
 }
 
-const COPY = {
+const CATEGORIES = ['All', 'General', 'Buy & Sell', 'Jobs', 'Housing', 'Farming', 'Tech', 'Faith', 'Sports', 'Women', 'Youth'];
+
+const T = {
   en: {
-    title: 'Community',
-    heroTitle: 'Community',
-    heroSubtitle: 'Connect, trade, and grow together',
-    searchPlaceholder: 'Search groups...',
-    groups: 'Groups',
-    members: 'Members',
-    postsToday: 'Posts Today',
-    createGroup: 'Create a Group',
-    createGroupSubtitle: 'Build your own community on Bambeh',
-    createGroupTitle: 'Create a Group',
-    groupName: 'Group Name *',
-    groupNamePlaceholder: 'e.g. Douala Fashion Entrepreneurs',
-    description: 'Description *',
-    descriptionPlaceholder: 'What is this group about? Who should join?',
-    category: 'Category *',
-    privacy: 'Privacy',
-    public: 'Public',
-    private: 'Private',
-    publicHint: 'Anyone can find and join this group.',
-    privateHint: 'Only invited people can join.',
-    adminWhatsApp: 'Admin WhatsApp (optional)',
-    previewGroupName: 'Group Name',
+    title: 'Community Groups',
+    subtitle: 'Join groups, share, and trade with people near you',
+    search: 'Search groups...',
     create: 'Create Group',
-    creating: 'Creating...',
-    shareGroup: 'Share Group',
-    invitePeople: 'Invite people to join',
-    copied: 'Copied!',
-    copyLink: 'Copy Link',
-    shareOnWhatsApp: 'Share on WhatsApp',
-    view: 'View',
-    joined: 'Joined',
+    members: 'members',
+    posts: 'posts',
     join: 'Join',
-    noGroupsFound: 'No groups found',
-    clearFilters: 'Clear filters',
-    groupBuying: 'Group Buying',
-    groupBuyingSubtitle: 'Buy together, save more',
-    yourGroup: 'Your Group',
-    searchGroups: 'Search groups...',
-    createdSuccessfully: 'created successfully!',
+    joined: 'Joined',
+    leave: 'Leave',
+    empty: 'No groups yet in this category. Be the first to create one!',
+    loadError: 'Could not load groups. Pull to retry or check your connection.',
+    retry: 'Retry',
+    private: 'Private',
+    // create modal
+    newGroup: 'New Group',
+    name: 'Group name',
+    namePh: 'e.g. Yaoundé Traders',
+    desc: 'Description',
+    descPh: 'What is this group about?',
+    category: 'Category',
+    city: 'City / Town',
+    cityPh: 'e.g. Yaoundé',
+    emoji: 'Emoji (optional)',
+    cancel: 'Cancel',
+    creating: 'Creating…',
+    createBtn: 'Create',
+    needLogin: 'Please log in to do this.',
+    createFail: 'Could not create the group. Please try again.',
+    actionFail: 'Action failed. Please try again.',
+    nameReq: 'Group name is required.',
   },
   fr: {
-    title: 'Communauté',
-    heroTitle: 'Communauté',
-    heroSubtitle: 'Échangez, collaborez et grandissez ensemble',
-    searchPlaceholder: 'Rechercher des groupes...',
-    groups: 'Groupes',
-    members: 'Membres',
-    postsToday: 'Publications du jour',
-    createGroup: 'Créer un groupe',
-    createGroupSubtitle: 'Créez votre propre communauté sur Bambeh',
-    createGroupTitle: 'Créer un groupe',
-    groupName: 'Nom du groupe *',
-    groupNamePlaceholder: 'ex. Entrepreneurs de la mode à Douala',
-    description: 'Description *',
-    descriptionPlaceholder: 'De quoi parle ce groupe ? Qui devrait le rejoindre ?',
-    category: 'Catégorie *',
-    privacy: 'Confidentialité',
-    public: 'Public',
-    private: 'Privé',
-    publicHint: 'Tout le monde peut trouver ce groupe et le rejoindre.',
-    privateHint: 'Seules les personnes invitées peuvent rejoindre ce groupe.',
-    adminWhatsApp: "WhatsApp de l'admin (facultatif)",
-    previewGroupName: 'Nom du groupe',
-    create: 'Créer le groupe',
-    creating: 'Création en cours...',
-    shareGroup: 'Partager le groupe',
-    invitePeople: 'Invitez des personnes à rejoindre',
-    copied: 'Copié !',
-    copyLink: 'Copier le lien',
-    shareOnWhatsApp: 'Partager sur WhatsApp',
-    view: 'Voir',
-    joined: 'Rejoint',
+    title: 'Groupes Communautaires',
+    subtitle: 'Rejoignez des groupes, partagez et échangez près de chez vous',
+    search: 'Rechercher des groupes...',
+    create: 'Créer un groupe',
+    members: 'membres',
+    posts: 'publications',
     join: 'Rejoindre',
-    noGroupsFound: 'Aucun groupe trouvé',
-    clearFilters: 'Effacer les filtres',
-    groupBuying: 'Achat groupé',
-    groupBuyingSubtitle: 'Achetez ensemble, économisez davantage',
-    yourGroup: 'Votre groupe',
-    searchGroups: 'Rechercher des groupes...',
-    createdSuccessfully: 'créé avec succès !',
-  },
-  ar: {
-    title: 'المجتمع',
-    heroTitle: 'المجتمع',
-    heroSubtitle: 'تواصلوا، وتبادلوا، وازدهروا معًا',
-    searchPlaceholder: 'ابحث عن المجموعات...',
-    groups: 'المجموعات',
-    members: 'الأعضاء',
-    postsToday: 'منشورات اليوم',
-    createGroup: 'إنشاء مجموعة',
-    createGroupSubtitle: 'أنشئ مجتمعك الخاص على Bambeh',
-    createGroupTitle: 'إنشاء مجموعة',
-    groupName: 'اسم المجموعة *',
-    groupNamePlaceholder: 'مثال: رواد الأزياء في دوالا',
-    description: 'الوصف *',
-    descriptionPlaceholder: 'ما موضوع هذه المجموعة؟ ومن المناسب أن ينضم إليها؟',
-    category: 'الفئة *',
-    privacy: 'الخصوصية',
-    public: 'عام',
-    private: 'خاص',
-    publicHint: 'يمكن لأي شخص العثور على هذه المجموعة والانضمام إليها.',
-    privateHint: 'يمكن فقط للأشخاص المدعوين الانضمام.',
-    adminWhatsApp: 'واتساب المشرف (اختياري)',
-    previewGroupName: 'اسم المجموعة',
-    create: 'إنشاء المجموعة',
-    creating: 'جارٍ الإنشاء...',
-    shareGroup: 'مشاركة المجموعة',
-    invitePeople: 'ادعُ الناس للانضمام',
-    copied: 'تم النسخ!',
-    copyLink: 'نسخ الرابط',
-    shareOnWhatsApp: 'مشاركة عبر واتساب',
-    view: 'عرض',
-    joined: 'انضممت',
-    join: 'انضم',
-    noGroupsFound: 'لم يتم العثور على مجموعات',
-    clearFilters: 'مسح الفلاتر',
-    groupBuying: 'الشراء الجماعي',
-    groupBuyingSubtitle: 'اشتروا معًا ووفّروا أكثر',
-    yourGroup: 'مجموعتك',
-    searchGroups: 'ابحث عن المجموعات...',
-    createdSuccessfully: 'تم الإنشاء بنجاح!',
-  },
-  pidgin: {
-    title: 'Community',
-    heroTitle: 'Community',
-    heroSubtitle: 'Make we connect, trade, and grow together',
-    searchPlaceholder: 'Search groups...',
-    groups: 'Groups',
-    members: 'Members',
-    postsToday: 'Posts today',
-    createGroup: 'Create group',
-    createGroupSubtitle: 'Build your own community for Bambeh',
-    createGroupTitle: 'Create group',
-    groupName: 'Group name *',
-    groupNamePlaceholder: 'e.g. Douala fashion entrepreneurs',
-    description: 'Description *',
-    descriptionPlaceholder: 'Na weti dis group be about? Who suppose join?',
-    category: 'Category *',
-    privacy: 'Privacy',
-    public: 'Public',
-    private: 'Private',
-    publicHint: 'Anybody fit find this group and join am.',
-    privateHint: 'Na only people wey dem invite fit join.',
-    adminWhatsApp: 'Admin WhatsApp (optional)',
-    previewGroupName: 'Group name',
-    create: 'Create group',
-    creating: 'Dey create...',
-    shareGroup: 'Share group',
-    invitePeople: 'Invite people make dem join',
-    copied: 'Copied!',
-    copyLink: 'Copy link',
-    shareOnWhatsApp: 'Share for WhatsApp',
-    view: 'View',
-    joined: 'Joined',
-    join: 'Join',
-    noGroupsFound: 'No groups found',
-    clearFilters: 'Clear filters',
-    groupBuying: 'Group buying',
-    groupBuyingSubtitle: 'Buy together, save more',
-    yourGroup: 'Your group',
-    searchGroups: 'Search groups...',
-    createdSuccessfully: 'don create am well!',
-  },
-  ful: {
-    title: 'Jamaa',
-    heroTitle: 'Jamaa',
-    heroSubtitle: 'Noɗu, jaɓu, e fowtude e goɗɗe',
-    searchPlaceholder: 'Yiylo jamaa...',
-    groups: 'Jamaaɓe',
-    members: 'Wonɓe',
-    postsToday: 'Binnde ɓooyii',
-    createGroup: 'Soppu jamaa',
-    createGroupSubtitle: 'Sos jamaa maa e Bambeh',
-    createGroupTitle: 'Soppu jamaa',
-    groupName: 'Innde jamaa *',
-    groupNamePlaceholder: 'ex. Jeyɓe fashion Douala',
-    description: 'Ƴeewtere *',
-    descriptionPlaceholder: 'Ko honɗun jamaa oo ɓuri? Holɓe waɗi ngam fittaade?',
-    category: 'Class *',
-    privacy: 'Suturo',
-    public: 'Faalɗo',
-    private: 'Cakkitɗo',
-    publicHint: 'Kala wonɗo waawi yiyde e joɓɗude e jamaa oo.',
-    privateHint: 'Hannuɓe naŋngiino tan ɗee waawi naatde.',
-    adminWhatsApp: 'WhatsApp nder bayloowo (ko heddii)',
-    previewGroupName: 'Innde jamaa',
-    create: 'Soppu jamaa',
-    creating: 'Ndenndude...',
-    shareGroup: 'Faw jamaa',
-    invitePeople: 'Noddu yimɓe ngam naaɓde',
-    copied: 'Kopii!',
-    copyLink: 'Koppi lien',
-    shareOnWhatsApp: 'Faw e WhatsApp',
-    view: 'Yiy',
-    joined: 'Naati',
-    join: 'Naati',
-    noGroupsFound: 'Alaa jamaa',
-    clearFilters: 'Momtu filtres',
-    groupBuying: 'Ceŋal binnde',
-    groupBuyingSubtitle: 'Somba no haɗi, teddude no ɓuri',
-    yourGroup: 'Jamaa maa',
-    searchGroups: 'Yiylo jamaa...',
-    createdSuccessfully: 'ngam waɗi jooni!',
+    joined: 'Membre',
+    leave: 'Quitter',
+    empty: 'Aucun groupe dans cette catégorie. Soyez le premier à en créer un !',
+    loadError: 'Impossible de charger les groupes. Vérifiez votre connexion.',
+    retry: 'Réessayer',
+    private: 'Privé',
+    newGroup: 'Nouveau groupe',
+    name: 'Nom du groupe',
+    namePh: 'ex. Commerçants de Yaoundé',
+    desc: 'Description',
+    descPh: 'De quoi parle ce groupe ?',
+    category: 'Catégorie',
+    city: 'Ville',
+    cityPh: 'ex. Yaoundé',
+    emoji: 'Emoji (facultatif)',
+    cancel: 'Annuler',
+    creating: 'Création…',
+    createBtn: 'Créer',
+    needLogin: 'Veuillez vous connecter pour continuer.',
+    createFail: 'Impossible de créer le groupe. Réessayez.',
+    actionFail: "L'action a échoué. Réessayez.",
+    nameReq: 'Le nom du groupe est requis.',
   },
 };
 
-const INITIAL_GROUPS: Group[] = [
-  {
-    id: '1',
-    name: 'Yaoundé Tech Entrepreneurs',
-    description: 'A community for tech founders and developers in Yaoundé to share resources and opportunities.',
-    category: 'Technology',
-    emoji: '💻',
-    coverUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&q=80',
-    members: 1240,
-    isJoined: false,
-    isPublic: true,
-  },
-  {
-    id: '2',
-    name: 'Women in Business Cameroon',
-    description: 'Supporting and empowering women entrepreneurs across all 10 regions of Cameroon.',
-    category: 'Business',
-    emoji: '👩‍💼',
-    coverUrl: 'https://images.unsplash.com/photo-1573164574572-cb89e39749b4?w=400&q=80',
-    members: 3456,
-    isJoined: true,
-    isPublic: true,
-  },
-  {
-    id: '3',
-    name: 'Douala Marketplace Buyers',
-    description: 'Connect with trusted buyers and sellers in Douala. Share deals and offers daily.',
-    category: 'Commerce',
-    emoji: '🛒',
-    coverUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&q=80',
-    members: 892,
-    isJoined: false,
-    isPublic: true,
-  },
-  {
-    id: '4',
-    name: 'Agriculture & Farming Network',
-    description: 'For farmers, agro-processors, and agricultural entrepreneurs across Cameroon.',
-    category: 'Agriculture',
-    emoji: '🌱',
-    coverUrl: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400&q=80',
-    members: 567,
-    isJoined: false,
-    isPublic: true,
-  },
-  {
-    id: '5',
-    name: 'Bambeh Flash Deal Hunters',
-    description: 'Get notified first about flash deals, bulk buys, and exclusive offers on Bambeh.',
-    category: 'Deals',
-    emoji: '⚡',
-    coverUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400&q=80',
-    members: 2103,
-    isJoined: true,
-    isPublic: true,
-  },
-  {
-    id: '6',
-    name: 'Bamenda Buyers & Sellers',
-    description: 'Local trade community for Bamenda and the North-West Region. Post items, find deals.',
-    category: 'Commerce',
-    emoji: '📦',
-    coverUrl: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=400&q=80',
-    members: 740,
-    isJoined: false,
-    isPublic: true,
-  },
-];
-
-const CATEGORIES = ['All', 'Technology', 'Business', 'Commerce', 'Agriculture', 'Deals', 'Education', 'Health'];
-
-const DIAL_CODES = [
-  { code: '+237', flag: '🇨🇲', name: 'Cameroun' },
-  { code: '+234', flag: '🇳🇬', name: 'Nigeria' },
-  { code: '+233', flag: '🇬🇭', name: 'Ghana' },
-  { code: '+221', flag: '🇸🇳', name: 'Sénégal' },
-  { code: '+225', flag: '🇨🇮', name: "Côte d'Ivoire" },
-  { code: '+241', flag: '🇬🇦', name: 'Gabon' },
-  { code: '+242', flag: '🇨🇬', name: 'Congo' },
-  { code: '+243', flag: '🇨🇩', name: 'RD Congo' },
-];
-
-function ShareModal({ group, onClose }: { group: Group; onClose: () => void }) {
-  const lang = useLang();
-  const isRtl = lang === "ar";
-  const [copied, setCopied] = useState(false);
-  const url = `${window.location.origin}${window.location.pathname}#/community/${group.id}`;
-  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
-
-  const copy = () => {
-    navigator.clipboard.writeText(url).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
-
-  const waText = `${ui.invitePeople} "${group.name}" on Bambeh Community!\n\n${group.description}\n\n${ui.shareGroup}:\n${url}`;
-
-  return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-teal-500 to-teal-700 px-5 py-4 flex items-center justify-between">
-          <h2 className="text-white font-bold">{ui.shareGroup}</h2>
-          <button onClick={onClose} className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-            <X className="w-4 h-4 text-white" />
-          </button>
-        </div>
-        <div className="p-5 space-y-3">
-          <p className="text-sm text-gray-600">{ui.invitePeople} <strong>{group.name}</strong></p>
-          <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-500 break-all font-mono">{url}</div>
-          <button onClick={copy}
-            className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 border transition-all ${
-              copied ? 'bg-green-50 border-green-300 text-green-700' : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            {copied ? <><Check className="w-4 h-4" /> {ui.copied}</> : <><Copy className="w-4 h-4" /> {ui.copyLink}</>}
-          </button>
-          <a href={`https://wa.me/?text=${encodeURIComponent(waText)}`} target="_blank" rel="noopener noreferrer"
-            className="w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 bg-green-500 text-white hover:bg-green-600 transition-all">
-            <MessageCircle className="w-4 h-4" /> {ui.shareOnWhatsApp}
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CreateGroupModal({ onClose, onCreated }: {
-  onClose: () => void;
-  onCreated: (group: Group) => void;
-}) {
-  const lang = useLang();
-  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('Business');
-  const [isPublic, setIsPublic] = useState(true);
-  const [dialCode, setDialCode] = useState('+237');
-  const [phone, setPhone] = useState('');
-  const [showDial, setShowDial] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const CAT_OPTIONS = ['Business', 'Technology', 'Commerce', 'Agriculture', 'Education', 'Health', 'Arts', 'Sports', 'Finance', 'Other'];
-  const CAT_EMOJIS: Record<string, string> = {
-    Business: '💼', Technology: '💻', Commerce: '🛍️', Agriculture: '🌾',
-    Education: '📚', Health: '🩺', Arts: '🎨', Sports: '⚽', Finance: '💰', Other: '✨',
-  };
-
-  const COVER_URLS: Record<string, string> = {
-    Business:    'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&q=80',
-    Technology:  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80',
-    Commerce:    'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=400&q=80',
-    Agriculture: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400&q=80',
-    Education:   'https://images.unsplash.com/photo-1513258496099-48168024aec0?w=400&q=80',
-    Health:      'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80',
-    Arts:        'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&q=80',
-    Sports:      'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80',
-    Finance:     'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
-    Other:       'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=80',
-  };
-
-  const canCreate = name.trim().length >= 3 && description.trim().length >= 10;
-
-  async function handleCreate() {
-    setSaving(true);
-    await new Promise(r => setTimeout(r, 800));
-    const newGroup: Group = {
-      id: `user-${Date.now()}`,
-      name: name.trim(),
-      description: description.trim(),
-      category,
-      emoji: CAT_EMOJIS[category] || '✨',
-      coverUrl: COVER_URLS[category],
-      members: 1,
-      isJoined: true,
-      isPublic,
-      isUserCreated: true,
-    };
-    setSaving(false);
-    onCreated(newGroup);
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        <div className="bg-gradient-to-r from-teal-600 to-teal-800 px-5 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-white font-bold text-lg">{ui.createGroupTitle}</h2>
-            <p className="text-teal-100 text-xs mt-0.5">{ui.createGroupSubtitle}</p>
-          </div>
-          <button onClick={onClose} className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-            <X className="w-4 h-4 text-white" />
-          </button>
-        </div>
-
-        <div className="p-5 space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">{ui.groupName}</label>
-            <input
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder={ui.groupNamePlaceholder}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <p className="text-xs text-gray-400 mt-1">{name.length}/60 characters</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">{ui.description}</label>
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder={ui.descriptionPlaceholder}
-              rows={3}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{ui.category}</label>
-            <div className="grid grid-cols-3 gap-2">
-              {CAT_OPTIONS.map(c => (
-                <button
-                  key={c}
-                  onClick={() => setCategory(c)}
-                  className={`py-2 px-1 rounded-xl text-xs font-semibold border transition-all ${
-                    category === c
-                      ? 'bg-teal-500 text-white border-teal-500'
-                      : 'border-gray-200 text-gray-600 hover:border-teal-300'
-                  }`}
-                >
-                  {CAT_EMOJIS[c]} {c}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{ui.privacy}</label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setIsPublic(true)}
-                className={`py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-2 transition-all ${
-                  isPublic ? 'bg-teal-500 text-white border-teal-500' : 'border-gray-200 text-gray-600 hover:border-teal-300'
-                }`}
-              >
-                <Globe className="w-4 h-4" /> {ui.public}
-              </button>
-              <button
-                onClick={() => setIsPublic(false)}
-                className={`py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-2 transition-all ${
-                  !isPublic ? 'bg-teal-500 text-white border-teal-500' : 'border-gray-200 text-gray-600 hover:border-teal-300'
-                }`}
-              >
-                <Lock className="w-4 h-4" /> {ui.private}
-              </button>
-            </div>
-            <p className="text-xs text-gray-400 mt-1">
-              {isPublic ? ui.publicHint : ui.privateHint}
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">{ui.adminWhatsApp}</label>
-            <div className="flex gap-0 relative">
-              <button
-                type="button"
-                onClick={() => setShowDial(v => !v)}
-                className="flex items-center gap-1 px-3 py-3 border border-r-0 border-gray-200 rounded-l-xl bg-gray-50 text-sm"
-              >
-                <span>{DIAL_CODES.find(d => d.code === dialCode)?.flag}</span>
-                <span className="font-medium text-gray-700">{dialCode}</span>
-                <ChevronRight className="w-3 h-3 text-gray-400 rotate-90" />
-              </button>
-              {showDial && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowDial(false)} />
-                  <div className="absolute top-full left-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-200 z-20 max-h-48 overflow-y-auto">
-                    {DIAL_CODES.map(d => (
-                      <button key={d.code} type="button"
-                        onClick={() => { setDialCode(d.code); setShowDial(false); }}
-                        className={`w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-gray-50 ${d.code === dialCode ? 'bg-teal-50 text-teal-700' : 'text-gray-700'}`}
-                      >
-                        <span>{d.flag}</span>
-                        <span className="font-medium">{d.code}</span>
-                        <span className="text-gray-400 text-xs truncate">{d.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-              <input
-                value={phone}
-                onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
-                placeholder="6XX XXX XXX"
-                type="tel"
-                className="flex-1 border border-gray-200 rounded-r-xl px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
-          </div>
-
-          {name && (
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
-              <div className="h-20 relative bg-gray-100">
-                <img
-                  src={COVER_URLS[category]}
-                  alt="preview"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/30"/>
-                <div className="absolute bottom-2 left-3 text-white">
-                  <p className="font-bold text-sm">{CAT_EMOJIS[category]} {name || ui.previewGroupName}</p>
-                  <p className="text-xs text-white/80">{category} ? {isPublic ? ui.public : ui.private}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <button
-            disabled={!canCreate || saving}
-            onClick={handleCreate}
-            className="w-full bg-gradient-to-r from-teal-500 to-teal-700 disabled:from-gray-200 disabled:to-gray-200 disabled:text-gray-400 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
-          >
-            {saving ? (
-              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> {ui.creating}</>
-            ) : (
-              <><Users className="w-4 h-4" /> {ui.create}</>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function GroupCard({ group, onShare }: { group: Group; onShare: (g: Group) => void }) {
-  const navigate = useNavigate();
-  const lang = useLang();
-  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
-  const [joined, setJoined] = useState(group.isJoined);
-  const [count, setCount] = useState(group.members);
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-      <div
-        className="h-28 relative cursor-pointer overflow-hidden bg-gradient-to-br from-teal-100 to-teal-200"
-        onClick={() => navigate(`/community/${group.id}`)}
-      >
-        {group.coverUrl && (
-          <img src={group.coverUrl} alt={group.name} className="w-full h-full object-cover" loading="lazy"
-            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"/>
-        <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
-          <div>
-            <p className="text-white font-bold text-sm leading-tight line-clamp-1">{group.emoji} {group.name}</p>
-            <p className="text-white/80 text-xs">{group.category}</p>
-          </div>
-          <button
-            onClick={e => { e.stopPropagation(); onShare(group); }}
-            className="w-7 h-7 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm"
-          >
-            <Share2 className="w-3.5 h-3.5 text-white" />
-          </button>
-        </div>
-        {group.isUserCreated && (
-          <div className="absolute top-2 left-2">
-            <span className="bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{ui.yourGroup}</span>
-          </div>
-        )}
-        {!group.isPublic && (
-          <div className="absolute top-2 right-2">
-            <span className="bg-gray-800/70 text-white text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-1">
-              <Lock className="w-2.5 h-2.5" /> {ui.private}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="p-3">
-        <p className="text-xs text-teal-600 font-medium mb-1 flex items-center gap-1">
-          <Users className="w-3 h-3" /> {count.toLocaleString()} {ui.members}
-        </p>
-        <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-3">{group.description}</p>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => navigate(`/community/${group.id}`)}
-            className="flex-1 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            {ui.view}
-          </button>
-          <button
-            onClick={() => {
-              setJoined(v => !v);
-              setCount(c => joined ? c - 1 : c + 1);
-            }}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98] ${
-              joined
-                ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200'
-                : 'bg-gradient-to-r from-teal-500 to-teal-700 text-white shadow-sm shadow-teal-500/20'
-            }`}
-          >
-            {joined ? `✓ ${ui.joined}` : ui.join}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function CommunityPage() {
-  const lang = useLang();
-  const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
-  const [groups, setGroups] = useState<Group[]>(INITIAL_GROUPS);
-  const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showCreate, setShowCreate] = useState(false);
-  const [shareTarget, setShareTarget] = useState<Group | null>(null);
+  const navigate = useNavigate();
+  const { language } = useLanguage() as { language?: string };
+  const t = T[language === 'fr' ? 'fr' : 'en'];
+
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [myGroupIds, setMyGroupIds] = useState<Set<string>>(new Set());
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [query, setQuery] = useState('');
+  const [cat, setCat] = useState('All');
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [toast, setToast] = useState('');
 
-  const filtered = groups.filter(g => {
-    if (search && !g.name.toLowerCase().includes(search.toLowerCase())) return false;
-    if (activeCategory !== 'All' && g.category !== activeCategory) return false;
-    return true;
-  });
+  // create modal
+  const [showCreate, setShowCreate] = useState(false);
+  const [cName, setCName] = useState('');
+  const [cDesc, setCDesc] = useState('');
+  const [cCat, setCCat] = useState('General');
+  const [cCity, setCCity] = useState('');
+  const [cEmoji, setCEmoji] = useState('👥');
+  const [creating, setCreating] = useState(false);
+  const [createErr, setCreateErr] = useState('');
 
-  const handleGroupCreated = (newGroup: Group) => {
-    setGroups(prev => [newGroup, ...prev]);
-    setShowCreate(false);
-    setToast(`"${newGroup.name}" ${ui.createdSuccessfully}`);
-    setTimeout(() => setToast(''), 4000);
+  const flash = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const uid = auth?.user?.id ?? null;
+      setUserId(uid);
+
+      const { data, error } = await supabase
+        .from('community_groups')
+        .select('id, name, description, category, city, emoji, member_count, members_count, post_count, creator_id, is_private, is_active, created_at')
+        .or('is_active.is.null,is_active.eq.true')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      setGroups((data ?? []) as Group[]);
+
+      if (uid) {
+        const { data: mem } = await supabase
+          .from('community_members')
+          .select('group_id')
+          .eq('user_id', uid);
+        setMyGroupIds(new Set((mem ?? []).map((m: { group_id: string }) => m.group_id).filter(Boolean)));
+      } else {
+        setMyGroupIds(new Set());
+      }
+    } catch (e) {
+      console.error('[Community] load failed:', e);
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return groups.filter((g) => {
+      if (cat !== 'All' && (g.category ?? 'General') !== cat) return false;
+      if (!q) return true;
+      return (
+        g.name.toLowerCase().includes(q) ||
+        (g.description ?? '').toLowerCase().includes(q) ||
+        (g.city ?? '').toLowerCase().includes(q)
+      );
+    });
+  }, [groups, query, cat]);
+
+  const memberCount = (g: Group) => Math.max(g.member_count ?? 0, g.members_count ?? 0);
+
+  const toggleJoin = async (g: Group) => {
+    if (!userId) { flash(t.needLogin); return; }
+    setBusyId(g.id);
+    try {
+      if (myGroupIds.has(g.id)) {
+        const { error } = await supabase
+          .from('community_members')
+          .delete()
+          .eq('group_id', g.id)
+          .eq('user_id', userId);
+        if (error) throw error;
+        setMyGroupIds((s) => { const n = new Set(s); n.delete(g.id); return n; });
+        setGroups((gs) => gs.map((x) => x.id === g.id ? { ...x, member_count: Math.max(memberCount(x) - 1, 0) } : x));
+      } else {
+        const { error } = await supabase
+          .from('community_members')
+          .insert({ group_id: g.id, community_id: g.id, user_id: userId, role: 'member' });
+        if (error) throw error;
+        setMyGroupIds((s) => new Set(s).add(g.id));
+        setGroups((gs) => gs.map((x) => x.id === g.id ? { ...x, member_count: memberCount(x) + 1 } : x));
+      }
+    } catch (e) {
+      console.error('[Community] join/leave failed:', e);
+      flash(t.actionFail);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const createGroup = async () => {
+    if (!userId) { setCreateErr(t.needLogin); return; }
+    if (!cName.trim()) { setCreateErr(t.nameReq); return; }
+    setCreating(true);
+    setCreateErr('');
+    try {
+      const { data, error } = await supabase
+        .from('community_groups')
+        .insert({
+          name: cName.trim(),
+          description: cDesc.trim() || null,
+          category: cCat,
+          city: cCity.trim() || null,
+          emoji: cEmoji || '👥',
+          creator_id: userId,
+          created_by: userId,
+          is_private: false,
+          is_public: true,
+          is_active: true,
+          member_count: 0,
+          members_count: 0,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+      setShowCreate(false);
+      setCName(''); setCDesc(''); setCCity('');
+      await load();
+      if (data?.id) navigate(`/community/${data.id}`);
+    } catch (e) {
+      console.error('[Community] create failed:', e);
+      setCreateErr(t.createFail);
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
-      {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-teal-600 text-white px-5 py-3 rounded-2xl shadow-xl text-sm font-semibold max-w-xs text-center">
-          {toast}
-        </div>
-      )}
-
-      <div className="bg-gradient-to-br from-teal-600 to-teal-800 px-4 pt-5 pb-7">
-        <div className="flex items-center justify-between mb-3">
+    <div className="min-h-screen bg-gray-50 pb-24">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 pt-6 pb-8">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-white font-bold text-2xl">{ui.heroTitle} ?</h1>
-            <p className="text-teal-100 text-sm mt-0.5">{ui.heroSubtitle}</p>
+            <h1 className="text-2xl font-bold flex items-center gap-2"><Users className="w-6 h-6" /> {t.title}</h1>
+            <p className="text-emerald-100 text-sm mt-1">{t.subtitle}</p>
           </div>
+          <button
+            onClick={() => { setCreateErr(''); setShowCreate(true); }}
+            className="bg-white text-emerald-700 rounded-xl px-3 py-2 font-semibold text-sm flex items-center gap-1 shadow"
+          >
+            <Plus className="w-4 h-4" /> {t.create}
+          </button>
         </div>
-
-        <div className="relative mt-2">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="mt-4 relative">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
-            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white/95 text-gray-900 text-sm placeholder-gray-400 outline-none shadow"
-            placeholder={ui.searchPlaceholder}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t.search}
+            className="w-full rounded-xl pl-9 pr-3 py-2.5 text-gray-800 text-sm outline-none"
           />
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2.5">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-          {CATEGORIES.map(c => (
-            <button key={c} onClick={() => setActiveCategory(c)}
-              className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                activeCategory === c ? 'bg-teal-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
+      {/* Category chips */}
+      <div className="flex gap-2 overflow-x-auto px-4 py-3 no-scrollbar">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCat(c)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border ${
+              cat === c ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-600 border-gray-200'
+            }`}
+          >
+            {c}
+          </button>
+        ))}
       </div>
 
-      <div className="px-4 py-5 space-y-4">
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: ui.groups, value: `${groups.length}+` },
-            { label: ui.members, value: '8.2K' },
-            { label: ui.postsToday, value: '342' },
-          ].map(s => (
-            <div key={s.label} className="bg-white dark:bg-gray-800 rounded-2xl p-3 text-center shadow-sm border border-gray-100 dark:border-gray-700">
-              <p className="font-bold text-lg text-teal-600 dark:text-teal-400">{s.value}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{s.label}</p>
-            </div>
-          ))}
-        </div>
+      {/* Body */}
+      <div className="px-4 space-y-3">
+        {loading && (
+          <div className="flex justify-center py-16 text-emerald-600"><Loader2 className="w-8 h-8 animate-spin" /></div>
+        )}
 
-        <button
-          onClick={() => setShowCreate(true)}
-          className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">?</div>
-            <div className="text-left">
-              <p className="font-bold text-sm">{ui.createGroup}</p>
-              <p className="text-teal-100 text-xs">{ui.createGroupSubtitle}</p>
-            </div>
-          </div>
-          <ChevronRight className="w-5 h-5 text-white/70" />
-        </button>
-
-        {filtered.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-3">??</p>
-            <p className="font-semibold text-gray-600 dark:text-gray-400">{ui.noGroupsFound}</p>
-            <button onClick={() => { setSearch(''); setActiveCategory('All'); }}
-              className="mt-3 text-sm text-teal-600 font-semibold">
-              {ui.clearFilters}
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {filtered.map(g => <GroupCard key={g.id} group={g} onShare={setShareTarget} />)}
+        {!loading && loadError && (
+          <div className="bg-white rounded-2xl p-6 text-center border border-red-100">
+            <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">{t.loadError}</p>
+            <button onClick={load} className="mt-3 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold">{t.retry}</button>
           </div>
         )}
 
-        <Link to="/group-buying"
-          className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">??</span>
-            <div>
-              <p className="font-bold text-sm text-gray-900 dark:text-white">{ui.groupBuying}</p>
-              <p className="text-xs text-gray-500">{ui.groupBuyingSubtitle}</p>
-            </div>
+        {!loading && !loadError && visible.length === 0 && (
+          <div className="bg-white rounded-2xl p-8 text-center border border-gray-100">
+            <Users className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">{t.empty}</p>
           </div>
-          <ChevronRight className="w-5 h-5 text-gray-400" />
-        </Link>
+        )}
+
+        {!loading && !loadError && visible.map((g) => {
+          const joined = myGroupIds.has(g.id);
+          return (
+            <div key={g.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-2xl shrink-0">
+                  {g.emoji || '👥'}
+                </div>
+                <button className="flex-1 text-left" onClick={() => navigate(`/community/${g.id}`)}>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-gray-900 leading-tight">{g.name}</h3>
+                    {g.is_private ? (
+                      <span className="text-[10px] bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> {t.private}
+                      </span>
+                    ) : null}
+                  </div>
+                  {g.description ? <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{g.description}</p> : null}
+                  <div className="flex items-center gap-3 mt-1.5 text-[11px] text-gray-400">
+                    <span>{memberCount(g)} {t.members}</span>
+                    <span>{g.post_count ?? 0} {t.posts}</span>
+                    {g.city ? <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" />{g.city}</span> : null}
+                  </div>
+                </button>
+                <div className="flex flex-col items-end gap-2">
+                  <button
+                    onClick={() => toggleJoin(g)}
+                    disabled={busyId === g.id}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold ${
+                      joined ? 'bg-gray-100 text-gray-600' : 'bg-emerald-600 text-white'
+                    } disabled:opacity-50`}
+                  >
+                    {busyId === g.id ? '…' : joined ? t.leave : t.join}
+                  </button>
+                  <ChevronRight className="w-4 h-4 text-gray-300" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {showCreate && (
-        <CreateGroupModal onClose={() => setShowCreate(false)} onCreated={handleGroupCreated} />
-      )}
-      {shareTarget && (
-        <ShareModal group={shareTarget} onClose={() => setShareTarget(null)} />
-      )}
+      {/* Toast */}
+      {toast ? (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2 rounded-xl shadow-lg z-50">
+          {toast}
+        </div>
+      ) : null}
+
+      {/* Create modal */}
+      {showCreate ? (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center" onClick={() => !creating && setShowCreate(false)}>
+          <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-lg text-gray-900">{t.newGroup}</h2>
+              <button onClick={() => !creating && setShowCreate(false)}><X className="w-5 h-5 text-gray-400" /></button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-gray-600">{t.name} *</label>
+                <input value={cName} onChange={(e) => setCName(e.target.value)} placeholder={t.namePh}
+                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-emerald-500" maxLength={80} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">{t.desc}</label>
+                <textarea value={cDesc} onChange={(e) => setCDesc(e.target.value)} placeholder={t.descPh} rows={2}
+                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-emerald-500" maxLength={300} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-gray-600">{t.category}</label>
+                  <select value={cCat} onChange={(e) => setCCat(e.target.value)}
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none bg-white">
+                    {CATEGORIES.filter((c) => c !== 'All').map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">{t.city}</label>
+                  <input value={cCity} onChange={(e) => setCCity(e.target.value)} placeholder={t.cityPh}
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-emerald-500" maxLength={60} />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">{t.emoji}</label>
+                <div className="flex gap-2 mt-1">
+                  {['👥', '🛍️', '💼', '🏠', '🌾', '💻', '🙏', '⚽', '👩', '🎓'].map((e) => (
+                    <button key={e} onClick={() => setCEmoji(e)}
+                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center border ${cEmoji === e ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}`}>
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {createErr ? <p className="text-xs text-red-600">{createErr}</p> : null}
+              <div className="flex gap-3 pt-1">
+                <button onClick={() => setShowCreate(false)} disabled={creating}
+                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600">{t.cancel}</button>
+                <button onClick={createGroup} disabled={creating}
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">
+                  {creating ? t.creating : t.createBtn}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
+// BAMBEH_END_TOKEN__COMMUNITYPAGE__COMPLETE
