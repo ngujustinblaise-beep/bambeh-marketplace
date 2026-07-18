@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX114_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,6 +35,8 @@ import {
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from '@/lib/supabase';
+import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
 
 // ─── Translation Table ─────────────────────────────────────────────────────
 const HOME_T: Record<string, Record<string, string>> = {
@@ -320,17 +323,6 @@ const homeNormLang = (l: string): string => {
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────
-interface FeaturedAd {
-  id: string;
-  title: string;
-  price: number;
-  location: string;
-  category: string;
-  subscriptionLevel: string;
-  featured: boolean;
-  posted: string;
-}
-
 interface RecentListing {
   id: string | number;
   type?: string;
@@ -362,7 +354,6 @@ export default function Home() {
     return v;
   };
 
-  const [featuredAds, setFeaturedAds] = useState<FeaturedAd[]>([]);
   const [recentListings, setRecentListings] = useState<RecentListing[]>([]);
 
   // ── Categories (translated names & descriptions) ───────────────────────
@@ -390,28 +381,38 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    // ── Featured ads (mock — replace with Supabase in production) ──────────
-    setFeaturedAds([
-      { id: '1', title: 'iPhone 15 Pro Max - 256GB',  price: 850000,   location: 'Bastos, Yaoundé', category: 'Electronics', subscriptionLevel: 'platinum', featured: true, posted: '2 hours ago' },
-      { id: '2', title: 'Toyota Camry 2020',           price: 15000000, location: 'Douala',          category: 'Vehicles',    subscriptionLevel: 'premium',  featured: true, posted: '5 hours ago' },
-      { id: '3', title: '3 Bedroom Apartment',         price: 450000,   location: 'Bastos, Yaoundé', category: 'Rentals',     subscriptionLevel: 'platinum', featured: true, posted: '1 day ago'   },
-    ]);
-
-    // ── Load recently posted listings from localStorage ─────────────────────
-    try {
-      const stored = localStorage.getItem('Bambeh_listings');
-      if (stored) {
-        const listings: RecentListing[] = JSON.parse(stored);
+    // FIX114: recently posted listings now load from REAL Supabase.
+    // (Featured ads are handled by the live <FeaturedAdsStrip /> below.)
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('listings')
+          .select('id, type, title, price, location, images, status, created_at, expires_at')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (error) throw error;
         const now = Date.now();
-        const active = listings.filter(l => {
-          if (l.expiresAt && new Date(l.expiresAt).getTime() < now) return false;
-          return true;
-        });
-        setRecentListings(active.slice(0, 10));
+        const mapped: RecentListing[] = ((data ?? []) as Array<{
+          id: string; type: string | null; title: string; price: number | null;
+          location: string | null; images: string[] | null; created_at: string; expires_at: string | null;
+        }>)
+          .filter(l => !l.expires_at || new Date(l.expires_at).getTime() >= now)
+          .map(l => ({
+            id: l.id,
+            type: l.type ?? 'marketplace',
+            title: l.title,
+            price: l.price ?? 0,
+            location: l.location ?? undefined,
+            primaryImage: Array.isArray(l.images) && l.images[0] ? l.images[0] : undefined,
+            createdAt: l.created_at,
+            expiresAt: l.expires_at ?? undefined,
+          }));
+        setRecentListings(mapped);
+      } catch {
+        setRecentListings([]);
       }
-    } catch (e) {
-      // silent fail
-    }
+    })();
   }, []);
 
   // ── Helpers ────────────────────────────────────────────────────────────
@@ -471,30 +472,11 @@ export default function Home() {
         </div>
 
         {/* ── Featured Ads ──────────────────────────────────────────────── */}
-        {featuredAds.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">⭐ Featured</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredAds.map((ad) => (
-                <Link
-                  key={ad.id}
-                  to={`/marketplace/${ad.id}`}
-                  className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all overflow-hidden group"
-                >
-                  <div className="relative h-48 bg-gradient-to-br from-teal-100 to-blue-100 flex items-center justify-center">
-                    <ShoppingBag className="w-16 h-16 text-teal-200" />
-                    <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold">⭐ {t('home.badgeFeatured')}</div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{ad.title}</h3>
-                    <p className="text-lg font-bold text-teal-600 mb-1">{Number(ad.price).toLocaleString()} XAF</p>
-                    <p className="text-sm text-gray-500">{ad.location}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+                {/* Featured Ads (FIX114: live rolling strip of REAL posts) */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">⭐ {t('home.badgeFeatured')}</h2>
+          <FeaturedAdsStrip maxVisible={10} showHeader={false} />
+        </div>
 
         {/* ── Recently Posted ───────────────────────────────────────────── */}
         {recentListings.length > 0 && (
@@ -649,5 +631,4 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
-
-
+// BAMBEH_END_TOKEN__HOME__COMPLETE
