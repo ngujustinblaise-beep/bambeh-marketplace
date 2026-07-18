@@ -1,13 +1,14 @@
+// BAMBEH_DEPLOY_TOKEN__COINSPAGE_FIX110_CLEAN
 /**
- * src/pages/CoinsPage.tsx ? Bambeh Marketplace
+ * CoinsPage.tsx — Bambeh Marketplace (FIX110, mojibake purge + full i18n)
+ * FILE LOCATION: src/routes/groups/payments/CoinsPage.tsx  (the ROUTED copy)
  *
- * FIXED (this version):
- *  ? Full i18n via useLang / t() ? EN, FR, Pidgin, Arabic, Fulfulde
- *  ? Buy Coins navigates to /coins/buy (aligned with router fix below)
- *  ? maybeSingle() so no crash when row doesn't exist yet
- *  ? Manual refresh button + auto-refresh on ?purchased=1
- *  ? Zero-balance row upserted on first visit
- *  ? RTL support for Arabic
+ * FIX110: every corrupted string ("Pi?ces", "Gagn?", "????") rewritten cleanly
+ * in EN / FR / Pidgin / Arabic / Fulfulde. Logic unchanged from the working
+ * version: zerm_coins maybeSingle + first-visit upsert, zerm_transactions
+ * history, ?purchased=1 auto-refresh, RTL for Arabic.
+ *
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -17,118 +18,69 @@ import {
   Plus, History, RefreshCw, CheckCircle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { useLang, t } from '@/hooks/useAppLang';
+import { useLang } from '@/hooks/useAppLang';
 
-// -- i18n strings --------------------------------------------------------------
+// -- i18n ----------------------------------------------------------------------
 const strings = {
   en: {
-    title:         'Zerm Coins',
-    balance:       'Your Balance',
-    available:     'Available',
-    earned:        'Earned',
-    spent:         'Spent',
-    buyCoins:      'Buy Coins',
-    transfer:      'Transfer',
-    tipTitle:      'Earn more Zerm Coins',
-    tipBody:       'Refer friends, complete your profile, and stay active to earn bonus coins.',
-    historyTitle:  'Transaction History',
-    all:           'All',
-    earnedTab:     'Earned',
-    spentTab:      'Spent',
-    noTx:          'No transactions yet',
-    purchased:     'Purchase received!',
-    purchasedSub:  'Your coins may take a moment to appear. Tap Refresh if needed.',
-    refresh:       'Refresh',
-    refreshing:    'Refreshing?',
+    title: 'Zerm Coins', balance: 'Your Balance', available: 'Available',
+    earned: 'Earned', spent: 'Spent', buyCoins: 'Buy Coins', transfer: 'Transfer',
+    tipTitle: 'Earn more Zerm Coins',
+    tipBody: 'Refer friends, complete your profile, and stay active to earn bonus coins.',
+    historyTitle: 'Transaction History', all: 'All', earnedTab: 'Earned', spentTab: 'Spent',
+    noTx: 'No transactions yet', purchased: 'Purchase received!',
+    purchasedSub: 'Your coins may take a moment to appear. Tap Refresh if needed.',
+    refresh: 'Refresh', refreshing: 'Refreshing…',
   },
   fr: {
-    title:         'Pi?ces Zerm',
-    balance:       'Votre Solde',
-    available:     'Disponible',
-    earned:        'Gagn?',
-    spent:         'D?pens?',
-    buyCoins:      'Acheter',
-    transfer:      'Transf?rer',
-    tipTitle:      'Gagnez plus de pi?ces Zerm',
-    tipBody:       'Parrainez des amis, compl?tez votre profil et restez actif pour gagner des bonus.',
-    historyTitle:  'Historique des transactions',
-    all:           'Tout',
-    earnedTab:     'Gagn?',
-    spentTab:      'D?pens?',
-    noTx:          'Aucune transaction',
-    purchased:     'Achat re?u !',
-    purchasedSub:  "Vos pi?ces peuvent prendre un moment. Appuyez sur Actualiser si n?cessaire.",
-    refresh:       'Actualiser',
-    refreshing:    'Actualisation?',
+    title: 'Pièces Zerm', balance: 'Votre Solde', available: 'Disponible',
+    earned: 'Gagné', spent: 'Dépensé', buyCoins: 'Acheter', transfer: 'Transférer',
+    tipTitle: 'Gagnez plus de pièces Zerm',
+    tipBody: 'Parrainez des amis, complétez votre profil et restez actif pour gagner des bonus.',
+    historyTitle: 'Historique des transactions', all: 'Tout', earnedTab: 'Gagné', spentTab: 'Dépensé',
+    noTx: 'Aucune transaction', purchased: 'Achat reçu !',
+    purchasedSub: 'Vos pièces peuvent prendre un moment. Appuyez sur Actualiser si nécessaire.',
+    refresh: 'Actualiser', refreshing: 'Actualisation…',
   },
   pidgin: {
-    title:         'Zerm Coins',
-    balance:       'Your Money',
-    available:     'Wey Dey',
-    earned:        'You Get',
-    spent:         'You Spend',
-    buyCoins:      'Buy Coins',
-    transfer:      'Send',
-    tipTitle:      'Get more Zerm Coins',
-    tipBody:       'Bring your padis, complete your profile, stay active ? na so bonus dey come.',
-    historyTitle:  'Transaction History',
-    all:           'All',
-    earnedTab:     'You Get',
-    spentTab:      'You Spend',
-    noTx:          'No transaction yet',
-    purchased:     'Purchase done!',
-    purchasedSub:  'Your coins fit take small time appear. Press Refresh if e no show.',
-    refresh:       'Refresh',
-    refreshing:    'Refreshing?',
+    title: 'Zerm Coins', balance: 'Your Money', available: 'Wey Dey',
+    earned: 'You Get', spent: 'You Spend', buyCoins: 'Buy Coins', transfer: 'Send',
+    tipTitle: 'Get more Zerm Coins',
+    tipBody: 'Bring your padis, complete your profile, stay active — na so bonus dey come.',
+    historyTitle: 'Transaction History', all: 'All', earnedTab: 'You Get', spentTab: 'You Spend',
+    noTx: 'No transaction yet', purchased: 'Purchase done!',
+    purchasedSub: 'Your coins fit take small time appear. Press Refresh if e no show.',
+    refresh: 'Refresh', refreshing: 'Refreshing…',
   },
   ar: {
-    title:         '????? ???',
-    balance:       '?????',
-    available:     '????',
-    earned:        '?????',
-    spent:         '??????',
-    buyCoins:      '????',
-    transfer:      '?????',
-    tipTitle:      '???? ?????? ?? ????? ???',
-    tipBody:       '???? ???????? ???? ???? ??????? ????? ????? ?????? ??? ??????.',
-    historyTitle:  '??? ?????????',
-    all:           '????',
-    earnedTab:     '?????',
-    spentTab:      '??????',
-    noTx:          '?? ???? ??????? ???',
-    purchased:     '?? ?????? ??? ??????!',
-    purchasedSub:  '?? ?????? ?????? ???? ??????. ???? ????? ??? ??????.',
-    refresh:       '?????',
-    refreshing:    '???? ????????',
+    title: 'عملات زيرم', balance: 'رصيدك', available: 'متاح',
+    earned: 'مكتسب', spent: 'منفق', buyCoins: 'شراء', transfer: 'تحويل',
+    tipTitle: 'اكسب المزيد من عملات زيرم',
+    tipBody: 'ادعُ أصدقاءك، أكمل ملفك الشخصي، وابقَ نشطًا لتكسب عملات إضافية.',
+    historyTitle: 'سجل المعاملات', all: 'الكل', earnedTab: 'مكتسب', spentTab: 'منفق',
+    noTx: 'لا توجد معاملات بعد', purchased: 'تم استلام الشراء!',
+    purchasedSub: 'قد تستغرق عملاتك لحظات لتظهر. اضغط تحديث إذا لزم الأمر.',
+    refresh: 'تحديث', refreshing: 'جارٍ التحديث…',
   },
-  fulfulde: {
-    title:         'Zerm Coin?e',
-    balance:       'Soodaande maa',
-    available:     'Woni',
-    earned:        'He?iino',
-    spent:         'Faalanaa',
-    buyCoins:      'Sood',
-    transfer:      'Neldu',
-    tipTitle:      'He? coin?e Zerm keew?e',
-    tipBody:       'Naatnu yim?e, he? profil maa, yahugol aktif ? so hono nii mba?aten bonus.',
-    historyTitle:  'Laamu Li??itol',
-    all:           'Fof',
-    earnedTab:     'He?iino',
-    spentTab:      'Faalanaa',
-    noTx:          'Alaa li??itol',
-    purchased:     'Soodaande accii!',
-    purchasedSub:  'Coin?e maa mbaawa waa?ude. Taa? Refresh so wonaa haa.',
-    refresh:       'Refresh',
-    refreshing:    'Dawnugol?',
+  ff: {
+    title: 'Zerm Coinɗe', balance: 'Soodaande maa', available: 'Woni',
+    earned: 'Heɓiino', spent: 'Faalanaa', buyCoins: 'Sood', transfer: 'Neldu',
+    tipTitle: 'Heɓ coinɗe Zerm keewɗe',
+    tipBody: 'Naatnu yimɓe, timmin profil maa, wonu aktif — nii heɓataa bonus.',
+    historyTitle: 'Laamu Liɓɓitol', all: 'Fof', earnedTab: 'Heɓiino', spentTab: 'Faalanaa',
+    noTx: 'Alaa liɓɓitol', purchased: 'Soodaande heɓaama!',
+    purchasedSub: 'Coinɗe maa mbaawa ɓooyde seeɗa. Taƴ Refresh so ɗe njiyaaki.',
+    refresh: 'Refresh', refreshing: 'Dawnugol…',
   },
 } as const;
 
-type Lang = keyof typeof strings;
+type LangStrings = (typeof strings)['en'];
 
-function useStrings() {
-  const lang = useLang() as string;
-  const key: Lang = (lang in strings ? lang : 'en') as Lang;
-  return strings[key];
+function useStrings(): { s: LangStrings; isRtl: boolean } {
+  const raw = useLang() as string;
+  const key = raw === 'fulfulde' ? 'ff' : raw;
+  const s = ((strings as Record<string, LangStrings>)[key] ?? strings.en);
+  return { s, isRtl: key === 'ar' };
 }
 
 interface Transaction {
@@ -140,12 +92,10 @@ interface Transaction {
 }
 
 export default function CoinsPage() {
-  const navigate           = useNavigate();
-  const [searchParams]     = useSearchParams();
-  const justPurchased      = searchParams.get('purchased') === '1';
-  const s                  = useStrings();
-  const lang               = useLang() as string;
-  const isRtl              = lang === 'ar';
+  const navigate       = useNavigate();
+  const [searchParams] = useSearchParams();
+  const justPurchased  = searchParams.get('purchased') === '1';
+  const { s, isRtl }   = useStrings();
 
   const [balance,      setBalance]      = useState<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -162,7 +112,7 @@ export default function CoinsPage() {
       if (!session?.user) { navigate('/login'); return; }
       const userId = session.user.id;
 
-      // Fetch balance ? maybeSingle() never throws on missing row
+      // Balance — maybeSingle() never throws on missing row
       const { data: coinData } = await supabase
         .from('zerm_coins')
         .select('balance')
@@ -172,7 +122,7 @@ export default function CoinsPage() {
       if (coinData) {
         setBalance(coinData.balance ?? 0);
       } else {
-        // First-time user ? create wallet row
+        // First-time user — create wallet row
         const { data: newRow } = await supabase
           .from('zerm_coins')
           .upsert({ user_id: userId, balance: 0 }, { onConflict: 'user_id' })
@@ -181,7 +131,6 @@ export default function CoinsPage() {
         setBalance(newRow?.balance ?? 0);
       }
 
-      // Fetch transactions
       const { data: txData } = await supabase
         .from('zerm_transactions')
         .select('id, type, amount, description, created_at')
@@ -206,13 +155,12 @@ export default function CoinsPage() {
   }, [justPurchased, loadData]);
 
   const filtered = transactions.filter(tx => tab === 'all' || tx.type === tab);
-  const earned   = transactions.filter(tx => tx.type === 'credit').reduce((s, tx) => s + tx.amount, 0);
-  const spent    = transactions.filter(tx => tx.type === 'debit').reduce((s, tx) => s + tx.amount, 0);
+  const earned   = transactions.filter(tx => tx.type === 'credit').reduce((sum, tx) => sum + tx.amount, 0);
+  const spent    = transactions.filter(tx => tx.type === 'debit').reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
 
-      {/* Purchase success banner */}
       {justPurchased && (
         <div className="bg-green-50 border-b border-green-200 px-4 py-3 flex items-center gap-3">
           <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
@@ -248,7 +196,7 @@ export default function CoinsPage() {
         <div className="text-center">
           <p className="text-teal-100 text-sm mb-1">{s.balance}</p>
           <div className="text-white text-6xl font-black mb-1">
-            {loading ? '?' : (balance ?? 0).toLocaleString()}
+            {loading ? '…' : (balance ?? 0).toLocaleString()}
           </div>
           <p className="text-teal-100 text-sm flex items-center justify-center gap-1">
             <Zap className="w-4 h-4 text-yellow-300" /> Zerm Coins
@@ -256,7 +204,7 @@ export default function CoinsPage() {
         </div>
       </div>
 
-      {/* Stats card ? overlaps hero */}
+      {/* Stats card */}
       <div className="px-4 -mt-14 mb-4 relative z-10">
         <div className="bg-white rounded-2xl shadow-md border p-4 grid grid-cols-3 gap-3">
           <div className="text-center">
@@ -274,7 +222,7 @@ export default function CoinsPage() {
         </div>
       </div>
 
-      {/* Action buttons */}
+      {/* Actions */}
       <div className="px-4 mb-4 grid grid-cols-2 gap-3">
         <button
           onClick={() => navigate('/coins/buy')}
@@ -293,7 +241,7 @@ export default function CoinsPage() {
       {/* Earn tip */}
       <div className="px-4 mb-4">
         <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 flex items-start gap-3">
-          <Zap className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5 text-yellow-500" />
+          <Zap className="w-5 h-5 flex-shrink-0 mt-0.5 text-yellow-500" />
           <div>
             <p className="text-sm font-semibold text-teal-800">{s.tipTitle}</p>
             <p className="text-xs text-teal-600 mt-0.5">{s.tipBody}</p>
@@ -301,7 +249,7 @@ export default function CoinsPage() {
         </div>
       </div>
 
-      {/* Transaction history */}
+      {/* History */}
       <div className="px-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -309,7 +257,6 @@ export default function CoinsPage() {
           </h2>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-3">
           {(['all', 'credit', 'debit'] as const).map(tabKey => (
             <button
@@ -368,8 +315,4 @@ export default function CoinsPage() {
     </div>
   );
 }
-
-
-
-
-
+// BAMBEH_END_TOKEN__COINSPAGE__COMPLETE

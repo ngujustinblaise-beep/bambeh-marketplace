@@ -1,10 +1,13 @@
+// BAMBEH_DEPLOY_TOKEN__COINSHISTORY_FIX110_CLEAN
 /**
- * src/pages/CoinsHistory.tsx — Bambeh Marketplace
+ * CoinsHistory.tsx — Bambeh Marketplace (FIX110)
+ * FILE LOCATION: src/routes/groups/payments/CoinsHistory.tsx  (the ROUTED copy)
  *
- * FIXED (this version):
- *  ✅ Full i18n — EN, FR, Pidgin, Arabic, Fulfulde
- *  ✅ RTL support for Arabic
- *  ✅ Shows all 50 most recent transactions with signed amounts
+ * FIX110: repaired the corrupted Arabic "back" string and normalized the
+ * language key ('fulfulde' → ff alias) to match the other Coins pages.
+ * Logic unchanged: latest 50 zerm_transactions, RTL for Arabic.
+ *
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -15,33 +18,40 @@ import { useLang } from '@/hooks/useAppLang';
 
 const strings = {
   en: {
-    back:    '← Back to Wallet',
-    title:   'Transaction History',
-    noTx:    'No transactions yet',
+    back: '← Back to Wallet',
+    title: 'Transaction History',
+    noTx: 'No transactions yet',
   },
   fr: {
-    back:    '← Retour au portefeuille',
-    title:   'Historique des transactions',
-    noTx:    'Aucune transaction pour le moment',
+    back: '← Retour au portefeuille',
+    title: 'Historique des transactions',
+    noTx: 'Aucune transaction pour le moment',
   },
   pidgin: {
-    back:    '← Back to Wallet',
-    title:   'Your Transactions',
-    noTx:    'No transaction yet',
+    back: '← Back to Wallet',
+    title: 'Your Transactions',
+    noTx: 'No transaction yet',
   },
   ar: {
-    back:    'العودة للمحÙظة →',
-    title:   'سجل المعاملات',
-    noTx:    'لا توجد معاملات بعد',
+    back: 'العودة للمحفظة →',
+    title: 'سجل المعاملات',
+    noTx: 'لا توجد معاملات بعد',
   },
-  fulfulde: {
-    back:    '← Rutto Jaaborgal',
-    title:   'Laamu Liɓɓitol',
-    noTx:    'Alaa liɓɓitol fewndo jooni',
+  ff: {
+    back: '← Rutto Jaaborgal',
+    title: 'Laamu Liɓɓitol',
+    noTx: 'Alaa liɓɓitol fewndo jooni',
   },
 } as const;
 
-type Lang = keyof typeof strings;
+type LangStrings = (typeof strings)['en'];
+
+function useStrings(): { s: LangStrings; isRtl: boolean } {
+  const raw = useLang() as string;
+  const key = raw === 'fulfulde' ? 'ff' : raw;
+  const s = ((strings as Record<string, LangStrings>)[key] ?? strings.en);
+  return { s, isRtl: key === 'ar' };
+}
 
 interface Tx {
   id: string;
@@ -52,10 +62,7 @@ interface Tx {
 }
 
 const CoinsHistory: React.FC = () => {
-  const langRaw = useLang() as string;
-  const lang: Lang = (langRaw in strings ? langRaw : 'en') as Lang;
-  const s       = strings[lang];
-  const isRtl   = lang === 'ar';
+  const { s, isRtl } = useStrings();
 
   const [txs,     setTxs]     = useState<Tx[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,8 +137,4 @@ const CoinsHistory: React.FC = () => {
 };
 
 export default CoinsHistory;
-
-
-
-
-
+// BAMBEH_END_TOKEN__COINSHISTORY__COMPLETE
