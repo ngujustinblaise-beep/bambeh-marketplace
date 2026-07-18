@@ -416,7 +416,7 @@ export default function Profile() {
 
   const quickLinks: [string, string][] = [
     ["⚡  " + s.qlCoins,     "/coins"],
-    ["🛍️  " + s.qlListings,  "/marketplace"],
+    ["🛍️  " + s.qlListings,  "/my-listings"],
     ["📦  " + s.qlOrders,    "/orders"],
     ["❤️   " + s.qlSaved,     "/favorites"],
     ["⚙️   " + s.qlSettings,  "/settings"],

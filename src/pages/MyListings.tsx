@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__MYLISTINGS_FIX116_CLEAN
 /**
  * src/pages/MyListings.tsx — Bambeh Marketplace
  *
@@ -27,6 +28,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { Link } from "react-router-dom";
+import { Trash2 } from "lucide-react";
+import DeleteListingButton, { type ListingType } from "@/components/listings/DeleteListingButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MyListing {
@@ -108,6 +112,7 @@ export default function MyListings() {
         .from("listings")
         .select("id, title, type, category, status, view_count, created_at, price, location")
         .eq("user_id", user.id)
+        .neq("status", "deleted")
         .order("created_at", { ascending: false });
 
       if (mainError) throw mainError;
@@ -154,6 +159,7 @@ export default function MyListings() {
         .from("exchange_items")
         .select("id, title, category, status, view_count, created_at, location")
         .eq("user_id", user.id)
+        .neq("status", "deleted")
         .order("created_at", { ascending: false });
 
       if (exchangeError) throw exchangeError;
@@ -292,6 +298,13 @@ export default function MyListings() {
           <p className="text-center text-sm text-gray-500 py-8">{t("myListings.noneInCategory")}</p>
         )}
 
+        {!loading && !error && (
+          <div className="flex justify-end mb-1">
+            <Link to="/trash" className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-red-600">
+              <Trash2 className="w-4 h-4" /> Trash
+            </Link>
+          </div>
+        )}
         {!loading && !error && filtered.map(l => (
           <div
             key={`${l.table}-${l.id}`}
@@ -328,6 +341,17 @@ export default function MyListings() {
                 })}
               </p>
             </div>
+
+            {l.table !== "farm_products" && (
+              <div className="mt-2 flex justify-end" onClick={(e) => e.stopPropagation()}>
+                <DeleteListingButton
+                  id={l.id}
+                  type={l.type as ListingType}
+                  variant="button"
+                  onDeleted={(delId) => setListings((xs) => xs.filter((x) => x.id !== delId))}
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
