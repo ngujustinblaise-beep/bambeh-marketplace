@@ -148,3 +148,15 @@ server/
 *~
 process.env
 .env
+# --- Bambeh hygiene (FIX109) ---
+android/app/build/
+android/app/src/main/assets/public/
+scan_results*/
+scan-output*/
+_typefix_backups/
+_quarantine/
+*bkup*
+*.backup*
+.env.bak
+.env*.bak
+*.report.html

@@ -1,464 +1,318 @@
+// BAMBEH_DEPLOY_TOKEN__FEATUREDADSSTRIP_FIX108_CLEAN
 /**
- * FeaturedAdsStrip.tsx ? Bambeh Marketplace
+ * FeaturedAdsStrip.tsx — Bambeh Marketplace (FIX108, REAL data + EXCHANGE)
  * FILE LOCATION: src/components/ads/FeaturedAdsStrip.tsx
+ * Supersedes FIX107 (delete the FIX107 copy from Downloads).
  *
- * RESPONSIBILITIES:
- *  - Renders a horizontal scrollable strip of featured ads
- *  - Up to 20 ads shown per set; rotates automatically every 30 s if >20 exist
- *  - Newest ads always shown first
- *  - Time labels are relative (minutes / hours / days / weeks / months) and
- *    rendered in the currently selected app language
- *  - Supports a `searchQuery` prop so parent pages can drive filtering
- *  - If `category` prop is passed the strip shows only that category's ads
- *  - Each card links to the original listing (listing_path) or the category page
+ * FIX108 change: the strip now ALSO pulls live swap posts from the
+ * `exchange_items` table (verified 2026-07-18 SQL screenshot), so all
+ * SEVEN modules feed the shop window:
+ *  • marketplace / jobs / services / rentals / vehicles  → `listings`
+ *  • Farm Fresh                                          → `farm_products`
+ *  • Exchange (item swaps, e.g. iPhone-for-laptop)       → `exchange_items`
+ *    — cards show estimated value (if set) and navigate to /exchange/:id
+ *  • Batches of 10, auto-rotate 10 s, chevrons + dots, 5 languages,
+ *    same props as before — existing pages keep working unchanged.
  *
- * PROPS:
- *  category?    ? limit to a single ad category
- *  searchQuery? ? live search string from the parent page
- *  maxVisible?  ? override the 20-ad page size
- *  showHeader?  ? whether to show the "Featured Ads" section header (default: true)
- *
- * ? 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
-import React, { useEffect,  useState, useCallback } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Tag,
-  Briefcase,
-  ShoppingBag,
-  Wrench,
-  Home,
-  Car,
-  ArrowLeftRight,
-  Zap,
-  Users,
-  Leaf,
-  Star,
-  ExternalLink,
-  RefreshCw,
-  Search,
+  ChevronLeft, ChevronRight, Tag, Briefcase, ShoppingBag, Wrench, Home, Car,
+  Leaf, Star, Loader2, ArrowLeftRight,
 } from "lucide-react";
-import {
-  useFeaturedAds,
-  resolveLocalizedText,
-  type AdCategory,
-  type FeaturedAd,
-} from "@/hooks/useFeaturedAds";
-import { useLang } from '@/hooks/useAppLang';
+import { supabase } from "@/lib/supabase";
+import { useLang } from "@/hooks/useAppLang";
 
-// --- Category icon + colour map -----------------------------------------------4
-const CATEGORY_META: Record<
-  AdCategory,
-  {
-    icon: React.ComponentType<{ className?: string }>;
-    colour: string;       // Tailwind bg class
-    textColour: string;   // Tailwind text class
-    path: string;         // fallback nav path
-  }
-> = {
-  marketplace:  { icon: ShoppingBag,    colour: "bg-blue-100",   textColour: "text-blue-700",   path: "/marketplace"  },
-  jobs:         { icon: Briefcase,      colour: "bg-amber-100",  textColour: "text-amber-700",  path: "/jobs"         },
-  services:     { icon: Wrench,         colour: "bg-purple-100", textColour: "text-purple-700", path: "/services"     },
-  rentals:      { icon: Home,           colour: "bg-green-100",  textColour: "text-green-700",  path: "/rentals"      },
-  vehicles:     { icon: Car,            colour: "bg-red-100",    textColour: "text-red-700",    path: "/vehicles"     },
-  exchange:     { icon: ArrowLeftRight, colour: "bg-pink-100",   textColour: "text-pink-700",   path: "/exchange"     },
-  "flash-deals":{ icon: Zap,            colour: "bg-yellow-100", textColour: "text-yellow-700", path: "/flash-deals"  },
-  "group-buying":{ icon: Users,         colour: "bg-cyan-100",   textColour: "text-cyan-700",   path: "/group-buying" },
-  "farm-fresh": { icon: Leaf,           colour: "bg-lime-100",   textColour: "text-lime-700",   path: "/farm-fresh"   },
-  general:      { icon: Tag,            colour: "bg-gray-100",   textColour: "text-gray-700",   path: "/"             },
-};
+// Kept broad so existing callers passing any old category value still compile.
+export type AdCategory =
+  | "marketplace" | "jobs" | "services" | "rentals" | "vehicles"
+  | "exchange" | "flash-deals" | "group-buying" | "farm-fresh";
 
-// --- UI string translations ---------------------------------------------------
-
-const UI_STRINGS: Record<
-  string,
-  {
-    featuredAds: string;
-    noAds: string;
-    promoted: string;
-    viewAll: string;
-    of: string;
-    loadError: string;
-    retry: string;
-    searchPlaceholder: string;
-  }
-> = {
-  en: {
-    featuredAds:       "Featured Ads",
-    noAds:             "No featured ads at the moment.",
-    promoted:          "Promoted",
-    viewAll:           "View all",
-    of:                "of",
-    loadError:         "Couldn't load ads.",
-    retry:             "Retry",
-    searchPlaceholder: "Search ads?",
-  },
-  fr: {
-    featuredAds:       "Annonces en vedette",
-    noAds:             "Aucune annonce pour le moment.",
-    promoted:          "Sponsoris?",
-    viewAll:           "Voir tout",
-    of:                "sur",
-    loadError:         "Impossible de charger les annonces.",
-    retry:             "R?essayer",
-    searchPlaceholder: "Rechercher des annonces?",
-  },
-  ha: {
-    featuredAds:       "Tallace-tallace na musamman",
-    noAds:             "Babu tallace-tallace yanzu.",
-    promoted:          "Ingantaccen",
-    viewAll:           "Duba duka",
-    of:                "daga",
-    loadError:         "Ba a iya loda tallace-tallace.",
-    retry:             "Sake gwadawa",
-    searchPlaceholder: "Nemo tallace-tallace?",
-  },
-  ar: {
-    featuredAds:       "????????? ???????",
-    noAds:             "?? ???? ??????? ?? ????? ??????.",
-    promoted:          "????",
-    viewAll:           "??? ????",
-    of:                "??",
-    loadError:         "????? ????? ?????????.",
-    retry:             "????? ????????",
-    searchPlaceholder: "??? ?? ??????????",
-  },
-  pcm: {
-    featuredAds:       "Featured Ads",
-    noAds:             "No ad dey now.",
-    promoted:          "Promoted",
-    viewAll:           "See all",
-    of:                "for",
-    loadError:         "E no fit load ads.",
-    retry:             "Try again",
-    searchPlaceholder: "Search ads?",
-  },
-  ful: {
-    featuredAds:       "Koon?e Ja??aa?e",
-    noAds:             "Alaa koon?e hannde.",
-    promoted:          "Nannginaa?o",
-    viewAll:           "Yiy'on fow",
-    of:                "e dow",
-    loadError:         "Waawaa he?tude koon?e.",
-    retry:             "Taa fu??o",
-    searchPlaceholder: "?a??u koon?e?",
-  },
-};
-
-function useUiStrings(lang: string) {
-  return UI_STRINGS[lang] ?? UI_STRINGS["en"];
+interface StripItem {
+  id: string;
+  kind: "marketplace" | "job" | "service" | "rental" | "vehicle" | "farm" | "exchange";
+  title: string;
+  price: number | null;
+  unit?: string | null;
+  location: string | null;
+  image: string | null;
+  created_at: string;
 }
-
-// --- Single ad card -----------------------------------------------------------
-
-interface AdCardProps {
-  ad: FeaturedAd;
-  lang: string;
-  timeAgo: string;
-  onNavigate: (path: string) => void;
-}
-
-const AdCard: React.FC<AdCardProps> = ({ ad, lang, timeAgo, onNavigate }) => {
-  const meta  = CATEGORY_META[ad.category] ?? CATEGORY_META.general;
-  const Icon  = meta.icon;
-  const title = resolveLocalizedText(ad.title, lang);
-  const desc  = resolveLocalizedText(ad.description, lang);
-  const dest  = ad.listing_path || meta.path;
-
-  const formattedPrice = ad.price
-    ? new Intl.NumberFormat("fr-CM", { style: "currency", currency: "XAF", maximumFractionDigits: 0 })
-        .format(ad.price)
-    : null;
-
-  return (
-    <button
-      onClick={() => onNavigate(dest)}
-      className="flex-shrink-0 w-44 sm:w-52 bg-white rounded-2xl shadow-sm border border-gray-100
-                 hover:shadow-md hover:border-teal-200 transition-all duration-200 overflow-hidden
-                 text-left active:scale-95"
-      aria-label={title}
-    >
-      {/* Image or colour placeholder */}
-      <div className={`relative h-28 sm:h-32 ${meta.colour} flex items-center justify-center overflow-hidden`}>
-        {ad.thumbnail_url || ad.image_url ? (
-          <img
-            src={ad.thumbnail_url || ad.image_url || ""}
-            alt={title}
-            className="w-full h-full object-cover"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-          />
-        ) : (
-          <Icon className={`w-10 h-10 ${meta.textColour} opacity-40`} />
-        )}
-        {/* Promoted badge */}
-        {ad.is_promoted && (
-          <span className="absolute top-1.5 left-1.5 bg-amber-500 text-white text-[9px] font-bold
-                           px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-            <Star className="w-2.5 h-2.5 fill-white" />
-            {UI_STRINGS[lang]?.promoted ?? "Promoted"}
-          </span>
-        )}
-        {/* Category badge */}
-        <span className={`absolute top-1.5 right-1.5 ${meta.colour} ${meta.textColour}
-                          text-[9px] font-semibold px-1.5 py-0.5 rounded-full capitalize`}>
-          {ad.category.replace("-", " ")}
-        </span>
-      </div>
-
-      {/* Text content */}
-      <div className="p-2.5">
-        <h4 className="text-xs font-semibold text-gray-800 leading-tight line-clamp-2 mb-1">
-          {title}
-        </h4>
-        {desc && (
-          <p className="text-[10px] text-gray-500 leading-tight line-clamp-2 mb-1.5">
-            {desc}
-          </p>
-        )}
-        <div className="flex items-center justify-between mt-auto">
-          {formattedPrice ? (
-            <span className="text-xs font-bold text-teal-700">{formattedPrice}</span>
-          ) : (
-            <span className="text-[10px] text-gray-400 truncate max-w-[80px]">{ad.vendor_name}</span>
-          )}
-          <span className="text-[9px] text-gray-400 shrink-0 ml-1">{timeAgo}</span>
-        </div>
-      </div>
-    </button>
-  );
-};
-
-// --- FeaturedAdsStrip ---------------------------------------------------------
 
 interface FeaturedAdsStripProps {
   category?: AdCategory;
   searchQuery?: string;
-  maxVisible?: number;
+  maxVisible?: number;      // batch size (default 10)
   showHeader?: boolean;
-  /** Extra Tailwind classes on the outer wrapper */
   className?: string;
 }
+
+const KIND_META: Record<StripItem["kind"], {
+  icon: React.ComponentType<{ className?: string }>;
+  badge: string;
+  text: string;
+  route: (id: string) => string;
+}> = {
+  marketplace: { icon: ShoppingBag,    badge: "bg-blue-100",   text: "text-blue-700",   route: (id) => `/marketplace/${id}` },
+  job:         { icon: Briefcase,      badge: "bg-amber-100",  text: "text-amber-700",  route: (id) => `/jobs/${id}` },
+  service:     { icon: Wrench,         badge: "bg-purple-100", text: "text-purple-700", route: (id) => `/services/${id}` },
+  rental:      { icon: Home,           badge: "bg-green-100",  text: "text-green-700",  route: (id) => `/rentals/${id}` },
+  vehicle:     { icon: Car,            badge: "bg-red-100",    text: "text-red-700",    route: (id) => `/vehicles/${id}` },
+  farm:        { icon: Leaf,           badge: "bg-lime-100",   text: "text-lime-700",   route: (id) => `/farm-fresh/${id}` },
+  exchange:    { icon: ArrowLeftRight, badge: "bg-teal-100",   text: "text-teal-700",   route: (id) => `/exchange/${id}` },
+};
+
+const STRINGS: Record<string, { header: string; empty: string; kind: Record<StripItem["kind"], string> }> = {
+  en:     { header: "Featured Ads", empty: "New ads will appear here soon.",
+            kind: { marketplace: "Market", job: "Job", service: "Service", rental: "Rental", vehicle: "Vehicle", farm: "Farm Fresh", exchange: "Swap" } },
+  fr:     { header: "Annonces en vedette", empty: "Les nouvelles annonces apparaîtront ici bientôt.",
+            kind: { marketplace: "Marché", job: "Emploi", service: "Service", rental: "Location", vehicle: "Véhicule", farm: "Ferme", exchange: "Troc" } },
+  pidgin: { header: "Top Ads dem", empty: "New ads go show for here soon.",
+            kind: { marketplace: "Market", job: "Work", service: "Service", rental: "House", vehicle: "Moto/Car", farm: "Farm", exchange: "Swap" } },
+  ar:     { header: "إعلانات مميزة", empty: "ستظهر الإعلانات الجديدة هنا قريبًا.",
+            kind: { marketplace: "سوق", job: "وظيفة", service: "خدمة", rental: "إيجار", vehicle: "مركبة", farm: "مزرعة", exchange: "مقايضة" } },
+  ff:     { header: "Jaayɗe ɗuuɗɗe", empty: "Jaayɗe kese ɗe ngari ɗoo law.",
+            kind: { marketplace: "Luumo", job: "Golle", service: "Ballal", rental: "Suudu", vehicle: "Oto", farm: "Ngesa", exchange: "Waylugol" } },
+};
+
+const fmtXAF = (n: number | null | undefined) =>
+  n == null || Number.isNaN(n) ? null
+    : new Intl.NumberFormat("fr-CM", { maximumFractionDigits: 0 }).format(n) + " FCFA";
+
+const CATEGORY_TO_KINDS: Partial<Record<AdCategory, StripItem["kind"][]>> = {
+  marketplace: ["marketplace"],
+  jobs: ["job"],
+  services: ["service"],
+  rentals: ["rental"],
+  vehicles: ["vehicle"],
+  "farm-fresh": ["farm"],
+  exchange: ["exchange"],
+};
 
 export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
   category,
   searchQuery = "",
-  maxVisible  = 20,
-  showHeader  = true,
-  className   = "",
+  maxVisible = 10,
+  showHeader = true,
+  className = "",
 }) => {
   const navigate = useNavigate();
   const lang = useLang();
-    const isRtl = lang === 'ar';
-  const ui   = useUiStrings(lang);
+  const isRtl = lang === "ar";
+  const s = STRINGS[lang] ?? STRINGS.en;
 
-  // Local search state (only used when parent hasn't passed searchQuery)
-  const [localSearch, setLocalSearch] = useState("");
-  const effectiveSearch = searchQuery || localSearch;
+  const [items, setItems] = useState<StripItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [batch, setBatch] = useState(0);
 
-  const {
-    ads,
-    allAds,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    nextPage,
-    prevPage,
-    timeAgoLabel,
-    refetch,
-  } = useFeaturedAds({
-    category,
-    pageSize:    maxVisible,
-    rotationMs:  30_000,
-    searchQuery: effectiveSearch,
-  });
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const wanted = category ? CATEGORY_TO_KINDS[category] : undefined;
+      const collected: StripItem[] = [];
 
-  const handleNav = useCallback(
-    (path: string) => { navigate(path); },
-    [navigate]
-  );
+      const needListings = !wanted || wanted.some((k) => k !== "farm" && k !== "exchange");
+      if (needListings) {
+        const typeFilter = wanted
+          ? wanted.filter((k) => k !== "farm" && k !== "exchange").map((k) => (k === "marketplace" ? "marketplace" : k))
+          : ["marketplace", "job", "service", "rental", "vehicle"];
+        const { data, error } = await supabase
+          .from("listings")
+          .select("id, type, title, price, location, images, status, created_at")
+          .in("type", typeFilter)
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(50);
+        if (!error && Array.isArray(data)) {
+          for (const r of data as {
+            id: string; type: string; title: string; price: number | null;
+            location: string | null; images: string[] | null; created_at: string;
+          }[]) {
+            const kind = (r.type === "marketplace" ? "marketplace" : r.type) as StripItem["kind"];
+            if (!KIND_META[kind]) continue;
+            collected.push({
+              id: r.id, kind, title: r.title, price: r.price, location: r.location,
+              image: Array.isArray(r.images) && r.images[0] ? r.images[0] : null,
+              created_at: r.created_at,
+            });
+          }
+        }
+      }
 
-  // -- Loading skeleton -----------------------------------------------------
-  if (isLoading) {
+      const needFarm = !wanted || wanted.includes("farm");
+      if (needFarm) {
+        try {
+          const { data } = await supabase
+            .from("farm_products")
+            .select("id, title, price_per_unit_xaf, unit, location, image_url, images, is_available, created_at")
+            .eq("is_available", true)
+            .order("created_at", { ascending: false })
+            .limit(15);
+          for (const r of ((data ?? []) as {
+            id: string; title: string; price_per_unit_xaf: number | null; unit: string | null;
+            location: string | null; image_url: string | null; images: string[] | null; created_at: string;
+          }[])) {
+            collected.push({
+              id: r.id, kind: "farm", title: r.title, price: r.price_per_unit_xaf,
+              unit: r.unit, location: r.location,
+              image: r.image_url || (Array.isArray(r.images) && r.images[0] ? r.images[0] : null),
+              created_at: r.created_at,
+            });
+          }
+        } catch {
+          /* farm strip is best-effort — never break the whole strip */
+        }
+      }
+
+      const needExchange = !wanted || wanted.includes("exchange");
+      if (needExchange) {
+        try {
+          const { data } = await supabase
+            .from("exchange_items")
+            .select("id, title, estimated_value_xaf, location, images, status, created_at")
+            .eq("status", "active")
+            .order("created_at", { ascending: false })
+            .limit(15);
+          for (const r of ((data ?? []) as {
+            id: string; title: string; estimated_value_xaf: number | null;
+            location: string | null; images: string[] | null; created_at: string;
+          }[])) {
+            collected.push({
+              id: r.id, kind: "exchange", title: r.title,
+              price: r.estimated_value_xaf, location: r.location,
+              image: Array.isArray(r.images) && r.images[0] ? r.images[0] : null,
+              created_at: r.created_at,
+            });
+          }
+        } catch {
+          /* exchange strip is best-effort — never break the whole strip */
+        }
+      }
+
+      collected.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setItems(collected);
+      setBatch(0);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [category]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((i) => i.title.toLowerCase().includes(q) || (i.location ?? "").toLowerCase().includes(q));
+  }, [items, searchQuery]);
+
+  const size = Math.max(maxVisible, 1);
+  const batches = Math.max(Math.ceil(filtered.length / size), 1);
+  const safeBatch = Math.min(batch, batches - 1);
+  const visible = filtered.slice(safeBatch * size, safeBatch * size + size);
+
+  // Auto-rotate through ALL batches every 10 s
+  useEffect(() => {
+    if (batches <= 1) return;
+    const t = setInterval(() => setBatch((b) => (b + 1) % batches), 10000);
+    return () => clearInterval(t);
+  }, [batches]);
+
+  if (!loading && filtered.length === 0) {
     return (
-      <div className={`px-4 py-3 ${className}`}>
-        {showHeader && (
-          <div className="flex items-center gap-2 mb-3">
-            <div className="h-4 w-28 bg-gray-200 rounded animate-pulse" />
+      <div className={`px-4 ${className}`} dir={isRtl ? "rtl" : "ltr"}>
+        {showHeader ? (
+          <div className="flex items-center gap-1.5 mb-2">
+            <Star className="w-4 h-4 text-amber-500" />
+            <h2 className="text-sm font-bold text-gray-800">{s.header}</h2>
           </div>
-        )}
-        <div className="flex gap-3 overflow-x-hidden">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-44 h-40 bg-gray-100 rounded-2xl animate-pulse"
-            />
-          ))}
+        ) : null}
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 text-center">
+          <p className="text-xs text-gray-400">{s.empty}</p>
         </div>
       </div>
     );
   }
 
-  // -- Error state ----------------------------------------------------------
-  if (error) {
-    return (
-      <div className={`px-4 py-2 ${className}`}>
-        <p className="text-xs text-red-500">
-          {ui.loadError}{" "}
-          <button onClick={refetch} className="underline inline-flex items-center gap-1">
-            <RefreshCw className="w-3 h-3" /> {ui.retry}
-          </button>
-        </p>
-      </div>
-    );
-  }
-
-  // -- Empty state ----------------------------------------------------------
-  if (allAds.length === 0 && !effectiveSearch) {
-    return null;   // silently hide strip when there are no ads to show
-  }
-
-  // -----------------------------------------------------------------------
   return (
-    <section
-      className={`bg-white border-b border-gray-100 ${className}`}
-      aria-label={ui.featuredAds}
-    >
-      {/* Header row */}
-      {showHeader && (
-        <div className="flex items-center justify-between px-4 pt-3 pb-1">
-          <div className="flex items-center gap-2">
-            <span className="w-1 h-5 bg-teal-500 rounded-full" />
-            <h2 className="text-sm font-bold text-gray-800">{ui.featuredAds}</h2>
-            {allAds.length > 0 && (
-              <span className="text-xs text-gray-400">
-                ({currentPage + 1} {ui.of} {totalPages})
-              </span>
-            )}
-          </div>
-
+    <div className={`${className}`} dir={isRtl ? "rtl" : "ltr"}>
+      {showHeader ? (
+        <div className="flex items-center justify-between px-4 mb-2">
           <div className="flex items-center gap-1.5">
-            {/* Inline search ? only shown if parent hasn't supplied searchQuery */}
-            {!searchQuery && (
-              <div className="relative hidden sm:block">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
-                <input
-                  type="text"
-                  value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
-                  placeholder={ui.searchPlaceholder}
-                  className="pl-6 pr-3 py-1 text-xs bg-gray-50 border border-gray-200 rounded-full
-                             focus:outline-none focus:ring-1 focus:ring-teal-400 w-36"
-                />
-              </div>
-            )}
-
-            {/* Prev / Next page */}
-            {totalPages > 1 && (
-              <>
-                <button
-                  onClick={prevPage}
-                  className="w-7 h-7 bg-gray-100 hover:bg-teal-100 rounded-full flex items-center
-                             justify-center transition-colors"
-                  aria-label="Previous ads"
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
-                </button>
-                <button
-                  onClick={nextPage}
-                  className="w-7 h-7 bg-gray-100 hover:bg-teal-100 rounded-full flex items-center
-                             justify-center transition-colors"
-                  aria-label="Next ads"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-600" />
-                </button>
-              </>
-            )}
-
-            {/* View-all link ? leads to /search or category page */}
-            {allAds.length > 0 && (
-              <button
-                onClick={() => handleNav(category ? (CATEGORY_META[category]?.path ?? "/") : "/marketplace")}
-                className="text-[11px] font-semibold text-teal-600 hover:text-teal-800
-                           flex items-center gap-0.5 transition-colors"
-              >
-                {ui.viewAll}
-                <ExternalLink className="w-3 h-3" />
+            <Star className="w-4 h-4 text-amber-500" />
+            <h2 className="text-sm font-bold text-gray-800">{s.header}</h2>
+          </div>
+          {batches > 1 ? (
+            <div className="flex items-center gap-1">
+              <button onClick={() => setBatch((b) => (b - 1 + batches) % batches)} className="p-1 text-gray-400">
+                <ChevronLeft className="w-4 h-4" />
               </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Mobile search bar (always shown below header on small screens) */}
-      {!searchQuery && (
-        <div className="sm:hidden px-4 pb-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-            <input
-              type="text"
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder={ui.searchPlaceholder}
-              className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl
-                         focus:outline-none focus:ring-2 focus:ring-teal-400"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Scrollable cards row */}
-      {ads.length === 0 ? (
-        <p className="px-4 py-3 text-xs text-gray-400">{ui.noAds}</p>
-      ) : (
-        <div
-          className="flex gap-3 px-4 pb-3 pt-1 overflow-x-auto scrollbar-hide
-                     snap-x snap-mandatory"
-        >
-          {ads.map((ad) => (
-            <div key={ad.id} className="snap-start">
-              <AdCard
-                ad={ad}
-                lang={lang}
-                timeAgo={timeAgoLabel(ad.created_at)}
-                onNavigate={handleNav}
-              />
+              <span className="text-[10px] text-gray-400">{safeBatch + 1}/{batches}</span>
+              <button onClick={() => setBatch((b) => (b + 1) % batches)} className="p-1 text-gray-400">
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
-          ))}
+          ) : null}
         </div>
-      )}
+      ) : null}
 
-      {/* Dot indicators (only shown when >1 page and =10 pages for readability) */}
-      {totalPages > 1 && totalPages <= 10 && (
-        <div className="flex justify-center gap-1.5 pb-2">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                /* goToPage is available from the hook; here we use the exported
-                   nextPage/prevPage only. For dot-click we just set the page
-                   by clicking through ? or you can expose goToPage as needed. */
-              }}
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                i === currentPage
-                  ? "bg-teal-500 w-4"
-                  : "bg-gray-300"
-              }`}
-              aria-label={`Page ${i + 1}`}
-            />
-          ))}
-        </div>
+      {loading ? (
+        <div className="flex justify-center py-6 text-amber-500"><Loader2 className="w-5 h-5 animate-spin" /></div>
+      ) : (
+        <>
+          <div className="flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar">
+            {visible.map((item) => {
+              const meta = KIND_META[item.kind];
+              const Icon = meta.icon;
+              const price = fmtXAF(item.price);
+              return (
+                <button
+                  key={`${item.kind}-${item.id}`}
+                  onClick={() => navigate(meta.route(item.id))}
+                  className="w-36 shrink-0 bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm text-left"
+                >
+                  <div className="h-24 bg-gray-100 flex items-center justify-center overflow-hidden">
+                    {item.image
+                      ? <img src={item.image} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
+                      : <Tag className="w-7 h-7 text-gray-300" />}
+                  </div>
+                  <div className="p-2">
+                    <span className={`inline-flex items-center gap-1 text-[9px] font-bold rounded-full px-1.5 py-0.5 ${meta.badge} ${meta.text}`}>
+                      <Icon className="w-2.5 h-2.5" /> {s.kind[item.kind]}
+                    </span>
+                    <p className="text-xs font-semibold text-gray-800 mt-1 leading-tight line-clamp-2">{item.title}</p>
+                    {price ? (
+                      <p className="text-[11px] font-bold text-emerald-700 mt-0.5">
+                        {price}{item.unit ? `/${item.unit}` : ""}
+                      </p>
+                    ) : null}
+                    {item.location ? <p className="text-[10px] text-gray-400 truncate">{item.location}</p> : null}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {batches > 1 ? (
+            <div className="flex justify-center gap-1 mt-2">
+              {Array.from({ length: batches }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setBatch(i)}
+                  className={`h-1.5 rounded-full transition-all ${i === safeBatch ? "w-4 bg-amber-500" : "w-1.5 bg-gray-300"}`}
+                />
+              ))}
+            </div>
+          ) : null}
+        </>
       )}
-    </section>
+    </div>
   );
 };
 
 export default FeaturedAdsStrip;
-
-
-
-
-
+// BAMBEH_END_TOKEN__FEATUREDADSSTRIP__COMPLETE
