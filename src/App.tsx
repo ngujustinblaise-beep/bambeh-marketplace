@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__APP_FIX118_CLEAN
+// BAMBEH_DEPLOY_TOKEN__APP_FIX120_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -252,6 +252,9 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 // CORPORATE (replaces the old vendor section)
 const CorporatePage   = lazy(() => import("@/features/corporate/CorporatePage"));
+const CorporateRegister   = lazy(() => import("@/features/corporate/CorporateRegister"));
+const CorporateStorefront = lazy(() => import("@/features/corporate/CorporateStorefront"));
+const CorporateDashboard  = lazy(() => import("@/features/corporate/CorporateDashboard"));
 // BIOMETRIC SETUP (post-signup passkey enrollment)
 const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
 const LoginForm       = lazy(() => import("@/pages/auth/Login"));
@@ -703,6 +706,9 @@ export default function App() {
 
                         {/* ── CORPORATE (replaces vendor) ────────────────────────── */}
                         <Route path="/corporate" element={<MainLayout><CorporatePage /></MainLayout>} />
+                        <Route path="/corporate/register" element={<MainLayout><AuthGate require="user"><CorporateRegister /></AuthGate></MainLayout>} />
+                        <Route path="/corporate/store/:key" element={<MainLayout><CorporateStorefront /></MainLayout>} />
+                        <Route path="/corporate/dashboard" element={<MainLayout><AuthGate require="user"><CorporateDashboard /></AuthGate></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
