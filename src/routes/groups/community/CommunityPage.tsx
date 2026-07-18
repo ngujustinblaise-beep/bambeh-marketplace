@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__COMMUNITYPAGE_FIX101_CLEAN
+// BAMBEH_DEPLOY_TOKEN__COMMUNITYPAGE_FIX112_CLEAN
 /**
  * CommunityPage — FIX101 (REAL data)
  * ──────────────────────────────────
@@ -6,7 +6,7 @@
  *  • Groups load from Supabase `community_groups` (live member counts)
  *  • Create Group saves a real row (creator auto-joins as admin via trigger)
  *  • Join / Leave writes `community_members` (counters kept by DB triggers)
- *  • Search + category filter, EN/FR, loading/empty/error states
+ *  • Search + category filter, 5 languages (EN/FR/Pidgin/AR-RTL/FF — FIX112), loading/empty/error states
  *  • Chat-only: no external share buttons
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,7 +15,7 @@ import {
   Users, Plus, Search, MapPin, Loader2, AlertCircle, X, Lock, ChevronRight,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { useLanguage } from '@/App';
+import { useLang } from '@/hooks/useAppLang';
 
 interface Group {
   id: string;
@@ -99,12 +99,109 @@ const T = {
     actionFail: "L'action a échoué. Réessayez.",
     nameReq: 'Le nom du groupe est requis.',
   },
+  pidgin: {
+    title: 'Community Groups',
+    subtitle: 'Join groups, share, and trade with people near you',
+    search: 'Find groups...',
+    create: 'Create Group',
+    members: 'members',
+    posts: 'posts',
+    join: 'Join',
+    joined: 'You don join',
+    leave: 'Comot',
+    empty: 'No group dey this category yet. Be the first one to create am!',
+    loadError: 'Groups no load. Check your network.',
+    retry: 'Try again',
+    private: 'Private',
+    newGroup: 'New Group',
+    name: 'Group name',
+    namePh: 'e.g. Yaoundé Traders',
+    desc: 'Description',
+    descPh: 'Wetin this group dey about?',
+    category: 'Category',
+    city: 'City / Town',
+    cityPh: 'e.g. Yaoundé',
+    emoji: 'Emoji (if you want)',
+    cancel: 'Cancel',
+    creating: 'E dey create…',
+    createBtn: 'Create',
+    needLogin: 'Login first before you do this.',
+    createFail: 'Group no create. Try again.',
+    actionFail: 'E no work. Try again.',
+    nameReq: 'Group name must dey.',
+  },
+  ar: {
+    title: 'مجموعات المجتمع',
+    subtitle: 'انضم إلى المجموعات، شارك وتاجر مع الناس من حولك',
+    search: 'ابحث عن المجموعات...',
+    create: 'إنشاء مجموعة',
+    members: 'أعضاء',
+    posts: 'منشورات',
+    join: 'انضمام',
+    joined: 'عضو',
+    leave: 'مغادرة',
+    empty: 'لا توجد مجموعات في هذه الفئة بعد. كن أول من ينشئ واحدة!',
+    loadError: 'تعذر تحميل المجموعات. تحقق من اتصالك.',
+    retry: 'إعادة المحاولة',
+    private: 'خاصة',
+    newGroup: 'مجموعة جديدة',
+    name: 'اسم المجموعة',
+    namePh: 'مثال: تجار ياوندي',
+    desc: 'الوصف',
+    descPh: 'ما موضوع هذه المجموعة؟',
+    category: 'الفئة',
+    city: 'المدينة',
+    cityPh: 'مثال: ياوندي',
+    emoji: 'إيموجي (اختياري)',
+    cancel: 'إلغاء',
+    creating: 'جارٍ الإنشاء…',
+    createBtn: 'إنشاء',
+    needLogin: 'سجّل الدخول للمتابعة.',
+    createFail: 'تعذر إنشاء المجموعة. حاول مرة أخرى.',
+    actionFail: 'فشل الإجراء. حاول مرة أخرى.',
+    nameReq: 'اسم المجموعة مطلوب.',
+  },
+  ff: {
+    title: 'Goomuuji Renndo',
+    subtitle: 'Naat e goomuuji, lollin, njulaa e yimɓe takko maa',
+    search: 'Yiylo goomuuji...',
+    create: 'Sos Goomu',
+    members: 'terɗe',
+    posts: 'jaltine',
+    join: 'Naat',
+    joined: 'A naatii',
+    leave: 'Yaltu',
+    empty: 'Alaa goomu e fannu oo tawo. Won gadano sosoowo!',
+    loadError: 'Goomuuji ɗi loowaaki. ƴeew internet maa.',
+    retry: 'Taƴ kadi',
+    private: 'Suuɗiiɗo',
+    newGroup: 'Goomu Kesu',
+    name: 'Innde goomu',
+    namePh: 'wano: Njulaagu Yaoundé',
+    desc: 'Sifa',
+    descPh: 'Ko goomu oo haali?',
+    category: 'Fannu',
+    city: 'Saare',
+    cityPh: 'wano: Yaoundé',
+    emoji: 'Emoji (so waɗii)',
+    cancel: 'Haaytu',
+    creating: 'Sosgol…',
+    createBtn: 'Sos',
+    needLogin: 'Naat ado waɗde ɗum.',
+    createFail: 'Goomu sosaaki. Taƴ kadi.',
+    actionFail: 'Tinaaki. Taƴ kadi.',
+    nameReq: 'Innde goomu ina naamnaa.',
+  },
 };
+
+type TL = typeof T.en;
 
 export default function CommunityPage() {
   const navigate = useNavigate();
-  const { language } = useLanguage() as { language?: string };
-  const t = T[language === 'fr' ? 'fr' : 'en'];
+  const raw = useLang() as string;
+  const langKey = raw === 'fulfulde' ? 'ff' : raw;
+  const t: TL = (T as Record<string, TL>)[langKey] ?? T.en;
+  const isRtl = langKey === 'ar';
 
   const [groups, setGroups] = useState<Group[]>([]);
   const [myGroupIds, setMyGroupIds] = useState<Set<string>>(new Set());
@@ -246,7 +343,7 @@ export default function CommunityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 pt-6 pb-8">
         <div className="flex items-center justify-between">

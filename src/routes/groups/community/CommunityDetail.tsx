@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__COMMUNITYDETAIL_FIX101_CLEAN
+// BAMBEH_DEPLOY_TOKEN__COMMUNITYDETAIL_FIX112_CLEAN
 /**
  * CommunityDetail — FIX101 (REAL data)
  * ────────────────────────────────────
@@ -8,7 +8,7 @@
  *  • Likes: `community_post_likes` insert/delete (counters via DB triggers)
  *  • Polls: `community_polls` + one-vote-per-user `community_poll_votes`;
  *    the group creator can create a poll (2–4 options)
- *  • EN/FR, loading/empty/error states, chat-only (no external share)
+ *  • 5 languages (EN/FR/Pidgin/AR-RTL/FF — FIX112), loading/empty/error states, chat-only
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -17,7 +17,7 @@ import {
   BarChart3, Plus, X, Lock,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { useLanguage } from '@/App';
+import { useLang } from '@/hooks/useAppLang';
 
 interface Group {
   id: string; name: string; description: string | null; category: string | null;
@@ -55,7 +55,42 @@ const T = {
     pollReq: 'Une question et au moins 2 options sont requises.', deleteFail: 'Suppression impossible.',
     private: 'Groupe privé',
   },
+  pidgin: {
+    members: 'members', posts: 'posts', join: 'Join group', joined: 'Member', leave: 'Comot',
+    writePh: 'Talk something give the group…', post: 'Post', joinToPost: 'Join the group first before you post.',
+    needLogin: 'Login first before you do this.', empty: 'No post yet. Start the talk!',
+    loadError: 'This group no load.', retry: 'Try again', back: 'Go back',
+    polls: 'Polls', newPoll: 'New poll', question: 'Question', option: 'Option',
+    addOption: 'Add option', createPoll: 'Create poll', creating: 'E dey create…',
+    votes: 'votes', voted: 'You don vote', cancel: 'Cancel', actionFail: 'E no work. Try again.',
+    pollReq: 'You need question and at least 2 options.', deleteFail: 'E no fit delete.',
+    private: 'Private group',
+  },
+  ar: {
+    members: 'أعضاء', posts: 'منشورات', join: 'انضم للمجموعة', joined: 'عضو', leave: 'مغادرة',
+    writePh: 'شارك شيئًا مع المجموعة…', post: 'نشر', joinToPost: 'انضم للمجموعة لتتمكن من النشر.',
+    needLogin: 'سجّل الدخول للمتابعة.', empty: 'لا منشورات بعد. ابدأ النقاش!',
+    loadError: 'تعذر تحميل هذه المجموعة.', retry: 'إعادة المحاولة', back: 'رجوع',
+    polls: 'استطلاعات', newPoll: 'استطلاع جديد', question: 'السؤال', option: 'خيار',
+    addOption: 'إضافة خيار', createPoll: 'إنشاء استطلاع', creating: 'جارٍ الإنشاء…',
+    votes: 'أصوات', voted: 'لقد صوّتّ', cancel: 'إلغاء', actionFail: 'فشل الإجراء. حاول مرة أخرى.',
+    pollReq: 'يلزم سؤال وخياران على الأقل.', deleteFail: 'تعذر الحذف.',
+    private: 'مجموعة خاصة',
+  },
+  ff: {
+    members: 'terɗe', posts: 'jaltine', join: 'Naat e goomu', joined: 'Terɗo', leave: 'Yaltu',
+    writePh: 'Lollin huťnde e goomu…', post: 'Yaltin', joinToPost: 'Naat e goomu ado yaltinde.',
+    needLogin: 'Naat ado waɗde ɗum.', empty: 'Alaa jaltine tawo. Fuɗɗu yeewtere!',
+    loadError: 'Goomu oo loowaaki.', retry: 'Taƴ kadi', back: 'Rutto',
+    polls: 'Woote', newPoll: 'Woote keso', question: 'Naamnal', option: 'Suɓaaɗo',
+    addOption: 'Ɓeydu suɓaaɗo', createPoll: 'Sos woote', creating: 'Sosgol…',
+    votes: 'daaɗe', voted: 'A wootii', cancel: 'Haaytu', actionFail: 'Tinaaki. Taƴ kadi.',
+    pollReq: 'Naamnal e suɓaaɗi 2 famarooji ina naamnaa.', deleteFail: 'Momtaaki.',
+    private: 'Goomu suuɗiiɗo',
+  },
 };
+
+type TL = typeof T.en;
 
 const timeAgo = (iso: string, fr: boolean) => {
   const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
@@ -68,9 +103,11 @@ const timeAgo = (iso: string, fr: boolean) => {
 export default function CommunityDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { language } = useLanguage() as { language?: string };
-  const fr = language === 'fr';
-  const t = T[fr ? 'fr' : 'en'];
+  const raw = useLang() as string;
+  const langKey = raw === 'fulfulde' ? 'ff' : raw;
+  const t: TL = (T as Record<string, TL>)[langKey] ?? T.en;
+  const isRtl = langKey === 'ar';
+  const fr = langKey === 'fr';
 
   const [group, setGroup] = useState<Group | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -314,11 +351,11 @@ export default function CommunityDetail() {
   const iAmCreator = userId != null && group.creator_id === userId;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 pt-5 pb-6">
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-emerald-100 text-sm mb-3">
-          <ArrowLeft className="w-4 h-4" /> {t.back}
+          <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} /> {t.back}
         </button>
         <div className="flex items-start gap-3">
           <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center text-3xl">{group.emoji || '👥'}</div>
