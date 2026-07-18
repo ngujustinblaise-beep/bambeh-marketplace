@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__APP_FIX118_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -205,6 +206,7 @@ const AlertsPage    = lazy(() => import("@/pages/AlertsPage"));
 const Orders        = lazy(() => import("@/pages/Orders"));
 const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
 const MyListings    = lazy(() => import("@/pages/MyListings"));
+const TrashPage     = lazy(() => import("@/pages/TrashPage"));
 
 // SETTINGS
 const UserSettings = lazy(() => import("@/pages/settings/UserSettings"));
@@ -944,6 +946,14 @@ export default function App() {
                           }
                         />
                         <Route
+                          path="/trash"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><TrashPage /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        <Route
                           path="/settings"
                           element={
                             <MainLayout>
@@ -1328,6 +1338,4 @@ export default function App() {
     </React.StrictMode>
   );
 }
-
-
-
+// BAMBEH_END_TOKEN__APP__COMPLETE
