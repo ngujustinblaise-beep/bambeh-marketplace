@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__HEADER_FIX127_CLEAN
 /**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
@@ -75,7 +76,9 @@ export default function Header() {
     }
     const recognition = new SpeechRecognition();
     const langMap: Record<LanguageCode, string> = {
-      en: 'en-US', fr: 'fr-FR', pcm: 'en-NG', ff: 'ff', ar: 'ar-SA'
+      // FIX127: 'ff' is not a valid speech tag (start() throws for Fulfulde
+      // users) -> fr-FR engine; Fulfulde KEYWORDS below still route correctly.
+      en: 'en-US', fr: 'fr-FR', pcm: 'en-NG', ff: 'fr-FR', ar: 'ar-SA'
     };
     recognition.lang = langMap[language] || 'en-US';
     recognition.continuous    = false;
@@ -89,16 +92,34 @@ export default function Header() {
     recognition.start();
   };
 
+  // FIX127: 5-language voice commands (EN/FR/Pidgin/Arabic/Fulfulde) across ALL
+  // sections. Anything unmatched falls through to the REAL universal /search
+  // page (FIX126), so every utterance does something useful.
+  const VOICE_ROUTES: Array<{ to: string; words: string[] }> = [
+    { to: '/rentals',     words: ['house', 'rent', 'maison', 'louer', 'appartement', 'haus', 'منزل', 'إيجار', 'luwe', 'galle'] },
+    { to: '/jobs',        words: ['job', 'work', 'emploi', 'travail', 'wok', 'وظيفة', 'عمل', 'golle'] },
+    { to: '/marketplace', words: ['market', 'buy', 'shop', 'marché', 'acheter', 'boutique', 'سوق', 'شراء', 'luumo', 'sood'] },
+    { to: '/vehicles',    words: ['car', 'vehicle', 'moto', 'voiture', 'véhicule', 'motto', 'سيارة', 'oto'] },
+    { to: '/services',    words: ['service', 'خدمة', 'sarwis'] },
+    { to: '/farm-fresh',  words: ['farm', 'food', 'tomato', 'vegetable', 'ferme', 'légume', 'chop', 'مزرعة', 'طعام', 'ndema', 'ñamdu', 'remuru'] },
+    { to: '/exchange',    words: ['exchange', 'swap', 'trade', 'échange', 'troc', 'مقايضة', 'waylugol', 'waylu'] },
+    { to: '/community',   words: ['community', 'group', 'communauté', 'groupe', 'مجتمع', 'renndo', 'goomu'] },
+    { to: '/tontine',     words: ['tontine', 'njangi', 'saving', 'épargne', 'توفير'] },
+    { to: '/coins',       words: ['coin', 'zerm', 'pièce', 'عملة'] },
+    { to: '/corporate',   words: ['corporate', 'business', 'company', 'entreprise', 'société', 'شركة', 'sosiyete'] },
+    { to: '/cart',        words: ['cart', 'basket', 'panier', 'سلة'] },
+    { to: '/my-listings', words: ['my listing', 'my ads', 'mes annonces', 'إعلاناتي', 'jaayɗe am'] },
+    { to: '/profile',     words: ['profile', 'account', 'profil', 'compte', 'حسابي', 'profil am'] },
+    { to: '/post-ad',     words: ['post', 'sell', 'publier', 'vendre', 'sell am', 'بيع', 'نشر', 'yeey'] },
+    { to: '/',            words: ['home', 'accueil', 'go home', 'الرئيسية', 'fuɗɗorde'] },
+  ];
+
   const handleVoiceCommand = (command: string) => {
-    if (command.includes('house') || command.includes('rent') || command.includes('maison'))  navigate('/rentals');
-    else if (command.includes('job') || command.includes('emploi'))                           navigate('/jobs');
-    else if (command.includes('market') || command.includes('buy') || command.includes('marché')) navigate('/marketplace');
-    else if (command.includes('car') || command.includes('vehicle') || command.includes('voiture')) navigate('/vehicles');
-    else if (command.includes('service'))                                                     navigate('/services');
-    else if (command.includes('community') || command.includes('group'))                      navigate('/community');
-    else if (command.includes('home') || command.includes('accueil'))                         navigate('/');
-    else if (command.includes('exchange') || command.includes('échange'))                     navigate('/exchange');
-    else navigate(`/search?q=${encodeURIComponent(command)}`);
+    for (const r of VOICE_ROUTES) {
+      if (r.words.some(w => command.includes(w))) { navigate(r.to); return; }
+    }
+    // No section keyword matched -> universal real search (FIX126).
+    navigate(`/search?q=${encodeURIComponent(command)}`);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -547,5 +568,4 @@ export default function Header() {
     </header>
   );
 }
-
-
+// BAMBEH_END_TOKEN__HEADER__COMPLETE
