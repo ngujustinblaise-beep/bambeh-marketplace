@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX123_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX128_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -468,7 +468,7 @@ export default function Home() {
               title="Bambeh - Online Marketplace"
               description="Join thousands buying, selling, and trading on Bambeh with only 1% transaction fee!"
               itemType="app"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
               <Share2 className="w-5 h-5" />
               {t('home.shareBtn')}
