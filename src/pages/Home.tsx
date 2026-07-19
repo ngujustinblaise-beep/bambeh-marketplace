@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX114_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX123_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -31,12 +31,15 @@ import {
   Share2,
   Clock,
   Eye,
+  Building2,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from '@/lib/supabase';
 import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
+import CorporateAdsStrip from '@/features/corporate/CorporateAdsStrip';
 
 // ─── Translation Table ─────────────────────────────────────────────────────
 const HOME_T: Record<string, Record<string, string>> = {
@@ -46,6 +49,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Online Marketplace",
     "home.feeMsg": "Only 1% Transaction Fee! — The lowest you will see online.",
     "home.shareBtn": "Share Bambeh with Friends",
+    "home.corporateBtn": "Corporate Login",
     "home.jobsTitle": "Jobs",
     "home.jobsDesc": "Find your next opportunity",
     "home.marketplaceTitle": "Marketplace",
@@ -70,6 +74,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "Meet Safely",
     "home.escrow": "Escrow",
     "home.recentPosted": "Recently Posted",
+    "home.corporateAds": "Corporate Adverts",
     "home.seeAll": "See all →",
     "home.badgeFeatured": "Featured",
     "home.badgeUrgent": "Urgent",
@@ -100,6 +105,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Place de marché en ligne",
     "home.feeMsg": "Seulement 1 % de frais de transaction ! — Les plus bas que vous trouverez en ligne.",
     "home.shareBtn": "Partager Bambeh avec des amis",
+    "home.corporateBtn": "Espace Entreprise",
     "home.jobsTitle": "Emplois",
     "home.jobsDesc": "Trouvez votre prochaine opportunité",
     "home.marketplaceTitle": "Marché",
@@ -124,6 +130,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "Rencontre sécurisée",
     "home.escrow": "Séquestre",
     "home.recentPosted": "Récemment publié",
+    "home.corporateAds": "Annonces Entreprises",
     "home.seeAll": "Voir tout →",
     "home.badgeFeatured": "À la une",
     "home.badgeUrgent": "Urgent",
@@ -154,6 +161,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "سوق إلكتروني",
     "home.feeMsg": "فقط رسوم معاملة بنسبة 1 %! — الأقل الذي ستجده عبر الإنترنت.",
     "home.shareBtn": "شارك Bambeh مع الأصدقاء",
+    "home.corporateBtn": "دخول الشركات",
     "home.jobsTitle": "الوظائف",
     "home.jobsDesc": "ابحث عن فرصتك التالية",
     "home.marketplaceTitle": "السوق",
@@ -178,6 +186,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "لقاء آمن",
     "home.escrow": "الضمان",
     "home.recentPosted": "تم نشره مؤخرا",
+    "home.corporateAds": "إعلانات الشركات",
     "home.seeAll": "عرض الكل ←",
     "home.badgeFeatured": "مميز",
     "home.badgeUrgent": "عاجل",
@@ -208,6 +217,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Online Marketplace",
     "home.feeMsg": "Only 1% money charge! — The lowest wey you go see anywhere online.",
     "home.shareBtn": "Share Bambeh with your friends dem",
+    "home.corporateBtn": "Corporate Login",
     "home.jobsTitle": "Work",
     "home.jobsDesc": "Find your next work opportunity",
     "home.marketplaceTitle": "Marketplace",
@@ -232,6 +242,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "Meet Safe",
     "home.escrow": "Escrow",
     "home.recentPosted": "Recently Posted",
+    "home.corporateAds": "Corporate Adverts",
     "home.seeAll": "See all →",
     "home.badgeFeatured": "Featured",
     "home.badgeUrgent": "Urgent",
@@ -262,6 +273,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Taako Janngo Online",
     "home.feeMsg": "Soo 1% ndiyam! — Ndiyam gadaa wey a dee gonngol online.",
     "home.shareBtn": "Jedd Bambeh e woot\u0257u",
+    "home.corporateBtn": "Naat\u0257e Corporate",
     "home.jobsTitle": "Suudu",
     "home.jobsDesc": "Yiylo suudu mawngal",
     "home.marketplaceTitle": "Taako",
@@ -286,6 +298,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.meetSafely": "Haaltu Jibintirde",
     "home.escrow": "Jalaani",
     "home.recentPosted": "Winduɗi Gooto",
+    "home.corporateAds": "Jeeyanɗe Corporate",
     "home.seeAll": "Yiylo fof →",
     "home.badgeFeatured": "Sifaa",
     "home.badgeUrgent": "Aray",
@@ -342,6 +355,7 @@ interface RecentListing {
 
 export default function Home() {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const _rl = homeNormLang(language);
   const isRtl = _rl === "ar";
   
@@ -441,7 +455,15 @@ export default function Home() {
             🎉 <span className="font-bold text-green-600">{t('home.feeMsg')}</span> 💚
           </p>
 
-          <div className="mt-6">
+          {/* FIX122: Corporate login (left) + labelled Share (right) */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button
+              onClick={() => navigate('/corporate')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              <Building2 className="w-5 h-5" />
+              {t('home.corporateBtn')}
+            </button>
             <SocialShareButton
               title="Bambeh - Online Marketplace"
               description="Join thousands buying, selling, and trading on Bambeh with only 1% transaction fee!"
@@ -478,81 +500,14 @@ export default function Home() {
           <FeaturedAdsStrip maxVisible={10} showHeader={false} />
         </div>
 
-        {/* ── Recently Posted ───────────────────────────────────────────── */}
-        {recentListings.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">🆕 {t('home.recentPosted')}</h2>
-              <Link to="/marketplace" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentListings.map((listing) => (
-                <Link
-                  key={listing.id}
-                  to={
-                    listing.type === 'job'      ? `/jobs/${listing.id}` :
-                    listing.type === 'vehicle'  ? `/vehicles/${listing.id}` :
-                    listing.type === 'exchange' ? `/exchange/${listing.id}` :
-                    listing.type === 'rental'   ? `/rentals/${listing.id}` :
-                    listing.type === 'service'  ? `/services/${listing.id}` :
-                    `/marketplace/${listing.id}`
-                  }
-                  className="bg-white rounded-xl shadow hover:shadow-lg transition-all overflow-hidden group"
-                >
-                  <div className="relative h-36 bg-gradient-to-br from-teal-50 to-blue-50 flex items-center justify-center overflow-hidden">
-                    {listing.primaryImage ? (
-                      <ListingImage src={listing.primaryImage} alt={listing.title} width={320} height={144} imgClassName="group-hover:scale-105 transition-transform duration-300" />
-                    ) : (
-                      <ShoppingBag className="w-14 h-14 text-teal-200 group-hover:scale-110 transition-transform" />
-                    )}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {listing.featured && (
-                        <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded">⭐ {t('home.badgeFeatured')}</span>
-                      )}
-                      {listing.urgent && (
-                        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">🔥 {t('home.badgeUrgent')}</span>
-                      )}
-                    </div>
-                    <div className="absolute bottom-2 right-2">
-                      <span className={`px-2 py-0.5 text-white text-xs font-bold rounded capitalize ${
-                        listing.type === 'vehicle'  ? 'bg-green-700'  :
-                        listing.type === 'exchange' ? 'bg-purple-700' :
-                        listing.type === 'rental'   ? 'bg-orange-600' :
-                        listing.type === 'service'  ? 'bg-blue-600'   :
-                        listing.type === 'job'      ? 'bg-indigo-600' :
-                        'bg-teal-600'
-                      }`}>{listing.type || t('home.typeItem')}</span>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-1">{listing.title}</h3>
-                    {listing.location && (
-                      <p className="text-xs text-gray-400 flex items-center gap-1 mb-1">
-                        <MapPin className="w-3 h-3" />{listing.location}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between mt-1">
-                      <div>
-                        {listing.type === 'exchange' ? (
-                          <span className="font-bold text-purple-600 text-sm">🔄 {t('home.typeExchange')}</span>
-                        ) : (
-                          <>
-                            <span className="font-bold text-teal-600 text-sm">{Number(listing.price).toLocaleString()} {listing.currency || 'XAF'}</span>
-                            {listing.negotiable && <span className="ml-1 text-xs text-green-600">· {t('home.typeNegotiable')}</span>}
-                          </>
-                        )}
-                      </div>
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />{timeAgo(listing.createdAt)}
-                      </span>
-                    </div>
-                    <ViewCount listingId={String(listing.id)} t={t} />
-                  </div>
-                </Link>
-              ))}
-            </div>
+        {/* ── Corporate Adverts (FIX123: replaces Recently Posted) ─────── */}
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">🏢 {t('home.corporateAds')}</h2>
+            <Link to="/corporate/ads" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
           </div>
-        )}
+          <CorporateAdsStrip maxVisible={8} />
+        </div>
 
         {/* ── Categories Grid ───────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">

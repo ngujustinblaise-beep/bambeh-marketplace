@@ -1,154 +1,133 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Fingerprint, ArrowRight, ShieldAlert } from "lucide-react";
-import AuthShell from "@/components/auth/AuthShell";
-import { useLanguage } from "@/context/LanguageContext";
-import { authenticateWithPasskey } from "@/services/passkeys";
+// BAMBEH_DEPLOY_TOKEN__BIOMETRICLOGIN_FIX125_CLEAN
+/**
+ * BiometricLogin.tsx — Bambeh (FIX125, REAL biometric)
+ * FILE LOCATION: src/pages/auth/BiometricLogin.tsx (per App.tsx eager import)
+ *
+ * Replaces the stub that only did navigate("/"). Now it runs a REAL WebAuthn
+ * platform-authenticator check via services/biometric, and only proceeds when
+ * the device fingerprint/face verifies AND a Supabase session is present.
+ * If biometrics are unavailable or not enrolled, it steers to password.
+ *
+ * © 2026 BAMBEH SARL. All rights reserved.
+ */
 
-type LangCode = "en" | "fr" | "pcm" | "ar" | "ful" | "ha";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Fingerprint, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import AuthShell from '@/components/auth/AuthShell';
+import { useLanguage } from '@/context/LanguageContext';
+import {
+  isBiometricAvailable, hasLocalBiometric, localUserHint, authenticateBiometric,
+} from '@/services/biometric';
 
-const STRINGS: Record<
-  LangCode,
-  {
-    title: string;
-    subtitle: string;
-    biometric: string;
-    fallback: string;
-    loading: string;
-    unsupported: string;
-    error: string;
-  }
-> = {
-  en: {
-    title: "Biometric login",
-    subtitle: "Use your fingerprint, face, or device unlock to continue.",
-    biometric: "Continue with biometrics",
-    fallback: "Use password instead",
-    loading: "Checking your device...",
-    unsupported: "Biometrics are not available on this device.",
-    error: "Biometric sign-in failed. Try again or use password.",
-  },
-  fr: {
-    title: "Connexion biom?trique",
-    subtitle: "Utilisez votre empreinte, votre visage ou le d?verrouillage de l?appareil pour continuer.",
-    biometric: "Continuer avec la biom?trie",
-    fallback: "Utiliser le mot de passe",
-    loading: "V?rification de l?appareil...",
-    unsupported: "La biom?trie n?est pas disponible sur cet appareil.",
-    error: "La connexion biom?trique a ?chou?. R?essayez ou utilisez le mot de passe.",
-  },
-  pcm: {
-    title: "Biometric login",
-    subtitle: "Use your fingerprint, face, or device unlock to continue.",
-    biometric: "Continue with biometrics",
-    fallback: "Use password instead",
-    loading: "We dey check your phone...",
-    unsupported: "Biometrics no dey this phone.",
-    error: "Biometric login no work. Try again or use password.",
-  },
-  ar: {
-    title: "????? ?????? ???????",
-    subtitle: "?????? ?????? ?? ????? ?? ??? ?????? ????????.",
-    biometric: "???????? ???????",
-    fallback: "??????? ???? ??????",
-    loading: "???? ?????? ?? ??????...",
-    unsupported: "?????? ??? ????? ??? ??? ??????.",
-    error: "??? ????? ?????? ???????. ???? ??? ???? ?? ?????? ???? ??????.",
-  },
-  ful: {
-    title: "Se?o e biometrics",
-    subtitle: "Huuto fingerprint, face, walla loowdi ?ii ngol e ndee.",
-    biometric: "Jokkondir e biometrics",
-    fallback: "Huuto password",
-    loading: "Ngam nji?de telefon maa...",
-    unsupported: "Biometrics woodaani e ndee telefon.",
-    error: "Biometric login mo??aani. Rew?e woni ndee walla huutoro password.",
-  },
-  ha: {
-    title: "Shiga da biometrics",
-    subtitle: "Yi amfani da yatsa, fuska, ko bu?e na'ura don ci gaba.",
-    biometric: "Ci gaba da biometrics",
-    fallback: "Yi amfani da kalmar sirri",
-    loading: "Ana bincika na'urar ka...",
-    unsupported: "Biometrics ba su samuwa a wannan na'urar.",
-    error: "Shiga da biometrics ya kasa. Gwada kuma ko yi amfani da kalmar sirri.",
-  },
+type LangCode = 'en' | 'fr' | 'pcm' | 'ar' | 'ful' | 'ha';
+
+const STRINGS: Record<LangCode, {
+  title: string; subtitle: string; biometric: string; fallback: string;
+  verifying: string; unavailable: string; notEnrolled: string; cancelled: string;
+  sessionExpired: string; failed: string;
+}> = {
+  en: { title: 'Biometric login', subtitle: 'Use your fingerprint or face to continue.',
+    biometric: 'Continue with biometrics', fallback: 'Use password instead',
+    verifying: 'Verifying…', unavailable: 'Biometrics are not available on this device.',
+    notEnrolled: 'No biometric is set up yet. Log in with your password, then enable it.',
+    cancelled: 'Biometric check was cancelled.', sessionExpired: 'Please sign in once with your password.',
+    failed: 'Could not verify. Please use your password.' },
+  fr: { title: 'Connexion biométrique', subtitle: 'Utilisez votre empreinte ou votre visage.',
+    biometric: 'Continuer avec la biométrie', fallback: 'Utiliser le mot de passe',
+    verifying: 'Vérification…', unavailable: 'La biométrie n’est pas disponible sur cet appareil.',
+    notEnrolled: 'Aucune biométrie configurée. Connectez-vous avec le mot de passe, puis activez-la.',
+    cancelled: 'Vérification annulée.', sessionExpired: 'Connectez-vous une fois avec votre mot de passe.',
+    failed: 'Échec de la vérification. Utilisez votre mot de passe.' },
+  pcm: { title: 'Biometric login', subtitle: 'Use your fingerprint or face to continue.',
+    biometric: 'Continue with biometrics', fallback: 'Use password instead',
+    verifying: 'E dey check…', unavailable: 'Biometrics no dey work for this device.',
+    notEnrolled: 'You never set biometric. Login with password first, then enable am.',
+    cancelled: 'You cancel the biometric check.', sessionExpired: 'Login one time with your password abeg.',
+    failed: 'E no fit verify. Use your password.' },
+  ar: { title: 'تسجيل بالبصمة', subtitle: 'استخدم البصمة أو الوجه للمتابعة.',
+    biometric: 'المتابعة بالبصمة', fallback: 'استخدام كلمة المرور',
+    verifying: 'جارٍ التحقق…', unavailable: 'البصمة غير متوفرة على هذا الجهاز.',
+    notEnrolled: 'لم يتم إعداد البصمة بعد. سجّل الدخول بكلمة المرور ثم فعّلها.',
+    cancelled: 'تم إلغاء التحقق.', sessionExpired: 'سجّل الدخول مرة بكلمة المرور.',
+    failed: 'تعذر التحقق. استخدم كلمة المرور.' },
+  ful: { title: 'Seŋo e biometrics', subtitle: 'Huuto fingerprint walla face.',
+    biometric: 'Jokkondir e biometrics', fallback: 'Huuto password',
+    verifying: 'Ƴeewndagol…', unavailable: 'Biometrics ngalaa e kaɓirgel ngel.',
+    notEnrolled: 'A waɗaani biometric tawo. Naat e password, refti huutu ɗum.',
+    cancelled: 'Ƴeewndagol haɗaama.', sessionExpired: 'Naat laawol gootol e password maa.',
+    failed: 'Ƴeewndagol tinaaki. Huuto password.' },
+  ha: { title: 'Shiga da biometrics', subtitle: 'Yi amfani da yatsa ko fuska.',
+    biometric: 'Ci gaba da biometrics', fallback: 'Yi amfani da kalmar sirri',
+    verifying: 'Ana tabbatarwa…', unavailable: 'Biometrics baya nan a wannan na’urar.',
+    notEnrolled: 'Ba a saita biometric ba tukuna. Shiga da kalmar sirri, sannan ka kunna.',
+    cancelled: 'An soke tabbatarwa.', sessionExpired: 'Ka shiga sau ɗaya da kalmar sirri.',
+    failed: 'An kasa tabbatarwa. Yi amfani da kalmar sirri.' },
 };
 
 export default function BiometricLogin() {
   const navigate = useNavigate();
   const { language } = useLanguage();
-  const lang = ((language as LangCode) in STRINGS ? (language as LangCode) : "en") as LangCode;
+  const lang = ((language as LangCode) in STRINGS ? (language as LangCode) : 'en') as LangCode;
   const t = STRINGS[lang];
-  const isRtl = lang === "ar";
+  const isRtl = lang === 'ar';
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [unsupported, setUnsupported] = useState(false);
+  const [available, setAvailable] = useState<boolean | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const hint = localUserHint();
 
-  const canUseBiometrics = useMemo(() => {
-    return typeof window !== "undefined" && "credentials" in navigator;
+  useEffect(() => {
+    (async () => {
+      const ok = await isBiometricAvailable();
+      setAvailable(ok && hasLocalBiometric());
+    })();
   }, []);
 
-  const handleBiometricLogin = async () => {
-    setError(null);
-    setUnsupported(false);
-
-    if (!canUseBiometrics) {
-      setUnsupported(true);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await authenticateWithPasskey();
-      navigate("/", { replace: true });
-    } catch (e: any) {
-      if (e?.name === "NotAllowedError") return;
-      setError(t.error);
-    } finally {
-      setIsLoading(false);
+  const run = async () => {
+    setBusy(true); setError('');
+    const res = await authenticateBiometric();
+    setBusy(false);
+    if (res.ok) { navigate('/', { replace: true }); return; }
+    const map: Record<string, string> = {
+      unavailable: t.unavailable, not_enrolled: t.notEnrolled, cancelled: t.cancelled,
+      session_expired: t.sessionExpired, failed: t.failed,
+    };
+    setError(map[res.error ?? 'failed'] ?? t.failed);
+    if (res.error === 'session_expired' || res.error === 'not_enrolled') {
+      setTimeout(() => navigate('/login', { replace: true }), 1800);
     }
   };
 
   return (
-    <AuthShell title={t.title} subtitle={t.subtitle} dir={isRtl ? "rtl" : "ltr"}>
+    <AuthShell title={t.title} subtitle={t.subtitle} dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="space-y-3">
-        {unsupported && (
-          <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>{t.unsupported}</span>
-          </div>
-        )}
+        {hint ? <p className="text-center text-xs text-gray-400">{hint}</p> : null}
 
-        {error && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-          >
-            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>{error}</span>
+        {error ? (
+          <div className="flex items-start gap-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-700">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" /> <span>{error}</span>
           </div>
-        )}
+        ) : null}
 
         <button
           type="button"
-          onClick={handleBiometricLogin}
-          disabled={isLoading}
-          aria-label={t.biometric}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-70"
+          disabled={busy || available === false}
+          onClick={run}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
         >
-          <Fingerprint className="h-4 w-4" />
-          {isLoading ? t.loading : t.biometric}
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
+          {busy ? t.verifying : t.biometric}
         </button>
 
+        {available === false ? (
+          <p className="text-center text-xs text-gray-400">{t.unavailable}</p>
+        ) : null}
+
         <button
           type="button"
-          onClick={() => navigate("/login", { replace: true })}
-          disabled={isLoading}
-          aria-label={t.fallback}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
+          onClick={() => navigate('/login', { replace: true })}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100"
         >
           {t.fallback}
           <ArrowRight className="h-4 w-4" />
@@ -157,3 +136,4 @@ export default function BiometricLogin() {
     </AuthShell>
   );
 }
+// BAMBEH_END_TOKEN__BIOMETRICLOGIN__COMPLETE
