@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__PROFILE_FIX129_CLEAN
+// BAMBEH_DEPLOY_TOKEN__PROFILE_FIX130_CLEAN
 /**
  * src/pages/Profile.tsx — Bambeh Marketplace
  *
@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLang } from "@/hooks/useAppLang";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
 
@@ -212,6 +213,7 @@ const MAX_AVATAR   = 3 * 1024 * 1024; // 3MB — keeps localStorage manageable
 
 export default function Profile() {
   const lang = useLang();
+  const { setLanguage } = useLanguage(); // FIX130: app-wide language setter
   const l: Lang = (lang in S ? lang : "en") as Lang;
   const s = S[l];
   const isRtl = l === "ar";
@@ -615,6 +617,33 @@ export default function Profile() {
                 className="w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 text-sm text-gray-700 flex items-center justify-between transition-colors">
                 <span>{label}</span>
                 <span className="text-gray-400 text-base">›</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Language selector (FIX130 — replaces the removed Post an Ad link) */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <h3 className="font-semibold text-gray-900 mb-3">
+            {({ en: '\u{1F310} Language', fr: '\u{1F310} Langue', pidgin: '\u{1F310} Language', ar: '\u{1F310} \u0627\u0644\u0644\u063A\u0629', ff: '\u{1F310} \u0110emngal' } as Record<string, string>)[lang] ?? '\u{1F310} Language'}
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { set: 'en',  match: 'en',     label: 'English' },
+              { set: 'fr',  match: 'fr',     label: 'Fran\u00E7ais' },
+              { set: 'pcm', match: 'pidgin', label: 'Pidgin' },
+              { set: 'ar',  match: 'ar',     label: '\u0627\u0644\u0639\u0631\u0628\u064A\u0629' },
+              { set: 'ff',  match: 'ff',     label: 'Fulfulde' },
+            ] as Array<{ set: string; match: string; label: string }>).map((L) => (
+              <button
+                key={L.set}
+                onClick={() => setLanguage(L.set as Parameters<typeof setLanguage>[0])}
+                className={`px-3 py-3 rounded-xl text-sm font-semibold border-2 transition-colors ${
+                  lang === L.match
+                    ? 'border-teal-600 bg-teal-50 text-teal-700'
+                    : 'border-gray-100 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}>
+                {L.label}
               </button>
             ))}
           </div>
