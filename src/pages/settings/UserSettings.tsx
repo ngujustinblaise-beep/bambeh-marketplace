@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__USERSETTINGS_FIX134_PHOTO_CLEAN
 /**
  * UserSettings.tsx — Bambeh Marketplace
  * FILE LOCATION: src/pages/settings/UserSettings.tsx
@@ -7,7 +8,7 @@
  *
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Camera, Heart, Package, List, LogOut, ChevronRight,
@@ -34,7 +35,7 @@ const PRIVACY_KEYS = ["showProfile","allowListings","showOnline","allowDM"] as c
 const S: Record<Lang, {
   tab: { general: string; notifications: string; privacy: string; security: string };
   profilePhoto: string; uploading: string; changePhoto: string; photoHint: string;
-  errImageType: string; errImageSize: string; photoSuccess: string; photoFail: string;
+  errImageType: string; errImageSize: string; photoSuccess: string; photoFail: string; errNetwork: string;
   langHint: string; account: string; editProfile: string; subscriptionPlans: string;
   session: string; signingOut: string; logoutHint: string; notifPrefs: string;
   notif: Record<typeof NOTIF_KEYS[number], string>;
@@ -56,6 +57,7 @@ const S: Record<Lang, {
     errImageSize: "Image must be smaller than 5MB",
     photoSuccess: "Profile photo updated successfully!",
     photoFail: "Photo upload failed. Please try again.",
+    errNetwork: "Connection problem — the upload could not reach the server. Please try again.",
     langHint: "This changes the language of the entire app immediately.",
     account: "Account",
     editProfile: "Edit Profile",
@@ -94,6 +96,7 @@ const S: Record<Lang, {
     errImageSize: "L'image doit faire moins de 5 Mo",
     photoSuccess: "Photo de profil mise à jour !",
     photoFail: "Échec du téléversement. Veuillez réessayer.",
+    errNetwork: "Problème de connexion — le téléversement n’a pas abouti. Veuillez réessayer.",
     langHint: "Ceci change la langue de toute l'application immédiatement.",
     account: "Compte",
     editProfile: "Modifier le profil",
@@ -132,6 +135,7 @@ const S: Record<Lang, {
     errImageSize: "Image must be small pass 5MB",
     photoSuccess: "Profile photo don update!",
     photoFail: "Photo no fit upload. Try again.",
+    errNetwork: "Network no gree — photo no reach server. Try again.",
     langHint: "Dis one go change di language for di whole app sharp sharp.",
     account: "Account",
     editProfile: "Edit Profile",
@@ -170,6 +174,7 @@ const S: Record<Lang, {
     errImageSize: "يجب أن تكون الصورة أصغر من 5 ميغابايت",
     photoSuccess: "تم تحديث صورة الملف الشخصي بنجاح!",
     photoFail: "فشل رفع الصورة. يرجى المحاولة مرة أخرى.",
+    errNetwork: "مشكلة في الاتصال — لم يصل التحميل إلى الخادم. حاول مرة أخرى.",
     langHint: "هذا يغيّر لغة التطبيق بالكامل فورًا.",
     account: "الحساب",
     editProfile: "تعديل الملف الشخصي",
@@ -208,6 +213,7 @@ const S: Record<Lang, {
     errImageSize: "Natal foti ɓurde famɗude 5MB",
     photoSuccess: "Natal profil hesɗitinaama!",
     photoFail: "Ɓamtugol natal hawri. Tiiɗno eto kadi.",
+    errNetwork: "Caɗeele laylol — natal yottaaki server. Tiiɗno eto kadi.",
     langHint: "Ɗum waylat ɗemngal aplikeysiŋ ndee fof jaka.",
     account: "Konto",
     editProfile: "Taƴto profil",
@@ -238,6 +244,38 @@ const S: Record<Lang, {
   },
 };
 
+// FIX134: shrink photos to <=512px JPEG (~50-100 KB) so uploads succeed on slow connections
+async function compressImage(file: File): Promise<Blob> {
+  try {
+    const dataUrl: string = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(new Error("read failed"));
+      r.readAsDataURL(file);
+    });
+    const img: HTMLImageElement = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error("decode failed"));
+      i.src = dataUrl;
+    });
+    const MAX = 512;
+    const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(img.width * scale));
+    canvas.height = Math.max(1, Math.round(img.height * scale));
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.82)
+    );
+    return blob && blob.size < file.size ? blob : file;
+  } catch {
+    return file; // any failure -> upload the original
+  }
+}
+
 const UserSettings: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
@@ -248,6 +286,7 @@ const UserSettings: React.FC = () => {
   const isRtl = lang === "ar";
 
   const [activeTab, setActiveTab] = useState<Tab>("general");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); // FIX134
   const [photoLoading, setPhotoLoading] = useState(false);
   const [photoError, setPhotoError] = useState("");
   const [photoSuccess, setPhotoSuccess] = useState("");
@@ -262,6 +301,18 @@ const UserSettings: React.FC = () => {
     showProfile: true, allowListings: true, showOnline: true, allowDM: false
   });
 
+  // FIX134: load the saved avatar from profiles (photoURL was never refreshed after upload)
+  useEffect(() => {
+    (async () => {
+      const uid = currentUser?.id;
+      if (!uid) return;
+      try {
+        const { data } = await supabase.from("profiles").select("avatar_url").eq("id", uid).single();
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      } catch { /* keep letter avatar */ }
+    })();
+  }, [currentUser?.id]);
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -273,18 +324,30 @@ const UserSettings: React.FC = () => {
       setPhotoError(s.errImageSize);
       return;
     }
+    const userId = currentUser?.id; // FIX134: never upload to an "unknown" folder
+    if (!userId) {
+      setPhotoError(s.photoFail);
+      return;
+    }
     setPhotoLoading(true);
     setPhotoError("");
     setPhotoSuccess("");
     try {
-      const userId = currentUser?.id || "unknown";
-      const ext = file.name.split(".").pop();
-      const filePath = `${userId}/avatar_${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
+      // FIX134: compress before upload -- critical on slow connections
+      const blob = await compressImage(file);
+      const filePath = `${userId}/avatar_${Date.now()}.jpg`;
 
-      if (uploadError) throw new Error(uploadError.message);
+      // FIX134: up to 3 attempts with a pause between (slow-network resilience)
+      let uploadError: Error | null = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const { error } = await supabase.storage
+          .from("avatars")
+          .upload(filePath, blob, { upsert: true, contentType: "image/jpeg" });
+        if (!error) { uploadError = null; break; }
+        uploadError = new Error(error.message);
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 1500 * attempt));
+      }
+      if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage
         .from("avatars")
@@ -296,9 +359,11 @@ const UserSettings: React.FC = () => {
         .eq("id", userId);
 
       if (profileError) throw new Error(profileError.message);
+      setAvatarUrl(urlData.publicUrl); // FIX134: show the new photo immediately
       setPhotoSuccess(s.photoSuccess);
     } catch (err: any) {
-      setPhotoError(err.message || s.photoFail);
+      const msg = String(err?.message || "");
+      setPhotoError(/failed to fetch|network|load failed|timeout/i.test(msg) ? s.errNetwork : (msg || s.photoFail));
     } finally {
       setPhotoLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -347,8 +412,8 @@ const UserSettings: React.FC = () => {
             </h3>
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {currentUser?.photoURL ? (
-                  <img src={currentUser.photoURL} alt="Avatar" className="w-full h-full object-cover" />
+                {(avatarUrl || currentUser?.photoURL) ? (
+                  <img src={avatarUrl || currentUser?.photoURL || ""} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-teal-600 text-2xl font-bold">
                     {(currentUser?.displayName || currentUser?.email || "U")[0].toUpperCase()}
@@ -468,3 +533,4 @@ const UserSettings: React.FC = () => {
 };
 
 export default UserSettings;
+// BAMBEH_END_TOKEN__USERSETTINGS__COMPLETE

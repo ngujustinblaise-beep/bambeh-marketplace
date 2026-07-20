@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATEPAGE_FIX119_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATEPAGE_FIX135_BACKBTN_CLEAN
 /**
  * CorporatePage.tsx — Bambeh Corporate directory / landing (FIX119)
  * FILE LOCATION: src/features/corporate/CorporatePage.tsx  (REPLACES the existing routed page)
@@ -18,7 +18,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Building2, Store, Briefcase, Truck, ShieldCheck, Search, Loader2,
+  ArrowLeft, Building2, Store, Briefcase, Truck, ShieldCheck, Search, Loader2,
   AlertCircle, Plus, LayoutDashboard, ChevronRight, Star, MapPin,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -82,6 +82,14 @@ export default function CorporatePage() {
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Hero */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white px-4 pt-6 pb-8">
+        {/* FIX135: back button */}
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Back"
+          className="mb-3 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:scale-95 transition-transform"
+        >
+          <ArrowLeft className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
+        </button>
         <div className="flex items-center gap-2 mb-1">
           <Building2 className="w-7 h-7 text-amber-400" />
           <h1 className="text-2xl font-bold">{s.corporate}</h1>
