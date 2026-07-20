@@ -1,27 +1,34 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATELOGO_FIX143_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATELOGO_FIX146_REALLOGO_CLEAN
 /**
- * CorporateLogo.tsx — Bambeh Corporate (FIX143)
+ * CorporateLogo.tsx — Bambeh Corporate (FIX146)
  * FILE LOCATION: src/features/corporate/CorporateLogo.tsx
  *
- * A single reusable, CLICKABLE Bambeh logo used across every corporate page.
- * Tapping it always returns the user to the corporate homepage (/corporate).
+ * The REAL Bambeh logo (man carrying loads + "Bambeh — we carry all loads"),
+ * used across every corporate page. Tapping it always returns the user to the
+ * corporate homepage (/corporate).
  *
- * Self-contained inline SVG wordmark — no external image file, so it can
- * never 404 on a slow connection. Sits on the dark/teal corporate heroes.
- * RTL-aware. Drop <CorporateLogo /> into any corporate header.
+ * The image is imported from src/assets so Vite bundles + fingerprints it
+ * (cannot 404, cache-busted on deploy). RTL-aware. Drop <CorporateLogo />
+ * into any corporate header.
+ *
+ * REQUIRED ASSET: src/assets/bambeh-logo.png  (the round glossy logo)
  *
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useNavigate } from 'react-router-dom';
+import bambehLogo from '@/assets/bambeh-logo.png'; // FIX146: real logo asset
 
 export default function CorporateLogo({
   className = '',
   onHome,
+  size = 40,
 }: {
   className?: string;
   /** optional override; defaults to navigating to /corporate */
   onHome?: () => void;
+  /** logo height in px (width auto). Default 40. */
+  size?: number;
 }) {
   const navigate = useNavigate();
   const go = () => (onHome ? onHome() : navigate('/corporate'));
@@ -30,23 +37,17 @@ export default function CorporateLogo({
     <button
       type="button"
       onClick={go}
-      aria-label="Bambeh Corporate — home"
-      className={`inline-flex items-center gap-2 active:scale-95 transition-transform ${className}`}
+      aria-label="Bambeh — home"
+      className={`inline-flex items-center active:scale-95 transition-transform ${className}`}
     >
-      {/* Mark */}
-      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-400 shrink-0">
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H12a4 4 0 0 1 1.6 7.66A4.2 4.2 0 0 1 12.5 20H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"
-                fill="#0f172a" />
-          <path d="M7.5 7.5H12a1.6 1.6 0 0 1 0 3.2H7.5V7.5Zm0 5.3h5a1.7 1.7 0 0 1 0 3.4h-5v-3.4Z"
-                fill="#fbbf24" />
-        </svg>
-      </span>
-      {/* Wordmark */}
-      <span className="font-extrabold text-base leading-none tracking-tight">
-        Bambeh<span className="text-amber-400"> Corporate</span>
-      </span>
+      <img
+        src={bambehLogo}
+        alt="Bambeh — we carry all loads"
+        style={{ height: size, width: 'auto' }}
+        className="object-contain select-none"
+        draggable={false}
+      />
     </button>
   );
 }
-// BAMBEH_END_TOKEN__CORPORATELOGO__COMPLETE
+// BAMBEH_END_TOKEN__CORPORATELOGO_FIX146__COMPLETE
