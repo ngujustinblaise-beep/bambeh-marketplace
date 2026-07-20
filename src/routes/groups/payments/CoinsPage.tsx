@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__COINSPAGE_FIX110_CLEAN
+// BAMBEH_DEPLOY_TOKEN__COINSPAGE_FIX136_CHECKIN_CLEAN
 /**
  * CoinsPage.tsx — Bambeh Marketplace (FIX110, mojibake purge + full i18n)
  * FILE LOCATION: src/routes/groups/payments/CoinsPage.tsx  (the ROUTED copy)
@@ -15,7 +15,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Zap, ArrowUpRight, ArrowDownLeft,
-  Plus, History, RefreshCw, CheckCircle,
+  Plus, History, RefreshCw, CheckCircle, CalendarCheck, Gift,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
@@ -30,6 +30,9 @@ const strings = {
     historyTitle: 'Transaction History', all: 'All', earnedTab: 'Earned', spentTab: 'Spent',
     noTx: 'No transactions yet', purchased: 'Purchase received!',
     purchasedSub: 'Your coins may take a moment to appear. Tap Refresh if needed.',
+    checkin: 'Daily Check-in', checkinSub: 'Claim your free daily bonus coins', checkinBtn: 'Claim',
+    checkinDone: 'Bonus added to your balance!', checkinAlready: 'Already claimed today — come back tomorrow.',
+    referralCta: 'Invite friends & earn coins',
     refresh: 'Refresh', refreshing: 'Refreshing…',
   },
   fr: {
@@ -40,6 +43,9 @@ const strings = {
     historyTitle: 'Historique des transactions', all: 'Tout', earnedTab: 'Gagné', spentTab: 'Dépensé',
     noTx: 'Aucune transaction', purchased: 'Achat reçu !',
     purchasedSub: 'Vos pièces peuvent prendre un moment. Appuyez sur Actualiser si nécessaire.',
+    checkin: 'Bonus quotidien', checkinSub: 'Réclamez vos pièces bonus gratuites du jour', checkinBtn: 'Réclamer',
+    checkinDone: 'Bonus ajouté à votre solde !', checkinAlready: 'Déjà réclamé aujourd’hui — revenez demain.',
+    referralCta: 'Invitez des amis et gagnez des pièces',
     refresh: 'Actualiser', refreshing: 'Actualisation…',
   },
   pidgin: {
@@ -50,6 +56,9 @@ const strings = {
     historyTitle: 'Transaction History', all: 'All', earnedTab: 'You Get', spentTab: 'You Spend',
     noTx: 'No transaction yet', purchased: 'Purchase done!',
     purchasedSub: 'Your coins fit take small time appear. Press Refresh if e no show.',
+    checkin: 'Daily Check-in', checkinSub: 'Collect your free daily bonus coins', checkinBtn: 'Collect',
+    checkinDone: 'Bonus don enter your balance!', checkinAlready: 'You don collect today — come back tomorrow.',
+    referralCta: 'Bring padi dem, get coins',
     refresh: 'Refresh', refreshing: 'Refreshing…',
   },
   ar: {
@@ -60,6 +69,9 @@ const strings = {
     historyTitle: 'سجل المعاملات', all: 'الكل', earnedTab: 'مكتسب', spentTab: 'منفق',
     noTx: 'لا توجد معاملات بعد', purchased: 'تم استلام الشراء!',
     purchasedSub: 'قد تستغرق عملاتك لحظات لتظهر. اضغط تحديث إذا لزم الأمر.',
+    checkin: 'تسجيل الدخول اليومي', checkinSub: 'احصل على مكافأتك اليومية المجانية', checkinBtn: 'احصل',
+    checkinDone: 'تمت إضافة المكافأة إلى رصيدك!', checkinAlready: 'تم الاستلام اليوم — عد غدًا.',
+    referralCta: 'ادعُ أصدقاءك واكسب عملات',
     refresh: 'تحديث', refreshing: 'جارٍ التحديث…',
   },
   ff: {
@@ -70,6 +82,9 @@ const strings = {
     historyTitle: 'Laamu Liɓɓitol', all: 'Fof', earnedTab: 'Heɓiino', spentTab: 'Faalanaa',
     noTx: 'Alaa liɓɓitol', purchased: 'Soodaande heɓaama!',
     purchasedSub: 'Coinɗe maa mbaawa ɓooyde seeɗa. Taƴ Refresh so ɗe njiyaaki.',
+    checkin: 'Naatgol ñande fof', checkinSub: 'Heɓ bonus coinɗe maa ñande', checkinBtn: 'Heɓ',
+    checkinDone: 'Bonus naati e soodaande maa!', checkinAlready: 'A heɓii hannde — artu janngo.',
+    referralCta: 'Noddu sehilaaɓe, heɓ coinɗe',
     refresh: 'Refresh', refreshing: 'Dawnugol…',
   },
 } as const;
@@ -102,6 +117,8 @@ export default function CoinsPage() {
   const [tab,          setTab]          = useState<'all' | 'credit' | 'debit'>('all');
   const [loading,      setLoading]      = useState(true);
   const [refreshing,   setRefreshing]   = useState(false);
+  const [claiming,     setClaiming]     = useState(false);          // FIX136
+  const [claimMsg,     setClaimMsg]     = useState<'done' | 'already' | null>(null); // FIX136
 
   const loadData = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -145,6 +162,28 @@ export default function CoinsPage() {
   }, [navigate]);
 
   useEffect(() => { void loadData(); }, [loadData]);
+
+  // FIX136: daily check-in via claim_daily_login() RPC (server-enforced 1/day)
+  const claimDaily = useCallback(async () => {
+    setClaiming(true);
+    setClaimMsg(null);
+    try {
+      const { data, error } = await supabase.rpc('claim_daily_login');
+      if (error) throw error;
+      if (data === null || data === undefined) {
+        setClaimMsg('already');
+      } else {
+        setClaimMsg('done');
+        setBalance(Number(data));
+        void loadData(true);
+      }
+    } catch (e) {
+      console.error('[CoinsPage] claim_daily_login failed:', e);
+      setClaimMsg('already');
+    } finally {
+      setClaiming(false);
+    }
+  }, [loadData]);
 
   // Auto-refresh once after purchase redirect
   useEffect(() => {
@@ -238,6 +277,38 @@ export default function CoinsPage() {
         </button>
       </div>
 
+      {/* FIX136: Daily check-in */}
+      <div className="px-4 mb-4">
+        <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0">
+            <CalendarCheck className="w-5 h-5 text-yellow-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-900">{s.checkin}</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {claimMsg === 'done' ? s.checkinDone : claimMsg === 'already' ? s.checkinAlready : s.checkinSub}
+            </p>
+          </div>
+          <button
+            onClick={() => void claimDaily()}
+            disabled={claiming || claimMsg !== null}
+            className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold active:scale-95 transition-transform disabled:opacity-50 flex-shrink-0"
+          >
+            {claiming ? '…' : claimMsg === 'done' ? '✓' : s.checkinBtn}
+          </button>
+        </div>
+      </div>
+
+      {/* FIX136: referral CTA */}
+      <div className="px-4 mb-4">
+        <button
+          onClick={() => navigate('/referral')}
+          className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-sm"
+        >
+          <Gift className="w-4 h-4" /> {s.referralCta}
+        </button>
+      </div>
+
       {/* Earn tip */}
       <div className="px-4 mb-4">
         <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 flex items-start gap-3">
@@ -315,4 +386,4 @@ export default function CoinsPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__COINSPAGE__COMPLETE
+// BAMBEH_END_TOKEN__COINSPAGE_FIX136__COMPLETE
