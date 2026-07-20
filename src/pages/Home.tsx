@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX128_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX129_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -456,10 +456,10 @@ export default function Home() {
           </p>
 
           {/* FIX122: Corporate login (left) + labelled Share (right) */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-6 flex flex-col items-center justify-center gap-3">
             <button
               onClick={() => navigate('/corporate')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
               <Building2 className="w-5 h-5" />
               {t('home.corporateBtn')}
@@ -468,7 +468,7 @@ export default function Home() {
               title="Bambeh - Online Marketplace"
               description="Join thousands buying, selling, and trading on Bambeh with only 1% transaction fee!"
               itemType="app"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
               <Share2 className="w-5 h-5" />
               {t('home.shareBtn')}

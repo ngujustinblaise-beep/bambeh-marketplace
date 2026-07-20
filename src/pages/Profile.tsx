@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__PROFILE_FIX129_CLEAN
 /**
  * src/pages/Profile.tsx — Bambeh Marketplace
  *
@@ -420,9 +421,7 @@ export default function Profile() {
     ["📦  " + s.qlOrders,    "/orders"],
     ["❤️   " + s.qlSaved,     "/favorites"],
     ["⚙️   " + s.qlSettings,  "/settings"],
-    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],
-    ["📢  " + s.qlPostAd,    "/post-ad"],
-  ];
+    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],  ];
 
   return (
     <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-20">
@@ -636,4 +635,4 @@ export default function Profile() {
     </div>
   );
 }
-
+// BAMBEH_END_TOKEN__PROFILE__COMPLETE

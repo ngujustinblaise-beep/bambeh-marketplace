@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__PROFILEORDERS_FIX129_CLEAN
 /**
  * ProfileOrders.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/profile/ProfileOrders.tsx
@@ -12,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock, ChevronLeft, ChevronRight, AlertCircle, Search, Filter, RefreshCw, ShoppingBag } from 'lucide-react';
 import { useLanguage } from '@/App';
+import { supabase } from '@/lib/supabase';
 
 type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
 type Lang = "en" | "fr" | "pidgin" | "ar" | "ff";
@@ -172,26 +174,60 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
 
   useEffect(() => { fetchOrders(); }, [userId]);
 
+  // FIX129: REAL orders from Supabase (mock array removed).
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockOrders: Order[] = [
-        { id: '1', orderNumber: 'BMB-00000001', status: 'shipped', placedAt: new Date(Date.now() - 3 * 86400000).toISOString(), total: 57500, itemCount: 3,
-          items: [{ id: '1', name: 'Premium Wireless Headphones', quantity: 1, price: 45000, image: '/images/products/headphones.jpg' }, { id: '2', name: 'USB-C Charging Cable', quantity: 2, price: 5000, image: '/images/products/cable.jpg' }],
-          estimatedDelivery: new Date(Date.now() + 2 * 86400000).toISOString() },
-        { id: '2', orderNumber: 'BMB-00000002', status: 'delivered', placedAt: new Date(Date.now() - 10 * 86400000).toISOString(), total: 25000, itemCount: 1,
-          items: [{ id: '3', name: 'Bluetooth Speaker', quantity: 1, price: 25000, image: '/images/products/speaker.jpg' }] },
-        { id: '3', orderNumber: 'BMB-00000003', status: 'processing', placedAt: new Date(Date.now() - 86400000).toISOString(), total: 120000, itemCount: 2,
-          items: [{ id: '4', name: 'Smart Watch', quantity: 1, price: 80000, image: '/images/products/watch.jpg' }, { id: '5', name: 'Watch Band', quantity: 2, price: 20000, image: '/images/products/band.jpg' }],
-          estimatedDelivery: new Date(Date.now() + 5 * 86400000).toISOString() },
-        { id: '4', orderNumber: 'BMB-00000004', status: 'pending', placedAt: new Date(Date.now() - 0.5 * 86400000).toISOString(), total: 15000, itemCount: 1,
-          items: [{ id: '6', name: 'Phone Case', quantity: 1, price: 15000, image: '/images/products/case.jpg' }] },
-      ];
-      setOrders(mockOrders);
+      let uid = userId ?? null;
+      if (!uid) {
+        const { data: auth } = await supabase.auth.getUser();
+        uid = auth?.user?.id ?? null;
+      }
+      if (!uid) { setOrders([]); setLoading(false); return; }
+
+      const { data, error: qe } = await supabase
+        .from('orders')
+        .select('id, order_number, status, created_at, total_xaf, items, escrow_status')
+        .eq('buyer_id', uid)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (qe) throw qe;
+
+      const KNOWN: OrderStatus[] = ['pending','confirmed','processing','shipped','out_for_delivery','delivered','cancelled'];
+      const mapStatus = (s: string | null): OrderStatus => {
+        if (s && (KNOWN as string[]).includes(s)) return s as OrderStatus;
+        if (s === 'paid' || s === 'success' || s === 'completed') return 'confirmed';
+        if (s === 'failed' || s === 'refunded') return 'cancelled';
+        return 'pending';
+      };
+
+      const mapped: Order[] = ((data ?? []) as Array<{
+        id: string; order_number: string | null; status: string | null;
+        created_at: string; total_xaf: number | null; items: unknown;
+      }>).map((r) => {
+        const rawItems = Array.isArray(r.items) ? (r.items as Array<Record<string, unknown>>) : [];
+        const items: OrderItem[] = rawItems.map((it, i) => ({
+          id: String(it.id ?? it.listing_id ?? i),
+          name: String(it.name ?? it.title ?? 'Item'),
+          quantity: Number(it.quantity ?? it.qty ?? 1),
+          price: Number(it.price ?? it.price_xaf ?? 0),
+          image: String((Array.isArray(it.images) ? (it.images as string[])[0] : it.image) ?? ''),
+        }));
+        return {
+          id: r.id,
+          orderNumber: r.order_number ?? r.id.slice(0, 8).toUpperCase(),
+          status: mapStatus(r.status),
+          placedAt: r.created_at,
+          total: r.total_xaf ?? items.reduce((sum, it) => sum + it.price * it.quantity, 0),
+          itemCount: items.reduce((sum, it) => sum + it.quantity, 0) || items.length,
+          items,
+        } as Order;
+      });
+      setOrders(mapped);
     } catch (err) {
-      setError(s.noCriteria);
+      console.error('[ProfileOrders] load failed:', err);
+      setError(s.tryAgain);
     } finally {
       setLoading(false);
     }
@@ -360,3 +396,4 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
     </div>
   );
 }
+// BAMBEH_END_TOKEN__PROFILEORDERS__COMPLETE
