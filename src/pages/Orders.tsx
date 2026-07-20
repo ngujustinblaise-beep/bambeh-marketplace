@@ -1,5 +1,6 @@
+// BAMBEH_DEPLOY_TOKEN__ORDERS_FIX141_REAL_SCHEMA_CLEAN
 /**
- * Orders.tsx — Bambeh Marketplace
+ * Orders.tsx — Bambeh Marketplace (FIX139: ALL demo/sample data removed)
  * FILE LOCATION: src/pages/Orders.tsx
  *
  * FIXES FROM ORIGINAL:
@@ -27,12 +28,6 @@ interface Order {
   total: number;
   createdAt: string;
 }
-
-// ── Sample orders shown when Supabase table is empty ──────────────────────────
-const SAMPLE_ORDERS: Order[] = [
-  { id: "1", orderNumber: "BH-2025-001234", item: "iPhone 13 Pro Max",   status: "In Transit", total: 463500, createdAt: new Date().toISOString() },
-  { id: "2", orderNumber: "BH-2025-001233", item: 'Samsung TV 55"',      status: "Delivered",  total: 515000, createdAt: new Date(Date.now() - 86400000).toISOString() },
-];
 
 // ── Status colour helper ──────────────────────────────────────────────────────
 function statusStyle(status: string) {
@@ -81,7 +76,7 @@ export default function Orders() {
         // Load from Supabase orders table
         const { data, error } = await supabase
           .from("orders")
-          .select("id, order_number, title, status, total_price, created_at")
+          .select("id, order_number, status, total_xaf, created_at, items")
           .eq("buyer_id", session.user.id)
           .order("created_at", { ascending: false })
           .limit(20);
@@ -90,18 +85,19 @@ export default function Orders() {
           setOrders(data.map(o => ({
             id:          o.id,
             orderNumber: o.order_number || `BH-${o.id.slice(0, 8).toUpperCase()}`,
-            item:        o.title        || "Order",
+            // FIX141: real schema has no title/total_price -- item name comes from items jsonb, total from total_xaf
+            item:        (Array.isArray(o.items) && o.items[0]?.title) || o.order_number || "Order",
             status:      o.status       || "Processing",
-            total:       o.total_price  || 0,
+            total:       o.total_xaf    || 0,
             createdAt:   o.created_at,
           })));
           return;
         }
       }
-      // Not logged in or no orders yet → show sample data
-      setOrders(SAMPLE_ORDERS);
+      // FIX139: no demo fallback — no orders means the honest empty state
+      setOrders([]);
     } catch {
-      setOrders(SAMPLE_ORDERS);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -204,9 +200,4 @@ export default function Orders() {
     </div>
   );
 }
-
-
-
-
-
-
+// BAMBEH_END_TOKEN__ORDERS_FIX141__COMPLETE
