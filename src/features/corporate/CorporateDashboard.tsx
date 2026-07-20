@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATEDASHBOARD_FIX119_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATEDASHBOARD_FIX144_LOGO_CLEAN
 /**
  * CorporateDashboard.tsx — Bambeh Corporate owner dashboard (FIX119)
  * FILE LOCATION: src/features/corporate/CorporateDashboard.tsx
@@ -27,6 +27,7 @@ import {
   corpStrings, fmtXAF, fetchMyStores, fetchStoreProducts,
   type CorporateStore, type CorporateProduct, type CorporateQuote,
 } from './lib';
+import CorporateLogo from './CorporateLogo'; // FIX144
 
 type Tab = 'products' | 'quotes';
 
@@ -89,6 +90,8 @@ export default function CorporateDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white px-4 pt-5 pb-6">
+        {/* FIX144: clickable logo -> corporate home */}
+        <div className="mb-3"><CorporateLogo /></div>
         <button onClick={() => navigate('/corporate')} className="flex items-center gap-1 text-slate-300 text-sm mb-2">
           <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} /> {s.back}
         </button>
@@ -282,4 +285,4 @@ function AddProductForm({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__CORPORATEDASHBOARD__COMPLETE
+// BAMBEH_END_TOKEN__CORPORATEDASHBOARD_FIX144__COMPLETE

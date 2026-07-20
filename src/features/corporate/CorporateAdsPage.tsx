@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATEADSPAGE_FIX123_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATEADSPAGE_FIX144_LOGO_CLEAN
 /**
  * CorporateAdsPage.tsx — Bambeh (FIX123)
  * FILE LOCATION: src/features/corporate/CorporateAdsPage.tsx
@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { Building2, ArrowLeft, Search, Loader2, Store } from 'lucide-react';
 import { useLang } from '@/hooks/useAppLang';
 import CorporateAdsStrip, { fetchCorporateAds, type CorporateAd } from './CorporateAdsStrip';
+import CorporateLogo from './CorporateLogo'; // FIX144
 
 const STR: Record<string, { title: string; subtitle: string; search: string; back: string; browse: string; empty: string; count: (n: number) => string }> = {
   en: {
@@ -73,6 +74,8 @@ export default function CorporateAdsPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-4 pt-6 pb-8">
+        {/* FIX144: clickable logo -> corporate home */}
+        <div className="mb-3"><CorporateLogo /></div>
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-teal-100 text-sm mb-3">
           <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} /> {s.back}
         </button>
@@ -110,4 +113,4 @@ export default function CorporateAdsPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__CORPORATEADSPAGE__COMPLETE
+// BAMBEH_END_TOKEN__CORPORATEADSPAGE_FIX144__COMPLETE

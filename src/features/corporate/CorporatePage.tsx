@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATEPAGE_FIX135_BACKBTN_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATEPAGE_FIX144_LOGO_CLEAN
 /**
  * CorporatePage.tsx — Bambeh Corporate directory / landing (FIX119)
  * FILE LOCATION: src/features/corporate/CorporatePage.tsx  (REPLACES the existing routed page)
@@ -27,6 +27,7 @@ import {
   corpStrings, fetchActiveStores, fetchMyStores,
   type CorpCategory, type CorporateStore,
 } from './lib';
+import CorporateLogo from './CorporateLogo'; // FIX144
 
 const CATEGORIES: { key: CorpCategory; icon: React.ComponentType<{ className?: string }>; }[] = [
   { key: 'shopping',       icon: Store },
@@ -82,6 +83,8 @@ export default function CorporatePage() {
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Hero */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white px-4 pt-6 pb-8">
+        {/* FIX144: clickable logo -> corporate home */}
+        <div className="mb-3"><CorporateLogo /></div>
         {/* FIX135: back button */}
         <button
           onClick={() => navigate(-1)}
@@ -223,4 +226,4 @@ export default function CorporatePage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__CORPORATEPAGE__COMPLETE
+// BAMBEH_END_TOKEN__CORPORATEPAGE_FIX144__COMPLETE
