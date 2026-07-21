@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__APP_FIX124_CLEAN
+// BAMBEH_DEPLOY_TOKEN__APP_FIX149_CORPROUTES_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -256,6 +256,8 @@ const CorporateRegister   = lazy(() => import("@/features/corporate/CorporateReg
 const CorporateStorefront = lazy(() => import("@/features/corporate/CorporateStorefront"));
 const CorporateDashboard  = lazy(() => import("@/features/corporate/CorporateDashboard"));
 const CorporateAdsPage    = lazy(() => import("@/features/corporate/CorporateAdsPage"));
+const CorporateStoreSettings = lazy(() => import("@/features/corporate/CorporateStoreSettings")); // FIX149
+const CorporateBulkUpload    = lazy(() => import("@/features/corporate/CorporateBulkUpload"));    // FIX149
 const AdminCommandCenter  = lazy(() => import("@/features/admin/AdminCommandCenter"));
 // BIOMETRIC SETUP (post-signup passkey enrollment)
 const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
@@ -712,6 +714,8 @@ export default function App() {
                         <Route path="/corporate/store/:key" element={<MainLayout><CorporateStorefront /></MainLayout>} />
                         <Route path="/corporate/dashboard" element={<MainLayout><AuthGate require="user"><CorporateDashboard /></AuthGate></MainLayout>} />
                         <Route path="/corporate/ads" element={<MainLayout><CorporateAdsPage /></MainLayout>} />
+                        <Route path="/corporate/settings" element={<MainLayout><AuthGate require="user"><CorporateStoreSettings /></AuthGate></MainLayout>} />{/* FIX149 */}
+                        <Route path="/corporate/bulk-upload" element={<MainLayout><AuthGate require="user"><CorporateBulkUpload /></AuthGate></MainLayout>} />{/* FIX149 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="user"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}

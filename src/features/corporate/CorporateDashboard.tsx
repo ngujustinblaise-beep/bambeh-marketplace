@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATEDASHBOARD_FIX144_LOGO_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATEDASHBOARD_FIX149_ACTIONS_CLEAN
 /**
  * CorporateDashboard.tsx — Bambeh Corporate owner dashboard (FIX119)
  * FILE LOCATION: src/features/corporate/CorporateDashboard.tsx
@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Building2, ArrowLeft, Loader2, AlertCircle, ShieldCheck, Plus, X,
+  Settings, UploadCloud, // FIX149
   Package, FileText, ExternalLink, Store, Tag, CheckCircle2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -111,6 +112,18 @@ export default function CorporateDashboard() {
             <ExternalLink className="w-3 h-3" /> {s.tabAbout}
           </button>
         </div>
+      </div>
+
+      {/* FIX149: owner quick actions */}
+      <div className="px-4 mt-4 grid grid-cols-2 gap-2">
+        <button onClick={() => navigate('/corporate/bulk-upload')}
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+          <UploadCloud className="w-4 h-4 text-teal-600" /> {s.dashProducts}
+        </button>
+        <button onClick={() => navigate('/corporate/settings')}
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+          <Settings className="w-4 h-4 text-slate-500" /> {s.tabAbout}
+        </button>
       </div>
 
       {/* Tabs */}
@@ -285,4 +298,4 @@ function AddProductForm({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__CORPORATEDASHBOARD_FIX144__COMPLETE
+// BAMBEH_END_TOKEN__CORPORATEDASHBOARD_FIX149__COMPLETE
