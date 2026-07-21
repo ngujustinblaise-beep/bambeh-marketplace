@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__CORPORATEDASHBOARD_FIX149_ACTIONS_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CORPORATEDASHBOARD_FIX156_ACTIONS_CLEAN
 /**
  * CorporateDashboard.tsx — Bambeh Corporate owner dashboard (FIX119)
  * FILE LOCATION: src/features/corporate/CorporateDashboard.tsx
@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Building2, ArrowLeft, Loader2, AlertCircle, ShieldCheck, Plus, X,
   Settings, UploadCloud, // FIX149
+  BarChart3, LifeBuoy, Trash2, // FIX156
   Package, FileText, ExternalLink, Store, Tag, CheckCircle2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -114,15 +115,27 @@ export default function CorporateDashboard() {
         </div>
       </div>
 
-      {/* FIX149: owner quick actions */}
-      <div className="px-4 mt-4 grid grid-cols-2 gap-2">
+      {/* FIX156: owner quick actions (2x3 grid) */}
+      <div className="px-4 mt-4 grid grid-cols-3 gap-2">
         <button onClick={() => navigate('/corporate/bulk-upload')}
-          className="bg-white border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-slate-700 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
           <UploadCloud className="w-4 h-4 text-teal-600" /> {s.dashProducts}
         </button>
+        <button onClick={() => navigate('/corporate/analytics')}
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-slate-700 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+          <BarChart3 className="w-4 h-4 text-indigo-600" /> {s.dashQuotes}
+        </button>
         <button onClick={() => navigate('/corporate/settings')}
-          className="bg-white border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-slate-700 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
           <Settings className="w-4 h-4 text-slate-500" /> {s.tabAbout}
+        </button>
+        <button onClick={() => navigate('/corporate/support')}
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-slate-700 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+          <LifeBuoy className="w-4 h-4 text-amber-500" /> Support
+        </button>
+        <button onClick={() => navigate('/corporate/trash')}
+          className="bg-white border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-slate-700 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+          <Trash2 className="w-4 h-4 text-slate-400" /> Trash
         </button>
       </div>
 
@@ -298,4 +311,4 @@ function AddProductForm({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__CORPORATEDASHBOARD_FIX149__COMPLETE
+// BAMBEH_END_TOKEN__CORPORATEDASHBOARD_FIX156__COMPLETE

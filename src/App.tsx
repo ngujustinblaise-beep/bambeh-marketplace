@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__APP_FIX149_CORPROUTES_CLEAN
+// BAMBEH_DEPLOY_TOKEN__APP_FIX156_CORPBATCH_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -258,6 +258,9 @@ const CorporateDashboard  = lazy(() => import("@/features/corporate/CorporateDas
 const CorporateAdsPage    = lazy(() => import("@/features/corporate/CorporateAdsPage"));
 const CorporateStoreSettings = lazy(() => import("@/features/corporate/CorporateStoreSettings")); // FIX149
 const CorporateBulkUpload    = lazy(() => import("@/features/corporate/CorporateBulkUpload"));    // FIX149
+const CorporateAnalytics     = lazy(() => import("@/features/corporate/CorporateAnalytics"));       // FIX156
+const CorporatePrioritySupport = lazy(() => import("@/features/corporate/CorporatePrioritySupport")); // FIX156
+const CorporateTrash         = lazy(() => import("@/features/corporate/CorporateTrash"));           // FIX156
 const AdminCommandCenter  = lazy(() => import("@/features/admin/AdminCommandCenter"));
 // BIOMETRIC SETUP (post-signup passkey enrollment)
 const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
@@ -716,6 +719,9 @@ export default function App() {
                         <Route path="/corporate/ads" element={<MainLayout><CorporateAdsPage /></MainLayout>} />
                         <Route path="/corporate/settings" element={<MainLayout><AuthGate require="user"><CorporateStoreSettings /></AuthGate></MainLayout>} />{/* FIX149 */}
                         <Route path="/corporate/bulk-upload" element={<MainLayout><AuthGate require="user"><CorporateBulkUpload /></AuthGate></MainLayout>} />{/* FIX149 */}
+                        <Route path="/corporate/analytics" element={<MainLayout><AuthGate require="user"><CorporateAnalytics /></AuthGate></MainLayout>} />{/* FIX156 */}
+                        <Route path="/corporate/support" element={<MainLayout><AuthGate require="user"><CorporatePrioritySupport /></AuthGate></MainLayout>} />{/* FIX156 */}
+                        <Route path="/corporate/trash" element={<MainLayout><AuthGate require="user"><CorporateTrash /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="user"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
