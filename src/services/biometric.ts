@@ -1,184 +1,192 @@
-// BAMBEH_DEPLOY_TOKEN__BIOMETRICSERVICE_FIX125_CLEAN
+// BAMBEH_DEPLOY_TOKEN__BIOMETRICSERVICE_FIX157_CLEAN
 /**
- * biometric.ts — Bambeh real biometric (WebAuthn) service (FIX125)
- * FILE LOCATION: src/services/biometric.ts
- *
- * Real fingerprint / face unlock using the browser's WebAuthn platform
- * authenticator. No passwords are stored anywhere. Flow:
- *
- *   ENROLL (BiometricSetup, while the user is already logged in):
- *     1. navigator.credentials.create() with a platform authenticator
- *        → the device prompts for fingerprint/face and returns a credential.
- *     2. We store the credential id + the user's id in `biometric_credentials`.
- *     3. We also stash a local hint so the login screen knows who to offer.
- *
- *   LOGIN (BiometricLogin):
- *     1. navigator.credentials.get() with the stored credential id
- *        → the device prompts for fingerprint/face.
- *     2. On success, we refresh the existing Supabase session (the refresh
- *        token was kept by supabase-js). If a session exists, the user is in.
- *
- * IMPORTANT REALITY NOTE (told to Big):
- *   - On the WEB (Chrome/Safari) this works with the real device biometric.
- *   - Inside the Capacitor Android WebView, WebAuthn platform authenticators
- *     are often NOT supported. isBiometricAvailable() detects this and the
- *     UI falls back to password cleanly — no fake success.
- *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * biometric.ts — Bambeh biometric service (FIX157)
+ * REAL WebAuthn platform-authenticator (fingerprint / face / Windows Hello).
+ * NO passwords or keys are ever stored. The passkey lives inside the device's
+ * secure hardware; we keep only the public credential id.
+ * Login model: biometric UNLOCKS the existing Supabase session (getSession/
+ * refreshSession). If the session is fully expired, we return "session_expired"
+ * and the UI falls back cleanly to password login.
+ * Deploy: C:\Dev\bambe-android\src\services\biometric.ts
  */
+import { supabase } from "@/lib/supabase";
 
-import { supabase } from '@/lib/supabase';
+const LS_CRED = "bambeh-biometric-credential";
+const LS_HINT = "bambeh-biometric-user";
 
-const LOCAL_CRED_KEY = 'bambeh_biometric_cred_id';
-const LOCAL_USER_HINT = 'bambeh_biometric_user';
+export type BiometricResult = { ok: boolean; error?: string };
 
-const enc = new TextEncoder();
-function bufToB64url(buf: ArrayBuffer): string {
+/* ---------- base64url helpers ---------- */
+function toB64(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
-  let str = '';
-  for (const b of bytes) str += String.fromCharCode(b);
-  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  let s = "";
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
-function b64urlToBuf(s: string): ArrayBuffer {
-  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
-  const b64 = s.replace(/-/g, '+').replace(/_/g, '/') + pad;
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes.buffer;
+function fromB64(s: string): Uint8Array {
+  const b = s.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = b.length % 4 === 0 ? "" : "=".repeat(4 - (b.length % 4));
+  const raw = atob(b + pad);
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
 }
-function randomChallenge(): Uint8Array {
-  const a = new Uint8Array(32);
-  crypto.getRandomValues(a);
-  return a;
+function challenge(): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(32));
 }
 
-/** True only if the platform can actually do fingerprint/face (not just any WebAuthn). */
+/* ---------- availability ---------- */
 export async function isBiometricAvailable(): Promise<boolean> {
   try {
-    if (typeof window === 'undefined' || !window.PublicKeyCredential) return false;
-    const ok = await window.PublicKeyCredential
-      .isUserVerifyingPlatformAuthenticatorAvailable();
-    return !!ok;
+    if (typeof window === "undefined") return false;
+    const PKC: any = (window as any).PublicKeyCredential;
+    if (!PKC || !navigator.credentials) return false;
+    if (typeof PKC.isUserVerifyingPlatformAuthenticatorAvailable !== "function") return false;
+    return await PKC.isUserVerifyingPlatformAuthenticatorAvailable();
   } catch {
     return false;
   }
 }
 
-/** Has THIS device already enrolled a biometric credential for a user? */
 export function hasLocalBiometric(): boolean {
-  try { return !!localStorage.getItem(LOCAL_CRED_KEY); } catch { return false; }
+  try {
+    return !!window.localStorage.getItem(LS_CRED);
+  } catch {
+    return false;
+  }
 }
 
 export function localUserHint(): string | null {
-  try { return localStorage.getItem(LOCAL_USER_HINT); } catch { return null; }
+  try {
+    return window.localStorage.getItem(LS_HINT);
+  } catch {
+    return null;
+  }
 }
 
-/** ENROLL: create a platform passkey and persist it. User must be logged in. */
-export async function enrollBiometric(): Promise<{ ok: boolean; error?: string }> {
+/* ---------- enroll (must be signed in) ---------- */
+export async function enrollBiometric(): Promise<BiometricResult> {
   try {
-    if (!(await isBiometricAvailable())) {
-      return { ok: false, error: 'unavailable' };
-    }
-    const { data: auth } = await supabase.auth.getUser();
-    const user = auth?.user;
-    if (!user) return { ok: false, error: 'not_logged_in' };
+    const { data } = await supabase.auth.getUser();
+    const user = data?.user;
+    if (!user) return { ok: false, error: "not_signed_in" };
 
-    const userIdBuf = enc.encode(user.id);
     const cred = (await navigator.credentials.create({
       publicKey: {
-        challenge: randomChallenge(),
-        rp: { name: 'Bambeh', id: window.location.hostname },
+        challenge: challenge() as unknown as BufferSource,
+        rp: { name: "Bambeh Marketplace", id: window.location.hostname },
         user: {
-          id: userIdBuf,
-          name: user.email ?? user.id,
-          displayName: user.email ?? 'Bambeh user',
+          id: new TextEncoder().encode(user.id) as unknown as BufferSource,
+          name: user.email || user.id,
+          displayName: user.email || "Bambeh user",
         },
         pubKeyCredParams: [
-          { type: 'public-key', alg: -7 },   // ES256
-          { type: 'public-key', alg: -257 }, // RS256
+          { type: "public-key", alg: -7 },
+          { type: "public-key", alg: -257 },
         ],
         authenticatorSelection: {
-          authenticatorAttachment: 'platform',
-          userVerification: 'required',
-          residentKey: 'preferred',
+          authenticatorAttachment: "platform",
+          userVerification: "required",
+          residentKey: "preferred",
         },
         timeout: 60000,
-        attestation: 'none',
+        attestation: "none",
       },
     })) as PublicKeyCredential | null;
 
-    if (!cred) return { ok: false, error: 'cancelled' };
+    if (!cred) return { ok: false, error: "cancelled" };
 
-    const credId = bufToB64url(cred.rawId);
+    const credentialId = toB64(cred.rawId);
+    window.localStorage.setItem(LS_CRED, credentialId);
+    window.localStorage.setItem(LS_HINT, user.email || "");
 
-    // Persist server-side (best-effort) and locally (for the login prompt).
+    // Server bookkeeping — best-effort, NEVER blocks enrollment.
     try {
-      await supabase.from('biometric_credentials').upsert({
-        user_id: user.id,
-        credential_id: credId,
-        device_label: navigator.userAgent.slice(0, 120),
-        created_at: new Date().toISOString(),
-      }, { onConflict: 'credential_id' });
-    } catch { /* table optional; local still works */ }
-
-    localStorage.setItem(LOCAL_CRED_KEY, credId);
-    localStorage.setItem(LOCAL_USER_HINT, user.email ?? user.id);
+      await supabase
+        .from("biometric_credentials")
+        .insert({ user_id: user.id, credential_id: credentialId });
+    } catch {
+      /* non-fatal */
+    }
     return { ok: true };
-  } catch (e) {
-    const name = (e as { name?: string })?.name;
-    if (name === 'NotAllowedError') return { ok: false, error: 'cancelled' };
-    console.error('[biometric] enroll failed:', e);
-    return { ok: false, error: 'failed' };
+  } catch (e: any) {
+    const name = e && e.name ? String(e.name) : "";
+    if (name === "NotAllowedError") return { ok: false, error: "cancelled" };
+    return { ok: false, error: "enroll_failed" };
   }
 }
 
-/** LOGIN: verify the device biometric, then confirm a Supabase session exists. */
-export async function authenticateBiometric(): Promise<{ ok: boolean; error?: string }> {
-  try {
-    if (!(await isBiometricAvailable())) return { ok: false, error: 'unavailable' };
-    const credId = localStorage.getItem(LOCAL_CRED_KEY);
-    if (!credId) return { ok: false, error: 'not_enrolled' };
+/* ---------- authenticate (unlock existing session) ---------- */
+export async function authenticateBiometric(): Promise<BiometricResult> {
+  const credId = (() => {
+    try {
+      return window.localStorage.getItem(LS_CRED);
+    } catch {
+      return null;
+    }
+  })();
+  if (!credId) return { ok: false, error: "not_enrolled" };
 
-    const assertion = await navigator.credentials.get({
+  try {
+    const assertion = (await navigator.credentials.get({
       publicKey: {
-        challenge: randomChallenge(),
-        allowCredentials: [{ type: 'public-key', id: b64urlToBuf(credId) }],
-        userVerification: 'required',
+        challenge: challenge() as unknown as BufferSource,
         timeout: 60000,
-        rpId: window.location.hostname,
+        userVerification: "required",
+        allowCredentials: [
+          {
+            type: "public-key",
+            id: fromB64(credId) as unknown as BufferSource,
+            transports: ["internal"] as AuthenticatorTransport[],
+          },
+        ],
       },
-    });
+    })) as PublicKeyCredential | null;
+    if (!assertion) return { ok: false, error: "cancelled" };
+  } catch (e: any) {
+    const name = e && e.name ? String(e.name) : "";
+    if (name === "NotAllowedError") return { ok: false, error: "cancelled" };
+    return { ok: false, error: "verify_failed" };
+  }
 
-    if (!assertion) return { ok: false, error: 'cancelled' };
-
-    // The device biometric passed. Now ensure Supabase still has a session
-    // (supabase-js persists + refreshes tokens locally). If yes → logged in.
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (sessionData?.session) return { ok: true };
-
-    const { data: refreshed } = await supabase.auth.refreshSession();
-    if (refreshed?.session) return { ok: true };
-
-    // Biometric was valid but the session has fully expired → need password once.
-    return { ok: false, error: 'session_expired' };
-  } catch (e) {
-    const name = (e as { name?: string })?.name;
-    if (name === 'NotAllowedError') return { ok: false, error: 'cancelled' };
-    console.error('[biometric] auth failed:', e);
-    return { ok: false, error: 'failed' };
+  // Device verified the human — now unlock the Supabase session.
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data?.session) {
+      try {
+        await supabase.auth.refreshSession();
+      } catch {
+        /* refresh best-effort; session still valid */
+      }
+      return { ok: true };
+    }
+    return { ok: false, error: "session_expired" };
+  } catch {
+    return { ok: false, error: "session_expired" };
   }
 }
 
-/** Turn off biometric on this device and remove the stored credential. */
+/* ---------- disable ---------- */
 export async function disableBiometric(): Promise<void> {
-  const credId = localStorage.getItem(LOCAL_CRED_KEY);
+  let credId: string | null = null;
   try {
-    if (credId) await supabase.from('biometric_credentials').delete().eq('credential_id', credId);
-  } catch { /* ignore */ }
+    credId = window.localStorage.getItem(LS_CRED);
+    window.localStorage.removeItem(LS_CRED);
+    window.localStorage.removeItem(LS_HINT);
+  } catch {
+    /* ignore */
+  }
   try {
-    localStorage.removeItem(LOCAL_CRED_KEY);
-    localStorage.removeItem(LOCAL_USER_HINT);
-  } catch { /* ignore */ }
+    const { data } = await supabase.auth.getUser();
+    if (data?.user && credId) {
+      await supabase
+        .from("biometric_credentials")
+        .delete()
+        .eq("user_id", data.user.id)
+        .eq("credential_id", credId);
+    }
+  } catch {
+    /* non-fatal */
+  }
 }
 // BAMBEH_END_TOKEN__BIOMETRICSERVICE__COMPLETE
