@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__COMPARISONTOOL_FIX97_CLEAN
+// BAMBEH_DEPLOY_TOKEN__COMPARISONTOOL_FIX163_CLEAN
 /**
  * src/pages/ComparisonTool.tsx ? Bambeh Marketplace
  *
@@ -23,6 +23,7 @@ import {
   Search, Loader2, Globe, AlertCircle, RefreshCw,
 } from 'lucide-react';
 import { useLang, t } from "@/hooks/useAppLang";
+import { supabase } from "@/lib/supabase"; // FIX163
 
 interface Product {
   id: string;
@@ -218,24 +219,8 @@ const COPY = {
   },
 };
 
-const SAMPLE: Product[] = [
-  {
-    id: '1', name: 'Samsung Galaxy A54', price: 185000, category: 'Electronics',
-    rating: 4.5, reviews: 234, seller: 'TechShop CM', location: 'Yaounde',
-    specs: { RAM: '8GB', Storage: '256GB', Battery: '5000mAh', Screen: '6.4"' },
-    pros: ['Great camera', 'Long battery', 'Good value'], cons: ['No fast charging'],
-    valueScore: 88, qualityScore: 85, sellerRating: 4.7,
-    source: 'https://bambeh.com', sourceLabel: 'Bambeh Marketplace',
-  },
-  {
-    id: '2', name: 'Tecno Camon 20', price: 145000, category: 'Electronics',
-    rating: 4.2, reviews: 189, seller: 'Mobile Zone', location: 'Douala',
-    specs: { RAM: '8GB', Storage: '128GB', Battery: '5000mAh', Screen: '6.67"' },
-    pros: ['Affordable', 'Big screen', 'Good camera'], cons: ['Average build quality'],
-    valueScore: 82, qualityScore: 75, sellerRating: 4.4,
-    source: 'https://bambeh.com', sourceLabel: 'Bambeh Marketplace',
-  },
-];
+// FIX163: SAMPLE demo products (Samsung/Tecno with fabricated ratings) REMOVED.
+// Real Bambeh products now load from the live `listings` table below.
 
 // FIX97: AI calls now go to the Supabase 'ai' Edge Function (Railway is dead)
 const BACKEND_URL =
@@ -499,42 +484,55 @@ export default function ComparisonTool() {
   const navigate = useNavigate();
   const lang = useLang();
   const ui = COPY[lang] ?? COPY[lang === 'ff' ? 'ful' : lang] ?? COPY.en;
-  const [products, setProducts] = useState<Product[]>(SAMPLE.slice(0, 2));
+  const [products, setProducts] = useState<Product[]>([]); // FIX163: start empty, no fake defaults
   const [localProducts, setLocalProducts] = useState<Product[]>([]);
   const [showPicker, setShowPicker] = useState(false);
   const [showOnline, setShowOnline] = useState(false);
 
+  // FIX163: real Bambeh products from the live `listings` table (was a dead
+  // localStorage relic). Honest mapping: no fabricated ratings or scores —
+  // rating/valueScore stay 0 for local items; badges below skip zero scores.
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('bambeh_marketplace_items');
-      if (!stored) return;
-      const items = JSON.parse(stored);
-      if (!Array.isArray(items)) return;
-
-      const mapped: Product[] = items.map((p: Record<string, unknown>, i: number) => ({
-        id: String(p.id ?? `local-${i}`),
-        name: String(p.title ?? p.name ?? 'Unknown'),
-        price: Number(p.price) || 0,
-        category: String(p.category ?? 'Other'),
-        rating: Number(p.rating) || 4.0,
-        reviews: Number(p.reviews) || 0,
-        seller: String(p.seller ?? 'Bambeh Seller'),
-        location: String(p.location ?? ''),
-        specs: { Category: String(p.category ?? ''), Condition: String(p.condition ?? 'Good') },
-        pros: ['Available on Bambeh'],
-        cons: [],
-        valueScore: 70,
-        qualityScore: 70,
-        sellerRating: Number(p.sellerRating) || 4.0,
-        source: 'https://bambeh.com',
-        sourceLabel: 'Bambeh Marketplace',
-      }));
-      setLocalProducts(mapped);
-    } catch {
-    }
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from('listings')
+          .select('id, title, price, category, location, type, status')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!alive || !data) return;
+        const mapped: Product[] = data.map((p: Record<string, unknown>) => ({
+          id: String(p.id),
+          name: String(p.title ?? 'Listing'),
+          price: Number(p.price) || 0,
+          category: String(p.category ?? p.type ?? 'Other'),
+          rating: 0,
+          reviews: 0,
+          seller: '',
+          location: String(p.location ?? ''),
+          specs: {
+            Category: String(p.category ?? p.type ?? ''),
+            Location: String(p.location ?? ''),
+          },
+          pros: [],
+          cons: [],
+          valueScore: 0,
+          qualityScore: 0,
+          sellerRating: 0,
+          source: 'https://bambeh.com',
+          sourceLabel: 'Bambeh Marketplace',
+        }));
+        setLocalProducts(mapped);
+      } catch {
+        // picker simply stays empty on failure
+      }
+    })();
+    return () => { alive = false; };
   }, []);
 
-  const allAvailable = [...SAMPLE, ...localProducts].filter(
+  const allAvailable = localProducts.filter( // FIX163: real listings only
     p => !products.find(c => c.id === p.id),
   );
 
@@ -553,11 +551,13 @@ export default function ComparisonTool() {
   const bestPrice = products.length >= 2
     ? products.reduce((b, p) => p.price < b.price ? p : b).id
     : null;
-  const bestRating = products.length >= 2
-    ? products.reduce((b, p) => p.rating > b.rating ? p : b).id
+  const rated = products.filter(p => p.rating > 0); // FIX163
+  const bestRating = rated.length >= 2
+    ? rated.reduce((b, p) => p.rating > b.rating ? p : b).id
     : null;
-  const bestValue = products.length >= 2
-    ? products.reduce((b, p) => p.valueScore > b.valueScore ? p : b).id
+  const valued = products.filter(p => p.valueScore > 0); // FIX163
+  const bestValue = valued.length >= 2
+    ? valued.reduce((b, p) => p.valueScore > b.valueScore ? p : b).id
     : null;
 
   const colClass = products.length === 3 ? 'grid-cols-3' : 'grid-cols-2';
@@ -722,7 +722,7 @@ export default function ComparisonTool() {
                           {products.map(p => (
                             <td key={p.id} className="py-2 pr-3 text-gray-900 font-medium">
                               {p.specs[spec] || (
-                                <span className="text-gray-300">?</span>
+                                <span className="text-gray-300">{'\u2014'}</span>
                               )}
                             </td>
                           ))}
@@ -778,4 +778,4 @@ export default function ComparisonTool() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__COMPARISONTOOL__COMPLETE
+// BAMBEH_END_TOKEN__COMPARISONTOOL_FIX163__COMPLETE
