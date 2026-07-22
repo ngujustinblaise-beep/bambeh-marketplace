@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__GROUPBUYINGDETAIL_FIX169_CLEAN
 /**
  * src/pages/GroupBuyingDetail.tsx ? Bambeh Marketplace
  */
@@ -186,24 +187,7 @@ const COPY = {
   },
 };
 
-const DEMO_DEALS: Record<string, GroupDeal> = {
-  s1: {
-    id: 's1', name: 'Samsung Galaxy A54 Group Deal',
-    originalPrice: 185000, groupPrice: 155000,
-    minParticipants: 10, currentBuyers: 7, maxBuyers: 10,
-    deadline: new Date(Date.now() + 86400000 * 3).toISOString(),
-    category: 'Electronics', seller: 'TechShop CM',
-    description: 'Join and save 16%. Deal activates when 10 people join.', status: 'open',
-  },
-  s2: {
-    id: 's2', name: 'Organic Rice 50kg Bulk Buy',
-    originalPrice: 45000, groupPrice: 35000,
-    minParticipants: 20, currentBuyers: 18, maxBuyers: 20,
-    deadline: new Date(Date.now() + 86400000).toISOString(),
-    category: 'Food', seller: 'FarmFresh CM',
-    description: 'Save 22% on bulk organic rice from local farmers.', status: 'open',
-  },
-};
+// FIX169: the fake demo deals map (TechShop CM etc.) was removed - real deals only.
 
 export default function GroupBuyingDetail() {
   const { id } = useParams<{ id: string }>();
@@ -273,10 +257,10 @@ export default function GroupBuyingDetail() {
         }
       }
 
-      setDeal(DEMO_DEALS[dealId] ?? null);
-      if (uid && DEMO_DEALS[dealId]) setJoined(false);
+      setDeal(null); // FIX169: honest not-found
+      
     } catch {
-      setDeal(DEMO_DEALS[id ?? ''] ?? null);
+      setDeal(null); // FIX169
     } finally {
       setLoading(false);
     }
@@ -474,3 +458,4 @@ export default function GroupBuyingDetail() {
     </div>
   );
 }
+// BAMBEH_END_TOKEN__GROUPBUYINGDETAIL_FIX169__COMPLETE

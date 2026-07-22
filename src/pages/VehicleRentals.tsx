@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__VEHICLERENTALS_FIX168_CLEAN
 /**
  * src/pages/VehicleRentals.tsx ? Bambeh Marketplace
  * Full vehicle listings page with multilingual support, Supabase realtime,
@@ -182,15 +183,7 @@ interface Vehicle {
   view_count?: number;
 }
 
-// -------------------------------------------------------------
-// Demo data (ids start with demo- for VehicleDetails detection)
-// -------------------------------------------------------------
-const DEMO_VEHICLES: Vehicle[] = [
-  { id:"demo-v1", title:"Toyota Camry 2020",         price:8_500_000,  location:"Yaound?", category:"Sedan",      images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Automatic", mileage:"45,000 km", year:2020}, isDemo:true },
-  { id:"demo-v2", title:"Honda Activa Motorcycle",   price:850_000,    location:"Douala",  category:"Motorcycle", images:[], created_at:new Date().toISOString(), extra:{fuel:"Petrol", transmission:"Manual",    mileage:"12,000 km", year:2021}, isDemo:true },
-  { id:"demo-v3", title:"Toyota Land Cruiser V8",    price:35_000_000, location:"Yaound?", category:"SUV",        images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Automatic", mileage:"78,000 km", year:2019}, isDemo:true },
-  { id:"demo-v4", title:"Nissan Pickup 4x4",         price:12_000_000, location:"Bamenda", category:"Pickup",     images:[], created_at:new Date().toISOString(), extra:{fuel:"Diesel", transmission:"Manual",    mileage:"95,000 km", year:2018}, isDemo:true },
-];
+// FIX168: the fake demo vehicles array was removed - real listings only.
 
 function expiringWithin(expiresAt?: string, days = 3): boolean {
   if (!expiresAt) return false;
@@ -231,12 +224,12 @@ export default function VehicleRentals() {
       setVehicles(
         data && data.length > 0
           ? data.map((d: any) => ({ ...d, isDemo: false, extra: d.extra || {}, images: d.images || [] }))
-          : DEMO_VEHICLES
+          : [] // FIX168: no demo fallback
       );
     } catch (err: any) {
       console.error("[VehicleRentals] fetch error:", err);
       setError(tr("errorBanner"));
-      setVehicles(DEMO_VEHICLES);
+      setVehicles([]); // FIX168
     } finally {
       setLoading(false);
     }
@@ -418,7 +411,7 @@ export default function VehicleRentals() {
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
                   ) : (
-                    <Car className="w-16 h-16 text-gray-300" />
+                    <span className="text-5xl">??</span>
                   )}
                   {v.isDemo && <DemoBadge />}
                   {expiringWithin(v.expires_at, 3) && (
@@ -481,3 +474,4 @@ export default function VehicleRentals() {
 
 
 
+// BAMBEH_END_TOKEN__VEHICLERENTALS_FIX168__COMPLETE
