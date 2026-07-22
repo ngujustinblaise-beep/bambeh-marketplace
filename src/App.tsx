@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__APP_FIX156_CORPBATCH_CLEAN
+// BAMBEH_DEPLOY_TOKEN__APP_FIX167_QUIZ_SUB_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -313,6 +313,8 @@ const FarmFreshOrderPage  = lazy(() => import("@/routes/groups/community/FarmFre
 const FarmFreshSellerPage = lazy(() => import("@/routes/groups/community/FarmFreshSellerPage"));
 const MakeOfferPage       = lazy(() => import("@/pages/MakeOfferPage"));
 const ComparisonTool      = lazy(() => import("@/pages/ComparisonTool"));
+const QuizPage            = lazy(() => import("@/pages/QuizPage"));         // FIX166
+const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
 const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
 const BambehWelcomeScreen = lazy(() => import("@/pages/BambehWelcomeScreen"));
@@ -722,6 +724,8 @@ export default function App() {
                         <Route path="/corporate/analytics" element={<MainLayout><AuthGate require="user"><CorporateAnalytics /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/support" element={<MainLayout><AuthGate require="user"><CorporatePrioritySupport /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/trash" element={<MainLayout><AuthGate require="user"><CorporateTrash /></AuthGate></MainLayout>} />{/* FIX156 */}
+                        <Route path="/quiz" element={<MainLayout><AuthGate require="subscription"><QuizPage /></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
+                        <Route path="/admin/quiz" element={<MainLayout><AuthGate require="user"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="user"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
