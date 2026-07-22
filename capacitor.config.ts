@@ -1,102 +1,73 @@
-﻿/**
- * capacitor.config.ts â€” Bambeh Marketplace
- * Â© 2026 Bambeh Marketplace. All rights reserved.
+/**
+ * capacitor.config.ts — Bambeh Marketplace
+ * © 2026 Bambeh Marketplace. All rights reserved.
  *
- * UPGRADED: androidScheme set to 'bambeh' for deep links.
+ * BAMBEH_DEPLOY_TOKEN__CAPACITORCONFIG_FIX175_CLEAN
  *
- * Deep link URLs handled by this config:
- *   bambeh://payment/callback?status=success&reference=TXN_XXX
- *   bambeh://payment/callback?status=failed&reference=TXN_XXX
- *   bambeh://payment/pending?reference=TXN_XXX
- *   bambeh://marketplace/:id   (listing deep links from share button)
- *   bambeh://profile           (profile deep links)
- *   bambeh://chat?chat=:id     (direct chat deep links from FCM notifications)
+ * FIX175 — THE "EVERYTHING FAILED TO FETCH" REPAIR
+ * ─────────────────────────────────────────────────
+ * A previous edit set `androidScheme: "bambeh"` (+ hostname "bambeh.app")
+ * believing it was needed for deep links. It is not — and it is destructive:
  *
- * The appUrlOpen listener in App.tsx bridges these to React Router.
+ *  1. Android WebView pages served from a CUSTOM scheme are not allowed to
+ *     make cross-origin network requests. Every fetch() to Supabase dies
+ *     with "TypeError: Failed to fetch" — which is exactly why photo
+ *     uploads, chat creation, posting rentals, and every other save
+ *     suddenly failed in the installed APK all at once.
+ *  2. Changing the scheme changes the WebView ORIGIN, which wipes
+ *     localStorage — the Supabase session vanishes, so the app behaves
+ *     half logged-out (hidden header/footer, missing gated buttons).
  *
- * ALSO requires AndroidManifest.xml intent-filter â€” see AndroidManifest-deeplink.xml
+ * Deep links (bambeh://payment/callback, bambeh://chat, etc.) NEVER needed
+ * this setting. They are handled by the AndroidManifest.xml intent-filter
+ * (see AndroidManifest-deeplink.xml) + the appUrlOpen listener in App.tsx.
+ * Those keep working exactly as before with androidScheme back on "https".
+ *
+ * The in-app CSP header block was also removed: web security headers belong
+ * in Netlify (_headers / netlify.toml) for bambeh.com, not inside the APK,
+ * where a single wrong directive silently kills network calls.
+ *
+ * NOTE after installing the rebuilt APK: you will need to LOG IN again once.
+ * That is expected (the origin moved back), not a new bug.
  */
 
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  // â”€â”€ App Identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── App Identity ─────────────────────────────────────────────────────────
   appId: "cm.bambeh.marketplace",
   appName: "Bambeh",
 
-  // â”€â”€ Web Dir â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Web Dir ──────────────────────────────────────────────────────────────
   webDir: "dist",
 
-  // â”€â”€ Server â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Server ───────────────────────────────────────────────────────────────
   server: {
-    // CRITICAL: 'bambeh' scheme enables deep links like bambeh://payment/callback
-    // Without this, Capacitor uses https:// internally and the appUrlOpen event
-    // is never fired for custom scheme URLs from NotchPay or FCM.
-    androidScheme: "bambeh",
+    // FIX175: MUST be "https". Custom schemes block all fetch() in the
+    // Android WebView. Deep links do NOT depend on this value.
+    androidScheme: "https",
 
-    // Allow cleartext for local dev only â€” production uses HTTPS
+    // Production is HTTPS-only; no cleartext.
     cleartext: false,
-
-    // Hostname for the embedded WebView â€” used as origin for CORS
-    hostname: "bambeh.app",
-
-    // â”€â”€ Content Security Policy â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    // Prevents XSS, clickjacking, data injection, and mixed content attacks.
-    // Each directive whitelists only the exact domains Bambeh communicates with.
-    headers: {
-      "Content-Security-Policy": [
-        // Default: only same-origin resources
-        "default-src 'self'",
-        // Scripts: allow inline (Vite/React needs this) + our cloud providers
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co https://apis.google.com https://www.gstatic.com",
-        // Styles: allow inline (Tailwind) + Google Fonts
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-        // Fonts: only Google Fonts CDN
-        "font-src 'self' data: https://fonts.gstatic.com",
-        // Images: same-origin, base64 blobs, Supabase Storage, Firebase Storage
-        "img-src 'self' data: blob: https://*.supabase.co https://firebasestorage.googleapis.com https://images.unsplash.com",
-        // API calls: Supabase (REST + Realtime WebSocket), Firebase, Twilio, NotchPay, FCM
-        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.firebase.com https://fcm.googleapis.com https://verify.twilio.com https://campay.net https://www.campay.net",
-        // Workers: Supabase Realtime uses service workers
-        "worker-src 'self' blob:",
-        // No iframes allowed
-        "frame-src 'none'",
-        // No plugins (Flash, Java, etc.)
-        "object-src 'none'",
-        // Restrict base URL to same origin
-        "base-uri 'self'",
-        // Force HTTPS for sub-resources
-        "upgrade-insecure-requests",
-      ].join("; "),
-      // Prevent Bambeh from being embedded in iframes on other sites (clickjacking)
-      "X-Frame-Options": "DENY",
-      // Prevent MIME type sniffing
-      "X-Content-Type-Options": "nosniff",
-      // Only send origin in Referer header (no full URL path)
-      "Referrer-Policy": "strict-origin-when-cross-origin",
-      // Disable browser features Bambeh doesn't use
-      "Permissions-Policy": "camera=(), microphone=(self), geolocation=(self), payment=()",
-    },
   },
 
-  // â”€â”€ Android â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Android ──────────────────────────────────────────────────────────────
   android: {
-    // Build output directory
     buildOptions: {
       releaseType: "APK",
     },
-    // Override back button globally â€” handled in App.tsx initializeCapacitor
+    // Back button handled globally in App.tsx initializeCapacitor
     overrideUserAgent: undefined,
   },
 
-  // â”€â”€ iOS (future-proofing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── iOS (future-proofing) ────────────────────────────────────────────────
   ios: {
     scheme: "bambeh",
   },
 
-  // â”€â”€ Plugins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Plugins ──────────────────────────────────────────────────────────────
   plugins: {
-    // â”€â”€ SplashScreen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── SplashScreen ───────────────────────────────────────────────────────
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
@@ -105,41 +76,40 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
 
-    // â”€â”€ StatusBar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── StatusBar ──────────────────────────────────────────────────────────
     StatusBar: {
       style: "LIGHT",
       backgroundColor: "#0d9488",
     },
 
-    // â”€â”€ Keyboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Keyboard ───────────────────────────────────────────────────────────
     Keyboard: {
       resize: "body",
       style: "DARK",
       resizeOnFullScreen: true,
     },
 
-    // â”€â”€ PushNotifications (FCM) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── PushNotifications (FCM) ────────────────────────────────────────────
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },
 
-    // â”€â”€ LocalNotifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── LocalNotifications ─────────────────────────────────────────────────
     LocalNotifications: {
       smallIcon: "ic_stat_icon_config_sample",
       iconColor: "#0d9488",
       sound: "bambeh_notify.wav",
     },
 
-    // â”€â”€ Preferences (used by offline posting queue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Preferences (used by offline posting queue) ────────────────────────
     Preferences: {
       group: "BambehPreferences",
     },
 
-    // â”€â”€ Share â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    // Capacitor Share plugin â€” used by the share listing button
-    // No config needed â€” uses native OS share sheet
+    // ── Share ──────────────────────────────────────────────────────────────
+    // Capacitor Share plugin — native OS share sheet, no config needed.
   },
 };
 
 export default config;
-
+// BAMBEH_END_TOKEN__CAPACITORCONFIG_FIX175__COMPLETE

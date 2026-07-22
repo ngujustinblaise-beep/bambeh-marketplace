@@ -1,10 +1,16 @@
-// BAMBEH_DEPLOY_TOKEN__FLASHDEALS_FIX102_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FLASHDEALS_FIX174_CLEAN
 /**
- * FlashDeals — FIX102 (REAL data)
- * ───────────────────────────────
- * Replaces the mock list (hardcoded deals + WhatsApp buttons).
- *  • Deals load from Supabase `flash_deals` (vendor name joined from
- *    vendor_profiles) — only live deals: ends_at in the future
+ * FlashDeals — FIX174 (matched to the REAL flash_deals schema)
+ * ─────────────────────────────────────────────────────────────
+ * FIX102 queried columns that do not exist in this database
+ * (images, original_price_xaf, discounted_price_xaf, total_slots,
+ * claimed_slots, status, vendor_profiles.store_name) → PostgREST 400
+ * → "Could not load deals". FIX174 selects the columns the 07-22
+ * schema recon actually shows: image_url, original_price, deal_price,
+ * stock_total/stock_remaining, max_quantity/sold_count, is_active,
+ * and vendor_name straight off the table — NO join at all, so no
+ * relationship problem can ever blank this page again.
+ *  • Only live deals: ends_at in the future, is_active not false
  *  • Claim writes `flash_deal_claims` (duplicate claim 23505 = already yours,
  *    same behavior as the working FlashDealDetail page)
  *  • Live countdown, slots progress, EN/FR, loading/empty/error states
@@ -20,15 +26,20 @@ interface Deal {
   id: string;
   title: string;
   description: string | null;
-  images: string[] | null;
+  image_url: string | null;
   discount_percent: number | null;
-  original_price_xaf: number | null;
-  discounted_price_xaf: number | null;
-  total_slots: number | null;
-  claimed_slots: number | null;
+  original_price: number | null;
+  deal_price: number | null;
+  stock_total: number | null;
+  stock_remaining: number | null;
+  max_quantity: number | null;
+  sold_count: number | null;
   ends_at: string | null;
-  status: string | null;
-  vendor_profiles: { store_name: string | null } | null;
+  is_active: boolean | null;
+  currency: string | null;
+  vendor_id: string | null;
+  seller_id: string | null;
+  vendor_name: string | null;
 }
 
 const T = {
@@ -96,12 +107,13 @@ export default function FlashDeals() {
 
       const { data, error } = await supabase
         .from('flash_deals')
-        .select('id, title, description, images, discount_percent, original_price_xaf, discounted_price_xaf, total_slots, claimed_slots, ends_at, status, vendor_profiles:vendor_id(store_name)')
+        .select('id, title, description, image_url, discount_percent, original_price, deal_price, stock_total, stock_remaining, max_quantity, sold_count, ends_at, is_active, currency, vendor_id, seller_id, vendor_name')
         .gt('ends_at', new Date().toISOString())
         .order('ends_at', { ascending: true })
         .limit(50);
       if (error) throw error;
-      const rows = ((data ?? []) as unknown as Deal[]).filter((d) => (d.status ?? 'active') !== 'cancelled');
+      // FIX174: is_active=false means cancelled/paused; null counts as live.
+      const rows = ((data ?? []) as unknown as Deal[]).filter((d) => d.is_active !== false);
       setDeals(rows);
 
       if (uid && rows.length > 0) {
@@ -134,7 +146,7 @@ export default function FlashDeals() {
       if (!error || (error as { code?: string }).code === '23505') {
         setMyClaims((s) => new Set(s).add(d.id));
         if (!error) {
-          setDeals((ds) => ds.map((x) => x.id === d.id ? { ...x, claimed_slots: (x.claimed_slots ?? 0) + 1 } : x));
+          setDeals((ds) => ds.map((x) => x.id === d.id ? { ...x, sold_count: (x.sold_count ?? 0) + 1 } : x));
         }
       } else {
         throw error;
@@ -176,13 +188,13 @@ export default function FlashDeals() {
         )}
 
         {!loading && !loadError && deals.map((d) => {
-          const total = d.total_slots ?? 0;
-          const claimed = d.claimed_slots ?? 0;
+          const total = d.stock_total ?? d.max_quantity ?? 0;
+          const claimed = d.sold_count ?? (d.stock_total != null && d.stock_remaining != null ? d.stock_total - d.stock_remaining : 0);
           const left = Math.max(total - claimed, 0);
           const pct = total > 0 ? Math.min(Math.round((claimed / total) * 100), 100) : 0;
           const mine = myClaims.has(d.id);
           const soldOut = total > 0 && left === 0 && !mine;
-          const img = Array.isArray(d.images) && d.images[0] ? d.images[0] : null;
+          const img = d.image_url || null;
           return (
             <div key={d.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="flex gap-3 p-3">
@@ -199,12 +211,12 @@ export default function FlashDeals() {
                       </span>
                     ) : null}
                   </div>
-                  {d.vendor_profiles?.store_name ? (
-                    <p className="text-[11px] text-gray-400 mt-0.5">{t.by} {d.vendor_profiles.store_name}</p>
+                  {d.vendor_name ? (
+                    <p className="text-[11px] text-gray-400 mt-0.5">{t.by} {d.vendor_name}</p>
                   ) : null}
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-red-600 font-bold text-sm">{fmtXAF(d.discounted_price_xaf)}</span>
-                    {d.original_price_xaf ? <span className="text-[11px] text-gray-400 line-through">{fmtXAF(d.original_price_xaf)}</span> : null}
+                    <span className="text-red-600 font-bold text-sm">{fmtXAF(d.deal_price)}</span>
+                    {d.original_price ? <span className="text-[11px] text-gray-400 line-through">{fmtXAF(d.original_price)}</span> : null}
                   </div>
                   <div className="mt-1.5"><Countdown endsAt={d.ends_at} endedLabel={t.ended} prefix={t.endsIn} /></div>
                 </div>
