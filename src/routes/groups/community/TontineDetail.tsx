@@ -169,12 +169,13 @@ export default function TontineDetail() {
         name:            data.name,
         description:     data.description || '',
         adminId:         data.admin_id,
-        contributionXaf: data.contribution_xaf,
+        contributionXaf: data.contribution_amount,
         frequency:       data.frequency,
         maxMembers:      data.max_members,
-        currentMembers:  data.current_members || 0,
-        totalPoolXaf:    data.total_pool_xaf || 0,
-        nextPayoutDate:  data.next_payout_date || null,
+        currentMembers:  data.member_count || 0,
+        // FIX182: total_pool_xaf / next_payout_date do not exist on tontine_groups.
+        totalPoolXaf:    Number(data.contribution_amount || 0) * Number(data.member_count || 0),
+        nextPayoutDate:  null,
         status:          data.status,
       });
 
@@ -223,7 +224,7 @@ export default function TontineDetail() {
         .then(() => {}, () =>
           supabase
             .from('tontine_groups')
-            .update({ current_members: group.currentMembers + 1 })
+            .update({ member_count: group.currentMembers + 1 })
             .eq('id', group.id),
         );
 

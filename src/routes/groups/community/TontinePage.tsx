@@ -172,12 +172,14 @@ export default function TontinePage() {
         setGroups(groupData.map(g => ({
           id:              g.id,
           name:            g.name,
-          contributionXaf: g.contribution_xaf,
+          contributionXaf: g.contribution_amount,
           frequency:       g.frequency,
-          currentMembers:  g.current_members || 0,
+          currentMembers:  g.member_count || 0,
           maxMembers:      g.max_members,
-          totalPoolXaf:    g.total_pool_xaf  || 0,
-          nextPayoutDate:  g.next_payout_date || null,
+          // FIX182: total_pool_xaf and next_payout_date do not exist on
+          // tontine_groups. The pool for one full round is derived instead.
+          totalPoolXaf:    Number(g.contribution_amount || 0) * Number(g.member_count || 0),
+          nextPayoutDate:  null,
           status:          g.status,
           isMine:          uid ? (g.admin_id === uid || myGroupIds.has(g.id)) : false,
           adminId:         g.admin_id,

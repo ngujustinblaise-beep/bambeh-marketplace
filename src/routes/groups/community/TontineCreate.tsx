@@ -188,37 +188,51 @@ export default function TontineCreate() {
       }
 
       const uid = session.user.id;
-      const today = new Date().toISOString().split('T')[0];
 
+      // FIX182: column names verified against the live tontine_groups schema.
+      // Was: contribution_xaf / current_members / start_date / total_pool_xaf
+      // Real: contribution_amount / member_count / (start_date and total_pool_xaf
+      // do not exist on this table at all).
       const { data: insertData, error: insertErr } = await supabase
         .from('tontine_groups')
         .insert({
-          admin_id:         uid,
-          name:             name.trim(),
-          description:      description.trim(),
-          contribution_xaf: parsedAmount,
+          admin_id:              uid,
+          creator_id:            uid,
+          name:                  name.trim(),
+          description:           description.trim(),
+          contribution_amount:   parsedAmount,
+          contribution_currency: 'XAF',
           frequency,
-          max_members:      parsedMembers,
-          current_members:  1,          // admin counts as first member
-          is_private:       isPrivate,
-          status:           'open',
-          start_date:       today,
-          total_pool_xaf:   0,
+          contribution_period:   frequency,
+          max_members:           parsedMembers,
+          member_count:          1,     // admin counts as first member
+          is_private:            isPrivate,
+          status:                'open',
         })
         .select('id')
         .single();
 
       if (insertErr) throw insertErr;
 
-      // also add admin to tontine_members table immediately
+      // also add admin to tontine_members table immediately.
+      // FIX182: this insert previously had NO error check, so if it failed the
+      // creator was silently left out of their own tontine. Now it reports.
       if (insertData?.id) {
-        await supabase.from('tontine_members').insert({
+        const { error: memberErr } = await supabase.from('tontine_members').insert({
           group_id:               insertData.id,
           user_id:                uid,
           joined_at:              new Date().toISOString(),
           payout_position:        1,
           has_paid_current_round: false,
+          total_contributed_xaf:  0,
         });
+        if (memberErr) {
+          setError(
+            `The tontine was created, but you were not added as a member: ${memberErr.message}`
+          );
+          setSubmitting(false);
+          return;
+        }
       }
 
       setDone(true);
