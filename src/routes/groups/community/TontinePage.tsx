@@ -145,31 +145,71 @@ export default function TontinePage() {
   const [groups,  setGroups]  = useState<TontineGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab,     setTab]     = useState<"my" | "discover">("my");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   async function fetchGroups() {
     setLoading(true);
+    setLoadError(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const uid = session?.user?.id ?? null;
 
-      const { data: groupData } = await supabase
+      // FIX183: membership first, then TWO group queries. The old single
+      // query filtered .eq("is_private", false), which hid a creator's own
+      // PRIVATE group from every tab — including "My tontines".
+      const myGroupIds = new Set<string>();
+      if (uid) {
+        const { data: memberData, error: memberErr } = await supabase
+          .from("tontine_members")
+          .select("group_id")
+          .eq("user_id", uid);
+        if (memberErr) throw memberErr;
+        if (memberData) memberData.forEach(m => myGroupIds.add(m.group_id));
+      }
+
+      // Discover pool: public groups only.
+      const { data: publicData, error: pubErr } = await supabase
         .from("tontine_groups")
         .select("*")
         .eq("is_private", false)
         .order("created_at", { ascending: false })
         .limit(30);
+      if (pubErr) throw pubErr;
 
-      const myGroupIds = new Set<string>();
+      // My groups: admin, creator, or member — private ones included.
+      let mineData: any[] = [];
       if (uid) {
-        const { data: memberData } = await supabase
-          .from("tontine_members")
-          .select("group_id")
-          .eq("user_id", uid);
-        if (memberData) memberData.forEach(m => myGroupIds.add(m.group_id));
+        const { data: ownData, error: ownErr } = await supabase
+          .from("tontine_groups")
+          .select("*")
+          .or(`admin_id.eq.${uid},creator_id.eq.${uid}`)
+          .order("created_at", { ascending: false })
+          .limit(30);
+        if (ownErr) throw ownErr;
+        mineData = ownData ?? [];
+
+        const memberOnlyIds = [...myGroupIds].filter(
+          id => !mineData.some(g => g.id === id)
+        );
+        if (memberOnlyIds.length > 0) {
+          const { data: memberGroups, error: mgErr } = await supabase
+            .from("tontine_groups")
+            .select("*")
+            .in("id", memberOnlyIds);
+          if (mgErr) throw mgErr;
+          mineData = mineData.concat(memberGroups ?? []);
+        }
       }
 
-      if (groupData && groupData.length > 0) {
-        setGroups(groupData.map(g => ({
+      const seen = new Set<string>();
+      const merged = [...mineData, ...(publicData ?? [])].filter(g => {
+        if (seen.has(g.id)) return false;
+        seen.add(g.id);
+        return true;
+      });
+
+      if (merged.length > 0) {
+        setGroups(merged.map(g => ({
           id:              g.id,
           name:            g.name,
           contributionXaf: g.contribution_amount,
@@ -181,16 +221,19 @@ export default function TontinePage() {
           totalPoolXaf:    Number(g.contribution_amount || 0) * Number(g.member_count || 0),
           nextPayoutDate:  null,
           status:          g.status,
-          isMine:          uid ? (g.admin_id === uid || myGroupIds.has(g.id)) : false,
+          isMine:          uid ? (g.admin_id === uid || g.creator_id === uid || myGroupIds.has(g.id)) : false,
           adminId:         g.admin_id,
         })));
       } else {
         // FIX160: no demo fallback \u2014 honest empty state
         setGroups([]);
       }
-    } catch {
-      // FIX160: no demo fallback on error either
+    } catch (e: any) {
+      // FIX160: no demo fallback on error. FIX183: and the error is no longer
+      // swallowed — it is shown, so a permission or RLS failure can never
+      // masquerade as an empty list again.
       setGroups([]);
+      setLoadError(e?.message ?? "Could not load tontines.");
     } finally {
       setLoading(false);
     }
@@ -220,6 +263,12 @@ export default function TontinePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-32" dir={isRtl ? "rtl" : "ltr"}>
+
+      {loadError && (
+        <div className="mx-4 mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      )}
 
       {/* Header */}
       <div className="bg-gradient-to-br from-purple-700 to-purple-800 px-4 pt-8 pb-16">
