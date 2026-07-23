@@ -14,6 +14,11 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import FlashDealToggle, {
+  emptyFlashDeal,
+  createFlashDealForListing,
+  type FlashDealConfig,
+} from '@/components/deals/FlashDealToggle';
 import { useLang } from "@/hooks/useAppLang";
 
 // ─────────────────────────────────────────────────────────────
@@ -395,6 +400,8 @@ const SellVehicle: React.FC = () => {
   const [imagePreviews,    setImagePreviews]    = useState<string[]>([]);
   const [submitting,       setSubmitting]       = useState(false);
   const [uploadingImgs,    setUploadingImgs]    = useState(false);
+  // FIX187 — optional Flash Deal for this vehicle
+  const [deal,             setDeal]             = useState<FlashDealConfig>(emptyFlashDeal);
   const [error,            setError]            = useState<string | null>(null);
   const [successId,        setSuccessId]        = useState<string | null>(null);
 
@@ -485,6 +492,22 @@ const SellVehicle: React.FC = () => {
         .single();
 
       if (sbErr) throw sbErr;
+
+      // FIX187 — publish the Flash Deal for this vehicle, if requested.
+      if (deal.enabled && data?.id) {
+        await createFlashDealForListing({
+          listingId:     data.id,
+          title:         form.title.trim(),
+          description:   form.description.trim(),
+          category:      form.category,
+          imageUrl:      imageUrls[0] ?? null,
+          originalPrice: parseInt(form.price.replace(/\D/g, ""), 10) || 0,
+          config:        deal,
+          user:          user as any,
+          sellerPhone:   form.phone.trim() || null,
+        });
+      }
+
       setSuccessId(data.id);
     } catch (err: any) {
       console.error("[SellVehicle] submit error:", err);
@@ -774,6 +797,14 @@ const SellVehicle: React.FC = () => {
             placeholder={tr("descPlaceholder")}
           />
         </div>
+
+        {/* FIX187 — optional Flash Deal */}
+        <FlashDealToggle
+          originalPrice={parseInt(form.price.replace(/\D/g, ""), 10) || 0}
+          value={deal}
+          onChange={setDeal}
+          lang={lang}
+        />
 
         {/* ── Submit ── */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 pt-3 pb-6 z-[60]">
