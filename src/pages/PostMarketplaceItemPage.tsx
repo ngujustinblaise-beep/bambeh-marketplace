@@ -23,6 +23,11 @@ import {
   Loader2, Camera, AlertCircle, FileText,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import FlashDealToggle, {
+  emptyFlashDeal,
+  createFlashDealForListing,
+  type FlashDealConfig,
+} from '@/components/deals/FlashDealToggle';
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
@@ -152,6 +157,8 @@ export default function PostMarketplaceItemPage() {
   const [saving,     setSaving]     = useState(false);
   const [error,      setError]      = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  // FIX187 — optional Flash Deal for this listing
+  const [deal,       setDeal]       = useState<FlashDealConfig>(emptyFlashDeal);
 
   const isRtl = lang === "ar";
 
@@ -270,7 +277,7 @@ export default function PostMarketplaceItemPage() {
       const price = parseInt(form.price.replace(/\D/g, ""), 10);
       const images = imageUrls;
 
-      const { error: insertErr } = await supabase.from("listings").insert({
+      const { data: inserted, error: insertErr } = await supabase.from("listings").insert({
         seller_id:    user.id,
         user_id:      user.id,
         type:         "marketplace",
@@ -289,9 +296,31 @@ export default function PostMarketplaceItemPage() {
         is_featured:  false,
         is_sponsored: false,
         expires_at:   new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      });
+      }).select("id").single();
 
       if (insertErr) { setError(insertErr.message); return; }
+
+      // FIX187 — publish the Flash Deal for this listing, if requested.
+      if (deal.enabled && inserted?.id) {
+        try {
+          await createFlashDealForListing({
+            listingId:     inserted.id,
+            title:         form.title.trim(),
+            description:   form.description.trim(),
+            category:      form.category,
+            imageUrl:      imageUrls[0] ?? null,
+            originalPrice: price,
+            config:        deal,
+            user,
+            sellerPhone:   form.phone.trim() || null,
+          });
+        } catch (e) {
+          setError("Listing posted, but the Flash Deal failed: " +
+            (e instanceof Error ? e.message : "unknown error"));
+          return;
+        }
+      }
+
       clearDraft();
       navigate("/marketplace", { replace: true });
     } catch (e) {
@@ -564,6 +593,14 @@ export default function PostMarketplaceItemPage() {
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
+
+            {/* FIX187 — optional Flash Deal */}
+            <FlashDealToggle
+              originalPrice={parseInt(form.price.replace(/\D/g, ""), 10) || 0}
+              value={deal}
+              onChange={setDeal}
+              lang={lang}
+            />
 
             {/* Publish */}
             <button

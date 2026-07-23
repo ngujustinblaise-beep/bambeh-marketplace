@@ -25,6 +25,11 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import FlashDealToggle, {
+  emptyFlashDeal,
+  createFlashDealForListing,
+  type FlashDealConfig,
+} from '@/components/deals/FlashDealToggle';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FormState {
@@ -227,6 +232,8 @@ const ListProperty: React.FC = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [submitting,  setSubmitting]  = useState(false);
   const [success,     setSuccess]     = useState(false);
+  // FIX187 — optional Flash Deal for this property
+  const [deal,        setDeal]        = useState<FlashDealConfig>(emptyFlashDeal);
   const [error,       setError]       = useState<string | null>(null);
   const fileInputRef  = useRef<HTMLInputElement>(null);
 
@@ -323,6 +330,21 @@ const ListProperty: React.FC = () => {
         .single();
 
       if (sbErr) throw sbErr;
+
+      // FIX187 — publish the Flash Deal for this property, if requested.
+      if (deal.enabled && inserted?.id) {
+        await createFlashDealForListing({
+          listingId:     inserted.id,
+          title:         form.title.trim(),
+          description:   form.description.trim() || null,
+          category:      form.type,
+          imageUrl:      imageUrls[0] ?? null,
+          originalPrice: Number(form.price) || 0,
+          config:        deal,
+          user:          user as any,
+          sellerPhone:   form.phone?.trim() || null,
+        });
+      }
 
       setSuccess(true);
       // Navigate to the new listing after 1.5 s
@@ -672,6 +694,14 @@ const ListProperty: React.FC = () => {
               />
             </div>
           </section>
+
+          {/* FIX187 — optional Flash Deal */}
+          <FlashDealToggle
+            originalPrice={Number(form.price) || 0}
+            value={deal}
+            onChange={setDeal}
+            lang={lang}
+          />
 
           {/* ── Submit button ─────────────────────────────────────────── */}
           <button
