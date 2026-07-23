@@ -20,7 +20,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   Menu, X, User, LogOut, LogIn, Search,
   Mic, MicOff, Crown, ArrowLeftRight,
-  Globe, Settings, Package, Heart, Gift, ChevronRight, Share2
+  Globe, Settings, Package, Heart, Gift, ChevronRight, Share2,
+  MessageSquare
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -235,8 +236,19 @@ export default function Header() {
                 Shows on desktop only (md:flex). On mobile the bottom
                 nav already has a bell icon that navigates to /notifications.
             ─────────────────────────────────────────────────────────────────────────────────────── */}
+            {/* FIX186 — messages + notifications, all screen sizes */}
             {currentUser && (
-              <div className="hidden md:flex items-center">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => navigate('/chat')}
+                  aria-label={t('nav.messages') || 'Messages'}
+                  title={t('nav.messages') || 'Messages'}
+                  className="flex items-center justify-center rounded-lg p-2 transition-colors hover:bg-teal-700"
+                  style={{ touchAction: 'auto', minHeight: '44px', minWidth: '44px' }}
+                >
+                  <MessageSquare className="w-5 h-5" />
+                </button>
                 <NotificationBell />
               </div>
             )}

@@ -2,23 +2,27 @@
 /**
  * src/components/layout/MainLayout.tsx — Bambeh Marketplace
  *
- * FIX176 — RESTORE HEADER + FOOTER
- * ─────────────────────────────────
- * A prior edit stripped this layout down to just <BottomNav>, which is why
- * the Header and Footer disappeared from EVERY page wrapped in <MainLayout>
- * (Home, Marketplace, Jobs, Services, Rentals, Vehicles, Corporate, …).
- * The Header (FIX127) and Footer components were fine all along — they simply
- * were not being rendered. This puts them back in one place, so all those
- * pages get the header and footer again at once.
+ * FIX186 — HEADER + FOOTER, fixed bottom nav removed
+ * ───────────────────────────────────────────────────
+ * The fixed bottom navigation bar overlapped page content on every screen
+ * that puts an action button at the bottom: "Apply now" on Jobs, "Book site
+ * visit" and "Message client" on Rentals, and "Add to cart" on product
+ * pages. Its collapse handle only folded it partway, so the buttons stayed
+ * unreachable. It is now removed — navigation lives in the Header (hamburger
+ * menu on mobile, full nav on desktop), which reaches every destination the
+ * bottom bar did.
  *
- * Layout order:  Header (top)  →  page content  →  Footer  →  BottomNav (fixed)
- * The spacer below the Footer clears the fixed BottomNav so the footer's last
- * line is never hidden behind it.
+ * The h-20 spacer that existed purely to clear the bottom bar is gone too,
+ * so pages no longer end with a strip of dead space.
+ *
+ * Layout order:  Header (top)  →  page content  →  Footer
+ *
+ * To restore the bar: re-add the BottomNav import and render it after
+ * <Footer />, together with a spacer div of at least h-20.
  */
 import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import BottomNav from '@/components/layout/BottomNav';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -34,11 +38,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </main>
 
       <Footer />
-
-      {/* Spacer so the fixed BottomNav never covers the footer's bottom row */}
-      <div className="h-20" aria-hidden="true" />
-
-      <BottomNav />
     </div>
   );
 };
