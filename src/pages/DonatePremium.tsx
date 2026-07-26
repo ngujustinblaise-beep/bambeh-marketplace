@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__DONATEPREMIUM_FIX191_START
 // BAMBEH_DEPLOY_TOKEN__DONATEPREMIUM_FIX98_CLEAN
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -15,7 +16,8 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import {
   Heart,
   CreditCard,
@@ -90,14 +92,70 @@ export default function DonatePremium() {
     [selectedAmount]
   );
 
-  const impactStats = {
-    goal: 5000000,
-    raised: 3247000,
-    donors: 1247,
-    avgDonation: 2600
-  };
+  /* FIX191 — REAL DONATION STATS.
+     These three numbers were hardcoded: raised 3,247,000 XAF / 1,247 donors /
+     65% of goal. They never moved, no matter how many people gave. Inventing
+     social proof is the fastest way to lose a user's trust the moment they
+     notice it, so they are now read from the `donations` table and rise with
+     every real donation.
 
-  const progressPercent = (impactStats.raised / impactStats.goal) * 100;
+     Verified against the live schema:
+       donations(id, reference, amount int, currency, phone, operator,
+                 user_id, tx_data jsonb, donated_at timestamptz)
+
+     The goal is a genuine campaign target, not a measurement — it stays a
+     constant, and the bar is honest because `raised` is real. Until the first
+     donation arrives the block simply hides itself rather than showing zeros
+     or fabricated figures. */
+  const DONATION_GOAL_XAF = 5_000_000;
+
+  const [impactStats, setImpactStats] = useState({
+    goal:        DONATION_GOAL_XAF,
+    raised:      0,
+    donors:      0,
+    avgDonation: 0,
+  });
+  const [statsReady, setStatsReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      // amount is the only column we need; count comes from the row length.
+      const { data, error } = await supabase
+        .from('donations')
+        .select('amount');
+
+      if (cancelled) return;
+
+      if (error || !data) {
+        // No invented fallback. If we cannot read the real figures we show
+        // nothing at all — never a made-up number.
+        setStatsReady(false);
+        return;
+      }
+
+      const raised = data.reduce(
+        (sum, row) => sum + (Number((row as { amount?: number }).amount) || 0),
+        0
+      );
+      const donors = data.length;
+
+      setImpactStats({
+        goal:        DONATION_GOAL_XAF,
+        raised,
+        donors,
+        avgDonation: donors > 0 ? Math.round(raised / donors) : 0,
+      });
+      setStatsReady(donors > 0);
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const progressPercent = impactStats.goal > 0
+    ? Math.min((impactStats.raised / impactStats.goal) * 100, 100)
+    : 0;
 
   const normalizePhone = (value: string) => {
     const cleaned = value.replace(/\s+/g, '');
@@ -206,10 +264,17 @@ export default function DonatePremium() {
             <p className="text-xl md:text-2xl text-purple-100 mb-8 max-w-3xl mx-auto">
               Help us keep Bambeh free and accessible for all users worldwide
             </p>
+            {/* FIX191 — shown only when real donations exist. No zeros, no
+                invented figures. */}
+            {statsReady && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
                 <div className="flex items-center justify-center gap-2 mb-2"><TrendingUp className="w-5 h-5" /><span className="text-sm">Total Raised</span></div>
-                <p className="text-3xl font-bold">{(impactStats.raised / 1000000).toFixed(1)}M</p>
+                <p className="text-3xl font-bold">
+                  {impactStats.raised >= 1_000_000
+                    ? `${(impactStats.raised / 1_000_000).toFixed(1)}M`
+                    : impactStats.raised.toLocaleString()}
+                </p>
                 <p className="text-xs text-purple-200">XAF</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
@@ -221,6 +286,7 @@ export default function DonatePremium() {
                 <p className="text-3xl font-bold">{progressPercent.toFixed(0)}%</p>
               </div>
             </div>
+            )}
           </div>
         </div>
 
@@ -347,3 +413,4 @@ export default function DonatePremium() {
   );
 }
 // BAMBEH_END_TOKEN__DONATEPREMIUM__COMPLETE
+// BAMBEH_DEPLOY_TOKEN__DONATEPREMIUM_FIX191_END
