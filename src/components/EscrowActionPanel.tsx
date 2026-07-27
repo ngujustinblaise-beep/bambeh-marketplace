@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ESCROWACTIONPANEL_FIX206_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ESCROWACTIONPANEL_FIX209_AUTOCONFIRM
 /**
  * EscrowActionPanel.tsx - Bambeh Marketplace (FIX206)
  * FILE LOCATION: src/components/EscrowActionPanel.tsx
@@ -81,6 +81,8 @@ function resolveFunctionsBase(): string {
 }
 
 const PAYMENTS_BASE = resolveFunctionsBase();
+/** FIX209 - sibling function that verifies the payment with the provider. */
+const CONFIRM_URL = PAYMENTS_BASE.replace(/\/payments$/, '/confirm-payment');
 
 /* ---------------------------------------------------------------------------
  * i18n
@@ -118,6 +120,10 @@ const strings = {
     brRef: 'Reference',
     brStatus: 'Escrow state',
     lockedPaid: 'Locked until the payment is confirmed',
+    checkNow: 'Check payment status now',
+    checking: 'Checking with the provider...',
+    checkPending: 'The provider has not confirmed it yet. Try again in a moment.',
+    nowActive: 'Payment confirmed. Escrow is now active.',
     confirmTitle: 'Confirm you received this item',
     confirmLine1: 'This releases {amount} to the seller straight away.',
     confirmLine2: 'It cannot be undone. Only confirm if the item is in your hands and it is what you ordered.',
@@ -167,6 +173,10 @@ const strings = {
     brRef: 'R\u00e9f\u00e9rence',
     brStatus: '\u00c9tat du s\u00e9questre',
     lockedPaid: 'Bloqu\u00e9 jusqu\u2019\u00e0 la confirmation du paiement',
+    checkNow: 'V\u00e9rifier le paiement maintenant',
+    checking: 'V\u00e9rification aupr\u00e8s de l\u2019op\u00e9rateur...',
+    checkPending: 'L\u2019op\u00e9rateur ne l\u2019a pas encore confirm\u00e9. R\u00e9essayez dans un instant.',
+    nowActive: 'Paiement confirm\u00e9. Le s\u00e9questre est actif.',
     confirmTitle: 'Confirmez avoir re\u00e7u cet article',
     confirmLine1: 'Cela verse imm\u00e9diatement {amount} au vendeur.',
     confirmLine2: 'C\u2019est irr\u00e9versible. Ne confirmez que si vous avez l\u2019article et qu\u2019il correspond \u00e0 la commande.',
@@ -216,6 +226,10 @@ const strings = {
     brRef: 'Reference',
     brStatus: 'Escrow state',
     lockedPaid: 'E lock until payment confirm',
+    checkNow: 'Check payment now',
+    checking: 'We dey check with the provider...',
+    checkPending: 'Provider no confirm am yet. Try again small time.',
+    nowActive: 'Payment confirm! Escrow don active.',
     confirmTitle: 'Confirm say you receive this thing',
     confirmLine1: 'This one go send {amount} give seller now now.',
     confirmLine2: 'You no go fit undo am. Only confirm if the thing dey your hand and e correct.',
@@ -265,6 +279,10 @@ const strings = {
     brRef: '\u0627\u0644\u0645\u0631\u062c\u0639',
     brStatus: '\u062d\u0627\u0644\u0629 \u0627\u0644\u0636\u0645\u0627\u0646',
     lockedPaid: '\u0645\u063a\u0644\u0642 \u062d\u062a\u0649 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062f\u0641\u0639',
+    checkNow: '\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u062f\u0641\u0639 \u0627\u0644\u0622\u0646',
+    checking: '\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0639 \u0627\u0644\u0645\u0634\u063a\u0644...',
+    checkPending: '\u0644\u0645 \u064a\u0624\u0643\u062f\u0647 \u0627\u0644\u0645\u0634\u063a\u0644 \u0628\u0639\u062f. \u062d\u0627\u0648\u0644 \u0628\u0639\u062f \u0642\u0644\u064a\u0644.',
+    nowActive: '\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062f\u0641\u0639. \u0627\u0644\u0636\u0645\u0627\u0646 \u0646\u0634\u0637 \u0627\u0644\u0622\u0646.',
     confirmTitle: '\u0623\u0643\u062f \u0623\u0646\u0643 \u0627\u0633\u062a\u0644\u0645\u062a \u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062a\u062c',
     confirmLine1: '\u0633\u064a\u062a\u0645 \u062a\u062d\u0648\u064a\u0644 {amount} \u0644\u0644\u0628\u0627\u0626\u0639 \u0641\u0648\u0631\u064b\u0627.',
     confirmLine2: '\u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062a\u0631\u0627\u062c\u0639. \u0623\u0643\u062f \u0641\u0642\u0637 \u0625\u0646 \u0643\u0627\u0646 \u0627\u0644\u0645\u0646\u062a\u062c \u0645\u0639\u0643 \u0648\u0645\u0637\u0627\u0628\u0642\u064b\u0627 \u0644\u0644\u0637\u0644\u0628.',
@@ -314,6 +332,10 @@ const strings = {
     brRef: 'Reference',
     brStatus: 'Ngonka escrow',
     lockedPaid: 'Uddiingo haa yo\u0253gol tee\u014btinee',
+    checkNow: 'Yiylo yo\u0253gol jooni',
+    checking: 'Ina yiylee to mobile money...',
+    checkPending: 'Tawo tee\u014btinaaka. Eto kadi see\u0257a.',
+    nowActive: 'Yo\u0253gol tee\u014btinaama. Escrow ina golloo.',
     confirmTitle: 'Tee\u014btin wonde a he\u0253ii ku\u0257e \u0257e\u0257',
     confirmLine1: '\u0186um neldata {amount} to jeeyoowo jaka jooni.',
     confirmLine2: 'A waawaa firtude \u0257um. Tee\u014btin tan so ku\u0257e \u0257on e jun\u0257e ma\u0257a e \u0257e goonga.',
@@ -442,6 +464,8 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
   const [modal, setModal] = useState<null | 'release' | 'refund'>(null);
   const [reason, setReason] = useState('');
   const [reasonErr, setReasonErr] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [autoTried, setAutoTried] = useState<string | null>(null);
 
   /* ---- load ------------------------------------------------------------- */
   const load = useCallback(async () => {
@@ -522,6 +546,65 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
     },
     [order?.id, reference, s.signIn],
   );
+
+  /* ---- FIX209: verify the payment with the provider, server-side --------
+   * The client never claims a payment succeeded - it only names the order.
+   * The edge function asks CamPay and writes paid_at only on a real success.
+   * Runs once automatically per order, and on demand from the button. */
+  const confirmPayment = useCallback(async (silent: boolean) => {
+    if (!order?.id) return;
+    setConfirming(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const tok = sessionData?.session?.access_token;
+      if (!tok) throw new Error(s.signIn);
+
+      const res = await fetch(CONFIRM_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` },
+        body: JSON.stringify({ orderId: order.id, order_id: order.id }),
+      });
+
+      const raw = await res.text();
+      let j: Record<string, unknown> | null = null;
+      try { j = raw ? (JSON.parse(raw) as Record<string, unknown>) : null; } catch { /* plain text */ }
+
+      if (!res.ok) {
+        const msg = (typeof j?.error === 'string' && j.error) || raw || `HTTP ${res.status}`;
+        if (!silent) setToast({ kind: 'err', text: msg });
+        return;
+      }
+
+      if (j?.paid === true) {
+        setToast({ kind: 'ok', text: s.nowActive });
+        await load();
+        onChanged?.();
+        return;
+      }
+
+      if (!silent) {
+        const msg = (typeof j?.message === 'string' && j.message) || s.checkPending;
+        setToast({ kind: 'err', text: msg });
+      }
+    } catch (e) {
+      if (!silent) setToast({ kind: 'err', text: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setConfirming(false);
+    }
+  }, [order?.id, load, onChanged, s.signIn, s.nowActive, s.checkPending]);
+
+  // Auto-verify once per order, so a buyer who just paid sees escrow activate
+  // without having to press anything.
+  useEffect(() => {
+    if (!order || !viewerId) return;
+    if (order.buyer_id !== viewerId) return;
+    if (order.paid_at) return;
+    if (deriveState(order) !== 'awaiting_payment') return;
+    if (!(order.payment_reference || order.payment_ref)) return;
+    if (autoTried === order.id) return;
+    setAutoTried(order.id);
+    void confirmPayment(true);
+  }, [order, viewerId, autoTried, confirmPayment]);
 
   const doRelease = useCallback(async () => {
     if (busy) return;
@@ -713,9 +796,24 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
             </button>
 
             {lockedByPayment && (
-              <p className="text-xs text-yellow-700 flex items-center gap-1.5 pt-0.5">
-                <Lock className="w-3 h-3 flex-shrink-0" /> {s.lockedPaid}
-              </p>
+              <>
+                <button
+                  onClick={() => void confirmPayment(false)}
+                  disabled={confirming}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                    confirming
+                      ? 'bg-gray-100 text-gray-400 cursor-wait'
+                      : 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                  }`}
+                >
+                  {confirming
+                    ? <><Loader2 className="w-4 h-4 animate-spin" /> {s.checking}</>
+                    : <><RefreshCw className="w-4 h-4" /> {s.checkNow}</>}
+                </button>
+                <p className="text-xs text-yellow-700 flex items-center gap-1.5 pt-0.5">
+                  <Lock className="w-3 h-3 flex-shrink-0" /> {s.lockedPaid}
+                </p>
+              </>
             )}
           </div>
         )}
@@ -896,4 +994,4 @@ function Modal({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ESCROWACTIONPANEL_FIX206__COMPLETE
+// BAMBEH_END_TOKEN__ESCROWACTIONPANEL_FIX209__COMPLETE
