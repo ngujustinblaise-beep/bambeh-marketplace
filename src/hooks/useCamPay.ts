@@ -1,30 +1,70 @@
-// BAMBEH_DEPLOY_TOKEN__USECAMPAY_FIX98_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USECAMPAY_FIX201_START
 /**
- * src/hooks/useCamPay.ts - Bambeh Marketplace
+ * useCamPay.ts — Bambeh Marketplace
  * FILE LOCATION: src/hooks/useCamPay.ts
  *
- * ORDER-FIRST UPGRADE:
- *  - initPayment(...) is UNCHANGED - every existing caller keeps working.
- *  - NEW initCartPayment(...) sends the cart to POST /api/payments/cart with
- *    the buyer's Supabase access token. The SERVER verifies prices, reserves
- *    stock, creates the order as 'pending', and initiates CamPay. The
- *    signature-verified webhook flips it to 'paid' and opens escrow.
- *  - Both share the same status/polling machinery, so the payment modal UX
- *    is identical.
+ * FIX201 — THE ORDER-FIRST PIPELINE, CONNECTED END TO END.
+ *
+ * ── BUG THIS FIXES (confirmed from the Network tab, 2026-07-27) ────────────
+ * Every payment was being sent to the DEAD Railway backend:
+ *   OPTIONS https://bambeh-backend-production-6bca.up.railway.app/api/payments/collect
+ *   → 404, server: railway-hikari, x-railway-fallback: true
+ * VITE_BACKEND_URL is still set to that host in the deployed environment, and
+ * `??` only falls back when a value is undefined — so the Supabase default
+ * never applied. A 404 fallback page has no CORS headers, which the browser
+ * reports as "NetworkError when attempting to fetch resource".
+ *
+ * WHAT CHANGED
+ *  1. VITE_BACKEND_URL is now VALIDATED. Only a supabase.co/functions/v1 URL
+ *     is honoured; anything else (Railway, localhost, empty) is ignored and we
+ *     use the real payments function. A stale env var can never again
+ *     silently redirect money traffic.
+ *  2. Legacy '/api/payments/...' path prefix dropped — we call /collect,
+ *     /cart and /status/:ref directly.
+ *  3. initCartPayment now returns the SERVER-CREATED orderId / orderGroupId
+ *     and passes them to onSuccess, so the client never has to write the
+ *     order itself.
+ *  4. escrow is an explicit flag. Omit it and the server holds the money
+ *     (safe default); pass escrow:false to pay the seller on confirmation.
  */
 
 import { useState, useRef, useCallback } from 'react';
 
-// FIX98: payments are served by the Supabase 'payments' Edge Function now
-// (Railway is dead). VITE_BACKEND_URL can still override for testing.
-const BACKEND =
-  (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL ??
+/* ── Endpoint resolution — deliberately defensive ────────────────────────── */
+
+const SUPABASE_PAYMENTS =
   'https://rbjbdxefwzvgmioearie.supabase.co/functions/v1/payments';
+
+function resolveBackend(): string {
+  const raw = (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL;
+  if (raw && /supabase\.co\/functions\/v1\//i.test(raw)) {
+    return raw.replace(/\/+$/, '');
+  }
+  if (raw) {
+    // Loud, once, so a bad override is never invisible again.
+    console.warn(
+      `[useCamPay] Ignoring VITE_BACKEND_URL="${raw}" — it is not a Supabase ` +
+      `Edge Function URL. Using ${SUPABASE_PAYMENTS} instead.`,
+    );
+  }
+  return SUPABASE_PAYMENTS;
+}
+
+const BACKEND = resolveBackend();
+
+/* ── Types ───────────────────────────────────────────────────────────────── */
 
 export type PaymentStatus = 'idle' | 'submitting' | 'waiting' | 'success' | 'failed' | 'timeout';
 
+export interface PaymentSuccessInfo {
+  reference: string;
+  orderId?: string | null;
+  orderGroupId?: string | null;
+  raw?: unknown;
+}
+
 interface UseCamPayOptions {
-  onSuccess?: (reference: string, data: unknown) => void | Promise<void>;
+  onSuccess?: (reference: string, info: PaymentSuccessInfo) => void | Promise<void>;
   onFailure?: (message: string) => void;
 }
 
@@ -49,9 +89,13 @@ interface InitCartPaymentParams {
   items: CartCheckoutItem[];
   phone: string;
   description: string;
-  /** Supabase session access token - checkout requires a signed-in buyer. */
+  /** Supabase session access token — checkout requires a signed-in buyer. */
   accessToken: string;
+  /** true (default) = hold in escrow. false = pay the seller on confirmation. */
+  escrow?: boolean;
 }
+
+/* ── Operator detection (unchanged) ──────────────────────────────────────── */
 
 const MTN_PREFIXES = [
   '650','651','652','653','654',
@@ -83,27 +127,31 @@ export function detectOperator(phone9: string): Operator {
 export function validateCamPhone(rawPhone: string): string | null {
   const phone9 = normalizePhone(rawPhone);
   if (phone9.length !== 9) return 'Enter your 9-digit MTN or Orange number (e.g. 670757326).';
-  const op = detectOperator(phone9);
-  if (!op) {
-    return `"${phone9}" is not a recognized MTN or Orange number.`;
-  }
+  if (!detectOperator(phone9)) return `"${phone9}" is not a recognized MTN or Orange number.`;
   return null;
 }
+
+/* ── Hook ────────────────────────────────────────────────────────────────── */
 
 export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
   const [status,    setStatus]    = useState<PaymentStatus>('idle');
   const [errorMsg,  setErrorMsg]  = useState<string>('');
   const [reference, setReference] = useState<string>('');
   const [countdown, setCountdown] = useState<number>(0);
+  const [orderId,   setOrderId]   = useState<string | null>(null);
+  const [orderGroupId, setOrderGroupId] = useState<string | null>(null);
 
   const timerRef     = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollRef      = useRef<ReturnType<typeof setInterval> | null>(null);
   const cancelledRef = useRef(false);
   const attemptRef   = useRef(0);
+  const orderRef     = useRef<{ orderId: string | null; orderGroupId: string | null }>({
+    orderId: null, orderGroupId: null,
+  });
 
   const clearTimers = () => {
-    if (timerRef.current)  clearInterval(timerRef.current);
-    if (pollRef.current)   clearInterval(pollRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (pollRef.current)  clearInterval(pollRef.current);
   };
 
   const reset = useCallback(() => {
@@ -113,35 +161,58 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     setErrorMsg('');
     setReference('');
     setCountdown(0);
+    setOrderId(null);
+    setOrderGroupId(null);
+    orderRef.current = { orderId: null, orderGroupId: null };
     attemptRef.current++;
     cancelledRef.current = false;
   }, []);
 
-  // -- Shared machinery ----------------------------------------------------------
+  /* ── Initiation ────────────────────────────────────────────────────────── */
 
-  /** Sends the initiation request; returns the CamPay reference or throws. */
-  const requestReference = async (
+  /**
+   * Sends the initiation request. Returns the CamPay reference plus anything
+   * the server created (order ids) or throws with a readable message.
+   */
+  const requestInit = async (
     url: string,
     body: Record<string, unknown>,
     accessToken?: string,
-  ): Promise<string> => {
+  ): Promise<{ reference: string; orderId: string | null; orderGroupId: string | null }> => {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
 
-    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-
-    if (!res.ok) {
-      const resBody = await res.json().catch(() => ({}));
-      throw new Error(resBody?.error ?? `Server error ${res.status}`);
+    let res: Response;
+    try {
+      res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+    } catch {
+      // Network-level failure: wrong host, offline, blocked preflight.
+      throw new Error(
+        `Could not reach the payment server at ${new URL(url).host}. ` +
+        `Check your connection and try again.`,
+      );
     }
 
-    const data = await res.json();
-    const ref = data?.data?.reference ?? data?.reference;
+    const payload = await res.json().catch(() => ({} as Record<string, unknown>));
+
+    if (!res.ok) {
+      const msg = (payload as { error?: string })?.error ?? `Server error ${res.status}`;
+      throw new Error(msg);
+    }
+
+    const data = (payload as { data?: Record<string, unknown> })?.data ?? payload;
+    const ref = (data as { reference?: string })?.reference;
     if (!ref) throw new Error('No payment reference returned by server.');
-    return ref;
+
+    return {
+      reference: ref,
+      orderId: ((data as { orderId?: string })?.orderId) ?? null,
+      orderGroupId: ((data as { orderGroupId?: string })?.orderGroupId) ?? null,
+    };
   };
 
-  /** Countdown + status polling until SUCCESSFUL / FAILED / timeout. */
+  /* ── Polling ───────────────────────────────────────────────────────────── */
+
   const startPolling = (ref: string, currentAttempt: number) => {
     setReference(ref);
     setStatus('waiting');
@@ -166,11 +237,13 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
       attempts++;
 
       try {
-        const res = await fetch(`${BACKEND}/api/payments/status/${ref}`);
+        const res = await fetch(`${BACKEND}/status/${ref}`);
         if (!res.ok) return;
 
         const body = await res.json();
-        const campayStatus = (body?.data?.status ?? body?.status ?? '').toUpperCase();
+        const campayStatus = String(
+          (body?.data?.status ?? body?.status ?? ''),
+        ).toUpperCase();
 
         if (currentAttempt !== attemptRef.current) { clearTimers(); return; }
 
@@ -178,14 +251,20 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
           clearTimers();
           if (cancelledRef.current) return;
           setStatus('success');
-          await onSuccess?.(ref, body?.data ?? body);
+          await onSuccess?.(ref, {
+            reference: ref,
+            orderId: orderRef.current.orderId,
+            orderGroupId: orderRef.current.orderGroupId,
+            raw: body?.data ?? body,
+          });
           return;
         }
 
         if (campayStatus === 'FAILED') {
           clearTimers();
           if (cancelledRef.current) return;
-          const msg = body?.data?.message ?? 'Payment was declined. Please check your balance and try again.';
+          const msg = body?.data?.message
+            ?? 'Payment was declined. Please check your balance and try again.';
           setStatus('failed');
           setErrorMsg(msg);
           onFailure?.(msg);
@@ -201,18 +280,20 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
           onFailure?.(msg);
         }
       } catch {
-        // Network error during poll
+        // Transient network error during poll — keep polling.
       }
     }, 8000);
   };
 
   const beginAttempt = (): number => {
     attemptRef.current++;
-    const currentAttempt = attemptRef.current;
     setStatus('submitting');
     setErrorMsg('');
     cancelledRef.current = false;
-    return currentAttempt;
+    orderRef.current = { orderId: null, orderGroupId: null };
+    setOrderId(null);
+    setOrderGroupId(null);
+    return attemptRef.current;
   };
 
   const failWith = (msg: string) => {
@@ -221,22 +302,19 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     onFailure?.(msg);
   };
 
-  // -- Public: open-ended collect (UNCHANGED behavior) ----------------------------
+  /* ── Public: open-ended collect (subscriptions, coins, donations) ──────── */
   const initPayment = useCallback(async (params: InitPaymentParams) => {
     const { amount, phone, description, externalRef, metadata } = params;
-
-    const phone9      = normalizePhone(phone);
-    const phoneForApi = `237${phone9}`;
-
+    const phoneForApi = `237${normalizePhone(phone)}`;
     const currentAttempt = beginAttempt();
 
-    let ref: string;
+    let init: { reference: string; orderId: string | null; orderGroupId: string | null };
     try {
-      ref = await requestReference(`${BACKEND}/api/payments/collect`, {
+      init = await requestInit(`${BACKEND}/collect`, {
         amount,
-        phone:       phoneForApi,
+        phone: phoneForApi,
         description,
-        externalRef: externalRef ?? `BAMBEH_${Date.now()}_${Math.random().toString(36).substring(2,10)}`,
+        externalRef: externalRef ?? `BAMBEH_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`,
         metadata,
       });
     } catch (err: unknown) {
@@ -245,37 +323,61 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     }
 
     if (currentAttempt !== attemptRef.current) return;
-    startPolling(ref, currentAttempt);
+    startPolling(init.reference, currentAttempt);
   }, [onSuccess, onFailure]);
 
-  // -- Public: ORDER-FIRST cart checkout -------------------------------------------
-  // The server verifies prices, reserves stock, creates the pending order,
-  // and initiates CamPay. The client never sends an amount.
+  /* ── Public: ORDER-FIRST cart checkout ────────────────────────────────────
+   * The server verifies prices, reserves stock, creates ONE ORDER PER SELLER
+   * with seller_id set, and initiates CamPay. The client never sends an
+   * amount. The signature-verified webhook flips the orders to paid and
+   * (when escrow is false) disburses each seller's share.
+   */
   const initCartPayment = useCallback(async (params: InitCartPaymentParams) => {
-    const { items, phone, description, accessToken } = params;
+    const { items, phone, description, accessToken, escrow } = params;
 
-    const phone9      = normalizePhone(phone);
-    const phoneForApi = `237${phone9}`;
+    if (!accessToken) {
+      failWith('Please sign in again before paying — your session has expired.');
+      return;
+    }
+    if (!items || items.length === 0) {
+      failWith('Your cart is empty.');
+      return;
+    }
 
+    const phoneForApi = `237${normalizePhone(phone)}`;
     const currentAttempt = beginAttempt();
 
-    let ref: string;
+    const body: Record<string, unknown> = {
+      phone: phoneForApi,
+      items,
+      summary: description,
+    };
+    // Only send the flag when explicitly set, so the server default (hold) stands.
+    if (escrow === false) body.escrow = false;
+
+    let init: { reference: string; orderId: string | null; orderGroupId: string | null };
     try {
-      ref = await requestReference(
-        `${BACKEND}/api/payments/cart`,
-        { phone: phoneForApi, items, summary: description },
-        accessToken,
-      );
+      init = await requestInit(`${BACKEND}/cart`, body, accessToken);
     } catch (err: unknown) {
       failWith(err instanceof Error ? err.message : 'Failed to reach payment server.');
       return;
     }
 
     if (currentAttempt !== attemptRef.current) return;
-    startPolling(ref, currentAttempt);
+
+    orderRef.current = { orderId: init.orderId, orderGroupId: init.orderGroupId };
+    setOrderId(init.orderId);
+    setOrderGroupId(init.orderGroupId);
+
+    startPolling(init.reference, currentAttempt);
   }, [onSuccess, onFailure]);
 
-  return { status, errorMsg, reference, countdown, initPayment, initCartPayment, reset };
+  return {
+    status, errorMsg, reference, countdown,
+    orderId, orderGroupId,
+    initPayment, initCartPayment, reset,
+    backendUrl: BACKEND,
+  };
 }
 
-// BAMBEH_END_TOKEN__USECAMPAY__COMPLETE
+// BAMBEH_END_TOKEN__USECAMPAY_FIX201__COMPLETE
