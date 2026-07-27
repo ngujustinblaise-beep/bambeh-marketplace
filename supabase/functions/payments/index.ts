@@ -1,8 +1,15 @@
-// BAMBEH_DEPLOY_TOKEN__PAYMENTS_FIX197_START
+// BAMBEH_DEPLOY_TOKEN__PAYMENTS_FIX202_START
 // FILE LOCATION: Supabase Edge Function "payments" (dashboard editor)
 //
-// FIX197 — MONEY ACTUALLY MOVES.  Based faithfully on FIX96; everything not
-// listed below is unchanged.  Deploy with Verify JWT OFF (as before).
+// FIX202 — corrects FIX197. Deploy with Verify JWT OFF (as before).
+//
+//  FIX202  escrow_status removed from the handleCart insert. I had written
+//          'pending_release', which orders_escrow_status_check does not allow,
+//          so every cart order insert failed with 500. The DB default 'held'
+//          now applies instead.
+//  FIX200  resolveSellerPhone also reads the LISTING's phone columns, because
+//          only 2 of 20 profiles have a number on file.
+//  FIX204  new POST /refund-escrow so a buyer can decline and be refunded.
 //
 // RUN FIX197_orders_order_group.sql FIRST.
 //
@@ -531,23 +538,71 @@ const SELLER_PHONE_COLUMNS = [
   "phone_number", "phone", "whatsapp", "contact_phone",
 ];
 
-async function resolveSellerPhone(sellerId: string | null): Promise<string | null> {
-  if (!sellerId || !UUID_RE.test(sellerId)) return null;
-  for (const table of SELLER_PHONE_TABLES) {
-    try {
-      const { data: row, error } = await supabase.from(table).select("*").eq("id", sellerId).maybeSingle();
-      if (error || !row) continue;
-      for (const col of SELLER_PHONE_COLUMNS) {
-        const raw = (row as any)[col];
-        if (!raw) continue;
-        const check = validatePhone(raw);
-        if (check.valid) {
-          console.info(`[payout] seller phone resolved from ${table}.${col}`);
-          return check.normalized;
-        }
-      }
-    } catch { /* table may not exist */ }
+// FIX200: the number the seller typed when posting the item. Far more
+// populated than profiles.phone (2 of 20 as of 2026-07-27).
+const LISTING_PHONE_COLUMNS = [
+  "payout_phone", "momo_phone", "phone", "contact_phone", "vendor_phone", "seller_phone",
+];
+
+function firstValidPhone(row: any, columns: string[]): string | null {
+  if (!row) return null;
+  for (const col of columns) {
+    const raw = row[col];
+    if (!raw) continue;
+    const check = validatePhone(raw);
+    if (check.valid) return check.normalized;
   }
+  return null;
+}
+
+/**
+ * Find a payout number for this seller.
+ *  1. profiles / vendor_profiles / shops / users / farmers
+ *  2. FIX200 - the listing(s) the ordered items came from
+ */
+async function resolveSellerPhone(sellerId: string | null, order?: any): Promise<string | null> {
+  if (sellerId && UUID_RE.test(sellerId)) {
+    for (const table of SELLER_PHONE_TABLES) {
+      try {
+        const { data: row, error } = await supabase.from(table).select("*").eq("id", sellerId).maybeSingle();
+        if (error || !row) continue;
+        const found = firstValidPhone(row, SELLER_PHONE_COLUMNS);
+        if (found) {
+          console.info(`[payout] seller phone resolved from ${table}`);
+          return found;
+        }
+      } catch { /* table may not exist */ }
+    }
+  }
+
+  const items = Array.isArray(order?.items) ? order.items : [];
+  const tried = new Set<string>();
+  for (const item of items as any[]) {
+    const listingId = item?.listingId;
+    if (!listingId || !UUID_RE.test(String(listingId))) continue;
+
+    const candidates = [
+      item?.listingType ? LISTING_TABLES[item.listingType] : null,
+      "listings",
+      "marketplace_listings",
+    ].filter(Boolean) as string[];
+
+    for (const table of candidates) {
+      const key = `${table}:${listingId}`;
+      if (tried.has(key)) continue;
+      tried.add(key);
+      try {
+        const { data: row, error } = await supabase.from(table).select("*").eq("id", listingId).maybeSingle();
+        if (error || !row) continue;
+        const found = firstValidPhone(row, LISTING_PHONE_COLUMNS);
+        if (found) {
+          console.info(`[payout] seller phone resolved from ${table} (listing ${listingId})`);
+          return found;
+        }
+      } catch { /* table may not exist */ }
+    }
+  }
+
   return null;
 }
 
@@ -583,7 +638,7 @@ async function disburseForOrder(order: any, reason: string): Promise<void> {
     return;
   }
 
-  const phone = await resolveSellerPhone(sellerId);
+  const phone = await resolveSellerPhone(sellerId, order);
   if (!phone) {
     await supabase.from("seller_payouts")
       .update({ status: "no_phone", failure_reason: "no valid payout number on file for this seller" })
@@ -891,7 +946,8 @@ async function handleCart(req: Request): Promise<Response> {
       payment_method: "campay",
       items: sellerItems,
       escrow: escrowHold,
-      escrow_status: escrowHold ? "held" : "pending_release",
+      // FIX202: escrow_status omitted on purpose - the DB default 'held' is
+      // guaranteed valid under orders_escrow_status_check.
     });
   });
 
@@ -899,8 +955,8 @@ async function handleCart(req: Request): Promise<Response> {
 
   if (orderErr || !orders || orders.length === 0) {
     await check.releaseAll();
-    console.error("[cart] order insert error:", orderErr?.message);
-    return fail("Could not create the order. Please try again.", 500);
+    console.error("[cart] order insert error:", orderErr?.message, "| details:", orderErr?.details, "| hint:", orderErr?.hint);
+    return fail(`Could not create the order. ${orderErr?.message ?? "Please try again."}`, 500);
   }
 
   const anchorOrder = (orders as any[])[0];
@@ -1030,44 +1086,174 @@ async function handleDisburse(req: Request): Promise<Response> {
   return ok({ message: "Disbursement initiated.", reference: result.reference, status: (result.data as any)?.status, externalRef: ref });
 }
 
+/** Shared guard for the two buyer-driven escrow actions. */
+async function loadOrderForBuyer(req: Request, orderId: unknown): Promise<
+  { ok: true; order: any; admin: boolean } | { ok: false; res: Response }
+> {
+  if (!orderId || !UUID_RE.test(String(orderId))) {
+    return { ok: false, res: fail("A valid orderId is required.") };
+  }
+  const user = await getBearerUser(req);
+  const admin = await isAdmin(req);
+  if (!user && !admin) return { ok: false, res: fail("Sign in required.", 401) };
+
+  const { data: order, error } = await supabase.from("orders").select("*").eq("id", orderId).maybeSingle();
+  if (error || !order) return { ok: false, res: fail("Order not found.", 404) };
+
+  const buyerId = (order as any).buyer_id ?? (order as any).user_id;
+  if (!admin && buyerId !== user!.id) {
+    return { ok: false, res: fail("Only the buyer of this order can do that.", 403) };
+  }
+  if ((order as any).status !== "paid") {
+    return { ok: false, res: fail("This order has not been paid yet.", 409) };
+  }
+  return { ok: true, order, admin };
+}
+
 /**
- * FIX197 — POST /release-escrow  { orderId }
- * The BUYER confirms they received the item; the seller gets paid.
- * Only the buyer on the order (or an admin) can call this.
+ * POST /release-escrow  { orderId }
+ * The BUYER confirms receipt; the seller gets paid.
  */
 async function handleReleaseEscrow(req: Request): Promise<Response> {
   const body = await req.json().catch(() => ({}));
-  const orderId = body?.orderId;
-  if (!orderId || !UUID_RE.test(String(orderId))) return fail("A valid orderId is required.");
+  const guard = await loadOrderForBuyer(req, body?.orderId);
+  if (!guard.ok) return guard.res;
+  const order = guard.order;
 
-  const user = await getBearerUser(req);
-  const admin = await isAdmin(req);
-  if (!user && !admin) return fail("Sign in required.", 401);
-
-  const { data: order, error } = await supabase.from("orders").select("*").eq("id", orderId).maybeSingle();
-  if (error || !order) return fail("Order not found.", 404);
-
-  const buyerId = (order as any).buyer_id ?? (order as any).user_id;
-  if (!admin && buyerId !== user!.id) return fail("Only the buyer can confirm receipt of this order.", 403);
-
-  if ((order as any).status !== "paid") {
-    return fail("This order has not been paid yet, so there is nothing to release.", 409);
+  const { data: existingRefund } = await supabase.from("refunds")
+    .select("status").eq("order_id", order.id).maybeSingle();
+  if (existingRefund) {
+    return fail("This order has already been refunded and cannot be released.", 409);
   }
 
   await supabase.from("orders").update({
     escrow: false, escrow_status: "released", updated_at: new Date().toISOString(),
-  }).eq("id", orderId);
+  }).eq("id", order.id);
 
-  await disburseForOrder({ ...(order as any), escrow: false }, "buyer confirmed receipt");
+  await disburseForOrder({ ...order, escrow: false }, "buyer confirmed receipt");
 
   const { data: payout } = await supabase.from("seller_payouts")
-    .select("status, amount_xaf, failure_reason").eq("order_id", orderId).maybeSingle();
+    .select("status, amount_xaf, failure_reason").eq("order_id", order.id).maybeSingle();
 
   return ok({
-    message: "Receipt confirmed.",
+    message: "Receipt confirmed. The seller is being paid.",
     payoutStatus: (payout as any)?.status ?? "unknown",
     amount: (payout as any)?.amount_xaf ?? null,
     note: (payout as any)?.failure_reason ?? null,
+  });
+}
+
+/**
+ * FIX204 — POST /refund-escrow  { orderId, reason? }
+ * The BUYER declines the item. The money goes back to the number that paid.
+ * Idempotent: refunds.order_id is unique, so a double-tap cannot refund twice.
+ * Refuses if the seller has already been paid.
+ */
+async function handleRefundEscrow(req: Request): Promise<Response> {
+  const body = await req.json().catch(() => ({}));
+  const guard = await loadOrderForBuyer(req, body?.orderId);
+  if (!guard.ok) return guard.res;
+  const order = guard.order;
+
+  const { data: payout } = await supabase.from("seller_payouts")
+    .select("status").eq("order_id", order.id).maybeSingle();
+  if (payout && (payout as any).status === "sent") {
+    return fail("The seller has already been paid for this order. Please open a dispute instead.", 409);
+  }
+
+  const amount = Math.round(Number(order.total_xaf ?? 0));
+  if (amount <= 0) return fail("This order has no refundable amount.", 409);
+
+  const externalRef = generateExternalRef("REFUND");
+  const { error: claimErr } = await supabase.from("refunds").insert({
+    order_id: order.id,
+    buyer_id: order.buyer_id ?? order.user_id ?? null,
+    amount_xaf: amount,
+    reason: String(body?.reason ?? "Buyer declined the item").slice(0, 500),
+    external_ref: externalRef,
+    status: "pending",
+  });
+  if (claimErr) {
+    if (claimErr.code === "23505") return fail("A refund for this order is already in progress.", 409);
+    console.error("[refund] could not claim refund row:", claimErr.message);
+    return fail("Could not start the refund. Please contact support.", 500);
+  }
+
+  // Refund to the number that actually paid.
+  let toPhone: string | null = null;
+  const { data: pay } = await supabase.from("payments")
+    .select("phone").eq("order_id", order.id)
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const payCheck = validatePhone((pay as any)?.phone);
+  if (payCheck.valid) toPhone = payCheck.normalized;
+
+  if (!toPhone) {
+    const buyerId = order.buyer_id ?? order.user_id;
+    if (buyerId) {
+      const { data: prof } = await supabase.from("profiles").select("*").eq("id", buyerId).maybeSingle();
+      toPhone = firstValidPhone(prof, SELLER_PHONE_COLUMNS);
+    }
+  }
+
+  if (!toPhone) {
+    await supabase.from("refunds")
+      .update({ status: "no_phone", failure_reason: "no valid number to refund to" })
+      .eq("order_id", order.id);
+    await supabase.from("orders").update({
+      status: "refund_pending",
+      failure_reason: "Refund requested but no payout number found",
+      updated_at: new Date().toISOString(),
+    }).eq("id", order.id);
+    console.error("[refund] no number to refund to for order", order.id);
+    return ok({
+      message: "Refund recorded, but we could not find a number to send it to. " +
+        "Our team will contact you within 24 hours.",
+      refundStatus: "no_phone",
+    });
+  }
+
+  const result = await campayDisburse({
+    amount, to: toPhone,
+    description: `Bambeh refund for order ${order.order_number ?? order.id}`,
+    externalRef,
+  });
+
+  if (!result.success) {
+    await supabase.from("refunds")
+      .update({ status: "failed", to_phone: toPhone, failure_reason: JSON.stringify(result.error).slice(0, 500) })
+      .eq("order_id", order.id);
+    await supabase.from("orders").update({
+      status: "refund_pending", updated_at: new Date().toISOString(),
+    }).eq("id", order.id);
+    console.error("[refund] disbursement REFUSED for order", order.id, result.error);
+    return ok({
+      message: "Your refund is recorded but the transfer did not go through. " +
+        "Our team will complete it manually within 24 hours.",
+      refundStatus: "failed",
+    });
+  }
+
+  await supabase.from("refunds").update({
+    status: "sent", to_phone: toPhone,
+    campay_reference: result.reference ?? null,
+    settled_at: new Date().toISOString(),
+  }).eq("order_id", order.id);
+
+  await supabase.from("orders").update({
+    status: "refunded", escrow: false, escrow_status: "refunded",
+    failure_reason: String(body?.reason ?? "Buyer declined the item").slice(0, 500),
+    updated_at: new Date().toISOString(),
+  }).eq("id", order.id);
+
+  await releaseStockForItems(order.items);
+
+  console.info(`[refund] SENT ${amount} XAF back to buyer for order ${order.id}`);
+
+  return ok({
+    message: "Refund sent. The money is on its way back to your mobile money account.",
+    refundStatus: "sent",
+    amount,
+    reference: result.reference ?? null,
   });
 }
 
@@ -1116,6 +1302,9 @@ async function handleWebhook(req: Request): Promise<Response> {
         case "SUBSCRIPTION": await activateSubscription(event.externalRef, event); break;
         case "CART": await fulfilOrder(event.externalRef, event); break;
         case "DONATION": await recordDonation(event.externalRef, event); break;
+        case "REFUND": case "DISBURSE":
+          console.info("[Webhook] outbound transfer confirmed:", event.externalRef);
+          break;
         default:
           await supabase.from("payments").update({ status: "SUCCESSFUL", operator: event.operator, settled_at: new Date().toISOString() }).eq("external_ref", event.externalRef);
           console.info("[Webhook] COLLECT payment confirmed:", event.externalRef);
@@ -1162,7 +1351,7 @@ async function handleSubscriptionLookup(userId: string): Promise<Response> {
 
 function handleHealth(): Response {
   return json({
-    status: "ok", service: "bambeh-payments", version: "fix197",
+    status: "ok", service: "bambeh-payments", version: "fix202",
     campayConfigured: !!ACCESS_TOKEN, webhookKeyConfigured: !!WEBHOOK_KEY,
     time: new Date().toISOString(),
   }, 200);
@@ -1185,7 +1374,7 @@ Deno.serve(async (req) => {
     const ip = clientIp(req);
 
     const isWebhook = route === "webhook";
-    if (req.method === "POST" && !isWebhook && rateLimited(`pay:${ip}`, 10, 60_000)) {
+    if (req.method === "POST" && !isWebhook && rateLimited(`pay:${ip}`, 20, 60_000)) {
       return fail("Too many payment attempts. Please wait a minute.", 429);
     }
     if (isWebhook && rateLimited(`hook:${ip}`, 120, 60_000)) {
@@ -1202,6 +1391,7 @@ Deno.serve(async (req) => {
         case "link": return await handlePaymentLink(req);
         case "disburse": return await handleDisburse(req);
         case "release-escrow": return await handleReleaseEscrow(req);
+        case "refund-escrow": return await handleRefundEscrow(req);
         case "webhook": return await handleWebhook(req);
       }
     }
@@ -1222,4 +1412,4 @@ Deno.serve(async (req) => {
     return json({ success: false, error: "Internal server error." }, 500);
   }
 });
-// BAMBEH_END_TOKEN__PAYMENTS_FIX197__COMPLETE
+// BAMBEH_END_TOKEN__PAYMENTS_FIX202__COMPLETE
