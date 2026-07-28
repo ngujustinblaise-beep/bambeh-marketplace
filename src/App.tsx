@@ -189,6 +189,7 @@ const BambehAIChatbot = lazy(() => import("@/routes/groups/community/BambehAICha
 
 // DETAIL PAGES
 const JobDetails              = lazy(() => import("@/pages/JobDetails"));
+const JobApplicants           = lazy(() => import("@/pages/JobApplicants"));
 const MarketplaceItemDetails  = lazy(() => import("@/routes/groups/marketplace/MarketplaceItemDetails"));
 const ServiceDetails          = lazy(() => import("@/pages/ServiceDetails"));
 const RentalDetails           = lazy(() => import("@/pages/RentalDetails"));
@@ -855,6 +856,14 @@ export default function App() {
                         />
 
                         {/* ── 6. DETAIL PAGES ── */}
+                        <Route
+                          path="/jobs/:jobId/applicants"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><JobApplicants /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
                         <Route
                           path="/jobs/:id"
                           element={

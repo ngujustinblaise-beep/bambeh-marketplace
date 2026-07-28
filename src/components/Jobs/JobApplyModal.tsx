@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__JOBAPPLYMODAL_FIX195_START
+// BAMBEH_DEPLOY_TOKEN__JOBAPPLYMODAL_FIX219_START
 /**
  * JobApplyModal.tsx — Bambeh Marketplace
  * FILE LOCATION: src/components/Jobs/JobApplyModal.tsx   <-- THE WIRED ONE
@@ -16,7 +16,7 @@
  *  2. Shows ONLY the sections the job giver switched on.
  *  3. Multi-step, validated, with a review step before submit.
  *  4. Writes job_applications, then job_application_languages, then uploads
- *     files to Storage bucket 'job-applications' and writes
+ *     files to Storage bucket 'job-documents' (private) and writes
  *     job_application_documents.
  *  5. Fixes the empty-string-uuid notification bug: if employerId is not a
  *     real uuid the notify is skipped instead of throwing a 400.
@@ -63,21 +63,34 @@ type Requirements = {
   special_request: string | null;
 };
 
+/**
+ * FIX217 - THE DEFAULTS ARE NOW ON.
+ *
+ * Every section of this form is gated behind a flag read from
+ * job_application_requirements. That table did not exist, so the query
+ * returned nothing, every flag fell back to false, and the wizard collapsed
+ * to personal -> languages -> review. The CV upload and the right-to-work
+ * section were built all along; they were simply switched off.
+ *
+ * These are now the DEFAULTS for any job whose employer has not chosen
+ * otherwise: identity, right to work and a CV are always asked for.
+ * An employer row still overrides any of them.
+ */
 const NO_REQUIREMENTS: Requirements = {
-  job_country: null,
-  require_nationality: false,
-  require_work_authorization: false,
-  require_id_document: false,
+  job_country: 'CM',
+  require_nationality: true,
+  require_work_authorization: true,
+  require_id_document: true,
   allowed_id_document_types: ['national_id', 'resident_permit', 'passport', 'other'],
   require_driving_ability: false,
   require_driving_licence_doc: false,
-  require_cv: false,
+  require_cv: true,
   require_portfolio: false,
   require_cover_letter: false,
   required_language_count: 1,
   required_languages: [],
   minimum_language_level: 'beginner',
-  require_interview_availability: false,
+  require_interview_availability: true,
   require_language_test_availability: false,
   other_documents: [],
   special_request: null,
@@ -212,9 +225,14 @@ export default function JobApplyModal({
       }
 
       // Requirements — absent row is normal, not an error.
-      const { data: r } = await supabase
+      const { data: r, error: rErr } = await supabase
         .from('job_application_requirements')
         .select('*').eq('job_id', jobId).maybeSingle();
+      if (rErr) {
+        // FIX217: never silent again. A missing table used to look identical
+        // to "this employer asked for nothing", which hid the bug for weeks.
+        console.warn('[JobApply] requirements lookup failed, using defaults:', rErr.message);
+      }
       if (!cancelled && r) {
         setReq({
           ...NO_REQUIREMENTS,
@@ -378,7 +396,7 @@ export default function JobApplyModal({
         const path = `${userId}/${applicationId}/${key.replace(':', '_')}-${Date.now()}-${safe}`;
 
         const { error: upErr } = await supabase.storage
-          .from('job-applications')
+          .from('job-documents')
           .upload(path, file, { upsert: false, contentType: file.type || undefined });
         if (upErr) throw new Error(`Application saved, but "${file.name}" failed to upload: ${upErr.message}`);
 
@@ -386,7 +404,7 @@ export default function JobApplyModal({
           application_id: applicationId,
           document_type: docType,
           other_label: otherLbl,
-          storage_bucket: 'job-applications',
+          storage_bucket: 'job-documents',
           storage_path: path,
           original_filename: file.name,
           mime_type: file.type || null,
@@ -399,16 +417,47 @@ export default function JobApplyModal({
       // Notify employer — FIX: skip when employerId isn't a real uuid ("" used to 400).
       if (UUID_RE.test(employerId)) {
         try {
-          await supabase.from('notifications').insert({
+          const base = {
             user_id: employerId,
             title: 'New job application',
             body: `${fullName.trim()} applied${jobTitle ? ` for ${jobTitle}` : ''}`,
-            type: 'job_application',
             data: { job_id: jobId, applicant_id: userId, application_id: applicationId },
-            action_url: '/jobs',
+            // FIX219: deep-link straight to the new applicants page.
+            action_url: `/jobs/${jobId}/applicants`,
             is_read: false,
-          });
+          };
+          // FIX219: notifications.type is guarded by notifications_type_check.
+          // If 'job_application' is not in that list the insert used to fail
+          // silently and the employer was never told. Fall back to a type we
+          // know the constraint accepts rather than lose the signal.
+          const { error: n1 } = await supabase
+            .from('notifications').insert({ ...base, type: 'job_application' });
+          if (n1) {
+            console.warn('[JobApply] notification type rejected, retrying:', n1.message);
+            const { error: n2 } = await supabase
+              .from('notifications').insert({ ...base, type: 'message' });
+            if (n2) console.warn('[JobApply] employer notification failed:', n2.message);
+          }
         } catch { /* best-effort */ }
+      }
+
+      // FIX219 - THE ZERO-APPLICANT BUG.
+      // JobDetails renders listings.extra.application_count. That counter was
+      // only ever incremented inside jobs.service.applyForJob(), which this
+      // modal replaced and nothing calls any more. So real applications saved
+      // correctly and the job still advertised "0 applicants". Bump it here.
+      try {
+        const { data: lrow } = await supabase
+          .from('listings').select('extra').eq('id', jobId).maybeSingle();
+        if (lrow) {
+          const extra = ((lrow as { extra?: Record<string, unknown> }).extra ?? {}) as Record<string, unknown>;
+          const next = Number(extra.application_count ?? 0) + 1;
+          await supabase.from('listings')
+            .update({ extra: { ...extra, application_count: next } })
+            .eq('id', jobId);
+        }
+      } catch (e) {
+        console.warn('[JobApply] applicant counter not bumped:', e);
       }
 
       setDone(true);
@@ -809,4 +858,4 @@ export default function JobApplyModal({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__JOBAPPLYMODAL_FIX195__COMPLETE
+// BAMBEH_END_TOKEN__JOBAPPLYMODAL_FIX219__COMPLETE
