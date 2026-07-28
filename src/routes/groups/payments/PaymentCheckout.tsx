@@ -1,52 +1,55 @@
-// BAMBEH_DEPLOY_TOKEN__PAYMENTCHECKOUT_FIX189_START
+// BAMBEH_DEPLOY_TOKEN__PAYMENTCHECKOUT_FIX216_START
 /**
  * PaymentCheckout.tsx — Bambeh Marketplace
  * FILE LOCATION: src/routes/groups/payments/PaymentCheckout.tsx   <-- THE WIRED ONE
  *
- * FIX189 — THE "ORDER NOT FOUND" FIX
- * ==================================
- * WHY NO PAYMENT HAS EVER SUCCEEDED IN THIS APP:
+ * FIX216 — THIS PAGE STOPS TAKING MONEY WITHOUT CREATING AN ORDER.
+ * =================================================================
+ * FIX189 wrote the order from the browser AFTER CamPay confirmed. That could
+ * never work, for a reason that only became visible once the server was read:
  *
- * This page invented an order id on mount:
- *     const id = state?.orderId ?? `ORD_${Date.now()}_...`;
- * then sent it to the payment server as metadata.order_id. The server's
- * handleCollect() treats a supplied order_id as the source of truth for the
- * amount:
- *     if (orderId) { const lookup = await resolveOrderAmount(orderId);
- *                    if (!lookup.ok) return fail(lookup.error, 404); }
- * The order was never written to the database, so the lookup found nothing and
- * returned 404 "Order not found." — which surfaced in the app as
- * "Payment failed. failed to fetch." Every payment. Every time.
+ *   orders.seller_id is NOT NULL, and this page has never known who the
+ *   seller is. Its items are {id, name, price, quantity, image} — no seller
+ *   anywhere. So the insert failed every time and the buyer got the yellow
+ *   "payment succeeded but we could not save the order" banner while the
+ *   money sat in the Bambeh CamPay balance with nothing pointing at it.
  *
- * A second hidden bug would have broken it even after that: the old code
- * inserted `id: orderId` (a string like "ORD_1753...") into orders.id, which is
- * a uuid column. Postgres rejects that outright.
+ * A second bug compounded it: externalRef was generated ONCE on mount and
+ * reused on every retry, so the second attempt always died on
+ * payments_external_ref_unique.
  *
  * WHAT THIS FILE NOW DOES
  * -----------------------
- *  1. order_id is sent to the server ONLY when a real order row exists. With no
- *     order_id the server charges the amount directly and succeeds.
- *  2. The order row is written AFTER payment is confirmed, letting Postgres
- *     generate the uuid instead of forcing a fabricated string.
- *  3. Escrow is recorded against the REAL order id, so /escrow can find it.
- *  4. If money is taken but a row fails to save, the user is shown the payment
- *     reference and told to contact support. Money never vanishes silently.
- *  5. All mojibake removed — the old file had "?" where em-dashes and icons
- *     belonged, in the header, the empty state and the delivery block.
- *  6. Fully translated across all five in-app languages, with RTL for Arabic.
+ *  1. CART MODE. It hands cartItems + accessToken to CamPayWidget, which calls
+ *     POST /cart. The SERVER verifies prices against the database, reserves
+ *     stock, splits the basket into one order per seller with seller_id set,
+ *     charges CamPay once and returns the real order id. The browser never
+ *     writes an order row again — the client-side insert is DELETED.
+ *  2. SELLER RESOLUTION BEFORE ANY MONEY MOVES. Each item id is looked up in
+ *     marketplace_listings, then listings, to learn its listingType and owner.
+ *     The server re-verifies both, so this is a hint, not a trust boundary.
+ *  3. IF AN ITEM CANNOT BE RESOLVED, WE DO NOT CHARGE. A blocking notice is
+ *     shown instead. Taking money we cannot attach to an order is the exact
+ *     failure this fix exists to end.
+ *  4. NO externalRef PROP. useCamPay mints a fresh reference per attempt, so
+ *     the duplicate-key collision on retry is gone by deletion.
+ *  5. FIX213 NAVIGATION. "Track Escrow" goes to /tracking?orderId=<id> — the
+ *     page that carries the escrow panel — or /orders when there is no id.
+ *     It never lands on /marketplace again.
  *
  * State is passed via React Router location.state:
  *   { items, subtotal, deliveryFee, total, deliveryAddress,
- *     orderId?  (ONLY pass this if the order genuinely exists in the DB),
+ *     cartItems?  (already-shaped CartCheckoutItem[]; used as-is if present),
  *     context: 'cart' | 'service' | 'escrow', description? }
  */
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, ShoppingCart, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, MapPin, ShoppingCart, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import CamPayWidget from '@/components/payment/CamPayWidget';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import type { CartCheckoutItem, PaymentSuccessInfo } from '@/hooks/useCamPay';
 
 interface CartItem {
   id: string;
@@ -58,6 +61,7 @@ interface CartItem {
 
 interface CheckoutState {
   items?: CartItem[];
+  cartItems?: CartCheckoutItem[];
   subtotal?: number;
   deliveryFee?: number;
   total: number;
@@ -81,6 +85,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     escrowMsg: 'Your money is held safely. The seller will now prepare your item.',
     cartMsg: 'Your order has been placed.',
     trackEscrow: 'Track Escrow', keepShopping: 'Continue Shopping',
+    preparing: 'Checking your items...',
+    blockedTitle: 'We cannot complete this order yet',
+    blockedBody: 'We could not identify the seller of one of these items, so we will not take your money. Please open the item again from the marketplace and add it to your cart from there.',
+    signInTitle: 'Please sign in',
+    signInBody: 'You need to be signed in so your order can be created and protected by escrow.',
   },
   fr: {
     back: 'Retour', checkout: 'Paiement', secure: 'Finalisez votre achat en toute securite',
@@ -92,6 +101,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     escrowMsg: 'Votre argent est conserve en securite. Le vendeur va preparer votre article.',
     cartMsg: 'Votre commande a ete enregistree.',
     trackEscrow: 'Suivre escrow', keepShopping: 'Continuer les achats',
+    preparing: 'Verification de vos articles...',
+    blockedTitle: 'Nous ne pouvons pas encore finaliser cette commande',
+    blockedBody: "Nous n'avons pas pu identifier le vendeur d'un de ces articles, donc nous ne prenons pas votre argent. Ouvrez a nouveau l'article depuis la marketplace et ajoutez-le au panier de la.",
+    signInTitle: 'Veuillez vous connecter',
+    signInBody: 'Vous devez etre connecte pour que votre commande soit creee et protegee par escrow.',
   },
   pidgin: {
     back: 'Go back', checkout: 'Checkout', secure: 'Finish your buy safe safe',
@@ -103,6 +117,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     escrowMsg: 'Your money dey safe. Seller go prepare your thing now.',
     cartMsg: 'Your order don enter.',
     trackEscrow: 'Follow the escrow', keepShopping: 'Continue to buy',
+    preparing: 'We dey check your things...',
+    blockedTitle: 'We no fit finish this order yet',
+    blockedBody: 'We no sabi who be the seller for one of these things, so we no go collect your money. Abeg open the thing again for marketplace and put am for cart from there.',
+    signInTitle: 'Abeg log in',
+    signInBody: 'You must log in so that we fit create your order and keep your money safe.',
   },
   ar: {
     back: 'رجوع', checkout: 'الدفع', secure: 'أكمل عملية الشراء بأمان',
@@ -114,6 +133,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     escrowMsg: 'أموالك محفوظة بأمان. سيقوم البائع بتحضير المنتج الآن.',
     cartMsg: 'تم تسجيل طلبك.',
     trackEscrow: 'تتبع الضمان', keepShopping: 'مواصلة الشراء',
+    preparing: 'جارٍ التحقق من عناصرك...',
+    blockedTitle: 'لا يمكننا إتمام هذا الطلب الآن',
+    blockedBody: 'لم نتمكن من تحديد بائع أحد هذه العناصر، لذلك لن نأخذ أموالك. يرجى فتح العنصر مرة أخرى من السوق وإضافته إلى السلة من هناك.',
+    signInTitle: 'يرجى تسجيل الدخول',
+    signInBody: 'يجب تسجيل الدخول حتى يتم إنشاء طلبك وحمايته بالضمان.',
   },
   ff: {
     back: 'Rutto', checkout: 'Yoɓgol', secure: 'Timmin coodgol maa e hoolaare',
@@ -125,6 +149,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     escrowMsg: 'Kaalis maa ina reenaa e jam. Jeeyoowo ina hebilanoo kuutorɗam maa.',
     cartMsg: 'Ordoru maa naatii.',
     trackEscrow: 'Ɗowto escrow', keepShopping: 'Jokku coodgol',
+    preparing: 'Eɗen ƴeewa kuutorɗe maa...',
+    blockedTitle: 'Min mbaawaa timminde ndee ordoru jooni',
+    blockedBody: 'Min anndaani jeeyoowo gooto e ɗee kuutorɗe, ndeen min ƴettataa kaalis maa. Tiiɗno uddit kuutorgal ngal e luumo ndee ɓeydaa ngal e panyeeru to ɗoon.',
+    signInTitle: 'Tiiɗno naatnu',
+    signInBody: 'Ada foti naatde ngam ordoru maa waɗee kadi reenee e escrow.',
   },
 };
 
@@ -140,6 +169,69 @@ function resolveLang(raw: unknown): LangKey {
 const money = (n: number) =>
   new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(Number(n) || 0);
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * The server's LISTING_TABLES map, mirrored. These are the only listingType
+ * values POST /cart understands:
+ *   marketplace -> marketplace_listings
+ *   listing     -> listings
+ * Probe order matters only for speed; the server re-reads the row either way
+ * and overrides both price and seller from the database.
+ */
+const PROBE_TABLES: { table: string; listingType: string }[] = [
+  { table: 'marketplace_listings', listingType: 'marketplace' },
+  { table: 'listings', listingType: 'listing' },
+];
+
+type Resolved = { items: CartCheckoutItem[]; unresolved: string[] };
+
+async function resolveCartItems(items: CartItem[]): Promise<Resolved> {
+  const out: CartCheckoutItem[] = [];
+  const unresolved: string[] = [];
+
+  for (const item of items) {
+    const base: CartCheckoutItem = {
+      listingId: UUID_RE.test(String(item.id)) ? String(item.id) : null,
+      listingType: null,
+      sellerId: null,
+      title: String(item.name ?? 'Item').slice(0, 200),
+      priceXAF: Math.round(Number(item.price) || 0),
+      quantity: Math.max(1, Math.round(Number(item.quantity) || 1)),
+    };
+
+    if (!base.listingId) {
+      unresolved.push(base.title);
+      out.push(base);
+      continue;
+    }
+
+    let found = false;
+    for (const probe of PROBE_TABLES) {
+      try {
+        const { data, error } = await supabase
+          .from(probe.table)
+          .select('id, user_id')
+          .eq('id', base.listingId)
+          .maybeSingle();
+        if (error || !data) continue;
+        base.listingType = probe.listingType;
+        const owner = (data as { user_id?: string | null })?.user_id ?? null;
+        if (owner && UUID_RE.test(String(owner))) base.sellerId = String(owner);
+        found = !!base.sellerId;
+        break;
+      } catch {
+        // Try the next table.
+      }
+    }
+
+    if (!found) unresolved.push(base.title);
+    out.push(base);
+  }
+
+  return { items: out, unresolved };
+}
+
 /* ======================================================================== */
 
 export default function PaymentCheckout() {
@@ -151,23 +243,61 @@ export default function PaymentCheckout() {
   const location = useLocation();
   const state    = (location.state as CheckoutState) ?? null;
 
-  // FIX189 — realOrderId is set ONLY when a row genuinely exists in `orders`.
-  // displayRef is cosmetic and is NEVER sent to the server as an order id.
   const [realOrderId, setRealOrderId] = useState<string | null>(state?.orderId ?? null);
   const [displayRef,  setDisplayRef]  = useState('');
   const [userId,      setUserId]      = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [success,     setSuccess]     = useState(false);
   const [orderRef,    setOrderRef]    = useState('');
   const [saveError,   setSaveError]   = useState<string | null>(null);
 
+  const [preparing,  setPreparing]  = useState(true);
+  const [cartItems,  setCartItems]  = useState<CartCheckoutItem[]>([]);
+  const [unresolved, setUnresolved] = useState<string[]>([]);
+
+  const rawItems   = state?.items ?? [];
+  const ctx        = state?.context ?? 'cart';
+  const needsOrder = ctx === 'cart' || ctx === 'escrow';
+
   useEffect(() => {
-    setDisplayRef(
-      state?.orderId ??
-      `REF_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`
-    );
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) setUserId(session.user.id);
-    });
+    let cancelled = false;
+
+    (async () => {
+      setDisplayRef(
+        state?.orderId ??
+        `REF_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`
+      );
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!cancelled) {
+        setUserId(session?.user?.id ?? null);
+        setAccessToken(session?.access_token ?? null);
+      }
+
+      // Already-shaped items win — the caller knows more than we can infer.
+      if (state?.cartItems && state.cartItems.length > 0) {
+        if (!cancelled) {
+          setCartItems(state.cartItems);
+          setUnresolved(state.cartItems.filter(i => !i.sellerId).map(i => i.title));
+          setPreparing(false);
+        }
+        return;
+      }
+
+      if (rawItems.length === 0) {
+        if (!cancelled) setPreparing(false);
+        return;
+      }
+
+      const resolved = await resolveCartItems(rawItems);
+      if (!cancelled) {
+        setCartItems(resolved.items);
+        setUnresolved(resolved.unresolved);
+        setPreparing(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -190,70 +320,31 @@ export default function PaymentCheckout() {
     );
   }
 
-  const items       = state.items ?? [];
+  const items       = rawItems;
   const total       = state.total;
   const deliveryFee = state.deliveryFee ?? 0;
   const subtotal    = state.subtotal ?? total;
-  const context     = state.context ?? 'cart';
+  const context     = ctx;
   const description = state.description
     ?? (items.length > 0
       ? `Bambeh Order ${displayRef} - ${items.length} item(s)`
       : `Bambeh Payment ${displayRef}`);
 
-  /* ---- Called after CamPay confirms SUCCESSFUL -------------------------- */
-  async function handlePaymentSuccess(reference: string) {
+  /* ---- Called after CamPay confirms SUCCESSFUL --------------------------
+   * The order already exists — the server created it before charging. All we
+   * do here is remember which one it is. No inserts. */
+  async function handlePaymentSuccess(reference: string, info?: PaymentSuccessInfo) {
     setOrderRef(reference);
     setSaveError(null);
 
-    let orderIdForEscrow = realOrderId;
-
-    // FIX189 — write the order AFTER confirmation; Postgres generates the uuid.
-    if (!orderIdForEscrow && userId) {
-      const { data: created, error: orderErr } = await supabase
-        .from('orders')
-        .insert({
-          buyer_id:          userId,
-          user_id:           userId,
-          status:            'paid',
-          total_xaf:         total,
-          items:             items,
-          delivery_address:  state.deliveryAddress ?? null,
-          payment_method:    'campay',
-          payment_reference: reference,
-          paid_at:           new Date().toISOString(),
-        })
-        .select('id')
-        .single();
-
-      if (orderErr) {
-        // The money IS taken by now. Never swallow this.
-        setSaveError(
-          `Your payment succeeded (reference ${reference}) but we could not save the order. ` +
-          `Please email support@bambeh.com with this reference and we will complete it for you.`
-        );
-      } else {
-        orderIdForEscrow = created?.id ?? null;
-        setRealOrderId(orderIdForEscrow);
-      }
-    }
-
-    // Escrow: record against the REAL order id so /escrow/:orderId resolves.
-    if (context === 'escrow' && orderIdForEscrow && userId) {
-      const { error: escErr } = await supabase.from('escrow_transactions').insert({
-        order_id:             orderIdForEscrow,
-        buyer_id:             userId,
-        amount:               total,
-        currency:             'XAF',
-        status:               'payment_confirmed',
-        campay_reference:     reference,
-        payment_confirmed_at: new Date().toISOString(),
-      });
-      if (escErr) {
-        setSaveError(
-          `Payment confirmed (reference ${reference}) but escrow could not be opened. ` +
-          `Please email support@bambeh.com with this reference.`
-        );
-      }
+    const serverOrderId = info?.orderId ?? null;
+    if (serverOrderId) {
+      setRealOrderId(serverOrderId);
+    } else if (needsOrder) {
+      setSaveError(
+        `Your payment succeeded (reference ${reference}) but the order id did not come back. ` +
+        `Open My Orders — it is usually there. If not, email support@bambeh.com with this reference.`
+      );
     }
 
     setSuccess(true);
@@ -286,7 +377,9 @@ export default function PaymentCheckout() {
           </p>
           <button
             onClick={() =>
-              navigate(context === 'escrow' && realOrderId ? `/escrow/${realOrderId}` : '/marketplace')
+              navigate(context === 'escrow'
+                ? (realOrderId ? `/tracking?orderId=${realOrderId}` : '/orders')
+                : '/marketplace')
             }
             className="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700"
           >
@@ -296,6 +389,11 @@ export default function PaymentCheckout() {
       </div>
     );
   }
+
+  /* ---- Gate: can this basket legally become an order? ------------------- */
+  const cartReady   = cartItems.length > 0 && unresolved.length === 0 && !!accessToken;
+  const blocked     = !preparing && needsOrder && !cartReady;
+  const blockedByAuth = blocked && !accessToken;
 
   /* ---- Checkout -------------------------------------------------------- */
   return (
@@ -375,20 +473,55 @@ export default function PaymentCheckout() {
           <div className="md:col-span-3">
             <div className="bg-white rounded-2xl shadow p-5">
               <h2 className="font-bold text-gray-900 mb-5">{c.method}</h2>
-              <CamPayWidget
-                amount={total}
-                description={description}
-                externalRef={displayRef}
-                /* FIX189 — order_id is sent ONLY when a real order row exists.
-                   Sending a fabricated id is what made the server answer
-                   404 "Order not found." for every single payment. */
-                metadata={{
-                  user_id: userId,
-                  ...(realOrderId ? { order_id: realOrderId } : {}),
-                  context,
-                }}
-                onSuccess={handlePaymentSuccess}
-              />
+
+              {preparing && (
+                <div className="flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-6 text-sm text-gray-600">
+                  <Loader2 className="w-4 h-4 animate-spin text-teal-600" />
+                  {c.preparing}
+                </div>
+              )}
+
+              {blocked && (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-amber-900 text-sm mb-1">
+                        {blockedByAuth ? c.signInTitle : c.blockedTitle}
+                      </p>
+                      <p className="text-xs text-amber-900">
+                        {blockedByAuth ? c.signInBody : c.blockedBody}
+                      </p>
+                      {!blockedByAuth && unresolved.length > 0 && (
+                        <ul className="mt-2 list-disc ps-4 text-xs text-amber-800">
+                          {unresolved.map((t, i) => <li key={i}>{t}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate(blockedByAuth ? '/login' : '/marketplace')}
+                    className="mt-3 w-full bg-amber-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-amber-700"
+                  >
+                    {blockedByAuth ? c.signInTitle : c.browse}
+                  </button>
+                </div>
+              )}
+
+              {!preparing && !blocked && (
+                <CamPayWidget
+                  amount={total}
+                  description={description}
+                  /* FIX216 — no externalRef prop on purpose. useCamPay mints a
+                     fresh one per attempt, so a retry can never collide with
+                     payments_external_ref_unique again. */
+                  cartItems={cartReady ? cartItems : undefined}
+                  accessToken={cartReady ? accessToken : undefined}
+                  /* escrow omitted = the server holds the money. Safe default. */
+                  metadata={{ user_id: userId, context }}
+                  onSuccess={handlePaymentSuccess}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -396,4 +529,4 @@ export default function PaymentCheckout() {
     </div>
   );
 }
-// BAMBEH_DEPLOY_TOKEN__PAYMENTCHECKOUT_FIX189_END
+// BAMBEH_END_TOKEN__PAYMENTCHECKOUT_FIX216__COMPLETE
