@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX223_START
+// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX224_START
 /**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
@@ -116,6 +116,10 @@ const JobDetails: React.FC = () => {
   // own applicants list; nothing linked to it before, so the page existed but
   // was unreachable without typing the URL by hand.
   const [viewerId,   setViewerId]   = useState<string | null>(null);
+  // FIX224 - the TRUE applicant count, counted from job_applications rather
+  // than read from listings.extra.application_count, which drifted to 0 while
+  // nine real applications sat in the table.
+  const [applicantCount, setApplicantCount] = useState<number | null>(null);
 
   // ── Load job ─────────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -127,6 +131,24 @@ const JobDetails: React.FC = () => {
       if (apiErr || !data) { setError(apiErr ?? s("notFound", lang)); return; }
       setJob(data);
       void incrementJobView(id);
+
+      // FIX224 - ask the database how many people actually applied.
+      // bambeh_job_applicant_count is SECURITY DEFINER: it returns one number
+      // and no rows, so a job seeker sees the count without being able to read
+      // anybody's application. If it is missing we fall back to the stored
+      // counter rather than showing nothing.
+      try {
+        const { supabase } = await import("@/lib/supabase");
+        const { data: cnt, error: cntErr } = await supabase
+          .rpc("bambeh_job_applicant_count", { p_job_id: id });
+        if (!cntErr && cnt !== null && cnt !== undefined) {
+          setApplicantCount(Number(cnt));
+        } else if (cntErr) {
+          console.warn("[JobDetails] applicant count RPC unavailable:", cntErr.message);
+        }
+      } catch (e) {
+        console.warn("[JobDetails] applicant count lookup failed:", e);
+      }
       // Restore bookmark state
       try {
         const saved: string[] = JSON.parse(localStorage.getItem("bambeh_saved_jobs") ?? "[]");
@@ -360,7 +382,7 @@ const JobDetails: React.FC = () => {
           </span>
           <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full text-xs font-medium text-gray-600 dark:text-gray-300">
             <Clock className="w-3.5 h-3.5" />
-            {job.applicationCount} {s("candidates", lang)}
+            {applicantCount ?? job.applicationCount ?? 0} {s("candidates", lang)}
           </span>
           <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full text-xs font-medium text-gray-600 dark:text-gray-300">
             <Eye className="w-3.5 h-3.5" />
@@ -472,9 +494,9 @@ const JobDetails: React.FC = () => {
           >
             <Users className="h-4 w-4" />
             {s("seeApplicants", lang)}
-            {typeof job.applicationCount === "number" && job.applicationCount > 0 && (
+            {(applicantCount ?? job.applicationCount ?? 0) > 0 && (
               <span className="rounded-full bg-white/25 px-2 py-0.5 text-xs">
-                {job.applicationCount}
+                {applicantCount ?? job.applicationCount ?? 0}
               </span>
             )}
           </button>
@@ -541,4 +563,4 @@ const JobDetails: React.FC = () => {
 
 export default JobDetails;
 
-// BAMBEH_END_TOKEN__JOBDETAILS_FIX223__COMPLETE
+// BAMBEH_END_TOKEN__JOBDETAILS_FIX224__COMPLETE
