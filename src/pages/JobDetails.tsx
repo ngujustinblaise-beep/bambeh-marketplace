@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX85_CLEAN
+// BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX223_START
 /**
  * src/pages/JobDetails.tsx
  * Bambeh Marketplace — Job Listing Detail Page
@@ -25,10 +25,15 @@ import JobApplyModal from "@/components/Jobs/JobApplyModal";
 
 // ─── i18n ──────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
+  seeApplicants:    { en:"See who applied", fr:"Voir les candidats", ha:"Duba masu nema", ar:"عرض المتقدمين", pcm:"See who apply", ful:"Yiy jokkooɓe" },
+  yourJob:          { en:"This is your job posting", fr:"Ceci est votre offre", ha:"Wannan aikin naka ne", ar:"هذه وظيفتك", pcm:"Na your work be this", ful:"Ndee golle ko maa" },
+  // FIX220 - tell the job seeker what to prepare BEFORE they open the form.
+  prepTitle:        { en:"Prepare your documents before you apply", fr:"Preparez vos documents avant de postuler", ha:"Ka shirya takardunka kafin ka nema", ar:"جهز مستنداتك قبل التقديم", pcm:"Get your papers ready before you apply", ful:"Hebilo kaayitaaji maa ado a jokkude" },
+  prepBody:         { en:"This application may ask you to upload a CV and legal documents proving you are allowed to live and work in the country where this job is. Get them ready before you start so you can finish in one sitting.", fr:"Cette candidature peut vous demander un CV et des documents legaux prouvant que vous pouvez vivre et travailler dans le pays ou se trouve cet emploi. Preparez-les a l avance pour tout terminer en une seule fois.", ha:"Wannan neman aiki na iya bukatar ka aika CV da takardun doka da ke tabbatar da cewa kana da izinin zama da yin aiki a kasar da aikin yake. Ka shirya su tun da wuri don ka kammala lokaci daya.", ar:"قد يطلب منك هذا الطلب رفع سيرة ذاتية ومستندات قانونية تثبت حقك في الإقامة والعمل في البلد الذي توجد فيه الوظيفة. جهزها مسبقا حتى تتمكن من إكمال الطلب دفعة واحدة.", pcm:"This application fit ask you to upload your CV and the legal papers wey show say you fit stay and work for the country where the work dey. Arrange dem before you start so you go finish one time.", ful:"Ndee jokkondiral ina waawi naamnaade ma neldude CV e kaayitaaji laawdi di kollirta a jojji hodde e gollude e leydi ndi golle ngoo woni. Hebilo di ado a fuddaade ngam timmingol laawol gootol." },
   back:             { en:"Back", fr:"Retour", ha:"Koma", ar:"رجوع", pcm:"Go back", ful:"Yahru" },
-  notFound:         { en:"Job not found", fr:"Offre introuvable", ha:"Ba a sami aiki ba", ar:"الوظيÙة غير موجودة", pcm:"Work no dey", ful:"Golle heɓaani" },
-  loading:          { en:"Loading job details…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
-  description:      { en:"Job Description", fr:"Description du poste", ha:"Bayanin Aiki", ar:"وصÙ الوظيÙة", pcm:"Work description", ful:"Jaŋtugol Golle" },
+  notFound:         { en:"Job not found", fr:"Offre introuvable", ha:"Ba a sami aiki ba", ar:"الوظيفة غير موجودة", pcm:"Work no dey", ful:"Golle heɓaani" },
+  loading:          { en:"Loading job details…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارٍ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
+  description:      { en:"Job Description", fr:"Description du poste", ha:"Bayanin Aiki", ar:"وصف الوظيفة", pcm:"Work description", ful:"Jaŋtugol Golle" },
   requirements:     { en:"Requirements & Skills", fr:"Exigences & Compétences", ha:"Buƙatun & Ƙwarewa", ar:"المتطلبات والمهارات", pcm:"Wetin dem need", ful:"Ko heɓetee" },
   benefits:         { en:"Benefits & Perks", fr:"Avantages", ha:"Fa'idoji", ar:"المزايا", pcm:"Bonus things", ful:"Nafaaji" },
   applyNow:         { en:"Apply Now", fr:"Postuler maintenant", ha:"Nema yanzu", ar:"تقدم الآن", pcm:"Apply Now", ful:"Dañ Golle" },
@@ -36,24 +41,24 @@ const STR: Record<string, Record<string, string>> = {
   applyCall:        { en:"Call to Apply", fr:"Appeler pour postuler", ha:"Kira don nema", ar:"اتصل للتقديم", pcm:"Call make apply", ful:"Noddu ngam Dañde" },
   applyEmail:       { en:"Apply via Email", fr:"Postuler par email", ha:"Nema ta email", ar:"التقديم بالبريد الإلكتروني", pcm:"Send email apply", ful:"Imeel ngam Dañde" },
   applied:          { en:"Application Sent ✓", fr:"Candidature envoyée ✓", ha:"An aika nema ✓", ar:"تم إرسال الطلب ✓", pcm:"You don apply ✓", ful:"Jokkunde nootii ✓" },
-  applying:         { en:"Sending application…", fr:"Envoi en cours…", ha:"Ana aika…", ar:"جارÙ الإرسال…", pcm:"Dey send am…", ful:"Nannginii…" },
-  alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez déjà postulé", ha:"Kun riga kun nema", ar:"لقد تقدمت بالÙعل", pcm:"You don apply before", ful:"Ko njimonaa yoodi" },
-  expired:          { en:"This job has expired", fr:"Cette offre a expiré", ha:"Aiki ya ƙare", ar:"انتهت صلاحية الوظيÙة", pcm:"Work don finish", ful:"Golle ɓenni" },
+  applying:         { en:"Sending application…", fr:"Envoi en cours…", ha:"Ana aika…", ar:"جارٍ الإرسال…", pcm:"Dey send am…", ful:"Nannginii…" },
+  alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez déjà postulé", ha:"Kun riga kun nema", ar:"لقد تقدمت بالفعل", pcm:"You don apply before", ful:"Ko njimonaa yoodi" },
+  expired:          { en:"This job has expired", fr:"Cette offre a expiré", ha:"Aiki ya ƙare", ar:"انتهت صلاحية الوظيفة", pcm:"Work don finish", ful:"Golle ɓenni" },
   closingSoon:      { en:"Closing soon", fr:"Ferme bientôt", ha:"Zai ƙare da wuri", ar:"ينتهي قريبًا", pcm:"E go close soon", ful:"Ɓennoo seeɗa" },
   today:            { en:"Today", fr:"Aujourd'hui", ha:"Yau", ar:"اليوم", pcm:"Today", ful:"Hannde" },
   dLeft:            { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام متبقية", pcm:"days left", ful:"balɗe" },
   deadline:         { en:"Application deadline", fr:"Date limite", ha:"Ƙarshen lokaci", ar:"آخر موعد", pcm:"Last date", ful:"Balɗe ɓennoo" },
   salary:           { en:"Monthly Salary", fr:"Salaire mensuel", ha:"Albashin wata", ar:"الراتب الشهري", pcm:"Month salary", ful:"Njobdi koorka" },
-  negotiable:       { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pcm:"E fit negotiate", ful:"Naggi" },
+  negotiable:       { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتفاوض", pcm:"E fit negotiate", ful:"Naggi" },
   salaryNotSpec:    { en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
-  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بÙعد", pcm:"Online work", ful:"E Ɓanndu" },
+  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بُعد", pcm:"Online work", ful:"E Ɓanndu" },
   candidates:       { en:"applicants", fr:"candidats", ha:"masu nema", ar:"متقدم", pcm:"people apply", ful:"jokkooɓe" },
   views:            { en:"views", fr:"vues", ha:"ra'ayoyi", ar:"مشاهدة", pcm:"people see am", ful:"yiylaama" },
-  published:        { en:"Published", fr:"Publié le", ha:"An buga", ar:"نÙشر Ùي", pcm:"Dem post am", ful:"Fewtiima" },
+  published:        { en:"Published", fr:"Publié le", ha:"An buga", ar:"نُشر في", pcm:"Dem post am", ful:"Fewtiima" },
   tryAgain:         { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pcm:"Try again", ful:"Eɗɗoo yeeso" },
   copyLink:         { en:"Link copied!", fr:"Lien copié!", ha:"An kwafi hanyar!", ar:"تم نسخ الرابط!", pcm:"Link don copy!", ful:"Ñolndi jaɓɓaama!" },
-  saved:            { en:"Saved", fr:"Sauvegardé", ha:"An adana", ar:"محÙوظ", pcm:"You don save am", ful:"Adanaama" },
-  unsaved:          { en:"Bookmark", fr:"Sauvegarder", ha:"Adana", ar:"حÙظ", pcm:"Save am", ful:"Adana" },
+  saved:            { en:"Saved", fr:"Sauvegardé", ha:"An adana", ar:"محفوظ", pcm:"You don save am", ful:"Adanaama" },
+  unsaved:          { en:"Bookmark", fr:"Sauvegarder", ha:"Adana", ar:"حفظ", pcm:"Save am", ful:"Adana" },
   loginToApply:     { en:"Log in to apply", fr:"Connectez-vous pour postuler", ha:"Shiga don nema", ar:"سجّل دخولك للتقديم", pcm:"Login first apply", ful:"Naatir ngam dañde" },
 };
 
@@ -76,7 +81,7 @@ const EXP_LABELS: Record<string, Record<string, string>> = {
   entry:         { en:"Entry (0–2 yrs)",      fr:"Débutant (0–2 ans)",  ha:"Farawa (0–2)",  ar:"مبتدئ (0–2)",  pcm:"Starter (0-2)", ful:"Sappoowo (0-2)" },
   mid:           { en:"Mid-level (2–5 yrs)",  fr:"Intermédiaire (2–5)", ha:"Tsaka-tsaki",   ar:"متوسط (2–5)",  pcm:"Middle (2-5)",  ful:"Seeɗum (2-5)" },
   senior:        { en:"Senior (5+ yrs)",      fr:"Senior (5+ ans)",     ha:"Babba (5+)",    ar:"خبير (5+)",    pcm:"Big man (5+)",  ful:"Mawɗo (5+)" },
-  executive:     { en:"Executive",            fr:"Cadre dirigeant",     ha:"Manajan",       ar:"مسؤول تنÙيذي", pcm:"Big boss",      ful:"Jom Laamu" },
+  executive:     { en:"Executive",            fr:"Cadre dirigeant",     ha:"Manajan",       ar:"مسؤول تنفيذي", pcm:"Big boss",      ful:"Jom Laamu" },
 };
 
 function jobTypeLabel(type: string, lang: string): string {
@@ -107,6 +112,10 @@ const JobDetails: React.FC = () => {
   const [applyError, setApplyError] = useState<string | null>(null);
   const [toast,      setToast]      = useState<string | null>(null);
   const [showApply,  setShowApply]  = useState(false);
+  // FIX223 - who is looking at this page? The employer needs a way into their
+  // own applicants list; nothing linked to it before, so the page existed but
+  // was unreachable without typing the URL by hand.
+  const [viewerId,   setViewerId]   = useState<string | null>(null);
 
   // ── Load job ─────────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -131,6 +140,18 @@ const JobDetails: React.FC = () => {
   }, [id, lang]);
 
   useEffect(() => { void load(); }, [load]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      // This file has no top-level supabase import - handleApply pulls it in
+      // dynamically. Do the same here rather than adding a new import.
+      const { supabase } = await import("@/lib/supabase");
+      const { data } = await supabase.auth.getUser();
+      if (!cancelled) setViewerId(data?.user?.id ?? null);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // ── Apply handler ─────────────────────────────────────────────────────────────
   const handleApply = useCallback(async () => {
@@ -438,6 +459,45 @@ const JobDetails: React.FC = () => {
         </p>
       </div>
 
+      {/* FIX223 - employer entry point into the applicants list */}
+      {viewerId && job.employerId && viewerId === job.employerId && (
+        <div className="mx-4 mb-4 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-800 dark:bg-teal-900/20">
+          <p className="mb-2 text-xs font-semibold text-teal-800 dark:text-teal-300">
+            {s("yourJob", lang)}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate(`/jobs/${job.id}/applicants`)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3 font-bold text-white hover:bg-teal-700"
+          >
+            <Users className="h-4 w-4" />
+            {s("seeApplicants", lang)}
+            {typeof job.applicationCount === "number" && job.applicationCount > 0 && (
+              <span className="rounded-full bg-white/25 px-2 py-0.5 text-xs">
+                {job.applicationCount}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+
+      {/* FIX220 - prepare-your-documents caution, shown before the Apply bar */}
+      {!applied && !isExpired && (
+        <div className="mx-4 mb-24 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+            <div>
+              <p className="mb-1 text-sm font-bold text-amber-900 dark:text-amber-200">
+                {s("prepTitle", lang)}
+              </p>
+              <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-300">
+                {s("prepBody", lang)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sticky CTA */}
       <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-3">
         {applied ? (
@@ -481,4 +541,4 @@ const JobDetails: React.FC = () => {
 
 export default JobDetails;
 
-// BAMBEH_END_TOKEN__JOBDETAILS__COMPLETE
+// BAMBEH_END_TOKEN__JOBDETAILS_FIX223__COMPLETE

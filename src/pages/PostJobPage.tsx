@@ -20,40 +20,48 @@ import { useLang } from "@/hooks/useAppLang";
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
-  pageTitle:       { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيÙة", pcm:"Post Work", ful:"Fewtu Golle" },
+  reqTitle:        { en:"What must applicants provide?", fr:"Que doivent fournir les candidats ?", ha:"Me ya kamata masu nema su bayar?", ar:"ما الذي يجب أن يقدمه المتقدمون؟", pcm:"Wetin the person wey apply must bring?", ful:"Hol ko jokkooɓe poti addude?" },
+  reqHint:         { en:"Switch off anything this job does not need. A night watchman should not be asked for a CV.", fr:"Desactivez ce dont ce poste n a pas besoin. On ne demande pas de CV a un gardien de nuit.", ha:"Kashe abin da wannan aikin ba ya bukata. Ba a tambayar mai gadi da dare CV.", ar:"أوقف ما لا تحتاجه هذه الوظيفة. حارس الليل لا يطلب منه سيرة ذاتية.", pcm:"Off anything wey this work no need. You no fit ask night watch for CV.", ful:"Ñif ko ndee golle sokla-aa. Deenoowo jamma naamnetaake CV." },
+  reqCv:           { en:"CV / Resume", fr:"CV", ha:"CV", ar:"السيرة الذاتية", pcm:"CV", ful:"CV" },
+  reqIdDocument:   { en:"ID card or legal document", fr:"Piece d identite ou document legal", ha:"Katin shaida ko takardar doka", ar:"بطاقة الهوية أو مستند قانوني", pcm:"ID card or legal paper", ful:"Kaayit anndinoowo walla kaayit laawɗo" },
+  reqWorkAuth:     { en:"Proof of right to work", fr:"Preuve du droit de travailler", ha:"Shaidar izinin yin aiki", ar:"إثبات حق العمل", pcm:"Paper wey show say e fit work", ful:"Seedamfaagu jojjande gollugol" },
+  reqNationality:  { en:"Nationality and residence", fr:"Nationalite et residence", ha:"Kasa da wurin zama", ar:"الجنسية ومحل الإقامة", pcm:"Where e from and where e dey stay", ful:"Leydi e ñiiɓirde" },
+  reqCoverLetter:  { en:"Cover letter", fr:"Lettre de motivation", ha:"Wasikar neman aiki", ar:"خطاب التقديم", pcm:"Letter wey e write", ful:"Ɓataake" },
+  reqDriving:      { en:"Driving licence", fr:"Permis de conduire", ha:"Lasisin tuki", ar:"رخصة القيادة", pcm:"Driving licence", ful:"Permi dognugol" },
+  pageTitle:       { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيفة", pcm:"Post Work", ful:"Fewtu Golle" },
   back:            { en:"Back", fr:"Retour", ha:"Koma", ar:"رجوع", pcm:"Go back", ful:"Yahru" },
-  subtitle:        { en:"Find the right talent across Cameroon", fr:"Trouvez les meilleurs talents au Cameroun", ha:"Samu gwanin ma'aikata a Kamaru", ar:"اعثر على المواهب Ùي الكاميرون", pcm:"Find correct person for Cameroon", ful:"Yiydaa ɗoo e Kameruun" },
-  jobTitle:        { en:"Job Title *", fr:"Intitulé du poste *", ha:"Sunan Aiki *", ar:"المسمى الوظيÙي *", pcm:"Work Name *", ful:"Innde Golle *" },
+  subtitle:        { en:"Find the right talent across Cameroon", fr:"Trouvez les meilleurs talents au Cameroun", ha:"Samu gwanin ma'aikata a Kamaru", ar:"اعثر على المواهب في الكاميرون", pcm:"Find correct person for Cameroon", ful:"Yiydaa ɗoo e Kameruun" },
+  jobTitle:        { en:"Job Title *", fr:"Intitulé du poste *", ha:"Sunan Aiki *", ar:"المسمى الوظيفي *", pcm:"Work Name *", ful:"Innde Golle *" },
   jobTitlePh:      { en:"e.g. Senior Software Engineer", fr:"ex. Ingénieur logiciel senior", ha:"mis. Babban Injiniya", ar:"مثل: مهندس برمجيات أول", pcm:"e.g. Big software engineer", ful:"taa. Injiniir ɓaleejo" },
   company:         { en:"Company / Organisation", fr:"Entreprise / Organisation", ha:"Kamfani / Ƙungiya", ar:"الشركة / المؤسسة", pcm:"Company / Organisation", ful:"Liggey / Ƙulle" },
   companyPh:       { en:"Name of your company", fr:"Nom de votre entreprise", ha:"Sunan kamfaninka", ar:"اسم شركتك", pcm:"Your company name", ful:"Innde liggey maa" },
-  category:        { en:"Job Category *", fr:"Catégorie *", ha:"Nau'in Aiki *", ar:"الÙئة *", pcm:"Work type *", ful:"Suudu Golle *" },
-  jobType:         { en:"Employment Type *", fr:"Type de contrat *", ha:"Nau'in kwantiragi *", ar:"نوع التوظيÙ *", pcm:"Work arrangement *", ful:"Suudu Kontoraaji *" },
+  category:        { en:"Job Category *", fr:"Catégorie *", ha:"Nau'in Aiki *", ar:"الفئة *", pcm:"Work type *", ful:"Suudu Golle *" },
+  jobType:         { en:"Employment Type *", fr:"Type de contrat *", ha:"Nau'in kwantiragi *", ar:"نوع التوظيف *", pcm:"Work arrangement *", ful:"Suudu Kontoraaji *" },
   experienceLevel: { en:"Experience Level *", fr:"Niveau d'expérience *", ha:"Matakin ƙwarewa *", ar:"مستوى الخبرة *", pcm:"Experience level *", ful:"Karallaagal *" },
   location:        { en:"City / Location *", fr:"Ville / Lieu *", ha:"Gari / Wuri *", ar:"المدينة / الموقع *", pcm:"Town / Place *", ful:"Wuro / Ɓoggol *" },
   locationPh:      { en:"e.g. Douala, Yaoundé…", fr:"ex. Douala, Yaoundé…", ha:"mis. Douala, Yaoundé…", ar:"مثل: دوالا، ياوندي…", pcm:"e.g. Douala, Yaoundé…", ful:"taa. Douala, Yaoundé…" },
   region:          { en:"Region", fr:"Région", ha:"Yanki", ar:"المنطقة", pcm:"Region", ful:"Leydi" },
-  isRemote:        { en:"Remote work available", fr:"Télétravail possible", ha:"Ana iya aiki daga nesa", ar:"يتوÙر عمل عن بÙعد", pcm:"Online work dey", ful:"E Ɓanndu ɗon" },
-  salaryMin:       { en:"Min Salary (FCFA/month)", fr:"Salaire min (FCFA/mois)", ha:"Ƙaramin albashi (FCFA/wata)", ar:"الحد الأدنى للراتب (Ùرنك/شهر)", pcm:"Small salary (FCFA/month)", ful:"Njobdi bilahi (FCFA/koorka)" },
+  isRemote:        { en:"Remote work available", fr:"Télétravail possible", ha:"Ana iya aiki daga nesa", ar:"يتوفر عمل عن بُعد", pcm:"Online work dey", ful:"E Ɓanndu ɗon" },
+  salaryMin:       { en:"Min Salary (FCFA/month)", fr:"Salaire min (FCFA/mois)", ha:"Ƙaramin albashi (FCFA/wata)", ar:"الحد الأدنى للراتب (فرنك/شهر)", pcm:"Small salary (FCFA/month)", ful:"Njobdi bilahi (FCFA/koorka)" },
   salaryMax:       { en:"Max Salary (FCFA/month)", fr:"Salaire max (FCFA/mois)", ha:"Babban albashi (FCFA/wata)", ar:"الحد الأقصى للراتب", pcm:"Big salary (FCFA/month)", ful:"Njobdi heeli (FCFA/koorka)" },
   salaryPh:        { en:"e.g. 150000", fr:"ex. 150000", ha:"mis. 150000", ar:"مثل: 150000", pcm:"e.g. 150000", ful:"taa. 150000" },
-  negotiable:      { en:"Salary is negotiable", fr:"Salaire négociable", ha:"Albashin ana tattaunawa", ar:"الراتب قابل للتÙاوض", pcm:"Salary e fit talk", ful:"Njobdi naggi" },
+  negotiable:      { en:"Salary is negotiable", fr:"Salaire négociable", ha:"Albashin ana tattaunawa", ar:"الراتب قابل للتفاوض", pcm:"Salary e fit talk", ful:"Njobdi naggi" },
   deadline:        { en:"Application Deadline", fr:"Date limite de candidature", ha:"Ƙarshen lokacin nema", ar:"آخر موعد للتقديم", pcm:"Last date to apply", ful:"Balɗe ɓennoo" },
-  description:     { en:"Job Description *", fr:"Description du poste *", ha:"Bayanin aiki *", ar:"وصÙ الوظيÙة *", pcm:"Work description *", ful:"Jaŋtugol Golle *" },
-  descPh:          { en:"Describe the role, responsibilities, and what a typical day looks like…", fr:"Décrivez le poste, les responsabilités, et le quotidien du rôle…", ha:"Bayyana aikin, ayyuka, da abin da rana ta yau da kullun take kama da…", ar:"اوصÙ الدور والمسؤوليات ويوم العمل المعتاد…", pcm:"Tell us wetin the work be, wetin dem go do everyday…", ful:"Jaŋtu golle ndee, ko waɗɗataake, ko haaletee kala ndarɗo…" },
+  description:     { en:"Job Description *", fr:"Description du poste *", ha:"Bayanin aiki *", ar:"وصف الوظيفة *", pcm:"Work description *", ful:"Jaŋtugol Golle *" },
+  descPh:          { en:"Describe the role, responsibilities, and what a typical day looks like…", fr:"Décrivez le poste, les responsabilités, et le quotidien du rôle…", ha:"Bayyana aikin, ayyuka, da abin da rana ta yau da kullun take kama da…", ar:"اوصف الدور والمسؤوليات ويوم العمل المعتاد…", pcm:"Tell us wetin the work be, wetin dem go do everyday…", ful:"Jaŋtu golle ndee, ko waɗɗataake, ko haaletee kala ndarɗo…" },
   requirements:    { en:"Requirements & Skills", fr:"Exigences & Compétences", ha:"Buƙatun & Ƙwarewa", ar:"المتطلبات والمهارات", pcm:"Wetin dem need", ful:"Ko heɓetee" },
   requirePh:       { en:"List qualifications, skills, and experience required…", fr:"Listez les qualifications, compétences et expériences requises…", ha:"Jera cancanta, ƙwarewa, da kwarewa da ake buƙata…", ar:"اذكر المؤهلات والمهارات والخبرة المطلوبة…", pcm:"List all the things dem need…", ful:"Jaŋtu ko heɓetee, ɗemɗe, karallaagal…" },
-  benefits:        { en:"Benefits & Perks", fr:"Avantages et avantages", ha:"Fa'idoji", ar:"المزايا والمكاÙآت", pcm:"Bonus things", ful:"Nafaaji" },
-  benefitsPh:      { en:"Health insurance, transport allowance, bonuses…", fr:"Assurance maladie, indemnité de transport, primes…", ha:"Inshorar lafiya, taimako na sufuri, bonus…", ar:"تأمين صحي، بدل نقل، مكاÙآت…", pcm:"Health, transport, bonus things…", ful:"Laamu cellal, njuɓɓudi, nafaaji…" },
+  benefits:        { en:"Benefits & Perks", fr:"Avantages et avantages", ha:"Fa'idoji", ar:"المزايا والمكافآت", pcm:"Bonus things", ful:"Nafaaji" },
+  benefitsPh:      { en:"Health insurance, transport allowance, bonuses…", fr:"Assurance maladie, indemnité de transport, primes…", ha:"Inshorar lafiya, taimako na sufuri, bonus…", ar:"تأمين صحي، بدل نقل، مكافآت…", pcm:"Health, transport, bonus things…", ful:"Laamu cellal, njuɓɓudi, nafaaji…" },
   tags:            { en:"Skills / Tags (comma separated)", fr:"Compétences / Tags (séparés par virgules)", ha:"Ƙwarewa / Alamomi", ar:"المهارات / الوسوم", pcm:"Skills (separate with comma)", ful:"Ɗemɗe (tippuɗe e tiindol)" },
   tagsPh:          { en:"React, Node.js, Marketing, Excel…", fr:"React, Node.js, Marketing, Excel…", ha:"React, Node.js, Marketing, Excel…", ar:"React, Node.js, تسويق…", pcm:"React, Node.js, Marketing…", ful:"React, Node.js…" },
-  applyMethod:     { en:"How should candidates apply?", fr:"Comment les candidats doivent-ils postuler ?", ha:"Ta yaya masu nema za su yi nema?", ar:"كيÙ يتقدم المرشحون؟", pcm:"How dem go apply?", ful:"No jokkorɗe poti jokkude?" },
+  applyMethod:     { en:"How should candidates apply?", fr:"Comment les candidats doivent-ils postuler ?", ha:"Ta yaya masu nema za su yi nema?", ar:"كيف يتقدم المرشحون؟", pcm:"How dem go apply?", ful:"No jokkorɗe poti jokkude?" },
   inApp:           { en:"📱 Through Bambeh Platform", fr:"📱 Via la plateforme Bambeh", ha:"📱 Ta hanyar Bambeh", ar:"📱 عبر منصة بامبيه", pcm:"📱 Through Bambeh", ful:"📱 E Bambeh" },
-  posting:         { en:"Publishing your job…", fr:"Publication en cours…", ha:"Ana wallafa aikin…", ar:"جارÙ النشر…", pcm:"Dey post your work…", ful:"Fewtinaama…" },
-  posted:          { en:"Job posted successfully!", fr:"Offre publiée avec succès!", ha:"An wallafa aiki cikin nasara!", ar:"تم نشر الوظيÙة بنجاح!", pcm:"Your work don post!", ful:"Golle fewtiima!" },
-  postBtn:         { en:"Publish Job", fr:"Publier l'offre", ha:"Wallafa Aiki", ar:"نشر الوظيÙة", pcm:"Post the work", ful:"Fewtu Golle" },
+  posting:         { en:"Publishing your job…", fr:"Publication en cours…", ha:"Ana wallafa aikin…", ar:"جارٍ النشر…", pcm:"Dey post your work…", ful:"Fewtinaama…" },
+  posted:          { en:"Job posted successfully!", fr:"Offre publiée avec succès!", ha:"An wallafa aiki cikin nasara!", ar:"تم نشر الوظيفة بنجاح!", pcm:"Your work don post!", ful:"Golle fewtiima!" },
+  postBtn:         { en:"Publish Job", fr:"Publier l'offre", ha:"Wallafa Aiki", ar:"نشر الوظيفة", pcm:"Post the work", ful:"Fewtu Golle" },
   requiredFields:  { en:"Please fill all required fields (*)", fr:"Veuillez remplir tous les champs obligatoires (*)", ha:"Da fatan a cika duk filayen da ake buƙata (*)", ar:"يرجى ملء جميع الحقول المطلوبة (*)", pcm:"Fill all * fields abeg", ful:"Heɓtu goɗɗe fof peewnaaɗe (*)" },
-  loginRequired:   { en:"You must be logged in to post a job", fr:"Vous devez être connecté pour publier une offre", ha:"Dole ne ku shiga don wallafa aiki", ar:"يجب تسجيل الدخول لنشر وظيÙة", pcm:"You need login first", ful:"Naatir ngam fewtoyde golle" },
+  loginRequired:   { en:"You must be logged in to post a job", fr:"Vous devez être connecté pour publier une offre", ha:"Dole ne ku shiga don wallafa aiki", ar:"يجب تسجيل الدخول لنشر وظيفة", pcm:"You need login first", ful:"Naatir ngam fewtoyde golle" },
 };
 
 function s(key: string, lang: string): string {
@@ -89,7 +97,7 @@ const EXP_LEVELS = [
   { value:"entry",         label:{ en:"Entry level (0–2 yrs)", fr:"Débutant (0–2 ans)", ha:"Farawa (0–2)", ar:"مبتدئ (0–2)", pcm:"Starter (0-2yrs)", ful:"Sappoowo (0-2)" }},
   { value:"mid",           label:{ en:"Mid level (2–5 yrs)", fr:"Intermédiaire (2–5)", ha:"Matsakaici (2–5)", ar:"متوسط (2–5)", pcm:"Middle (2-5yrs)", ful:"Seeɗum (2-5)" }},
   { value:"senior",        label:{ en:"Senior (5+ yrs)", fr:"Senior (5+ ans)", ha:"Babba (5+)", ar:"خبير (5+)", pcm:"Big man (5+yrs)", ful:"Mawɗo (5+)" }},
-  { value:"executive",     label:{ en:"Executive", fr:"Cadre dirigeant", ha:"Manajan", ar:"مسؤول تنÙيذي", pcm:"Big boss", ful:"Jom Laamu" }},
+  { value:"executive",     label:{ en:"Executive", fr:"Cadre dirigeant", ha:"Manajan", ar:"مسؤول تنفيذي", pcm:"Big boss", ful:"Jom Laamu" }},
 ];
 
 const REGIONS = [
@@ -117,6 +125,14 @@ interface FormState {
   tags: string;
   applyMethod: string;
   applyContact: string;
+  // FIX222 - what this employer demands of applicants. Saved to
+  // job_application_requirements, which is what JobApplyModal reads.
+  reqCv: boolean;
+  reqIdDocument: boolean;
+  reqWorkAuthorization: boolean;
+  reqNationality: boolean;
+  reqCoverLetter: boolean;
+  reqDrivingLicence: boolean;
 }
 
 const INIT: FormState = {
@@ -125,6 +141,10 @@ const INIT: FormState = {
   isRemote: false, salaryMin: "", salaryMax: "", isSalaryNegotiable: false,
   deadline: "", description: "", requirements: "", benefits: "",
   tags: "", applyMethod: "in_app", applyContact: "",
+  // Identity and right to work default ON, CV defaults ON. A night watchman
+  // post simply switches the CV off - that was the whole point of this fix.
+  reqCv: true, reqIdDocument: true, reqWorkAuthorization: true,
+  reqNationality: true, reqCoverLetter: false, reqDrivingLicence: false,
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -192,6 +212,27 @@ export default function PostJobPage() {
     setPosting(false);
 
     if (result.success && result.id) {
+      // FIX222 - save what this employer requires. Upsert on job_id so a later
+      // edit overwrites instead of duplicating. Non-fatal on purpose: a failure
+      // here must never lose a job the employer has just written out.
+      try {
+        await supabase.from("job_application_requirements").upsert({
+          job_id:                         result.id,
+          job_country:                    "CM",
+          require_cv:                     form.reqCv,
+          require_id_document:            form.reqIdDocument,
+          require_work_authorization:     form.reqWorkAuthorization,
+          require_nationality:            form.reqNationality,
+          require_cover_letter:           form.reqCoverLetter,
+          require_driving_licence_doc:    form.reqDrivingLicence,
+          require_driving_ability:        form.reqDrivingLicence,
+          require_interview_availability: true,
+          updated_at:                     new Date().toISOString(),
+        }, { onConflict: "job_id" });
+      } catch (e) {
+        console.warn("[PostJob] requirements not saved:", e);
+      }
+
       setSuccess(true);
       setTimeout(() => navigate(`/jobs/${result.id}`), 1500);
     } else {
@@ -393,6 +434,46 @@ export default function PostJobPage() {
 
         </div>
 
+      </div>
+
+      {/* FIX222 - employer-controlled application requirements */}
+      <div className="px-4 pb-40">
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
+            {s("reqTitle", lang)}
+          </h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            {s("reqHint", lang)}
+          </p>
+          <div className="space-y-1">
+            {([
+              ["reqCv",                "reqCv"],
+              ["reqIdDocument",        "reqIdDocument"],
+              ["reqWorkAuthorization", "reqWorkAuth"],
+              ["reqNationality",       "reqNationality"],
+              ["reqCoverLetter",       "reqCoverLetter"],
+              ["reqDrivingLicence",    "reqDriving"],
+            ] as [keyof FormState, string][]).map(([field, labelKey]) => (
+              <button
+                key={String(field)}
+                type="button"
+                onClick={() => toggle(field)}
+                className="w-full flex items-center justify-between py-2.5 text-left">
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {s(labelKey, lang)}
+                </span>
+                <span
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors
+                    ${form[field] ? "bg-teal-600" : "bg-gray-300 dark:bg-gray-600"}`}>
+                  <span
+                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all
+                      ${form[field] ? "left-[22px]" : "left-0.5"}`}
+                  />
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Sticky submit button */}
