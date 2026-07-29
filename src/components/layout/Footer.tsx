@@ -164,7 +164,7 @@ export default function Footer() {
               <li><Link to="/help" className="hover:text-teal-400 transition-colors">{s.helpCentre}</Link></li>
               <li><Link to="/help/contact" className="hover:text-teal-400 transition-colors">{s.contactSupport}</Link></li>
               <li><Link to="/help/safety-security" className="hover:text-teal-400 transition-colors">{s.safetySecurity}</Link></li>
-              <li><Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">{s.subscriptionPlans}</Link></li>
+              <li><Link to="/subscription" className="hover:text-teal-400 transition-colors">{s.subscriptionPlans}</Link></li>
               <li>
                 <Link to="/donate" className="hover:text-teal-400 transition-colors flex items-center gap-2">
                   <Heart className="w-4 h-4 text-pink-500" />
@@ -216,7 +216,7 @@ export default function Footer() {
               <span className="text-gray-600">·</span>
               <Link to="/help/contact" className="hover:text-teal-400 transition-colors">{s.qContact}</Link>
               <span className="text-gray-600">·</span>
-              <Link to="/subscription-plans" className="hover:text-teal-400 transition-colors">{s.qSubs}</Link>
+              <Link to="/subscription" className="hover:text-teal-400 transition-colors">{s.qSubs}</Link>
             </div>
 
             <div className="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold">
