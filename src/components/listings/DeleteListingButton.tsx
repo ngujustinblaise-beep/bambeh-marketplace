@@ -1,27 +1,37 @@
-// BAMBEH_DEPLOY_TOKEN__DELETELISTINGBUTTON_FIX116_CLEAN
+// BAMBEH_DEPLOY_TOKEN__DELETELISTINGBUTTON_FIX226_START
 /**
- * DeleteListingButton — Bambeh Marketplace (FIX116, Trash edition)
+ * DeleteListingButton — Bambeh Marketplace (FIX226)
  * FILE LOCATION: src/components/listings/DeleteListingButton.tsx
- *   (replaces the FIX115 copy)
+ *   (replaces the FIX116 copy)
  *
- * WHAT CHANGED FROM FIX115
- *  • Delete is now a SOFT delete that stamps `deleted_at = now()` as well as
- *    `status = 'deleted'`. The ad vanishes from Bambeh immediately (every list
- *    page filters status='active') but is kept in the DB so the owner can
- *    RESTORE or EDIT it from the Trash page for 7 days.
- *  • After 7 days it is hard-deleted automatically by a server function
- *    (see FIX116 SQL). The owner can also "Delete forever" from Trash early.
- *  • If the table has no `deleted_at` column yet, it still soft-deletes on
- *    status alone; if that fails, it falls back to a hard delete. Nothing
- *    here can ever fail loudly on the user.
+ * FIX226 — DELETE NOW WORKS FOR EVERY LISTING TYPE, FARM PRODUCE INCLUDED.
+ *
+ * The bug, in three parts, all found on 2026-07-29:
+ *
+ *  1. MyListings.tsx wrapped this control in
+ *        {l.table !== "farm_products" && ( <DeleteListingButton/> )}
+ *     so on farm rows there was no button on screen at all.
+ *
+ *  2. This file mapped every type except 'exchange' to `listings`:
+ *        const table = type === 'exchange' ? 'exchange_items' : 'listings';
+ *     Farm produce lives in farm_products. The write went to the wrong table.
+ *
+ *  3. Every write was scoped .eq('user_id', userId). farm_products has NO
+ *     user_id column — it has farmer_id (NOT NULL) and seller_id. The update
+ *     could never have matched a row even from the right table.
+ *
+ * So TARGETS below now names, per type, the real table and the real owner
+ * column(s). ownerCols is a LIST because farm_products carries two owner
+ * columns from two generations of the schema; we try each until one matches.
+ *
+ * Requires FIX226_farm_delete.sql to have been run first — that adds status,
+ * deleted_at and updated_at to farm_products so produce can use the same
+ * 7-day Trash as everything else. Without it this still works: the code falls
+ * back to status-only, then to a hard delete.
  *
  * SAFETY (unchanged): only the owner sees the control, and every write is
- * filtered by BOTH id AND user_id — a user can never touch someone else's ad.
- *
- * USAGE:
- *   import DeleteListingButton from '@/components/listings/DeleteListingButton';
- *   <DeleteListingButton id={item.id} type="marketplace" ownerId={item.user_id} />
- *   <DeleteListingButton id={p.id} type="farm" ownerId={p.user_id} variant="icon" />
+ * filtered by BOTH id AND an owner column — a user can never touch someone
+ * else's ad.
  *
  * © 2026 BAMBEH SARL. All rights reserved.
  */
@@ -44,6 +54,22 @@ interface DeleteListingButtonProps {
   onDeleted?: (id: string) => void;
   className?: string;
 }
+
+/** FIX226 — where each listing type actually lives, and who owns it. */
+const TARGETS: Record<
+  ListingType,
+  { table: string; ownerCols: string[]; alsoSet?: Record<string, unknown> }
+> = {
+  marketplace: { table: 'listings',       ownerCols: ['user_id'] },
+  job:         { table: 'listings',       ownerCols: ['user_id'] },
+  service:     { table: 'listings',       ownerCols: ['user_id'] },
+  rental:      { table: 'listings',       ownerCols: ['user_id'] },
+  vehicle:     { table: 'listings',       ownerCols: ['user_id'] },
+  exchange:    { table: 'exchange_items', ownerCols: ['user_id'] },
+  // Deleting produce also takes it out of stock, so it can never resurface in
+  // a farm page that filters on availability alone.
+  farm:        { table: 'farm_products',  ownerCols: ['farmer_id', 'seller_id'], alsoSet: { is_available: false } },
+};
 
 const T = {
   en: {
@@ -121,7 +147,8 @@ export default function DeleteListingButton({
   const isOwner = !!userId && (!ownerId || ownerId === userId);
   if (!isOwner) return null;
 
-  const table = type === 'exchange' ? 'exchange_items' : 'listings';
+  const target = TARGETS[type] ?? TARGETS.marketplace;
+  const table = target.table;
 
   const doDelete = async () => {
     if (!userId) { setError(t.notOwner); return; }
@@ -129,40 +156,55 @@ export default function DeleteListingButton({
     setError('');
     const nowIso = new Date().toISOString();
     try {
-      // 1) SOFT delete WITH deleted_at (feeds the 7-day Trash).
       let ok = false;
-      const soft = await supabase
-        .from(table)
-        .update({ status: 'deleted', deleted_at: nowIso, updated_at: nowIso })
-        .eq('id', id)
-        .eq('user_id', userId)
-        .select('id');
-      ok = !soft.error && Array.isArray(soft.data) && soft.data.length > 0;
+      let lastErr: unknown = null;
 
-      // 2) If deleted_at column doesn't exist yet, soft-delete on status alone.
-      if (!ok && soft.error) {
-        const soft2 = await supabase
+      // Try each owner column this table might use. The first that matches a
+      // row wins. Every write stays scoped by BOTH id AND an owner column.
+      for (const ownerCol of target.ownerCols) {
+        // 1) SOFT delete WITH deleted_at — this is what feeds the 7-day Trash.
+        const soft = await supabase
           .from(table)
-          .update({ status: 'deleted', updated_at: nowIso })
+          .update({ status: 'deleted', deleted_at: nowIso, updated_at: nowIso, ...(target.alsoSet ?? {}) })
           .eq('id', id)
-          .eq('user_id', userId)
+          .eq(ownerCol, userId)
           .select('id');
-        ok = !soft2.error && Array.isArray(soft2.data) && soft2.data.length > 0;
-      }
+        ok = !soft.error && Array.isArray(soft.data) && soft.data.length > 0;
+        if (ok) break;
+        if (soft.error) lastErr = soft.error;
 
-      // 3) Last resort: hard delete (still owner-scoped).
-      if (!ok) {
+        // 2) Older table with no deleted_at — soft-delete on status alone.
+        if (soft.error) {
+          const soft2 = await supabase
+            .from(table)
+            .update({ status: 'deleted', ...(target.alsoSet ?? {}) })
+            .eq('id', id)
+            .eq(ownerCol, userId)
+            .select('id');
+          ok = !soft2.error && Array.isArray(soft2.data) && soft2.data.length > 0;
+          if (ok) break;
+          if (soft2.error) lastErr = soft2.error;
+        }
+
+        // 3) Last resort: hard delete, still owner-scoped.
         const hard = await supabase
           .from(table)
           .delete()
           .eq('id', id)
-          .eq('user_id', userId)
+          .eq(ownerCol, userId)
           .select('id');
         ok = !hard.error && Array.isArray(hard.data) && hard.data.length > 0;
-        if (hard.error) throw hard.error;
+        if (ok) break;
+        if (hard.error) lastErr = hard.error;
       }
 
-      if (!ok) { setError(t.notOwner); setBusy(false); return; }
+      if (!ok) {
+        // Say what actually happened rather than blaming the user for it.
+        console.error('[DeleteListingButton]', table, 'delete failed:', lastErr);
+        setError(lastErr ? t.fail : t.notOwner);
+        setBusy(false);
+        return;
+      }
 
       setOpen(false);
       if (onDeleted) onDeleted(id);
@@ -238,4 +280,4 @@ export default function DeleteListingButton({
     </>
   );
 }
-// BAMBEH_END_TOKEN__DELETELISTINGBUTTON__COMPLETE
+// BAMBEH_END_TOKEN__DELETELISTINGBUTTON_FIX226__COMPLETE

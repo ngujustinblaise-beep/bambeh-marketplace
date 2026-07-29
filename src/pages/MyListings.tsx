@@ -132,13 +132,28 @@ export default function MyListings() {
         })
       );
 
-      const { data: farmRows, error: farmError } = await supabase
+      // FIX226 - hide produce the farmer has already deleted. Tries the new
+      // `status` column first and falls back to the old shape if the migration
+      // has not been run, so this can never blank out the farm section.
+      let farmRows: any[] | null = null;
+      const farmTry = await supabase
         .from("farm_products")
-        .select("id, title, category, is_available, view_count, created_at, price_per_unit_xaf, location")
+        .select("id, title, category, is_available, view_count, created_at, price_per_unit_xaf, location, status")
         .eq("seller_id", user.id)
+        .neq("status", "deleted")
         .order("created_at", { ascending: false });
-
-      if (farmError) throw farmError;
+      if (farmTry.error) {
+        console.warn("[MyListings] farm_products status column missing, using legacy query:", farmTry.error.message);
+        const farmLegacy = await supabase
+          .from("farm_products")
+          .select("id, title, category, is_available, view_count, created_at, price_per_unit_xaf, location")
+          .eq("seller_id", user.id)
+          .order("created_at", { ascending: false });
+        if (farmLegacy.error) throw farmLegacy.error;
+        farmRows = farmLegacy.data;
+      } else {
+        farmRows = farmTry.data;
+      }
 
       (farmRows || []).forEach((r: any) =>
         all.push({
@@ -342,7 +357,8 @@ export default function MyListings() {
               </p>
             </div>
 
-            {l.table !== "farm_products" && (
+            {/* FIX226 - farm produce used to be excluded here. It no longer is. */}
+            {true && (
               <div className="mt-2 flex justify-end" onClick={(e) => e.stopPropagation()}>
                 <DeleteListingButton
                   id={l.id}
