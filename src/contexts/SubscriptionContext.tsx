@@ -36,23 +36,23 @@ export function SubscriptionProvider({
   children: React.ReactNode;
 }) {
   const [subscription, setSubscription] = useState<SubscriptionStatus>({
-    tier: "Basic",
-    isActive: true,
+    tier: "free",
+    isActive: false,
   });
 
   const subscribe = async (tier: string) => {
     setSubscription({
       tier,
-      isActive: true,
+      isActive: false,
     });
     localStorage.setItem(
       "bambeh_subscription",
-      JSON.stringify({ tier, isActive: true }),
+      JSON.stringify({ tier, isActive: false }),
     );
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem("bambeh_subscription");
+    const saved = null /* FIX231: a subscription is never restored from localStorage - anyone can write that key from the console */;
     if (saved) {
       try {
         setSubscription(JSON.parse(saved));

@@ -269,7 +269,7 @@ const LoginForm       = lazy(() => import("@/pages/auth/Login"));
 const RegisterForm    = lazy(() => import("@/pages/auth/Register"));
 
 // ADMIN PAGES
-const AdminLogin                  = lazy(() => import("@/routes/groups/admin/AdminLogin"));
+// FIX240: AdminLogin page deleted - hardcoded admin password removed from the bundle.
 const AdminDashboard              = lazy(() => import("@/routes/groups/admin/AdminDashboard"));
 const CreateAdminPage             = lazy(() => import("@/routes/groups/admin/CreateAdminPage"));
 const AdminInbox                  = lazy(() => import("@/admin/AdminInbox"));
@@ -1101,15 +1101,12 @@ export default function App() {
                         <Route path="/zerm/purchase"   element={<Navigate to="/coins/buy" replace />} />
 
                         {/* ── 11. ADMIN ─────────────────────────────────────────── */}
-                        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
-                        <Route
-                          path="/admin/login"
-                          element={
-                            <Suspense fallback={<LoadingFallback />}>
-                              <AdminLogin />
-                            </Suspense>
-                          }
-                        />
+                        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+                        {/* FIX240: the hardcoded-credential admin login page was deleted. Admins now sign in
+                             at /login with their real account, and AuthGate require="admin" guards every
+                             admin route below. This path stays alive as a redirect so old bookmarks and
+                             the internal redirects in AuthProvider and SecurityInitializer do not 404. */}
+                        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
                         <Route path="/admin/dashboard" element={<AdminRouteWrapper><AdminDashboard /></AdminRouteWrapper>} />
                         <Route path="/admin/create" element={<AdminRouteWrapper><CreateAdminPage /></AdminRouteWrapper>} />
                         <Route path="/admin/resolve-dispute" element={<AdminRouteWrapper><AdminResolveDispute /></AdminRouteWrapper>} />

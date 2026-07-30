@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useLanguage } from "@/context/LanguageContext";
 
 type RequireLevel = "user" | "subscription" | "vendor" | "admin";
@@ -47,9 +48,12 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
 
   const userId = user?.id ?? null;
 
-  const isSubscribed = true;
+  // FIX233 - was: const isSubscribed = true;  A paywall that could never fire.
+  // Now verified against the Supabase subscriptions table, using the same
+  // hook SubscriptionGuard uses. One source of truth for access, not four.
+  const { isActive: isSubscribed, isLoading: subLoading } = useSubscription(userId);
 
-  if (loading || authReady === false) {
+  if (loading || authReady === false || (level === "subscription" && subLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3 text-gray-600">
@@ -67,11 +71,8 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
   if (level === "admin" && !isAdmin) {
     return <Navigate to="/" replace />;
   }
-
-  if (level === "vendor") {
-    const ok = isVendor || (user?.role ?? "").toLowerCase() === "vendor";
-    if (!ok) return <Navigate to="/vendor/register" state={{ from: location }} replace />;
-  }
+  // FIX233 - the vendor branch is gone. It redirected to /vendor/register,
+  // which is not a declared route, so it landed on Page Not Found.
 
   if (level === "subscription" && !isSubscribed) {
     return <Navigate to="/subscription" state={{ from: location }} replace />;
