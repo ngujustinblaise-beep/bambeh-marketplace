@@ -210,31 +210,34 @@ const STRINGS: Record<LangCode, Record<string, string>> = {
   },
 };
 
+// FIX253: every line below is something the app actually delivers.
+// The three plans grant the SAME access and differ only in duration,
+// so the copy says that plainly instead of inventing feature tiers.
 const FEATURES: Record<LangCode, Record<string, string[]>> = {
   en: {
-    daily: ["Full marketplace access", "Contact any seller", "Basic support"],
-    weekly: ["All Daily features", "Unlimited seller contacts", "Advanced search filters", "Priority support"],
-    monthly: ["All Weekly features", "VIP support (24/7)", "Featured listings", "Ad-free experience"],
+    daily: ["Every item's location and contact details", "Unlimited seller contacts", "In-app messaging", "All special features", "Valid 24 hours"],
+    weekly: ["Everything in the Daily Pass", "Unlimited seller contacts", "Priority support", "Valid 7 days"],
+    monthly: ["Everything in the Weekly Plan", "Unlimited seller contacts", "VIP support (24/7)", "Valid 30 days"],
   },
   fr: {
-    daily: ["Acc\u00e8s complet au march\u00e9", "Contactez tout vendeur", "Assistance de base"],
-    weekly: ["Tout le forfait Journalier", "Contacts vendeurs illimit\u00e9s", "Filtres de recherche avanc\u00e9s", "Assistance prioritaire"],
-    monthly: ["Tout le forfait Hebdomadaire", "Assistance VIP (24h/24)", "Annonces en vedette", "Exp\u00e9rience sans publicit\u00e9"],
+    daily: ["Localisation et contact de chaque annonce", "Contacts vendeurs illimit\u00e9s", "Messagerie dans l'application", "Toutes les fonctions sp\u00e9ciales", "Valable 24 heures"],
+    weekly: ["Tout le forfait Journalier", "Contacts vendeurs illimit\u00e9s", "Assistance prioritaire", "Valable 7 jours"],
+    monthly: ["Tout le forfait Hebdomadaire", "Contacts vendeurs illimit\u00e9s", "Assistance VIP (24h/24)", "Valable 30 jours"],
   },
   pcm: {
-    daily: ["Full marketplace access", "Contact any seller", "Basic support"],
-    weekly: ["All Daily things", "Contact seller anyhow you want", "Better search filter", "Priority support"],
-    monthly: ["All Weekly things", "VIP support (24/7)", "Your listing go show for front", "No advert go worry you"],
+    daily: ["See where every item dey and who dey sell am", "Contact seller dem, no limit", "Message inside the app", "All the special features", "E go last 24 hours"],
+    weekly: ["All the Daily Pass things", "Contact seller dem, no limit", "Priority support", "E go last 7 days"],
+    monthly: ["All the Weekly Plan things", "Contact seller dem, no limit", "VIP support (24/7)", "E go last 30 days"],
   },
   ar: {
-    daily: ["\u0648\u0635\u0648\u0644 \u0643\u0627\u0645\u0644 \u0625\u0644\u0649 \u0627\u0644\u0633\u0648\u0642", "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0623\u064a \u0628\u0627\u0626\u0639", "\u062f\u0639\u0645 \u0623\u0633\u0627\u0633\u064a"],
-    weekly: ["\u0643\u0644 \u0645\u064a\u0632\u0627\u062a \u0627\u0644\u064a\u0648\u0645\u064a\u0629", "\u062a\u0648\u0627\u0635\u0644 \u063a\u064a\u0631 \u0645\u062d\u062f\u0648\u062f \u0645\u0639 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646", "\u0641\u0644\u0627\u062a\u0631 \u0628\u062d\u062b \u0645\u062a\u0642\u062f\u0645\u0629", "\u062f\u0639\u0645 \u0630\u0648 \u0623\u0648\u0644\u0648\u064a\u0629"],
-    monthly: ["\u0643\u0644 \u0645\u064a\u0632\u0627\u062a \u0627\u0644\u0623\u0633\u0628\u0648\u0639\u064a\u0629", "\u062f\u0639\u0645 VIP \u0639\u0644\u0649 \u0645\u062f\u0627\u0631 \u0627\u0644\u0633\u0627\u0639\u0629", "\u0625\u0639\u0644\u0627\u0646\u0627\u062a \u0645\u0645\u064a\u0632\u0629", "\u062a\u062c\u0631\u0628\u0629 \u0628\u062f\u0648\u0646 \u0625\u0639\u0644\u0627\u0646\u0627\u062a"],
+    daily: ["\u0645\u0648\u0642\u0639 \u0643\u0644 \u0633\u0644\u0639\u0629 \u0648\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062a\u0648\u0627\u0635\u0644", "\u062a\u0648\u0627\u0635\u0644 \u063a\u064a\u0631 \u0645\u062d\u062f\u0648\u062f \u0645\u0639 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646", "\u0645\u0631\u0627\u0633\u0644\u0629 \u062f\u0627\u062e\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642", "\u0643\u0644 \u0627\u0644\u0645\u064a\u0632\u0627\u062a \u0627\u0644\u062e\u0627\u0635\u0629", "\u0635\u0627\u0644\u062d \u0644\u0645\u062f\u0629 24 \u0633\u0627\u0639\u0629"],
+    weekly: ["\u0643\u0644 \u0645\u0632\u0627\u064a\u0627 \u0627\u0644\u0628\u0627\u0642\u0629 \u0627\u0644\u064a\u0648\u0645\u064a\u0629", "\u062a\u0648\u0627\u0635\u0644 \u063a\u064a\u0631 \u0645\u062d\u062f\u0648\u062f \u0645\u0639 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646", "\u062f\u0639\u0645 \u0630\u0648 \u0623\u0648\u0644\u0648\u064a\u0629", "\u0635\u0627\u0644\u062d \u0644\u0645\u062f\u0629 7 \u0623\u064a\u0627\u0645"],
+    monthly: ["\u0643\u0644 \u0645\u0632\u0627\u064a\u0627 \u0627\u0644\u0628\u0627\u0642\u0629 \u0627\u0644\u0623\u0633\u0628\u0648\u0639\u064a\u0629", "\u062a\u0648\u0627\u0635\u0644 \u063a\u064a\u0631 \u0645\u062d\u062f\u0648\u062f \u0645\u0639 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646", "\u062f\u0639\u0645 VIP \u0639\u0644\u0649 \u0645\u062f\u0627\u0631 \u0627\u0644\u0633\u0627\u0639\u0629", "\u0635\u0627\u0644\u062d \u0644\u0645\u062f\u0629 30 \u064a\u0648\u0645\u064b\u0627"],
   },
   ff: {
-    daily: ["Naatgol timmungol e luumo", "Jokkondir e kala jeeyoowo", "Ballal gadanal"],
-    weekly: ["Fof ko woni e \u00d1alawma", "Jokkondiral jeeyoo\u0253e keeriindi", "Filteruuji njiilaw \u0253ur\u0257i", "Ballal adii\u0257um"],
-    monthly: ["Fof ko woni e Yontere", "Ballal VIP (24/7)", "Jaayndeeji \u0253ur\u0257i fee\u00f1de", "Alaa jaaynde haljinoore"],
+    daily: ["Nokku e jokkondiral kala jeeynge", "Jokkondiral jeeyoo\u0253e keeriindi", "\u0181ataake nder jaaynde", "Golle keerii\u0257e fof", "Ina wuuri waktuuji 24"],
+    weekly: ["Fof ko woni e Pass \u00d1alawma", "Jokkondiral jeeyoo\u0253e keeriindi", "Ballal adii\u0257um", "Ina wuuri bal\u0257e 7"],
+    monthly: ["Fof ko woni e Plan Yontere", "Jokkondiral jeeyoo\u0253e keeriindi", "Ballal VIP (24/7)", "Ina wuuri bal\u0257e 30"],
   },
 };
 
