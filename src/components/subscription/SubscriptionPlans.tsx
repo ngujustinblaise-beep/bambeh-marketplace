@@ -353,6 +353,13 @@ export default function SubscriptionPlans() {
       setPhase("polling");
       const outcome = await pollStatus(reference);
       if (outcome === "SUCCESSFUL") {
+        // FIX245: claim the paid reference server-side. The RPC re-checks the
+        // payment against the payments table using this user's own Supabase JWT,
+        // so access cannot be forged from the browser. Activation is immediate;
+        // the every-minute reconciler remains the safety net if this call fails.
+        try {
+          await supabase.rpc("bambeh_claim_subscription", { p_reference: reference });
+        } catch { /* reconciler will pick it up within a minute */ }
         setPhase("success");
         setTimeout(() => navigate("/marketplace"), 3000);
       } else {
