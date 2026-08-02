@@ -270,15 +270,15 @@ const RegisterForm    = lazy(() => import("@/pages/auth/Register"));
 
 // ADMIN PAGES
 // FIX240: AdminLogin page deleted - hardcoded admin password removed from the bundle.
-const AdminDashboard              = lazy(() => import("@/routes/groups/admin/AdminDashboard"));
-const CreateAdminPage             = lazy(() => import("@/routes/groups/admin/CreateAdminPage"));
+const AdminDashboard              = lazy(() => import("@/features/admin/AdminCommandCenter")); // FIX258: old page gated on a localStorage key nothing sets, and its main return was trapped inside the access-denied branch
+const CreateAdminPage             = lazy(() => import("@/features/admin/AdminCommandCenter")); // FIX258: Team & Roles lives here
 const AdminInbox                  = lazy(() => import("@/admin/AdminInbox"));
-const AdminSettings               = lazy(() => import("@/routes/groups/admin/AdminSettings"));
-const AdminDisputeResolution      = lazy(() => import("@/routes/groups/admin/AdminDisputeResolution"));
-const AdminLiveChat               = lazy(() => import("@/routes/groups/admin/AdminLiveChat"));
-const AdminUserManagement         = lazy(() => import("@/routes/groups/admin/AdminUserManagement"));
-const AdminResolveDispute         = lazy(() => import("@/routes/groups/admin/AdminResolveDispute"));
-const AdminUserAccountManagement  = lazy(() => import("@/routes/groups/admin/AdminUserAccountManagement"));
+const AdminSettings               = lazy(() => import("@/features/admin/AdminCommandCenter")); // FIX258
+const AdminDisputeResolution      = lazy(() => import("@/routes/groups/admin/ResolveDisputePage")); // FIX258
+const AdminLiveChat               = lazy(() => import("@/admin/AdminInbox")); // FIX258: the real support inbox
+const AdminUserManagement         = lazy(() => import("@/routes/groups/admin/UserManagementPage")); // FIX258: real page, was a 0.4 KB placeholder
+const AdminResolveDispute         = lazy(() => import("@/routes/groups/admin/ResolveDisputePage")); // FIX258
+const AdminUserAccountManagement  = lazy(() => import("@/routes/groups/admin/UserManagementPage")); // FIX258
 
 // HELP CENTER
 const Help                    = lazy(() => import("@/pages/help/Help"));
@@ -726,8 +726,8 @@ export default function App() {
                         <Route path="/corporate/support" element={<MainLayout><AuthGate require="user"><CorporatePrioritySupport /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/trash" element={<MainLayout><AuthGate require="user"><CorporateTrash /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/quiz" element={<MainLayout><AuthGate require="subscription"><QuizPage /></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
-                        <Route path="/admin/quiz" element={<MainLayout><AuthGate require="user"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
-                        <Route path="/admin/center" element={<MainLayout><AuthGate require="user"><AdminCommandCenter /></AuthGate></MainLayout>} />
+                        <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
+                        <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
