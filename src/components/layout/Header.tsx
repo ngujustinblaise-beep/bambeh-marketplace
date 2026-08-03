@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { useLanguage } from "@/context/LanguageContext";
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Menu, X, User, LogOut, LogIn, Search,
+  Menu, X, User, LogOut, LogIn, Search, Plus,
   Mic, MicOff, Crown, ArrowLeftRight,
   Globe, Settings, Package, Heart, Gift, ChevronRight, Share2,
   MessageSquare
@@ -236,7 +236,22 @@ export default function Header() {
                 Shows on desktop only (md:flex). On mobile the bottom
                 nav already has a bell icon that navigates to /notifications.
             ─────────────────────────────────────────────────────────────────────────────────────── */}
-            {/* FIX186 — messages + notifications, all screen sizes */}
+            {/* FIX276: Sell is the money action - always on screen, signed in or not.
+                A signed-out tap lands on the login page, which is the right
+                place for it to land. */}
+            <button
+              type="button"
+              onClick={() => navigate('/post-ad')}
+              aria-label={t('nav.sell') || 'Sell'}
+              title={t('nav.sell') || 'Sell'}
+              className="flex items-center gap-1.5 rounded-lg bg-amber-400 px-3 py-2 font-bold text-teal-900 shadow-md transition-colors hover:bg-amber-300 active:scale-95"
+              style={{ touchAction: 'auto', minHeight: '44px' }}
+            >
+              <Plus className="h-5 w-5" />
+              <span className="hidden sm:inline">{t('nav.sell') || 'Sell'}</span>
+            </button>
+
+            {/* FIX186 - messages + notifications, all screen sizes */}
             {currentUser && (
               <div className="flex items-center gap-1">
                 <button
