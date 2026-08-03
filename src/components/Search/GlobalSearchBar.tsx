@@ -11,6 +11,7 @@ import { useSearch } from '@/hooks/useAllListings';
 import { recordAdView } from '@/utils/BambehStore';
 import type { SearchResult } from '@/utils/BambehStore';
 
+import LocationLock from "@/components/security/LocationLock";
 const TYPE_ROUTES: Record<string, string> = {
   marketplace: '/marketplace', service: '/services', property: '/rentals',
   vehicle: '/vehicles', job: '/jobs', exchange: '/exchange',
@@ -130,7 +131,7 @@ const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
                           <Icon className="w-3 h-3" />{result.type}
                         </span>
                         {result.location && result.location !== '?' && (
-                          <span className="flex items-center gap-1 text-xs text-gray-400"><MapPin className="w-3 h-3" />{result.location}</span>
+                          <LocationLock location={result.location} compact />
                         )}
                       </div>
                     </div>

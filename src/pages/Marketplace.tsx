@@ -25,6 +25,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
+import LocationLock from "@/components/security/LocationLock";
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 
@@ -301,7 +302,7 @@ function ItemCard({
         <div className="flex items-center justify-between mt-1.5">
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <MapPin className="w-3 h-3 flex-shrink-0" />
-            <span className="truncate max-w-[70px]">{item.location}</span>
+            <LocationLock location={item.location} compact />
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <Eye className="w-3 h-3" />

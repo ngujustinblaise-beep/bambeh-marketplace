@@ -1,28 +1,28 @@
-// BAMBEH_DEPLOY_TOKEN__LOCATIONLOCK_FIX250_CLEAN
+// BAMBEH_DEPLOY_TOKEN__LOCATIONLOCK_FIX272_CLEAN
 // FILE LOCATION: src/components/security/LocationLock.tsx
 //
-// FIX250 - HIDE THE ITEM LOCATION FROM UNSUBSCRIBED USERS.
+// FIX272 - v2. One important change from v1:
 //
-// Routing cannot hide a field inside a page, so this is a component you
-// drop in wherever a listing's town/quarter is printed. A subscriber sees
-// the real location. Everyone else sees that the item is available, plus a
-// tap that leads to the plans page.
+//   The compact variant is now a plain SPAN, not a Link. Listing cards are
+//   already wrapped in a link to the item, and an anchor inside an anchor is
+//   invalid HTML - React warns and browsers behave unpredictably. Tapping the
+//   card now goes to the detail page, which the guard sends to /subscription.
+//   That is the better funnel anyway: they tap the thing they want, and the
+//   plans page is what they land on.
 //
-// USAGE - replace this:
-//     <span>{item.location}</span>
+// USAGE - inside a listing card, replace this:
+//     <span className="truncate">{item.location}</span>
 // with this:
-//     <LocationLock location={item.location} />
-//
-// Compact version for listing cards:
 //     <LocationLock location={item.location} compact />
 //
-// There is also a hook for anything else you need to hide (phone numbers,
-// exact addresses, contact names):
-//     const canView = useCanViewDetails();
-//     {canView ? seller.phone : <LocationLock location={null} compact />}
+// Full block version, for a detail page or a panel:
+//     <LocationLock location={item.location} />
 //
-// Truth source is unchanged: useSubscription(uid) against Supabase.
-// Nothing here is decided by localStorage.
+// For any other hidden field (phone, exact address, contact name):
+//     const canView = useCanViewDetails();
+//     {canView ? seller.phone : "Hidden"}
+//
+// Truth comes from useSubscription(uid) against Supabase. Never localStorage.
 
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -52,27 +52,27 @@ const T: Record<LangCode, { available: string; hidden: string; unlock: string }>
   en: {
     available: "Available",
     hidden: "Location hidden",
-    unlock: "Subscribe to see where this item is",
+    unlock: "100 XAF unlocks every listing for 24 hours",
   },
   fr: {
     available: "Disponible",
     hidden: "Localisation masqu\u00E9e",
-    unlock: "Abonnez-vous pour voir o\u00F9 se trouve cet article",
+    unlock: "100 FCFA d\u00E9bloque toutes les annonces pendant 24 heures",
   },
   pcm: {
-    available: "E dey available",
+    available: "E dey",
     hidden: "Location hide",
-    unlock: "Subscribe make you see where the thing dey",
+    unlock: "100 FCFA go open all the listings for 24 hours",
   },
   ar: {
     available: "\u0645\u062A\u0648\u0641\u0631",
     hidden: "\u0627\u0644\u0645\u0648\u0642\u0639 \u0645\u062E\u0641\u064A",
-    unlock: "\u0627\u0634\u062A\u0631\u0643 \u0644\u0645\u0639\u0631\u0641\u0629 \u0645\u0643\u0627\u0646 \u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062A\u062C",
+    unlock: "100 \u0641\u0631\u0646\u0643 \u062A\u0641\u062A\u062D \u0643\u0644 \u0627\u0644\u0625\u0639\u0644\u0627\u0646\u0627\u062A \u0644\u0645\u062F\u0629 24 \u0633\u0627\u0639\u0629",
   },
   ff: {
     available: "Ina woodi",
     hidden: "Nokku suu\u0257ii",
-    unlock: "Abonno ngam yiide nokku mum",
+    unlock: "100 XAF ina u\u0253\u0253ita jeeyngeeji fof e waktuuji 24",
   },
 };
 
@@ -90,7 +90,7 @@ export function useCanViewDetails(): boolean {
 interface LocationLockProps {
   /** The real location string. Shown only to subscribers. */
   location?: string | null;
-  /** Small inline chip for listing cards. */
+  /** Small inline chip for listing cards. Renders a span, never a link. */
   compact?: boolean;
   /** Optional custom node to render for subscribers instead of plain text. */
   children?: ReactNode;
@@ -114,32 +114,31 @@ export default function LocationLock({
     if (!location) return null;
     return (
       <span className={"inline-flex items-center gap-1 " + className}>
-        <MapPin className="h-4 w-4 shrink-0 text-teal-600" />
-        <span>{location}</span>
+        <MapPin className="h-3.5 w-3.5 shrink-0 text-teal-600" />
+        <span className="truncate">{location}</span>
       </span>
     );
   }
 
-  // Not a subscriber - availability only, plus a way to pay.
+  // Not a subscriber - availability only. PLAIN SPAN: safe inside a card link.
   if (compact) {
     return (
-      <Link
-        to="/subscription"
+      <span
         dir={rtl ? "rtl" : "ltr"}
         title={t.unlock}
         className={
           "inline-flex items-center gap-1 rounded-full border border-amber-200 " +
-          "bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 " +
-          "hover:bg-amber-100 " +
+          "bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 " +
           className
         }
       >
-        <Lock className="h-3 w-3 shrink-0" />
+        <Lock className="h-2.5 w-2.5 shrink-0" />
         <span>{t.available}</span>
-      </Link>
+      </span>
     );
   }
 
+  // Full block - used on its own, so a link is fine here.
   return (
     <div
       dir={rtl ? "rtl" : "ltr"}
@@ -166,4 +165,4 @@ export default function LocationLock({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__LOCATIONLOCK_FIX250__COMPLETE
+// BAMBEH_END_TOKEN__LOCATIONLOCK_FIX272__COMPLETE

@@ -32,6 +32,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 
+import LocationLock from "@/components/security/LocationLock";
 type ResultKind =
   | 'marketplace' | 'job' | 'service' | 'rental' | 'vehicle' | 'farm'
   | 'exchange' | 'corporate';
@@ -352,7 +353,7 @@ export default function SearchResults() {
                 <div className="flex items-center justify-between mt-1">
                   {price ? <p className="text-sm font-bold text-teal-700">{price}</p> : <span />}
                   <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                    {h.location ? <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" />{h.location}</span> : null}
+                    {h.location ? <LocationLock location={h.location} compact /> : null}
                     {h.views != null ? <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{h.views} {t.views}</span> : null}
                   </div>
                 </div>

@@ -1,50 +1,51 @@
-// BAMBEH_DEPLOY_TOKEN__SUBSCRIPTIONGUARD_FIX251_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SUBSCRIPTIONGUARD_FIX272_CLEAN
 // FILE LOCATION: src/components/security/SubscriptionGuard.tsx
 //
-// FIX251 - THE FINAL ACCESS MODEL.
+// FIX272 - THE TIERED MODEL, WITH THE LOCK MADE VISIBLE.
 //
-// THREE GROUPS OF PEOPLE, TWO PAYWALL STATES.
+// Same access rules as FIX251. Two additions:
 //
-//   A. Downloaded, not signed in
-//      Home, all browse lists, search, corporate storefronts, help, legal,
-//      about, the plans page, donations. Sees THAT items exist. Does not
-//      see WHERE they are or WHO is selling.
+//   1. On a browse page, a non-subscriber now sees a counted banner above
+//      the list: "47 places to rent. Location and seller contact are hidden.
+//      Unlock everything - 100 XAF, 24 hours." A wall shows nothing to want;
+//      this shows the size of the prize and the price of it.
 //
-//   B. Signed in, not subscribed  (everything in A, plus)
-//      POSTING - always free, instantly, no wall, ever.
-//      Their own things: profile, settings, my listings, drafts, editing,
-//      orders, cart, favourites, notifications, alerts, saved searches,
-//      trash, referrals, job applicants for jobs they posted.
+//   2. ONE SWITCH, below, to put whole categories behind the paywall later.
+//      Leave it false while the marketplace is filling. Flip it to true and
+//      rebuild when a category has enough listings that the count alone
+//      sells the subscription.
 //
-//   C. Subscribed
-//      Everything above, plus the four things that are worth paying for:
-//        1. Messages / chat
-//        2. Item DETAIL pages (where the location and contact live)
-//        3. Making an offer / contacting a seller
-//        4. Special modules: FarmFresh, Coins, Community, Group Buying,
-//           Compare, AI Chat, Deals, Flash Deals, Tontine, Escrow
-//
-// So the paywall sits on OTHER PEOPLE'S value and on the special modules.
-// Nothing a user owns is ever locked away from them, and posting supply
-// into the marketplace costs nothing - which is how the marketplace fills.
-//
-// NOTE ON PLANS: daily / weekly / monthly currently grant the SAME access
-// and differ only in how long they last. Per-plan feature differences are
-// marketing copy on the plans page, not enforced here. If you want them
-// enforced, that is a separate change and I will need to know the rules.
-//
-// Item location and detail masking INSIDE a page is not done here -
-// routing cannot hide a field. That is LocationLock.tsx.
+// Everything else is unchanged: posting is always free, nothing a user owns
+// is ever locked away from them, and /subscription is always reachable.
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
+import BrowseTeaser from "@/components/security/BrowseTeaser";
+
+/* ==================================================================== *
+ *  THE SWITCH
+ *
+ *  false = anyone can browse every category list. Details, contact and
+ *          location stay behind the paywall. THIS IS THE CURRENT PLAN.
+ *
+ *  true  = jobs, services, rentals, vehicles and exchange become
+ *          subscriber-only entirely. Marketplace stays open, so the app
+ *          still has a free front door.
+ *
+ *  Change one word, run npm run build, deploy. Reversible the same way.
+ * ==================================================================== */
+const LOCK_CATEGORIES_BEHIND_PAYWALL = false;
+
+/* Locked only when the switch above is true. Marketplace is never here. */
+const SWITCHABLE_CATEGORIES = [
+  "/jobs", "/services", "/rentals", "/vehicles", "/exchange",
+];
 
 /* ------------------------------------------------------------------ *
  * OPEN TO EVERYONE - EXACT MATCH ONLY.
- * Exact match is deliberate: "/marketplace" is open, but
- * "/marketplace/abc123" (an item's details) must not be. A prefix rule
+ * "/marketplace" is open; "/marketplace/abc123" is not. A prefix rule
  * here would leak every detail page in the app.
  * ------------------------------------------------------------------ */
 const PUBLIC_EXACT = [
@@ -70,7 +71,6 @@ const PUBLIC_EXACT = [
   "/corporate", "/corporate/register",
 ];
 
-/* Open to everyone - prefix match. None of these has a gated child. */
 const PUBLIC_PREFIX = [
   "/marketplace/category",
   "/jobs/category",
@@ -78,7 +78,7 @@ const PUBLIC_PREFIX = [
   "/seller",
   "/corporate/store",
 
-  // Payment return pages. A person paying for their FIRST subscription is
+  // Payment return pages. Someone paying for their FIRST subscription is
   // still unsubscribed when the gateway sends them back here. Gating this
   // would lose the payment at the final step. Do not remove.
   "/payment",
@@ -96,8 +96,8 @@ const ALWAYS_FREE_SIGNED_IN = [
   "/rentals/list", "/rentals/post", "/list-property",
   "/vehicles/sell",
   "/exchange/post",
-  "/tontine/create",      // beats the /tontine gate below
-  "/farm-fresh/sell",     // beats the /farm-fresh gate below
+  "/tontine/create",
+  "/farm-fresh/sell",
 
   // managing what they posted
   "/my-listings", "/marketplace/drafts", "/marketplace/edit",
@@ -111,24 +111,21 @@ const ALWAYS_FREE_SIGNED_IN = [
 ];
 
 /* ------------------------------------------------------------------ *
- * SUBSCRIBERS ONLY - the special modules and the contact channels.
+ * SUBSCRIBERS ONLY - contact channels and the special modules.
  * ------------------------------------------------------------------ */
 const SUBSCRIBER_PREFIX = [
-  "/chat",           // in-app messaging
-  "/make-offer",     // contacting a seller with an offer
-  "/exchange/offer", // same, on the exchange
+  "/chat",
+  "/make-offer",
+  "/exchange/offer",
 
-  // special modules
   "/farm-fresh", "/community", "/group-buying", "/compare",
   "/ai-chat", "/deals", "/flash-deals", "/tontine", "/escrow",
 
-  // coins economy - earned free, visible on subscription
   "/coins", "/zerm",
 ];
 
 /* ------------------------------------------------------------------ *
  * DETAIL PAGES - one segment after the base that is not a known keyword.
- * /marketplace/category/food -> open.  /marketplace/abc123 -> subscribers.
  * ------------------------------------------------------------------ */
 const DETAIL_ROUTES: { base: string; free: string[] }[] = [
   { base: "/marketplace", free: ["category", "sell", "drafts", "edit"] },
@@ -137,6 +134,12 @@ const DETAIL_ROUTES: { base: string; free: string[] }[] = [
   { base: "/rentals",     free: ["list", "post"] },
   { base: "/vehicles",    free: ["sell"] },
   { base: "/exchange",    free: ["post", "offer"] },
+];
+
+/* Where the counted teaser makes sense. */
+const TEASER_PATHS = [
+  "/marketplace", "/jobs", "/services", "/rentals", "/vehicles",
+  "/exchange", "/search",
 ];
 
 /* ------------------------------------------------------------------ */
@@ -150,6 +153,11 @@ function underPrefix(path: string, list: string[]): boolean {
 }
 
 function isPublic(path: string): boolean {
+  if (LOCK_CATEGORIES_BEHIND_PAYWALL && underPrefix(path, SWITCHABLE_CATEGORIES)) {
+    // the posting routes inside those categories stay free even when locked
+    if (underPrefix(path, ALWAYS_FREE_SIGNED_IN)) return false;
+    return false;
+  }
   return exactly(path, PUBLIC_EXACT) || underPrefix(path, PUBLIC_PREFIX);
 }
 
@@ -171,7 +179,12 @@ function isDetailPage(path: string): boolean {
 function needsSubscription(path: string): boolean {
   if (underPrefix(path, ALWAYS_FREE_SIGNED_IN)) return false;
   if (underPrefix(path, SUBSCRIBER_PREFIX)) return true;
+  if (LOCK_CATEGORIES_BEHIND_PAYWALL && underPrefix(path, SWITCHABLE_CATEGORIES)) return true;
   return isDetailPage(path);
+}
+
+function showsTeaser(path: string): boolean {
+  return TEASER_PATHS.some((p) => path === p || path.startsWith(p + "/"));
 }
 
 /* ------------------------------------------------------------------ */
@@ -193,9 +206,16 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
     return () => clearTimeout(t);
   }, [path, uid]);
 
+  const teaser = !isActive && showsTeaser(path) ? <BrowseTeaser /> : null;
+
   // ---- GROUP A: open to anyone, signed in or not ----
   if (isPublic(path)) {
-    return <>{children}</>;
+    return (
+      <>
+        {teaser}
+        {children}
+      </>
+    );
   }
 
   // ---- Everything below needs an account ----
@@ -223,4 +243,4 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
 
   return <Navigate to="/subscription" replace state={{ from: path }} />;
 }
-// BAMBEH_END_TOKEN__SUBSCRIPTIONGUARD_FIX251__COMPLETE
+// BAMBEH_END_TOKEN__SUBSCRIPTIONGUARD_FIX272__COMPLETE

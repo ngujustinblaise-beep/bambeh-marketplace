@@ -26,6 +26,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useLang } from "@/hooks/useAppLang";
 
+import LocationLock from "@/components/security/LocationLock";
 // Kept broad so existing callers passing any old category value still compile.
 export type AdCategory =
   | "marketplace" | "jobs" | "services" | "rentals" | "vehicles"
@@ -290,7 +291,7 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
                         {price}{item.unit ? `/${item.unit}` : ""}
                       </p>
                     ) : null}
-                    {item.location ? <p className="text-[10px] text-gray-400 truncate">{item.location}</p> : null}
+                    {item.location ? <LocationLock location={item.location} compact /> : null}
                   </div>
                 </button>
               );

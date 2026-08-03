@@ -19,6 +19,7 @@ import { DemoBadge } from "@/components/listings/DemoBadge";
 import { useLang } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 
+import LocationLock from "@/components/security/LocationLock";
 // -------------------------------------------------------------
 // i18n dictionary
 // -------------------------------------------------------------
@@ -438,7 +439,7 @@ export default function VehicleRentals() {
                   </p>
 
                   <div className={`flex items-center gap-4 text-xs text-gray-500 flex-wrap ${isRtl ? "flex-row-reverse" : ""}`}>
-                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{v.location}</span>
+                    <LocationLock location={v.location} compact />
                     {v.extra?.mileage     && <span className="flex items-center gap-1"><Gauge className="w-3 h-3"/>{v.extra.mileage}</span>}
                     {v.extra?.fuel        && <span className="flex items-center gap-1"><Fuel className="w-3 h-3"/>{v.extra.fuel}</span>}
                     {v.extra?.transmission && <span className="capitalize">{v.extra.transmission}</span>}

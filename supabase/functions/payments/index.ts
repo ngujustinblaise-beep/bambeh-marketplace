@@ -834,7 +834,18 @@ async function handleSubscribe(req: Request): Promise<Response> {
       amount: price, phone: phoneCheck.normalized, userId, planName,
       govTax: 0, totalCharged: price,
     });
-    return ok({ message: "Subscription payment initiated.", reference: result.reference, status: result.status, operator: phoneCheck.operator, externalRef: result.externalRef }, 201);
+    return ok({
+      message: "Subscription payment initiated.",
+      reference: result.reference,
+      status: result.status,
+      operator: phoneCheck.operator,
+      externalRef: result.externalRef,
+      // FIX270: CamPay returns a USSD code because the automatic push is
+      // unreliable on MTN Cameroon. Passing it to the client gives the user
+      // a way to approve the payment by hand when no prompt arrives.
+      ussd_code: (result as any)?.ussd_code ?? (result as any)?.data?.ussd_code ?? null,
+      paymentUrl: (result as any)?.paymentUrl ?? (result as any)?.data?.payment_url ?? null,
+    }, 201);
   } catch (e) {
     console.error("[subscribe] CamPay error:", e);
     return fail("CamPay refused the payment request. Check the phone number and balance.", 502);
