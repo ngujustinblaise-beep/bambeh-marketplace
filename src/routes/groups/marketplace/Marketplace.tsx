@@ -119,6 +119,53 @@ const CATEGORIES = [
   { label: "Rentals",     emoji: "🏠" },
   { label: "Other",       emoji: "📦" },
 ];
+// FIX277: category chips and condition in the user's language.
+// The English label stays the FILTER VALUE - only the display is translated,
+// so switching language can never break filtering.
+// These read the language at render time, so they work inside card
+// components too, and the existing "langChange" event repaints them.
+function bambehLang(): string {
+  try {
+    const r = String(localStorage.getItem("Bambeh_language") || "").toLowerCase();
+    if (r.startsWith("fr")) return "fr";
+    if (r.startsWith("ar")) return "ar";
+    if (r.startsWith("ha")) return "ha";
+    if (r.startsWith("ff") || r.startsWith("ful")) return "ff";
+    if (r.startsWith("pcm") || r.startsWith("pid")) return "pcm";
+  } catch { /* storage blocked */ }
+  return "en";
+}
+
+const CATEGORY_TEXT: Record<string, Record<string, string>> = {
+  "All":         { en: "All",         fr: "Tout",        ha: "Duka",      ar: "\u0627\u0644\u0643\u0644",                   pcm: "All",          ff: "Fof" },
+  "Electronics": { en: "Electronics", fr: "\u00C9lectronique", ha: "Na'urori", ar: "\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A\u0627\u062A",     pcm: "Electronics",  ff: "Elektoronik" },
+  "Fashion":     { en: "Fashion",     fr: "Mode",        ha: "Kayan ado", ar: "\u0623\u0632\u064A\u0627\u0621",               pcm: "Fashion",      ff: "Comci" },
+  "Appliances":  { en: "Appliances",  fr: "\u00C9lectrom\u00E9nager", ha: "Kayan gida", ar: "\u0623\u062C\u0647\u0632\u0629 \u0645\u0646\u0632\u0644\u064A\u0629", pcm: "House machine", ff: "Kaake suudu" },
+  "Books":       { en: "Books",       fr: "Livres",      ha: "Littattafai", ar: "\u0643\u062A\u0628",                       pcm: "Books",        ff: "Defte" },
+  "Furniture":   { en: "Furniture",   fr: "Meubles",     ha: "Kayan daki", ar: "\u0623\u062B\u0627\u062B",                  pcm: "Furniture",    ff: "Kaake suudu" },
+  "Vehicles":    { en: "Vehicles",    fr: "V\u00E9hicules", ha: "Motoci",   ar: "\u0645\u0631\u0643\u0628\u0627\u062A",       pcm: "Motor",        ff: "Otooji" },
+  "Rentals":     { en: "Rentals",     fr: "Locations",   ha: "Haya",      ar: "\u0625\u064A\u062C\u0627\u0631",             pcm: "House for rent", ff: "Luwol" },
+  "Other":       { en: "Other",       fr: "Autre",       ha: "Sauran",    ar: "\u0623\u062E\u0631\u0649",                   pcm: "Other",        ff: "Go\u0257\u0257o" },
+};
+
+const CONDITION_TEXT: Record<string, Record<string, string>> = {
+  "New":         { en: "New",         fr: "Neuf",        ha: "Sabo",      ar: "\u062C\u062F\u064A\u062F",                   pcm: "New",          ff: "Kesum" },
+  "Used":        { en: "Used",        fr: "Occasion",    ha: "An yi amfani", ar: "\u0645\u0633\u062A\u0639\u0645\u0644",    pcm: "Second hand",  ff: "Huutoraa\u0257um" },
+  "Refurbished": { en: "Refurbished", fr: "Reconditionn\u00E9", ha: "An gyara", ar: "\u0645\u062C\u062F\u062F",              pcm: "Repaired one", ff: "Mo\u0253\u0253itaa\u0257um" },
+};
+
+function catLabel(label: string): string {
+  const row = CATEGORY_TEXT[label];
+  if (!row) return label;
+  return row[bambehLang()] || row.en || label;
+}
+
+function condLabel(value: string): string {
+  const row = CONDITION_TEXT[value];
+  if (!row) return value;
+  return row[bambehLang()] || row.en || value;
+}
+
 
 const FAV_KEY  = "bambeh_favorites";
 const CART_KEY = "bambeh_cart";
@@ -275,7 +322,7 @@ function ItemCard({
 
         <div className="absolute bottom-2 left-2 flex gap-1">
           <span className="text-xs bg-white/90 backdrop-blur-sm text-gray-700 px-1.5 py-0.5 rounded-full font-medium">
-            {item.condition}
+            {condLabel(item.condition)}
           </span>
         </div>
         <div className="absolute bottom-2 right-2 flex gap-1">
@@ -536,7 +583,7 @@ export default function Marketplace() {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              <span>{emoji}</span> {label}
+              <span>{emoji}</span> {catLabel(label)}
             </button>
           ))}
         </div>
