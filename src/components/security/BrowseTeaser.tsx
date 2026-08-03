@@ -68,31 +68,32 @@ const NOUN: Record<string, Record<LangCode, string>> = {
   search:      { en: "results",        fr: "r\u00E9sultats",   pcm: "results",         ar: "\u0646\u062A\u064A\u062C\u0629",           ff: "nju\u0253\u0257i" },
 };
 
+// FIX279: price framed as a thing people already buy, not a number to weigh up.
 const COPY: Record<LangCode, { hidden: string; cta: string; unlock: string }> = {
   en: {
     hidden: "Location and seller contact are hidden.",
     cta: "Unlock everything",
-    unlock: "100 XAF \u00B7 24 hours",
+    unlock: "less than a loaf of bread, for a whole day",
   },
   fr: {
     hidden: "La localisation et le contact du vendeur sont masqu\u00E9s.",
     cta: "Tout d\u00E9bloquer",
-    unlock: "100 FCFA \u00B7 24 heures",
+    unlock: "moins qu'une baguette, pour toute une journ\u00E9e",
   },
   pcm: {
     hidden: "Location and seller contact dey hide.",
     cta: "Open everything",
-    unlock: "100 FCFA \u00B7 24 hours",
+    unlock: "e no reach the price of bread, and e last full day",
   },
   ar: {
     hidden: "\u0627\u0644\u0645\u0648\u0642\u0639 \u0648\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0628\u0627\u0626\u0639 \u0645\u062E\u0641\u064A\u0629.",
     cta: "\u0627\u0641\u062A\u062D \u0643\u0644 \u0634\u064A\u0621",
-    unlock: "100 \u0641\u0631\u0646\u0643 \u00B7 24 \u0633\u0627\u0639\u0629",
+    unlock: "\u0623\u0642\u0644 \u0645\u0646 \u062B\u0645\u0646 \u0631\u063A\u064A\u0641 \u062E\u0628\u0632\u060C \u0644\u064A\u0648\u0645 \u0643\u0627\u0645\u0644",
   },
   ff: {
     hidden: "Nokku e jokkondiral jeeyoowo ina suu\u0257i.",
     cta: "U\u0253\u0253it fof",
-    unlock: "100 XAF \u00B7 waktuuji 24",
+    unlock: "\u0181uri famÉ—ude e coggu mbuuru, e \u00F1alawma timmu\u0257o",
   },
 };
 
@@ -172,8 +173,9 @@ export default function BrowseTeaser() {
             className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-teal-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:from-teal-500 hover:to-teal-600"
           >
             <Zap className="h-3.5 w-3.5" />
-            {copy.cta} &middot; {copy.unlock}
+            {copy.cta}
           </Link>
+          <p className="mt-1.5 text-[11px] italic text-gray-500">{copy.unlock}</p>
         </div>
 
         <button
