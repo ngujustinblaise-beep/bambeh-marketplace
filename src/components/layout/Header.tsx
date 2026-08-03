@@ -241,14 +241,14 @@ export default function Header() {
                 place for it to land. */}
             <button
               type="button"
-              onClick={() => navigate('/post-ad')}
-              aria-label={t('nav.sell') || 'Sell'}
-              title={t('nav.sell') || 'Sell'}
+              onClick={() => navigate('/marketplace/sell')}
+              aria-label={t('nav.sellItem') || 'Sell Item'}
+              title={t('nav.sellItem') || 'Sell Item'}
               className="flex items-center gap-1.5 rounded-lg bg-amber-400 px-3 py-2 font-bold text-teal-900 shadow-md transition-colors hover:bg-amber-300 active:scale-95"
               style={{ touchAction: 'auto', minHeight: '44px' }}
             >
               <Plus className="h-5 w-5" />
-              <span className="hidden sm:inline">{t('nav.sell') || 'Sell'}</span>
+              <span className="hidden sm:inline">{t('nav.sellItem') || 'Sell Item'}</span>
             </button>
 
             {/* FIX186 - messages + notifications, all screen sizes */}
