@@ -6,12 +6,69 @@
 // from @/App (the provider that actually wraps the app). Auto-logs-in on success.
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Check, X as XIcon, ArrowRight, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
 import { authIdentity, normalisePhone } from "@/utils/phoneAuth";
 import { supabase } from "@/lib/supabase";
+
+/* FIX284: password visibility and strength. A person who cannot see what
+   they typed cannot fix it, and a person who is told only "invalid" learns
+   nothing. Both problems end here. */
+function bambehPwLang(): string {
+  try {
+    const r = String(localStorage.getItem("Bambeh_language") || "").toLowerCase();
+    if (r.startsWith("fr")) return "fr";
+    if (r.startsWith("ar")) return "ar";
+    if (r.startsWith("ff") || r.startsWith("ful")) return "ff";
+    if (r.startsWith("pcm") || r.startsWith("pid")) return "pcm";
+  } catch { /* storage blocked */ }
+  return "en";
+}
+
+const PW_TEXT: Record<string, Record<string, string>> = {
+  lv0: { en: "Very weak", fr: "Tr\u00E8s faible", pcm: "Weak well well", ar: "\u0636\u0639\u064A\u0641\u0629 \u062C\u062F\u0627\u064B", ff: "Lo\u0253\u0257i sanne" },
+  lv1: { en: "Weak", fr: "Faible", pcm: "Weak", ar: "\u0636\u0639\u064A\u0641\u0629", ff: "Lo\u0253\u0257i" },
+  lv2: { en: "Fair", fr: "Moyen", pcm: "Fair", ar: "\u0645\u062A\u0648\u0633\u0637\u0629", ff: "Hakkunde" },
+  lv3: { en: "Strong", fr: "Fort", pcm: "Strong", ar: "\u0642\u0648\u064A\u0629", ff: "Sembi\u0257i" },
+  lv4: { en: "Very strong", fr: "Tr\u00E8s fort", pcm: "Strong well well", ar: "\u0642\u0648\u064A\u0629 \u062C\u062F\u0627\u064B", ff: "Sembi\u0257i sanne" },
+  add8: { en: "Use at least 8 characters", fr: "Utilisez au moins 8 caract\u00E8res", pcm: "Make e reach 8 characters", ar: "\u0627\u0633\u062A\u062E\u062F\u0645 8 \u0623\u062D\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644", ff: "Wa\u0257 alkulal 8 walla \u0253urde" },
+  addNum: { en: "Add a number", fr: "Ajoutez un chiffre", pcm: "Put number inside", ar: "\u0623\u0636\u0641 \u0631\u0642\u0645\u0627\u064B", ff: "\u0181eydu limngal" },
+  addCap: { en: "Add a capital letter", fr: "Ajoutez une majuscule", pcm: "Put capital letter", ar: "\u0623\u0636\u0641 \u062D\u0631\u0641\u0627\u064B \u0643\u0628\u064A\u0631\u0627\u064B", ff: "\u0181eydu alkulal mawngal" },
+  addSym: { en: "Add a symbol like ! or #", fr: "Ajoutez un symbole comme ! ou #", pcm: "Put symbol like ! or #", ar: "\u0623\u0636\u0641 \u0631\u0645\u0632\u0627\u064B \u0645\u062B\u0644 ! \u0623\u0648 #", ff: "\u0181eydu maande wano ! walla #" },
+  match: { en: "Passwords match", fr: "Les mots de passe correspondent", pcm: "The passwords match", ar: "\u0643\u0644\u0645\u062A\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u0645\u062A\u0637\u0627\u0628\u0642\u062A\u0627\u0646", ff: "Mo\u0263\u0263e \u0257ee ina ndoo\u0257i" },
+  noMatch: { en: "Passwords do not match", fr: "Les mots de passe ne correspondent pas", pcm: "The passwords no match", ar: "\u0643\u0644\u0645\u062A\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u063A\u064A\u0631 \u0645\u062A\u0637\u0627\u0628\u0642\u062A\u064A\u0646", ff: "Mo\u0263\u0263e \u0257ee ndoo\u0257aani" },
+};
+
+function pwT(key: string): string {
+  const row = PW_TEXT[key];
+  return row ? (row[bambehPwLang()] || row.en) : "";
+}
+
+function pwScore(pw: string): number {
+  if (!pw) return -1;
+  let s = 0;
+  if (pw.length >= 8) s++;
+  if (pw.length >= 12) s++;
+  if (/[0-9]/.test(pw)) s++;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) s++;
+  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  if (pw.length < 8) s = Math.min(s, 1);   // short is never strong
+  return Math.min(s, 4);
+}
+
+function pwAdvice(pw: string): string {
+  if (!pw) return "";
+  if (pw.length < 8) return pwT("add8");
+  if (!/[0-9]/.test(pw)) return pwT("addNum");
+  if (!(/[a-z]/.test(pw) && /[A-Z]/.test(pw))) return pwT("addCap");
+  if (!/[^A-Za-z0-9]/.test(pw)) return pwT("addSym");
+  return "";
+}
+
+const PW_BAR = ["bg-red-500","bg-orange-500","bg-amber-400","bg-green-500","bg-blue-600"];
+const PW_TXT = ["text-red-600","text-orange-600","text-amber-600","text-green-600","text-blue-700"];
 const STRINGS = {
   en: {
     title: "Create your account", subtitle: "Join Bambeh and get started.",
@@ -79,6 +136,8 @@ export default function Register() {
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPw, setShowPw] = useState(false);      // FIX284
+  const [showPw2, setShowPw2] = useState(false);    // FIX284
 
   const emailValid = useMemo(() => email.trim() === "" || /^\S+@\S+\.\S+$/.test(email), [email]); // FIX283: email is optional now
   const phoneValid = useMemo(() => phone.trim().length >= 7, [phone]);
@@ -169,15 +228,48 @@ export default function Register() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">{t.password}</label>
-                <input id="password" type="password" autoComplete="new-password" value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200" />
+                <div className="relative">
+                  <input id="password" type={showPw ? "text" : "password"} autoComplete="new-password" value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200" />
+                  <button type="button" onClick={() => setShowPw(v => !v)}
+                    aria-label={showPw ? "Hide password" : "Show password"}
+                    className="absolute right-0 top-1 flex h-12 w-12 items-center justify-center text-gray-400 hover:text-gray-700">
+                    {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {password.length > 0 && (
+                  <div className="mt-2">
+                    <div className="flex gap-1">
+                      {[0,1,2,3,4].map((i) => (
+                        <div key={i} className={"h-1.5 flex-1 rounded-full transition-colors " + (i <= pwScore(password) ? PW_BAR[pwScore(password)] : "bg-gray-200")} />
+                      ))}
+                    </div>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <span className={"text-xs font-semibold " + PW_TXT[pwScore(password)]}>{pwT("lv" + pwScore(password))}</span>
+                      {pwAdvice(password) && <span className="text-xs text-gray-500">{pwAdvice(password)}</span>}
+                    </div>
+                  </div>
+                )}
               </div>
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">{t.confirmPassword}</label>
-                <input id="confirmPassword" type="password" autoComplete="new-password" value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200" />
+                <div className="relative">
+                  <input id="confirmPassword" type={showPw2 ? "text" : "password"} autoComplete="new-password" value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 pr-12 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200" />
+                  <button type="button" onClick={() => setShowPw2(v => !v)}
+                    aria-label={showPw2 ? "Hide password" : "Show password"}
+                    className="absolute right-0 top-1 flex h-12 w-12 items-center justify-center text-gray-400 hover:text-gray-700">
+                    {showPw2 ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {confirmPassword.length > 0 && (
+                  <p className={"mt-1.5 flex items-center gap-1 text-xs font-medium " + (password === confirmPassword ? "text-green-600" : "text-red-600")}>
+                    {password === confirmPassword ? <Check className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
+                    {password === confirmPassword ? pwT("match") : pwT("noMatch")}
+                  </p>
+                )}
               </div>
             </div>
 
