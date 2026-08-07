@@ -114,7 +114,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
       <div onClick={handleCardClick}
         className="group bg-white rounded-2xl border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 cursor-pointer hover:shadow-xl overflow-hidden">
         <div className="relative h-48 bg-gray-100 overflow-hidden">
-          <img src={getItemImage()} alt={item.title} onError={() => setImageError(true)}
+          <img loading="lazy" decoding="async" src={getItemImage()} alt={item.title} onError={() => setImageError(true)}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {item.featured && (
@@ -198,7 +198,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
     <div onClick={handleCardClick}
       className="group bg-white rounded-xl border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden flex">
       <div className="relative w-48 h-48 bg-gray-100 flex-shrink-0">
-        <img src={getItemImage()} alt={item.title} onError={() => setImageError(true)} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={getItemImage()} alt={item.title} onError={() => setImageError(true)} className="w-full h-full object-cover" />
         {item.featured && (
           <span className="absolute top-2 left-2 px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
             <Crown className="w-3 h-3" />{t('featured')}

@@ -324,7 +324,7 @@ export default function Rentals() {
               >
                 <div className="h-40 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center relative overflow-hidden">
                   {p.images && p.images[0] ? (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={p.images[0]}
                       alt={p.title}
                       className="w-full h-full object-cover"

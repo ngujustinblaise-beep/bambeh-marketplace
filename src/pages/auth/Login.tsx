@@ -4,11 +4,12 @@ import { Eye, EyeOff, ArrowRight, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
+import { authIdentity } from "@/utils/phoneAuth";
 const STRINGS = {
   en: {
     title: "Welcome back",
     subtitle: "Sign in to continue.",
-    email: "Email address",
+    email: "Phone number or email",
     password: "Password",
     signIn: "Sign in",
     signingIn: "Signing in...",
@@ -24,7 +25,7 @@ const STRINGS = {
   fr: {
     title: "Bon retour",
     subtitle: "Connectez-vous pour continuer.",
-    email: "Adresse e-mail",
+    email: "Num\u00e9ro de t\u00e9l\u00e9phone ou e-mail",
     password: "Mot de passe",
     signIn: "Se connecter",
     signingIn: "Connexion...",
@@ -40,7 +41,7 @@ const STRINGS = {
   ar: {
     title: "\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0639\u0648\u062f\u062a\u0643",
     subtitle: "\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u0645\u062a\u0627\u0628\u0639\u0629.",
-    email: "\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a",
+    email: "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0623\u0648 \u0627\u0644\u0628\u0631\u064a\u062f",
     password: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631",
     signIn: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644",
     signingIn: "\u062c\u0627\u0631\u064d \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644...",
@@ -56,7 +57,7 @@ const STRINGS = {
   pidgin: {
     title: "Welcome back",
     subtitle: "Sign in make you continue.",
-    email: "Email address",
+    email: "Phone number or email",
     password: "Password",
     signIn: "Sign in",
     signingIn: "Dey sign in...",
@@ -72,7 +73,7 @@ const STRINGS = {
   ff: {
     title: "Jam weeti",
     subtitle: "Se\u014bo ngam jokkude.",
-    email: "Email ma",
+    email: "Limngal noddirgal walla email",
     password: "Mo\u01b4\u01b4ere",
     signIn: "Se\u014bo",
     signingIn: "Ko se\u014boto...",
@@ -100,7 +101,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const emailValid = useMemo(() => /^\S+@\S+\.\S+$/.test(email), [email]);
+  const emailValid = useMemo(() => authIdentity(email) !== null, [email]); // FIX283: a phone number is just as valid as an email here
   const passwordValid = password.length >= 8;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,7 +114,7 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      const result = await login(email, password);
+      const result = await login(authIdentity(email) || email, password); // FIX283
       if (result?.error) {
         setError(result.error);
         return;
@@ -148,9 +149,9 @@ export default function Login() {
               </label>
               <input
                 id="email"
-                type="email"
-                autoComplete="email"
-                inputMode="email"
+                type="text"
+                autoComplete="username"
+                inputMode="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200"

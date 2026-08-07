@@ -227,7 +227,7 @@ export default function Favorites() {
               >
                 <div className="w-[72px] h-[72px] rounded-xl bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
                   {fav.image ? (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={fav.image}
                       alt={fav.title}
                       className="w-full h-full object-cover"

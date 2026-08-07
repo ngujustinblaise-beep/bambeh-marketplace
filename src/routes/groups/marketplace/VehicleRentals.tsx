@@ -405,7 +405,7 @@ export default function VehicleRentals() {
                 {/* Image */}
                 <div className="h-44 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center overflow-hidden relative">
                   {v.images?.[0] ? (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={v.images[0]}
                       alt={v.title}
                       className="w-full h-full object-cover"

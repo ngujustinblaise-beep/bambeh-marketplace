@@ -254,7 +254,7 @@ const JobsCategory: React.FC = () => {
                 <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/20 flex items-center
                                 justify-center text-xl font-bold text-teal-600 flex-shrink-0 overflow-hidden">
                   {(job as any).companyLogoUrl ? (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={(job as any).companyLogoUrl}
                       alt={job.company ?? ""}
                       className="w-full h-full object-cover"

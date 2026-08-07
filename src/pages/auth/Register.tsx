@@ -10,6 +10,8 @@ import { ArrowRight, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
+import { authIdentity, normalisePhone } from "@/utils/phoneAuth";
+import { supabase } from "@/lib/supabase";
 const STRINGS = {
   en: {
     title: "Create your account", subtitle: "Join Bambeh and get started.",
@@ -78,7 +80,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const emailValid = useMemo(() => /^\S+@\S+\.\S+$/.test(email), [email]);
+  const emailValid = useMemo(() => email.trim() === "" || /^\S+@\S+\.\S+$/.test(email), [email]); // FIX283: email is optional now
   const phoneValid = useMemo(() => phone.trim().length >= 7, [phone]);
   const passwordValid = useMemo(() => password.length >= 8, [password]);
   const passwordsMatch = password === confirmPassword;
@@ -101,13 +103,29 @@ export default function Register() {
         setError(t.failed);
         return;
       }
-      const result = await register(email, password, fullName);
+      const identity = authIdentity(phone);
+      if (!identity) { setError(t.invalid); return; }
+      // FIX283: the phone IS the account. Supabase only ever sees a
+      // generated address; the person types their number and nothing else.
+      const result = await register(identity, password, fullName);
       if (result && typeof result === "object" && "error" in result && (result as { error?: unknown }).error) {
         const err = (result as { error?: unknown }).error;
         setError(typeof err === "string" ? err : (err as Error)?.message || t.failed);
         return;
       }
-      // fix71 register() auto-signs-in when email confirmation is off → go home.
+      // FIX283: keep the phone. It was being collected and thrown away,
+      // and notifications need somewhere to go.
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("profiles").update({
+            phone: normalisePhone(phone),
+            contact_email: email.trim() ? email.trim().toLowerCase() : null,
+          }).eq("id", user.id);
+        }
+      } catch { /* never block a signup because a profile write failed */ }
+
+      // register() auto-signs-in when email confirmation is off.
       navigate("/", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failed);

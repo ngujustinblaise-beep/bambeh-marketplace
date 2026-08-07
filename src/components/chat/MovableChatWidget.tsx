@@ -1,261 +1,151 @@
-/**
- * MOVABLE CHAT WIDGET - Android Optimized Version
- * FILE LOCATION: src/components/chat/MovableChatWidget.tsx
- *
- * ? FIXED: Always starts anchored to BOTTOM-RIGHT corner
- * ? Fully draggable ? drag handle appears when chat is open
- * ? Remembers dragged position via localStorage (new key _v2)
- * ? Unread badge, minimizable, touch + mouse optimized
- * ? Android-optimized smaller dimensions
- */
+// BAMBEH_DEPLOY_TOKEN__CHATWIDGET_FIX285_CLEAN
+// FILE LOCATION: src/components/chat/MovableChatWidget.tsx
+//
+// FIX285 - A REAL DOOR, NOT A FAKE ROOM.
+//
+// WHAT THIS REPLACES: the old widget held a conversation in local state and
+// carried the comment "TODO: wire to your real chat service". Messages
+// vanished on refresh. Meanwhile the app already HAS working messaging -
+// conversations and messages tables, a real /chat page, and a real admin
+// inbox behind it.
+//
+// So this stops pretending to be a chat and becomes what it should always
+// have been: a button that opens the real one, plus a WhatsApp line for
+// people who are not signed in or want a human.
+//
+// Nothing here is simulated. Every button goes somewhere real.
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { MessageCircle, Move, X, Send, Minimize2, Maximize2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle, X, Send, LifeBuoy, HelpCircle } from "lucide-react";
 
-// -- Position is stored as pixel offset from the LEFT and TOP of the viewport.
-// On first load we convert "bottom-right 24px" into left/top coordinates.
-function getDefaultPosition() {
-  return {
-    x: window.innerWidth  - 80,  // 80px from right  (button is 56px wide)
-    y: window.innerHeight - 80,  // 80px from bottom (button is 56px tall)
-  };
+/* EDIT ME if the support number ever changes */
+const SUPPORT_PHONE = "237652953607";
+
+function bambehLang(): string {
+  try {
+    const r = String(localStorage.getItem("Bambeh_language") || "").toLowerCase();
+    if (r.startsWith("fr")) return "fr";
+    if (r.startsWith("ar")) return "ar";
+    if (r.startsWith("pcm") || r.startsWith("pid")) return "pcm";
+    if (r.startsWith("ff") || r.startsWith("ful")) return "ff";
+  } catch { /* storage blocked */ }
+  return "en";
 }
 
+const T: Record<string, Record<string, string>> = {
+  title:   { en: "Need a hand?", fr: "Besoin d\u2019aide ?", pcm: "You need help?", ar: "\u062A\u062D\u062A\u0627\u062C \u0645\u0633\u0627\u0639\u062F\u0629\u061F", ff: "A haaji ballal?" },
+  msgs:    { en: "My messages", fr: "Mes messages", pcm: "My messages", ar: "\u0631\u0633\u0627\u0626\u0644\u064A", ff: "\u0181ataake am" },
+  msgsSub: { en: "Talk to buyers and sellers", fr: "Parler aux acheteurs et vendeurs", pcm: "Talk to buyer and seller dem", ar: "\u062A\u062D\u062F\u0651\u062B \u0645\u0639 \u0627\u0644\u0645\u0634\u062A\u0631\u064A\u0646 \u0648\u0627\u0644\u0628\u0627\u0626\u0639\u064A\u0646", ff: "Haalda e sooduɓe e jeeyooɓe" },
+  wa:      { en: "WhatsApp support", fr: "Assistance WhatsApp", pcm: "WhatsApp support", ar: "\u062F\u0639\u0645 \u0648\u0627\u062A\u0633\u0627\u0628", ff: "Ballal WhatsApp" },
+  waSub:   { en: "A real person, +237 652 953 607", fr: "Une vraie personne, +237 652 953 607", pcm: "Real person, +237 652 953 607", ar: "\u0634\u062E\u0635 \u062D\u0642\u064A\u0642\u064A\u060C +237 652 953 607", ff: "Neɗɗo goonga, +237 652 953 607" },
+  help:    { en: "Help centre", fr: "Centre d\u2019aide", pcm: "Help centre", ar: "\u0645\u0631\u0643\u0632 \u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629", ff: "Nokku ballal" },
+  helpSub: { en: "Guides and common questions", fr: "Guides et questions fr\u00E9quentes", pcm: "Guide and question wey plenty people dey ask", ar: "\u0623\u062F\u0644\u0629 \u0648\u0623\u0633\u0626\u0644\u0629 \u0634\u0627\u0626\u0639\u0629", ff: "Peeje e naamnde keewɗe" },
+};
+const t = (k: string) => (T[k] && (T[k][bambehLang()] || T[k].en)) || "";
+
 export default function MovableChatWidget() {
-  // -- v2 key so stale left-biased positions from the old key are ignored --
-  const [position, setPosition] = useState<{ x: number; y: number }>(() => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dragging = useRef(false);
+  const start = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
     try {
-      const saved = localStorage.getItem('Bambeh_chat_position_v2');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Validate that saved position is still within current viewport
-        if (
-          parsed.x >= 0 && parsed.x <= window.innerWidth  - 56 &&
-          parsed.y >= 0 && parsed.y <= window.innerHeight - 56
-        ) {
-          return parsed;
-        }
-      }
-    } catch {}
-    return getDefaultPosition();
-  });
-
-  const [isDragging, setIsDragging]   = useState(false);
-  const [isOpen, setIsOpen]           = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [message, setMessage]         = useState('');
-  const [unreadCount, setUnreadCount] = useState(2);
-
-  // dragRef stores the offset between pointer and the widget's top-left corner
-  const dragRef = useRef({ startX: 0, startY: 0 });
-
-  // -- Persist position whenever it changes -----------------------------------
-  useEffect(() => {
-    localStorage.setItem('Bambeh_chat_position_v2', JSON.stringify(position));
-  }, [position]);
-
-  // -- Re-clamp position on window resize so widget never goes off-screen -----
-  useEffect(() => {
-    const onResize = () => {
-      setPosition(prev => ({
-        x: Math.min(prev.x, window.innerWidth  - 56),
-        y: Math.min(prev.y, window.innerHeight - 56),
-      }));
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+      const saved = localStorage.getItem("Bambeh_chat_pos");
+      if (saved) setPos(JSON.parse(saved));
+    } catch { /* ignore */ }
   }, []);
 
-  // -- Mouse drag handlers ----------------------------------------------------
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    dragRef.current = {
-      startX: e.clientX - position.x,
-      startY: e.clientY - position.y,
-    };
+  const onDown = (x: number, y: number) => {
+    dragging.current = true;
+    start.current = { x: x - pos.x, y: y - pos.y };
   };
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    setPosition({
-      x: Math.max(0, Math.min(e.clientX - dragRef.current.startX, window.innerWidth  - 56)),
-      y: Math.max(0, Math.min(e.clientY - dragRef.current.startY, window.innerHeight - 56)),
+  const onMove = useCallback((x: number, y: number) => {
+    if (!dragging.current) return;
+    setPos({ x: x - start.current.x, y: y - start.current.y });
+  }, []);
+  const onUp = useCallback(() => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    setPos((p) => {
+      try { localStorage.setItem("Bambeh_chat_pos", JSON.stringify(p)); } catch { /* ignore */ }
+      return p;
     });
-  }, [isDragging]);
-
-  const handleMouseUp = useCallback(() => setIsDragging(false), []);
+  }, []);
 
   useEffect(() => {
-    if (!isDragging) return;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    const mm = (e: MouseEvent) => onMove(e.clientX, e.clientY);
+    const tm = (e: TouchEvent) => { const p = e.touches[0]; if (p) onMove(p.clientX, p.clientY); };
+    window.addEventListener("mousemove", mm);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", tm, { passive: true });
+    window.addEventListener("touchend", onUp);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("mousemove", mm);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", tm);
+      window.removeEventListener("touchend", onUp);
     };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  }, [onMove, onUp]);
 
-  // -- Touch drag handlers (Android) -----------------------------------------
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    dragRef.current = {
-      startX: touch.clientX - position.x,
-      startY: touch.clientY - position.y,
-    };
+  const go = (path: string) => { setOpen(false); navigate(path); };
+
+  const Row = ({
+    icon, title, sub, onClick, href,
+  }: { icon: React.ReactNode; title: string; sub: string; onClick?: () => void; href?: string }) => {
+    const inner = (
+      <>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700">
+          {icon}
+        </span>
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block text-sm font-semibold text-gray-900">{title}</span>
+          <span className="block text-xs text-gray-500">{sub}</span>
+        </span>
+      </>
+    );
+    const cls = "flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-gray-50";
+    return href
+      ? <a href={href} target="_blank" rel="noopener noreferrer" className={cls} onClick={() => setOpen(false)}>{inner}</a>
+      : <button type="button" onClick={onClick} className={cls}>{inner}</button>;
   };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    setPosition({
-      x: Math.max(0, Math.min(touch.clientX - dragRef.current.startX, window.innerWidth  - 56)),
-      y: Math.max(0, Math.min(touch.clientY - dragRef.current.startY, window.innerHeight - 56)),
-    });
-  };
-
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
-    // TODO: wire to your real chat service
-    setMessage('');
-  };
-
-  // -- Determine if chat panel opens upward or downward based on position -----
-  // If widget is in the bottom half of screen, panel opens upward (normal).
-  // If widget is in top half, panel opens downward.
-  const panelOpensUpward = position.y > window.innerHeight / 2;
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        left: `${position.x}px`,
-        top:  `${position.y}px`,
-        zIndex: 9999,
-      }}
-      className="select-none"
+      style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
+      className="fixed bottom-6 right-4 z-[60] select-none"
     >
-      {/* -- Drag handle ? only visible when chat is open ---------------------- */}
-      {isOpen && (
-        <div
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          className="absolute -top-8 left-1/2 -translate-x-1/2 bg-teal-700 text-white px-4 py-1 rounded-t-lg cursor-move text-xs flex items-center gap-2 shadow-lg hover:bg-teal-800 transition-colors whitespace-nowrap"
-          style={{ touchAction: 'none' }}
-        >
-          <Move className="w-3 h-3" />
-          <span className="font-medium">Drag to move</span>
-        </div>
-      )}
-
-      {/* -- Floating button ---------------------------------------------------- */}
-      <button
-        onClick={() => {
-          setIsOpen(!isOpen);
-          if (!isOpen) setUnreadCount(0);
-        }}
-        className="w-14 h-14 bg-gradient-to-br from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-full shadow-2xl flex items-center justify-center transition-all transform hover:scale-110 relative"
-        title="Chat"
-      >
-        {isOpen ? (
-          <X className="w-6 h-6" />
-        ) : (
-          <>
-            <MessageCircle className="w-6 h-6" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </>
-        )}
-      </button>
-
-      {/* -- Chat panel --------------------------------------------------------- */}
-      {isOpen && (
-        <div
-          className={`
-            absolute right-0 bg-white rounded-lg shadow-2xl border-2 border-teal-200
-            flex flex-col transition-all duration-300
-            ${panelOpensUpward ? 'bottom-16' : 'top-16'}
-            ${isMinimized ? 'w-64 h-12' : 'w-72 h-80 sm:w-80 sm:h-96'}
-          `}
-        >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-3 rounded-t-lg flex items-center justify-between flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-4 h-4" />
-              <h3 className="font-semibold text-sm">Messages</h3>
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setIsMinimized(!isMinimized)}
-                className="hover:bg-white/20 p-1.5 rounded transition-colors"
-                title={isMinimized ? 'Expand' : 'Minimize'}
-              >
-                {isMinimized
-                  ? <Maximize2 className="w-3.5 h-3.5" />
-                  : <Minimize2 className="w-3.5 h-3.5" />
-                }
-              </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="hover:bg-white/20 p-1.5 rounded transition-colors"
-                title="Close"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
+      {open && (
+        <div className="mb-3 w-72 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
+          <div className="flex items-center justify-between bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-3">
+            <p className="text-sm font-bold text-white">{t("title")}</p>
+            <button onClick={() => setOpen(false)} aria-label="Close"
+              className="rounded-full p-1 text-white/80 hover:bg-white/15 hover:text-white">
+              <X className="h-4 w-4" />
+            </button>
           </div>
 
-          {/* Body ? hidden when minimized */}
-          {!isMinimized && (
-            <>
-              <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">
-                <div className="flex justify-start">
-                  <div className="max-w-[75%] rounded-lg px-3 py-2 bg-white text-gray-900 border border-gray-200">
-                    <p className="text-sm">Hello! Is this item still available?</p>
-                    <p className="text-xs text-gray-400 mt-1">10:30 AM</p>
-                  </div>
-                </div>
-                <div className="flex justify-end">
-                  <div className="max-w-[75%] rounded-lg px-3 py-2 bg-teal-600 text-white">
-                    <p className="text-sm">Yes, it is! Would you like to make an offer?</p>
-                    <p className="text-xs text-teal-100 mt-1">10:32 AM</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Input */}
-              <div className="p-2 border-t border-gray-200 bg-white rounded-b-lg flex-shrink-0">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Type message..."
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!message.trim()}
-                    className="px-3 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+          <div className="p-2">
+            <Row icon={<Send className="h-5 w-5" />}      title={t("msgs")} sub={t("msgsSub")} onClick={() => go("/chat")} />
+            <Row icon={<LifeBuoy className="h-5 w-5" />}  title={t("wa")}   sub={t("waSub")}
+                 href={"https://wa.me/" + SUPPORT_PHONE} />
+            <Row icon={<HelpCircle className="h-5 w-5" />} title={t("help")} sub={t("helpSub")} onClick={() => go("/help")} />
+          </div>
         </div>
       )}
+
+      <button
+        onMouseDown={(e) => onDown(e.clientX, e.clientY)}
+        onTouchStart={(e) => { const p = e.touches[0]; if (p) onDown(p.clientX, p.clientY); }}
+        onClick={() => { if (!dragging.current) setOpen((v) => !v); }}
+        aria-label={t("title")}
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white shadow-xl transition-transform active:scale-95"
+      >
+        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+      </button>
     </div>
   );
 }
-
-
-
-
-
+// BAMBEH_END_TOKEN__CHATWIDGET_FIX285__COMPLETE

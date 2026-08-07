@@ -71,7 +71,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         {/* Image */}
         <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
           {imageUrl ? (
-            <img
+            <img loading="lazy" decoding="async"
               src={imageUrl}
               alt={item.title}
               className="w-full h-full object-cover"
@@ -127,7 +127,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       >
         <div className="h-24 bg-gray-100 overflow-hidden">
           {imageUrl ? (
-            <img src={imageUrl} alt={item.title} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+            <img loading="lazy" decoding="async" src={imageUrl} alt={item.title} className="w-full h-full object-cover" onError={() => setImgError(true)} />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl">??</div>
           )}
@@ -153,7 +153,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       {/* Image */}
       <div className="relative aspect-square bg-gray-100 overflow-hidden">
         {imageUrl ? (
-          <img
+          <img loading="lazy" decoding="async"
             src={imageUrl}
             alt={item.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
@@ -240,7 +240,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-gray-100">
             <div className="w-5 h-5 rounded-full bg-teal-100 overflow-hidden flex items-center justify-center">
               {item.seller.avatarUrl ? (
-                <img src={item.seller.avatarUrl} alt={item.seller.displayName} className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={item.seller.avatarUrl} alt={item.seller.displayName} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-teal-600 text-xs font-bold">{item.seller.displayName.charAt(0)}</span>
               )}

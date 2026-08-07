@@ -98,7 +98,7 @@ export default function CorporateStorefront() {
     <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Banner */}
       <div className="h-32 bg-gradient-to-r from-slate-700 to-slate-900 relative">
-        {store.banner_url ? <img src={store.banner_url} alt="" className="w-full h-full object-cover" /> : null}
+        {store.banner_url ? <img loading="lazy" decoding="async" src={store.banner_url} alt="" className="w-full h-full object-cover" /> : null}
         <button onClick={() => navigate(-1)} className="absolute top-4 left-4 bg-black/30 text-white p-2 rounded-xl">
           <ArrowLeft className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
         </button>
@@ -110,7 +110,7 @@ export default function CorporateStorefront() {
           <div className="flex gap-3 items-start">
             <div className="w-16 h-16 rounded-xl bg-gray-100 border shrink-0 overflow-hidden flex items-center justify-center -mt-8 bg-white">
               {store.logo_url
-                ? <img src={store.logo_url} alt={store.registered_name} className="w-full h-full object-cover" />
+                ? <img loading="lazy" decoding="async" src={store.logo_url} alt={store.registered_name} className="w-full h-full object-cover" />
                 : <Store className="w-7 h-7 text-gray-300" />}
             </div>
             <div className="flex-1 min-w-0">
