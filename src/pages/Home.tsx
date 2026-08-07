@@ -49,6 +49,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Online Marketplace",
     "home.feeMsg": "Only 1% Transaction Fee! — The lowest you will see online.",
     "home.shareBtn": "Share Bambeh with Friends",
+    "home.sellBtn": "Sell an Item",
     "home.corporateBtn": "Corporate Login",
     "home.jobsTitle": "Jobs",
     "home.jobsDesc": "Find your next opportunity",
@@ -105,6 +106,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Place de marché en ligne",
     "home.feeMsg": "Seulement 1 % de frais de transaction ! — Les plus bas que vous trouverez en ligne.",
     "home.shareBtn": "Partager Bambeh avec des amis",
+    "home.sellBtn": "Vendre un article",
     "home.corporateBtn": "Espace Entreprise",
     "home.jobsTitle": "Emplois",
     "home.jobsDesc": "Trouvez votre prochaine opportunité",
@@ -161,6 +163,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "سوق إلكتروني",
     "home.feeMsg": "فقط رسوم معاملة بنسبة 1 %! — الأقل الذي ستجده عبر الإنترنت.",
     "home.shareBtn": "شارك Bambeh مع الأصدقاء",
+    "home.sellBtn": "\u0628\u0650\u0639 \u0633\u0644\u0639\u0629",
     "home.corporateBtn": "دخول الشركات",
     "home.jobsTitle": "الوظائف",
     "home.jobsDesc": "ابحث عن فرصتك التالية",
@@ -217,6 +220,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Online Marketplace",
     "home.feeMsg": "Only 1% money charge! — The lowest wey you go see anywhere online.",
     "home.shareBtn": "Share Bambeh with your friends dem",
+    "home.sellBtn": "Sell Your Thing",
     "home.corporateBtn": "Corporate Login",
     "home.jobsTitle": "Work",
     "home.jobsDesc": "Find your next work opportunity",
@@ -273,6 +277,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.tagline": "Taako Janngo Online",
     "home.feeMsg": "Soo 1% ndiyam! — Ndiyam gadaa wey a dee gonngol online.",
     "home.shareBtn": "Jedd Bambeh e woot\u0257u",
+    "home.sellBtn": "Yeey huunde",
     "home.corporateBtn": "Naat\u0257e Corporate",
     "home.jobsTitle": "Suudu",
     "home.jobsDesc": "Yiylo suudu mawngal",
@@ -473,6 +478,15 @@ export default function Home() {
               <Share2 className="w-5 h-5" />
               {t('home.shareBtn')}
             </SocialShareButton>
+            {/* FIX280: Sell Item sits under Share, same green, same white label.
+                This is the money action - it belongs where people can see it. */}
+            <button
+              onClick={() => navigate('/marketplace/sell')}
+              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {t('home.sellBtn')}
+            </button>
           </div>
         </div>
 
