@@ -122,7 +122,62 @@ const STRINGS = {
   },
 } as const;
 
+/* FIX281 - name the EXACT problem, in the user's own language.
+ * The old code only ever said "fill all fields correctly", and only
+ * after a submit that a disabled button would never allow. */
+const SIGNUP_PROBLEM: Record<string, Record<string, string>> = {
+  name: {
+    en: "Please enter your full name.",
+    fr: "Veuillez saisir votre nom complet.",
+    pidgin: "Abeg put your full name.",
+    ar: "\u0627\u0644\u0631\u062c\u0627\u0621 \u0625\u062f\u062e\u0627\u0644 \u0627\u0633\u0645\u0643 \u0627\u0644\u0643\u0627\u0645\u0644.",
+    ff: "Tii\u0257no winndu innde maa timmunde.",
+  },
+  email: {
+    en: "That email address does not look right. You can also leave it empty.",
+    fr: "Cette adresse e-mail semble incorrecte. Vous pouvez aussi la laisser vide.",
+    pidgin: "This email no correct. You fit leave am empty too.",
+    ar: "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u063a\u064a\u0631 \u0635\u062d\u064a\u062d. \u064a\u0645\u0643\u0646\u0643 \u062a\u0631\u0643\u0647 \u0641\u0627\u0631\u063a\u0627\u064b.",
+    ff: "Ndee adres e-mail wonaa feewnde. A waawi accitde \u0257um meere.",
+  },
+  phone: {
+    en: "Please enter your phone number.",
+    fr: "Veuillez saisir votre num\u00e9ro de t\u00e9l\u00e9phone.",
+    pidgin: "Abeg put your phone number.",
+    ar: "\u0627\u0644\u0631\u062c\u0627\u0621 \u0625\u062f\u062e\u0627\u0644 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643.",
+    ff: "Tii\u0257no winndu limpol maa.",
+  },
+  password: {
+    en: "Your password must be at least 8 characters.",
+    fr: "Votre mot de passe doit contenir au moins 8 caracteres.",
+    pidgin: "Your password must reach 8 letters.",
+    ar: "\u064a\u062c\u0628 \u0623\u0646 \u062a\u062a\u0643\u0648\u0646 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0645\u0646 8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.",
+    ff: "Mo\u01b4\u01b4e maa foti heewde alkulal 8.",
+  },
+  match: {
+    en: "The two passwords are not the same.",
+    fr: "Les deux mots de passe ne sont pas identiques.",
+    pidgin: "The two passwords no be the same.",
+    ar: "\u0643\u0644\u0645\u062a\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u064a\u0631 \u0645\u062a\u0637\u0627\u0628\u0642\u062a\u064a\u0646.",
+    ff: "Mo\u01b4\u01b4e \u0257i\u0257i \u0257ee ndoowaani.",
+  },
+  terms: {
+    en: "Please accept the terms before continuing.",
+    fr: "Veuillez accepter les conditions avant de continuer.",
+    pidgin: "Abeg accept the terms before you continue.",
+    ar: "\u0627\u0644\u0631\u062c\u0627\u0621 \u0642\u0628\u0648\u0644 \u0627\u0644\u0634\u0631\u0648\u0637 \u0642\u0628\u0644 \u0627\u0644\u0645\u062a\u0627\u0628\u0639\u0629.",
+    ff: "Tii\u0257no ja\u0253 sar\u0257iiji \u0257ii ado jokkude.",
+  },
+};
+
+function signupProblem(key: string, lang: string): string {
+  const row = SIGNUP_PROBLEM[key];
+  if (!row) return "";
+  return row[lang] || row.en;
+}
+
 export default function Register() {
+
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = STRINGS[language as keyof typeof STRINGS] ?? STRINGS.en;
@@ -149,8 +204,25 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !emailValid || !phoneValid || !passwordValid || !passwordsMatch || !accepted) {
-      setError(!passwordsMatch ? t.passwordsNoMatch : t.invalid);
+    // FIX301: check in the order a person fills the form, and stop at the
+    // FIRST thing that is wrong. One clear sentence beats a generic one.
+    const lang = String(language || "en");
+    let problem = "";
+    if (fullName.trim().length < 2)   problem = signupProblem("name", lang);
+    else if (!emailValid)             problem = signupProblem("email", lang);
+    else if (!phoneValid)             problem = signupProblem("phone", lang);
+    else if (!passwordValid)          problem = signupProblem("password", lang);
+    else if (!passwordsMatch)         problem = signupProblem("match", lang);
+    else if (!accepted)               problem = signupProblem("terms", lang);
+
+    if (problem) {
+      setError(problem);
+      // On a phone the error box sits above the fold. Take them to it.
+      window.setTimeout(() => {
+        document.getElementById("signup-error")?.scrollIntoView({
+          behavior: "smooth", block: "center",
+        });
+      }, 50);
       return;
     }
 
@@ -280,14 +352,20 @@ export default function Register() {
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div id="signup-error" role="alert" aria-live="assertive"
+                className="flex items-start gap-2 rounded-xl border-2 border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
-            <button type="submit" disabled={!canSubmit || loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3 font-semibold text-white transition-colors hover:bg-teal-700 disabled:bg-gray-300">
+            {/* FIX301: only greys while SENDING. canSubmit now dims it as a
+                hint instead of blocking it, so pressing always explains. */}
+            <button type="submit" disabled={loading}
+              className={
+                "flex w-full items-center justify-center gap-2 rounded-xl py-3 font-semibold text-white transition-colors disabled:bg-gray-300 " +
+                (canSubmit ? "bg-teal-600 hover:bg-teal-700" : "bg-teal-600/70 hover:bg-teal-600")
+              }>
               {loading ? t.creatingAccount : t.createAccount}
               <ArrowRight className="h-4 w-4" />
             </button>
