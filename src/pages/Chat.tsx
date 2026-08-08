@@ -16,13 +16,11 @@ import {
   Image as ImageIcon,
   Lock,
   MessageSquare,
-  Mic,
-  MoreVertical,
-  Phone,
+  Loader2,
   Search,
   Send,
   Smile,
-  Video,
+  X as XIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
@@ -236,6 +234,43 @@ const ConversationItem: React.FC<{
   );
 };
 
+/* FIX290: everything the photo button and the emoji panel need. */
+const CHAT_BUCKET = 'chat-media';
+const MAX_PICK_BYTES = 12 * 1024 * 1024;
+
+const CHAT_EMOJI: string[] = [
+  "\ud83d\ude00", "\ud83d\ude42", "\ud83d\ude02", "\ud83d\ude05",
+  "\ud83d\ude0d", "\ud83e\udd14", "\ud83d\ude22", "\ud83d\ude21",
+  "\ud83d\ude4f", "\ud83d\udc4d", "\ud83d\udc4c", "\ud83d\udc4b",
+  "\ud83d\udcaa", "\ud83e\udd1d", "\u2764\ufe0f", "\ud83d\udd25", "\u2b50",
+  "\ud83c\udf89", "\u2705", "\u274c", "\ud83d\udcb0", "\ud83d\udce6",
+  "\ud83d\ude9a", "\ud83d\udccd", "\ud83d\udcde", "\u23f0", "\ud83d\udcf7",
+  "\ud83d\uded2", "\ud83c\udfe0", "\ud83d\ude97",
+];
+
+/** Shrink a camera photo before it ever leaves the phone. A 4 MB
+ *  original becomes roughly 200 KB, which matters a great deal on a
+ *  3G connection paid for by the megabyte. */
+async function compressForChat(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const maxSide = 1280;
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('This browser cannot prepare the picture.');
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  if (typeof bitmap.close === 'function') bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, 'image/jpeg', 0.75),
+  );
+  if (!blob) throw new Error('Could not prepare the picture.');
+  return blob;
+}
+
 export default function ChatPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -251,6 +286,12 @@ export default function ChatPage() {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
   const [searchQuery, setSearchQuery] = useState('');
   const [showScrollDown, setShowScrollDown] = useState(false);
+
+  /* FIX290 */
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -449,7 +490,14 @@ export default function ChatPage() {
           createdAt: m.created_at,
           isBookingMessage: m.is_booking_message ?? false,
         };
-        setMessages(prev => [...prev, newMsg]);
+        /* FIX290: replace the optimistic copy instead of stacking on it. */
+        setMessages(prev => {
+          if (prev.some(x => x.id === newMsg.id)) return prev;
+          const withoutTwin = prev.filter(
+            x => !(x.id.startsWith('opt-') && x.senderId === newMsg.senderId && x.content === newMsg.content)
+          );
+          return [...withoutTwin, newMsg];
+        });
         if (m.sender_id !== user.id) {
           setTypingUsers(prev => prev.filter(u => u !== m.sender_id));
         }
@@ -536,6 +584,77 @@ export default function ChatPage() {
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     typingTimerRef.current = setTimeout(() => broadcastTyping(false), 2000);
   }, [broadcastTyping]);
+
+  /* FIX290: a photo goes to storage and comes back as a real message.
+     No optimistic bubble here on purpose - the realtime subscription
+     below already inserts it the moment the row lands, and adding a
+     second copy is what made text messages appear twice. */
+  const sendImage = useCallback(async (file: File) => {
+    if (!selectedChatId || !user?.id) return;
+    setImageError(null);
+
+    if (!file.type.startsWith('image/')) {
+      setImageError('That file is not a picture.');
+      return;
+    }
+    if (file.size > MAX_PICK_BYTES) {
+      setImageError('That picture is too large. Please choose a smaller one.');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const blob = await compressForChat(file);
+      const path = selectedChatId + '/' + user.id + '-' + Date.now() + '.jpg';
+
+      const { error: upErr } = await supabase.storage
+        .from(CHAT_BUCKET)
+        .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+      if (upErr) throw upErr;
+
+      const { data: pub } = supabase.storage.from(CHAT_BUCKET).getPublicUrl(path);
+      const publicUrl = pub?.publicUrl;
+      if (!publicUrl) throw new Error('The picture uploaded but has no address.');
+
+      const { error: insErr } = await supabase.from('messages').insert({
+        conversation_id: selectedChatId,
+        sender_id: user.id,
+        content: '',
+        message_type: 'image',
+        image_url: publicUrl,
+        read_by: [user.id],
+        is_booking_message: false,
+      });
+      if (insErr) throw insErr;
+
+      /* same delivery step sendMessage does, or the other side never sees it */
+      const { data: convo } = await supabase
+        .from('conversations')
+        .select('participant_ids, unread_counts')
+        .eq('id', selectedChatId)
+        .maybeSingle();
+
+      const recipientId = (convo?.participant_ids ?? []).find((pid: string) => pid !== user.id);
+      const nextUnread = { ...(convo?.unread_counts ?? {}) };
+      if (recipientId) nextUnread[recipientId] = (nextUnread[recipientId] ?? 0) + 1;
+
+      await supabase
+        .from('conversations')
+        .update({
+          last_message: 'Photo',
+          last_message_at: new Date().toISOString(),
+          unread_counts: nextUnread,
+        })
+        .eq('id', selectedChatId);
+    } catch (err: any) {
+      logger.warn('FIX290 image send failed:', err);
+      const detail = err?.message ? ' (' + err.message + ')' : '';
+      setImageError('Could not send the picture. Please try again.' + detail);
+    } finally {
+      setIsUploadingImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  }, [selectedChatId, user?.id]);
 
   const sendMessage = useCallback(async () => {
     const content = newMessage.trim();
@@ -759,17 +878,8 @@ export default function ChatPage() {
           </div>
         )}
 
-        <div className="flex items-center gap-1 ml-auto">
-          <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-colors">
-            <Phone className="w-4 h-4" />
-          </button>
-          <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-colors">
-            <Video className="w-4 h-4" />
-          </button>
-          <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-colors">
-            <MoreVertical className="w-4 h-4" />
-          </button>
-        </div>
+        {/* FIX290: phone, video and the three-dot menu removed - none of them did anything. */}
+        <div className="ml-auto" />
       </div>
 
       <div ref={messagesContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto py-4 space-y-0.5 relative">
@@ -833,11 +943,38 @@ export default function ChatPage() {
       ) : (
         <div className="bg-white border-t border-gray-100 px-3 py-3">
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowEmoji((v) => !v)}
+              aria-label="Emoji"
+              className={
+                'p-2 rounded-xl transition-colors flex-shrink-0 ' +
+                (showEmoji ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-teal-600 hover:bg-teal-50')
+              }
+            >
               <Smile className="w-5 h-5" />
             </button>
-            <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
-              <ImageIcon className="w-5 h-5" />
+
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void sendImage(f);
+              }}
+            />
+            <button
+              type="button"
+              disabled={isUploadingImage}
+              onClick={() => imageInputRef.current?.click()}
+              aria-label="Send a photo"
+              className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0 disabled:opacity-50"
+            >
+              {isUploadingImage
+                ? <Loader2 className="w-5 h-5 animate-spin text-teal-600" />
+                : <ImageIcon className="w-5 h-5" />}
             </button>
 
             <div className="flex-1 relative">
@@ -858,11 +995,41 @@ export default function ChatPage() {
                 <Send className="w-4 h-4 text-white" />
               </button>
             ) : (
-              <button className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0">
-                <Mic className="w-5 h-5" />
-              </button>
+              <span className="w-10 flex-shrink-0" />
             )}
           </div>
+
+          {imageError && (
+            <p className="mt-2 text-xs font-medium text-red-600">{imageError}</p>
+          )}
+
+          {showEmoji && (
+            <div className="mt-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg">
+              <div className="mb-1 flex items-center justify-between px-1">
+                <span className="text-xs font-semibold text-gray-500">Emoji</span>
+                <button
+                  type="button"
+                  onClick={() => setShowEmoji(false)}
+                  aria-label="Close"
+                  className="rounded-full p-1 text-gray-400 hover:bg-gray-100"
+                >
+                  <XIcon className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-10 gap-1">
+                {CHAT_EMOJI.map((e) => (
+                  <button
+                    key={e}
+                    type="button"
+                    onClick={() => setNewMessage((prev) => prev + e)}
+                    className="rounded-lg py-1 text-lg hover:bg-teal-50 active:scale-90 transition"
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
