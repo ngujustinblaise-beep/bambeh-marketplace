@@ -10,6 +10,7 @@
  * ? Safe area + keyboard-aware layout
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -301,7 +302,7 @@ export default function ExchangeItemPost() {
   async function uploadImages(userId: string): Promise<string[]> {
     const urls: string[] = [];
     for (let i = 0; i < images.length; i++) {
-      const file = images[i];
+      const file = await prepImage(images[i]);   // FIX296
       const ext  = file.name.split('.').pop() ?? 'jpg';
       const path = `${userId}/${Date.now()}_${i}.${ext}`;
       const { error: upErr } = await supabase.storage

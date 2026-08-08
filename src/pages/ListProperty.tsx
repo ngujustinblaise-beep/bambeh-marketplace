@@ -16,6 +16,7 @@
  * © 2026 Bambeh Marketplace. All rights reserved.
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "@/hooks/useAppLang";
@@ -71,7 +72,8 @@ const BEDROOM_OPTIONS = ["Studio", "1", "2", "3", "4", "5", "6+", "N/A"];
 const BATH_OPTIONS    = ["1", "2", "3", "4+"];
 
 // ─── Image upload helpers ─────────────────────────────────────────────────────
-async function uploadImage(file: File, userId: string): Promise<string> {
+async function uploadImage(rawFile: File, userId: string): Promise<string> {
+  const file = await prepImage(rawFile);   // FIX296
   const ext  = file.name.split(".").pop() || "jpg";
   const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 

@@ -16,6 +16,7 @@
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -208,7 +209,8 @@ export default function PostMarketplaceItemPage() {
   async function uploadPhotos(sellerId: string): Promise<string[]> {
     if (photos.length === 0) return [];
     const urls: string[] = [];
-    for (const file of photos) {
+    for (const rawFile of photos) {
+      const file = await prepImage(rawFile);   // FIX296
       const ext  = file.name.split(".").pop() ?? "jpg";
       const path = `marketplace/${sellerId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: upErr } = await supabase.storage

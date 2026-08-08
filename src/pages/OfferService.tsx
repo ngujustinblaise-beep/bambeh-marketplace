@@ -25,6 +25,7 @@
  *   ✅ RTL layout for Arabic
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -607,11 +608,12 @@ export default function OfferService() {
     const urls: string[] = [];
     for (let i = 0; i < imgFiles.length; i++) {
       setUploadProgress(Math.round(((i + 0.5) / imgFiles.length) * 100));
-      const ext  = imgFiles[i].name.split('.').pop() ?? 'jpg';
+      const ready = await prepImage(imgFiles[i]);   // FIX296
+      const ext  = ready.name.split('.').pop() ?? 'jpg';
       const path = `service-images/${userId}/${Date.now()}-${i}.${ext}`;
       const { error } = await supabase.storage
         .from('service-images')
-        .upload(path, imgFiles[i], { upsert: false });
+        .upload(path, ready, { upsert: false, contentType: ready.type });
       if (!error) {
         const { data: pub } = supabase.storage.from('service-images').getPublicUrl(path);
         if (pub?.publicUrl) urls.push(pub.publicUrl);

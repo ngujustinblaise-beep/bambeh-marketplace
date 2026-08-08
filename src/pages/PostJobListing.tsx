@@ -10,6 +10,7 @@
  *  ✅ Correct listings table via jobs.service (not job_listings)
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useCallback, useRef } from "react";
 import { Briefcase, MapPin, DollarSign, Calendar, Users, Loader2, CheckCircle, AlertCircle, Camera } from "lucide-react";
 import { createJob } from "@/services/jobs.service";
@@ -117,11 +118,12 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
         setUploadingLogo(true);
         try {
           const { supabase } = await import("@/lib/supabase");
-          const ext  = logoFile.name.split(".").pop() ?? "jpg";
+          const readyLogo = await prepImage(logoFile, { maxSide: 512, targetBytes: 120 * 1024 });   // FIX296
+          const ext  = readyLogo.name.split(".").pop() ?? "jpg";
           const path = `job-logos/${userId}-${Date.now()}.${ext}`;
           const { error: upErr } = await supabase.storage
             .from("job-logos")
-            .upload(path, logoFile, { upsert: true });
+            .upload(path, readyLogo, { upsert: true, contentType: readyLogo.type });
           if (!upErr) {
             const { data: urlData } = supabase.storage
               .from("job-logos")

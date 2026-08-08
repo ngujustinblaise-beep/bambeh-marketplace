@@ -5,6 +5,7 @@
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -370,7 +371,8 @@ const EMPTY_FORM: FormState = {
 // ─────────────────────────────────────────────────────────────
 async function uploadImages(files: File[]): Promise<string[]> {
   const urls: string[] = [];
-  for (const file of files) {
+  for (const rawFile of files) {
+    const file = await prepImage(rawFile);   // FIX296
     const ext  = file.name.split(".").pop() || "jpg";
     const path = `vehicles/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage

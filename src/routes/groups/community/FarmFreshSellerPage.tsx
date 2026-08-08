@@ -12,6 +12,7 @@
  *  ✅ Draft save/restore
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -145,7 +146,7 @@ const DRAFT_KEY = "bambeh_draft_farm_produce";
 async function tryUploadImage(dataUrl: string, fileName: string): Promise<string | null> {
   try {
     const res  = await fetch(dataUrl);
-    const blob = await res.blob();
+    const blob = await prepImage(await res.blob());   // FIX296
     const ext  = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
     const path = `farm-fresh/${Date.now()}-${fileName.replace(/\s/g, "-")}.${ext}`;
 
