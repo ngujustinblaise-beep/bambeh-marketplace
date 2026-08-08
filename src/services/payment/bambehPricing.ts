@@ -43,6 +43,11 @@ export type PayoutFeePayer = "seller" | "buyer" | "marketplace";
 export interface PricingConfig {
   /** Marketplace commission on the item price. 100 = 1%. */
   commissionBp: number;
+  /** Flat marketplace commission per sale, in whole XAF. Bambeh charges 4. */
+  commissionFlatXaf: number;
+  /** Government transaction tax, PER SIDE. 20 = 0.2%. Charged twice (the
+   *  collection side and the withdrawal side) but BOTH are paid by the buyer. */
+  govTaxBp: number;
   /** VAT applied to the commission only. 1925 = 19.25%. */
   vatBp: number;
   /** Gateway fee when COLLECTING from the buyer. 200 = 2%. */
@@ -72,6 +77,8 @@ export interface CheckoutQuote {
   commissionXaf: number;
   /** VAT on the commission, rounded to whole XAF for the ledger. */
   vatXaf: number;
+  /** Government tax, both sides, rounded to whole XAF for the ledger. */
+  govTaxXaf: number;
   /** What the gateway will keep out of the collection. */
   collectFeeXaf: number;
   /** THE ONLY NUMBER THE BUYER EVER SEES. Whole XAF. */
@@ -83,6 +90,7 @@ export interface CheckoutQuote {
     sellerAmount: number;
     commission: number;
     vat: number;
+    govTax: number;
     collectFee: number;
     buyerTotal: number;
     roundingSurplus: number;
@@ -145,6 +153,8 @@ const BP = 10_000;
  */
 export const BAMBEH_PRICING: PricingConfig = {
   commissionBp: 100,        // 1%
+  commissionFlatXaf: 4,     // the 4 FCFA your calculate_fees trigger already charges
+  govTaxBp: 20,             // 0.2% per side, both sides paid by the buyer
   vatBp: 1925,              // 19.25%
   collectFeeBp: 200,        // 2%   <-- confirm against your CamPay contract
   collectFlatXaf: 0,
@@ -178,6 +188,7 @@ function assertConfig(cfg: PricingConfig): void {
   const rates: Array<[string, number]> = [
     ["commissionBp", cfg.commissionBp],
     ["vatBp", cfg.vatBp],
+    ["govTaxBp", cfg.govTaxBp],
     ["collectFeeBp", cfg.collectFeeBp],
     ["payoutFeeBp", cfg.payoutFeeBp],
   ];
@@ -194,6 +205,7 @@ function assertConfig(cfg: PricingConfig): void {
   if (cfg.payoutFeeBp >= BP) {
     throw new Error("payoutFeeBp of " + String(cfg.payoutFeeBp) + " leaves the seller nothing");
   }
+  assertWholeXaf(cfg.commissionFlatXaf, "commissionFlatXaf");
   assertWholeXaf(cfg.collectFlatXaf, "collectFlatXaf");
   assertWholeXaf(cfg.payoutFlatXaf, "payoutFlatXaf");
 }
@@ -231,8 +243,14 @@ export function quoteCheckout(
   }
 
   const sellerMicro = sellerAmountXaf * MICRO;
-  const commissionMicro = applyBp(sellerMicro, cfg.commissionBp);
+  const commissionMicro =
+    applyBp(sellerMicro, cfg.commissionBp) + cfg.commissionFlatXaf * MICRO;
   const vatMicro = applyBp(commissionMicro, cfg.vatBp);
+
+  // Government tax, both sides. The withdrawal side used to be deducted from
+  // the seller's payout; Big's instruction is that a seller who lists at 1,000
+  // collects 1,000, so the buyer now covers both.
+  const govTaxMicro = applyBp(sellerMicro, cfg.govTaxBp) * 2;
 
   // If the buyer is covering the payout fee, it has to be inside the
   // gross-up, otherwise it comes out of the seller's money later.
@@ -249,7 +267,7 @@ export function quoteCheckout(
 
   const flatMicro = cfg.collectFlatXaf * MICRO;
   const requiredMicro =
-    sellerMicro + commissionMicro + vatMicro + payoutCoverMicro + flatMicro;
+    sellerMicro + commissionMicro + vatMicro + govTaxMicro + payoutCoverMicro + flatMicro;
 
   // gross = required / (1 - rate), kept as integers
   const grossMicro = Math.ceil((requiredMicro * BP) / (BP - cfg.collectFeeBp));
@@ -259,7 +277,8 @@ export function quoteCheckout(
   const collectFeeMicro = applyBp(buyerTotalMicro, cfg.collectFeeBp) + flatMicro;
   const netAfterGatewayMicro = buyerTotalMicro - collectFeeMicro;
   const surplusMicro =
-    netAfterGatewayMicro - (sellerMicro + commissionMicro + vatMicro + payoutCoverMicro);
+    netAfterGatewayMicro -
+    (sellerMicro + commissionMicro + vatMicro + govTaxMicro + payoutCoverMicro);
 
   const issued = now;
   const expires = new Date(issued.getTime() + cfg.quoteTtlSeconds * 1000);
@@ -272,6 +291,7 @@ export function quoteCheckout(
     sellerAmountXaf,
     commissionXaf: microToWholeXafNearest(commissionMicro),
     vatXaf: microToWholeXafNearest(vatMicro),
+    govTaxXaf: microToWholeXafNearest(govTaxMicro),
     collectFeeXaf: microToWholeXafNearest(collectFeeMicro),
     buyerTotalXaf,
     roundingSurplusXaf: microToWholeXafNearest(surplusMicro),
@@ -279,6 +299,7 @@ export function quoteCheckout(
       sellerAmount: sellerMicro,
       commission: commissionMicro,
       vat: vatMicro,
+      govTax: govTaxMicro,
       collectFee: collectFeeMicro,
       buyerTotal: buyerTotalMicro,
       roundingSurplus: surplusMicro,
@@ -374,9 +395,10 @@ export function settlementLedger(quote: CheckoutQuote): LedgerLine[] {
     { account: "seller_payable", debitMicro: 0, creditMicro: m.sellerAmount, memo: "owed to seller" },
     { account: "marketplace_commission", debitMicro: 0, creditMicro: m.commission, memo: "Bambeh commission" },
     { account: "vat_payable", debitMicro: 0, creditMicro: m.vat, memo: "VAT on commission" },
+    { account: "gov_tax_payable", debitMicro: 0, creditMicro: m.govTax, memo: "government tax, both sides" },
     { account: "gateway_fee_expense", debitMicro: 0, creditMicro: m.collectFee, memo: "collection fee" },
   ];
-  const credited = m.sellerAmount + m.commission + m.vat + m.collectFee;
+  const credited = m.sellerAmount + m.commission + m.vat + m.govTax + m.collectFee;
   const remainder = m.buyerTotal - credited;
   if (remainder !== 0) {
     lines.push({
@@ -407,7 +429,9 @@ export function assertBalanced(lines: LedgerLine[]): void {
 export function formatQuoteForBuyer(quote: CheckoutQuote): Array<{ label: string; xaf: number }> {
   return [
     { label: "item", xaf: quote.sellerAmountXaf },
-    { label: "serviceFee", xaf: quote.commissionXaf + quote.vatXaf },
+    { label: "serviceFee", xaf: quote.commissionXaf },
+    { label: "vat", xaf: quote.vatXaf },
+    { label: "govTax", xaf: quote.govTaxXaf },
     { label: "paymentCharge", xaf: quote.collectFeeXaf },
     { label: "total", xaf: quote.buyerTotalXaf },
   ];

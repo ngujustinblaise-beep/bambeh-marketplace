@@ -1,78 +1,135 @@
-﻿/**
- * ════════════════════════════════════════════════════════════════
- * src/services/payment/taxCalculator.ts
- * Government Tax Calculator for Bambeh Marketplace
- *
- *  government tax: 0.2% per side of every transaction
- *   • Buyer pays:   item price + 0.2% gov tax  → platform collects it
- *   • Vendor gets:  item price - 0.2% gov tax  → deducted at withdrawal
- *   • Total gov tax per deal = 0.4% of item value
- *
- * ⚠ï¸  Subscription payments are TAX-EXEMPT (pass isSubscription=true).
- *
- * © 2026 BAMBEH SARL. All rights reserved.
- * ════════════════════════════════════════════════════════════════
- */
+// BAMBEH_DEPLOY_TOKEN__TAXCALCULATOR_FIX291_CLEAN
+// FILE LOCATION: src/services/payment/taxCalculator.ts
+//
+// FIX291 - THE GOVERNMENT TAX, CORRECTED. AND ONE SOURCE OF TRUTH.
+//
+// WHAT THIS REPLACES AND WHY
+// --------------------------
+// The old file did two things wrong and one thing badly.
+//
+//  1. WRONG: calculateWithdrawalTax() took 0.2% OFF the seller. A seller who
+//     listed at 1,000 received 998. Your instruction is that a seller who
+//     lists at 1,000 collects 1,000. That deduction is gone. The withdrawal-
+//     side government tax is still charged - it is a real tax and the state
+//     still wants it - but it is now added to the buyer's checkout total
+//     alongside everything else, the way you asked.
+//
+//  2. WRONG: it was a second, independent fee calculator sitting next to the
+//     calculate_fees database trigger and next to bambehPricing.ts. Three
+//     places computing money is how a marketplace ends up with a hole in its
+//     books. This file no longer decides anything. It asks bambehPricing.ts
+//     and reports the answer.
+//
+//  3. BADLY: formatXAF had its closing brace AFTER the JSDoc comment that
+//     followed it, so formatTaxAmount ended up dangling outside the function
+//     it was documented against. It compiled, which is the worst kind of bug.
+//     Fixed.
+//
+// NOTHING THAT IMPORTS THIS FILE HAS TO CHANGE. Every exported name that was
+// here before is still here, still with the same shape. PaymentSuccess.tsx
+// keeps importing formatXAF and keeps working.
+//
+// THE RATE STILL LIVES IN ONE PLACE: BAMBEH_PRICING.govTaxBp in
+// bambehPricing.ts. Change it there and every screen follows.
 
-/** Tax rate: 0.2% = 0.002 */
-export const GOV_TAX_RATE = parseFloat(
-  import.meta.env.VITE_GOV_TAX_RATE || "0.002",
-);
+import {
+  BAMBEH_PRICING,
+  quoteCheckout,
+  type PricingConfig,
+} from "./bambehPricing";
+
+/** 0.2% per side, kept as a decimal for the handful of old call sites that
+ *  read it directly. The authoritative value is BAMBEH_PRICING.govTaxBp. */
+export const GOV_TAX_RATE = BAMBEH_PRICING.govTaxBp / 10_000;
 
 export interface TransferTaxBreakdown {
-  baseAmount: number; // Original item price,
-  govTax: number; // 0.2% tax added on top,
-  totalCharged: number; // What buyer pays = baseAmount + govTax,
-  taxRate: string; // e.g. "0.2%"
-}
-
-export interface WithdrawalTaxBreakdown {
-  grossAmount: number; // Amount vendor requests to withdraw,
-  govTax: number; // 0.2% deducted from gross,
-  netPayout: number; // What vendor actually receives,
+  /** The seller's price. Untouched. */
+  baseAmount: number;
+  /** Government tax, both sides, all of it charged to the buyer. */
+  govTax: number;
+  /** Everything the buyer is charged: item, commission, VAT, tax, gateway. */
+  totalCharged: number;
   taxRate: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BUYER-SIDE TAX  (applies to all marketplace payments except subscriptions)
-// ─────────────────────────────────────────────────────────────────────────────
-export function calculateTransferTax(amount: number): TransferTaxBreakdown {
-  if (amount <= 0) throw new Error("Amount must be greater than 0");
-  const govTax = Math.max(1, Math.ceil(amount * GOV_TAX_RATE));
-  return { baseAmount: amount,
-    govTax,
-    totalCharged: amount + govTax,
-    taxRate: `${GOV_TAX_RATE * 100}%`,
-  }; }
+export interface WithdrawalTaxBreakdown {
+  grossAmount: number;
+  /** Always 0 now. The buyer paid this at checkout. */
+  govTax: number;
+  /** Equal to grossAmount. The seller collects what they listed. */
+  netPayout: number;
+  taxRate: string;
+}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// VENDOR-SIDE TAX  (applies to every vendor withdrawal)
-// ─────────────────────────────────────────────────────────────────────────────
-export function calculateWithdrawalTax(amount: number): WithdrawalTaxBreakdown {
-  if (amount <= 0) throw new Error("Amount must be greater than 0");
-  const govTax = Math.max(1, Math.ceil(amount * GOV_TAX_RATE));
-  return { grossAmount: amount,
-    govTax,
-    netPayout: amount - govTax,
-    taxRate: `${GOV_TAX_RATE * 100}%`,
-  }; }
+function ratePercent(cfg: PricingConfig): string {
+  return String(cfg.govTaxBp / 100) + "%";
+}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FORMAT helpers
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * What the buyer is charged, government tax included.
+ *
+ * NOTE: totalCharged is the FULL checkout figure, not just price + tax. The
+ * old version returned baseAmount + govTax and nothing else, which is how the
+ * commission, the VAT and CamPay's 2% ended up being paid by Bambeh out of
+ * its own pocket on every sale.
+ */
+export function calculateTransferTax(
+  amount: number,
+  cfg: PricingConfig = BAMBEH_PRICING,
+): TransferTaxBreakdown {
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Amount must be greater than 0");
+  }
+  const quote = quoteCheckout(Math.round(amount), cfg);
+  return {
+    baseAmount: quote.sellerAmountXaf,
+    govTax: quote.govTaxXaf,
+    totalCharged: quote.buyerTotalXaf,
+    taxRate: ratePercent(cfg),
+  };
+}
 
-/** Format XAF currency for display: 1500 → "1 500 XAF" */
+/**
+ * What a seller receives when they withdraw.
+ *
+ * This used to shave 0.2% off. It no longer does, and that is deliberate:
+ * a seller who lists an item at 1,000 collects 1,000. Both sides of the
+ * government tax, plus the gateway's withdrawal fee, were already collected
+ * from the buyer at checkout.
+ */
+export function calculateWithdrawalTax(
+  amount: number,
+  cfg: PricingConfig = BAMBEH_PRICING,
+): WithdrawalTaxBreakdown {
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Amount must be greater than 0");
+  }
+  const gross = Math.round(amount);
+  return {
+    grossAmount: gross,
+    govTax: 0,
+    netPayout: gross,
+    taxRate: ratePercent(cfg),
+  };
+}
+
+/** Format XAF for display: 1500 becomes "1 500 FCFA". */
 export function formatXAF(amount: number): string {
-  return new Intl.NumberFormat("fr-CM", { style: "currency",
+  const safe = Number.isFinite(amount) ? amount : 0;
+  return new Intl.NumberFormat("fr-CM", {
+    style: "currency",
     currency: "XAF",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
-
-/** e.g. returns "21 XAF" for 10000 XAF at 0.2% tax */
-}
-export function formatTaxAmount(amount: number): string {
-  const tax = Math.max(1, Math.ceil(amount * GOV_TAX_RATE));
-  return formatXAF(tax);
+  }).format(safe);
 }
 
+/** The government tax on a given item price, formatted for display. */
+export function formatTaxAmount(
+  amount: number,
+  cfg: PricingConfig = BAMBEH_PRICING,
+): string {
+  if (!Number.isFinite(amount) || amount <= 0) return formatXAF(0);
+  return formatXAF(quoteCheckout(Math.round(amount), cfg).govTaxXaf);
+}
+// BAMBEH_END_TOKEN__TAXCALCULATOR_FIX291__COMPLETE
