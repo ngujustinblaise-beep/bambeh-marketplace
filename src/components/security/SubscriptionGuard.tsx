@@ -1,22 +1,48 @@
-// BAMBEH_DEPLOY_TOKEN__SUBSCRIPTIONGUARD_FIX272_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SUBSCRIPTIONGUARD_FIX299_CLEAN
 // FILE LOCATION: src/components/security/SubscriptionGuard.tsx
 //
-// FIX272 - THE TIERED MODEL, WITH THE LOCK MADE VISIBLE.
+// FIX299 - NOTHING THAT MOVES MONEY SITS BEHIND THE PAYWALL.
 //
-// Same access rules as FIX251. Two additions:
+// WHAT CHANGED, AND ONLY THIS:
 //
-//   1. On a browse page, a non-subscriber now sees a counted banner above
-//      the list: "47 places to rent. Location and seller contact are hidden.
-//      Unlock everything - 100 XAF, 24 hours." A wall shows nothing to want;
-//      this shows the size of the prize and the price of it.
+//   1. /escrow and /escrow/:orderId are now free for any signed-in user.
 //
-//   2. ONE SWITCH, below, to put whole categories behind the paywall later.
-//      Leave it false while the marketplace is filling. Flip it to true and
-//      rebuild when a category has enough listings that the count alone
-//      sells the subscription.
+//      This is the important one. /escrow is where a BUYER presses "I
+//      received my item". That press is the only thing that calls
+//      handleReleaseEscrow, which is the only thing that calls
+//      disburseForOrder, which is the only thing that pays the seller.
 //
-// Everything else is unchanged: posting is always free, nothing a user owns
-// is ever locked away from them, and /subscription is always reachable.
+//      With it gated, this happens: a buyer subscribes, pays 1,070 with
+//      escrow, and Bambeh holds the money. Their 24-hour pass expires. The
+//      goods arrive. They open /escrow to confirm - and are bounced to the
+//      subscription page. The seller's 1,011 then sits in Bambeh's CamPay
+//      account with no way out, and the seller did nothing wrong. Their
+//      money is trapped because SOMEBODY ELSE stopped subscribing.
+//
+//      Escrow protection itself is still not free. You only reach this page
+//      by having paid for an item. What is free is the button that finishes
+//      the transaction you already paid for.
+//
+//   2. /coins/buy, /coins/purchase and /zerm/purchase are now free.
+//
+//      Buying coins IS a payment. A paywall in front of a payment page turns
+//      away money. The two /purchase paths are redirects to /coins/buy, and
+//      this guard runs BEFORE a redirect resolves - so freeing only
+//      /coins/buy would still have bounced anyone arriving by those links.
+//
+//      THE WALLET STAYS GATED. /coins, /coins/history, /coins/transfer and
+//      /zerm are still subscribers-only, exactly as before.
+//
+//   3. CHAT IS UNTOUCHED. /chat stays behind the paywall. It is the reason
+//      people subscribe and it was not part of this change.
+//
+// Everything else in this file is byte-for-byte what FIX272 shipped.
+//
+// ── FIX272 (unchanged, kept for the record) ────────────────────────────
+// Same access rules as FIX251, plus a counted browse teaser and ONE SWITCH
+// to put whole categories behind the paywall later. Posting is always free,
+// nothing a user owns is ever locked away from them, and /subscription is
+// always reachable.
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocation, Navigate } from "react-router-dom";
@@ -108,10 +134,30 @@ const ALWAYS_FREE_SIGNED_IN = [
   "/notifications", "/alerts", "/saved-searches", "/referral", "/quiz",
   "/order-tracking", "/track-orders", "/tracking",
   "/biometric-login", "/biometric-setup", "/enable-biometrics",
+
+  /* ---------------------------------------------------------------- *
+   * FIX299 - MONEY MUST NEVER BE TRAPPED BEHIND A PAYWALL.
+   * ---------------------------------------------------------------- */
+
+  // Confirming receipt is what pays the seller. If a buyer's pass expires
+  // before the goods arrive, the seller must not be the one who suffers.
+  // Covers /escrow and /escrow/:orderId through the prefix rule.
+  "/escrow",
+
+  // Buying coins is a payment. The two /purchase paths are redirects to
+  // /coins/buy, and this guard runs before a redirect resolves - so all
+  // three have to be here or the links still bounce.
+  // THE WALLET IS NOT HERE ON PURPOSE: /coins, /coins/history and
+  // /coins/transfer stay subscribers-only below.
+  "/coins/buy", "/coins/purchase", "/zerm/purchase",
 ];
 
 /* ------------------------------------------------------------------ *
  * SUBSCRIBERS ONLY - contact channels and the special modules.
+ *
+ * FIX299: /escrow left this list. Nothing else moved.
+ * /chat stays. It is the reason people subscribe.
+ * /coins and /zerm stay - that is the WALLET, not the purchase.
  * ------------------------------------------------------------------ */
 const SUBSCRIBER_PREFIX = [
   "/chat",
@@ -119,7 +165,7 @@ const SUBSCRIBER_PREFIX = [
   "/exchange/offer",
 
   "/farm-fresh", "/community", "/group-buying", "/compare",
-  "/ai-chat", "/deals", "/flash-deals", "/tontine", "/escrow",
+  "/ai-chat", "/deals", "/flash-deals", "/tontine",
 
   "/coins", "/zerm",
 ];
@@ -177,6 +223,9 @@ function isDetailPage(path: string): boolean {
 }
 
 function needsSubscription(path: string): boolean {
+  // ALWAYS_FREE is checked FIRST and that ordering is what makes FIX299
+  // work: /coins/buy is free even though /coins is gated, because this line
+  // returns before the SUBSCRIBER_PREFIX line is ever reached.
   if (underPrefix(path, ALWAYS_FREE_SIGNED_IN)) return false;
   if (underPrefix(path, SUBSCRIBER_PREFIX)) return true;
   if (LOCK_CATEGORIES_BEHIND_PAYWALL && underPrefix(path, SWITCHABLE_CATEGORIES)) return true;
@@ -223,7 +272,8 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
     return <Navigate to="/login" replace state={{ from: path }} />;
   }
 
-  // ---- GROUP B: signed in is enough (posting, own data, own account) ----
+  // ---- GROUP B: signed in is enough (posting, own data, own account,
+  //      and since FIX299: confirming receipt and buying coins) ----
   if (!needsSubscription(path)) {
     return <>{children}</>;
   }
@@ -243,4 +293,4 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
 
   return <Navigate to="/subscription" replace state={{ from: path }} />;
 }
-// BAMBEH_END_TOKEN__SUBSCRIPTIONGUARD_FIX272__COMPLETE
+// BAMBEH_END_TOKEN__SUBSCRIPTIONGUARD_FIX299__COMPLETE
