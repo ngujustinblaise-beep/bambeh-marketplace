@@ -926,7 +926,7 @@ export default function App() {
                           path="/cart"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><Cart /></AuthGate>
+                              <AuthGate require="user"><Cart /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -942,7 +942,7 @@ export default function App() {
                           path="/notifications"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><Notifications /></AuthGate>
+                              <AuthGate require="user"><Notifications /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1228,7 +1228,7 @@ export default function App() {
                           path="/escrow"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><EscrowPage /></AuthGate>
+                              <AuthGate require="user"><EscrowPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1236,7 +1236,7 @@ export default function App() {
                           path="/escrow/:orderId"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><EscrowPage /></AuthGate>
+                              <AuthGate require="user"><EscrowPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1272,7 +1272,7 @@ export default function App() {
                           path="/tontine/create"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><TontineCreate /></AuthGate>
+                              <AuthGate require="user"><TontineCreate /></AuthGate>
                             </MainLayout>
                           }
                         />
