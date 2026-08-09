@@ -17,6 +17,7 @@ type Category = "general" | "buying" | "selling" | "payment" | "support" | "bug"
 
 const COPY = {
   en: {
+    sendFailed: "Could not send. Please check your connection and try again — your message is still here.",
     title: "Share My Voice",
     subtitle: "Tell us about your experience",
     yourVoiceMatters: "Your Voice Matters",
@@ -62,6 +63,7 @@ const COPY = {
     weReadEveryMessage: "We read every single message.",
   },
   fr: {
+    sendFailed: "Envoi impossible. Vérifiez votre connexion et réessayez — votre message est toujours là.",
     title: 'Donner mon avis',
     subtitle: 'Racontez-nous votre expérience',
     yourVoiceMatters: 'Votre avis compte',
@@ -107,6 +109,7 @@ const COPY = {
     weReadEveryMessage: 'Nous lisons chaque message.',
   },
   ar: {
+    sendFailed: "تعذّر الإرسال. تحقق من اتصالك وحاول مرة أخرى — رسالتك ما زالت موجودة.",
     title: 'شارك صوتك',
     subtitle: 'أخبرنا عن تجربتك',
     yourVoiceMatters: 'صوتك مهم',
@@ -152,6 +155,7 @@ const COPY = {
     weReadEveryMessage: 'نقرأ كل رسالة.',
   },
   pidgin: {
+    sendFailed: "E no send. Check your network and try again — your message still dey here.",
     title: 'Share My Voice',
     subtitle: 'Tell us how your experience be',
     yourVoiceMatters: 'Your voice dey matter',
@@ -197,6 +201,7 @@ const COPY = {
     weReadEveryMessage: 'We dey read every single message.',
   },
   ful: {
+    sendFailed: "Neldugol waawaa. ƴeewto jokkondiral maa, etto goɗɗum — Ɓataake maa ina heen tan.",
     title: 'Hollu Ko Aɗa Sema',
     subtitle: 'Yamno min hakkunde dow ko a heɓi',
     yourVoiceMatters: 'Ko a holli ɗoo no feewi',
@@ -303,7 +308,7 @@ export default function ShareMyVoice() {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      await supabase.from("user_feedback").insert({
+      const { error: dbErr } = await supabase.from("user_feedback").insert({
         user_id: session?.user?.id ?? null,
         mood,
         rating,
@@ -314,7 +319,13 @@ export default function ShareMyVoice() {
         email: feedback.email,
         submitted_at: feedback.submitted_at,
       });
-    } catch {}
+      if (dbErr) throw dbErr;
+    } catch (err) {
+      console.error("[ShareMyVoice] could not save feedback:", err);
+      setError(ui.sendFailed);
+      setSubmitting(false);
+      return;
+    }
 
     setSubmitting(false);
     setDone(true);
