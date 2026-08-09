@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback } from "react";
 import React from "react";
 
 const STORAGE_KEY = "Bambeh_last_feedback_month";
-const FEEDBACK_URL = "/help/contact";
+const FEEDBACK_URL = "#/feedback";
 
 function currentMonthKey(): string {
   const d = new Date();
@@ -60,7 +60,7 @@ async function scheduleNativeNotification(): Promise<void> {
       "localNotificationActionPerformed",
       (action) => {
         if (action.notification.id === 8801) {
-          window.location.href = FEEDBACK_URL;
+          window.location.hash = FEEDBACK_URL;
         }
       },
     );

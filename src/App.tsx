@@ -297,6 +297,7 @@ const AvoidingScams           = lazy(() => import("@/pages/help/AvoidingScams"))
 const MeetingSafely           = lazy(() => import("@/pages/help/MeetingSafely"));
 const ReportingIssues         = lazy(() => import("@/pages/help/ReportingIssues"));
 const ContactSupport          = lazy(() => import("@/pages/help/ContactSupport"));
+const ShareMyVoice        = lazy(() => import("@/pages/ShareMyVoice"));
 
 // BAMBEH FEATURES
 const EscrowPage          = lazy(() => import("@/routes/groups/community/EscrowPage"));
@@ -378,7 +379,7 @@ const BackToTopButton = React.memo(function BackToTopButton() {
 });
 
 // ── RouteAwareWidgets ────────────────────────────────────────────────────────
-const WIDGET_HIDDEN_PATHS = ["/language", "/terms-acceptance"];
+const WIDGET_HIDDEN_PATHS = ["/language", "/terms-acceptance", "/feedback"];
 
 // Share banner shows ONLY on home page to avoid covering content on other pages
 const HOME_PATHS = ["/", "/home"];
@@ -1120,6 +1121,7 @@ export default function App() {
                         {/* ── 12. HELP CENTER ────────────────────────────────────── */}
                         <Route path="/help" element={<MainLayout><Help /></MainLayout>} />
                         <Route path="/help/contact" element={<MainLayout><ContactSupport /></MainLayout>} />
+                        <Route path="/feedback" element={<ShareMyVoice />} />
                         <Route path="/help/guides" element={<MainLayout><HelpGuides /></MainLayout>} />
                         <Route path="/help/video-tutorials" element={<MainLayout><VideoTutorials /></MainLayout>} />
                         <Route path="/help/getting-started" element={<MainLayout><GettingStarted /></MainLayout>} />
