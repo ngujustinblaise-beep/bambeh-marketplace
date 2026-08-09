@@ -70,14 +70,35 @@ const TR: Record<string, Record<Lang, string>> = {
 };
 
 // ─── Language helpers — ALL PURE (no hooks) ────────────────────────────────────
+// FIX302: read the key the APP actually writes, and translate its
+// language codes into the ones this page's dictionary uses.
+// App.tsx line 79:  const LANG_KEY = "Bambeh_language"
+// This page used to read "bambeh_lang", which nothing ever writes.
+const LANG_ALIASES: Record<string, Lang> = {
+  en: "en", eng: "en", english: "en",
+  fr: "fr", fra: "fr", french: "fr", francais: "fr",
+  ar: "ar", ara: "ar", arabic: "ar",
+  ff: "ff", ful: "ff", fulfulde: "ff",
+  // the app stores "pidgin"; this page's dictionary is keyed "pcm"
+  pcm: "pcm", pidgin: "pcm", pid: "pcm",
+  ha: "ha", hausa: "ha",
+};
+
 function getLang(): Lang {
   try {
-    const s = localStorage.getItem("bambeh_lang") as Lang;
-    if (s && ["en","fr","ha","ar","pcm","ff"].includes(s)) return s;
-  } catch { /* ignore */ }
-  const b = navigator.language.split("-")[0] as Lang;
-  return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
+    const raw = String(
+      localStorage.getItem("Bambeh_language") ||
+      localStorage.getItem("bambeh_lang") ||   // the old key, still honoured
+      ""
+    ).trim().toLowerCase();
+    const mapped = LANG_ALIASES[raw];
+    if (mapped) return mapped;
+  } catch { /* storage blocked */ }
+  // Fall back to ENGLISH, not to navigator.language. Reading the
+  // computer's language is exactly what froze this page in English.
+  return "en";
 }
+
 
 function tx(key: string, lang: Lang): string {
   return TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
@@ -88,15 +109,20 @@ function useLangState(): Lang {
   const [lang, setLang] = useState<Lang>(getLang);
   useEffect(() => {
     const onLangChange = () => setLang(getLang());
+    // FIX302: this is the one the app really fires (App.tsx line 143).
+    window.addEventListener("bambeh:langchange", onLangChange);
+    // The old names are kept so nothing that used to work stops.
     window.addEventListener("langChange", onLangChange);
     window.addEventListener("storage",   onLangChange);
     return () => {
+      window.removeEventListener("bambeh:langchange", onLangChange);
       window.removeEventListener("langChange", onLangChange);
       window.removeEventListener("storage",   onLangChange);
     };
   }, []);
   return lang;
 }
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DraftData {
