@@ -31,6 +31,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+// FIX306: the sentence parser. Understands en / fr / pidgin / arabic / fulfulde.
+import { parseSearch, describeSearch } from '@/utils/smartSearch';
 
 import LocationLock from "@/components/security/LocationLock";
 type ResultKind =
@@ -147,23 +149,47 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [kind, setKind] = useState<'all' | ResultKind>('all');
+  // FIX306: what the parser lifted out, shown above the results so a
+  // search is never quietly changed behind the user's back.
+  const [understood, setUnderstood] = useState('');
 
   const runSearch = useCallback(async (q: string) => {
     if (!q) { setHits([]); return; }
     setLoading(true);
     setFailed(false);
     try {
-      const like = `%${q}%`;
+      // FIX306: read the sentence BEFORE querying. Filters come out of it,
+      // and only the words that are left are matched as text.
+      const parsed = parseSearch(q);
+      setUnderstood(describeSearch(parsed, langKey));
+      const textQ = (parsed.text || q).trim();
+      const like = `%${textQ}%`;
       const collected: SearchHit[] = [];
 
       // 1) unified listings — all six types
-      const { data: listRows, error: le } = await supabase
+      let lq = supabase
         .from('listings')
         .select('id, type, title, description, price, location, category, images, status, view_count, created_at')
-        .eq('status', 'active')
-        .or(`title.ilike.${like},description.ilike.${like},location.ilike.${like},category.ilike.${like}`)
-        .order('created_at', { ascending: false })
-        .limit(60);
+        .eq('status', 'active');
+
+      // Only match text when something is left after the filters were
+      // lifted out. "cheap fridge under 50000" leaves "fridge";
+      // "under 50000" alone leaves nothing, and must not match every row.
+      if (textQ) {
+        lq = lq.or(`title.ilike.${like},description.ilike.${like},location.ilike.${like},category.ilike.${like}`);
+      }
+
+      // FIX306: the filters the sentence actually asked for.
+      if (parsed.category)          lq = lq.ilike('category', `%${parsed.category}%`);
+      if (parsed.location)          lq = lq.ilike('location', `%${parsed.location}%`);
+      if (parsed.minPrice !== null) lq = lq.gte('price', parsed.minPrice);
+      if (parsed.maxPrice !== null) lq = lq.lte('price', parsed.maxPrice);
+
+      if (parsed.sort === 'price_asc')       lq = lq.order('price', { ascending: true });
+      else if (parsed.sort === 'price_desc') lq = lq.order('price', { ascending: false });
+      else                                  lq = lq.order('created_at', { ascending: false });
+
+      const { data: listRows, error: le } = await lq.limit(60);
       if (le) throw le;
       for (const r of ((listRows ?? []) as Array<{
         id: string; type: string | null; title: string; description: string | null;
@@ -308,6 +334,13 @@ export default function SearchResults() {
           <div className="bg-white rounded-2xl p-8 text-center border border-gray-100">
             <Search className="w-10 h-10 text-gray-300 mx-auto mb-2" />
             <p className="text-sm text-gray-500">{t.startTyping}</p>
+          </div>
+        )}
+
+        {/* FIX306: say what was understood. Never change a search silently. */}
+        {!loading && understood && hits.length > 0 && (
+          <div className="mb-3 rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-sm text-teal-800">
+            {understood}
           </div>
         )}
 
