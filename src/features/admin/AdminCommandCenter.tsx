@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Shield, Users, Gavel, Lock, Megaphone, Send, CheckSquare, UserCog,
   Wallet, FileText, LayoutGrid, Loader2, Search, Snowflake, Flame,
-  AlertCircle, X, ChevronRight, ShieldAlert, Radio,
+  AlertCircle, X, ChevronRight, ShieldAlert, Radio, MessageSquare,
 } from 'lucide-react';
 import {
   fetchMyRole, capabilitiesFor, ROLE_LABEL, type AdminRole, type Capabilities,
@@ -28,11 +28,12 @@ import {
   fetchDisputes, type Dispute, resolveDispute, setEscrowFrozen,
   composeMessage, fetchPendingMessages, approveMessage, rejectMessage,
   publishAnnouncement, fetchReports, fetchFinanceSummary, fmtXAF,
+  fetchFeedback, type FeedbackRow, setFeedbackHandled,
 } from './lib';
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
-  | 'approvals' | 'announce' | 'team' | 'finances' | 'reports';
+  | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback';
 
 const NAV: Array<{ key: Section; label: string; icon: React.ComponentType<{ className?: string }>; needs?: keyof Capabilities }> = [
   { key: 'overview',  label: 'Overview',       icon: LayoutGrid },
@@ -45,6 +46,7 @@ const NAV: Array<{ key: Section; label: string; icon: React.ComponentType<{ clas
   { key: 'team',      label: 'Team & Roles',   icon: UserCog,  needs: 'createModerators' },
   { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances' },
   { key: 'reports',   label: 'Reports',        icon: FileText },
+  { key: 'feedback',  label: 'Share My Voice', icon: MessageSquare },
 ];
 
 export default function AdminCommandCenter() {
@@ -121,6 +123,7 @@ export default function AdminCommandCenter() {
         {section === 'team'      && cap.createModerators && <TeamSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'finances'  && cap.viewFinances && <FinancesSection />}
         {section === 'reports'   && <ReportsSection role={role} />}
+        {section === 'feedback'  && <FeedbackSection userId={userId!} role={role} />}
       </main>
 
       {toast ? (
@@ -574,6 +577,91 @@ function FinCard({ label, value }: { label: string; value: string }) {
 }
 
 // ---------- Reports ----------
+const MOOD_FACE: Record<string, string> = {
+  love: '\u{1F60D}', good: '\u{1F642}', okay: '\u{1F610}', bad: '\u{1F615}',
+};
+
+function FeedbackSection({ userId, role }: { userId: string; role: AdminRole }) {
+  const [rows, setRows] = useState<FeedbackRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [unhandledOnly, setUnhandledOnly] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      setRows(await fetchFeedback(unhandledOnly));
+      setLoading(false);
+    })();
+  }, [unhandledOnly]);
+
+  const toggle = async (row: FeedbackRow) => {
+    setBusy(row.id);
+    try {
+      await setFeedbackHandled(userId, role, row.id, !row.is_read);
+      setRows((prev) => unhandledOnly
+        ? prev.filter((r) => r.id !== row.id)
+        : prev.map((r) => (r.id === row.id ? { ...r, is_read: !r.is_read } : r)));
+    } catch { /* leave the row exactly as it was */ }
+    setBusy(null);
+  };
+
+  return (
+    <>
+      <h1 className="text-xl font-bold text-gray-900 mb-1">Share My Voice</h1>
+      <p className="text-sm text-gray-500 mb-4">
+        What people are telling us. Everyone on the team reads this. Deal with what is yours,
+        and mark it handled so nobody works the same message twice.
+      </p>
+
+      <div className="flex gap-2 mb-4">
+        <button onClick={() => setUnhandledOnly(true)}
+          className={`text-xs font-semibold rounded-full px-3 py-1.5 ${unhandledOnly ? 'bg-teal-600 text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+          Waiting
+        </button>
+        <button onClick={() => setUnhandledOnly(false)}
+          className={`text-xs font-semibold rounded-full px-3 py-1.5 ${!unhandledOnly ? 'bg-teal-600 text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+          All
+        </button>
+      </div>
+
+      {loading ? <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div> : (
+        <div className="space-y-2">
+          {rows.map((r) => (
+            <div key={r.id} className={`bg-white rounded-xl border p-3 ${r.is_read ? 'border-gray-100 opacity-60' : 'border-teal-200'}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2 min-w-0">
+                  <span className="text-lg leading-none mt-0.5">{MOOD_FACE[r.mood ?? ''] ?? ''}</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{r.title || r.category || 'Feedback'}</p>
+                    <p className="text-[11px] text-gray-400">
+                      {'\u2605'.repeat(r.rating ?? 0)}
+                      {r.category ? ` \u00b7 ${r.category}` : ''}
+                      {r.name ? ` \u00b7 ${r.name}` : ''}
+                      {` \u00b7 ${new Date(r.created_at).toLocaleDateString('fr-CM')}`}
+                    </p>
+                  </div>
+                </div>
+                <button onClick={() => toggle(r)} disabled={busy === r.id}
+                  className="text-[10px] font-bold rounded-full px-2 py-1 border border-gray-200 text-gray-600 whitespace-nowrap shrink-0">
+                  {busy === r.id ? '...' : r.is_read ? 'Reopen' : 'Mark handled'}
+                </button>
+              </div>
+              <p className="text-xs text-gray-600 mt-2 whitespace-pre-wrap">{r.message}</p>
+              {r.email ? <p className="text-[11px] text-gray-400 mt-1">{r.email}</p> : null}
+            </div>
+          ))}
+          {rows.length === 0 ? (
+            <p className="text-center text-sm text-gray-400 py-8">
+              {unhandledOnly ? 'Nothing waiting. Everything has been handled.' : 'No feedback yet.'}
+            </p>
+          ) : null}
+        </div>
+      )}
+    </>
+  );
+}
+
 function ReportsSection({ role }: { role: AdminRole }) {
   const [rows, setRows] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);

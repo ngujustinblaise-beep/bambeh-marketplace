@@ -327,4 +327,44 @@ export async function fetchFinanceSummary() {
 export const fmtXAF = (n: number | null | undefined) =>
   n == null || Number.isNaN(n) ? '0 FCFA'
     : new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
+// ---- Share My Voice feedback (all three staff roles may read) -------------
+export interface FeedbackRow {
+  id: string;
+  user_id: string | null;
+  mood: string | null;
+  rating: number | null;
+  category: string | null;
+  title: string | null;
+  message: string | null;
+  name: string | null;
+  email: string | null;
+  submitted_at: string | null;
+  created_at: string;
+  is_read: boolean;
+  admin_note: string | null;
+}
+
+/** Moderators, admins and the super admin all see this. RLS enforces it too. */
+export async function fetchFeedback(onlyUnhandled = false): Promise<FeedbackRow[]> {
+  let q = supabase
+    .from('user_feedback')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(200);
+  if (onlyUnhandled) q = q.eq('is_read', false);
+  const { data } = await q;
+  return (data ?? []) as FeedbackRow[];
+}
+
+export async function setFeedbackHandled(
+  actorId: string, actorRole: AdminRole, feedbackId: string, handled: boolean,
+) {
+  const { error } = await supabase
+    .from('user_feedback')
+    .update({ is_read: handled })
+    .eq('id', feedbackId);
+  if (error) throw error;
+  await logAction(actorId, actorRole, handled ? 'feedback_handled' : 'feedback_reopened', 'feedback', feedbackId, {});
+}
+
 // BAMBEH_END_TOKEN__ADMINLIB__COMPLETE
