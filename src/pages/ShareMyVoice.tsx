@@ -32,14 +32,14 @@ const COPY = {
     experiencePlaceholder:
       "Tell us what happened, what you liked, what could be better, or describe a bug you found...",
     contact: "Contact",
-    contactNote: "(optional ? for follow-up only)",
+    contactNote: "(optional — for follow-up only)",
     yourName: "Your name",
     sendFeedback: "Send Feedback",
     sending: "Sending...",
-    thankYou: "Thank You! ??",
+    thankYou: "Thank You! 🎉",
     received:
       "Your feedback has been received. We read every single message and use it to make Bambeh better for everyone in Cameroon.",
-    team: "? The Bambeh Team ??",
+    team: "💚 The Bambeh Team 🇨🇲",
     goBack: "Go Back",
     veryPoor: "Very Poor",
     poor: "Poor",
@@ -78,14 +78,14 @@ const COPY = {
     experiencePlaceholder:
       'Racontez ce qui s’est passé, ce que vous avez apprécié, ce qui pourrait être amélioré, ou décrivez un bug rencontré...',
     contact: 'Coordonnées',
-    contactNote: '(facultatif ? uniquement pour un suivi)',
+    contactNote: '(facultatif — uniquement pour un suivi)',
     yourName: 'Votre nom',
     sendFeedback: 'Envoyer',
     sending: 'Envoi en cours...',
-    thankYou: 'Merci ! ??',
+    thankYou: 'Merci ! 🎉',
     received:
       'Votre retour a bien été reçu. Nous lisons chaque message et nous l’utilisons pour améliorer Bambeh pour tout le monde au Cameroun.',
-    team: '? L’équipe Bambeh ??',
+    team: '💚 L’équipe Bambeh 🇨🇲',
     goBack: 'Retour',
     veryPoor: 'Très mauvais',
     poor: 'Mauvais',
@@ -124,14 +124,14 @@ const COPY = {
     experiencePlaceholder:
       'أخبرنا بما حدث، وما أعجبك، وما يمكن أن يكون أفضل، أو صف أي خلل وجدته...',
     contact: 'وسيلة التواصل',
-    contactNote: '(اختياري ? للمتابعة فقط)',
+    contactNote: '(اختياري — للمتابعة فقط)',
     yourName: 'اسمك',
     sendFeedback: 'إرسال الملاحظات',
     sending: 'جارٍ الإرسال...',
-    thankYou: 'شكرًا لك! ??',
+    thankYou: 'شكرًا لك! 🎉',
     received:
       'لقد وصلتنا ملاحظاتك. نحن نقرأ كل رسالة ونستخدمها لجعل Bambeh أفضل للجميع في الكاميرون.',
-    team: '? فريق Bambeh ??',
+    team: '💚 فريق Bambeh 🇨🇲',
     goBack: 'رجوع',
     veryPoor: 'ضعيف جدًا',
     poor: 'ضعيف',
@@ -170,14 +170,14 @@ const COPY = {
     experiencePlaceholder:
       'Tell us wetin happen, wetin you like, wetin fit beta, or describe any bug wey you find...',
     contact: 'Contact',
-    contactNote: '(optional ? for follow-up only)',
+    contactNote: '(optional — for follow-up only)',
     yourName: 'Your name',
     sendFeedback: 'Send feedback',
     sending: 'Dey send...',
-    thankYou: 'Thank you! ??',
+    thankYou: 'Thank you! 🎉',
     received:
       'We don receive your feedback. We dey read every message and use am make Bambeh better for everybody for Cameroon.',
-    team: '? The Bambeh Team ??',
+    team: '💚 The Bambeh Team 🇨🇲',
     goBack: 'Go back',
     veryPoor: 'Very poor',
     poor: 'Poor',
@@ -216,14 +216,14 @@ const COPY = {
     experiencePlaceholder:
       'Yamno min ko waɗi, ko a yiɗi, ko waawi ɓeydugol, walla bug ɗoo a heɓi...',
     contact: 'Hollitaango',
-    contactNote: '(yeesowol ? ngam ɗoo e fuɗɗo)',
+    contactNote: '(yeesowol — ngam ɗoo e fuɗɗo)',
     yourName: 'Innde maa',
     sendFeedback: 'Neldu jangu',
     sending: 'Dey neldu...',
-    thankYou: 'A jaaraama! ??',
+    thankYou: 'A jaaraama! 🎉',
     received:
       'Min heɓii jangu maa. Minndaa e njaŋtude kala haala, min huutora ɗum ngam Bambeh ɓeyduɗe ngam yimɓe Cameroon kala.',
-    team: '? Ekip Bambeh ??',
+    team: '💚 Ekip Bambeh 🇨🇲',
     goBack: 'Rutto',
     veryPoor: 'Mo wonii no feewi kala',
     poor: 'Mo ɗow',
@@ -258,10 +258,10 @@ const CATEGORIES: { value: Category; label: string }[] = [
 ];
 
 const MOOD_CONFIG = [
-  { value: "love" as Mood, emoji: "??", label: "Love it!", color: "bg-green-100 border-green-400 text-green-700" },
-  { value: "good" as Mood, emoji: "??", label: "Good", color: "bg-teal-100 border-teal-400 text-teal-700" },
-  { value: "okay" as Mood, emoji: "??", label: "Okay", color: "bg-amber-100 border-amber-400 text-amber-700" },
-  { value: "bad" as Mood, emoji: "??", label: "Needs work", color: "bg-red-100 border-red-400 text-red-700" },
+  { value: "love" as Mood, emoji: "😍", label: "Love it!", color: "bg-green-100 border-green-400 text-green-700" },
+  { value: "good" as Mood, emoji: "🙂", label: "Good", color: "bg-teal-100 border-teal-400 text-teal-700" },
+  { value: "okay" as Mood, emoji: "😐", label: "Okay", color: "bg-amber-100 border-amber-400 text-amber-700" },
+  { value: "bad" as Mood, emoji: "😕", label: "Needs work", color: "bg-red-100 border-red-400 text-red-700" },
 ];
 
 export default function ShareMyVoice() {
@@ -469,7 +469,6 @@ export default function ShareMyVoice() {
               maxLength={1000}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none leading-relaxed"
             />
-            <p className="text-xs text-gray-400 mt-1 text-right">{message.length}/1000</p>
           </div>
 
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
