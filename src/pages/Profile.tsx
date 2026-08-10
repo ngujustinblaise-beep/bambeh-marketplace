@@ -44,7 +44,7 @@ const S: Record<Lang, {
   fullName: string; email: string; phone: string; location: string; bio: string;
   notSet: string; locationPh: string; bioPh: string;
   quickLinks: string; qlCoins: string; qlListings: string; qlOrders: string;
-  qlSaved: string; qlSettings: string; qlFarmFresh: string; qlPostAd: string;
+  qlSaved: string; qlSettings: string; qlFarmFresh: string; qlPostAd: string; qlVoice: string;
   account: string; signOut: string;
 }> = {
   en: {
@@ -75,6 +75,7 @@ const S: Record<Lang, {
     qlSettings: "Settings",
     qlFarmFresh: "Farm Fresh",
     qlPostAd: "Post an Ad",
+    qlVoice: "Share My Voice",
     account: "Account",
     signOut: "Sign Out",
   },
@@ -105,6 +106,7 @@ const S: Record<Lang, {
     qlSaved: "Articles enregistrés",
     qlSettings: "Paramètres",
     qlFarmFresh: "Ferme Fraîche",
+    qlVoice: "Donnez votre avis",
     qlPostAd: "Publier une annonce",
     account: "Compte",
     signOut: "Se déconnecter",
@@ -137,6 +139,7 @@ const S: Record<Lang, {
     qlSettings: "Settings",
     qlFarmFresh: "Farm Fresh",
     qlPostAd: "Post Ad",
+    qlVoice: "Talk Your Mind",
     account: "Account",
     signOut: "Comot",
   },
@@ -167,6 +170,7 @@ const S: Record<Lang, {
     qlSaved: "العناصر المحفوظة",
     qlSettings: "الإعدادات",
     qlFarmFresh: "طازج من المزرعة",
+    qlVoice: "شارك رأيك",
     qlPostAd: "نشر إعلان",
     account: "الحساب",
     signOut: "تسجيل الخروج",
@@ -198,6 +202,7 @@ const S: Record<Lang, {
     qlSaved: "Kuuje danaaɗe",
     qlSettings: "Teelte",
     qlFarmFresh: "Ko hecci diga ngesa",
+    qlVoice: "Hollu Ko Aɗa Sema",
     qlPostAd: "Fewtu njeeyannde",
     account: "Konto",
     signOut: "Yaltude",
@@ -423,7 +428,8 @@ export default function Profile() {
     ["📦  " + s.qlOrders,    "/orders"],
     ["❤️   " + s.qlSaved,     "/favorites"],
     ["⚙️   " + s.qlSettings,  "/settings"],
-    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],  ];
+    ["🌿  " + s.qlFarmFresh, "/farm-fresh"],
+    ["\u{1F4AC}  " + s.qlVoice,     "/feedback"],  ];
 
   return (
     <div dir={isRtl ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-20">

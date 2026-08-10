@@ -35,6 +35,7 @@ const FOOTER_T = {
     operatedBy: "Operated by BAMBEH SARL",
     qTerms: "Terms", qPrivacy: "Privacy", qContact: "Contact", qSubs: "Subscriptions",
     feeBadge: "Only 1% Transaction Fee!",
+    shareMyVoice: "Share My Voice",
   },
   fr: {
     aboutTitle: "À propos de Bambeh",
@@ -53,6 +54,7 @@ const FOOTER_T = {
     operatedBy: "Exploité par BAMBEH SARL",
     qTerms: "Conditions", qPrivacy: "Confidentialité", qContact: "Contact", qSubs: "Abonnements",
     feeBadge: "Seulement 1 % de frais !",
+    shareMyVoice: "Donnez votre avis",
   },
   pidgin: {
     aboutTitle: "About Bambeh",
@@ -71,6 +73,7 @@ const FOOTER_T = {
     operatedBy: "Operated by BAMBEH SARL",
     qTerms: "Terms", qPrivacy: "Privacy", qContact: "Contact", qSubs: "Subscriptions",
     feeBadge: "Only 1% Fee!",
+    shareMyVoice: "Talk Your Mind",
   },
   ar: {
     aboutTitle: "عن بامبيه",
@@ -89,6 +92,7 @@ const FOOTER_T = {
     operatedBy: "تُدار بواسطة BAMBEH SARL",
     qTerms: "الشروط", qPrivacy: "الخصوصية", qContact: "اتصل بنا", qSubs: "الاشتراكات",
     feeBadge: "رسوم 1% فقط!",
+    shareMyVoice: "شارك رأيك",
   },
   ff: {
     aboutTitle: "E dow Bambeh",
@@ -107,6 +111,7 @@ const FOOTER_T = {
     operatedBy: "Ardii e BAMBEH SARL",
     qTerms: "Sarɗiiji", qPrivacy: "Gaasooji", qContact: "Ɓanndital", qSubs: "Sooddi",
     feeBadge: "Ko 1% njoɓdi tan!",
+    shareMyVoice: "Hollu Ko Aɗa Sema",
   },
 } as const;
 
@@ -165,6 +170,7 @@ export default function Footer() {
               <li><Link to="/help/contact" className="hover:text-teal-400 transition-colors">{s.contactSupport}</Link></li>
               <li><Link to="/help/safety-security" className="hover:text-teal-400 transition-colors">{s.safetySecurity}</Link></li>
               <li><Link to="/subscription" className="hover:text-teal-400 transition-colors">{s.subscriptionPlans}</Link></li>
+              <li><Link to="/feedback" className="hover:text-teal-400 transition-colors">{s.shareMyVoice}</Link></li>
               <li>
                 <Link to="/donate" className="hover:text-teal-400 transition-colors flex items-center gap-2">
                   <Heart className="w-4 h-4 text-pink-500" />
