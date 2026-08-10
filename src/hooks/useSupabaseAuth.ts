@@ -82,11 +82,37 @@ export function useSupabaseAuth(): SupabaseAuthState {
     // ── Verify JWT server-side ───────────────────────────────────────────────
     // getUser() makes a network call to Supabase Auth — the JWT is validated
     // cryptographically on the server, NOT just decoded locally.
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      // Token is invalid / expired — force sign out
-      await supabase.auth.signOut();
-      profileCache = null;
+    // FIX316 - a FAILED getUser() must NOT sign the user out.
+    // getUser() is a NETWORK call. On a slow or dropped connection it fails,
+    // and the old code treated that exactly like a rejected token: it called
+    // signOut(), which DELETED the saved session. That is why refreshing the
+    // app on a weak connection asked people to sign in again.
+    // Now we only sign out when Supabase actually REJECTS the token.
+    let verifiedUser: User | null = null;
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        const status = (userError as { status?: number }).status;
+        if (status === 401 || status === 403) {
+          // The server genuinely rejected this token. Sign out.
+          await supabase.auth.signOut();
+          profileCache = null;
+          setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
+          return;
+        }
+        // Could not reach the server. Keep the session we already have.
+        console.warn('[auth] getUser() unreachable, keeping stored session:', userError.message);
+        verifiedUser = session.user ?? null;
+      } else {
+        verifiedUser = user;
+      }
+    } catch (netErr) {
+      console.warn('[auth] getUser() threw, keeping stored session:', netErr);
+      verifiedUser = session.user ?? null;
+    }
+
+    const user = verifiedUser;
+    if (!user) {
       setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
       return;
     }
@@ -174,9 +200,18 @@ export function useSupabaseAuth(): SupabaseAuthState {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) resolveSession(session).finally(() => { if (mounted) setAuthReady(true); });
-    });
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (mounted) resolveSession(session).finally(() => { if (mounted) setAuthReady(true); });
+      })
+      .catch((bootErr) => {
+        // FIX316 - if getSession() itself throws, never leave the app spinning.
+        console.warn('[auth] getSession() failed at bootstrap:', bootErr);
+        if (mounted) {
+          setAuthReady(true);
+          setState(prev => ({ ...prev, loading: false, authReady: true }));
+        }
+      });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
