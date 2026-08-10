@@ -28,13 +28,36 @@ import { useLang, t } from "@/hooks/useAppLang";
 
 // --- Helpers ------------------------------------------------------------------
 
-const BAMBEH_FEE_RATE = 0.01;
-const GOV_TAX_FLAT    = 4; // flat 4 FCFA government tax per transaction
+// FIX317 - these numbers are now IDENTICAL to the deployed `payments` edge
+// function. They were not: the cart showed 1,014 for a 1,000 item while the
+// server charged 1,070. Basis points, not decimals - 0.0025 + 0.0075 does not
+// equal 0.01 in JavaScript, and money must not drift.
+// IF THE EDGE FUNCTION EVER CHANGES, CHANGE THIS BLOCK IN THE SAME BREATH.
+const BP             = 10000;
+const COMMISSION_BP  = 100;   // Bambeh keeps 1% of the item price
+const GOV_TAX_FLAT   = 4;     // flat 4 FCFA per sale
+const VAT_BP         = 1925;  // 19.25% - on the COMMISSION only, not the item
+const PAYOUT_FEE_BP  = 100;   // 1% taken when money is sent out to a seller
+const PROCESSING_BP  = 400;   // 200 of this is CamPay's real 2%; the rest is margin
+
+/** What we must SEND so the seller actually RECEIVES `net` after the 1%. */
+const payoutGross = (net: number) =>
+  Math.ceil((net * BP) / (BP - PAYOUT_FEE_BP));
 
 function calcFees(subtotal: number) {
-  const appFee = Math.round(subtotal * BAMBEH_FEE_RATE);
-  const govTax = subtotal > 0 ? GOV_TAX_FLAT : 0;
-  return { appFee, govTax, total: subtotal + appFee + govTax };
+  if (!(subtotal > 0)) {
+    return { appFee: 0, govTax: 0, serviceCharge: 0, total: 0 };
+  }
+  const appFee       = Math.round((subtotal * COMMISSION_BP) / BP);
+  const govTax       = GOV_TAX_FLAT;
+  const sellerPayout = payoutGross(subtotal);
+  const payoutCover  = sellerPayout - subtotal;
+
+  const scaled = (subtotal + appFee + govTax + payoutCover) * BP + appFee * VAT_BP;
+  const total  = Math.ceil(scaled / (BP - PROCESSING_BP));
+
+  // The single honest line the buyer sees beside the commission.
+  return { appFee, govTax, serviceCharge: total - subtotal - appFee, total };
 }
 
 const fmt = (n: number) => n.toLocaleString('fr-CM');
@@ -311,7 +334,7 @@ export default function Cart() {
   const [escrowDone,      setEscrowDone]      = useState(false);
 
   const subtotal = totalPrice;
-  const { appFee, govTax, total } = calcFees(subtotal);
+  const { appFee, serviceCharge, total } = calcFees(subtotal);
 
   // Build a description of what's in the cart
   const cartDescription = items.length === 1
@@ -520,11 +543,11 @@ export default function Cart() {
           {/* Order summary */}
           <div className="bg-white rounded-2xl p-5 shadow-sm border mb-4">
             <h2 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Order Summary</h2>
-            <FeeRow label="Subtotal" amount={`${fmt(subtotal)} XAF`} />
-            <FeeRow label="Bambeh Fee (1%)" amount={`${fmt(appFee)} XAF`} muted
-              tooltip="A 1% platform fee that keeps Bambeh running and supports local sellers." />
-            <FeeRow label="Government Tax (4 FCFA)" amount={`${fmt(govTax)} XAF`} muted
-              tooltip="A flat 4 FCFA tax levied by the Government of Cameroon on each transaction." />
+            <FeeRow label="Item" amount={`${fmt(subtotal)} XAF`} />
+            <FeeRow label="Bambeh commission (1%)" amount={`${fmt(appFee)} XAF`} muted
+              tooltip="Bambeh keeps 1% of the item price. That is the whole of what Bambeh earns." />
+            <FeeRow label="Service and payment charge" amount={`${fmt(serviceCharge)} XAF`} muted
+              tooltip="Government tax, VAT and the mobile money charges for collecting and paying out. Bambeh keeps none of this." />
             <div className="border-t border-gray-100 my-3"/>
             <FeeRow label="Total" amount={`${fmt(total)} XAF`} bold />
           </div>
