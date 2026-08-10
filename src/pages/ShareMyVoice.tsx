@@ -387,7 +387,12 @@ export default function ShareMyVoice() {
                   }`}
                 >
                   <span className="text-2xl">{m.emoji}</span>
-                  <span className="text-xs font-semibold leading-tight text-center">{m.label}</span>
+                  <span className="text-xs font-semibold leading-tight text-center">
+                    {m.value === "love" ? ui.moodLove
+                      : m.value === "good" ? ui.moodGood
+                      : m.value === "okay" ? ui.moodOkay
+                      : ui.moodBad}
+                  </span>
                 </button>
               ))}
             </div>
