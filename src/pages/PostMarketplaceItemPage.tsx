@@ -66,6 +66,7 @@ const TR: Record<string, Record<Lang, string>> = {
   visible_to_all: { en: "Your listing will be visible to all Bambeh users immediately.", fr: "Votre annonce sera visible par tous les utilisateurs de Bambeh immédiatement.", ha: "Jerin ku zai iya ganin duk masu amfani da Bambeh nan take.", ar: "ستكون قائمتك مرئية لجميع مستخدمي Bambeh Ùوراً.", pcm: "Your listing go show for all Bambeh users right now.", ff: "Nde maa yiyete e Bambeh ɗimmo hannde." },
   login_required: { en: "You must be logged in to post a listing.", fr: "Vous devez être connecté pour publier une annonce.", ha: "Dole ne ku shiga don buga jeri.", ar: "يجب تسجيل الدخول لنشر إعلان.", pcm: "You must login before you post.", ff: "Tiggee naatude ngam yeesude." },
   unexpected:     { en: "Unexpected error. Please try again.", fr: "Erreur inattendue. Réessayez.", ha: "Kuskure da ba a tsammani. Sake.", ar: "خطأ غير متوقع. حاول مجدداً.", pcm: "Unexpected error. Try again.", ff: "Juumre anndaande. Artu jeer." },
+  payout_phone_required: { en: "Add the phone number where you want to be paid. Without it we cannot send you your money.", fr: "Ajoutez le numéro où vous voulez être payé. Sans lui, nous ne pouvons pas vous envoyer votre argent.", ha: "Ҹara lambar wayar da kake son a biya ka. Ba tare da ita ba, ba za mu iya aiko maka da kuɗin ka ba.", ar: "أضف رقم الهاتف الذي تريد أن تُدفع عليه. بدونه لا يمكننا إرسال أموالك إليك.", pcm: "Put the phone number wey you want make we pay you. Without am, we no fit send your money.", ff: "Ɓeydu limce nokku ɗo njiɗ-ɗaa yoɓeede. Si alaa, min mbaawaa neldude ma kaalis maa." },
   draft_saved:    { en: "Draft saved!", fr: "Brouillon sauvegardé!", ha: "Daftar ya adana!", ar: "تم حÙظ المسودة!", pcm: "Draft saved!", ff: "Draft nanngi!" },
 };
 
@@ -300,6 +301,15 @@ export default function PostMarketplaceItemPage() {
     try {
       const { data: { user }, error: authErr } = await supabase.auth.getUser();
       if (authErr || !user) { setError(t("login_required")); return; }
+
+      // FIX319 - a seller with no payout number cannot be paid. The database
+      // trigger copies this number into profiles.payout_phone, and that is the
+      // ONLY place a payout is ever read from. Blank here means the money has
+      // nowhere to go, so publishing is blocked until it is filled in.
+      if (form.phone.replace(/\D/g, "").length < 9) {
+        setError(t("payout_phone_required"));
+        return;
+      }
 
       const imageUrls = await uploadPhotos(user.id);
       const price = parseInt(form.price.replace(/\D/g, ""), 10);
