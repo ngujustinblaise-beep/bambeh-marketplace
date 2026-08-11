@@ -27,7 +27,7 @@ import {
   RefreshCw, ArrowLeft, Heart, ShoppingCart, Share2,
   MapPin, Tag, Phone, ChevronLeft, ChevronRight,
   AlertCircle, Package, ShieldCheck, Flag, CheckCircle,
-  Eye, Clock, Zap, MessageCircle,
+  Eye, Clock, Zap, MessageCircle, Star,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -43,6 +43,8 @@ const TR: Record<string, Record<Lang, string>> = {
   no_description:  { en: "No description provided.", fr: "Aucune description.",       ha: "Babu bayanai.",          ar: "لا يوجد وصÙ.",                 pcm: "No description.",         ff: "Alaa pijirde." },
   contact_seller:  { en: "Contact Seller",          fr: "Contacter le vendeur",       ha: "Tuntuɓi mai siyarwa",   ar: "تواصل مع البائع",              pcm: "Contact Seller",          ff: "Newnin Yoɓoowo" },
   view_profile:    { en: "Rate Seller",             fr: "Noter le vendeur",         ha: "Kimanta mai siyarwa",   ar: "\u062a\u0642\u064a\u064a\u0645 \u0627\u0644\u0628\u0627\u0626\u0639", pcm: "Rate the Seller",       ff: "Hokku njeeygu" },  // FIX325
+  rating_none:     { en: "No ratings yet",            fr: "Pas encore de note",       ha: "Babu kima tukuna",      ar: "\u0644\u0627 \u062a\u0648\u062c\u062f \u062a\u0642\u064a\u064a\u0645\u0627\u062a \u0628\u0639\u062f", pcm: "No rating yet",         ff: "Njeeygu alaa tawo" },  // FIX326
+  rating_more:     { en: "See what buyers said",      fr: "Voir les avis des acheteurs", ha: "Duba ra'ayin masu saye", ar: "\u0627\u0642\u0631\u0623 \u0622\u0631\u0627\u0621 \u0627\u0644\u0645\u0634\u062a\u0631\u064a\u0646", pcm: "See wetin buyers talk",  ff: "Ndaaru haala soodoo\u0253e" },  // FIX326
   whatsapp:        { en: "WhatsApp",                fr: "WhatsApp",                   ha: "WhatsApp",               ar: "واتساب",                       pcm: "WhatsApp",                ff: "WhatsApp" },
   call:            { en: "Call",                    fr: "Appeler",                    ha: "Kira",                   ar: "اتصل",                         pcm: "Call",                    ff: "Ewnu" },
   chat:            { en: "Chat",                    fr: "Chat",                       ha: "Zanta",                  ar: "دردشة",                        pcm: "Chat",                    ff: "Haɓɓu" },
@@ -321,6 +323,31 @@ export default function MarketplaceItemDetails() {
   }, [id]);
 
   useEffect(() => { void load(); }, [load]);
+
+  // FIX326 - the seller's average rating, shown beside their name.
+  // Reviews are stored polymorphically (target_id + target_type), so we
+  // match on target_id alone: a seller's user id can never collide with a
+  // listing id, and that keeps this working whatever target_type is called.
+  const [sellerRating, setSellerRating] = useState<{ avg: number; count: number } | null>(null);
+  useEffect(() => {
+    const sid = listing?.sellerId;
+    if (!sid) { setSellerRating(null); return; }
+    let alive = true;
+    (async () => {
+      const { data, error: revErr } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("target_id", sid);
+      if (!alive || revErr || !data) return;
+      const scores = (data as { rating: number | null }[])
+        .map((r) => Number(r.rating))
+        .filter((n) => Number.isFinite(n) && n >= 1 && n <= 5);
+      if (scores.length === 0) { setSellerRating(null); return; }
+      const total = scores.reduce((sum, n) => sum + n, 0);
+      setSellerRating({ avg: total / scores.length, count: scores.length });
+    })();
+    return () => { alive = false; };
+  }, [listing?.sellerId]);
 
   // Cart sync
   useEffect(() => {
@@ -653,13 +680,40 @@ export default function MarketplaceItemDetails() {
               <p className="font-semibold text-gray-900 text-sm truncate">{listing.sellerName}</p>
               <p className="text-xs text-gray-400">{t("contact_seller")}</p>
             </div>
-            <button
-              onClick={() => navigate(`/seller/${listing.sellerId}/rating`)}
-              className="text-xs text-teal-600 font-semibold hover:text-teal-800 transition"
-              aria-label={`${t("view_profile")} ${listing.sellerName}`}
-            >
-              {t("view_profile")}
-            </button>
+            <div className="flex flex-col items-end gap-0.5 shrink-0">
+              <button
+                onClick={() => navigate(`/seller/${listing.sellerId}/rating`)}
+                className="text-xs text-teal-600 font-semibold hover:text-teal-800 transition"
+                aria-label={`${t("view_profile")} ${listing.sellerName}`}
+              >
+                {t("view_profile")}
+              </button>
+
+              {/* FIX326 - the average of every star this seller has been given.
+                  Rounding, exactly as agreed: a decimal of .5 or more rounds UP,
+                  .4 or less rounds DOWN. 4+4+4+5 = 17 / 4 = 4.25 shows 4 stars. */}
+              {sellerRating ? (
+                <>
+                  <div className="flex items-center gap-0.5"
+                    aria-label={`${Math.floor(sellerRating.avg + 0.5)} / 5`}>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star key={n}
+                        className={`w-3.5 h-3.5 ${n <= Math.floor(sellerRating.avg + 0.5)
+                          ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
+                    ))}
+                    <span className="text-[10px] text-gray-400 ml-1">({sellerRating.count})</span>
+                  </div>
+                  <button
+                    onClick={() => navigate(`/seller/${listing.sellerId}/rating`)}
+                    className="text-[10px] text-gray-400 hover:text-teal-600 transition text-right leading-tight max-w-[9rem]"
+                  >
+                    {t("rating_more")}
+                  </button>
+                </>
+              ) : (
+                <span className="text-[10px] text-gray-400">{t("rating_none")}</span>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-2">
