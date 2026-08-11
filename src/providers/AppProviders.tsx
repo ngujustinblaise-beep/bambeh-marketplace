@@ -10,7 +10,6 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { VendorProvider } from "@/contexts/VendorContext";
-import { AdminProvider } from "@/contexts/AdminContext";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ReportProvider } from "@/contexts/ReportContext";
@@ -23,7 +22,6 @@ export default function AppProviders({ children }: { children: ReactNode }) {
         <NotificationProvider>
           <CartProvider>
             <VendorProvider>
-              <AdminProvider>
                 <ChatProvider>
                   <ThemeProvider>
                     <ReportProvider>
@@ -33,7 +31,6 @@ export default function AppProviders({ children }: { children: ReactNode }) {
                     </ReportProvider>
                   </ThemeProvider>
                 </ChatProvider>
-              </AdminProvider>
             </VendorProvider>
           </CartProvider>
         </NotificationProvider>

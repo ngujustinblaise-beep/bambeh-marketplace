@@ -16,7 +16,6 @@ import {
   Paperclip, Image, X, Reply, Forward, MoreVertical, Flag,
   Tag, Users, Bell, Settings,
 } from 'lucide-react';
-import { useAdmin } from '@/contexts/AdminContext';
 
 // ── TYPES ────────────────────────────────────────────────────────────────────
 type MessageStatus   = 'unread' | 'read' | 'replied' | 'resolved' | 'archived';
@@ -318,7 +317,6 @@ const ComposeModal: React.FC<ComposeModalProps> = ({ isOpen, onClose, replyTo })
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function AdminInbox() {
-  const { currentAdmin } = useAdmin();
   const [messages, setMessages]               = useState<InboxMessage[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<InboxMessage | null>(null);
   const [isLoading, setIsLoading]             = useState(true);
