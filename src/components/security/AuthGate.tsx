@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -53,6 +53,22 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
   // hook SubscriptionGuard uses. One source of truth for access, not four.
   const { isActive: isSubscribed, isLoading: subLoading } = useSubscription(userId);
 
+  // FIX320 - AuthGate used to redirect the instant it got a "no".
+  // SubscriptionGuard, the OUTER gate, holds 1.5s before bouncing anyone,
+  // for exactly the reason its own comment gives: a member who has genuinely
+  // paid must never be thrown out mid-verification. AuthGate had no such
+  // hold - so in the seconds between a payment succeeding and the webhook
+  // writing the subscription row, a paying member clicking an item was sent
+  // straight back to the subscription page, over and over, until the row
+  // finally landed. "No answer yet" now means WAIT, never NO.
+  const [graceOver, setGraceOver] = useState(false);
+  useEffect(() => {
+    setGraceOver(false);
+    const timer = setTimeout(() => setGraceOver(true), 2500);
+    return () => clearTimeout(timer);
+  }, [location.pathname, userId]);
+
+
   if (loading || authReady === false || (level === "subscription" && subLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -75,6 +91,18 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
   // which is not a declared route, so it landed on Page Not Found.
 
   if (level === "subscription" && !isSubscribed) {
+    // FIX320 - hold the spinner until the grace window closes. Only after
+    // that is a "no" treated as a real answer.
+    if (!graceOver) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="flex items-center gap-3 text-gray-600">
+            <Loader2 className="h-5 w-5 animate-spin text-teal-600" />
+            <span>{t.loading}</span>
+          </div>
+        </div>
+      );
+    }
     return <Navigate to="/subscription" state={{ from: location }} replace />;
   }
 
