@@ -42,7 +42,7 @@ const TR: Record<string, Record<Lang, string>> = {
   description:     { en: "Description",             fr: "Description",                ha: "Bayanai",                ar: "الوصÙ",                        pcm: "Description",             ff: "Pijirde" },
   no_description:  { en: "No description provided.", fr: "Aucune description.",       ha: "Babu bayanai.",          ar: "لا يوجد وصÙ.",                 pcm: "No description.",         ff: "Alaa pijirde." },
   contact_seller:  { en: "Contact Seller",          fr: "Contacter le vendeur",       ha: "Tuntuɓi mai siyarwa",   ar: "تواصل مع البائع",              pcm: "Contact Seller",          ff: "Newnin Yoɓoowo" },
-  view_profile:    { en: "View Profile",            fr: "Voir le profil",             ha: "Duba profile",           ar: "عرض الملÙ الشخصي",             pcm: "See Profile",             ff: "Yiy Profil" },
+  view_profile:    { en: "Rate Seller",             fr: "Noter le vendeur",         ha: "Kimanta mai siyarwa",   ar: "\u062a\u0642\u064a\u064a\u0645 \u0627\u0644\u0628\u0627\u0626\u0639", pcm: "Rate the Seller",       ff: "Hokku njeeygu" },  // FIX325
   whatsapp:        { en: "WhatsApp",                fr: "WhatsApp",                   ha: "WhatsApp",               ar: "واتساب",                       pcm: "WhatsApp",                ff: "WhatsApp" },
   call:            { en: "Call",                    fr: "Appeler",                    ha: "Kira",                   ar: "اتصل",                         pcm: "Call",                    ff: "Ewnu" },
   chat:            { en: "Chat",                    fr: "Chat",                       ha: "Zanta",                  ar: "دردشة",                        pcm: "Chat",                    ff: "Haɓɓu" },
