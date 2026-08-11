@@ -128,12 +128,24 @@ interface Draft {
   title: string; category: string; unit: string;
   price: string; quantity: string; is_organic: boolean;
   location: string; description: string; available_for_delivery: boolean;
+  payoutPhone: string;
 }
+
+/* FIX322 - the payout number. Written as \u escapes on purpose, so no
+   future edit can eat the Arabic or the Fulfulde. */
+const PAYOUT_COPY: Record<string, Record<string, string>> = {
+  en: { label: "Phone number for your payment", ph: "6XX XXX XXX", hint: "This is where your money is sent when somebody buys from you.", required: "Add the phone number where you want to be paid. Without it we cannot send you your money.", saveFailed: "We could not save your payment number. Please try again." },
+  fr: { label: "Num\u00e9ro de t\u00e9l\u00e9phone pour votre paiement", ph: "6XX XXX XXX", hint: "C'est l\u00e0 que votre argent sera envoy\u00e9 quand quelqu'un ach\u00e8te chez vous.", required: "Ajoutez le num\u00e9ro o\u00f9 vous voulez \u00eatre pay\u00e9. Sans lui, nous ne pouvons pas vous envoyer votre argent.", saveFailed: "Nous n'avons pas pu enregistrer votre num\u00e9ro. R\u00e9essayez." },
+  pidgin: { label: "Phone number wey we go pay you", ph: "6XX XXX XXX", hint: "Na here your money go enter when person buy from you.", required: "Put the phone number wey you want make we pay you. Without am, we no fit send your money.", saveFailed: "We no fit save your number. Abeg try again." },
+  ar: { label: "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0623\u0645\u0648\u0627\u0644\u0643", ph: "6XX XXX XXX", hint: "\u0625\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u062a\u064f\u0631\u0633\u0644 \u0623\u0645\u0648\u0627\u0644\u0643 \u0639\u0646\u062f \u0627\u0644\u0634\u0631\u0627\u0621 \u0645\u0646\u0643.", required: "\u0623\u0636\u0641 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0627\u0644\u0630\u064a \u062a\u0631\u064a\u062f \u0623\u0646 \u062a\u064f\u062f\u0641\u0639 \u0639\u0644\u064a\u0647. \u0628\u062f\u0648\u0646\u0647 \u0644\u0627 \u064a\u0645\u0643\u0646\u0646\u0627 \u0625\u0631\u0633\u0627\u0644 \u0623\u0645\u0648\u0627\u0644\u0643.", saveFailed: "\u062a\u0639\u0630\u0631 \u062d\u0641\u0638 \u0631\u0642\u0645\u0643. \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b." },
+  ff: { label: "Limce noone ngam yo\u0253eede", ph: "6XX XXX XXX", hint: "Ko \u0257oo kaalis maa neldetee si go\u0257\u0257o soodii to ma.", required: "\u0181eydu limce nokku \u0257o nji\u0257\u0257aa yo\u0253eede. Si alaa, min mbaawaa neldude ma kaalis maa.", saveFailed: "Min mbaawaa danndude limce maa. Artu jeer." },
+};
 
 const BLANK: Draft = {
   title: "", category: "Vegetables", unit: "kg",
   price: "", quantity: "", is_organic: false,
   location: "", description: "", available_for_delivery: false,
+  payoutPhone: "",
 };
 
 const DRAFT_KEY = "bambeh_draft_farm_produce";
@@ -171,6 +183,7 @@ export default function FarmFreshSellerPage() {
   const navigate = useNavigate();
   const fileRef  = useRef<HTMLInputElement>(null);
   const lang     = useLang();
+  const pc       = PAYOUT_COPY[lang as string] ?? PAYOUT_COPY.en;
 
   const [step,           setStep]           = useState(1);
   const [d,              setD]              = useState<Draft>(BLANK);
@@ -235,6 +248,8 @@ export default function FarmFreshSellerPage() {
     }
     if (s === 2) {
       if (!d.location.trim()) e.location = t("errorLocation", lang) as string || "Location is required";
+      // FIX322 - a farmer with no payout number cannot be paid.
+      if (d.payoutPhone.replace(/\D/g, "").length < 9) e.payoutPhone = pc.required;
       if (!d.description.trim() || d.description.trim().length < 20)
         e.description = t("errorDescription", lang) as string || "Description must be at least 20 characters";
     }
@@ -262,6 +277,21 @@ export default function FarmFreshSellerPage() {
         return;
       }
 
+      // FIX322 - the FarmFresh trigger fills farm_products.seller_phone from
+      // the PROFILE, not from this form. Writing the number to the profile is
+      // what actually makes this farmer payable, so it happens FIRST - before
+      // any photo upload, and before the listing exists.
+      const payoutPhone = d.payoutPhone.trim();
+      const { error: profErr } = await supabase
+        .from("profiles")
+        .update({ payout_phone: payoutPhone })
+        .eq("id", session.user.id);
+      if (profErr) {
+        setErrs({ payoutPhone: pc.saveFailed });
+        setSubmitting(false);
+        return;
+      }
+
       // ── 1. Try uploading images (graceful — never blocks the listing) ──────
       const uploadedUrls: string[] = [];
       for (let i = 0; i < imageFiles.length; i++) {
@@ -284,6 +314,7 @@ export default function FarmFreshSellerPage() {
         unit:                   d.unit,
         category:               d.category,
         location:               d.location.trim(),
+        seller_phone:           payoutPhone,
         stock_quantity:         d.quantity ? Number(d.quantity) : null,
         is_organic:             d.is_organic,
         available_for_delivery: d.available_for_delivery,
@@ -440,6 +471,16 @@ export default function FarmFreshSellerPage() {
                 className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
                   ${errs.location ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
               <Err msg={errs.location} />
+            </div>
+
+            <div>
+              <Lbl required>{pc.label}</Lbl>
+              <input value={d.payoutPhone} onChange={e => upd({ payoutPhone: e.target.value })}
+                inputMode="tel" placeholder={pc.ph}
+                className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-colors
+                  ${errs.payoutPhone ? "border-red-400 bg-red-50" : "border-gray-200 dark:border-gray-600 focus:border-green-500"}`} />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{pc.hint}</p>
+              <Err msg={errs.payoutPhone} />
             </div>
 
             <BigCheck checked={d.available_for_delivery} onChange={v => upd({ available_for_delivery: v })}
