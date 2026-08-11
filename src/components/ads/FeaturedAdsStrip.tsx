@@ -122,18 +122,25 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
           : ["marketplace", "job", "service", "rental", "vehicle"];
         const { data, error } = await supabase
           .from("listings")
-          .select("id, type, title, price, location, images, status, created_at")
+          .select("id, type, title, price, location, images, status, created_at, expires_at")
           .in("type", typeFilter)
           .eq("status", "active")
           .order("created_at", { ascending: false })
           .limit(50);
         if (!error && Array.isArray(data)) {
+          // FIX323 - this strip never asked for expires_at, so a listing that
+          // had run out still sat in the shop window and still opened when
+          // tapped. Home already filters these out; the strip did not. A buyer
+          // chasing something that is gone is how trust quietly leaks away.
+          const nowMs = Date.now();
           for (const r of data as {
             id: string; type: string; title: string; price: number | null;
             location: string | null; images: string[] | null; created_at: string;
+            expires_at: string | null;
           }[]) {
             const kind = (r.type === "marketplace" ? "marketplace" : r.type) as StripItem["kind"];
             if (!KIND_META[kind]) continue;
+            if (r.expires_at && new Date(r.expires_at).getTime() < nowMs) continue;
             collected.push({
               id: r.id, kind, title: r.title, price: r.price, location: r.location,
               image: Array.isArray(r.images) && r.images[0] ? r.images[0] : null,
