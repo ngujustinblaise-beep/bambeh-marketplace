@@ -1,3 +1,4 @@
+// FIX329 - dictionary labels renamed pcm->pidgin and ful->ff so useLang() can find them
 // FIX327 - the service safety line: shield emoji repaired, Arabic repaired, all six escaped
 // BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX99_CLEAN
 // BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX83_CLEAN
@@ -161,7 +162,7 @@ const STRINGS = {
     report_success:  'An aika rahoto.',
     report_error:    'Ba a iya aika.',
   },
-  pcm: {
+  pidgin: {
     back:          'Services',
     share:         'Share',
     edit:          'Edit',
@@ -190,7 +191,7 @@ const STRINGS = {
     report_success:  'Report send.',
     report_error:    'E no fit send.',
   },
-  ful: {
+  ff: {
     back:          'Ɓeyngal',
     share:         'Hollu',
     edit:          'Rewo',

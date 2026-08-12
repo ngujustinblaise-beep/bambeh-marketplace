@@ -1,3 +1,4 @@
+// FIX329 - dictionary labels renamed pcm->pidgin and ful->ff so useLang() can find them
 /**
  * src/pages/OfferService.tsx — Bambeh Marketplace
  * ─────────────────────────────────────────────────────────────────────────────
@@ -291,7 +292,7 @@ const STRINGS = {
     err_auth:       'Shiga domin fitar da sabis', err_submit:  'Ba a iya fitar da sabis.',
     draft_saved:    'An ajiye daftari ✅',
   },
-  pcm: {
+  pidgin: {
     page_title:     'Offer Service',
     step_labels:    ['Service Info', 'Price & Details', 'Review & Post'],
     step_prefix:    'Step',
@@ -345,7 +346,7 @@ const STRINGS = {
     err_auth:       'Login first to post service', err_submit:  'E no work. Try again.',
     draft_saved:    'Draft saved ✅',
   },
-  ful: {
+  ff: {
     page_title:     'Hollu ɓeyngal',
     step_labels:    ['Jaaɓi', 'Ngiɗgu & Coftal', 'Leelu & Neltu'],
     step_prefix:    'Laabi',

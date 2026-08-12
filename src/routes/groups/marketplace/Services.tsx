@@ -1,3 +1,4 @@
+// FIX329 - dictionary labels renamed pcm->pidgin and ful->ff so useLang() can find them
 // FIX328 - the services list safety line: shield repaired, Arabic repaired twice, all six escaped
 // BAMBEH_DEPLOY_TOKEN__SERVICES_FIX99_CLEAN
 // BAMBEH_DEPLOY_TOKEN__SERVICES_FIX54_CLEAN
@@ -187,7 +188,7 @@ const STRINGS = {
     report_success:    'An aika rahoto. Na gode.',
     report_error:      'Ba za a iya aika rahoto ba.',
   },
-  pcm: {
+  pidgin: {
     hero_title:        'Professional Services',
     hero_sub:          'Find trusted people weh dey do work for Cameroon',
     search_placeholder:'Search for services…',
@@ -221,7 +222,7 @@ const STRINGS = {
     report_success:    'Report send. Thank you.',
     report_error:      'E no fit send report.',
   },
-  ful: {
+  ff: {
     hero_title:        'Ɓeyngal Ɓurtooji',
     hero_sub:          'Yiɗ neɗɗo feewi Kameruun',
     search_placeholder:'Yiɗ ɓeyngal…',
@@ -322,7 +323,7 @@ function sanitiseText(t: string): string {
 }
 
 function getLang(raw: string): Lang {
-  const map: Record<string, Lang> = { en:'en', fr:'fr', ar:'ar', ha:'ha', pcm:'pcm', ful:'ful' };
+  const map: Record<string, Lang> = { en:'en', fr:'fr', ar:'ar', ha:'ha', pidgin:'pidgin', ff:'ff' };
   return map[raw] ?? 'en';
 }
 
@@ -747,7 +748,7 @@ export default function Services() {
     return acc;
   }, {} as Record<string, number>);
 
-  const allLabel = lang === 'fr' ? 'Tout' : lang === 'ar' ? 'الكل' : lang === 'ha' ? 'Duka' : lang === 'ful' ? 'Fof' : 'All';
+  const allLabel = lang === 'fr' ? 'Tout' : lang === 'ar' ? 'الكل' : lang === 'ha' ? 'Duka' : lang === 'ff' ? 'Fof' : 'All';
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
