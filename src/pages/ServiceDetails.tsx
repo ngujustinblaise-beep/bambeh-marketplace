@@ -1,3 +1,4 @@
+// FIX327 - the service safety line: shield emoji repaired, Arabic repaired, all six escaped
 // BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX99_CLEAN
 // BAMBEH_DEPLOY_TOKEN__SERVICEDETAILS_FIX83_CLEAN
 /**
@@ -52,7 +53,7 @@ const STRINGS = {
     about:         'About this Service',
     provider:      'Service Provider',
     more_services: (cat: string) => `More ${cat} Services`,
-    safety:        '🛡ï¸ Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
+    safety:        '\uD83D\uDEE1\uFE0F Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
     call:          'Call',
     book:          'Book this Service',
     views:         (n: number) => `${n} view${n !== 1 ? 's' : ''}`,
@@ -82,7 +83,7 @@ const STRINGS = {
     about:         'À propos de ce service',
     provider:      'Prestataire',
     more_services: (cat: string) => `Plus de services ${cat}`,
-    safety:        '🛡ï¸ Vérifiez toujours l\'identité d\'un prestataire avant de payer. Bambeh ne demande jamais de payer en dehors de l\'application.',
+    safety:        '\uD83D\uDEE1\uFE0F V\u00E9rifiez toujours l\'identit\u00E9 d\'un prestataire avant de payer. Bambeh ne demande jamais de payer en dehors de l\'application.',
     call:          'Appeler',
     book:          'Réserver ce service',
     views:         (n: number) => `${n} vue${n !== 1 ? 's' : ''}`,
@@ -111,7 +112,7 @@ const STRINGS = {
     about:         'عن هذه الخدمة',
     provider:      'مقدم الخدمة',
     more_services: (cat: string) => `المزيد من خدمات ${cat}`,
-    safety:        '🛡ï¸ تحقق دائمًا من هوية المزود قبل الدÙع.',
+    safety:        '\uD83D\uDEE1\uFE0F \u062A\u062D\u0642\u0642 \u062F\u0627\u0626\u0645\u064B\u0627 \u0645\u0646 \u0647\u0648\u064A\u0629 \u0627\u0644\u0645\u0632\u0648\u062F \u0642\u0628\u0644 \u0627\u0644\u062F\u0641\u0639.',
     call:          'اتصل',
     book:          'احجز هذه الخدمة',
     views:         (n: number) => `${n} مشاهدة`,
@@ -140,7 +141,7 @@ const STRINGS = {
     about:         'Game da wannan sabis',
     provider:      'Mai ba da sabis',
     more_services: (cat: string) => `Ƙarin ayyukan ${cat}`,
-    safety:        '🛡ï¸ Tabbata ainihin mai sabis kafin biyan kuɗi.',
+    safety:        '\uD83D\uDEE1\uFE0F Tabbata ainihin mai sabis kafin biyan ku\u0257i.',
     call:          'Kira',
     book:          'Yi Rijistar Sabis',
     views:         (n: number) => `Duba ${n}`,
@@ -169,7 +170,7 @@ const STRINGS = {
     about:         'About this service',
     provider:      'Service Provider',
     more_services: (cat: string) => `More ${cat} services`,
-    safety:        '🛡ï¸ Always check person before you pay. Bambeh no go ask you pay outside app.',
+    safety:        '\uD83D\uDEE1\uFE0F Always check person before you pay. Bambeh no go ask you pay outside app.',
     call:          'Call',
     book:          'Book Service',
     views:         (n: number) => `${n} view${n !== 1 ? 's' : ''}`,
@@ -198,7 +199,7 @@ const STRINGS = {
     about:         'Fii ɓeyngal ngel',
     provider:      'Neɗɗo ɓeyngal',
     more_services: (cat: string) => `Ɓeyngal ${cat} goɗɗe`,
-    safety:        '🛡ï¸ Tiiɗnu neɗɗo hade hade.',
+    safety:        '\uD83D\uDEE1\uFE0F Tii\u0257nu ne\u0257\u0257o hade hade.',
     call:          'Noddu',
     book:          'Jaɓɓu ɓeyngal',
     views:         (n: number) => `Yiyaama ${n}`,
