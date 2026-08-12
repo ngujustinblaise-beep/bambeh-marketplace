@@ -1,3 +1,4 @@
+// FIX328 - the services list safety line: shield repaired, Arabic repaired twice, all six escaped
 // BAMBEH_DEPLOY_TOKEN__SERVICES_FIX99_CLEAN
 // BAMBEH_DEPLOY_TOKEN__SERVICES_FIX54_CLEAN
 /**
@@ -62,7 +63,7 @@ const STRINGS = {
     clear_search:      'Clear search',
     first_offer:       'Offer a Service',
     no_services_found: 'No services found',
-    safety_note:       '🛡ï¸ Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
+    safety_note:       '\uD83D\uDEE1\uFE0F Always verify a provider\'s identity before making payment. Bambeh never asks you to pay outside the app.',
     sample_label:      'Sample listing — not a real service',
     expiry_warning:    (days: number) => `This listing expires in ${days} day${days !== 1 ? 's' : ''} — renew to keep it visible`,
     book:              'Book',
@@ -96,7 +97,7 @@ const STRINGS = {
     clear_search:      'Effacer la recherche',
     first_offer:       'Proposer un Service',
     no_services_found: 'Aucun service trouvé',
-    safety_note:       '🛡ï¸ Vérifiez toujours l\'identité d\'un prestataire avant tout paiement. Bambeh ne vous demande jamais de payer en dehors de l\'application.',
+    safety_note:       '\uD83D\uDEE1\uFE0F V\u00E9rifiez toujours l\'identit\u00E9 d\'un prestataire avant tout paiement. Bambeh ne vous demande jamais de payer en dehors de l\'application.',
     sample_label:      'Annonce exemple — pas un vrai service',
     expiry_warning:    (days: number) => `Cette annonce expire dans ${days} jour${days !== 1 ? 's' : ''} — renouvelez pour rester visible`,
     book:              'Réserver',
@@ -130,7 +131,7 @@ const STRINGS = {
     clear_search:      'مسح البحث',
     first_offer:       'تقديم خدمة',
     no_services_found: 'لا توجد خدمات',
-    safety_note:       '🛡ï¸ تحقق دائمًا من هوية المزود قبل الدÙع. لا تطلب بامبيه الدÙع خارج التطبيق.',
+    safety_note:       '\uD83D\uDEE1\uFE0F \u062A\u062D\u0642\u0642 \u062F\u0627\u0626\u0645\u064B\u0627 \u0645\u0646 \u0647\u0648\u064A\u0629 \u0627\u0644\u0645\u0632\u0648\u062F \u0642\u0628\u0644 \u0627\u0644\u062F\u0641\u0639. \u0644\u0627 \u062A\u0637\u0644\u0628 \u0628\u0627\u0645\u0628\u064A\u0647 \u0627\u0644\u062F\u0641\u0639 \u062E\u0627\u0631\u062C \u0627\u0644\u062A\u0637\u0628\u064A\u0642.',
     sample_label:      'إعلان تجريبي — ليس خدمة حقيقية',
     expiry_warning:    (days: number) => `ينتهي هذا الإعلان خلال ${days} يوم`,
     book:              'حجز',
@@ -164,7 +165,7 @@ const STRINGS = {
     clear_search:      'Share bincike',
     first_offer:       'Ba da Sabis',
     no_services_found: 'Ba a sami ayyuka ba',
-    safety_note:       '🛡ï¸ Koyaushe tabbatar da ainihin mai ba da sabis kafin biyan kuɗi.',
+    safety_note:       '\uD83D\uDEE1\uFE0F Koyaushe tabbatar da ainihin mai ba da sabis kafin biyan ku\u0257i.',
     sample_label:      'Misalin jeri — ba ainihin sabis ba',
     expiry_warning:    (days: number) => `Wannan jeri yana ƙarewa cikin kwana ${days}`,
     book:              'Yi Rijistar',
@@ -198,7 +199,7 @@ const STRINGS = {
     clear_search:      'Clear search',
     first_offer:       'Offer Service',
     no_services_found: 'No service dey',
-    safety_note:       '🛡ï¸ Always check person identity before you pay. Bambeh no go ask you pay outside app.',
+    safety_note:       '\uD83D\uDEE1\uFE0F Always check person identity before you pay. Bambeh no go ask you pay outside app.',
     sample_label:      'Sample listing — na demo, no be real service',
     expiry_warning:    (days: number) => `This listing go expire for ${days} day`,
     book:              'Book Am',
@@ -232,7 +233,7 @@ const STRINGS = {
     clear_search:      'Yiɗ hala',
     first_offer:       'Hollu ɓeyngal',
     no_services_found: 'Alaa ɓeyngal',
-    safety_note:       '🛡ï¸ Tiiɗnu ɗemngal neɗɗo nde hade.',
+    safety_note:       '\uD83D\uDEE1\uFE0F Tii\u0257nu \u0257emngal ne\u0257\u0257o nde hade.',
     sample_label:      'Misal — alaa ɓeyngal goɗɗungel',
     expiry_warning:    (days: number) => `Ɓeyngal ngel wuura ${days} ñalawma`,
     book:              'Jaɓɓu',
