@@ -1,3 +1,4 @@
+// FIX332 - inline dictionary keys renamed pcm->pidgin and ful->ff
 /**
  * src/pages/JobsCategory.tsx
  * Bambeh Marketplace — Jobs Category Page
@@ -36,27 +37,27 @@ const CATEGORY_MAP: Record<string, { label: string; dbValue: string; emoji: stri
 
 // ─── i18n ──────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
-  jobs:         { en:"Jobs", fr:"Emplois", ha:"Ayyuka", ar:"وظائÙ", pcm:"Work", ful:"Golle" },
-  opportunity:  { en:"opportunity", fr:"opportunité", ha:"dama", ar:"Ùرصة", pcm:"opportunity", ful:"sago" },
-  opportunities:{ en:"opportunities", fr:"opportunités", ha:"damar aiki", ar:"Ùرص", pcm:"opportunities", ful:"sagoji" },
-  loading:      { en:"Loading", fr:"Chargement", ha:"Ana lodi", ar:"جارÙ التحميل", pcm:"Dey load", ful:"Nannginii" },
-  jobs_lc:      { en:"jobs…", fr:"offres…", ha:"ayyuka…", ar:"وظائÙ…", pcm:"work…", ful:"golle…" },
-  error:        { en:"Could not load jobs.", fr:"Impossible de charger les offres.", ha:"Ba a iya lodi", ar:"تعذر تحميل", pcm:"E no fit load", ful:"Golle naataani" },
-  tryAgain:     { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pcm:"Try again", ful:"Eɗɗoo yeeso" },
-  noJobs:       { en:"No jobs posted yet", fr:"Aucune offre publiée", ha:"Babu ayyuka", ar:"لا توجد وظائÙ بعد", pcm:"No work yet", ful:"Alaa golle" },
-  checkBack:    { en:"Check back soon or post one yourself!", fr:"Revenez bientôt ou publiez une offre!", ha:"Dawo cikin wuri ko wallafa aiki!", ar:"عد قريبًا أو انشر وظيÙة!", pcm:"Come back later or post work!", ful:"Ardi tuma ɓee ko fewtu!" },
-  allJobs:      { en:"All Jobs", fr:"Tous les emplois", ha:"Duk Ayyuka", ar:"جميع الوظائÙ", pcm:"All Work", ful:"Golle fof" },
-  postJob:      { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيÙة", pcm:"Post Work", ful:"Fewtu Golle" },
-  viewApply:    { en:"View & Apply →", fr:"Voir & Postuler →", ha:"Duba & Nema →", ar:"عرض وتقديم →", pcm:"See & Apply →", ful:"Yii & Dañ →" },
-  loadMore:     { en:"Load More Jobs", fr:"Charger plus d'offres", ha:"Ƙara ayyuka", ar:"تحميل المزيد", pcm:"Load more work", ful:"Nanngin Golleli" },
-  loading2:     { en:"Loading…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
-  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بÙعد", pcm:"Online", ful:"E Ɓanndu" },
-  negotiable:   { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pcm:"E fit negotiate", ful:"Naggi" },
-  salaryNotSpec:{ en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
-  closed:       { en:"⛔ Closed — Deadline passed", fr:"⛔ Fermé — Délai dépassé", ha:"⛔ An rufe — lokaci ya ƙare", ar:"⛔ مغلق — انتهى الموعد", pcm:"⛔ E don close", ful:"⛔ Uddii" },
-  closingSoon:  { en:"⏰ Closing soon", fr:"⏰ Ferme bientôt", ha:"⏰ Zai ƙare", ar:"⏰ ينتهي قريبًا", pcm:"⏰ E go close", ful:"⏰ Ɓennoo seeɗa" },
-  today:        { en:"Today!", fr:"Aujourd'hui!", ha:"Yau!", ar:"اليوم!", pcm:"Today!", ful:"Hannde!" },
-  dLeft:        { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام", pcm:"days left", ful:"balɗe" },
+  jobs:         { en:"Jobs", fr:"Emplois", ha:"Ayyuka", ar:"وظائÙ", pidgin:"Work", ff:"Golle" },
+  opportunity:  { en:"opportunity", fr:"opportunité", ha:"dama", ar:"Ùرصة", pidgin:"opportunity", ff:"sago" },
+  opportunities:{ en:"opportunities", fr:"opportunités", ha:"damar aiki", ar:"Ùرص", pidgin:"opportunities", ff:"sagoji" },
+  loading:      { en:"Loading", fr:"Chargement", ha:"Ana lodi", ar:"جارÙ التحميل", pidgin:"Dey load", ff:"Nannginii" },
+  jobs_lc:      { en:"jobs…", fr:"offres…", ha:"ayyuka…", ar:"وظائÙ…", pidgin:"work…", ff:"golle…" },
+  error:        { en:"Could not load jobs.", fr:"Impossible de charger les offres.", ha:"Ba a iya lodi", ar:"تعذر تحميل", pidgin:"E no fit load", ff:"Golle naataani" },
+  tryAgain:     { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pidgin:"Try again", ff:"Eɗɗoo yeeso" },
+  noJobs:       { en:"No jobs posted yet", fr:"Aucune offre publiée", ha:"Babu ayyuka", ar:"لا توجد وظائÙ بعد", pidgin:"No work yet", ff:"Alaa golle" },
+  checkBack:    { en:"Check back soon or post one yourself!", fr:"Revenez bientôt ou publiez une offre!", ha:"Dawo cikin wuri ko wallafa aiki!", ar:"عد قريبًا أو انشر وظيÙة!", pidgin:"Come back later or post work!", ff:"Ardi tuma ɓee ko fewtu!" },
+  allJobs:      { en:"All Jobs", fr:"Tous les emplois", ha:"Duk Ayyuka", ar:"جميع الوظائÙ", pidgin:"All Work", ff:"Golle fof" },
+  postJob:      { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيÙة", pidgin:"Post Work", ff:"Fewtu Golle" },
+  viewApply:    { en:"View & Apply →", fr:"Voir & Postuler →", ha:"Duba & Nema →", ar:"عرض وتقديم →", pidgin:"See & Apply →", ff:"Yii & Dañ →" },
+  loadMore:     { en:"Load More Jobs", fr:"Charger plus d'offres", ha:"Ƙara ayyuka", ar:"تحميل المزيد", pidgin:"Load more work", ff:"Nanngin Golleli" },
+  loading2:     { en:"Loading…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pidgin:"Dey load…", ff:"Nannginii…" },
+  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بÙعد", pidgin:"Online", ff:"E Ɓanndu" },
+  negotiable:   { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pidgin:"E fit negotiate", ff:"Naggi" },
+  salaryNotSpec:{ en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pidgin:"No salary talk", ff:"Njobdi alaa" },
+  closed:       { en:"⛔ Closed — Deadline passed", fr:"⛔ Fermé — Délai dépassé", ha:"⛔ An rufe — lokaci ya ƙare", ar:"⛔ مغلق — انتهى الموعد", pidgin:"⛔ E don close", ff:"⛔ Uddii" },
+  closingSoon:  { en:"⏰ Closing soon", fr:"⏰ Ferme bientôt", ha:"⏰ Zai ƙare", ar:"⏰ ينتهي قريبًا", pidgin:"⏰ E go close", ff:"⏰ Ɓennoo seeɗa" },
+  today:        { en:"Today!", fr:"Aujourd'hui!", ha:"Yau!", ar:"اليوم!", pidgin:"Today!", ff:"Hannde!" },
+  dLeft:        { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام", pidgin:"days left", ff:"balɗe" },
 };
 
 function s(key: string, lang: string): string {
@@ -86,12 +87,12 @@ function timeAgo(dateStr: string, lang: string): string {
 }
 
 const JOB_TYPE_LABELS: Record<string, Record<string, string>> = {
-  full_time:  { en:"Full-time",  fr:"Temps plein",   ar:"دوام كامل",  ha:"Cikakken lokaci", pcm:"Full time",  ful:"Waktu fof" },
-  part_time:  { en:"Part-time",  fr:"Temps partiel", ar:"دوام جزئي",  ha:"Rabin lokaci",    pcm:"Half time",  ful:"Waktu didi" },
-  contract:   { en:"Contract",   fr:"Contrat",       ar:"عقد",         ha:"Kwantiragi",      pcm:"Contract",   ful:"Kontoraaji" },
-  internship: { en:"Internship", fr:"Stage",         ar:"تدريب",       ha:"Horarwa",         pcm:"Training",   ful:"Jannginagol" },
-  freelance:  { en:"Freelance",  fr:"Freelance",     ar:"حر",          ha:"Yanci",           pcm:"Freelance",  ful:"Freelance" },
-  temporary:  { en:"Temporary",  fr:"Temporaire",    ar:"مؤقت",        ha:"Wucin gadi",      pcm:"Small time", ful:"Seeɗa" },
+  full_time:  { en:"Full-time",  fr:"Temps plein",   ar:"دوام كامل",  ha:"Cikakken lokaci", pidgin:"Full time",  ff:"Waktu fof" },
+  part_time:  { en:"Part-time",  fr:"Temps partiel", ar:"دوام جزئي",  ha:"Rabin lokaci",    pidgin:"Half time",  ff:"Waktu didi" },
+  contract:   { en:"Contract",   fr:"Contrat",       ar:"عقد",         ha:"Kwantiragi",      pidgin:"Contract",   ff:"Kontoraaji" },
+  internship: { en:"Internship", fr:"Stage",         ar:"تدريب",       ha:"Horarwa",         pidgin:"Training",   ff:"Jannginagol" },
+  freelance:  { en:"Freelance",  fr:"Freelance",     ar:"حر",          ha:"Yanci",           pidgin:"Freelance",  ff:"Freelance" },
+  temporary:  { en:"Temporary",  fr:"Temporaire",    ar:"مؤقت",        ha:"Wucin gadi",      pidgin:"Small time", ff:"Seeɗa" },
 };
 
 // ─── Main Component ─────────────────────────────────────────────────────────────

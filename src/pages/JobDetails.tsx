@@ -1,3 +1,4 @@
+// FIX332 - inline dictionary keys renamed pcm->pidgin and ful->ff
 // BAMBEH_DEPLOY_TOKEN__JOBDETAILS_FIX224_START
 /**
  * src/pages/JobDetails.tsx
@@ -25,41 +26,41 @@ import JobApplyModal from "@/components/Jobs/JobApplyModal";
 
 // ─── i18n ──────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
-  seeApplicants:    { en:"See who applied", fr:"Voir les candidats", ha:"Duba masu nema", ar:"عرض المتقدمين", pcm:"See who apply", ful:"Yiy jokkooɓe" },
-  yourJob:          { en:"This is your job posting", fr:"Ceci est votre offre", ha:"Wannan aikin naka ne", ar:"هذه وظيفتك", pcm:"Na your work be this", ful:"Ndee golle ko maa" },
+  seeApplicants:    { en:"See who applied", fr:"Voir les candidats", ha:"Duba masu nema", ar:"عرض المتقدمين", pidgin:"See who apply", ff:"Yiy jokkooɓe" },
+  yourJob:          { en:"This is your job posting", fr:"Ceci est votre offre", ha:"Wannan aikin naka ne", ar:"هذه وظيفتك", pidgin:"Na your work be this", ff:"Ndee golle ko maa" },
   // FIX220 - tell the job seeker what to prepare BEFORE they open the form.
-  prepTitle:        { en:"Prepare your documents before you apply", fr:"Preparez vos documents avant de postuler", ha:"Ka shirya takardunka kafin ka nema", ar:"جهز مستنداتك قبل التقديم", pcm:"Get your papers ready before you apply", ful:"Hebilo kaayitaaji maa ado a jokkude" },
-  prepBody:         { en:"This application may ask you to upload a CV and legal documents proving you are allowed to live and work in the country where this job is. Get them ready before you start so you can finish in one sitting.", fr:"Cette candidature peut vous demander un CV et des documents legaux prouvant que vous pouvez vivre et travailler dans le pays ou se trouve cet emploi. Preparez-les a l avance pour tout terminer en une seule fois.", ha:"Wannan neman aiki na iya bukatar ka aika CV da takardun doka da ke tabbatar da cewa kana da izinin zama da yin aiki a kasar da aikin yake. Ka shirya su tun da wuri don ka kammala lokaci daya.", ar:"قد يطلب منك هذا الطلب رفع سيرة ذاتية ومستندات قانونية تثبت حقك في الإقامة والعمل في البلد الذي توجد فيه الوظيفة. جهزها مسبقا حتى تتمكن من إكمال الطلب دفعة واحدة.", pcm:"This application fit ask you to upload your CV and the legal papers wey show say you fit stay and work for the country where the work dey. Arrange dem before you start so you go finish one time.", ful:"Ndee jokkondiral ina waawi naamnaade ma neldude CV e kaayitaaji laawdi di kollirta a jojji hodde e gollude e leydi ndi golle ngoo woni. Hebilo di ado a fuddaade ngam timmingol laawol gootol." },
-  back:             { en:"Back", fr:"Retour", ha:"Koma", ar:"رجوع", pcm:"Go back", ful:"Yahru" },
-  notFound:         { en:"Job not found", fr:"Offre introuvable", ha:"Ba a sami aiki ba", ar:"الوظيفة غير موجودة", pcm:"Work no dey", ful:"Golle heɓaani" },
-  loading:          { en:"Loading job details…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارٍ التحميل…", pcm:"Dey load…", ful:"Nannginii…" },
-  description:      { en:"Job Description", fr:"Description du poste", ha:"Bayanin Aiki", ar:"وصف الوظيفة", pcm:"Work description", ful:"Jaŋtugol Golle" },
-  requirements:     { en:"Requirements & Skills", fr:"Exigences & Compétences", ha:"Buƙatun & Ƙwarewa", ar:"المتطلبات والمهارات", pcm:"Wetin dem need", ful:"Ko heɓetee" },
-  benefits:         { en:"Benefits & Perks", fr:"Avantages", ha:"Fa'idoji", ar:"المزايا", pcm:"Bonus things", ful:"Nafaaji" },
-  applyNow:         { en:"Apply Now", fr:"Postuler maintenant", ha:"Nema yanzu", ar:"تقدم الآن", pcm:"Apply Now", ful:"Dañ Golle" },
-  applyWhatsApp:    { en:"Apply via WhatsApp", fr:"Postuler via WhatsApp", ha:"Nema ta WhatsApp", ar:"التقديم عبر واتساب", pcm:"Apply for WhatsApp", ful:"Jokkude e WhatsApp" },
-  applyCall:        { en:"Call to Apply", fr:"Appeler pour postuler", ha:"Kira don nema", ar:"اتصل للتقديم", pcm:"Call make apply", ful:"Noddu ngam Dañde" },
-  applyEmail:       { en:"Apply via Email", fr:"Postuler par email", ha:"Nema ta email", ar:"التقديم بالبريد الإلكتروني", pcm:"Send email apply", ful:"Imeel ngam Dañde" },
-  applied:          { en:"Application Sent ✓", fr:"Candidature envoyée ✓", ha:"An aika nema ✓", ar:"تم إرسال الطلب ✓", pcm:"You don apply ✓", ful:"Jokkunde nootii ✓" },
-  applying:         { en:"Sending application…", fr:"Envoi en cours…", ha:"Ana aika…", ar:"جارٍ الإرسال…", pcm:"Dey send am…", ful:"Nannginii…" },
-  alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez déjà postulé", ha:"Kun riga kun nema", ar:"لقد تقدمت بالفعل", pcm:"You don apply before", ful:"Ko njimonaa yoodi" },
-  expired:          { en:"This job has expired", fr:"Cette offre a expiré", ha:"Aiki ya ƙare", ar:"انتهت صلاحية الوظيفة", pcm:"Work don finish", ful:"Golle ɓenni" },
-  closingSoon:      { en:"Closing soon", fr:"Ferme bientôt", ha:"Zai ƙare da wuri", ar:"ينتهي قريبًا", pcm:"E go close soon", ful:"Ɓennoo seeɗa" },
-  today:            { en:"Today", fr:"Aujourd'hui", ha:"Yau", ar:"اليوم", pcm:"Today", ful:"Hannde" },
-  dLeft:            { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام متبقية", pcm:"days left", ful:"balɗe" },
-  deadline:         { en:"Application deadline", fr:"Date limite", ha:"Ƙarshen lokaci", ar:"آخر موعد", pcm:"Last date", ful:"Balɗe ɓennoo" },
-  salary:           { en:"Monthly Salary", fr:"Salaire mensuel", ha:"Albashin wata", ar:"الراتب الشهري", pcm:"Month salary", ful:"Njobdi koorka" },
-  negotiable:       { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتفاوض", pcm:"E fit negotiate", ful:"Naggi" },
-  salaryNotSpec:    { en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pcm:"No salary talk", ful:"Njobdi alaa" },
-  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بُعد", pcm:"Online work", ful:"E Ɓanndu" },
-  candidates:       { en:"applicants", fr:"candidats", ha:"masu nema", ar:"متقدم", pcm:"people apply", ful:"jokkooɓe" },
-  views:            { en:"views", fr:"vues", ha:"ra'ayoyi", ar:"مشاهدة", pcm:"people see am", ful:"yiylaama" },
-  published:        { en:"Published", fr:"Publié le", ha:"An buga", ar:"نُشر في", pcm:"Dem post am", ful:"Fewtiima" },
-  tryAgain:         { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pcm:"Try again", ful:"Eɗɗoo yeeso" },
-  copyLink:         { en:"Link copied!", fr:"Lien copié!", ha:"An kwafi hanyar!", ar:"تم نسخ الرابط!", pcm:"Link don copy!", ful:"Ñolndi jaɓɓaama!" },
-  saved:            { en:"Saved", fr:"Sauvegardé", ha:"An adana", ar:"محفوظ", pcm:"You don save am", ful:"Adanaama" },
-  unsaved:          { en:"Bookmark", fr:"Sauvegarder", ha:"Adana", ar:"حفظ", pcm:"Save am", ful:"Adana" },
-  loginToApply:     { en:"Log in to apply", fr:"Connectez-vous pour postuler", ha:"Shiga don nema", ar:"سجّل دخولك للتقديم", pcm:"Login first apply", ful:"Naatir ngam dañde" },
+  prepTitle:        { en:"Prepare your documents before you apply", fr:"Preparez vos documents avant de postuler", ha:"Ka shirya takardunka kafin ka nema", ar:"جهز مستنداتك قبل التقديم", pidgin:"Get your papers ready before you apply", ff:"Hebilo kaayitaaji maa ado a jokkude" },
+  prepBody:         { en:"This application may ask you to upload a CV and legal documents proving you are allowed to live and work in the country where this job is. Get them ready before you start so you can finish in one sitting.", fr:"Cette candidature peut vous demander un CV et des documents legaux prouvant que vous pouvez vivre et travailler dans le pays ou se trouve cet emploi. Preparez-les a l avance pour tout terminer en une seule fois.", ha:"Wannan neman aiki na iya bukatar ka aika CV da takardun doka da ke tabbatar da cewa kana da izinin zama da yin aiki a kasar da aikin yake. Ka shirya su tun da wuri don ka kammala lokaci daya.", ar:"قد يطلب منك هذا الطلب رفع سيرة ذاتية ومستندات قانونية تثبت حقك في الإقامة والعمل في البلد الذي توجد فيه الوظيفة. جهزها مسبقا حتى تتمكن من إكمال الطلب دفعة واحدة.", pidgin:"This application fit ask you to upload your CV and the legal papers wey show say you fit stay and work for the country where the work dey. Arrange dem before you start so you go finish one time.", ff:"Ndee jokkondiral ina waawi naamnaade ma neldude CV e kaayitaaji laawdi di kollirta a jojji hodde e gollude e leydi ndi golle ngoo woni. Hebilo di ado a fuddaade ngam timmingol laawol gootol." },
+  back:             { en:"Back", fr:"Retour", ha:"Koma", ar:"رجوع", pidgin:"Go back", ff:"Yahru" },
+  notFound:         { en:"Job not found", fr:"Offre introuvable", ha:"Ba a sami aiki ba", ar:"الوظيفة غير موجودة", pidgin:"Work no dey", ff:"Golle heɓaani" },
+  loading:          { en:"Loading job details…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارٍ التحميل…", pidgin:"Dey load…", ff:"Nannginii…" },
+  description:      { en:"Job Description", fr:"Description du poste", ha:"Bayanin Aiki", ar:"وصف الوظيفة", pidgin:"Work description", ff:"Jaŋtugol Golle" },
+  requirements:     { en:"Requirements & Skills", fr:"Exigences & Compétences", ha:"Buƙatun & Ƙwarewa", ar:"المتطلبات والمهارات", pidgin:"Wetin dem need", ff:"Ko heɓetee" },
+  benefits:         { en:"Benefits & Perks", fr:"Avantages", ha:"Fa'idoji", ar:"المزايا", pidgin:"Bonus things", ff:"Nafaaji" },
+  applyNow:         { en:"Apply Now", fr:"Postuler maintenant", ha:"Nema yanzu", ar:"تقدم الآن", pidgin:"Apply Now", ff:"Dañ Golle" },
+  applyWhatsApp:    { en:"Apply via WhatsApp", fr:"Postuler via WhatsApp", ha:"Nema ta WhatsApp", ar:"التقديم عبر واتساب", pidgin:"Apply for WhatsApp", ff:"Jokkude e WhatsApp" },
+  applyCall:        { en:"Call to Apply", fr:"Appeler pour postuler", ha:"Kira don nema", ar:"اتصل للتقديم", pidgin:"Call make apply", ff:"Noddu ngam Dañde" },
+  applyEmail:       { en:"Apply via Email", fr:"Postuler par email", ha:"Nema ta email", ar:"التقديم بالبريد الإلكتروني", pidgin:"Send email apply", ff:"Imeel ngam Dañde" },
+  applied:          { en:"Application Sent ✓", fr:"Candidature envoyée ✓", ha:"An aika nema ✓", ar:"تم إرسال الطلب ✓", pidgin:"You don apply ✓", ff:"Jokkunde nootii ✓" },
+  applying:         { en:"Sending application…", fr:"Envoi en cours…", ha:"Ana aika…", ar:"جارٍ الإرسال…", pidgin:"Dey send am…", ff:"Nannginii…" },
+  alreadyApplied:   { en:"You already applied for this job", fr:"Vous avez déjà postulé", ha:"Kun riga kun nema", ar:"لقد تقدمت بالفعل", pidgin:"You don apply before", ff:"Ko njimonaa yoodi" },
+  expired:          { en:"This job has expired", fr:"Cette offre a expiré", ha:"Aiki ya ƙare", ar:"انتهت صلاحية الوظيفة", pidgin:"Work don finish", ff:"Golle ɓenni" },
+  closingSoon:      { en:"Closing soon", fr:"Ferme bientôt", ha:"Zai ƙare da wuri", ar:"ينتهي قريبًا", pidgin:"E go close soon", ff:"Ɓennoo seeɗa" },
+  today:            { en:"Today", fr:"Aujourd'hui", ha:"Yau", ar:"اليوم", pidgin:"Today", ff:"Hannde" },
+  dLeft:            { en:"d left", fr:"j restants", ha:"kwanaki", ar:"أيام متبقية", pidgin:"days left", ff:"balɗe" },
+  deadline:         { en:"Application deadline", fr:"Date limite", ha:"Ƙarshen lokaci", ar:"آخر موعد", pidgin:"Last date", ff:"Balɗe ɓennoo" },
+  salary:           { en:"Monthly Salary", fr:"Salaire mensuel", ha:"Albashin wata", ar:"الراتب الشهري", pidgin:"Month salary", ff:"Njobdi koorka" },
+  negotiable:       { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتفاوض", pidgin:"E fit negotiate", ff:"Naggi" },
+  salaryNotSpec:    { en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pidgin:"No salary talk", ff:"Njobdi alaa" },
+  remote:           { en:"Remote work", fr:"Télétravail", ha:"Aiki daga nesa", ar:"عمل عن بُعد", pidgin:"Online work", ff:"E Ɓanndu" },
+  candidates:       { en:"applicants", fr:"candidats", ha:"masu nema", ar:"متقدم", pidgin:"people apply", ff:"jokkooɓe" },
+  views:            { en:"views", fr:"vues", ha:"ra'ayoyi", ar:"مشاهدة", pidgin:"people see am", ff:"yiylaama" },
+  published:        { en:"Published", fr:"Publié le", ha:"An buga", ar:"نُشر في", pidgin:"Dem post am", ff:"Fewtiima" },
+  tryAgain:         { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pidgin:"Try again", ff:"Eɗɗoo yeeso" },
+  copyLink:         { en:"Link copied!", fr:"Lien copié!", ha:"An kwafi hanyar!", ar:"تم نسخ الرابط!", pidgin:"Link don copy!", ff:"Ñolndi jaɓɓaama!" },
+  saved:            { en:"Saved", fr:"Sauvegardé", ha:"An adana", ar:"محفوظ", pidgin:"You don save am", ff:"Adanaama" },
+  unsaved:          { en:"Bookmark", fr:"Sauvegarder", ha:"Adana", ar:"حفظ", pidgin:"Save am", ff:"Adana" },
+  loginToApply:     { en:"Log in to apply", fr:"Connectez-vous pour postuler", ha:"Shiga don nema", ar:"سجّل دخولك للتقديم", pidgin:"Login first apply", ff:"Naatir ngam dañde" },
 };
 
 function s(key: string, lang: string): string {
@@ -68,20 +69,20 @@ function s(key: string, lang: string): string {
 
 // ─── Label maps ────────────────────────────────────────────────────────────────
 const JOB_TYPE_LABELS: Record<string, Record<string, string>> = {
-  full_time:  { en:"Full-time",  fr:"Temps plein",   ha:"Cikakken lokaci", ar:"دوام كامل",  pcm:"Full time",  ful:"Waktu fof" },
-  part_time:  { en:"Part-time",  fr:"Temps partiel", ha:"Rabin lokaci",    ar:"دوام جزئي",  pcm:"Half time",  ful:"Waktu didi" },
-  contract:   { en:"Contract",   fr:"Contrat",       ha:"Kwantiragi",      ar:"عقد",         pcm:"Contract",   ful:"Kontoraaji" },
-  internship: { en:"Internship", fr:"Stage",         ha:"Horarwa",         ar:"تدريب",       pcm:"Training",   ful:"Jannginagol" },
-  freelance:  { en:"Freelance",  fr:"Freelance",     ha:"Yanci",           ar:"حر",          pcm:"Freelance",  ful:"Freelance" },
-  temporary:  { en:"Temporary",  fr:"Temporaire",    ha:"Wucin gadi",      ar:"مؤقت",        pcm:"Small time", ful:"Seeɗa" },
+  full_time:  { en:"Full-time",  fr:"Temps plein",   ha:"Cikakken lokaci", ar:"دوام كامل",  pidgin:"Full time",  ff:"Waktu fof" },
+  part_time:  { en:"Part-time",  fr:"Temps partiel", ha:"Rabin lokaci",    ar:"دوام جزئي",  pidgin:"Half time",  ff:"Waktu didi" },
+  contract:   { en:"Contract",   fr:"Contrat",       ha:"Kwantiragi",      ar:"عقد",         pidgin:"Contract",   ff:"Kontoraaji" },
+  internship: { en:"Internship", fr:"Stage",         ha:"Horarwa",         ar:"تدريب",       pidgin:"Training",   ff:"Jannginagol" },
+  freelance:  { en:"Freelance",  fr:"Freelance",     ha:"Yanci",           ar:"حر",          pidgin:"Freelance",  ff:"Freelance" },
+  temporary:  { en:"Temporary",  fr:"Temporaire",    ha:"Wucin gadi",      ar:"مؤقت",        pidgin:"Small time", ff:"Seeɗa" },
 };
 
 const EXP_LABELS: Record<string, Record<string, string>> = {
-  no_experience: { en:"No experience",       fr:"Sans expérience",     ha:"Ba kwarewa",    ar:"بدون خبرة",    pcm:"No experience", ful:"Alaa karallaagal" },
-  entry:         { en:"Entry (0–2 yrs)",      fr:"Débutant (0–2 ans)",  ha:"Farawa (0–2)",  ar:"مبتدئ (0–2)",  pcm:"Starter (0-2)", ful:"Sappoowo (0-2)" },
-  mid:           { en:"Mid-level (2–5 yrs)",  fr:"Intermédiaire (2–5)", ha:"Tsaka-tsaki",   ar:"متوسط (2–5)",  pcm:"Middle (2-5)",  ful:"Seeɗum (2-5)" },
-  senior:        { en:"Senior (5+ yrs)",      fr:"Senior (5+ ans)",     ha:"Babba (5+)",    ar:"خبير (5+)",    pcm:"Big man (5+)",  ful:"Mawɗo (5+)" },
-  executive:     { en:"Executive",            fr:"Cadre dirigeant",     ha:"Manajan",       ar:"مسؤول تنفيذي", pcm:"Big boss",      ful:"Jom Laamu" },
+  no_experience: { en:"No experience",       fr:"Sans expérience",     ha:"Ba kwarewa",    ar:"بدون خبرة",    pidgin:"No experience", ff:"Alaa karallaagal" },
+  entry:         { en:"Entry (0–2 yrs)",      fr:"Débutant (0–2 ans)",  ha:"Farawa (0–2)",  ar:"مبتدئ (0–2)",  pidgin:"Starter (0-2)", ff:"Sappoowo (0-2)" },
+  mid:           { en:"Mid-level (2–5 yrs)",  fr:"Intermédiaire (2–5)", ha:"Tsaka-tsaki",   ar:"متوسط (2–5)",  pidgin:"Middle (2-5)",  ff:"Seeɗum (2-5)" },
+  senior:        { en:"Senior (5+ yrs)",      fr:"Senior (5+ ans)",     ha:"Babba (5+)",    ar:"خبير (5+)",    pidgin:"Big man (5+)",  ff:"Mawɗo (5+)" },
+  executive:     { en:"Executive",            fr:"Cadre dirigeant",     ha:"Manajan",       ar:"مسؤول تنفيذي", pidgin:"Big boss",      ff:"Jom Laamu" },
 };
 
 function jobTypeLabel(type: string, lang: string): string {
