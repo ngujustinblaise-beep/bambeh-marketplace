@@ -1,3 +1,4 @@
+// FIX333 - language-first dictionary blocks renamed pcm->pidgin and ful->ff
 /**
  * src/pages/SellVehicle.tsx — Bambeh Marketplace
  * Full vehicle listing form: multilingual, Supabase storage image upload,
@@ -234,7 +235,7 @@ const I18N: Record<string, Record<string, string>> = {
     uploadingImages: "جارÙ رÙع الصور…",
     imageError: "Ùشل رÙع صورة واحدة أو أكثر.",
   },
-  pcm: {
+  pidgin: {
     pageTitle: "Sell Your Motor",
     pageSubtitle: "Reach plenty buyers all over Cameroon",
     back: "Motors",

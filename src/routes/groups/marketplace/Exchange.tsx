@@ -1,3 +1,4 @@
+// FIX333 - language-first dictionary blocks renamed pcm->pidgin and ful->ff
 /**
  * src/pages/Exchange.tsx — Bambeh Marketplace
  *
@@ -115,7 +116,7 @@ const STRINGS = {
     freeLabel: 'مجانًا · 30 يومًا',
     open: 'مÙتوح للعروض',
   },
-  pcm: {
+  pidgin: {
     title: 'Exchange',
     postItem: 'Post Am',
     refresh: 'Refresh',

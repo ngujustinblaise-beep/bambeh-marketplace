@@ -1,3 +1,4 @@
+// FIX333 - language-first dictionary blocks renamed pcm->pidgin and ful->ff
 // BAMBEH_DEPLOY_TOKEN__EXCHANGEITEM_FIX83_CLEAN
 /**
  * src/pages/ExchangeItem.tsx — Bambeh Marketplace
@@ -156,7 +157,7 @@ const STRINGS = {
     expiringSoon: 'الإعلان ينتهي قريبًا —',
     openToOffers: 'مÙتوح للعروض',
   },
-  pcm: {
+  pidgin: {
     backToExchange: 'Go Back Exchange',
     itemUnavailable: 'Item no dey',
     noLongerExists: 'This item don disappear.',
