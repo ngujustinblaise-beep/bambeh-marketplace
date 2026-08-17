@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX336_CLEAN
 // BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX82_CLEAN
 /**
  * src/pages/MarketplaceItemDetails.tsx — Bambeh Marketplace
@@ -37,10 +38,12 @@ type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 const TR: Record<string, Record<Lang, string>> = {
   loading:         { en: "Loading listing…",        fr: "Chargement…",                ha: "Ana lodawa…",            ar: "جار التحميل…",                pcm: "Loading…",               ff: "Naatirde…" },
   not_found:       { en: "Listing not found",       fr: "Annonce introuvable",        ha: "Ba a samu ba",           ar: "الإعلان غير موجود",            pcm: "Listing no dey",          ff: "Alaa" },
+  expired_title:   { en: "This listing has expired",  fr: "Cette annonce a expiré",   ha: "Wannan talla ta ƙare",   ar: "انتهت صلاحية هذا الإعلان",  pcm: "Dis listing don expire",  ff: "Jeeyngal ngal timmii" },  // FIX336
+  expired_msg:     { en: "The seller's posting period is over. Ask them to renew it, or browse other listings.", fr: "La période de publication du vendeur est terminée. Demandez-lui de la renouveler ou parcourez d'autres annonces.", ha: "Lokacin tallar mai siyarwa ya ƙare. Ka nemi ya sabunta ta, ko ka duba wasu tallace-tallace.", ar: "انتهت فترة نشر البائع. اطلب منه تجديدها أو تصفح إعلانات أخرى.", pcm: "Di seller time don finish. Tell am make e renew am, or check other listings.", ff: "Sahaa jeeyngal yoɓoowo timmii. Naamno mo yo o hesɗitin ngal, walla ndaaru goɗɗe." },  // FIX336
   removed:         { en: "This item may have been sold or removed.", fr: "Cet article a peut-être été vendu ou supprimé.", ha: "An sayar ko an cire.", ar: "ربما تم بيع العنصر أو إزالته.", pcm: "Dis item don sell or remove.", ff: "Ko nde dawnii ko nde ɓennii." },
-  browse:          { en: "Browse Marketplace",      fr: "Parcourir le marché",        ha: "Duba kasuwa",            ar: "تصÙح السوق",                   pcm: "Browse Market",           ff: "Yiyto Suudu" },
-  description:     { en: "Description",             fr: "Description",                ha: "Bayanai",                ar: "الوصÙ",                        pcm: "Description",             ff: "Pijirde" },
-  no_description:  { en: "No description provided.", fr: "Aucune description.",       ha: "Babu bayanai.",          ar: "لا يوجد وصÙ.",                 pcm: "No description.",         ff: "Alaa pijirde." },
+  browse:          { en: "Browse Marketplace",      fr: "Parcourir le marché",        ha: "Duba kasuwa",            ar: "تصفح السوق",                   pcm: "Browse Market",           ff: "Yiyto Suudu" },
+  description:     { en: "Description",             fr: "Description",                ha: "Bayanai",                ar: "الوصف",                        pcm: "Description",             ff: "Pijirde" },
+  no_description:  { en: "No description provided.", fr: "Aucune description.",       ha: "Babu bayanai.",          ar: "لا يوجد وصف.",                 pcm: "No description.",         ff: "Alaa pijirde." },
   contact_seller:  { en: "Contact Seller",          fr: "Contacter le vendeur",       ha: "Tuntuɓi mai siyarwa",   ar: "تواصل مع البائع",              pcm: "Contact Seller",          ff: "Newnin Yoɓoowo" },
   view_profile:    { en: "Rate Seller",             fr: "Noter le vendeur",         ha: "Kimanta mai siyarwa",   ar: "\u062a\u0642\u064a\u064a\u0645 \u0627\u0644\u0628\u0627\u0626\u0639", pcm: "Rate the Seller",       ff: "Hokku njeeygu" },  // FIX325
   rating_none:     { en: "No ratings yet",            fr: "Pas encore de note",       ha: "Babu kima tukuna",      ar: "\u0644\u0627 \u062a\u0648\u062c\u062f \u062a\u0642\u064a\u064a\u0645\u0627\u062a \u0628\u0639\u062f", pcm: "No rating yet",         ff: "Njeeygu alaa tawo" },  // FIX326
@@ -49,31 +52,31 @@ const TR: Record<string, Record<Lang, string>> = {
   call:            { en: "Call",                    fr: "Appeler",                    ha: "Kira",                   ar: "اتصل",                         pcm: "Call",                    ff: "Ewnu" },
   chat:            { en: "Chat",                    fr: "Chat",                       ha: "Zanta",                  ar: "دردشة",                        pcm: "Chat",                    ff: "Haɓɓu" },
   safety_tip:      { en: "Safety tip:",             fr: "Conseil de sécurité :",      ha: "Tip na aminci:",         ar: "نصيحة أمان:",                  pcm: "Safety tip:",             ff: "Miijo sehilal:" },
-  safety_msg:      { en: "Use Bambeh Escrow to protect your purchase. Never send money before inspecting the item.", fr: "Utilisez l'Escrow Bambeh pour protéger votre achat. N'envoyez jamais d'argent avant d'inspecter l'article.", ha: "Yi amfani da Bambeh Escrow. Kada ka aika kudi kafin bincika kaya.", ar: "استخدم ضمان Bambeh. لا ترسل المال قبل الÙحص.", pcm: "Use Bambeh Escrow protect your buy. No send money before you see item.", ff: "Huɓɓin Bambeh Escrow. Taa aawa mbaydi tawi anndaaki kala ngoo." },
-  meet_safely:     { en: "How to meet safely →",   fr: "Comment se rencontrer en sécurité →", ha: "Yadda za a gana lafiya →", ar: "كيÙية الاجتماع بأمان →",  pcm: "How to meet safe →",      ff: "No rewata sehilal →" },
+  safety_msg:      { en: "Use Bambeh Escrow to protect your purchase. Never send money before inspecting the item.", fr: "Utilisez l'Escrow Bambeh pour protéger votre achat. N'envoyez jamais d'argent avant d'inspecter l'article.", ha: "Yi amfani da Bambeh Escrow. Kada ka aika kudi kafin bincika kaya.", ar: "استخدم ضمان Bambeh. لا ترسل المال قبل الفحص.", pcm: "Use Bambeh Escrow protect your buy. No send money before you see item.", ff: "Huɓɓin Bambeh Escrow. Taa aawa mbaydi tawi anndaaki kala ngoo." },
+  meet_safely:     { en: "How to meet safely →",   fr: "Comment se rencontrer en sécurité →", ha: "Yadda za a gana lafiya →", ar: "كيفية الاجتماع بأمان →",  pcm: "How to meet safe →",      ff: "No rewata sehilal →" },
   report:          { en: "Report this listing",     fr: "Signaler cette annonce",     ha: "Rahoton wannan jeri",    ar: "الإبلاغ عن هذا الإعلان",       pcm: "Report dis listing",      ff: "Tiindirgo nde" },
   your_cart:       { en: "Your Cart",               fr: "Votre panier",               ha: "Katonku",                ar: "سلتك",                         pcm: "Your Cart",               ff: "Cart maa" },
   items_in_cart:   { en: "items",                   fr: "articles",                   ha: "kaya",                   ar: "عناصر",                        pcm: "items",                   ff: "kala" },
   view_cart:       { en: "View Cart",               fr: "Voir le panier",             ha: "Duba kato",              ar: "عرض السلة",                    pcm: "See Cart",                ff: "Yiy Cart" },
-  checkout:        { en: "Checkout Now",            fr: "Payer maintenant",           ha: "Biya yanzu",             ar: "الدÙع الآن",                   pcm: "Pay now",                 ff: "Haaɓtu hannde" },
-  add_to_cart:     { en: "Add to Cart",             fr: "Ajouter au panier",          ha: "Ƙara zuwa kato",         ar: "أضÙ إلى السلة",                pcm: "Add to Cart",             ff: "Ɓeydu e Cart" },
-  added:           { en: "Added!",                  fr: "Ajouté!",                    ha: "An ƙara!",               ar: "تمت الإضاÙة!",                 pcm: "Added!",                  ff: "Ɓeydaama!" },
-  in_cart:         { en: "In Cart",                 fr: "Dans le panier",             ha: "A cikin kato",           ar: "Ùي السلة",                     pcm: "In Cart",                 ff: "E nder Cart" },
+  checkout:        { en: "Checkout Now",            fr: "Payer maintenant",           ha: "Biya yanzu",             ar: "الدفع الآن",                   pcm: "Pay now",                 ff: "Haaɓtu hannde" },
+  add_to_cart:     { en: "Add to Cart",             fr: "Ajouter au panier",          ha: "Ƙara zuwa kato",         ar: "أضف إلى السلة",                pcm: "Add to Cart",             ff: "Ɓeydu e Cart" },
+  added:           { en: "Added!",                  fr: "Ajouté!",                    ha: "An ƙara!",               ar: "تمت الإضافة!",                 pcm: "Added!",                  ff: "Ɓeydaama!" },
+  in_cart:         { en: "In Cart",                 fr: "Dans le panier",             ha: "A cikin kato",           ar: "في السلة",                     pcm: "In Cart",                 ff: "E nder Cart" },
   buy_now:         { en: "Buy Now",                 fr: "Acheter",                    ha: "Saya yanzu",             ar: "اشتر الآن",                    pcm: "Buy Now",                 ff: "Soo Hannde" },
   views:           { en: "views",                   fr: "vues",                       ha: "kallon",                 ar: "مشاهدات",                      pcm: "view",                    ff: "yiytatii" },
   featured:        { en: "Featured",                fr: "En vedette",                 ha: "Babban zaɓi",            ar: "مميز",                         pcm: "Featured",                ff: "Yiɗaaɗo" },
-  negotiable:      { en: "Price negotiable",        fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتÙاوض",           pcm: "Price nego",              ff: "Njaru hewtii" },
+  negotiable:      { en: "Price negotiable",        fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتفاوض",           pcm: "Price nego",              ff: "Njaru hewtii" },
   expires_today:   { en: "This listing expires today!", fr: "Cette annonce expire aujourd'hui!", ha: "Wannan jeri na ƙarewa yau!", ar: "ينتهي هذا الإعلان اليوم!", pcm: "Dis listing expire today!", ff: "Nde ɗowroo hande!" },
   expires_in:      { en: "This listing expires in", fr: "Cette annonce expire dans",  ha: "Wannan jeri na ƙarewa a cikin", ar: "ينتهي هذا الإعلان خلال", pcm: "Dis listing expire for",  ff: "Nde ɗowroo e nder" },
   days:            { en: "day(s)",                  fr: "jour(s)",                    ha: "kwana",                  ar: "يوم/أيام",                     pcm: "day(s)",                  ff: "ñalnde(ɗe)" },
   no_image:        { en: "No image",                fr: "Pas d'image",                ha: "Babu hoto",              ar: "لا توجد صورة",                 pcm: "No picture",              ff: "Alaa foto" },
   seller:          { en: "Bambeh Seller",           fr: "Vendeur Bambeh",             ha: "Mai siyarwa Bambeh",     ar: "بائع Bambeh",                  pcm: "Bambeh Seller",           ff: "Yoɓoowo Bambeh" },
-  qty_each:        { en: "XAF each",                fr: "XAF l'unité",                ha: "XAF kowanne",            ar: "Ùرنك إÙريقي للقطعة",           pcm: "XAF each one",            ff: "XAF ɓe kala" },
+  qty_each:        { en: "XAF each",                fr: "XAF l'unité",                ha: "XAF kowanne",            ar: "فرنك إفريقي للقطعة",           pcm: "XAF each one",            ff: "XAF ɓe kala" },
   retry:           { en: "Retry",                   fr: "Réessayer",                  ha: "Sake",                   ar: "أعد المحاولة",                 pcm: "Try again",               ff: "Artu jeer" },
   go_back:         { en: "Go back",                 fr: "Retour",                     ha: "Koma baya",              ar: "الرجوع",                       pcm: "Go back",                 ff: "Yah artu" },
   shared:          { en: "Link copied!",            fr: "Lien copié!",                ha: "An kwafi hanyar!",       ar: "تم نسخ الرابط!",               pcm: "Link don copy!",          ff: "Lien nanngi!" },
   condition:       { en: "Condition",               fr: "État",                       ha: "Yanayi",                 ar: "الحالة",                       pcm: "Condition",               ff: "Damal" },
-  posted:          { en: "Posted",                  fr: "Publié",                     ha: "An buga",                ar: "نÙشر",                         pcm: "Posted",                  ff: "Yeesaama" },
+  posted:          { en: "Posted",                  fr: "Publié",                     ha: "An buga",                ar: "نُشر",                         pcm: "Posted",                  ff: "Yeesaama" },
   qty:             { en: "Qty",                     fr: "Qté",                        ha: "Adadi",                  ar: "الكمية",                       pcm: "Qty",                     ff: "Tonngol" },
 };
 
@@ -449,6 +452,36 @@ export default function MarketplaceItemDetails() {
     );
   }
 
+  // ─── FIX336: expired listing — never render an ad past its expiry ────────
+  // Compares the RAW timestamp, not daysLeft. daysLeft is Math.ceil(), so an ad
+  // that expired two hours ago comes out as -0, which is not < 0 and would slip
+  // straight through this guard. Before FIX336 the page showed a red
+  // "Expires today" banner on an ad dead for days and left it fully buyable.
+  const expiryMs = listing.expiresAt ? new Date(listing.expiresAt).getTime() : null;
+  if (expiryMs !== null && expiryMs < Date.now()) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4 px-6 pb-24" dir={isRtl ? "rtl" : "ltr"}>
+        <Clock className="w-16 h-16 text-gray-300" />
+        <h1 className="text-xl font-bold text-gray-800">{t("expired_title")}</h1>
+        <p className="text-sm text-gray-500 text-center max-w-sm">{t("expired_msg")}</p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-50 transition"
+          >
+            {t("go_back")}
+          </button>
+          <button
+            onClick={() => navigate("/marketplace")}
+            className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition"
+          >
+            {t("browse")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ─── Main render ─────────────────────────────────────────────────────────
   return (
     <div
@@ -792,3 +825,4 @@ export default function MarketplaceItemDetails() {
 }
 
 // BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX82__COMPLETE
+// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX336__COMPLETE
