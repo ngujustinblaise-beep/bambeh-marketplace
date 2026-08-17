@@ -1,16 +1,41 @@
-// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX96_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX335_CLEAN
 // src/hooks/useSubscription.ts — Supabase-only source of truth. NO localStorage.
 //
-// FIX91 (Big's request: no local-storage prototypes):
-//  - Removed the localStorage cache entirely. Supabase `subscriptions` is the
-//    ONLY source of truth. A tiny per-session, in-memory snapshot avoids
-//    refetch storms but is NEVER persisted and never grants access on its own.
-//  - Railway removed: payment calls default to the live Supabase payments
-//    function (override with VITE_BACKEND_URL if ever needed).
-//  - Real `isLoading` now. Export surface otherwise unchanged so all consumers
-//    keep compiling (getActiveSubscription / activateSubscription /
-//    clearSubscription / useSubscription / pollPaymentStatus / fetchPlans /
-//    initiateSubscription).
+// HISTORY
+//  FIX91  — localStorage cache removed. Supabase `subscriptions` is the ONLY
+//           authority. A per-session in-memory snapshot avoids refetch storms
+//           but is NEVER persisted and never grants access on its own.
+//  FIX96  — select * and judge in JS: the live table uses plan/is_active
+//           (plan_type & plan_name do not exist; naming them causes SQL 42703).
+//
+//  FIX335 — THE BOUNCE LOOP. This is the one that was costing paying users.
+//
+//    What was wrong: when CamPay returned SUCCESSFUL, pollPaymentStatus
+//    re-checked Supabase 6 times at 2s — twelve seconds — and then called
+//    onSuccess() WHETHER OR NOT the subscription row had appeared. The UI
+//    announced "Payment confirmed!", navigated into the app, the access gate
+//    re-checked, found no active subscription, and threw the user straight back
+//    to the subscription page. Marketplace -> success -> marketplace, forever.
+//    The customer had paid, and the app told them they had not.
+//
+//    What is right now:
+//      * The post-payment check runs for up to 120 SECONDS at 2s intervals and
+//        announces on every round, so every mounted gate flips the instant the
+//        webhook lands.
+//      * onSuccess() fires ONLY when a live row genuinely exists.
+//      * If that window closes with no row we call onTimeout() — the honest
+//        outcome — AND leave a background watch running for 10 more minutes, so
+//        access switches on by itself whenever the webhook finally writes. The
+//        user is never told a lie and never bounced into a loop.
+//      * Hooks re-verify on window focus and tab visibility, not only on a
+//        5-minute timer. Coming back to the tab is now enough.
+//      * New export refreshSubscription() for an "I have paid — check now"
+//        button. Purely additive: every existing export keeps its signature, so
+//        SubscriptionPlans, PaymentCheckout and CamPayWidget keep compiling.
+//
+//    Deliberately NOT done here: the client still never self-grants. If the
+//    webhook never writes the row at all, no frontend code can fix that — it is
+//    the payments Edge Function's job, and it is tracked separately.
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -20,6 +45,14 @@ const BACKEND_URL =
   "https://rbjbdxefwzvgmioearie.supabase.co/functions/v1/payments";
 
 const REFRESH_EVENT = "bambeh_sub";
+
+// FIX335 timings ---------------------------------------------------------------
+const ACTIVATION_WINDOW_MS = 120_000; // foreground wait after CamPay says SUCCESSFUL
+const ACTIVATION_STEP_MS = 2_000; // how often we re-ask Supabase in that window
+const BACKGROUND_WINDOW_MS = 600_000; // keep watching quietly for 10 more minutes
+const BACKGROUND_STEP_MS = 5_000;
+const IDLE_REFRESH_MS = 5 * 60_000; // baseline heartbeat, unchanged
+const MIN_REFETCH_MS = 15_000; // throttle for focus / visibility re-checks
 
 // -- Types (unchanged surface) -------------------------------------------------
 export interface SubscriptionStatus {
@@ -53,6 +86,7 @@ interface CachedSub {
 // -- Per-session in-memory snapshot (NOT persisted) ----------------------------
 let currentUserId: string | null = null;
 let currentSub: CachedSub | null = null;
+let lastVerifyAt = 0;
 
 function announce(): void {
   try {
@@ -62,10 +96,18 @@ function announce(): void {
   }
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((res) => setTimeout(res, ms));
+}
+
 // -- Server verification: the ONLY authority -----------------------------------
-async function verifyWithSupabase(userId: string): Promise<CachedSub | null> {
-  // FIX96: select * and judge in JS — the live table uses plan/is_active
-  // (plan_type & plan_name do not exist; naming them causes SQL 42703).
+// strict = true means "tell me the truth or tell me nothing": on a network or
+// SQL error we return null instead of the stale snapshot. The activation loop
+// uses strict mode so a cached answer can never be mistaken for a fresh grant.
+async function verifyWithSupabase(
+  userId: string,
+  strict = false,
+): Promise<CachedSub | null> {
   const { data, error } = await supabase
     .from("subscriptions")
     .select("*")
@@ -73,18 +115,25 @@ async function verifyWithSupabase(userId: string): Promise<CachedSub | null> {
     .order("expires_at", { ascending: false })
     .limit(3);
 
+  lastVerifyAt = Date.now();
+
   if (error) {
+    if (strict) return null;
     return currentUserId === userId ? currentSub : null;
   }
 
   const nowMs = Date.now();
   const row = (data || []).find((r: Record<string, unknown>) => {
-    const alive = r.is_active === true || String(r.status || "").toLowerCase() === "active";
+    const alive =
+      r.is_active === true || String(r.status || "").toLowerCase() === "active";
     return alive && r.expires_at && new Date(String(r.expires_at)).getTime() > nowMs;
   }) as Record<string, unknown> | undefined;
 
   const sub = row
-    ? { planType: String(row.plan ?? row.plan_type ?? row.plan_name ?? "active"), expiresAt: String(row.expires_at) }
+    ? {
+        planType: String(row.plan ?? row.plan_type ?? row.plan_name ?? "active"),
+        expiresAt: String(row.expires_at),
+      }
     : null;
 
   currentUserId = userId;
@@ -111,7 +160,60 @@ export function activateSubscription(_planType?: string, _expiresAt?: string): v
 export function clearSubscription(): void {
   currentUserId = null;
   currentSub = null;
+  stopActivationWatch();
   announce();
+}
+
+// -- FIX335: refreshSubscription ------------------------------------------------
+// Force one fresh check right now and tell every mounted hook about the result.
+// Wire this to an "I have paid — check now" button so a waiting customer has
+// something to press instead of reloading the app.
+export async function refreshSubscription(userId?: string | null): Promise<boolean> {
+  const uid = userId || currentUserId;
+  if (!uid) return false;
+  const sub = await verifyWithSupabase(uid, true);
+  announce();
+  return sub !== null;
+}
+
+// -- FIX335: activationWatch ----------------------------------------------------
+// A quiet background poller for the window right after a payment. It NEVER
+// grants anything: all it does is keep asking Supabase and announcing, so the
+// gates update themselves the moment the webhook writes the row.
+let activationTimer: ReturnType<typeof setInterval> | null = null;
+
+export function stopActivationWatch(): void {
+  if (activationTimer !== null) {
+    clearInterval(activationTimer);
+    activationTimer = null;
+  }
+}
+
+export function activationWatch(
+  userId: string,
+  windowMs: number = BACKGROUND_WINDOW_MS,
+  stepMs: number = BACKGROUND_STEP_MS,
+): () => void {
+  stopActivationWatch();
+  const deadline = Date.now() + windowMs;
+  let busy = false;
+
+  const tick = async (): Promise<void> => {
+    if (busy) return;
+    busy = true;
+    try {
+      const sub = await verifyWithSupabase(userId, true);
+      announce();
+      if (sub !== null || Date.now() > deadline) stopActivationWatch();
+    } catch {
+      /* transient — keep watching until the deadline */
+    } finally {
+      busy = false;
+    }
+  };
+
+  activationTimer = setInterval(() => void tick(), stepMs);
+  return stopActivationWatch;
 }
 
 // -- useSubscription HOOK -------------------------------------------------------
@@ -129,7 +231,7 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
       return;
     }
 
-    const verify = () => {
+    const verify = (): void => {
       verifyWithSupabase(userId)
         .then((next) => {
           if (mounted) {
@@ -142,16 +244,35 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
         });
     };
 
-    const onRefresh = () => verify();
+    // FIX335: an event or a tab-focus must not be able to hammer the database.
+    const verifyThrottled = (): void => {
+      if (Date.now() - lastVerifyAt < MIN_REFETCH_MS) return;
+      verify();
+    };
+
+    const onRefresh = (): void => verify(); // explicit announce: always honour it
+    const onFocus = (): void => verifyThrottled();
+    const onVisible = (): void => {
+      if (typeof document !== "undefined" && !document.hidden) verifyThrottled();
+    };
+
     window.addEventListener(REFRESH_EVENT, onRefresh);
+    window.addEventListener("focus", onFocus);
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", onVisible);
+    }
 
     if (!(currentUserId === userId && currentSub !== null)) setIsLoading(true);
     verify(); // verify immediately on mount
-    const timer = setInterval(verify, 5 * 60_000);
+    const timer = setInterval(verify, IDLE_REFRESH_MS);
 
     return () => {
       mounted = false;
       window.removeEventListener(REFRESH_EVENT, onRefresh);
+      window.removeEventListener("focus", onFocus);
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", onVisible);
+      }
       clearInterval(timer);
     };
   }, [userId]);
@@ -167,7 +288,8 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
 
 // -- pollPaymentStatus ----------------------------------------------------------
 // Polls the payments function for status. On SUCCESSFUL it does NOT self-grant:
-// the webhook activates server-side; we re-verify Supabase until the row shows.
+// the webhook activates server-side, and we wait — properly this time — for the
+// row to appear before telling the customer anything.
 export function pollPaymentStatus(
   reference: string,
   userId: string,
@@ -198,15 +320,33 @@ export function pollPaymentStatus(
 
         if (status === "SUCCESSFUL" || status === "SUCCESS") {
           stop();
-          for (let i = 0; i < 6; i++) {
-            const sub = await verifyWithSupabase(userId);
-            if (sub) break;
-            await new Promise((res) => setTimeout(res, 2000));
+
+          // FIX335: wait for the row for up to two minutes, announcing every
+          // round so any mounted gate switches on the moment it appears.
+          const deadline = Date.now() + ACTIVATION_WINDOW_MS;
+          let live: CachedSub | null = null;
+
+          while (!stopped) {
+            live = await verifyWithSupabase(userId, true);
+            announce();
+            if (live !== null) break;
+            if (Date.now() >= deadline) break;
+            await sleep(ACTIVATION_STEP_MS);
           }
-          announce();
-          onSuccess();
+
+          if (live !== null) {
+            onSuccess(); // true confirmation: the subscription really is live
+            return;
+          }
+
+          // Paid, but the webhook has not written the row yet. Do NOT claim
+          // success and do NOT navigate them into a gate that will bounce them.
+          // Keep watching quietly; access will switch on by itself.
+          activationWatch(userId);
+          onTimeout();
           return;
         }
+
         if (status === "FAILED" || status === "CANCELLED") {
           stop();
           if (onError) onError("Payment declined by your mobile money provider.");
@@ -282,4 +422,4 @@ export async function initiateSubscription(
     ussd_code: (j.ussd_code || inner.ussd_code) as string | undefined,
   };
 }
-// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX96__COMPLETE
+// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX335__COMPLETE
