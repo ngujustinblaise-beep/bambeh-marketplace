@@ -16,7 +16,6 @@
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
-import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -66,40 +65,18 @@ const TR: Record<string, Record<Lang, string>> = {
   visible_to_all: { en: "Your listing will be visible to all Bambeh users immediately.", fr: "Votre annonce sera visible par tous les utilisateurs de Bambeh immédiatement.", ha: "Jerin ku zai iya ganin duk masu amfani da Bambeh nan take.", ar: "ستكون قائمتك مرئية لجميع مستخدمي Bambeh Ùوراً.", pcm: "Your listing go show for all Bambeh users right now.", ff: "Nde maa yiyete e Bambeh ɗimmo hannde." },
   login_required: { en: "You must be logged in to post a listing.", fr: "Vous devez être connecté pour publier une annonce.", ha: "Dole ne ku shiga don buga jeri.", ar: "يجب تسجيل الدخول لنشر إعلان.", pcm: "You must login before you post.", ff: "Tiggee naatude ngam yeesude." },
   unexpected:     { en: "Unexpected error. Please try again.", fr: "Erreur inattendue. Réessayez.", ha: "Kuskure da ba a tsammani. Sake.", ar: "خطأ غير متوقع. حاول مجدداً.", pcm: "Unexpected error. Try again.", ff: "Juumre anndaande. Artu jeer." },
-  payout_phone_required: { en: "Add the phone number where you want to be paid. Without it we cannot send you your money.", fr: "Ajoutez le numéro où vous voulez être payé. Sans lui, nous ne pouvons pas vous envoyer votre argent.", ha: "Ҹara lambar wayar da kake son a biya ka. Ba tare da ita ba, ba za mu iya aiko maka da kuɗin ka ba.", ar: "أضف رقم الهاتف الذي تريد أن تُدفع عليه. بدونه لا يمكننا إرسال أموالك إليك.", pcm: "Put the phone number wey you want make we pay you. Without am, we no fit send your money.", ff: "Ɓeydu limce nokku ɗo njiɗ-ɗaa yoɓeede. Si alaa, min mbaawaa neldude ma kaalis maa." },
   draft_saved:    { en: "Draft saved!", fr: "Brouillon sauvegardé!", ha: "Daftar ya adana!", ar: "تم حÙظ المسودة!", pcm: "Draft saved!", ff: "Draft nanngi!" },
 };
 
 // ─── Language helpers — ALL PURE (no hooks) ────────────────────────────────────
-// FIX302: read the key the APP actually writes, and translate its
-// language codes into the ones this page's dictionary uses.
-// App.tsx line 79:  const LANG_KEY = "Bambeh_language"
-// This page used to read "bambeh_lang", which nothing ever writes.
-const LANG_ALIASES: Record<string, Lang> = {
-  en: "en", eng: "en", english: "en",
-  fr: "fr", fra: "fr", french: "fr", francais: "fr",
-  ar: "ar", ara: "ar", arabic: "ar",
-  ff: "ff", ful: "ff", fulfulde: "ff",
-  // the app stores "pidgin"; this page's dictionary is keyed "pcm"
-  pcm: "pcm", pidgin: "pcm", pid: "pcm",
-  ha: "ha", hausa: "ha",
-};
-
 function getLang(): Lang {
   try {
-    const raw = String(
-      localStorage.getItem("Bambeh_language") ||
-      localStorage.getItem("bambeh_lang") ||   // the old key, still honoured
-      ""
-    ).trim().toLowerCase();
-    const mapped = LANG_ALIASES[raw];
-    if (mapped) return mapped;
-  } catch { /* storage blocked */ }
-  // Fall back to ENGLISH, not to navigator.language. Reading the
-  // computer's language is exactly what froze this page in English.
-  return "en";
+    const s = localStorage.getItem("bambeh_lang") as Lang;
+    if (s && ["en","fr","ha","ar","pcm","ff"].includes(s)) return s;
+  } catch { /* ignore */ }
+  const b = navigator.language.split("-")[0] as Lang;
+  return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
 }
-
 
 function tx(key: string, lang: Lang): string {
   return TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
@@ -110,20 +87,15 @@ function useLangState(): Lang {
   const [lang, setLang] = useState<Lang>(getLang);
   useEffect(() => {
     const onLangChange = () => setLang(getLang());
-    // FIX302: this is the one the app really fires (App.tsx line 143).
-    window.addEventListener("bambeh:langchange", onLangChange);
-    // The old names are kept so nothing that used to work stops.
     window.addEventListener("langChange", onLangChange);
     window.addEventListener("storage",   onLangChange);
     return () => {
-      window.removeEventListener("bambeh:langchange", onLangChange);
       window.removeEventListener("langChange", onLangChange);
       window.removeEventListener("storage",   onLangChange);
     };
   }, []);
   return lang;
 }
-
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DraftData {
@@ -236,8 +208,7 @@ export default function PostMarketplaceItemPage() {
   async function uploadPhotos(sellerId: string): Promise<string[]> {
     if (photos.length === 0) return [];
     const urls: string[] = [];
-    for (const rawFile of photos) {
-      const file = await prepImage(rawFile);   // FIX296
+    for (const file of photos) {
       const ext  = file.name.split(".").pop() ?? "jpg";
       const path = `marketplace/${sellerId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: upErr } = await supabase.storage
@@ -301,15 +272,6 @@ export default function PostMarketplaceItemPage() {
     try {
       const { data: { user }, error: authErr } = await supabase.auth.getUser();
       if (authErr || !user) { setError(t("login_required")); return; }
-
-      // FIX319 - a seller with no payout number cannot be paid. The database
-      // trigger copies this number into profiles.payout_phone, and that is the
-      // ONLY place a payout is ever read from. Blank here means the money has
-      // nowhere to go, so publishing is blocked until it is filled in.
-      if (form.phone.replace(/\D/g, "").length < 9) {
-        setError(t("payout_phone_required"));
-        return;
-      }
 
       const imageUrls = await uploadPhotos(user.id);
       const price = parseInt(form.price.replace(/\D/g, ""), 10);
