@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX341_CLEAN
 // BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX336_CLEAN
 // BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX82_CLEAN
 /**
@@ -31,6 +32,7 @@ import {
   Eye, Clock, Zap, MessageCircle, Star,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import SellerReviews from "@/components/reviews/SellerReviews";  // FIX341
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
@@ -760,6 +762,10 @@ export default function MarketplaceItemDetails() {
           </div>
         </div>
 
+        {/* FIX341 - what buyers actually said. The words were being written to
+            `reviews` all along and displayed nowhere; this is the missing screen. */}
+        {listing.sellerId ? <SellerReviews sellerId={listing.sellerId} /> : null}
+
         {/* Safety tip */}
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
           <div className="flex items-start gap-2">
@@ -825,4 +831,4 @@ export default function MarketplaceItemDetails() {
 }
 
 // BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX82__COMPLETE
-// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX336__COMPLETE
+// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX341__COMPLETE
