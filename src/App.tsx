@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__APP_FIX167_QUIZ_SUB_CLEAN
+// BAMBEH_DEPLOY_TOKEN__APP_FIX347_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -17,6 +17,57 @@ import "@/lib/net-interceptor";
 // ─── 1. React Core ────────────────────────────────────────────────────────────
 import React, { Suspense, lazy, useEffect, createContext, useContext, useState, useCallback } from "react";
 
+
+// ─── FIX347: the "Please refresh or contact support" screen ──────────────────
+// Cause: every deploy renames every code-split chunk. A visitor whose browser
+// is still holding the PREVIOUS index.html then lazy-loads a chunk filename
+// that no longer exists on the server, Vite throws
+//     TypeError: Failed to fetch dynamically imported module
+// and the error boundary shows a scary page. It has nothing to do with their
+// connection and nothing to do with the code they were trying to reach - the
+// app is simply one deploy out of date. We deployed many times tonight, which
+// is exactly why "so many users" hit it.
+//
+// Vite fires `vite:preloadError` on window for precisely this. We reload once
+// so the browser fetches the new index.html and the correct chunk names.
+//
+// The sessionStorage flag is the important part: without it, a genuinely
+// missing chunk would reload forever. One attempt per tab, then we let the
+// error boundary show, because at that point something really is wrong.
+const BAMBEH_CHUNK_RELOAD_KEY = "bambeh_chunk_reload_attempted";
+
+if (typeof window !== "undefined") {
+  const recoverFromStaleChunk = (why: string) => {
+    try {
+      if (sessionStorage.getItem(BAMBEH_CHUNK_RELOAD_KEY)) return;  // already tried
+      sessionStorage.setItem(BAMBEH_CHUNK_RELOAD_KEY, String(Date.now()));
+    } catch {
+      /* storage blocked - reload anyway, once is better than a dead screen */
+    }
+    console.warn("[FIX347] stale build detected, reloading once:", why);
+    window.location.reload();
+  };
+
+  // Vite's own signal for a failed lazy-chunk fetch.
+  window.addEventListener("vite:preloadError", (e) => {
+    e.preventDefault();
+    recoverFromStaleChunk("vite:preloadError");
+  });
+
+  // Belt and braces: some browsers surface it only as an unhandled rejection.
+  window.addEventListener("unhandledrejection", (e) => {
+    const msg = String((e as PromiseRejectionEvent).reason?.message ?? "");
+    if (/dynamically imported module|Importing a module script failed|error loading dynamically imported/i.test(msg)) {
+      recoverFromStaleChunk(msg);
+    }
+  });
+
+  // A clean load means the build we are running is current; clear the flag so
+  // the next deploy gets its own single retry.
+  window.addEventListener("load", () => {
+    try { sessionStorage.removeItem(BAMBEH_CHUNK_RELOAD_KEY); } catch { /* ignore */ }
+  });
+}
 // ─── 1b. TanStack Query (React Query v5) ──────────────────────────────────────
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -1371,3 +1422,4 @@ export default function App() {
   );
 }
 // BAMBEH_END_TOKEN__APP__COMPLETE
+// BAMBEH_END_TOKEN__APP_FIX347__COMPLETE
