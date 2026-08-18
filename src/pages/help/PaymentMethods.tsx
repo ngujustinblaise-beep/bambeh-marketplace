@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__PAYMENTMETHODS_FIX348_CLEAN
 import { Link } from "react-router-dom";
 import { CreditCard, Coins, Smartphone, DollarSign } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -70,11 +71,11 @@ const T: Record<string, Record<string, string>> = {
     "back": "Go back to Help Center"
   },
   "ar": {
-    "title": "طرق الدÙع",
-    "subtitle": "خيارات دÙع آمنة ومريحة",
+    "title": "طرق الدفع",
+    "subtitle": "خيارات دفع آمنة ومريحة",
     "coinsTitle": "Zerm Coins",
     "coinsDesc": "استخدم Zerm Coins التي كسبتها للميزات المميزة والتعزيزات",
-    "c1a": "معاملات Ùورية",
+    "c1a": "معاملات فورية",
     "c1b": "بدون رسوم",
     "c1c": "آمن داخل المنصة",
     "momoTitle": "Mobile Money",
@@ -83,12 +84,12 @@ const T: Record<string, Record<string, string>> = {
     "m2": "معالجة سريعة",
     "m3": "مريح",
     "cashTitle": "نقدًا",
-    "cashDesc": "ادÙع شخصيًا عند اللقاء",
+    "cashDesc": "ادفع شخصيًا عند اللقاء",
     "ca1": "بدون رسوم معاملات",
-    "ca2": "دÙع Ùوري",
+    "ca2": "دفع فوري",
     "ca3": "بسيط ومباشر",
     "safetyTitle": "تذكير بالأمان",
-    "safetyMsg": "لا تشارك تÙاصيل الدÙع الخاصة بك قبل اللقاء شخصيًا. تحقق دائمًا من السلع قبل الدÙع.",
+    "safetyMsg": "لا تشارك تفاصيل الدفع الخاصة بك قبل اللقاء شخصيًا. تحقق دائمًا من السلع قبل الدفع.",
     "back": "العودة إلى مركز المساعدة"
   },
   "ff": {
@@ -161,7 +162,7 @@ export default function PaymentMethods() {
         </div>
 
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-bold text-gray-900 mb-3">🛡ï¸ {tr("safetyTitle")}</h3>
+          <h3 className="font-bold text-gray-900 mb-3">🛡️ {tr("safetyTitle")}</h3>
           <p className="text-gray-700">{tr("safetyMsg")}</p>
         </div>
 
@@ -178,3 +179,4 @@ export default function PaymentMethods() {
 
 
 
+// BAMBEH_END_TOKEN__PAYMENTMETHODS_FIX348__COMPLETE
