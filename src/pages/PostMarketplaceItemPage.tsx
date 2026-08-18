@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__POSTMARKETPLACEITEMPAGE_FIX337_CLEAN
 /**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
  *
@@ -16,6 +17,7 @@
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
+import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -36,47 +38,69 @@ const TR: Record<string, Record<Lang, string>> = {
   sell_item:      { en: "Sell an Item",             fr: "Vendre un article",          ha: "Sayar da kaya",          ar: "بيع منتج",                   pcm: "Sell Item",              ff: "Yoɓ Kala" },
   step_of:        { en: "Step",                     fr: "Étape",                      ha: "Matakai",                ar: "خطوة",                         pcm: "Step",                   ff: "Lahal" },
   of:             { en: "of",                       fr: "sur",                        ha: "na",                     ar: "من",                           pcm: "of",                     ff: "e" },
-  item_details:   { en: "Item Details",             fr: "Détails de l'article",       ha: "Bayanan kaya",           ar: "تÙاصيل المنتج",                pcm: "Item Details",           ff: "Pijirɗe Kala" },
+  item_details:   { en: "Item Details",             fr: "Détails de l'article",       ha: "Bayanan kaya",           ar: "تفاصيل المنتج",                pcm: "Item Details",           ff: "Pijirɗe Kala" },
   title:          { en: "Title *",                  fr: "Titre *",                    ha: "Take *",                 ar: "العنوان *",                    pcm: "Name *",                 ff: "Tiitoonde *" },
-  title_ph:       { en: "e.g. iPhone 15 Pro 256GB", fr: "ex. iPhone 15 Pro 256 Go",   ha: "misali: iPhone 15 Pro",  ar: "مثال: آيÙون 15 برو",           pcm: "e.g. iPhone 15 Pro",     ff: "ex. iPhone 15 Pro" },
-  description:    { en: "Description *",            fr: "Description *",              ha: "Bayani *",               ar: "الوصÙ *",                      pcm: "Description *",          ff: "Pijirde *" },
-  desc_ph:        { en: "Describe your item: condition, why you're selling, extras included…", fr: "Décrivez votre article : état, raison de vente, accessoires inclus…", ha: "Bayyana kaya: yanayi, dalilin siyarwa…", ar: "صÙ منتجك: الحالة، سبب البيع…", pcm: "Tell people about the item: condition, reason…", ff: "Pijir kala: ko waɗi, ko holliɗo…" },
-  category:       { en: "Category *",              fr: "Catégorie *",                ha: "Rukuni *",               ar: "الÙئة *",                      pcm: "Category *",             ff: "Jikkuure *" },
+  title_ph:       { en: "e.g. iPhone 15 Pro 256GB", fr: "ex. iPhone 15 Pro 256 Go",   ha: "misali: iPhone 15 Pro",  ar: "مثال: آيفون 15 برو",           pcm: "e.g. iPhone 15 Pro",     ff: "ex. iPhone 15 Pro" },
+  description:    { en: "Description *",            fr: "Description *",              ha: "Bayani *",               ar: "الوصف *",                      pcm: "Description *",          ff: "Pijirde *" },
+  desc_ph:        { en: "Describe your item: condition, why you're selling, extras included…", fr: "Décrivez votre article : état, raison de vente, accessoires inclus…", ha: "Bayyana kaya: yanayi, dalilin siyarwa…", ar: "صف منتجك: الحالة، سبب البيع…", pcm: "Tell people about the item: condition, reason…", ff: "Pijir kala: ko waɗi, ko holliɗo…" },
+  category:       { en: "Category *",              fr: "Catégorie *",                ha: "Rukuni *",               ar: "الفئة *",                      pcm: "Category *",             ff: "Jikkuure *" },
   condition:      { en: "Condition *",              fr: "État *",                     ha: "Yanayi *",               ar: "الحالة *",                     pcm: "Condition *",            ff: "Damal *" },
-  price:          { en: "Price (XAF) *",            fr: "Prix (XAF) *",               ha: "Farashi (XAF) *",        ar: "السعر (Ùرنك أÙريقي) *",        pcm: "Price (XAF) *",          ff: "Njaru (XAF) *" },
+  price:          { en: "Price (XAF) *",            fr: "Prix (XAF) *",               ha: "Farashi (XAF) *",        ar: "السعر (فرنك أفريقي) *",        pcm: "Price (XAF) *",          ff: "Njaru (XAF) *" },
   price_ph:       { en: "e.g. 50,000",              fr: "ex. 50 000",                 ha: "misali: 50,000",         ar: "مثال: 50,000",                 pcm: "e.g. 50,000",            ff: "ex. 50,000" },
   location:       { en: "Location *",              fr: "Lieu *",                     ha: "Wuri *",                 ar: "الموقع *",                     pcm: "Location *",             ff: "Dow *" },
   location_ph:    { en: "e.g. Bastos, Yaoundé",    fr: "ex. Bastos, Yaoundé",        ha: "misali: Bamenda",        ar: "مثال: باستوس، ياوندي",         pcm: "e.g. Bastos, Yaoundé",   ff: "ex. Bastos, Yaoundé" },
-  phone:          { en: "WhatsApp / Phone",         fr: "WhatsApp / Téléphone",       ha: "WhatsApp / Waya",        ar: "واتساب / هاتÙ",                pcm: "WhatsApp / Phone",       ff: "WhatsApp / Weyol" },
+  phone:          { en: "WhatsApp / Phone",         fr: "WhatsApp / Téléphone",       ha: "WhatsApp / Waya",        ar: "واتساب / هاتف",                pcm: "WhatsApp / Phone",       ff: "WhatsApp / Weyol" },
   phone_ph:       { en: "+237 6XX XXX XXX",         fr: "+237 6XX XXX XXX",           ha: "+237 6XX XXX XXX",       ar: "+237 6XX XXX XXX",             pcm: "+237 6XX XXX XXX",       ff: "+237 6XX XXX XXX" },
-  negotiable:     { en: "Price is negotiable",      fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتÙاوض",           pcm: "Price nego",             ff: "Njaru hewtii" },
-  next_photos:    { en: "Next — Add Photos",        fr: "Suivant — Ajouter des photos", ha: "Gaba — Ƙara hotuna",  ar: "التالي — أضÙ صوراً",           pcm: "Next — Add Photos",      ff: "Yeeso — Ɓeydu Foto" },
-  add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Ƙara hotuna",           ar: "أضÙ صوراً",                    pcm: "Add Photos",             ff: "Ɓeydu Foto" },
-  photos_hint:    { en: "Up to 6 photos. First photo is the cover.", fr: "Jusqu'à 6 photos. La première est la couverture.", ha: "Har hoto 6. Na farko shine cover.", ar: "حتى 6 صور. الأولى هي الغلاÙ.", pcm: "Max 6 pictures. First one na cover.", ff: "Haa 6 foto. Araniwol na cover." },
-  cover:          { en: "COVER",                    fr: "COUVERTURE",                 ha: "COVER",                  ar: "غلاÙ",                         pcm: "COVER",                  ff: "COVER" },
-  tap_upload:     { en: "Tap to upload photos",     fr: "Appuyez pour ajouter des photos", ha: "Danna don ɗora hotuna", ar: "اضغط لرÙع الصور",           pcm: "Tap to add pictures",    ff: "Jokku ngam ɓeydu foto" },
+  negotiable:     { en: "Price is negotiable",      fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتفاوض",           pcm: "Price nego",             ff: "Njaru hewtii" },
+  next_photos:    { en: "Next — Add Photos",        fr: "Suivant — Ajouter des photos", ha: "Gaba — Ƙara hotuna",  ar: "التالي — أضف صوراً",           pcm: "Next — Add Photos",      ff: "Yeeso — Ɓeydu Foto" },
+  add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Ƙara hotuna",           ar: "أضف صوراً",                    pcm: "Add Photos",             ff: "Ɓeydu Foto" },
+  photos_hint:    { en: "Up to 6 photos. First photo is the cover.", fr: "Jusqu'à 6 photos. La première est la couverture.", ha: "Har hoto 6. Na farko shine cover.", ar: "حتى 6 صور. الأولى هي الغلاف.", pcm: "Max 6 pictures. First one na cover.", ff: "Haa 6 foto. Araniwol na cover." },
+  cover:          { en: "COVER",                    fr: "COUVERTURE",                 ha: "COVER",                  ar: "غلاف",                         pcm: "COVER",                  ff: "COVER" },
+  tap_upload:     { en: "Tap to upload photos",     fr: "Appuyez pour ajouter des photos", ha: "Danna don ɗora hotuna", ar: "اضغط لرفع الصور",           pcm: "Tap to add pictures",    ff: "Jokku ngam ɓeydu foto" },
   photo_formats:  { en: "JPG, PNG, WebP — max 6",  fr: "JPG, PNG, WebP — max 6",     ha: "JPG, PNG, WebP — max 6", ar: "JPG, PNG, WebP — الحد 6",      pcm: "JPG, PNG — max 6",       ff: "JPG, PNG — max 6" },
-  photos_optional:{ en: "Photos are optional but greatly increase your chances of selling!", fr: "Les photos sont facultatives mais augmentent vos chances!", ha: "Hotuna ba tilas ba amma suna taimakawa!", ar: "الصور اختيارية لكنها تزيد Ùرص البيع!", pcm: "Picture no must but e help plenty!", ff: "Foto alaa tilas kono e waɗtu!" },
+  photos_optional:{ en: "Photos are optional but greatly increase your chances of selling!", fr: "Les photos sont facultatives mais augmentent vos chances!", ha: "Hotuna ba tilas ba amma suna taimakawa!", ar: "الصور اختيارية لكنها تزيد فرص البيع!", pcm: "Picture no must but e help plenty!", ff: "Foto alaa tilas kono e waɗtu!" },
   next_review:    { en: "Next — Review",            fr: "Suivant — Vérifier",         ha: "Gaba — Duba",            ar: "التالي — مراجعة",              pcm: "Next — Check",           ff: "Yeeso — Yiy" },
   review_post:    { en: "Review & Post",            fr: "Vérifier & Publier",         ha: "Duba & Buga",            ar: "مراجعة ونشر",                  pcm: "Check & Post",           ff: "Yiy & Yeeso" },
   posting:        { en: "Posting…",                 fr: "Publication…",               ha: "Ana buga…",              ar: "جار النشر…",                   pcm: "Dey post…",              ff: "Naatirde…" },
   post_listing:   { en: "Post Listing",             fr: "Publier l'annonce",          ha: "Buga jeri",              ar: "نشر الإعلان",                  pcm: "Post Listing",           ff: "Yeeso Nde" },
-  save_draft:     { en: "Save as Draft",            fr: "Sauvegarder comme brouillon", ha: "Adana a matsayin daftar", ar: "حÙظ كمسودة",                  pcm: "Save as Draft",          ff: "Danndu haa Draft" },
-  visible_to_all: { en: "Your listing will be visible to all Bambeh users immediately.", fr: "Votre annonce sera visible par tous les utilisateurs de Bambeh immédiatement.", ha: "Jerin ku zai iya ganin duk masu amfani da Bambeh nan take.", ar: "ستكون قائمتك مرئية لجميع مستخدمي Bambeh Ùوراً.", pcm: "Your listing go show for all Bambeh users right now.", ff: "Nde maa yiyete e Bambeh ɗimmo hannde." },
+  save_draft:     { en: "Save as Draft",            fr: "Sauvegarder comme brouillon", ha: "Adana a matsayin daftar", ar: "حفظ كمسودة",                  pcm: "Save as Draft",          ff: "Danndu haa Draft" },
+  visible_to_all: { en: "Your listing will be visible to all Bambeh users immediately.", fr: "Votre annonce sera visible par tous les utilisateurs de Bambeh immédiatement.", ha: "Jerin ku zai iya ganin duk masu amfani da Bambeh nan take.", ar: "ستكون قائمتك مرئية لجميع مستخدمي Bambeh فوراً.", pcm: "Your listing go show for all Bambeh users right now.", ff: "Nde maa yiyete e Bambeh ɗimmo hannde." },
   login_required: { en: "You must be logged in to post a listing.", fr: "Vous devez être connecté pour publier une annonce.", ha: "Dole ne ku shiga don buga jeri.", ar: "يجب تسجيل الدخول لنشر إعلان.", pcm: "You must login before you post.", ff: "Tiggee naatude ngam yeesude." },
   unexpected:     { en: "Unexpected error. Please try again.", fr: "Erreur inattendue. Réessayez.", ha: "Kuskure da ba a tsammani. Sake.", ar: "خطأ غير متوقع. حاول مجدداً.", pcm: "Unexpected error. Try again.", ff: "Juumre anndaande. Artu jeer." },
-  draft_saved:    { en: "Draft saved!", fr: "Brouillon sauvegardé!", ha: "Daftar ya adana!", ar: "تم حÙظ المسودة!", pcm: "Draft saved!", ff: "Draft nanngi!" },
+  payout_phone_required: { en: "Add the phone number where you want to be paid. Without it we cannot send you your money.", fr: "Ajoutez le numéro où vous voulez être payé. Sans lui, nous ne pouvons pas vous envoyer votre argent.", ha: "Ҹara lambar wayar da kake son a biya ka. Ba tare da ita ba, ba za mu iya aiko maka da kuɗin ka ba.", ar: "أضف رقم الهاتف الذي تريد أن تُدفع عليه. بدونه لا يمكننا إرسال أموالك إليك.", pcm: "Put the phone number wey you want make we pay you. Without am, we no fit send your money.", ff: "Ɓeydu limce nokku ɗo njiɗ-ɗaa yoɓeede. Si alaa, min mbaawaa neldude ma kaalis maa." },
+  draft_saved:    { en: "Draft saved!", fr: "Brouillon sauvegardé!", ha: "Daftar ya adana!", ar: "تم حفظ المسودة!", pcm: "Draft saved!", ff: "Draft nanngi!" },
 };
 
 // ─── Language helpers — ALL PURE (no hooks) ────────────────────────────────────
+// FIX302: read the key the APP actually writes, and translate its
+// language codes into the ones this page's dictionary uses.
+// App.tsx line 79:  const LANG_KEY = "Bambeh_language"
+// This page used to read "bambeh_lang", which nothing ever writes.
+const LANG_ALIASES: Record<string, Lang> = {
+  en: "en", eng: "en", english: "en",
+  fr: "fr", fra: "fr", french: "fr", francais: "fr",
+  ar: "ar", ara: "ar", arabic: "ar",
+  ff: "ff", ful: "ff", fulfulde: "ff",
+  // the app stores "pidgin"; this page's dictionary is keyed "pcm"
+  pcm: "pcm", pidgin: "pcm", pid: "pcm",
+  ha: "ha", hausa: "ha",
+};
+
 function getLang(): Lang {
   try {
-    const s = localStorage.getItem("bambeh_lang") as Lang;
-    if (s && ["en","fr","ha","ar","pcm","ff"].includes(s)) return s;
-  } catch { /* ignore */ }
-  const b = navigator.language.split("-")[0] as Lang;
-  return ["en","fr","ha","ar","pcm","ff"].includes(b) ? b : "fr";
+    const raw = String(
+      localStorage.getItem("Bambeh_language") ||
+      localStorage.getItem("bambeh_lang") ||   // the old key, still honoured
+      ""
+    ).trim().toLowerCase();
+    const mapped = LANG_ALIASES[raw];
+    if (mapped) return mapped;
+  } catch { /* storage blocked */ }
+  // Fall back to ENGLISH, not to navigator.language. Reading the
+  // computer's language is exactly what froze this page in English.
+  return "en";
 }
+
 
 function tx(key: string, lang: Lang): string {
   return TR[key]?.[lang] ?? TR[key]?.["en"] ?? key;
@@ -87,15 +111,20 @@ function useLangState(): Lang {
   const [lang, setLang] = useState<Lang>(getLang);
   useEffect(() => {
     const onLangChange = () => setLang(getLang());
+    // FIX302: this is the one the app really fires (App.tsx line 143).
+    window.addEventListener("bambeh:langchange", onLangChange);
+    // The old names are kept so nothing that used to work stops.
     window.addEventListener("langChange", onLangChange);
     window.addEventListener("storage",   onLangChange);
     return () => {
+      window.removeEventListener("bambeh:langchange", onLangChange);
       window.removeEventListener("langChange", onLangChange);
       window.removeEventListener("storage",   onLangChange);
     };
   }, []);
   return lang;
 }
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DraftData {
@@ -119,6 +148,34 @@ const CATEGORIES = [
 
 const CONDITIONS = ["New", "Like New", "Good", "Fair", "Poor"];
 
+// ─── FIX337: translated LABELS for the category & condition dropdowns ──────
+// The English string stays the stored VALUE; only the visible label changes.
+// Translating the value would write "Électronique" / "جيد" into listings.category
+// and listings.condition, and every category filter in the app would stop
+// matching. Label in, value out — that is the whole trick.
+const CATEGORY_TR: Record<string, Record<Lang, string>> = {
+  "Electronics": { en: "Electronics", fr: "Électronique",   ha: "Kayan lantarki", ar: "إلكترونيات",   pcm: "Electronics",   ff: "Elektoroniki" },
+  "Fashion":     { en: "Fashion",     fr: "Mode",           ha: "Kayan sawa",     ar: "أزياء",         pcm: "Fashion",       ff: "Comci" },
+  "Appliances":  { en: "Appliances",  fr: "Électroménager", ha: "Kayan gida",     ar: "أجهزة منزلية", pcm: "House Machine", ff: "Kuutorɗe suudu" },
+  "Books":       { en: "Books",       fr: "Livres",         ha: "Littattafai",    ar: "كتب",           pcm: "Books",         ff: "Deftere" },
+  "Furniture":   { en: "Furniture",   fr: "Meubles",        ha: "Kayan daki",     ar: "أثاث",          pcm: "Furniture",     ff: "Meebal" },
+  "Vehicles":    { en: "Vehicles",    fr: "Véhicules",      ha: "Motoci",         ar: "مركبات",        pcm: "Motor",         ff: "Otooji" },
+  "Rentals":     { en: "Rentals",     fr: "Locations",      ha: "Haya",           ar: "إيجارات",       pcm: "Rent",          ff: "Luwaaji" },
+  "Other":       { en: "Other",       fr: "Autre",          ha: "Wasu",           ar: "أخرى",          pcm: "Other",         ff: "Goɗɗum" },
+};
+
+const CONDITION_TR: Record<string, Record<Lang, string>> = {
+  "New":      { en: "New",      fr: "Neuf",         ha: "Sabo",       ar: "جديد",     pcm: "Brand New",   ff: "Keso" },
+  "Like New": { en: "Like New", fr: "Comme neuf",   ha: "Kamar sabo", ar: "شبه جديد", pcm: "Like New",    ff: "Wa'i no keso" },
+  "Good":     { en: "Good",     fr: "Bon état",     ha: "Mai kyau",   ar: "جيد",      pcm: "Good",        ff: "Moƴƴi" },
+  "Fair":     { en: "Fair",     fr: "État moyen",   ha: "Matsakaici", ar: "مقبول",    pcm: "Manage",      ff: "Hakkunde" },
+  "Poor":     { en: "Poor",     fr: "Mauvais état", ha: "Mara kyau",  ar: "سيئ",      pcm: "No too good", ff: "Bonɗum" },
+};
+
+function txOpt(map: Record<string, Record<Lang, string>>, value: string, lang: Lang): string {
+  return map[value]?.[lang] ?? map[value]?.["en"] ?? value;
+}
+
 const EMPTY: DraftData = {
   title: "", description: "", price: "",
   category: "Electronics", condition: "Good",
@@ -126,7 +183,7 @@ const EMPTY: DraftData = {
 };
 
 // ─── Draft helpers — PURE FUNCTIONS, NO HOOKS ──────────────────────────────────
-// ⚠ï¸  loadDraft() MUST NOT call useLang() or any React hook.
+// ⚠️  loadDraft() MUST NOT call useLang() or any React hook.
 //     It is used as the useState initialiser — React calls it before any hooks run.
 function loadDraft(): DraftData {
   try {
@@ -208,7 +265,8 @@ export default function PostMarketplaceItemPage() {
   async function uploadPhotos(sellerId: string): Promise<string[]> {
     if (photos.length === 0) return [];
     const urls: string[] = [];
-    for (const file of photos) {
+    for (const rawFile of photos) {
+      const file = await prepImage(rawFile);   // FIX296
       const ext  = file.name.split(".").pop() ?? "jpg";
       const path = `marketplace/${sellerId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: upErr } = await supabase.storage
@@ -272,6 +330,15 @@ export default function PostMarketplaceItemPage() {
     try {
       const { data: { user }, error: authErr } = await supabase.auth.getUser();
       if (authErr || !user) { setError(t("login_required")); return; }
+
+      // FIX319 - a seller with no payout number cannot be paid. The database
+      // trigger copies this number into profiles.payout_phone, and that is the
+      // ONLY place a payout is ever read from. Blank here means the money has
+      // nowhere to go, so publishing is blocked until it is filled in.
+      if (form.phone.replace(/\D/g, "").length < 9) {
+        setError(t("payout_phone_required"));
+        return;
+      }
 
       const imageUrls = await uploadPhotos(user.id);
       const price = parseInt(form.price.replace(/\D/g, ""), 10);
@@ -411,7 +478,7 @@ export default function PostMarketplaceItemPage() {
                   className={inputCls}
                   aria-label={t("category")}
                 >
-                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  {CATEGORIES.map((c) => <option key={c} value={c}>{txOpt(CATEGORY_TR, c, lang)}</option>)}
                 </select>
               </Field>
               <Field label={t("condition")}>
@@ -421,7 +488,7 @@ export default function PostMarketplaceItemPage() {
                   className={inputCls}
                   aria-label={t("condition")}
                 >
-                  {CONDITIONS.map((c) => <option key={c}>{c}</option>)}
+                  {CONDITIONS.map((c) => <option key={c} value={c}>{txOpt(CONDITION_TR, c, lang)}</option>)}
                 </select>
               </Field>
             </div>
@@ -653,3 +720,4 @@ const inputCls =
 
 
 
+// BAMBEH_END_TOKEN__POSTMARKETPLACEITEMPAGE_FIX337__COMPLETE
