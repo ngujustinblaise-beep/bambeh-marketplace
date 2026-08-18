@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX342_CLEAN
 // BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX105_CLEAN
 /**
  * src/pages/FarmFreshDetail.tsx ? Bambeh Marketplace
@@ -21,6 +22,7 @@ import {
   Loader2, AlertCircle, Eye, Package,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import SellerReviews from "@/components/reviews/SellerReviews";  // FIX342
 import { useCart } from "@/contexts/CartContext";
 import { useLang, t } from "@/hooks/useAppLang";
 
@@ -347,6 +349,10 @@ const FarmFreshDetail: React.FC = () => {
           </div>
         )}
 
+        {/* FIX342 - the same review screen the marketplace item page got.
+            Farmers are sellers too, and reviews are stored on target_id. */}
+        {product.seller_id ? <SellerReviews sellerId={product.seller_id} /> : null}
+
         {/* Related products */}
         {relatedItems.length > 0 && (
           <div>
@@ -458,3 +464,4 @@ export default FarmFreshDetail;
 
 
 // BAMBEH_END_TOKEN__FARMFRESHDETAIL__COMPLETE
+// BAMBEH_END_TOKEN__FARMFRESHDETAIL_FIX342__COMPLETE

@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__POSTMARKETPLACEITEMPAGE_FIX337_CLEAN
+// BAMBEH_DEPLOY_TOKEN__POSTMARKETPLACEITEMPAGE_FIX343_CLEAN
 /**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
  *
@@ -136,6 +136,8 @@ interface DraftData {
   location: string;
   phone: string;
   negotiable: boolean;
+  stockQuantity: string;   // FIX343 - kept as a string so the draft stays simple
+  colors: string;          // FIX343 - comma-joined English colour names
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -172,6 +174,40 @@ const CONDITION_TR: Record<string, Record<Lang, string>> = {
   "Poor":     { en: "Poor",     fr: "Mauvais état", ha: "Mara kyau",  ar: "سيئ",      pcm: "No too good", ff: "Bonɗum" },
 };
 
+// ─── FIX343: units in stock + colours available ────────────────────────────
+// Same rule as FIX337: the LABEL is translated, the STORED VALUE stays the
+// English colour name, so listings.colors_available holds one clean spelling
+// instead of "blue"/"bleu"/"BLUE" and can still be filtered on later.
+const EXTRA_TR: Record<string, Record<Lang, string>> = {
+  qty_label:   { en: "How many do you have?",  fr: "Combien en avez-vous ?",   ha: "Nawa kake da su?",      ar: "كم قطعة لديك؟",            pcm: "How many you get?",      ff: "No foti mbaɗ-ɗaa?" },
+  qty_hint:    { en: "Leave empty if you would rather not say", fr: "Laissez vide si vous préférez ne pas le dire", ha: "Ka bar shi babu komai idan ba ka son fada", ar: "اتركه فارغاً إذا كنت تفضل عدم الذكر", pcm: "Leave am empty if you no wan talk", ff: "Accu meere si a yiɗaa haalde" },
+  color_label: { en: "Colours available",      fr: "Couleurs disponibles",     ha: "Launukan da ake da su",  ar: "الألوان المتوفرة",         pcm: "Colour wey dey",         ff: "Nooneeji goodɗi" },
+  color_hint:  { en: "Tap all that apply",     fr: "Touchez tout ce qui convient", ha: "Danna duk wanda ya dace", ar: "اضغط على كل ما ينطبق",  pcm: "Tap all wey dey",        ff: "Meemu fof ko woodi" },
+};
+
+const COLORS = ["Black","White","Red","Blue","Green","Yellow","Grey","Brown","Pink","Orange","Purple","Gold"];
+
+const COLOR_HEX: Record<string, string> = {
+  Black: "#111827", White: "#ffffff", Red: "#dc2626", Blue: "#2563eb",
+  Green: "#16a34a", Yellow: "#eab308", Grey: "#9ca3af", Brown: "#92400e",
+  Pink: "#ec4899", Orange: "#ea580c", Purple: "#7c3aed", Gold: "#d4af37",
+};
+
+const COLOR_TR: Record<string, Record<Lang, string>> = {
+  Black:  { en: "Black",  fr: "Noir",   ha: "Baƙi",     ar: "أسود",   pcm: "Black",  ff: "Ɓaleejo" },
+  White:  { en: "White",  fr: "Blanc",  ha: "Fari",     ar: "أبيض",   pcm: "White",  ff: "Danejo" },
+  Red:    { en: "Red",    fr: "Rouge",  ha: "Ja",       ar: "أحمر",   pcm: "Red",    ff: "Boɗeejo" },
+  Blue:   { en: "Blue",   fr: "Bleu",   ha: "Shuɗi",    ar: "أزرق",   pcm: "Blue",   ff: "Bulu" },
+  Green:  { en: "Green",  fr: "Vert",   ha: "Kore",     ar: "أخضر",   pcm: "Green",  ff: "Haako" },
+  Yellow: { en: "Yellow", fr: "Jaune",  ha: "Rawaya",   ar: "أصفر",   pcm: "Yellow", ff: "Ɓoccoori" },
+  Grey:   { en: "Grey",   fr: "Gris",   ha: "Toka",     ar: "رمادي",  pcm: "Grey",   ff: "Buruure" },
+  Brown:  { en: "Brown",  fr: "Marron", ha: "Ruwan ƙasa", ar: "بني",  pcm: "Brown",  ff: "Mbaadi leydi" },
+  Pink:   { en: "Pink",   fr: "Rose",   ha: "Ruwan hoda", ar: "وردي", pcm: "Pink",   ff: "Rooza" },
+  Orange: { en: "Orange", fr: "Orange", ha: "Lemu",     ar: "برتقالي", pcm: "Orange", ff: "Oraas" },
+  Purple: { en: "Purple", fr: "Violet", ha: "Shunayya", ar: "بنفسجي", pcm: "Purple", ff: "Wolee" },
+  Gold:   { en: "Gold",   fr: "Or",     ha: "Zinariya", ar: "ذهبي",   pcm: "Gold",   ff: "Kaŋŋe" },
+};
+
 function txOpt(map: Record<string, Record<Lang, string>>, value: string, lang: Lang): string {
   return map[value]?.[lang] ?? map[value]?.["en"] ?? value;
 }
@@ -180,6 +216,7 @@ const EMPTY: DraftData = {
   title: "", description: "", price: "",
   category: "Electronics", condition: "Good",
   location: "", phone: "", negotiable: false,
+  stockQuantity: "", colors: "",   // FIX343
 };
 
 // ─── Draft helpers — PURE FUNCTIONS, NO HOOKS ──────────────────────────────────
@@ -305,6 +342,8 @@ export default function PostMarketplaceItemPage() {
         negotiable:   form.negotiable,
         images,
         extra:        { image_url: imageUrls[0] ?? null },
+        stock_quantity:   form.stockQuantity.trim() && Number(form.stockQuantity) > 0 ? Math.floor(Number(form.stockQuantity)) : null,   // FIX343
+        colors_available: form.colors.split(",").map((x) => x.trim()).filter(Boolean).length ? form.colors.split(",").map((x) => x.trim()).filter(Boolean) : null,   // FIX343
         status:       "draft",
         view_count:   0,
         is_featured:  false,
@@ -358,6 +397,8 @@ export default function PostMarketplaceItemPage() {
         negotiable:   form.negotiable,
         images,
         extra:        { image_url: imageUrls[0] ?? null },
+        stock_quantity:   form.stockQuantity.trim() && Number(form.stockQuantity) > 0 ? Math.floor(Number(form.stockQuantity)) : null,   // FIX343
+        colors_available: form.colors.split(",").map((x) => x.trim()).filter(Boolean).length ? form.colors.split(",").map((x) => x.trim()).filter(Boolean) : null,   // FIX343
         status:       "active",
         view_count:   0,
         is_featured:  false,
@@ -526,6 +567,52 @@ export default function PostMarketplaceItemPage() {
                 className={inputCls}
                 aria-label={t("phone")}
               />
+            </Field>
+
+            {/* FIX343 - units in stock. Blank means "seller did not say", which
+                is why it is nullable: an old ad must never claim "1 left". */}
+            <Field label={txOpt(EXTRA_TR, "qty_label", lang)}>
+              <input
+                type="number"
+                min={1}
+                inputMode="numeric"
+                value={form.stockQuantity}
+                onChange={(e) => set("stockQuantity", e.target.value)}
+                placeholder="1"
+                className={inputCls}
+                aria-label={txOpt(EXTRA_TR, "qty_label", lang)}
+              />
+              <p className="text-[11px] text-gray-400 mt-1">{txOpt(EXTRA_TR, "qty_hint", lang)}</p>
+            </Field>
+
+            {/* FIX343 - colours. Tappable chips, because typing colour names on a
+                phone produces "blak"/"BLUE"/"bleu" and nothing can filter that. */}
+            <Field label={txOpt(EXTRA_TR, "color_label", lang)}>
+              <div className="flex flex-wrap gap-2">
+                {COLORS.map((cname) => {
+                  const chosen = form.colors.split(",").map((x) => x.trim()).filter(Boolean);
+                  const on = chosen.includes(cname);
+                  return (
+                    <button
+                      key={cname}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => {
+                        const next = on ? chosen.filter((x) => x !== cname) : [...chosen, cname];
+                        set("colors", next.join(","));
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition ${on ? "border-teal-600 bg-teal-50 text-teal-800" : "border-gray-200 bg-white text-gray-600"}`}
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full border border-gray-300 flex-shrink-0"
+                        style={{ backgroundColor: COLOR_HEX[cname] }}
+                      />
+                      {txOpt(COLOR_TR, cname, lang)}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-gray-400 mt-1">{txOpt(EXTRA_TR, "color_hint", lang)}</p>
             </Field>
 
             {/* Negotiable toggle */}
@@ -720,4 +807,4 @@ const inputCls =
 
 
 
-// BAMBEH_END_TOKEN__POSTMARKETPLACEITEMPAGE_FIX337__COMPLETE
+// BAMBEH_END_TOKEN__POSTMARKETPLACEITEMPAGE_FIX343__COMPLETE
