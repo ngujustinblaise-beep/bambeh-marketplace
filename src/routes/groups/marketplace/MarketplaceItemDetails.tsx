@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX341_CLEAN
+// BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX345_CLEAN
 // BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX336_CLEAN
 // BAMBEH_DEPLOY_TOKEN__MARKETPLACEITEMDETAILS_FIX82_CLEAN
 /**
@@ -29,9 +29,11 @@ import {
   RefreshCw, ArrowLeft, Heart, ShoppingCart, Share2,
   MapPin, Tag, Phone, ChevronLeft, ChevronRight,
   AlertCircle, Package, ShieldCheck, Flag, CheckCircle,
-  Eye, Clock, Zap, MessageCircle, Star,
+  Eye, Clock, Zap, MessageCircle, Star, Lock, Boxes,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";           // FIX345
+import { useSubscription } from "@/hooks/useSubscription";  // FIX345
 import SellerReviews from "@/components/reviews/SellerReviews";  // FIX341
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
@@ -68,6 +70,13 @@ const TR: Record<string, Record<Lang, string>> = {
   views:           { en: "views",                   fr: "vues",                       ha: "kallon",                 ar: "مشاهدات",                      pcm: "view",                    ff: "yiytatii" },
   featured:        { en: "Featured",                fr: "En vedette",                 ha: "Babban zaɓi",            ar: "مميز",                         pcm: "Featured",                ff: "Yiɗaaɗo" },
   negotiable:      { en: "Price negotiable",        fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتفاوض",           pcm: "Price nego",              ff: "Njaru hewtii" },
+  avail_title:     { en: "Availability",            fr: "Disponibilité",              ha: "Samuwa",                 ar: "التوفر",                        pcm: "Wetin dey",               ff: "Ko woodi" },  // FIX345
+  units_available: { en: "available",               fr: "disponibles",                ha: "akwai",                  ar: "متوفر",                         pcm: "dey",                     ff: "woodi" },     // FIX345
+  only_left:       { en: "Only",                    fr: "Plus que",                   ha: "Sai",                    ar: "بقي فقط",                       pcm: "Na only",                 ff: "Tan" },       // FIX345
+  left_word:       { en: "left",                    fr: "restant(s)",                 ha: "ya rage",                ar: "متبقٍ",                         pcm: "remain",                  ff: "heddii" },    // FIX345
+  colors_avail:    { en: "Colours available",       fr: "Couleurs disponibles",       ha: "Launukan da ake da su",  ar: "الألوان المتوفرة",              pcm: "Colour wey dey",          ff: "Nooneeji goodɗi" },  // FIX345
+  locked_msg:      { en: "Subscribe to see how many are left and which colours.", fr: "Abonnez-vous pour voir la quantité restante et les couleurs.", ha: "Ka biya kuɗin shiga don ganin adadin da ya rage da launuka.", ar: "اشترك لمعرفة الكمية المتبقية والألوان المتاحة.", pcm: "Subscribe make you see how many remain and which colour dey.", ff: "Naatnu ngam yiyde ko heddii e nooneeji." },  // FIX345
+  see_plans:       { en: "See plans",               fr: "Voir les offres",            ha: "Duba tsare-tsare",       ar: "عرض الباقات",                   pcm: "See di plans",            ff: "Ndaaru paketaaji" },  // FIX345
   expires_today:   { en: "This listing expires today!", fr: "Cette annonce expire aujourd'hui!", ha: "Wannan jeri na ƙarewa yau!", ar: "ينتهي هذا الإعلان اليوم!", pcm: "Dis listing expire today!", ff: "Nde ɗowroo hande!" },
   expires_in:      { en: "This listing expires in", fr: "Cette annonce expire dans",  ha: "Wannan jeri na ƙarewa a cikin", ar: "ينتهي هذا الإعلان خلال", pcm: "Dis listing expire for",  ff: "Nde ɗowroo e nder" },
   days:            { en: "day(s)",                  fr: "jour(s)",                    ha: "kwana",                  ar: "يوم/أيام",                     pcm: "day(s)",                  ff: "ñalnde(ɗe)" },
@@ -125,6 +134,8 @@ interface ListingDetail {
   viewCount: number;
   expiresAt?: string;
   isFeatured: boolean;
+  stockQuantity?: number | null;   // FIX345
+  colors?: string[] | null;        // FIX345
 }
 
 interface CartItem {
@@ -137,6 +148,13 @@ interface CartItem {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
+// FIX345 - swatch colours, keyed by the English value stored in colors_available.
+const COLOR_HEX: Record<string, string> = {
+  Black: "#111827", White: "#ffffff", Red: "#dc2626", Blue: "#2563eb",
+  Green: "#16a34a", Yellow: "#eab308", Grey: "#9ca3af", Brown: "#92400e",
+  Pink: "#ec4899", Orange: "#ea580c", Purple: "#7c3aed", Gold: "#d4af37",
+};
+
 const CART_KEY = "bambeh_cart";
 const FAV_KEY  = "bambeh_favorites";
 
@@ -248,7 +266,7 @@ export default function MarketplaceItemDetails() {
       // Build query — accept UUID or slug
       let query = supabase
         .from("listings")
-        .select("id, title, description, price, category, condition, location, phone, negotiable, images, extra, seller_id, created_at, view_count, expires_at, is_featured, status, type")
+        .select("id, title, description, price, category, condition, location, phone, negotiable, images, extra, seller_id, created_at, view_count, expires_at, is_featured, status, type, stock_quantity, colors_available")
         .eq("type", "marketplace");
 
       if (isUUID(id)) {
@@ -307,6 +325,8 @@ export default function MarketplaceItemDetails() {
         viewCount: data.view_count ?? 0,
         expiresAt: data.expires_at ?? undefined,
         isFeatured: data.is_featured ?? false,
+        stockQuantity: data.stock_quantity ?? null,                                  // FIX345
+        colors: Array.isArray(data.colors_available) ? data.colors_available : null, // FIX345
       };
 
       setListing(detail);
@@ -333,6 +353,12 @@ export default function MarketplaceItemDetails() {
   // Reviews are stored polymorphically (target_id + target_type), so we
   // match on target_id alone: a seller's user id can never collide with a
   // listing id, and that keeps this working whatever target_type is called.
+  // FIX345 - the stock + colour reveal is a SUBSCRIBER benefit, so we need to
+  // know who is looking. useAuth() never throws; useSubscription verifies
+  // against Supabase and is the same hook the access gates use.
+  const { user } = useAuth();
+  const { isActive: isSubscribed } = useSubscription(user?.id ?? null);
+
   const [sellerRating, setSellerRating] = useState<{ avg: number; count: number } | null>(null);
   useEffect(() => {
     const sid = listing?.sellerId;
@@ -651,6 +677,63 @@ export default function MarketplaceItemDetails() {
           </div>
         </div>
 
+        {/* FIX345 - units left and colours. Shown ONLY when the seller actually
+            told us something: teasing a lock over empty data would be a lie.
+            Subscribers see the numbers; everyone else sees why to subscribe. */}
+        {(listing.stockQuantity != null || (listing.colors && listing.colors.length > 0)) && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Boxes className="w-4 h-4 text-teal-600" />
+              <h3 className="text-sm font-bold text-gray-900">{t("avail_title")}</h3>
+            </div>
+
+            {isSubscribed ? (
+              <div className="space-y-2">
+                {listing.stockQuantity != null && (
+                  listing.stockQuantity <= 5 ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+                      {t("only_left")} {listing.stockQuantity} {t("left_word")}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                      {listing.stockQuantity} {t("units_available")}
+                    </span>
+                  )
+                )}
+
+                {listing.colors && listing.colors.length > 0 && (
+                  <div>
+                    <p className="text-[11px] text-gray-500 mb-1">{t("colors_avail")}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {listing.colors.map((cname) => (
+                        <span key={cname}
+                          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-gray-200 bg-white text-[11px] text-gray-700">
+                          <span className="w-3 h-3 rounded-full border border-gray-300 flex-shrink-0"
+                            style={{ backgroundColor: COLOR_HEX[cname] ?? "#d1d5db" }} />
+                          {cname}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-start gap-2">
+                <Lock className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs text-gray-600">{t("locked_msg")}</p>
+                  <button
+                    onClick={() => navigate("/subscription")}
+                    className="mt-1.5 text-xs font-bold text-teal-700 hover:text-teal-900"
+                  >
+                    {t("see_plans")} →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Cart mini-panel */}
         {showCart && cart.length > 0 && (
           <div className="bg-teal-50 border border-teal-200 rounded-2xl p-3">
@@ -831,4 +914,4 @@ export default function MarketplaceItemDetails() {
 }
 
 // BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX82__COMPLETE
-// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX341__COMPLETE
+// BAMBEH_END_TOKEN__MARKETPLACEITEMDETAILS_FIX345__COMPLETE

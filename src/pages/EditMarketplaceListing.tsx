@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__EDITMARKETPLACELISTING_FIX339_CLEAN
+// BAMBEH_DEPLOY_TOKEN__EDITMARKETPLACELISTING_FIX346_CLEAN
 /**
  * src/pages/EditMarketplaceListing.tsx - Bambeh Marketplace
  *
@@ -60,6 +60,31 @@ const CONDITION_TR: Record<string, Record<Lang, string>> = {
   'Poor':     { en: 'Poor',      fr: 'Mauvais état', pidgin: 'No too good', ar: 'سيئ',      ff: 'Bonɗum' },
 };
 
+// ─── FIX346: colours, matching the Sell Item page exactly ─────────────────
+// Translated label, English value stored. Same rule as FIX337/FIX343.
+const COLORS = ["Black","White","Red","Blue","Green","Yellow","Grey","Brown","Pink","Orange","Purple","Gold"];
+
+const COLOR_HEX: Record<string, string> = {
+  Black: "#111827", White: "#ffffff", Red: "#dc2626", Blue: "#2563eb",
+  Green: "#16a34a", Yellow: "#eab308", Grey: "#9ca3af", Brown: "#92400e",
+  Pink: "#ec4899", Orange: "#ea580c", Purple: "#7c3aed", Gold: "#d4af37",
+};
+
+const COLOR_TR: Record<string, Record<Lang, string>> = {
+  Black:  { en: "Black",  fr: "Noir",   pidgin: "Black",  ar: "أسود",   ff: "Ɓaleejo" },
+  White:  { en: "White",  fr: "Blanc",  pidgin: "White",  ar: "أبيض",   ff: "Danejo" },
+  Red:    { en: "Red",    fr: "Rouge",  pidgin: "Red",    ar: "أحمر",   ff: "Boɗeejo" },
+  Blue:   { en: "Blue",   fr: "Bleu",   pidgin: "Blue",   ar: "أزرق",   ff: "Bulu" },
+  Green:  { en: "Green",  fr: "Vert",   pidgin: "Green",  ar: "أخضر",   ff: "Haako" },
+  Yellow: { en: "Yellow", fr: "Jaune",  pidgin: "Yellow", ar: "أصفر",   ff: "Ɓoccoori" },
+  Grey:   { en: "Grey",   fr: "Gris",   pidgin: "Grey",   ar: "رمادي",  ff: "Buruure" },
+  Brown:  { en: "Brown",  fr: "Marron", pidgin: "Brown",  ar: "بني",    ff: "Mbaadi leydi" },
+  Pink:   { en: "Pink",   fr: "Rose",   pidgin: "Pink",   ar: "وردي",   ff: "Rooza" },
+  Orange: { en: "Orange", fr: "Orange", pidgin: "Orange", ar: "برتقالي", ff: "Oraas" },
+  Purple: { en: "Purple", fr: "Violet", pidgin: "Purple", ar: "بنفسجي", ff: "Wolee" },
+  Gold:   { en: "Gold",   fr: "Or",     pidgin: "Gold",   ar: "ذهبي",   ff: "Kaŋŋe" },
+};
+
 function txOpt(map: Record<string, Record<Lang, string>>, value: string, lang: Lang): string {
   return map[value]?.[lang] ?? map[value]?.['en'] ?? value;
 }
@@ -71,6 +96,7 @@ const COPY: Record<Lang, Record<string, string>> = {
     phone: 'Contact Phone', negotiable: 'Price is negotiable', save: 'Save Changes', saving: 'Saving...',
     required: 'Title and price are required.', failed: 'Could not save changes. Please try again.',
     notFound: 'Listing not found', back: 'Back to Marketplace', updated: 'Listing updated!',
+    qty: 'How many do you have?', qtyHint: 'Leave empty if you would rather not say', colours: 'Colours available', coloursHint: 'Tap all that apply',
   },
   fr: {
     heading: "Modifier l'annonce", title: 'Titre', description: 'Description', price: 'Prix (XAF)',
@@ -78,6 +104,7 @@ const COPY: Record<Lang, Record<string, string>> = {
     phone: 'Téléphone de contact', negotiable: 'Prix négociable', save: 'Enregistrer', saving: 'Enregistrement...',
     required: 'Le titre et le prix sont obligatoires.', failed: "Impossible d'enregistrer. Réessayez.",
     notFound: 'Annonce introuvable', back: 'Retour au marché', updated: 'Annonce mise à jour !',
+    qty: 'Combien en avez-vous ?', qtyHint: 'Laissez vide si vous préférez ne pas le dire', colours: 'Couleurs disponibles', coloursHint: 'Touchez tout ce qui convient',
   },
   pidgin: {
     heading: 'Change Your Advert', title: 'Title', description: 'Wetin e be', price: 'Price (XAF)',
@@ -85,6 +112,7 @@ const COPY: Record<Lang, Record<string, string>> = {
     phone: 'Phone number', negotiable: 'Price fit change', save: 'Save Am', saving: 'Dey save...',
     required: 'Abeg put title and price.', failed: 'E no save. Abeg try again.',
     notFound: 'We no see this advert', back: 'Go back to Market', updated: 'Advert don change!',
+    qty: 'How many you get?', qtyHint: 'Leave am empty if you no wan talk', colours: 'Colour wey dey', coloursHint: 'Tap all wey dey',
   },
   ar: {
     heading: 'تعديل الإعلان', title: 'العنوان', description: 'الوصف', price: 'السعر (فرنك أفريقي)',
@@ -92,6 +120,7 @@ const COPY: Record<Lang, Record<string, string>> = {
     phone: 'هاتف التواصل', negotiable: 'السعر قابل للتفاوض', save: 'حفظ التغييرات', saving: 'جارٍ الحفظ...',
     required: 'العنوان والسعر مطلوبان.', failed: 'تعذّر حفظ التغييرات. حاول مرة أخرى.',
     notFound: 'الإعلان غير موجود', back: 'العودة إلى السوق', updated: 'تم تحديث الإعلان!',
+    qty: 'كم قطعة لديك؟', qtyHint: 'اتركه فارغاً إذا كنت تفضل عدم الذكر', colours: 'الألوان المتوفرة', coloursHint: 'اضغط على كل ما ينطبق',
   },
   ff: {
     heading: 'Waylu jeeyngal', title: 'Tiitoonde', description: 'Sifaa', price: 'Njaru (XAF)',
@@ -99,6 +128,7 @@ const COPY: Record<Lang, Record<string, string>> = {
     phone: 'Telefol', negotiable: 'Njaru hewtii', save: 'Danndu', saving: 'Ena danndee...',
     required: 'Tiitoonde e njaru ina naamnaa.', failed: 'Danndugol waawaani. Artu jeer.',
     notFound: 'Min tawaani jeeyngal ngal', back: 'Rutto to luumo', updated: 'Jeeyngal waylaama!',
+    qty: 'No foti mbaɗ-ɗaa?', qtyHint: 'Accu meere si a yiɗaa haalde', colours: 'Nooneeji goodɗi', coloursHint: 'Meemu fof ko woodi',
   },
 };
 
@@ -120,6 +150,7 @@ export default function EditMarketplaceListing() {
   const [form, setForm] = useState({
     title: '', description: '', price: '', category: '',
     condition: '', location: '', phone: '', negotiable: false,
+    stockQuantity: '', colors: '',   // FIX346
   });
 
   useEffect(() => {
@@ -132,7 +163,7 @@ export default function EditMarketplaceListing() {
       // FIX339 - was .from('farm-images'), a storage bucket. Now the real table.
       const { data, error: err } = await supabase
         .from('listings')
-        .select('title, description, price, category, condition, location, phone, negotiable')
+        .select('title, description, price, category, condition, location, phone, negotiable, stock_quantity, colors_available')
         .eq('id', listingId)
         .eq('type', 'marketplace')
         .single();
@@ -148,6 +179,8 @@ export default function EditMarketplaceListing() {
         location:    data.location    || '',
         phone:       data.phone       || '',
         negotiable:  data.negotiable  || false,
+        stockQuantity: data.stock_quantity == null ? '' : String(data.stock_quantity),   // FIX346
+        colors:      Array.isArray(data.colors_available) ? data.colors_available.join(',') : '',   // FIX346
       });
     } catch {
       setNotFound(true);
@@ -173,6 +206,8 @@ export default function EditMarketplaceListing() {
           location:    form.location.trim(),
           phone:       form.phone.trim(),
           negotiable:  form.negotiable,
+          stock_quantity:   form.stockQuantity.trim() && Number(form.stockQuantity) > 0 ? Math.floor(Number(form.stockQuantity)) : null,   // FIX346
+          colors_available: form.colors.split(',').map((x) => x.trim()).filter(Boolean).length ? form.colors.split(',').map((x) => x.trim()).filter(Boolean) : null,   // FIX346
           updated_at:  new Date().toISOString(),
         })
         .eq('id', id);
@@ -293,6 +328,40 @@ export default function EditMarketplaceListing() {
               className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
           </div>
 
+          {/* FIX346 - units in stock. Blank stays blank; it must never claim "1 left". */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{c.qty}</label>
+            <input type="number" min={1} inputMode="numeric" value={form.stockQuantity}
+              onChange={e => setForm({ ...form, stockQuantity: e.target.value })}
+              placeholder="1"
+              className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+            <p className="text-[11px] text-gray-400 mt-1">{c.qtyHint}</p>
+          </div>
+
+          {/* FIX346 - colours as chips, never free text. */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{c.colours}</label>
+            <div className="flex flex-wrap gap-2">
+              {COLORS.map((cname) => {
+                const chosen = form.colors.split(",").map((x) => x.trim()).filter(Boolean);
+                const on = chosen.includes(cname);
+                return (
+                  <button key={cname} type="button" aria-pressed={on}
+                    onClick={() => {
+                      const next = on ? chosen.filter((x) => x !== cname) : [...chosen, cname];
+                      setForm({ ...form, colors: next.join(",") });
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition ${on ? "border-teal-600 bg-teal-50 text-teal-800" : "border-gray-200 bg-white text-gray-600"}`}>
+                    <span className="w-3 h-3 rounded-full border border-gray-300 flex-shrink-0"
+                      style={{ backgroundColor: COLOR_HEX[cname] }} />
+                    {txOpt(COLOR_TR, cname, lang)}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[11px] text-gray-400 mt-1">{c.coloursHint}</p>
+          </div>
+
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={form.negotiable} onChange={e => setForm({ ...form, negotiable: e.target.checked })}
               className="w-4 h-4 accent-teal-600" />
@@ -310,4 +379,4 @@ export default function EditMarketplaceListing() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__EDITMARKETPLACELISTING_FIX339__COMPLETE
+// BAMBEH_END_TOKEN__EDITMARKETPLACELISTING_FIX346__COMPLETE
