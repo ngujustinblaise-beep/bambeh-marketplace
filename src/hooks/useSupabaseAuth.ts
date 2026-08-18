@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX71_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX340_CLEAN
 /**
  * ═══════════════════════════════════════════════════════════════════════
  * src/hooks/useSupabaseAuth.ts
@@ -12,6 +12,12 @@
  *        silently (false "account created" + no redirect). register() now
  *        calls supabase.auth.signUp and, when a session is returned
  *        (email-confirmation OFF), signs the user straight in.
+ *
+ * FIX340: The admin gate could never fire. This hook read the WRONG TABLE and
+ *         the WRONG COLUMN - .from('users').select('role, is_vendor') and then
+ *         isAdmin = role === 'admin'. Roles live in `profiles`, and admin is
+ *         carried by profiles.is_admin. Fixed below, and now tolerant of all
+ *         three conventions (is_admin, admin_role, role).
  *
  * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════
@@ -28,9 +34,9 @@ export interface SupabaseAuthState {
   user:       User | null;
   /** The active session (contains access_token for API calls) */
   session:    Session | null;
-  /** True only when DB profile confirms is_vendor === true OR role === 'seller' */
+  /** True when profiles.is_vendor is true, or role is 'seller' / 'vendor' */
   isVendor:   boolean;
-  /** True only when DB profile confirms role === 'admin' */
+  /** True when profiles.is_admin is true, or admin_role is 'admin'/'super_admin', or role is 'admin' */
   isAdmin:    boolean;
   /** True while the initial JWT verification is in flight — gate UI on this */
   loading:    boolean;
@@ -137,14 +143,33 @@ export function useSupabaseAuth(): SupabaseAuthState {
 
     // ── Fetch role from database ─────────────────────────────────────────────
     // This is the AUTHORITATIVE source — cannot be spoofed via localStorage.
+    // FIX340 - this block was wrong in TWO ways at once, which is why no
+    // amount of editing the database ever opened the admin panel:
+    //   1. It queried .from('users'). The app's profile table is `profiles`.
+    //   2. It decided admin from role === 'admin'. The flag actually lives in
+    //      profiles.is_admin (boolean); profiles.admin_role separately holds
+    //      'admin' / 'super_admin'; profiles.role holds 'user' for everybody.
+    // select('*') and judge in JS on purpose: naming a column that does not
+    // exist makes PostgREST reject the WHOLE query, which would silently strip
+    // both admin AND vendor rights from every user. Same lesson as FIX96.
     const { data: profile } = await supabase
-      .from('users')
-      .select('role, is_vendor')
+      .from('profiles')
+      .select('*')
       .eq('id', user.id)
       .maybeSingle();
 
-    const isVendor = profile?.is_vendor === true || profile?.role === 'seller';
-    const isAdmin  = profile?.role === 'admin';
+    const p         = (profile ?? {}) as Record<string, unknown>;
+    const roleStr   = String(p.role ?? '').toLowerCase();
+    const adminRole = String(p.admin_role ?? '').toLowerCase();
+
+    const isVendor = p.is_vendor === true || roleStr === 'seller' || roleStr === 'vendor';
+    // Accept every convention this codebase has used, so renaming one of them
+    // later cannot lock the owner out of his own admin panel a second time.
+    const isAdmin =
+      p.is_admin === true ||
+      adminRole === 'admin' ||
+      adminRole === 'super_admin' ||
+      roleStr === 'admin';
 
     profileCache = { userId: user.id, isVendor, isAdmin, fetchedAt: now };
 
@@ -245,4 +270,4 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
 
 /** Convenience hook — use this in components instead of prop drilling */
 export { useAuth } from "@/contexts/AuthContext";
-// BAMBEH_END_TOKEN__USESUPABASEAUTH__COMPLETE
+// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX340__COMPLETE
