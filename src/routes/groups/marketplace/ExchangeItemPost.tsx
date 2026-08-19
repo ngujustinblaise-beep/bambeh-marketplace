@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__EXCHANGEPOST_FIX358_CLEAN
 /**
  * src/pages/ExchangeItemPost.tsx ? Bambeh Marketplace
  *
@@ -19,6 +20,9 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+// FIX358 - the same guard the other six post forms already use. One rule,
+// one file, so the eight forms cannot drift apart.
+import { scanFields, contactWarning } from '@/lib/contactGuard';
 
 // --- i18n ----------------------------------------------------------------------
 const STRINGS = {
@@ -324,6 +328,13 @@ export default function ExchangeItemPost() {
     if (!condition)       { setError(s.errCondition); return; }
     if (!location.trim()) { setError(s.errLocation);  return; }
 
+    // FIX358 - a phone number or email in the advert moves the deal off
+    // Bambeh: no escrow, no record, no protection if it goes wrong, and no
+    // commission. Checked BEFORE the images upload, so a rejected post never
+    // wastes the seller's data bundle.
+    const contacts = scanFields(title, description);
+    if (!contacts.clean) { setError(contactWarning(contacts, lang)); return; }
+
     setSubmitting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -596,3 +607,4 @@ export default function ExchangeItemPost() {
 
 
 
+// BAMBEH_END_TOKEN__EXCHANGEPOST_FIX358__COMPLETE

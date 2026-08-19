@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__FARMFRESHSELLER_FIX358_CLEAN
 /**
  * src/pages/FarmFreshSellerPage.tsx — Bambeh Marketplace
  *
@@ -18,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { AlertCircle } from "lucide-react";
 import { useLang, t } from "@/hooks/useAppLang";
+// FIX358 - the same guard the other six post forms already use.
+import { scanForContacts, scanFields, contactWarning } from "@/lib/contactGuard";
 
 const CATEGORIES = ["Vegetables", "Fruits", "Tubers", "Grains", "Legumes", "Herbs", "Dairy", "Other"];
 const UNITS      = ["kg", "g", "bunch", "cob", "litre", "bag", "crate", "piece"];
@@ -245,6 +248,9 @@ export default function FarmFreshSellerPage() {
     if (s === 1) {
       if (!d.title.trim()) e.title = t("errorProduceName", lang) as string || "Produce name is required";
       if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0) e.price = t("errorPrice", lang) as string || "Valid price is required";
+      // FIX358 - flag the offending field itself, not a generic banner.
+      const titleScan = scanForContacts(d.title);
+      if (!titleScan.clean) e.title = contactWarning(titleScan, lang);
     }
     if (s === 2) {
       if (!d.location.trim()) e.location = t("errorLocation", lang) as string || "Location is required";
@@ -252,6 +258,9 @@ export default function FarmFreshSellerPage() {
       if (d.payoutPhone.replace(/\D/g, "").length < 9) e.payoutPhone = pc.required;
       if (!d.description.trim() || d.description.trim().length < 20)
         e.description = t("errorDescription", lang) as string || "Description must be at least 20 characters";
+      // FIX358
+      const descScan = scanForContacts(d.description);
+      if (!descScan.clean) e.description = contactWarning(descScan, lang);
     }
     return e;
   }
@@ -267,6 +276,18 @@ export default function FarmFreshSellerPage() {
     setSubmitting(true);
     setErrs({});
     setUploadWarning("");
+
+    // FIX358 - the last gate. validate() only runs from next(), so a field
+    // edited AFTER passing step 2 would otherwise reach the database
+    // unchecked. This runs before any upload or insert.
+    const contacts = scanFields(d.title, d.description);
+    if (!contacts.clean) {
+      setErrs({ description: contactWarning(contacts, lang) });
+      setSubmitting(false);
+      setStep(2);
+      window.scrollTo(0, 0);
+      return;
+    }
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -601,3 +622,4 @@ export default function FarmFreshSellerPage() {
 
 
 
+// BAMBEH_END_TOKEN__FARMFRESHSELLER_FIX358__COMPLETE
