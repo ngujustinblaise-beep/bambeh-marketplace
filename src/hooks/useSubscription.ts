@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX335_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX356_CLEAN
 // src/hooks/useSubscription.ts — Supabase-only source of truth. NO localStorage.
 //
 // HISTORY
@@ -33,12 +33,36 @@
 //        button. Purely additive: every existing export keeps its signature, so
 //        SubscriptionPlans, PaymentCheckout and CamPayWidget keep compiling.
 //
+//  FIX356 — THE SUBSCRIBER WAS THE ONLY ONE NOT TOLD THE TRUTH.
+//
+//    FIX352 gave cart buyers CamPay's real reason in their own language
+//    ("Wrong PIN", "Not enough money in your wallet") through
+//    src/lib/campayReasons.ts. This file never got it. On a failed
+//    subscription payment it said, in English, to everyone:
+//
+//        "Payment declined by your mobile money provider."
+//
+//    So the people actually paying Bambeh — 100, 500 or 1,500 FCFA — were
+//    the ONLY ones left guessing, and a buyer who simply mistyped their PIN
+//    was never told to just try again. That is a lost sale for nothing.
+//
+//    Now: the reason CamPay returned is read from the status response and
+//    passed through campayFailureMessage() in the buyer's own language.
+//    No caller has to change — the language is read from the same
+//    localStorage key App.tsx writes ("Bambeh_language").
+//
+//    Also fixed: onError is an OPTIONAL callback, so a caller that omits it
+//    turned a failed payment into COMPLETE SILENCE. It is now always logged
+//    loudly with the reason, so a missing handler can never hide a failure.
+//
 //    Deliberately NOT done here: the client still never self-grants. If the
 //    webhook never writes the row at all, no frontend code can fix that — it is
 //    the payments Edge Function's job, and it is tracked separately.
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+// FIX356 - the same translator FIX352 gave the cart path.
+import { campayFailureMessage } from "@/lib/campayReasons";
 
 const BACKEND_URL =
   (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL ||
@@ -98,6 +122,24 @@ function announce(): void {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((res) => setTimeout(res, ms));
+}
+
+// FIX356 - the buyer's language, read from the key App.tsx actually writes.
+// App.tsx: const LANG_KEY = "Bambeh_language", storing "en"|"fr"|"pidgin"|"ar"|"ff".
+// The two legacy spellings are mapped exactly as _resolveCode does there, so a
+// customer who chose Pidgin or Fulfulde before the rename is still understood.
+const LANG_KEY = "Bambeh_language";
+
+function currentLang(): string {
+  try {
+    const raw = window.localStorage.getItem(LANG_KEY);
+    if (raw === "pcm" || raw === "pidgin_english") return "pidgin";
+    if (raw === "ful" || raw === "fulfulde") return "ff";
+    if (raw === "en" || raw === "fr" || raw === "pidgin" || raw === "ar" || raw === "ff") return raw;
+  } catch {
+    /* storage blocked - fall through */
+  }
+  return "en";
 }
 
 // -- Server verification: the ONLY authority -----------------------------------
@@ -317,6 +359,10 @@ export function pollPaymentStatus(
         const d = (await r.json().catch(() => ({}))) as Record<string, unknown>;
         const inner = (d.data || {}) as Record<string, unknown>;
         const status = String(d.status || inner.status || "").toUpperCase();
+        // FIX356 - FIX353 puts CamPay's own words in data.reason. Take them.
+        const reason = String(
+          inner.reason || d.reason || inner.message || d.message || "",
+        );
 
         if (status === "SUCCESSFUL" || status === "SUCCESS") {
           stop();
@@ -349,7 +395,23 @@ export function pollPaymentStatus(
 
         if (status === "FAILED" || status === "CANCELLED") {
           stop();
-          if (onError) onError("Payment declined by your mobile money provider.");
+          // FIX356 - the real reason, in the buyer's own language.
+          const message = campayFailureMessage(reason, currentLang());
+          // Never silent: a caller without an onError handler used to swallow
+          // the whole failure, leaving the customer staring at a dead spinner.
+          console.error(
+            "[subscription] payment " + status + " ref " + reference +
+            " | CamPay reason: " + (reason || "(none given)") +
+            " | shown: " + message,
+          );
+          if (onError) {
+            onError(message);
+          } else {
+            console.error(
+              "[subscription] NO onError HANDLER PASSED to pollPaymentStatus - " +
+              "the customer was told nothing. Fix the caller.",
+            );
+          }
           return;
         }
       }
