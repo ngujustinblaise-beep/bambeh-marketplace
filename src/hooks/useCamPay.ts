@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__USECAMPAY_FIX201_START
+// BAMBEH_DEPLOY_TOKEN__USECAMPAY_FIX352_CLEAN
 /**
  * useCamPay.ts — Bambeh Marketplace
  * FILE LOCATION: src/hooks/useCamPay.ts
@@ -29,6 +29,8 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
+import { useLang } from '@/hooks/useAppLang';                    // FIX352
+import { campayFailureMessage } from '@/lib/campayReasons';      // FIX352
 
 /* ── Endpoint resolution — deliberately defensive ────────────────────────── */
 
@@ -134,7 +136,12 @@ export function validateCamPhone(rawPhone: string): string | null {
 /* ── Hook ────────────────────────────────────────────────────────────────── */
 
 export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
+  // FIX352 - the buyer's own language, so a failure is readable to them.
+  const lang = String(useLang() || 'en');
+
   const [status,    setStatus]    = useState<PaymentStatus>('idle');
+  // FIX352 - the raw CamPay reason, kept so a screen can log or branch on it.
+  const [failureReason, setFailureReason] = useState<string>('');
   const [errorMsg,  setErrorMsg]  = useState<string>('');
   const [reference, setReference] = useState<string>('');
   const [countdown, setCountdown] = useState<number>(0);
@@ -159,6 +166,7 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
     clearTimers();
     setStatus('idle');
     setErrorMsg('');
+    setFailureReason('');   // FIX352
     setReference('');
     setCountdown(0);
     setOrderId(null);
@@ -263,9 +271,18 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
         if (campayStatus === 'FAILED') {
           clearTimers();
           if (cancelledRef.current) return;
-          const msg = body?.data?.message
-            ?? 'Payment was declined. Please check your balance and try again.';
+          // FIX352 - CamPay always sends a reason. Big's own export shows
+          // 'Wrong PIN' and 'LOW_BALANCE_OR_PAYEE_LIMIT_REACHED_OR_NOT_ALLOWED'
+          // - both fixable by the buyer in seconds IF we tell them. We used to
+          // throw that away and print one English sentence about the balance,
+          // which is wrong advice when the real problem was a mistyped PIN.
+          const rawReason = String(
+            body?.data?.reason ?? body?.reason ??
+            body?.data?.message ?? body?.message ?? '',
+          );
+          const msg = campayFailureMessage(rawReason, lang);
           setStatus('failed');
+          setFailureReason(rawReason);
           setErrorMsg(msg);
           onFailure?.(msg);
           return;
@@ -374,10 +391,11 @@ export function useCamPay({ onSuccess, onFailure }: UseCamPayOptions = {}) {
 
   return {
     status, errorMsg, reference, countdown,
+    failureReason,   // FIX352 - raw CamPay reason, for logging or branching
     orderId, orderGroupId,
     initPayment, initCartPayment, reset,
     backendUrl: BACKEND,
   };
 }
 
-// BAMBEH_END_TOKEN__USECAMPAY_FIX201__COMPLETE
+// BAMBEH_END_TOKEN__USECAMPAY_FIX352__COMPLETE
