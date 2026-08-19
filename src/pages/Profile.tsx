@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__PROFILE_FIX130_CLEAN
+// BAMBEH_DEPLOY_TOKEN__PROFILE_FIX354_CLEAN
 /**
  * src/pages/Profile.tsx — Bambeh Marketplace
  *
@@ -16,9 +16,12 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User, Mail, Phone, MapPin, Edit2, Save,
-  X, LogOut, Camera, AlertCircle,
+  X, LogOut, Camera, AlertCircle, Wallet, CheckCircle2,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+// FIX354 - the SAME prefix tables the payments Edge Function uses, so the
+// browser can never accept a number CamPay would refuse to pay.
+import { checkMomoPhone, momoOperatorLabel, momoError } from "@/lib/momoPhone";
 import { useLang } from "@/hooks/useAppLang";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -29,6 +32,7 @@ interface UserProfile {
   name:     string;
   email:    string;
   phone:    string;
+  payoutPhone: string;   // FIX354 - where sale money is sent
   location: string;
   bio:      string;
   avatar?:  string;  // base64 or URL
@@ -42,6 +46,8 @@ const S: Record<Lang, {
   tapCamera: string; changePhotoAria: string; personalInfo: string;
   saving: string; save: string; edit: string;
   fullName: string; email: string; phone: string; location: string; bio: string;
+  payoutTitle: string; payoutLabel: string; payoutHelp: string; payoutSame: string;
+  payoutMissing: string; payoutReady: (op: string) => string; saveFailed: string;
   notSet: string; locationPh: string; bioPh: string;
   quickLinks: string; qlCoins: string; qlListings: string; qlOrders: string;
   qlSaved: string; qlSettings: string; qlFarmFresh: string; qlPostAd: string; qlVoice: string;
@@ -76,6 +82,13 @@ const S: Record<Lang, {
     qlFarmFresh: "Farm Fresh",
     qlPostAd: "Post an Ad",
     qlVoice: "Share My Voice",
+    payoutTitle: "Where your money arrives",
+    payoutLabel: "Mobile Money payout number",
+    payoutHelp: "When someone buys from you, Bambeh sends your money to this number. MTN Mobile Money or Orange Money only.",
+    payoutSame: "Same as my phone",
+    payoutMissing: "Not set — Bambeh cannot pay you yet",
+    payoutReady: (op) => "Confirmed: " + op,
+    saveFailed: "Could not save your changes:",
     account: "Account",
     signOut: "Sign Out",
   },
@@ -108,6 +121,13 @@ const S: Record<Lang, {
     qlFarmFresh: "Ferme Fraîche",
     qlVoice: "Donnez votre avis",
     qlPostAd: "Publier une annonce",
+    payoutTitle: "Où votre argent arrive",
+    payoutLabel: "Numéro Mobile Money pour vos paiements",
+    payoutHelp: "Quand quelqu'un vous achète un article, Bambeh envoie votre argent à ce numéro. Uniquement MTN Mobile Money ou Orange Money.",
+    payoutSame: "Identique à mon téléphone",
+    payoutMissing: "Non défini — Bambeh ne peut pas encore vous payer",
+    payoutReady: (op) => "Confirmé : " + op,
+    saveFailed: "Impossible d'enregistrer vos modifications :",
     account: "Compte",
     signOut: "Se déconnecter",
   },
@@ -140,6 +160,13 @@ const S: Record<Lang, {
     qlFarmFresh: "Farm Fresh",
     qlPostAd: "Post Ad",
     qlVoice: "Talk Your Mind",
+    payoutTitle: "Wia your money go enter",
+    payoutLabel: "Mobile Money number for your payment",
+    payoutHelp: "When person buy something from you, Bambeh go send your money go dis number. Na only MTN Mobile Money or Orange Money.",
+    payoutSame: "Same as my phone",
+    payoutMissing: "You never set am — Bambeh no fit pay you yet",
+    payoutReady: (op) => "E don confirm: " + op,
+    saveFailed: "E no fit save wetin you change:",
     account: "Account",
     signOut: "Comot",
   },
@@ -172,6 +199,13 @@ const S: Record<Lang, {
     qlFarmFresh: "طازج من المزرعة",
     qlVoice: "شارك رأيك",
     qlPostAd: "نشر إعلان",
+    payoutTitle: "أين تصل أموالك",
+    payoutLabel: "رقم المحفظة الإلكترونية لاستلام أموالك",
+    payoutHelp: "عندما يشتري أحد منك، ترسل Bambeh أموالك إلى هذا الرقم. MTN Mobile Money أو Orange Money فقط.",
+    payoutSame: "نفس رقم هاتفي",
+    payoutMissing: "غير محدد — لا تستطيع Bambeh الدفع لك بعد",
+    payoutReady: (op) => "تم التأكيد: " + op,
+    saveFailed: "تعذّر حفظ التغييرات:",
     account: "الحساب",
     signOut: "تسجيل الخروج",
   },
@@ -204,6 +238,13 @@ const S: Record<Lang, {
     qlFarmFresh: "Ko hecci diga ngesa",
     qlVoice: "Hollu Ko Aɗa Sema",
     qlPostAd: "Fewtu njeeyannde",
+    payoutTitle: "Ɗo ceede maa njippotoo",
+    payoutLabel: "Limngal Mobile Money ngal njobeteɗaa",
+    payoutHelp: "So neɗɗo soodii e maa, Bambeh neldan ceede maa e ngal limngal. Ko MTN Mobile Money walla Orange Money tan.",
+    payoutSame: "Wano telefoŋ am",
+    payoutMissing: "Teelaaka — Bambeh waawaa yobde ma tawo",
+    payoutReady: (op) => "Teeŋtinaama: " + op,
+    saveFailed: "Waawaa danndude ko waylu-ɗaa:",
     account: "Konto",
     signOut: "Yaltude",
   },
@@ -230,6 +271,11 @@ export default function Profile() {
   const [form,        setForm]        = useState<Partial<UserProfile>>({});
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [saving,      setSaving]      = useState(false);
+  // FIX354 - the old code swallowed every save failure in a bare catch {} and
+  // still closed the editor, so a seller could "save" a payout number that was
+  // never stored. Both of these are now shown.
+  const [saveError,   setSaveError]   = useState<string | null>(null);
+  const [payoutError, setPayoutError] = useState<string | null>(null);
 
   // ── Load profile ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -243,9 +289,12 @@ export default function Profile() {
           // Try to fetch extended profile from profiles table
           let extra: Record<string, any> = {};
           try {
+            // FIX354 - select("*") on purpose. Naming a column that does not
+            // exist makes PostgREST reject the ENTIRE query, which would blank
+            // the whole profile page if payout_phone has not been added yet.
             const { data } = await supabase
               .from("profiles")
-              .select("display_name, phone, location, bio, avatar_url")
+              .select("*")
               .eq("id", u.id)
               .single();
             if (data) extra = data;
@@ -256,6 +305,7 @@ export default function Profile() {
             name:     extra.display_name ?? u.user_metadata?.full_name ?? u.email?.split("@")[0] ?? "Bambeh User",
             email:    u.email ?? "",
             phone:    extra.phone ?? u.user_metadata?.phone ?? "",
+            payoutPhone: extra.payout_phone ?? extra.momo_phone ?? "",
             location: extra.location ?? u.user_metadata?.location ?? "",
             bio:      extra.bio ?? "Bambeh Marketplace member",
             avatar:   extra.avatar_url ?? u.user_metadata?.avatar_url,
@@ -280,6 +330,7 @@ export default function Profile() {
                 name:     data.name ?? data.displayName ?? "Bambeh User",
                 email:    data.email ?? "",
                 phone:    data.phone ?? data.phoneNumber ?? "",
+                payoutPhone: data.payoutPhone ?? data.payout_phone ?? "",
                 location: data.location ?? "",
                 bio:      data.bio ?? "Bambeh Marketplace member",
                 avatar:   data.avatar ?? data.photoURL,
@@ -299,6 +350,7 @@ export default function Profile() {
         name:     "Guest User",
         email:    "",
         phone:    "",
+        payoutPhone: "",
         location: "",
         bio:      "Welcome to Bambeh!",
         joinedAt: new Date().toISOString(),
@@ -365,8 +417,26 @@ export default function Profile() {
   // ── Save profile edits ────────────────────────────────────────────────────
   async function saveProfile() {
     if (!profile) return;
+    setSaveError(null);
+    setPayoutError(null);
+
+    // FIX354 - REFUSE TO SAVE A PAYOUT NUMBER CAMPAY WOULD REJECT.
+    // Leaving it blank is allowed (a buyer never needs one); typing a wrong one
+    // is not, because the failure would otherwise surface weeks later as an
+    // unpaid seller and money parked with Bambeh.
+    const rawPayout = String(form.payoutPhone ?? "").trim();
+    let normalisedPayout = "";
+    if (rawPayout) {
+      const check = checkMomoPhone(rawPayout);
+      if (!check.valid) {
+        setPayoutError(momoError(check.reason, l));
+        return;
+      }
+      normalisedPayout = check.normalized;
+    }
+
     setSaving(true);
-    const updated: UserProfile = { ...profile, ...form };
+    const updated: UserProfile = { ...profile, ...form, payoutPhone: normalisedPayout };
     setProfile(updated);
 
     // Persist to localStorage
@@ -383,17 +453,30 @@ export default function Profile() {
         await supabase.auth.updateUser({
           data: { full_name: updated.name, phone: updated.phone, location: updated.location },
         });
-        await supabase
+        const { error } = await supabase
           .from("profiles")
           .upsert({
             id:           session.user.id,
             display_name: updated.name,
             phone:        updated.phone,
+            payout_phone: normalisedPayout || null,
             location:     updated.location,
             bio:          updated.bio,
           });
+        if (error) {
+          // FIX354 - never again close the editor on a failed write.
+          console.error("[profile] save failed:", error.message, error.details ?? "", error.hint ?? "");
+          setSaveError(s.saveFailed + " " + error.message);
+          setSaving(false);
+          return;
+        }
       }
-    } catch { /* offline or profiles table doesn't exist — localStorage saved */ }
+    } catch (e) {
+      console.error("[profile] save threw:", e);
+      setSaveError(s.saveFailed + " " + (e instanceof Error ? e.message : String(e)));
+      setSaving(false);
+      return;
+    }
 
     setSaving(false);
     setEditing(false);
@@ -545,6 +628,14 @@ export default function Profile() {
               }
             </div>
 
+            {/* FIX354 — a failed write is never silent again */}
+            {saveError && (
+              <div className="flex items-start gap-1.5 rounded-xl bg-red-50 border-2 border-red-200 px-3 py-2">
+                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-red-700 font-medium break-words">{saveError}</p>
+              </div>
+            )}
+
             {/* Email */}
             <div>
               <label className="flex items-center gap-1 text-xs text-gray-500 mb-1">
@@ -578,6 +669,84 @@ export default function Profile() {
                       className="flex-1 border-2 border-gray-200 focus:border-teal-500 rounded-r-xl px-3 py-2.5 text-sm outline-none transition-colors" />
                   </div>
                 : <p className="text-gray-900 font-medium text-sm">{profile.phone || s.notSet}</p>
+              }
+            </div>
+
+            {/* FIX354 — PAYOUT NUMBER. Deliberately a card, not another grey
+                row: this is the one field that decides whether a seller ever
+                sees their money, and it was being ignored as a result. */}
+            <div className="rounded-xl border-2 border-teal-100 bg-teal-50/60 p-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Wallet className="w-4 h-4 text-teal-700 flex-shrink-0" />
+                <span className="text-sm font-semibold text-teal-900">{s.payoutTitle}</span>
+              </div>
+              <p className="text-[11px] leading-snug text-teal-800/80 mb-2">{s.payoutHelp}</p>
+
+              <label className="block text-xs text-gray-600 mb-1">{s.payoutLabel}</label>
+              {editing
+                ? <>
+                    <div className="flex">
+                      <span className="border-2 border-r-0 border-teal-200 rounded-l-xl px-3 py-2.5 text-sm bg-white text-gray-600 flex-shrink-0">
+                        🇨🇲 +237
+                      </span>
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        value={(form.payoutPhone ?? "").replace(/^\+?237/, "")}
+                        onChange={e => {
+                          setPayoutError(null);
+                          setForm({ ...form, payoutPhone: "+237" + e.target.value.replace(/\D/g, "").slice(0, 9) });
+                        }}
+                        placeholder="6XX XXX XXX"
+                        className="flex-1 border-2 border-teal-200 focus:border-teal-500 rounded-r-xl px-3 py-2.5 text-sm outline-none transition-colors bg-white" />
+                    </div>
+
+                    {/* live operator confirmation — the seller sees it is right BEFORE saving */}
+                    {(() => {
+                      const raw = String(form.payoutPhone ?? "").trim();
+                      if (!raw.replace(/\D/g, "").replace(/^237/, "")) return null;
+                      const c = checkMomoPhone(raw);
+                      return c.valid
+                        ? <p className="flex items-center gap-1 text-[11px] text-teal-700 mt-1.5 font-medium">
+                            <CheckCircle2 className="w-3 h-3 flex-shrink-0" />
+                            {s.payoutReady(momoOperatorLabel(c.operator))}
+                          </p>
+                        : <p className="flex items-start gap-1 text-[11px] text-amber-700 mt-1.5">
+                            <AlertCircle className="w-3 h-3 flex-shrink-0 mt-px" />
+                            <span>{momoError(c.reason, l)}</span>
+                          </p>;
+                    })()}
+
+                    {form.phone && form.phone !== form.payoutPhone && (
+                      <button
+                        type="button"
+                        onClick={() => { setPayoutError(null); setForm({ ...form, payoutPhone: form.phone ?? "" }); }}
+                        className="mt-2 text-[11px] text-teal-700 underline underline-offset-2">
+                        {s.payoutSame}
+                      </button>
+                    )}
+
+                    {payoutError && (
+                      <p className="flex items-start gap-1 text-[11px] text-red-600 mt-1.5 font-medium">
+                        <AlertCircle className="w-3 h-3 flex-shrink-0 mt-px" />
+                        <span>{payoutError}</span>
+                      </p>
+                    )}
+                  </>
+                : (() => {
+                    const c = checkMomoPhone(profile.payoutPhone ?? "");
+                    return c.valid
+                      ? <p className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
+                          {profile.payoutPhone}
+                          <span className="text-[11px] text-teal-700 font-normal">
+                            · {momoOperatorLabel(c.operator)}
+                          </span>
+                        </p>
+                      : <p className="flex items-start gap-1 text-sm text-amber-700 font-medium">
+                          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                          <span>{s.payoutMissing}</span>
+                        </p>;
+                  })()
               }
             </div>
 
@@ -671,3 +840,4 @@ export default function Profile() {
   );
 }
 // BAMBEH_END_TOKEN__PROFILE__COMPLETE
+// BAMBEH_END_TOKEN__PROFILE_FIX354__COMPLETE
