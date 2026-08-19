@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__SELLVEHICLE_FIX351_CLEAN
 // FIX333 - language-first dictionary blocks renamed pcm->pidgin and ful->ff
 /**
  * src/pages/SellVehicle.tsx — Bambeh Marketplace
@@ -22,6 +23,7 @@ import FlashDealToggle, {
   type FlashDealConfig,
 } from '@/components/deals/FlashDealToggle';
 import { useLang } from "@/hooks/useAppLang";
+import { scanFields, contactWarning } from "@/lib/contactGuard";  // FIX351
 
 // ─────────────────────────────────────────────────────────────
 // i18n
@@ -445,6 +447,11 @@ const SellVehicle: React.FC = () => {
       return;
     }
 
+    // FIX351 - form.phone is the seller's payout/contact field and stays;
+    // a number written into the advert text does not.
+    const contactScan = scanFields(form.title, form.description);
+    if (!contactScan.clean) { setError(contactWarning(contactScan, String(lang))); return; }
+
     setSubmitting(true);
 
     try {
@@ -844,3 +851,4 @@ export default SellVehicle;
 
 
 
+// BAMBEH_END_TOKEN__SELLVEHICLE_FIX351__COMPLETE

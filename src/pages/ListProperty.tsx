@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__LISTPROPERTY_FIX351_CLEAN
 /**
  * src/pages/ListProperty.tsx — Bambeh Marketplace
  *
@@ -20,6 +21,7 @@ import { prepImage } from "@/utils/bambehImagePrep";
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "@/hooks/useAppLang";
+import { scanFields, contactWarning } from "@/lib/contactGuard";  // FIX351
 import {
   Home, ArrowLeft, Upload, X, Loader2,
   CheckCircle, AlertCircle, Plus,
@@ -275,6 +277,11 @@ const ListProperty: React.FC = () => {
     if (!form.price.trim())   { setError(tr("formPrice")    + " " + tr("isRequired")); return; }
     if (!form.location.trim()){ setError(tr("formLocation") + " " + tr("isRequired")); return; }
     if (!form.contactPhone.trim()){ setError(tr("formPhone") + " " + tr("isRequired")); return; }
+
+    // FIX351 - the contactPhone field above is fine; a number hidden in the
+    // title or description is not.
+    const contactScan = scanFields(form.title, form.description);
+    if (!contactScan.clean) { setError(contactWarning(contactScan, String(lang))); return; }
 
     setSubmitting(true);
     try {
@@ -730,3 +737,4 @@ export default ListProperty;
 
 
 
+// BAMBEH_END_TOKEN__LISTPROPERTY_FIX351__COMPLETE

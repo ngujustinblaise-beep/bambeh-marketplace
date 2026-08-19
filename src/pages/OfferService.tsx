@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__OFFERSERVICE_FIX351_CLEAN
 // FIX329 - dictionary labels renamed pcm->pidgin and ful->ff so useLang() can find them
 /**
  * src/pages/OfferService.tsx — Bambeh Marketplace
@@ -32,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { REGIONS, CITIES_BY_REGION } from '@/data/Locations';
 import { useLang } from '@/hooks/useAppLang';
+import { scanFields, contactWarning } from "@/lib/contactGuard";  // FIX351
 import {
   Upload, X, CheckCircle, ArrowLeft, Camera,
   AlertTriangle, Wrench,
@@ -577,6 +579,14 @@ export default function OfferService() {
       if (!d.price || isNaN(Number(d.price)) || Number(d.price) <= 0) e.price = s.err_price;
       if (!d.description.trim() || d.description.trim().length < 30) e.description = s.err_description;
     }
+
+    // FIX351 - runs on BOTH steps: the title is entered on step 1 and the
+    // description on step 2, so a single check on one step would miss half.
+    const contactScan = step === 1 ? scanFields(d.title) : scanFields(d.description);
+    if (!contactScan.clean) {
+      if (step === 1) e.title = contactWarning(contactScan, String(lang));
+      else            e.description = contactWarning(contactScan, String(lang));
+    }
     return e;
   }
 
@@ -937,3 +947,4 @@ export default function OfferService() {
 
 
 
+// BAMBEH_END_TOKEN__OFFERSERVICE_FIX351__COMPLETE

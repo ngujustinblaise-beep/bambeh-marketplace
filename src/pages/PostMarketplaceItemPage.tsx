@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__POSTMARKETPLACEITEMPAGE_FIX351_CLEAN
 // BAMBEH_DEPLOY_TOKEN__POSTMARKETPLACEITEMPAGE_FIX343_CLEAN
 /**
  * src/pages/PostMarketplaceItemPage.tsx — Bambeh Marketplace
@@ -25,6 +26,7 @@ import {
   Loader2, Camera, AlertCircle, FileText,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { scanFields, contactWarning } from "@/lib/contactGuard";  // FIX351
 import FlashDealToggle, {
   emptyFlashDeal,
   createFlashDealForListing,
@@ -376,6 +378,15 @@ export default function PostMarketplaceItemPage() {
       // nowhere to go, so publishing is blocked until it is filled in.
       if (form.phone.replace(/\D/g, "").length < 9) {
         setError(t("payout_phone_required"));
+        return;
+      }
+
+      // FIX351 - no phone numbers or emails in the advert itself. The phone
+      // field above is the PAYOUT number and is never shown publicly; a
+      // number typed into the title or description is a deal leaving Bambeh.
+      const contactScan = scanFields(form.title, form.description);
+      if (!contactScan.clean) {
+        setError(contactWarning(contactScan, String(lang)));
         return;
       }
 
@@ -808,3 +819,4 @@ const inputCls =
 
 
 // BAMBEH_END_TOKEN__POSTMARKETPLACEITEMPAGE_FIX343__COMPLETE
+// BAMBEH_END_TOKEN__POSTMARKETPLACEITEMPAGE_FIX351__COMPLETE

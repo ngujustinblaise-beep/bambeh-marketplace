@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__POSTJOBLISTING_FIX351_CLEAN
 /**
  * src/components/Jobs/PostJobListing.tsx
  * Bambeh Marketplace — Post Job Listing Form (Embeddable Component)
@@ -15,6 +16,7 @@ import { Briefcase, MapPin, DollarSign, Calendar, Users, Loader2, CheckCircle, A
 import { createJob } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { useLang } from "@/hooks/useAppLang";
+import { scanFields, contactWarning } from "@/lib/contactGuard";  // FIX351
 
 interface PostJobListingProps {
   userId: string;
@@ -92,6 +94,9 @@ const PostJobListing: React.FC<PostJobListingProps> = ({
   };
 
   const validate = (): string | null => {
+    // FIX351 - contact details belong in the profile, not the advert.
+    const contactScan = scanFields(form.title, form.description, form.requirements, form.benefits, form.company);
+    if (!contactScan.clean) return contactWarning(contactScan, String(lang));
     if (!form.title.trim())        return lang === "fr" ? "Le titre du poste est obligatoire" : "Job title is required";
     if (form.title.trim().length < 5) return lang === "fr" ? "Le titre doit contenir au moins 5 caractères" : "Title too short (min 5 chars)";
     if (!form.category)            return lang === "fr" ? "Veuillez sélectionner une catégorie" : "Please select a category";
@@ -439,3 +444,4 @@ export default PostJobListing;
 
 
 
+// BAMBEH_END_TOKEN__POSTJOBLISTING_FIX351__COMPLETE

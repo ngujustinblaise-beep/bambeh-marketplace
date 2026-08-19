@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__POSTJOBPAGE_FIX351_CLEAN
 // FIX331 - inner dictionary keys renamed pcm->pidgin and ful->ff so useLang() can find them
 // BAMBEH_DEPLOY_TOKEN__POSTJOBPAGE_FIX73_CLEAN
 /**
@@ -18,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Briefcase, Loader2, CheckCircle } from "lucide-react";
 import { createJob } from "@/services/jobs.service";
 import { useLang } from "@/hooks/useAppLang";
+import { scanFields, contactWarning } from "@/lib/contactGuard";  // FIX351
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
@@ -172,6 +174,13 @@ export default function PostJobPage() {
     // Validation
     if (!form.title.trim() || !form.city.trim() || !form.description.trim()) {
       setErrorMsg(s("requiredFields", lang));
+      return;
+    }
+
+    // FIX351 - block contact details in the advert text.
+    const contactScan = scanFields(form.title, form.description, form.company);
+    if (!contactScan.clean) {
+      setErrorMsg(contactWarning(contactScan, String(lang)));
       return;
     }
 
@@ -513,3 +522,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 // BAMBEH_END_TOKEN__POSTJOBPAGE__COMPLETE
+// BAMBEH_END_TOKEN__POSTJOBPAGE_FIX351__COMPLETE
