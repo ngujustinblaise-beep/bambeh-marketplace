@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__PROFILE_FIX363_CLEAN
 // BAMBEH_DEPLOY_TOKEN__PROFILE_FIX354_CLEAN
 /**
  * src/pages/Profile.tsx — Bambeh Marketplace
@@ -49,7 +50,7 @@ const S: Record<Lang, {
   payoutTitle: string; payoutLabel: string; payoutHelp: string; payoutSame: string;
   payoutMissing: string; payoutReady: (op: string) => string; saveFailed: string;
   notSet: string; locationPh: string; bioPh: string;
-  quickLinks: string; qlCoins: string; qlListings: string; qlOrders: string;
+  quickLinks: string; qlCoins: string; qlListings: string; qlOrders: string; qlSales: string;
   qlSaved: string; qlSettings: string; qlFarmFresh: string; qlPostAd: string; qlVoice: string;
   account: string; signOut: string;
 }> = {
@@ -77,6 +78,7 @@ const S: Record<Lang, {
     qlCoins: "Zerm Coins",
     qlListings: "My Listings",
     qlOrders: "My Orders",
+    qlSales: "My Sales",
     qlSaved: "Saved Items",
     qlSettings: "Settings",
     qlFarmFresh: "Farm Fresh",
@@ -116,6 +118,7 @@ const S: Record<Lang, {
     qlCoins: "Pièces Zerm",
     qlListings: "Mes annonces",
     qlOrders: "Mes commandes",
+    qlSales: "Mes ventes",
     qlSaved: "Articles enregistrés",
     qlSettings: "Paramètres",
     qlFarmFresh: "Ferme Fraîche",
@@ -155,6 +158,7 @@ const S: Record<Lang, {
     qlCoins: "Zerm Coins",
     qlListings: "My Listings",
     qlOrders: "My Orders",
+    qlSales: "My Sales",
     qlSaved: "Things Wey I Save",
     qlSettings: "Settings",
     qlFarmFresh: "Farm Fresh",
@@ -194,6 +198,7 @@ const S: Record<Lang, {
     qlCoins: "عملات زيرم",
     qlListings: "إعلاناتي",
     qlOrders: "طلباتي",
+    qlSales: "مبيعاتي",
     qlSaved: "العناصر المحفوظة",
     qlSettings: "الإعدادات",
     qlFarmFresh: "طازج من المزرعة",
@@ -233,6 +238,7 @@ const S: Record<Lang, {
     qlCoins: "Ceede Zerm",
     qlListings: "Ko njeeyetee am",
     qlOrders: "Sarwiiji am",
+    qlSales: "Njeeygu am",
     qlSaved: "Kuuje danaaɗe",
     qlSettings: "Teelte",
     qlFarmFresh: "Ko hecci diga ngesa",
@@ -509,6 +515,9 @@ export default function Profile() {
     ["⚡  " + s.qlCoins,     "/coins"],
     ["🛍️  " + s.qlListings,  "/my-listings"],
     ["📦  " + s.qlOrders,    "/orders"],
+    // FIX363 - /my-sales existed but nothing pointed at it. It belongs beside
+    // My Orders, and next to the payout number that now lives on this page.
+    ["🧾  " + s.qlSales,     "/my-sales"],
     ["❤️   " + s.qlSaved,     "/favorites"],
     ["⚙️   " + s.qlSettings,  "/settings"],
     ["🌿  " + s.qlFarmFresh, "/farm-fresh"],
@@ -841,3 +850,4 @@ export default function Profile() {
 }
 // BAMBEH_END_TOKEN__PROFILE__COMPLETE
 // BAMBEH_END_TOKEN__PROFILE_FIX354__COMPLETE
+// BAMBEH_END_TOKEN__PROFILE_FIX363__COMPLETE

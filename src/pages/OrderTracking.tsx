@@ -1,4 +1,5 @@
-﻿// BAMBEH_DEPLOY_TOKEN__ORDERTRACKING_FIX140_REAL_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ORDERTRACKING_FIX362_CLEAN
+﻿// BAMBEH_DEPLOY_TOKEN__OT_OLD_FIX140_REAL_CLEAN
 /**
  * OrderTracking.tsx â€” Bambeh Marketplace (FIX140)
  * FILE LOCATION: src/pages/OrderTracking.tsx  (REPLACES the fully-mock version)
@@ -41,8 +42,8 @@ const strings = {
     payTitle: 'Payment', method: 'Method', reference: 'Reference', paidAt: 'Paid',
     escrow: 'Escrow', deliveryTitle: 'Delivery', address: 'Address', city: 'City',
     timeline: 'Tracking history',
-    st_pending: 'Order received', st_confirmed: 'Confirmed', st_processing: 'Processing',
-    st_shipped: 'Shipped', st_out_for_delivery: 'Out for delivery', st_delivered: 'Delivered',
+    st_pending: 'Order received', st_confirmed: 'Confirmed', st_preparing: 'Being prepared',
+    st_handed_over: 'Handed to delivery', st_delivered: 'Delivered',
     st_cancelled: 'Cancelled', st_failed: 'Failed', notPaid: 'Not yet paid',
   },
   fr: {
@@ -54,8 +55,8 @@ const strings = {
     payTitle: 'Paiement', method: 'M\u00e9thode', reference: 'R\u00e9f\u00e9rence', paidAt: 'Pay\u00e9 le',
     escrow: 'S\u00e9questre', deliveryTitle: 'Livraison', address: 'Adresse', city: 'Ville',
     timeline: 'Historique de suivi',
-    st_pending: 'Commande re\u00e7ue', st_confirmed: 'Confirm\u00e9e', st_processing: 'En pr\u00e9paration',
-    st_shipped: 'Exp\u00e9di\u00e9e', st_out_for_delivery: 'En livraison', st_delivered: 'Livr\u00e9e',
+    st_pending: 'Commande re\u00e7ue', st_confirmed: 'Confirm\u00e9e', st_preparing: 'En pr\u00e9paration',
+    st_handed_over: 'Remise au livreur', st_delivered: 'Livr\u00e9e',
     st_cancelled: 'Annul\u00e9e', st_failed: '\u00c9chou\u00e9e', notPaid: 'Pas encore pay\u00e9',
   },
   pidgin: {
@@ -67,8 +68,8 @@ const strings = {
     payTitle: 'Payment', method: 'How you pay', reference: 'Reference', paidAt: 'You pay',
     escrow: 'Escrow', deliveryTitle: 'Delivery', address: 'Address', city: 'Town',
     timeline: 'Tracking history',
-    st_pending: 'Order don enter', st_confirmed: 'E don confirm', st_processing: 'Dem dey prepare am',
-    st_shipped: 'E don comot', st_out_for_delivery: 'E dey road come', st_delivered: 'E don reach',
+    st_pending: 'Order don enter', st_confirmed: 'E don confirm', st_preparing: 'Dem dey prepare am',
+    st_handed_over: 'Dem don give am to delivery', st_delivered: 'E don reach',
     st_cancelled: 'E don cancel', st_failed: 'E fail', notPaid: 'You never pay',
   },
   ar: {
@@ -80,8 +81,8 @@ const strings = {
     payTitle: '\u0627\u0644\u062f\u0641\u0639', method: '\u0627\u0644\u0637\u0631\u064a\u0642\u0629', reference: '\u0627\u0644\u0645\u0631\u062c\u0639', paidAt: '\u062a\u0645 \u0627\u0644\u062f\u0641\u0639',
     escrow: '\u0627\u0644\u0636\u0645\u0627\u0646', deliveryTitle: '\u0627\u0644\u062a\u0648\u0635\u064a\u0644', address: '\u0627\u0644\u0639\u0646\u0648\u0627\u0646', city: '\u0627\u0644\u0645\u062f\u064a\u0646\u0629',
     timeline: '\u0633\u062c\u0644 \u0627\u0644\u062a\u062a\u0628\u0639',
-    st_pending: '\u062a\u0645 \u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u0637\u0644\u0628', st_confirmed: '\u0645\u0624\u0643\u062f', st_processing: '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632',
-    st_shipped: '\u062a\u0645 \u0627\u0644\u0634\u062d\u0646', st_out_for_delivery: '\u0642\u064a\u062f \u0627\u0644\u062a\u0648\u0635\u064a\u0644', st_delivered: '\u062a\u0645 \u0627\u0644\u062a\u0633\u0644\u064a\u0645',
+    st_pending: '\u062a\u0645 \u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u0637\u0644\u0628', st_confirmed: '\u0645\u0624\u0643\u062f', st_preparing: '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632',
+    st_handed_over: '\u0633\u064f\u0644\u0651\u0645 \u0644\u0644\u062a\u0648\u0635\u064a\u0644', st_delivered: '\u062a\u0645 \u0627\u0644\u062a\u0633\u0644\u064a\u0645',
     st_cancelled: '\u0645\u0644\u063a\u064a', st_failed: '\u0641\u0634\u0644', notPaid: '\u0644\u0645 \u064a\u064f\u062f\u0641\u0639 \u0628\u0639\u062f',
   },
   ff: {
@@ -93,8 +94,8 @@ const strings = {
     payTitle: 'Yo\u0253gol', method: 'No yo\u0253iri', reference: 'Reference', paidAt: 'Yo\u0253aa',
     escrow: 'Escrow', deliveryTitle: 'Naworgol', address: 'Adres', city: 'Saare',
     timeline: 'Laamu \u0257aggol',
-    st_pending: 'Yamiroore he\u0253aama', st_confirmed: 'Tee\u014btinaama', st_processing: '\u0257on hebloo',
-    st_shipped: 'Neldaama', st_out_for_delivery: '\u0257on ara', st_delivered: 'Yottiima',
+    st_pending: 'Yamiroore he\u0253aama', st_confirmed: 'Tee\u014btinaama', st_preparing: '\u0257on hebloo',
+    st_handed_over: 'Hokkaama neldoowo', st_delivered: 'Yottiima',
     st_cancelled: 'Haaytaama', st_failed: 'Hawrii', notPaid: 'Yo\u0253aaka tawo',
   },
 } as const;
@@ -108,11 +109,15 @@ function useStrings(): { s: LangStrings; isRtl: boolean } {
   return { s, isRtl: key === 'ar' };
 }
 
-const STEPS = ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'] as const;
+// FIX362 - these five MUST match the orders_delivery_status_check constraint
+// exactly. If they drift, indexOf returns -1 and the whole bar goes dark again.
+const STEPS = ['pending', 'confirmed', 'preparing', 'handed_over', 'delivered'] as const;
 
 interface OrderItem { title: string; quantity: number; price_xaf: number; image_url?: string | null; }
 
 interface OrderRow {
+  delivery_status?: string | null;
+  delivery_updated_at?: string | null;
   id: string;
   order_number: string | null;
   status: string | null;
@@ -152,7 +157,7 @@ export default function OrderTracking() {
 
       const { data, error: dbErr } = await supabase
         .from('orders')
-        .select('id, order_number, status, total_xaf, items, delivery_address, delivery_city, payment_method, payment_reference, payment_ref, escrow_status, paid_at, created_at, updated_at')
+        .select('id, order_number, status, total_xaf, items, delivery_address, delivery_city, payment_method, payment_reference, payment_ref, escrow_status, paid_at, created_at, updated_at, delivery_status, delivery_updated_at')
         .eq('id', orderId)
         .maybeSingle();
 
@@ -191,9 +196,20 @@ export default function OrderTracking() {
 
   useEffect(() => { void load(); }, [load]);
 
-  const status = (order?.status || 'pending').toLowerCase();
-  const isTerminalBad = status === 'cancelled' || status === 'failed';
-  const currentIdx = STEPS.indexOf(status as (typeof STEPS)[number]);
+  // FIX362 - two DIFFERENT facts, never again conflated:
+  //   payStatus  = orders.status         -> pending | paid | failed | refunded
+  //   delivery   = orders.delivery_status -> what the SELLER has reported
+  // The old code fed payStatus into STEPS.indexOf(). 'paid' is not a delivery
+  // step, so it returned -1 and NO step ever lit up for any paid order.
+  const payStatus = (order?.status || 'pending').toLowerCase();
+  const isTerminalBad = payStatus === 'cancelled' || payStatus === 'failed';
+  const isPaid = payStatus === 'paid' || payStatus === 'completed';
+  const delivery = (order?.delivery_status || 'pending').toLowerCase();
+  // Paying IS the first step. Before payment nothing has started.
+  const currentIdx = isPaid
+    ? Math.max(0, STEPS.indexOf(delivery as (typeof STEPS)[number]))
+    : -1;
+  const status = delivery;
 
   const stepLabel = (k: string): string =>
     (s as Record<string, string>)[`st_${k}`] ?? k.replace(/_/g, ' ');
@@ -291,7 +307,7 @@ export default function OrderTracking() {
                 <h3 className="text-sm font-bold text-gray-900 mb-4">{s.timeline}</h3>
                 <div>
                   {STEPS.map((step, idx) => {
-                    const done = currentIdx > idx || status === 'delivered';
+                    const done = currentIdx >= idx && currentIdx >= 0 && (idx === 0 ? isPaid : true);
                     const active = currentIdx === idx && status !== 'delivered';
                     return (
                       <div key={step} className="flex gap-3">
@@ -400,3 +416,4 @@ export default function OrderTracking() {
   );
 }
 // BAMBEH_END_TOKEN__ORDERTRACKING_FIX140__COMPLETE
+// BAMBEH_END_TOKEN__ORDERTRACKING_FIX362__COMPLETE
