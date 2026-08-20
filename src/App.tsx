@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__APP_FIX347_CLEAN
+// BAMBEH_DEPLOY_TOKEN__APP_FIX361_CLEAN
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
@@ -256,6 +256,9 @@ const Favorites     = lazy(() => import("@/pages/Favorites"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const AlertsPage    = lazy(() => import("@/pages/AlertsPage"));
 const Orders        = lazy(() => import("@/pages/Orders"));
+// FIX361 - the seller side of Orders. Orders.tsx filters on buyer_id, so a
+// seller had no way to see their own sales at all until this route existed.
+const SellerOrders  = lazy(() => import("@/pages/SellerOrders"));
 const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
 const MyListings    = lazy(() => import("@/pages/MyListings"));
 const TrashPage     = lazy(() => import("@/pages/TrashPage"));
@@ -1014,6 +1017,16 @@ export default function App() {
                             </MainLayout>
                           }
                         />
+                        {/* FIX361 - a seller's own sales, with the delivery control. */}
+                        <Route
+                          path="/my-sales"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><SellerOrders /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        <Route path="/seller-orders" element={<Navigate to="/my-sales" replace />} />
                         <Route
                           path="/orders/:id"
                           element={
@@ -1422,4 +1435,4 @@ export default function App() {
   );
 }
 // BAMBEH_END_TOKEN__APP__COMPLETE
-// BAMBEH_END_TOKEN__APP_FIX347__COMPLETE
+// BAMBEH_END_TOKEN__APP_FIX361__COMPLETE
