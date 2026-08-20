@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__SHAREMYVOICE_FIX369_CLEAN
 /**
  * src/pages/ShareMyVoice.tsx ? Bambeh Marketplace
  *
@@ -34,6 +35,8 @@ const COPY = {
     contact: "Contact",
     contactNote: "(optional — for follow-up only)",
     yourName: "Your name",
+    summaryPlaceholder: "e.g. Payment was very smooth",
+    emailPlaceholder: "your@email.com",
     sendFeedback: "Send Feedback",
     sending: "Sending...",
     thankYou: "Thank You! 🎉",
@@ -80,6 +83,8 @@ const COPY = {
     contact: 'Coordonnées',
     contactNote: '(facultatif — uniquement pour un suivi)',
     yourName: 'Votre nom',
+    summaryPlaceholder: 'ex. Le paiement a été très fluide',
+    emailPlaceholder: 'vous@email.com',
     sendFeedback: 'Envoyer',
     sending: 'Envoi en cours...',
     thankYou: 'Merci ! 🎉',
@@ -126,6 +131,8 @@ const COPY = {
     contact: 'وسيلة التواصل',
     contactNote: '(اختياري — للمتابعة فقط)',
     yourName: 'اسمك',
+    summaryPlaceholder: 'مثال: تمت عملية الدفع بسلاسة',
+    emailPlaceholder: 'you@email.com',
     sendFeedback: 'إرسال الملاحظات',
     sending: 'جارٍ الإرسال...',
     thankYou: 'شكرًا لك! 🎉',
@@ -172,6 +179,8 @@ const COPY = {
     contact: 'Contact',
     contactNote: '(optional — for follow-up only)',
     yourName: 'Your name',
+    summaryPlaceholder: 'e.g. Di payment waka fine well well',
+    emailPlaceholder: 'your@email.com',
     sendFeedback: 'Send feedback',
     sending: 'Dey send...',
     thankYou: 'Thank you! 🎉',
@@ -218,6 +227,8 @@ const COPY = {
     contact: 'Hollitaango',
     contactNote: '(yeesowol — ngam ɗoo e fuɗɗo)',
     yourName: 'Innde maa',
+    summaryPlaceholder: 'misal: Yoɓgol ngol yahii no moƴƴi',
+    emailPlaceholder: 'maa@email.com',
     sendFeedback: 'Neldu jangu',
     sending: 'Dey neldu...',
     thankYou: 'A jaaraama! 🎉',
@@ -455,7 +466,7 @@ export default function ShareMyVoice() {
             <input
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="e.g. Payment was very smooth"
+              placeholder={ui.summaryPlaceholder}
               maxLength={80}
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500"
             />
@@ -491,7 +502,7 @@ export default function ShareMyVoice() {
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder={ui.emailPlaceholder}
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500"
             />
             <p className="text-xs text-gray-400">{ui.followUp}</p>
@@ -525,3 +536,4 @@ export default function ShareMyVoice() {
     </div>
   );
 }
+// BAMBEH_END_TOKEN__SHAREMYVOICE_FIX369__COMPLETE
