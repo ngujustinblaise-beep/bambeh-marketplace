@@ -225,6 +225,7 @@ import BiometricLogin from "@/pages/auth/BiometricLogin";
 // AUTH
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
+const SecurityRecovery  = lazy(() => import("@/pages/SecurityRecovery")); // FIX378
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
@@ -513,6 +514,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/register",
     "/forgot-password",
     "/forgot-credentials",
+    "/security-recovery",
     "/language",
     "/terms-acceptance",
     "/help",
@@ -761,6 +763,10 @@ export default function App() {
                           path="/forgot-credentials"
                           element={<AuthLayout><ForgotCredentials /></AuthLayout>}
                         />
+                        <Route
+                          path="/security-recovery"
+                          element={<AuthLayout><SecurityRecovery /></AuthLayout>}
+                        />{/* FIX378 */}
                         <Route path="/biometric-login" element={<AuthLayout><BiometricLogin /></AuthLayout>} />
                         <Route path="/biometric-setup" element={<AuthLayout><BiometricSetup /></AuthLayout>} />
                         <Route path="/enable-biometrics" element={<Navigate to="/biometric-setup" replace />} />

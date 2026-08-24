@@ -165,7 +165,7 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
 };
 
 const VEHICLE_TYPES = ["All", "Sedan", "SUV", "Pickup", "Motorcycle", "Van", "Minibus", "Truck"];
-const CITIES        = ["All", "Yaound?", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
+const CITIES        = ["All", "Yaoundé", "Douala", "Bamenda", "Bafoussam", "Garoua", "Maroua"];
 
 // -------------------------------------------------------------
 // Types

@@ -4,7 +4,7 @@
  *
  * FIX190 — MOJIBAKE REPAIR. Every French accented character in this file had
  * been replaced by "?" by an encoding-unaware edit: job categories
- * ("?ducation", "Sant? & M?dical"), city names ("Yaound?", "Ngaound?r?"),
+ * ("?ducation", "Sant? & M?dical"), city names ("Yaoundé", "Ngaoundéré"),
  * every validation message, and most labels and placeholders. 24 strings
  * repaired; the file is now valid UTF-8 with correct accents throughout.
  * Bambeh Marketplace — Post Job Listing Form

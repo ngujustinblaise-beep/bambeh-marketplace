@@ -27,7 +27,7 @@ type Lang = "en" | "fr" | "ha" | "ar" | "pcm" | "ff";
 const TR: Record<string, Record<Lang, string>> = {
   marketplace:    { en: "Marketplace", fr: "March?", ha: "Kasuwanci", ar: "?????", pcm: "Market", ff: "Suudu" },
   loading:        { en: "Loading", fr: "Chargement", ha: "Lodawa", ar: "?????", pcm: "Loading", ff: "Naatirde" },
-  no_match:       { en: "No matching items", fr: "Aucun r?sultat", ha: "Babu", ar: "?? ?????", pcm: "Notin match", ff: "Alaa goonga" },
+  no_match:       { en: "No matching items", fr: "Aucun résultat", ha: "Babu", ar: "?? ?????", pcm: "Notin match", ff: "Alaa goonga" },
   try_different:  { en: "Try a different keyword", fr: "Essayez un autre terme", ha: "Gwada wani kalma", ar: "??? ??????? ???", pcm: "Try different word", ff: "Mbiy go??o" },
   no_listings:    { en: "No listings yet", fr: "Aucune annonce", ha: "Babu jeri", ar: "?? ???????", pcm: "No listing yet", ff: "Alaa" },
   first_to_list:  { en: "Be the first to list in this category!", fr: "Soyez le premier ? lister!", ha: "Kasance na farko!", ar: "?? ??? ?? ????!", pcm: "Be first to list here!", ff: "Wartoraa!" },

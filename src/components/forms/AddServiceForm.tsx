@@ -45,7 +45,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onSuccess, onCancel }) 
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Titre du service <span className="text-red-500">*</span></label>
           <input type="text" value={form.title} onChange={e=>set("title",e.target.value)} placeholder="Ex: R?paration ordinateurs & smartphones" required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
         <div className="grid grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Cat?gorie <span className="text-red-500">*</span></label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Catégorie <span className="text-red-500">*</span></label>
             <select value={form.category} onChange={e=>set("category",e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
               <option value="">-- Choisir --</option>{SERVICE_CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
           <div><label className="block text-sm font-medium text-gray-700 mb-1">Tarif (FCFA) <span className="text-red-500">*</span></label>

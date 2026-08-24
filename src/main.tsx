@@ -1,3 +1,4 @@
+import "./lib/recovery-hash"; // FIX378 - MUST stay first: runs before Supabase initialises
 import React from "react";
 import "./i18n"; // initialize react-i18next engine once at startup
 import ReactDOM from "react-dom/client";

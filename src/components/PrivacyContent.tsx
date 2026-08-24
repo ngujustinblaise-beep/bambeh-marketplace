@@ -501,7 +501,7 @@ export const PrivacyContent: React.FC = () => {
             <strong>Bambeh Legal Team</strong>
           </p>
           <p>
-            <strong>Location:</strong> Yaound?, Centre Region, 
+            <strong>Location:</strong> Yaoundé, Centre Region, 
           </p>
           <p>
             <strong>Phone:</strong> +237 670 757 326

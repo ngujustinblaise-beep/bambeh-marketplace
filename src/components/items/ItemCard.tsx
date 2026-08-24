@@ -88,7 +88,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <p className="text-base font-bold text-teal-700 mt-0.5">{formatXAF(item.priceXAF)}</p>
           <div className="flex items-center gap-2 mt-1">
             {item.isNegotiable && (
-              <span className="text-xs text-green-600 font-medium">N?gociable</span>
+              <span className="text-xs text-green-600 font-medium">Négociable</span>
             )}
             <span className="text-xs text-gray-400">{CONDITION_LABELS[item.condition] ?? item.condition}</span>
           </div>
@@ -218,7 +218,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <div className="flex items-center justify-between mb-2">
           <p className="text-base font-bold text-teal-700">{formatXAF(item.priceXAF)}</p>
           {item.isNegotiable && (
-            <span className="text-xs text-green-600 font-medium">N?gociable</span>
+            <span className="text-xs text-green-600 font-medium">Négociable</span>
           )}
         </div>
 

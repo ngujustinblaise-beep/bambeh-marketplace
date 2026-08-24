@@ -50,7 +50,7 @@ const allPages: SearchResult[] = [
   { id: 'verification', title: 'Verification',   description: 'Get verified badge',         path: '/vendor/verification',  icon: BadgeCheck,   category: 'Vendor',  keywords: ['verification','verified','badge','trust'] },
 ];
 
-const trendingSearches = ['iPhone','Apartments in Douala','Electronics','Jobs Yaound?','Car rental','Services'];
+const trendingSearches = ['iPhone','Apartments in Douala','Electronics','Jobs Yaoundé','Car rental','Services'];
 
 interface GlobalSearchProps { isOpen: boolean; onClose: () => void; }
 

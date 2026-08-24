@@ -38,7 +38,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ isOpen, onClose, itemDetails })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reason) { setError("Veuillez s?lectionner un motif."); return; }
+    if (!reason) { setError("Veuillez sélectionner un motif."); return; }
     if (!user) { setError("Vous devez ?tre connect? pour signaler."); return; }
     setLoading(true);
     setError("");

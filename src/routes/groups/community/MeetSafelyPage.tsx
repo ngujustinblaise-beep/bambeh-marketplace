@@ -67,8 +67,8 @@ const TIPS = [
 ];
 
 const SAFE_SPOTS = [
-  { name: 'March? Central, Yaound?', type: 'Market' },
-  { name: 'Auchan, Yaound?', type: 'Supermarket' },
+  { name: 'March? Central, Yaoundé', type: 'Market' },
+  { name: 'Auchan, Yaoundé', type: 'Supermarket' },
   { name: 'Akwa Business District, Douala', type: 'Business Area' },
   { name: 'Hotel lobbies (any city)', type: 'Hotel' },
   { name: 'Police stations', type: 'Official' },

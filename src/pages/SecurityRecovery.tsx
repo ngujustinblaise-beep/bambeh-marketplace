@@ -28,14 +28,69 @@ export default function SecurityRecovery() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<Msg>(null);
 
-  // Detect arrival from a recovery email (Supabase puts type=recovery in the URL hash).
+  // FIX378: recovery-hash.ts stashes the tokens from the reset link BEFORE
+  // React mounts, because HashRouter cannot survive "#access_token=..." in the
+  // URL. We pick that stash up here and turn it into a real session, which is
+  // what supabase.auth.updateUser() needs in order to set the new password.
   useEffect(() => {
-    const hash = window.location.hash || "";
-    if (hash.includes("type=recovery") || hash.includes("access_token")) setMode("reset");
+    let cancelled = false;
+    const hadRecoveryHash = /access_token=|type=recovery|error_code=/.test(
+      window.location.hash || ""
+    );
+
+    (async () => {
+      let stash: any = null;
+      try {
+        const raw = sessionStorage.getItem("bambeh_recovery_tokens");
+        if (raw) {
+          stash = JSON.parse(raw);
+          sessionStorage.removeItem("bambeh_recovery_tokens");
+        }
+      } catch {
+        /* storage blocked - fall through to the checks below */
+      }
+
+      if (stash && stash.error_code) {
+        setMsg({
+          type: "err",
+          text:
+            stash.error_description ||
+            "This recovery link has expired. Please request a new one below.",
+        });
+        return;
+      }
+
+      if (stash && stash.access_token) {
+        const { error } = await supabase.auth.setSession({
+          access_token: stash.access_token,
+          refresh_token: stash.refresh_token,
+        });
+        if (cancelled) return;
+        if (error) {
+          setMsg({
+            type: "err",
+            text: "This recovery link is no longer valid. Please request a new one below.",
+          });
+          return;
+        }
+        setMode("reset");
+        return;
+      }
+
+      if (hadRecoveryHash) {
+        const { data: sess } = await supabase.auth.getSession();
+        if (!cancelled && sess.session) setMode("reset");
+      }
+    })();
+
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") setMode("reset");
     });
-    return () => data.subscription.unsubscribe();
+
+    return () => {
+      cancelled = true;
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   const sendResetLink = async () => {

@@ -61,7 +61,7 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cat?gorie <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie <span className="text-red-500">*</span></label>
             <select value={form.category} onChange={e=>set("category",e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
               <option value="">-- Choisir --</option>
               {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
@@ -86,7 +86,7 @@ const AddMarketplaceItemForm: React.FC<AddMarketplaceItemFormProps> = ({ onSucce
           </div>
           <label className="flex items-center gap-2 pb-2.5 cursor-pointer">
             <input type="checkbox" checked={form.isNegotiable} onChange={e=>set("isNegotiable",e.target.checked)} className="w-4 h-4 text-teal-600 rounded" />
-            <span className="text-sm text-gray-700">N?gociable</span>
+            <span className="text-sm text-gray-700">Négociable</span>
           </label>
         </div>
         <div>

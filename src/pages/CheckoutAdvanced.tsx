@@ -86,7 +86,7 @@ export default function CheckoutAdvanced() {
         subtotal: subtotal,
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
-        deliveryAddress: 'Bastos, Yaound?, '
+        deliveryAddress: 'Bastos, Yaoundé, '
       };
 
       setCheckoutData(mockCheckoutData);

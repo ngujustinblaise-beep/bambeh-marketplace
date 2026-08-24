@@ -97,14 +97,14 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSuccess, onCancel }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Type de contrat <span className="text-red-500">*</span></label>
             <select value={form.jobType} onChange={(e) => set("jobType", e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white">
-              <option value="">-- S?lectionner --</option>
+              <option value="">-- Sélectionner --</option>
               {JOB_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cat?gorie <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie <span className="text-red-500">*</span></label>
             <select value={form.category} onChange={(e) => set("category", e.target.value)} required className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none bg-white">
-              <option value="">-- S?lectionner --</option>
+              <option value="">-- Sélectionner --</option>
               {JOB_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>

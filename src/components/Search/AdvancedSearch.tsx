@@ -49,7 +49,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     all:        ['All Categories'],
   };
 
-  const locations = ['All Locations','Yaound?','Douala','Bamenda','Bafoussam','Garoua','Maroua','Ngaound?r?','Bertoua','Buea','Kribi','Limbe','Ebolowa','Kumba','Ed?a','Loum'];
+  const locations = ['All Locations','Yaoundé','Douala','Bamenda','Bafoussam','Garoua','Maroua','Ngaoundéré','Bertoua','Buea','Kribi','Limbe','Ebolowa','Kumba','Edéa','Loum'];
 
   useEffect(() => {
     let count = 0;

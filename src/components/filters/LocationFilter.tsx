@@ -63,16 +63,16 @@ const REGIONS: string[] = [
 
 /** Cities/towns grouped by region for cascading select */
 const CITIES_BY_REGION: Record<string, string[]> = {
-  'Adamawa':   ['Ngaound?r?', 'Meiganga', 'Tibati', 'Banyo', 'Tign?re'],
-  'Centre':    ['Yaound?', 'Mbalmayo', 'Obala', 'Nanga Eboko', 'Mfou', 'Bafia'],
+  'Adamawa':   ['Ngaoundéré', 'Meiganga', 'Tibati', 'Banyo', 'Tignère'],
+  'Centre':    ['Yaoundé', 'Mbalmayo', 'Obala', 'Nanga Eboko', 'Mfou', 'Bafia'],
   'East':      ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang', 'Doum?'],
   'Far North': ['Maroua', 'Kousseri', 'Mora', 'Yagoua', 'Guider', 'Ka?l?'],
-  'Littoral':  ['Douala', 'Nkongsamba', 'Ed?a', 'Loum', 'Mbanga', 'Manjo'],
+  'Littoral':  ['Douala', 'Nkongsamba', 'Edéa', 'Loum', 'Mbanga', 'Manjo'],
   'North':     ['Garoua', 'Guider', 'Poli', 'Bibemi', 'Rey Bouba'],
   'North West':['Bamenda', 'Kumbo', 'Nkambe', 'Wum', 'Fundong', 'Mbengwi', 'Santa', 'Ndop'],
-  'South':     ['Ebolowa', 'Kribi', 'Sangm?lima', 'Lolodorf', 'Ambam'],
+  'South':     ['Ebolowa', 'Kribi', 'Sangmélima', 'Lolodorf', 'Ambam'],
   'South West':['Buea', 'Limbe', 'Kumba', 'Mamfe', 'Ekondo Titi', 'Muyuka'],
-  'West':      ['Bafoussam', 'Dschang', 'Foumban', 'Mbouda', 'Bangangt?', 'Foumbot'],
+  'West':      ['Bafoussam', 'Dschang', 'Foumban', 'Mbouda', 'Bangangté', 'Foumbot'],
 };
 
 /** Common landmarks used as placeholders */

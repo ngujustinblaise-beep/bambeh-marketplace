@@ -82,7 +82,7 @@ const PrioritySupport: React.FC = () => {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Cat?gorie</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
           <select value={category} onChange={(e) => setCategory(e.target.value as TicketCategory)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-500 bg-white">
             <option value="payment">Paiement & Revenus</option>
             <option value="account">Compte & V?rification</option>
