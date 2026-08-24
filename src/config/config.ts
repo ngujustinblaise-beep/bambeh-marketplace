@@ -51,7 +51,7 @@ try {
   arTranslation = require("./locales/ar/translation.json");
 } catch (error) {
   console.warn("Arabic translation not found, using fallback");
-  arTranslation = { welcome: "مرحبا بكم Ùي بامبيه",
+  arTranslation = { welcome: "مرحبا بكم في بامبيه",
     search: "بحث",
     login: "تسجيل الدخول",
     signup: "اشتراك",

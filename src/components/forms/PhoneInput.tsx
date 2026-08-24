@@ -267,7 +267,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         />
       </div>
 
-      {error && <p className="text-xs text-red-600 mt-1 flex items-center gap-1">⚠ï¸ {error}</p>}
+      {error && <p className="text-xs text-red-600 mt-1 flex items-center gap-1">⚠️ {error}</p>}
 
       {/* Helper: shows chosen country */}
       {!error && localNumber && (

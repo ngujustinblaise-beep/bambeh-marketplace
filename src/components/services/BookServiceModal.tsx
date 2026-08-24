@@ -98,7 +98,7 @@ export default function BookServiceModal({
         return;
       }
 
-      // 1ï¸⃣ Write to service_bookings table
+      // 1️⃣ Write to service_bookings table
       const { error: dbErr } = await supabase.from('service_bookings').insert({
         service_id:   serviceId,
         client_id:    session.user.id,
@@ -111,7 +111,7 @@ export default function BookServiceModal({
 
       if (dbErr) throw dbErr;
 
-      // 2ï¸⃣ Send non-repliable in-app booking message to the service provider
+      // 2️⃣ Send non-repliable in-app booking message to the service provider
       //    Provider sees a formatted booking card in Chat — no contact exposure needed.
       if (providerId) {
         await sendBookingMessage({

@@ -63,9 +63,9 @@ export const WELCOME_MESSAGES: Record<string, {
     cta:        'Fara',
   },
   ar: {
-    greeting:   'مرحباً بك Ùي Bambeh',
-    tagline:    'الكدح الذي لا يتوقÙ',
-    subTagline: 'أÙضل سوق إلكتروني Ùي الكاميرون — اشترÙ وبيع وتواصل.',
+    greeting:   'مرحباً بك في Bambeh',
+    tagline:    'الكدح الذي لا يتوقف',
+    subTagline: 'أفضل سوق إلكتروني في الكاميرون — اشترِ وبيع وتواصل.',
     cta:        'ابدأ الآن',
   },
 };

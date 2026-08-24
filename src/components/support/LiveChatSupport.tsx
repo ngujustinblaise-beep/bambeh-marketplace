@@ -59,7 +59,7 @@ export default function LiveChatSupport({ buttonText = 'Start Live Chat', classN
       window.dispatchEvent(new CustomEvent('supportRequested', {
         detail: { user: currentUser, timestamp: new Date().toISOString(), messages: messages.map(m => ({ text: m.text, sender: m.sender })) },
       }));
-      return ["I understand you'd like to speak with a human agent. 👨â€💼", "I've notified our support team and someone will be with you shortly!", "Please stay on this chat. Average response time is 5-10 minutes during business hours (8 AM - 8 PM WAT). 🕐"];
+      return ["I understand you'd like to speak with a human agent. 👨‍💼", "I've notified our support team and someone will be with you shortly!", "Please stay on this chat. Average response time is 5-10 minutes during business hours (8 AM - 8 PM WAT). 🕐"];
     }
     if (lc.includes('zerm') || lc.includes('coin')) {
       return ["Zerm Coins are Bambeh's reward currency! 🪙", "You can earn them through:\n• Daily logins (+50)\n• Completing your profile (+200)\n• Making purchases (+varies)\n• Referrals (+500)", "Use Zerm Coins to boost listings, get discounts, and unlock premium features!"];

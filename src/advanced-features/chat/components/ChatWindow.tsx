@@ -195,7 +195,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, currentUserId, on
 
         <div className="chat-header-actions">
           <button className="header-action-button" title={t('chat.search')}>🔍</button>
-          <button className="header-action-button" title={t('chat.info')}>ℹï¸</button>
+          <button className="header-action-button" title={t('chat.info')}>ℹ️</button>
         </div>
       </div>
 

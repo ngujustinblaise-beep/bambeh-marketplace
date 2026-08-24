@@ -101,7 +101,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           <div className="message-voice">
             <audio ref={audioRef} src={message.voiceUrl} preload="metadata" />
             <button className="voice-play-button" onClick={handlePlayVoice} aria-label={isPlaying ? 'Pause' : 'Play'}>
-              {isPlaying ? '⏸️' : '▶ï¸'}
+              {isPlaying ? '⏸️' : '▶️'}
             </button>
             <div className="voice-progress">
               <div className="voice-waveform">
@@ -158,7 +158,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
               <div className="message-menu-overlay" onClick={() => setShowMenu(false)} />
               <div className="message-menu">
                 {isOwn && onDelete && (
-                  <button onClick={handleDelete} className="menu-item danger">🗑ï¸ Delete</button>
+                  <button onClick={handleDelete} className="menu-item danger">🗑️ Delete</button>
                 )}
                 <button onClick={() => setShowMenu(false)} className="menu-item">✕ Close</button>
               </div>

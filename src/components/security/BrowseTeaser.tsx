@@ -93,7 +93,7 @@ const COPY: Record<LangCode, { hidden: string; cta: string; unlock: string }> = 
   ff: {
     hidden: "Nokku e jokkondiral jeeyoowo ina suu\u0257i.",
     cta: "U\u0253\u0253it fof",
-    unlock: "\u0181uri famÉ—ude e coggu mbuuru, e \u00F1alawma timmu\u0257o",
+    unlock: "\u0181uri famɗude e coggu mbuuru, e \u00F1alawma timmu\u0257o",
   },
 };
 

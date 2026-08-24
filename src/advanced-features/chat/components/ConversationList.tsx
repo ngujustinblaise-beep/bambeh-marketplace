@@ -129,7 +129,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                   <span className={`role-badge ${otherParticipant.role}`}>
                     {otherParticipant.role === 'vendor' && '🏪'}
                     {otherParticipant.role === 'customer' && '👤'}
-                    {otherParticipant.role === 'admin' && '⚙ï¸'}
+                    {otherParticipant.role === 'admin' && '⚙️'}
                   </span>
                 </div>
 
@@ -139,7 +139,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                     onClick={(e) => handleDelete(e, conversation.id)}
                     aria-label="Delete conversation"
                   >
-                    🗑ï¸
+                    🗑️
                   </button>
                 )}
               </div>

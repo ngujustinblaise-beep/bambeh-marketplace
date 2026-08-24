@@ -163,7 +163,7 @@ const GPSTrackingADVANCED: React.FC<GPSTrackingProps> = ({
     return (
       <div className="gps-tracking-container">
         <div className="error-state">
-          <span className="error-icon">⚠ï¸</span>
+          <span className="error-icon">⚠️</span>
           <p>{error}</p>
           <button onClick={initializeTracking} className="retry-button">Retry</button>
         </div>

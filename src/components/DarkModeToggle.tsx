@@ -230,8 +230,8 @@ export const BrightnessControl: React.FC = () => {
   const { brightness, setBrightness } = useTheme();
 
   const presets = [
-    { value: 100, label: '100%', icon: '☀ï¸' },
-    { value: 80, label: '80%', icon: '🌤ï¸' },
+    { value: 100, label: '100%', icon: '☀️' },
+    { value: 80, label: '80%', icon: '🌤️' },
     { value: 60, label: '60%', icon: '⛅' },
     { value: 40, label: '40%', icon: '🌙' }
   ];

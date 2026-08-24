@@ -110,11 +110,11 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSend, onCancel }) => {
 
         <div className="voice-recorder-controls">
           <button className="recorder-button delete" onClick={handleCancel} disabled={isSending}>
-            🗑ï¸
+            🗑️
           </button>
 
           <button className="recorder-button pause" onClick={togglePause} disabled={isSending || !isRecording}>
-            {isPaused ? '▶ï¸' : '⏸️'}
+            {isPaused ? '▶️' : '⏸️'}
           </button>
 
           <button

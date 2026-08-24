@@ -69,7 +69,7 @@ const JOB_TYPES_I18N: Record<string, Record<string, string>> = {
   "Part-time":  { en:"Part-time",  fr:"Temps partiel", pidgin:"Half time",  ar:"دوام جزئي",    ff:"Waktu didi" },
   "Contract":   { en:"Contract",   fr:"Contrat",       pidgin:"Contract",   ar:"عقد",          ff:"Kontoraaji" },
   "Internship": { en:"Internship", fr:"Stage",         pidgin:"Training",   ar:"تدريب",        ff:"Jannginagol" },
-  "Remote":     { en:"Remote",     fr:"Télétravail",   pidgin:"Online",     ar:"عن بÙعد",      ff:"E Ɓanndu" },
+  "Remote":     { en:"Remote",     fr:"Télétravail",   pidgin:"Online",     ar:"عن بُعد",      ff:"E Ɓanndu" },
   "Freelance":  { en:"Freelance",  fr:"Freelance",     pidgin:"Freelance",  ar:"حر",           ff:"Freelance" },
   "Temporary":  { en:"Temporary",  fr:"Temporaire",    pidgin:"Small time", ar:"مؤقت",         ff:"Seeɗa" },
 };
@@ -486,7 +486,7 @@ export default function Jobs() {
 
         {!loading && error && (
           <div className="text-center py-16">
-            <p className="text-4xl mb-3">⚠ï¸</p>
+            <p className="text-4xl mb-3">⚠️</p>
             <p className="font-semibold text-gray-600 dark:text-gray-400">{t(error)}</p>
             <button onClick={() => void fetchJobs()}
               className="mt-4 bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">

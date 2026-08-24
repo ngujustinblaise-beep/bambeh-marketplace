@@ -90,7 +90,7 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
       <div className="w-full max-w-sm bg-teal-50 border border-teal-200 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-lg flex-shrink-0">
-            ðŸ“©
+            📩
           </div>
           <div>
             <p className="font-bold text-teal-800 text-sm leading-tight">{title}</p>

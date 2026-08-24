@@ -25,34 +25,34 @@ const CATEGORY_MAP: Record<string, { label: string; dbValue: string; emoji: stri
   technology:  { label: "Technology",  dbValue: "Technology",  emoji: "💻" },
   marketing:   { label: "Marketing",   dbValue: "Marketing",   emoji: "📣" },
   finance:     { label: "Finance",     dbValue: "Finance",     emoji: "💰" },
-  engineering: { label: "Engineering", dbValue: "Engineering", emoji: "⚙ï¸" },
+  engineering: { label: "Engineering", dbValue: "Engineering", emoji: "⚙️" },
   education:   { label: "Education",   dbValue: "Education",   emoji: "🎓" },
   agriculture: { label: "Agriculture", dbValue: "Agriculture", emoji: "🌾" },
   healthcare:  { label: "Healthcare",  dbValue: "Healthcare",  emoji: "🏥" },
   logistics:   { label: "Logistics",   dbValue: "Logistics",   emoji: "🚚" },
   sales:       { label: "Sales",       dbValue: "Sales",       emoji: "🤝" },
-  legal:       { label: "Legal",       dbValue: "Legal",       emoji: "⚖ï¸" },
+  legal:       { label: "Legal",       dbValue: "Legal",       emoji: "⚖️" },
   other:       { label: "Other",       dbValue: "Other",       emoji: "📋" },
 };
 
 // ─── i18n ──────────────────────────────────────────────────────────────────────
 const STR: Record<string, Record<string, string>> = {
-  jobs:         { en:"Jobs", fr:"Emplois", ha:"Ayyuka", ar:"وظائÙ", pidgin:"Work", ff:"Golle" },
-  opportunity:  { en:"opportunity", fr:"opportunité", ha:"dama", ar:"Ùرصة", pidgin:"opportunity", ff:"sago" },
-  opportunities:{ en:"opportunities", fr:"opportunités", ha:"damar aiki", ar:"Ùرص", pidgin:"opportunities", ff:"sagoji" },
-  loading:      { en:"Loading", fr:"Chargement", ha:"Ana lodi", ar:"جارÙ التحميل", pidgin:"Dey load", ff:"Nannginii" },
-  jobs_lc:      { en:"jobs…", fr:"offres…", ha:"ayyuka…", ar:"وظائÙ…", pidgin:"work…", ff:"golle…" },
+  jobs:         { en:"Jobs", fr:"Emplois", ha:"Ayyuka", ar:"وظائف", pidgin:"Work", ff:"Golle" },
+  opportunity:  { en:"opportunity", fr:"opportunité", ha:"dama", ar:"فرصة", pidgin:"opportunity", ff:"sago" },
+  opportunities:{ en:"opportunities", fr:"opportunités", ha:"damar aiki", ar:"فرص", pidgin:"opportunities", ff:"sagoji" },
+  loading:      { en:"Loading", fr:"Chargement", ha:"Ana lodi", ar:"جارٍ التحميل", pidgin:"Dey load", ff:"Nannginii" },
+  jobs_lc:      { en:"jobs…", fr:"offres…", ha:"ayyuka…", ar:"وظائف…", pidgin:"work…", ff:"golle…" },
   error:        { en:"Could not load jobs.", fr:"Impossible de charger les offres.", ha:"Ba a iya lodi", ar:"تعذر تحميل", pidgin:"E no fit load", ff:"Golle naataani" },
   tryAgain:     { en:"Try Again", fr:"Réessayer", ha:"Sake gwadawa", ar:"حاول مرة أخرى", pidgin:"Try again", ff:"Eɗɗoo yeeso" },
-  noJobs:       { en:"No jobs posted yet", fr:"Aucune offre publiée", ha:"Babu ayyuka", ar:"لا توجد وظائÙ بعد", pidgin:"No work yet", ff:"Alaa golle" },
-  checkBack:    { en:"Check back soon or post one yourself!", fr:"Revenez bientôt ou publiez une offre!", ha:"Dawo cikin wuri ko wallafa aiki!", ar:"عد قريبًا أو انشر وظيÙة!", pidgin:"Come back later or post work!", ff:"Ardi tuma ɓee ko fewtu!" },
-  allJobs:      { en:"All Jobs", fr:"Tous les emplois", ha:"Duk Ayyuka", ar:"جميع الوظائÙ", pidgin:"All Work", ff:"Golle fof" },
-  postJob:      { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيÙة", pidgin:"Post Work", ff:"Fewtu Golle" },
+  noJobs:       { en:"No jobs posted yet", fr:"Aucune offre publiée", ha:"Babu ayyuka", ar:"لا توجد وظائف بعد", pidgin:"No work yet", ff:"Alaa golle" },
+  checkBack:    { en:"Check back soon or post one yourself!", fr:"Revenez bientôt ou publiez une offre!", ha:"Dawo cikin wuri ko wallafa aiki!", ar:"عد قريبًا أو انشر وظيفة!", pidgin:"Come back later or post work!", ff:"Ardi tuma ɓee ko fewtu!" },
+  allJobs:      { en:"All Jobs", fr:"Tous les emplois", ha:"Duk Ayyuka", ar:"جميع الوظائف", pidgin:"All Work", ff:"Golle fof" },
+  postJob:      { en:"Post a Job", fr:"Publier une offre", ha:"Wallafa Aiki", ar:"نشر وظيفة", pidgin:"Post Work", ff:"Fewtu Golle" },
   viewApply:    { en:"View & Apply →", fr:"Voir & Postuler →", ha:"Duba & Nema →", ar:"عرض وتقديم →", pidgin:"See & Apply →", ff:"Yii & Dañ →" },
   loadMore:     { en:"Load More Jobs", fr:"Charger plus d'offres", ha:"Ƙara ayyuka", ar:"تحميل المزيد", pidgin:"Load more work", ff:"Nanngin Golleli" },
-  loading2:     { en:"Loading…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارÙ التحميل…", pidgin:"Dey load…", ff:"Nannginii…" },
-  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بÙعد", pidgin:"Online", ff:"E Ɓanndu" },
-  negotiable:   { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتÙاوض", pidgin:"E fit negotiate", ff:"Naggi" },
+  loading2:     { en:"Loading…", fr:"Chargement…", ha:"Ana lodi…", ar:"جارٍ التحميل…", pidgin:"Dey load…", ff:"Nannginii…" },
+  remote:       { en:"Remote", fr:"Télétravail", ha:"Nesa", ar:"عن بُعد", pidgin:"Online", ff:"E Ɓanndu" },
+  negotiable:   { en:"Negotiable", fr:"Négociable", ha:"Ana tattaunawa", ar:"قابل للتفاوض", pidgin:"E fit negotiate", ff:"Naggi" },
   salaryNotSpec:{ en:"Salary not specified", fr:"Salaire non précisé", ha:"Ba a ambaci albashi", ar:"الراتب غير محدد", pidgin:"No salary talk", ff:"Njobdi alaa" },
   closed:       { en:"⛔ Closed — Deadline passed", fr:"⛔ Fermé — Délai dépassé", ha:"⛔ An rufe — lokaci ya ƙare", ar:"⛔ مغلق — انتهى الموعد", pidgin:"⛔ E don close", ff:"⛔ Uddii" },
   closingSoon:  { en:"⏰ Closing soon", fr:"⏰ Ferme bientôt", ha:"⏰ Zai ƙare", ar:"⏰ ينتهي قريبًا", pidgin:"⏰ E go close", ff:"⏰ Ɓennoo seeɗa" },
@@ -191,7 +191,7 @@ const JobsCategory: React.FC = () => {
         {/* Error */}
         {!loading && error && (
           <div className="text-center py-16">
-            <p className="text-4xl mb-3">⚠ï¸</p>
+            <p className="text-4xl mb-3">⚠️</p>
             <p className="text-gray-600 dark:text-gray-400">{error}</p>
             <button onClick={() => void load(1)}
               className="mt-4 bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">

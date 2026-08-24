@@ -22,12 +22,12 @@ const TR: Record<string, Record<Lang, string>> = {
   loading:        { en: "Loading drafts…", fr: "Chargement…", ha: "Ana lodawa…", ar: "جار التحميل…", pcm: "Loading…", ff: "Naatirde…" },
   retry:          { en: "Retry", fr: "Réessayer", ha: "Sake", ar: "أعد المحاولة", pcm: "Try again", ff: "Artu jeer" },
   no_drafts:      { en: "No drafts saved", fr: "Aucun brouillon", ha: "Babu daftar", ar: "لا مسودات", pcm: "No draft dey", ff: "Alaa draftji" },
-  drafts_hint:    { en: "Items you save as drafts will appear here", fr: "Les articles sauvegardés en brouillon apparaîtront ici", ha: "Abubuwan da kuka adana a matsayin daftari za su bayyana anan", ar: "ستظهر هنا العناصر التي تحÙظها كمسودات", pcm: "Item wey you save as draft go show here", ff: "Kala ndema e draft ngo jeyaa wa" },
+  drafts_hint:    { en: "Items you save as drafts will appear here", fr: "Les articles sauvegardés en brouillon apparaîtront ici", ha: "Abubuwan da kuka adana a matsayin daftari za su bayyana anan", ar: "ستظهر هنا العناصر التي تحفظها كمسودات", pcm: "Item wey you save as draft go show here", ff: "Kala ndema e draft ngo jeyaa wa" },
   create:         { en: "Create a listing", fr: "Créer une annonce", ha: "Ƙirƙiri jeri", ar: "إنشاء إعلان", pcm: "Create listing", ff: "Newnin nde" },
   drafts_count:   { en: "drafts", fr: "brouillons", ha: "daftar", ar: "مسودات", pcm: "draft", ff: "draftji" },
   draft_one:      { en: "draft", fr: "brouillon", ha: "daftar ɗaya", ar: "مسودة", pcm: "draft", ff: "draft" },
   login_required: { en: "Please log in to view drafts.", fr: "Connectez-vous pour voir les brouillons.", ha: "Da fatan a shiga don ganin daftari.", ar: "الرجاء تسجيل الدخول لعرض المسودات.", pcm: "Please login to see drafts.", ff: "Newnin e nder ngam yiyde draftji." },
-  failed:         { en: "Failed to load drafts.", fr: "Échec du chargement.", ha: "An kasa lodawa.", ar: "Ùشل التحميل.", pcm: "Loading fail.", ff: "Naatirde waɗaani." },
+  failed:         { en: "Failed to load drafts.", fr: "Échec du chargement.", ha: "An kasa lodawa.", ar: "فشل التحميل.", pcm: "Loading fail.", ff: "Naatirde waɗaani." },
   unexpected:     { en: "Unexpected error.", fr: "Erreur inattendue.", ha: "Kuskure da ba a tsammani.", ar: "خطأ غير متوقع.", pcm: "Unexpected error.", ff: "Juumre anndaande." },
 };
 function getLang(): Lang {

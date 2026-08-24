@@ -193,7 +193,7 @@ export class ErrorBoundary extends React.Component<
               minWidth: 140,
             }}
           >
-            🗑ï¸ Clear Data & Reload
+            🗑️ Clear Data & Reload
           </button>
         </div>
 

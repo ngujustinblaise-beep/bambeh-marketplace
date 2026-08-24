@@ -134,33 +134,33 @@ const STRINGS = {
     goBack:     'العودة',
     offerSent:  'تم إرسال العرض! 🎉',
     ownerReview:'سيراجع صاحب العنصر عرضك وسيرد عليك عبر المحادثة.',
-    browseMore: 'تصÙح المزيد من العناصر',
+    browseMore: 'تصفح المزيد من العناصر',
     backToItem: 'العودة إلى العنصر',
     back:       'رجوع',
     whatOffering:'ماذا تعرض؟ *',
     offerPlaceholder:'مثال: سامسونج غالاكسي S21',
-    descLabel:  'الوصÙ *',
-    minChars:   (n: number) => `${n} حرÙ على الأقل`,
-    descPlaceholder:'صÙ عنصرك — الحالة، العمر، المميزات، العيوب…',
-    chars:      (n: number) => `${n} حرÙ`,
+    descLabel:  'الوصف *',
+    minChars:   (n: number) => `${n} حرف على الأقل`,
+    descPlaceholder:'صف عنصرك — الحالة، العمر، المميزات، العيوب…',
+    chars:      (n: number) => `${n} حرف`,
     need:       (n: number) => ` — يحتاج ${n} أكثر`,
     condition:  'الحالة *',
-    estValue:   'القيمة التقديرية (Ùرنك)',
+    estValue:   'القيمة التقديرية (فرنك)',
     estPlaceholder:'مثال: 75000',
-    howItWorks: 'كيÙ تعمل عروض التبادل',
-    step1:      'قدّم عرضك مع تÙاصيل العنصر',
-    step2:      'يراجع صاحب العنصر العرض ويقبله أو يرÙضه',
-    step3:      'عند القبول، أتمّ الصÙقة عبر المحادثة',
-    step4:      'التقÙ Ùي مكان عام لتبادل العناصر',
+    howItWorks: 'كيف تعمل عروض التبادل',
+    step1:      'قدّم عرضك مع تفاصيل العنصر',
+    step2:      'يراجع صاحب العنصر العرض ويقبله أو يرفضه',
+    step3:      'عند القبول، أتمّ الصفقة عبر المحادثة',
+    step4:      'التقِ في مكان عام لتبادل العناصر',
     cancel:     'إلغاء',
     sendOffer:  'إرسال العرض',
-    sending:    'جارÙ الإرسال…',
+    sending:    'جارٍ الإرسال…',
     errOffering:'يرجى إدخال ما تعرضه.',
-    errDesc:    'يرجى وصÙ عنصرك.',
-    errDescMin: 'يجب أن يحتوي الوصÙ على 20 حرÙًا على الأقل.',
+    errDesc:    'يرجى وصف عنصرك.',
+    errDescMin: 'يجب أن يحتوي الوصف على 20 حرفًا على الأقل.',
     errItem:    'عنصر تبادل غير صالح.',
-    errDuplicate:'لقد قدّمت عرضًا بالÙعل على هذا العنصر.',
-    errGeneric: 'Ùشل الإرسال. حاول مجددًا.',
+    errDuplicate:'لقد قدّمت عرضًا بالفعل على هذا العنصر.',
+    errGeneric: 'فشل الإرسال. حاول مجددًا.',
   },
   pcm: {
     pageTitle:  'Make Exchange Offer',
@@ -392,7 +392,7 @@ export default function ExchangeOfferPage() {
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
-            <span className="flex-shrink-0">⚠ï¸</span>
+            <span className="flex-shrink-0">⚠️</span>
             <span>{error}</span>
           </div>
         )}

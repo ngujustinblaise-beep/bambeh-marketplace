@@ -495,7 +495,7 @@ export const clearTestData = () => {
   localStorage.removeItem("bambe-services");
   localStorage.removeItem("bambe-rentals");
   localStorage.removeItem("bambe-vehicles");
-  console.log("🗑ï¸ Test data cleared");
+  console.log("🗑️ Test data cleared");
 
 /**
  * Check if test data exists

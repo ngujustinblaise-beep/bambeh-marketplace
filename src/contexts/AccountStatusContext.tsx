@@ -111,7 +111,7 @@ const STATUS_MESSAGES: Record<AccountStatus, AccountStatusMessage> = {
     canAppeal: false,
   },
   frozen: {
-    title: "⚠ï¸ Account Frozen",
+    title: "⚠️ Account Frozen",
     message:
       "Your account has been temporarily frozen due to suspicious activity or policy violation.",
     contactInfo:

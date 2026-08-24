@@ -1,23 +1,23 @@
 // BAMBEH_DEPLOY_TOKEN__ORDERTRACKING_FIX362_CLEAN
 ﻿// BAMBEH_DEPLOY_TOKEN__OT_OLD_FIX140_REAL_CLEAN
 /**
- * OrderTracking.tsx â€” Bambeh Marketplace (FIX140)
+ * OrderTracking.tsx — Bambeh Marketplace (FIX140)
  * FILE LOCATION: src/pages/OrderTracking.tsx  (REPLACES the fully-mock version)
  *
- * REAL data â€” the fabricated BMB-0000000X order, fake items, fake customer and
+ * REAL data — the fabricated BMB-0000000X order, fake items, fake customer and
  * fake courier are all removed. Built on the confirmed `orders` schema
  * (fix140a recon): order_number, status, total_xaf, items jsonb,
  * delivery_address/city, payment_method, payment_reference/payment_ref,
- * paid_at, escrow_status, created_at, updated_at â€” plus order_items rows
+ * paid_at, escrow_status, created_at, updated_at — plus order_items rows
  * when present.
  *
- *  â€¢ Loads the order by id for the signed-in user (RLS-safe).
- *  â€¢ Status timeline: pending â†’ confirmed â†’ processing â†’ shipped â†’
- *    out for delivery â†’ delivered; cancelled/failed shown honestly.
- *  â€¢ Items from order_items table, falling back to the items jsonb.
- *  â€¢ Copy order number, refresh, back button. 5 languages + RTL.
+ *  • Loads the order by id for the signed-in user (RLS-safe).
+ *  • Status timeline: pending → confirmed → processing → shipped →
+ *    out for delivery → delivered; cancelled/failed shown honestly.
+ *  • Items from order_items table, falling back to the items jsonb.
+ *  • Copy order number, refresh, back button. 5 languages + RTL.
  *
- * Â© 2026 BAMBEH SARL. All rights reserved.
+ * © 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -173,14 +173,14 @@ export default function OrderTracking() {
         .eq('order_id', orderId);
       if (rows && rows.length > 0) {
         list = rows.map(r => ({
-          title: r.title || 'â€”',
+          title: r.title || '—',
           quantity: r.quantity || 1,
           price_xaf: r.price_xaf || 0,
           image_url: r.image_url,
         }));
       } else if (Array.isArray((data as OrderRow).items)) {
         list = ((data as OrderRow).items as Record<string, unknown>[]).map(it => ({
-          title: String(it.title ?? it.name ?? 'â€”'),
+          title: String(it.title ?? it.name ?? '—'),
           quantity: Number(it.quantity ?? 1),
           price_xaf: Number(it.price_xaf ?? it.price ?? 0),
           image_url: (it.image_url as string) ?? null,
@@ -225,7 +225,7 @@ export default function OrderTracking() {
   }
 
   const fmtXAF = (n: number) => `${(n || 0).toLocaleString()} XAF`;
-  const fmtDate = (d?: string | null) => (d ? new Date(d).toLocaleString() : 'â€”');
+  const fmtDate = (d?: string | null) => (d ? new Date(d).toLocaleString() : '—');
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -295,7 +295,7 @@ export default function OrderTracking() {
                     </button>
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {s.placed}: {fmtDate(order.created_at)} Â· {s.updated}: {fmtDate(order.updated_at)}
+                    {s.placed}: {fmtDate(order.created_at)} · {s.updated}: {fmtDate(order.updated_at)}
                   </p>
                 </div>
               </div>
