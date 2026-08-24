@@ -757,7 +757,7 @@ export default function App() {
                         <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
                         <Route
                           path="/forgot-password"
-                          element={<AuthLayout><ForgotPassword /></AuthLayout>}
+                          element={<AuthLayout><SecurityRecovery /></AuthLayout>}
                         />
                         <Route
                           path="/forgot-credentials"
