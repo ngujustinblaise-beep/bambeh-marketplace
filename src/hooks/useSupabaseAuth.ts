@@ -1,6 +1,34 @@
-// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX385_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX388_CLEAN
 /**
- * src/hooks/useSupabaseAuth.ts - FIX385 (supersedes FIX340)
+ * src/hooks/useSupabaseAuth.ts - FIX388 (supersedes FIX385)
+ *
+ * ===================================================================
+ * FIX388 - THE TWO RETRY LAYERS WERE MULTIPLYING.
+ * ===================================================================
+ *
+ * FIX385 (below) wrapped every auth call in a three-attempt retry. FIX386
+ * then gave net-interceptor.ts its own three-attempt retry for GET and HEAD.
+ * Nobody told either about the other, so they COMPOUNDED:
+ *
+ *     one getUser()      =  3 app tries  x  3 transport tries  =  9 requests
+ *     one profiles read  =  3 app tries  x  3 transport tries  =  9 requests
+ *     one resolveSession =  18 requests where 2 were needed
+ *
+ * On a connection that was already failing, that is the opposite of help. A
+ * live console showed "[auth] profiles read failed after 3 tries" repeating
+ * endlessly - the fix working exactly as written, and making things worse.
+ *
+ * FIX388 leaves the retrying to ONE layer:
+ *
+ *   * getUser, getSession and the profiles read now make ONE call each.
+ *     net-interceptor retries them at the transport, where it belongs.
+ *
+ *   * signInWithPassword and signUp still retry HERE, twice, because the
+ *     transport deliberately never retries a POST. Two attempts, not three,
+ *     and a longer pause between them.
+ *
+ * Everything FIX385 established is kept: a failed read never demotes anyone,
+ * a failed read is never cached, and only a 401 or 403 signs anyone out.
  *
  * ===================================================================
  * THE ADMIN LOOP, FOUND. It was never permissions.
@@ -112,19 +140,23 @@ function pause(ms: number): Promise<void> {
 }
 
 /**
- * Runs an async Supabase call up to three times.
+ * Runs an async Supabase call up to `times` attempts.
  * Returns { value, threw } - it never throws, so callers can decide what an
  * unreachable server means for them instead of crashing.
+ *
+ * FIX388: the count is now a parameter. Reads pass 1 because
+ * net-interceptor.ts already retries them at the transport layer; writes that
+ * the transport will not retry (sign-in, sign-up) pass 2.
  */
-async function tryThrice<T>(fn: () => Promise<T>): Promise<{ value: T | null; threw: unknown }> {
+async function attempt<T>(fn: () => Promise<T>, times = 1): Promise<{ value: T | null; threw: unknown }> {
   let threw: unknown = null;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let i = 0; i < times; i++) {
     try {
       const value = await fn();
       return { value, threw: null };
     } catch (e) {
       threw = e;
-      if (attempt < 2) await pause(400 * (attempt + 1));
+      if (i < times - 1) await pause(900 * (i + 1));
     }
   }
   return { value: null, threw };
@@ -159,10 +191,11 @@ export function useSupabaseAuth(): SupabaseAuthState {
     // before giving up, because one attempt is not a fair test on this network.
     let verifiedUser: User | null = null;
 
-    const got = await tryThrice(() => supabase.auth.getUser());
+    // FIX388 - ONE call. net-interceptor retries this GET at the transport.
+    const got = await attempt(() => supabase.auth.getUser(), 1);
 
     if (got.threw) {
-      console.warn('[auth] getUser() unreachable after 3 tries, keeping stored session:', got.threw);
+      console.warn('[auth] getUser() unreachable, keeping stored session:', got.threw);
       verifiedUser = session.user ?? null;
     } else {
       const userError = got.value?.error;
@@ -211,8 +244,10 @@ export function useSupabaseAuth(): SupabaseAuthState {
     // FIX340's lesson still applies: select('*') and judge in JS. Naming a
     // column that does not exist makes PostgREST reject the WHOLE query, which
     // would strip admin AND vendor rights from every user at once.
-    const read = await tryThrice(() =>
-      supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+    // FIX388 - ONE call. The transport layer does the retrying.
+    const read = await attempt(
+      () => supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+      1,
     );
 
     const readFailed = !!read.threw || !!read.value?.error;
@@ -229,7 +264,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
           : (profileCache && profileCache.userId === user.id ? profileCache : null);
 
       console.warn(
-        '[auth] profiles read failed after 3 tries - keeping last known roles, not caching.',
+        '[auth] profiles read failed - keeping last known roles, not caching.',
         read.threw || read.value?.error
       );
 
@@ -267,26 +302,31 @@ export function useSupabaseAuth(): SupabaseAuthState {
   // -- Manual refresh ---------------------------------------------------------
   const refresh = useCallback(async () => {
     profileCache = null; // force a fresh read; lastKnownRoles is deliberately kept
-    const got = await tryThrice(() => supabase.auth.getSession());
+    const got = await attempt(() => supabase.auth.getSession(), 1);
     await resolveSession(got.value?.data?.session ?? null);
   }, [resolveSession]);
 
   // -- Email + password sign-in ----------------------------------------------
   const login = useCallback(
     async (email: string, password: string): Promise<{ error: string | null }> => {
-      const attempt = await tryThrice(() =>
-        supabase.auth.signInWithPassword({ email, password })
+      // FIX388 - the transport never retries a POST, so this one retries here.
+      // Twice, not three times, with a longer pause.
+      const tried = await attempt(
+        () => supabase.auth.signInWithPassword({ email, password }),
+        2,
       );
 
-      if (attempt.threw) {
-        // Never reached the server. Say so plainly instead of "Failed to fetch".
-        return { error: 'Could not reach Bambeh. Check your connection and try again.' };
+      if (tried.threw) {
+        // The connection dropped. On this network the server has sometimes
+        // ALREADY answered 200 and only the response body was lost, so the
+        // honest message is "try again", never "wrong password".
+        return { error: 'The connection dropped before Bambeh could answer. Please try again.' };
       }
 
-      const error = attempt.value?.error;
+      const error = tried.value?.error;
       if (error) return { error: error.message };
 
-      const got = await tryThrice(() => supabase.auth.getSession());
+      const got = await attempt(() => supabase.auth.getSession(), 1);
       await resolveSession(got.value?.data?.session ?? null);
       return { error: null };
     },
@@ -296,25 +336,26 @@ export function useSupabaseAuth(): SupabaseAuthState {
   // -- Email + password sign-up ----------------------------------------------
   const register = useCallback(
     async (email: string, password: string, fullName?: string): Promise<{ error: string | null }> => {
-      const attempt = await tryThrice(() =>
-        supabase.auth.signUp({
+      const tried = await attempt(
+        () => supabase.auth.signUp({
           email,
           password,
           options: fullName ? { data: { full_name: fullName } } : undefined,
-        })
+        }),
+        2,
       );
 
-      if (attempt.threw) {
-        return { error: 'Could not reach Bambeh. Check your connection and try again.' };
+      if (tried.threw) {
+        return { error: 'The connection dropped before Bambeh could answer. Please try again.' };
       }
 
-      const error = attempt.value?.error;
+      const error = tried.value?.error;
       if (error) return { error: error.message };
 
       // When "Confirm email" is OFF, signUp returns a live session - log the
       // user straight in. When it is ON, session is null and the caller can
       // route them to /login.
-      const newSession = attempt.value?.data?.session ?? null;
+      const newSession = tried.value?.data?.session ?? null;
       if (newSession) await resolveSession(newSession);
       return { error: null };
     },
@@ -322,7 +363,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
   );
 
   const logout = useCallback(async (): Promise<void> => {
-    await tryThrice(() => supabase.auth.signOut());
+    await attempt(() => supabase.auth.signOut(), 1);
     profileCache   = null;
     lastKnownRoles = null;
     await resolveSession(null);
@@ -333,12 +374,12 @@ export function useSupabaseAuth(): SupabaseAuthState {
     let mounted = true;
 
     (async () => {
-      const got = await tryThrice(() => supabase.auth.getSession());
+      const got = await attempt(() => supabase.auth.getSession(), 1);
       if (!mounted) return;
 
       if (got.threw) {
         // FIX316 - if getSession() itself fails, never leave the app spinning.
-        console.warn('[auth] getSession() failed at bootstrap after 3 tries:', got.threw);
+        console.warn('[auth] getSession() failed at bootstrap:', got.threw);
         setAuthReady(true);
         setState(prev => ({ ...prev, loading: false, authReady: true }));
         return;
@@ -380,4 +421,4 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
 
 /** Convenience hook - use this in components instead of prop drilling */
 export { useAuth } from "@/contexts/AuthContext";
-// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX385__COMPLETE
+// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX388__COMPLETE

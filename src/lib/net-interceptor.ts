@@ -1,6 +1,36 @@
-// BAMBEH_DEPLOY_TOKEN__NETINTERCEPTOR_FIX386_CLEAN
+// BAMBEH_DEPLOY_TOKEN__NETINTERCEPTOR_FIX389_CLEAN
 /**
- * src/lib/net-interceptor.ts - FIX386. The real one.
+ * src/lib/net-interceptor.ts - FIX389 (supersedes FIX386). The auth lane.
+ *
+ * ===================================================================
+ * FIX389 - SIGN-IN GETS THE PIPE TO ITSELF.
+ * ===================================================================
+ *
+ * A live console caught something that changes everything:
+ *
+ *     POST /auth/v1/token?grant_type=password  ERR_CONNECTION_RESET  200 (OK)
+ *     POST /auth/v1/token?grant_type=password  ERR_CONNECTION_CLOSED 200 (OK)
+ *
+ * TWO HUNDRED OK, and then the connection died. Supabase authenticated the
+ * user and issued the token. The headers arrived. The RESPONSE BODY was cut
+ * off mid-transfer, so the browser never received the JWT and fetch() threw
+ * "Failed to fetch". The user was signed in on the server and told they were
+ * not.
+ *
+ * That is what a single HTTP/2 connection does when it is carrying too many
+ * streams and one of them is killed. And the login page was firing
+ * exchange_items, corporate_products, vendor_profiles, listings, notifications
+ * and profiles AT THE SAME TIME as the sign-in.
+ *
+ * So FIX389 adds an AUTH LANE. Any request to /auth/v1/ - sign in, sign up,
+ * token refresh, password reset - gets the connection to itself:
+ *
+ *   * every other Supabase request waits while an auth call is in flight
+ *   * the auth call waits for the in-flight ones to drain first (capped at
+ *     5 seconds so it can never hang)
+ *   * normal concurrency drops from 4 to 3
+ *
+ * Signing in is the one request a user cannot work around. It gets priority.
  *
  * ===================================================================
  * WHAT WAS HERE BEFORE
@@ -83,7 +113,8 @@ export type NetInterceptorOptions = {
 // -- Tuning ------------------------------------------------------------------
 
 const HOST_MARKER     = ".supabase.co";
-const MAX_CONCURRENT  = 4;      // simultaneous Supabase requests
+const MAX_CONCURRENT  = 3;      // FIX389 - simultaneous NON-AUTH Supabase requests
+const AUTH_MARKER     = "/auth/v1/";
 const RETRY_LIMIT     = 3;      // GET / HEAD only
 const RETRY_BASE_MS   = 400;
 const MICRO_CACHE_MS  = 3000;   // identical GET inside this window is reused
@@ -99,11 +130,16 @@ let originalFetch: typeof fetch | null = null;
 let active = 0;
 const waiters: Array<() => void> = [];
 
+// FIX389 - the auth lane. While an /auth/v1/ request is in flight, nothing
+// else is allowed onto the connection.
+let authBusy = false;
+const authQueue: Array<() => void> = [];
+
 const inFlight   = new Map<string, Promise<Response>>();
 const microCache = new Map<string, { at: number; res: Response }>();
 const recentHits = new Map<string, number[]>();
 
-const stats = { passed: 0, deduped: 0, cached: 0, retried: 0, blocked: 0, failed: 0 };
+const stats = { passed: 0, deduped: 0, cached: 0, retried: 0, blocked: 0, failed: 0, authHeld: 0 };
 
 // -- Helpers -----------------------------------------------------------------
 
@@ -142,7 +178,8 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function acquireSlot(): Promise<void> {
-  while (active >= MAX_CONCURRENT) {
+  // FIX389 - also wait while the auth lane is held.
+  while (authBusy || active >= MAX_CONCURRENT) {
     await new Promise<void>((resolve) => waiters.push(resolve));
   }
   active = active + 1;
@@ -152,6 +189,36 @@ function releaseSlot(): void {
   active = active > 0 ? active - 1 : 0;
   const next = waiters.shift();
   if (next) next();
+}
+
+/**
+ * FIX389 - take the connection exclusively for an auth request.
+ * Waits for any other auth call to finish, then lets the in-flight normal
+ * requests drain. Capped at 5 seconds so a stuck request can never hang a
+ * sign-in.
+ */
+async function acquireAuthLane(): Promise<void> {
+  while (authBusy) {
+    await new Promise<void>((resolve) => authQueue.push(resolve));
+  }
+  authBusy = true;
+  stats.authHeld = stats.authHeld + 1;
+
+  let spins = 0;
+  while (active > 0 && spins < 100) {
+    await sleep(50);
+    spins = spins + 1;
+  }
+}
+
+function releaseAuthLane(): void {
+  authBusy = false;
+  const nextAuth = authQueue.shift();
+  if (nextAuth) nextAuth();
+  // Wake everyone that parked while the lane was held; each re-checks and
+  // re-parks if it still has to.
+  const parked = waiters.splice(0, waiters.length);
+  parked.forEach((resolve) => resolve());
 }
 
 function sweepCache(): void {
@@ -189,6 +256,22 @@ async function bambehFetch(input: RequestInfo | URL, init?: RequestInit): Promis
   const method = methodOf(input, init);
   const idempotent = method === "GET" || method === "HEAD";
   const key = method + " " + url;
+
+  // FIX389 - AUTH LANE. Never cached, never deduped, never retried here:
+  // it simply gets the connection to itself and one clean attempt.
+  if (url.indexOf(AUTH_MARKER) !== -1) {
+    await acquireAuthLane();
+    try {
+      const res = await raw(input as RequestInfo, init);
+      stats.passed = stats.passed + 1;
+      return res;
+    } catch (e) {
+      stats.failed = stats.failed + 1;
+      throw e;
+    } finally {
+      releaseAuthLane();
+    }
+  }
 
   if (idempotent) {
     const cached = microCache.get(key);
@@ -275,13 +358,14 @@ export function initNetInterceptor(options: NetInterceptorOptions = {}): void {
       ...stats,
       activeNow: active,
       queued: waiters.length,
+      authBusy,
       cacheEntries: microCache.size,
     });
   } catch {
     /* debugging helper only - never fatal */
   }
 
-  console.info("[net] Bambeh interceptor active - dedupe, micro-cache, 4 at a time, loop guard.");
+  console.info("[net] Bambeh interceptor active - auth lane, dedupe, micro-cache, 3 at a time, loop guard.");
 }
 
 export function isNetInterceptorInitialized(): boolean {
@@ -290,9 +374,9 @@ export function isNetInterceptorInitialized(): boolean {
 
 /** Live counters. Also reachable from the browser console as __bambehNet(). */
 export function getNetInterceptorStats() {
-  return { ...stats, activeNow: active, queued: waiters.length, cacheEntries: microCache.size };
+  return { ...stats, activeNow: active, queued: waiters.length, authBusy, cacheEntries: microCache.size };
 }
 
 // App.tsx imports this module for its side effect, so install on load.
 initNetInterceptor();
-// BAMBEH_END_TOKEN__NETINTERCEPTOR_FIX386__COMPLETE
+// BAMBEH_END_TOKEN__NETINTERCEPTOR_FIX389__COMPLETE
