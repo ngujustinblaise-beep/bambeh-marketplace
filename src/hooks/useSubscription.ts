@@ -1,63 +1,81 @@
-// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX356_CLEAN
-// src/hooks/useSubscription.ts — Supabase-only source of truth. NO localStorage.
+// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX387_CLEAN
+// src/hooks/useSubscription.ts - Supabase-only source of truth. NO localStorage.
 //
-// HISTORY
-//  FIX91  — localStorage cache removed. Supabase `subscriptions` is the ONLY
+// ===================================================================
+// FIX387 - ONE QUESTION, ASKED ONCE.
+// ===================================================================
+//
+// THE BUG, in this file's own previous code:
+//
+//     const onRefresh = (): void => verify();              // NOT throttled
+//     window.addEventListener(REFRESH_EVENT, onRefresh);   // PER INSTANCE
+//     verify();                                            // PER INSTANCE
+//     const timer = setInterval(verify, IDLE_REFRESH_MS);  // PER INSTANCE
+//
+// Every mounted copy of this hook opened its own connection to the database,
+// started its own five-minute timer, and registered its own event listener.
+// LocationLock renders inside EVERY listing card, so a marketplace page with
+// fifty cards created fifty of everything.
+//
+// The multiplier was announce(). One announce() woke all fifty listeners and
+// each fired an UNTHROTTLED fetch. activationWatch() announces every five
+// seconds for ten minutes after a payment - fifty listeners times a hundred
+// and twenty rounds is SIX THOUSAND requests from a single subscription.
+//
+// A live console showed 3,295 errors on one page, the same URL over and over:
+//     GET /rest/v1/subscriptions?select=*&user_...  ERR_CONNECTION_CLOSED
+//
+// Nothing was wrong with Supabase. Ten sequential requests to this project
+// succeed ten times out of ten. The app was asking one question thousands of
+// times and drowning its own connection.
+//
+// WHAT FIX387 CHANGES - the shape of the answer, not the answer itself:
+//
+//   1. ONE SHARED STORE. The verified subscription lives in module state.
+//      Hooks read it; they do not each own a copy.
+//
+//   2. ONE REQUEST IN FLIGHT. If a check is already running, every other
+//      caller awaits the SAME promise. Fifty cards, one request.
+//
+//   3. ONE TIMER AND ONE SET OF LISTENERS for the whole app, reference
+//      counted - started by the first hook, stopped by the last.
+//
+//   4. announce() NO LONGER CAUSES A STAMPEDE. It publishes the state we
+//      already have to every subscriber and dispatches the window event for
+//      any external listener, but it does not make fifty components refetch.
+//
+//   5. THE THROTTLE IS REAL. MIN_REFETCH_MS now guards every path except an
+//      explicit force, instead of only the focus and visibility handlers.
+//
+// EVERY EXPORT KEEPS ITS EXACT SIGNATURE - SubscriptionStatus, Plan,
+// PaymentResult, getActiveSubscription, activateSubscription,
+// clearSubscription, refreshSubscription, activationWatch,
+// stopActivationWatch, useSubscription, pollPaymentStatus, fetchPlans,
+// initiateSubscription. Nothing that imports this file has to change.
+//
+// The security model is untouched: Supabase is the only authority, the client
+// never self-grants, and nothing is ever restored from localStorage.
+//
+// ===================================================================
+// HISTORY (kept - each of these is a bug someone paid for)
+// ===================================================================
+//  FIX91  - localStorage cache removed. Supabase `subscriptions` is the ONLY
 //           authority. A per-session in-memory snapshot avoids refetch storms
 //           but is NEVER persisted and never grants access on its own.
-//  FIX96  — select * and judge in JS: the live table uses plan/is_active
-//           (plan_type & plan_name do not exist; naming them causes SQL 42703).
+//  FIX96  - select * and judge in JS: the live table uses plan/is_active
+//           (plan_type and plan_name do not exist; naming them causes 42703).
+//  FIX335 - THE BOUNCE LOOP. pollPaymentStatus used to call onSuccess() after
+//           twelve seconds WHETHER OR NOT the subscription row had appeared.
+//           The UI said "Payment confirmed!", the gate found no subscription,
+//           and threw the paying customer straight back out. Now onSuccess()
+//           fires only when a live row genuinely exists, the window is 120s,
+//           and a background watch keeps looking for ten more minutes.
+//  FIX356 - the subscriber was the only one not told the truth. A failed
+//           subscription payment said "Payment declined by your mobile money
+//           provider" in English to everyone. Now CamPay's real reason is
+//           passed through campayFailureMessage() in the buyer's language.
 //
-//  FIX335 — THE BOUNCE LOOP. This is the one that was costing paying users.
-//
-//    What was wrong: when CamPay returned SUCCESSFUL, pollPaymentStatus
-//    re-checked Supabase 6 times at 2s — twelve seconds — and then called
-//    onSuccess() WHETHER OR NOT the subscription row had appeared. The UI
-//    announced "Payment confirmed!", navigated into the app, the access gate
-//    re-checked, found no active subscription, and threw the user straight back
-//    to the subscription page. Marketplace -> success -> marketplace, forever.
-//    The customer had paid, and the app told them they had not.
-//
-//    What is right now:
-//      * The post-payment check runs for up to 120 SECONDS at 2s intervals and
-//        announces on every round, so every mounted gate flips the instant the
-//        webhook lands.
-//      * onSuccess() fires ONLY when a live row genuinely exists.
-//      * If that window closes with no row we call onTimeout() — the honest
-//        outcome — AND leave a background watch running for 10 more minutes, so
-//        access switches on by itself whenever the webhook finally writes. The
-//        user is never told a lie and never bounced into a loop.
-//      * Hooks re-verify on window focus and tab visibility, not only on a
-//        5-minute timer. Coming back to the tab is now enough.
-//      * New export refreshSubscription() for an "I have paid — check now"
-//        button. Purely additive: every existing export keeps its signature, so
-//        SubscriptionPlans, PaymentCheckout and CamPayWidget keep compiling.
-//
-//  FIX356 — THE SUBSCRIBER WAS THE ONLY ONE NOT TOLD THE TRUTH.
-//
-//    FIX352 gave cart buyers CamPay's real reason in their own language
-//    ("Wrong PIN", "Not enough money in your wallet") through
-//    src/lib/campayReasons.ts. This file never got it. On a failed
-//    subscription payment it said, in English, to everyone:
-//
-//        "Payment declined by your mobile money provider."
-//
-//    So the people actually paying Bambeh — 100, 500 or 1,500 FCFA — were
-//    the ONLY ones left guessing, and a buyer who simply mistyped their PIN
-//    was never told to just try again. That is a lost sale for nothing.
-//
-//    Now: the reason CamPay returned is read from the status response and
-//    passed through campayFailureMessage() in the buyer's own language.
-//    No caller has to change — the language is read from the same
-//    localStorage key App.tsx writes ("Bambeh_language").
-//
-//    Also fixed: onError is an OPTIONAL callback, so a caller that omits it
-//    turned a failed payment into COMPLETE SILENCE. It is now always logged
-//    loudly with the reason, so a missing handler can never hide a failure.
-//
-//    Deliberately NOT done here: the client still never self-grants. If the
-//    webhook never writes the row at all, no frontend code can fix that — it is
-//    the payments Edge Function's job, and it is tracked separately.
+// (c) 2026 BAMBEH SARL. All rights reserved.
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -71,12 +89,12 @@ const BACKEND_URL =
 const REFRESH_EVENT = "bambeh_sub";
 
 // FIX335 timings ---------------------------------------------------------------
-const ACTIVATION_WINDOW_MS = 120_000; // foreground wait after CamPay says SUCCESSFUL
-const ACTIVATION_STEP_MS = 2_000; // how often we re-ask Supabase in that window
-const BACKGROUND_WINDOW_MS = 600_000; // keep watching quietly for 10 more minutes
-const BACKGROUND_STEP_MS = 5_000;
-const IDLE_REFRESH_MS = 5 * 60_000; // baseline heartbeat, unchanged
-const MIN_REFETCH_MS = 15_000; // throttle for focus / visibility re-checks
+const ACTIVATION_WINDOW_MS = 120000; // foreground wait after CamPay says SUCCESSFUL
+const ACTIVATION_STEP_MS = 2000;     // how often we re-ask Supabase in that window
+const BACKGROUND_WINDOW_MS = 600000; // keep watching quietly for 10 more minutes
+const BACKGROUND_STEP_MS = 5000;
+const IDLE_REFRESH_MS = 5 * 60000;   // baseline heartbeat, ONE for the whole app
+const MIN_REFETCH_MS = 15000;        // FIX387 - now guards every non-forced path
 
 // -- Types (unchanged surface) -------------------------------------------------
 export interface SubscriptionStatus {
@@ -107,16 +125,43 @@ interface CachedSub {
   expiresAt: string;
 }
 
-// -- Per-session in-memory snapshot (NOT persisted) ----------------------------
+// ==============================================================================
+// FIX387 - THE SHARED STORE. One copy of the answer for the whole application.
+// ==============================================================================
+
 let currentUserId: string | null = null;
 let currentSub: CachedSub | null = null;
 let lastVerifyAt = 0;
 
+/** The single request in flight, if any. Everyone else awaits this one. */
+let inFlight: Promise<CachedSub | null> | null = null;
+
+/** Mounted hooks. Each entry is a re-render trigger, not a copy of the data. */
+type Listener = () => void;
+const listeners = new Set<Listener>();
+
+/** Guards against our own dispatched event coming back and causing a refetch. */
+let selfDispatch = false;
+
+function publish(): void {
+  listeners.forEach((fn) => {
+    try {
+      fn();
+    } catch {
+      /* a broken listener must never stop the others */
+    }
+  });
+}
+
 function announce(): void {
+  publish();
   try {
+    selfDispatch = true;
     window.dispatchEvent(new Event(REFRESH_EVENT));
   } catch {
     /* non-browser environment */
+  } finally {
+    selfDispatch = false;
   }
 }
 
@@ -125,9 +170,6 @@ function sleep(ms: number): Promise<void> {
 }
 
 // FIX356 - the buyer's language, read from the key App.tsx actually writes.
-// App.tsx: const LANG_KEY = "Bambeh_language", storing "en"|"fr"|"pidgin"|"ar"|"ff".
-// The two legacy spellings are mapped exactly as _resolveCode does there, so a
-// customer who chose Pidgin or Fulfulde before the rename is still understood.
 const LANG_KEY = "Bambeh_language";
 
 function currentLang(): string {
@@ -183,6 +225,89 @@ async function verifyWithSupabase(
   return sub;
 }
 
+// ==============================================================================
+// FIX387 - verifyShared: the ONLY path a component may take.
+// Deduplicates concurrent callers and honours the throttle.
+// ==============================================================================
+function verifyShared(
+  userId: string,
+  opts: { force?: boolean } = {},
+): Promise<CachedSub | null> {
+  const sameUser = currentUserId === userId;
+
+  // Someone is already asking. Wait for their answer instead of asking again.
+  if (inFlight && sameUser) return inFlight;
+
+  // Asked recently enough. Reuse the answer we already have.
+  if (!opts.force && sameUser && lastVerifyAt > 0 && Date.now() - lastVerifyAt < MIN_REFETCH_MS) {
+    return Promise.resolve(currentSub);
+  }
+
+  const request = verifyWithSupabase(userId, false)
+    .catch(() => (currentUserId === userId ? currentSub : null))
+    .then((sub) => {
+      inFlight = null;
+      publish();
+      return sub;
+    });
+
+  inFlight = request;
+  return request;
+}
+
+// ==============================================================================
+// FIX387 - ONE timer and ONE set of listeners for the whole app.
+// Reference counted: started by the first hook, stopped by the last.
+// ==============================================================================
+let globalTimer: ReturnType<typeof setInterval> | null = null;
+let globalsWired = false;
+
+function refreshIfIdle(): void {
+  if (!currentUserId) return;
+  void verifyShared(currentUserId);
+}
+
+function onExternalRefresh(): void {
+  // Our own announce() already published the state. Only an OUTSIDE dispatch
+  // means "something changed that I do not know about - go and look".
+  if (selfDispatch) return;
+  if (!currentUserId) return;
+  void verifyShared(currentUserId, { force: true });
+}
+
+function onFocus(): void {
+  refreshIfIdle();
+}
+
+function onVisible(): void {
+  if (typeof document !== "undefined" && !document.hidden) refreshIfIdle();
+}
+
+function wireGlobals(): void {
+  if (globalsWired || typeof window === "undefined") return;
+  globalsWired = true;
+  window.addEventListener(REFRESH_EVENT, onExternalRefresh);
+  window.addEventListener("focus", onFocus);
+  if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", onVisible);
+  }
+  globalTimer = setInterval(refreshIfIdle, IDLE_REFRESH_MS);
+}
+
+function unwireGlobals(): void {
+  if (!globalsWired || typeof window === "undefined") return;
+  globalsWired = false;
+  window.removeEventListener(REFRESH_EVENT, onExternalRefresh);
+  window.removeEventListener("focus", onFocus);
+  if (typeof document !== "undefined") {
+    document.removeEventListener("visibilitychange", onVisible);
+  }
+  if (globalTimer !== null) {
+    clearInterval(globalTimer);
+    globalTimer = null;
+  }
+}
+
 // -- getActiveSubscription (sync snapshot of last verified answer) -------------
 export function getActiveSubscription(): SubscriptionStatus {
   return {
@@ -194,34 +319,43 @@ export function getActiveSubscription(): SubscriptionStatus {
   };
 }
 
-// -- activateSubscription: NOT a grant. Asks hooks to re-verify Supabase. ------
+// -- activateSubscription: NOT a grant. Asks the store to re-verify. -----------
 export function activateSubscription(_planType?: string, _expiresAt?: string): void {
+  if (currentUserId) {
+    void verifyShared(currentUserId, { force: true });
+  }
   announce();
 }
 
 export function clearSubscription(): void {
   currentUserId = null;
   currentSub = null;
+  lastVerifyAt = 0;
+  inFlight = null;
   stopActivationWatch();
   announce();
 }
 
 // -- FIX335: refreshSubscription ------------------------------------------------
 // Force one fresh check right now and tell every mounted hook about the result.
-// Wire this to an "I have paid — check now" button so a waiting customer has
+// Wire this to an "I have paid - check now" button so a waiting customer has
 // something to press instead of reloading the app.
 export async function refreshSubscription(userId?: string | null): Promise<boolean> {
   const uid = userId || currentUserId;
   if (!uid) return false;
   const sub = await verifyWithSupabase(uid, true);
-  announce();
+  publish();
   return sub !== null;
 }
 
 // -- FIX335: activationWatch ----------------------------------------------------
 // A quiet background poller for the window right after a payment. It NEVER
-// grants anything: all it does is keep asking Supabase and announcing, so the
+// grants anything: all it does is keep asking Supabase and publishing, so the
 // gates update themselves the moment the webhook writes the row.
+//
+// FIX387: it now publishes instead of announcing. Announcing used to wake every
+// mounted hook and make each one fetch again - which is precisely how one
+// payment turned into thousands of requests.
 let activationTimer: ReturnType<typeof setInterval> | null = null;
 
 export function stopActivationWatch(): void {
@@ -245,10 +379,10 @@ export function activationWatch(
     busy = true;
     try {
       const sub = await verifyWithSupabase(userId, true);
-      announce();
+      publish();
       if (sub !== null || Date.now() > deadline) stopActivationWatch();
     } catch {
-      /* transient — keep watching until the deadline */
+      /* transient - keep watching until the deadline */
     } finally {
       busy = false;
     }
@@ -258,79 +392,58 @@ export function activationWatch(
   return stopActivationWatch;
 }
 
-// -- useSubscription HOOK -------------------------------------------------------
+// ==============================================================================
+// useSubscription HOOK - now a thin reader of the shared store.
+// It owns no request, no timer and no listener of its own.
+// ==============================================================================
 export function useSubscription(userId?: string | null): SubscriptionStatus {
-  const seeded = userId && currentUserId === userId ? currentSub : null;
-  const [sub, setSub] = useState<CachedSub | null>(seeded);
-  const [isLoading, setIsLoading] = useState<boolean>(!!userId && seeded === null);
+  const [, bump] = useState(0);
 
   useEffect(() => {
-    let mounted = true;
+    const listener: Listener = () => bump((n) => n + 1);
+    listeners.add(listener);
+    wireGlobals();
 
-    if (!userId) {
-      setSub(null);
-      setIsLoading(false);
-      return;
+    if (userId) {
+      // A different user than the store holds: the old answer is not theirs.
+      if (currentUserId !== userId) {
+        currentUserId = userId;
+        currentSub = null;
+        lastVerifyAt = 0;
+        inFlight = null;
+      }
+      void verifyShared(userId);
+    } else {
+      currentUserId = null;
+      currentSub = null;
+      lastVerifyAt = 0;
+      publish();
     }
-
-    const verify = (): void => {
-      verifyWithSupabase(userId)
-        .then((next) => {
-          if (mounted) {
-            setSub(next);
-            setIsLoading(false);
-          }
-        })
-        .catch(() => {
-          if (mounted) setIsLoading(false);
-        });
-    };
-
-    // FIX335: an event or a tab-focus must not be able to hammer the database.
-    const verifyThrottled = (): void => {
-      if (Date.now() - lastVerifyAt < MIN_REFETCH_MS) return;
-      verify();
-    };
-
-    const onRefresh = (): void => verify(); // explicit announce: always honour it
-    const onFocus = (): void => verifyThrottled();
-    const onVisible = (): void => {
-      if (typeof document !== "undefined" && !document.hidden) verifyThrottled();
-    };
-
-    window.addEventListener(REFRESH_EVENT, onRefresh);
-    window.addEventListener("focus", onFocus);
-    if (typeof document !== "undefined") {
-      document.addEventListener("visibilitychange", onVisible);
-    }
-
-    if (!(currentUserId === userId && currentSub !== null)) setIsLoading(true);
-    verify(); // verify immediately on mount
-    const timer = setInterval(verify, IDLE_REFRESH_MS);
 
     return () => {
-      mounted = false;
-      window.removeEventListener(REFRESH_EVENT, onRefresh);
-      window.removeEventListener("focus", onFocus);
-      if (typeof document !== "undefined") {
-        document.removeEventListener("visibilitychange", onVisible);
-      }
-      clearInterval(timer);
+      listeners.delete(listener);
+      if (listeners.size === 0) unwireGlobals();
     };
   }, [userId]);
 
+  const mine = !!userId && currentUserId === userId;
+  const answered = mine && lastVerifyAt > 0;
+
   return {
-    isActive: sub !== null,
-    planType: sub ? sub.planType : null,
-    expiresAt: sub ? sub.expiresAt : null,
-    isLoading,
+    isActive: mine && currentSub !== null,
+    planType: mine && currentSub ? currentSub.planType : null,
+    expiresAt: mine && currentSub ? currentSub.expiresAt : null,
+    // Loading only until we have a verified answer for THIS user. A failed
+    // check still counts as answered, so a weak connection can never leave a
+    // gate spinning forever.
+    isLoading: !!userId && !answered,
     error: null,
   };
 }
 
 // -- pollPaymentStatus ----------------------------------------------------------
 // Polls the payments function for status. On SUCCESSFUL it does NOT self-grant:
-// the webhook activates server-side, and we wait — properly this time — for the
+// the webhook activates server-side, and we wait \u2014 properly this time \u2014 for the
 // row to appear before telling the customer anything.
 export function pollPaymentStatus(
   reference: string,
@@ -374,7 +487,8 @@ export function pollPaymentStatus(
 
           while (!stopped) {
             live = await verifyWithSupabase(userId, true);
-            announce();
+            publish(); // FIX387 - publish, never announce: announcing here made
+                       // every mounted hook fetch again, fifty at a time.
             if (live !== null) break;
             if (Date.now() >= deadline) break;
             await sleep(ACTIVATION_STEP_MS);
@@ -416,7 +530,7 @@ export function pollPaymentStatus(
         }
       }
     } catch {
-      /* transient network error — keep polling */
+      /* transient network error \u2014 keep polling */
     }
     if (tries >= 45) {
       stop();
@@ -484,4 +598,4 @@ export async function initiateSubscription(
     ussd_code: (j.ussd_code || inner.ussd_code) as string | undefined,
   };
 }
-// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX335__COMPLETE
+// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX387__COMPLETE
