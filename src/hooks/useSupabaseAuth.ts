@@ -1,33 +1,70 @@
-// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX340_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX385_CLEAN
 /**
- * ═══════════════════════════════════════════════════════════════════════
- * src/hooks/useSupabaseAuth.ts
- * Server-Side JWT Validation Hook — Bambeh Marketplace
+ * src/hooks/useSupabaseAuth.ts - FIX385 (supersedes FIX340)
  *
- * SECURITY FIX: Replaces localStorage-only auth checks with
- * cryptographically verified Supabase JWT validation.
+ * ===================================================================
+ * THE ADMIN LOOP, FOUND. It was never permissions.
+ * ===================================================================
  *
- * FIX71: Added the missing register() function. Register.tsx calls
- *        useAuth().register(...) — which was undefined, so signup threw
- *        silently (false "account created" + no redirect). register() now
- *        calls supabase.auth.signUp and, when a session is returned
- *        (email-confirmation OFF), signs the user straight in.
+ * FIX340 corrected the table and column, and profiles.is_admin has been true
+ * for the owner ever since. The panel still bounced. This is why:
  *
- * FIX340: The admin gate could never fire. This hook read the WRONG TABLE and
- *         the WRONG COLUMN - .from('users').select('role, is_vendor') and then
- *         isAdmin = role === 'admin'. Roles live in `profiles`, and admin is
- *         carried by profiles.is_admin. Fixed below, and now tolerant of all
- *         three conventions (is_admin, admin_role, role).
+ *     const { data: profile } = await supabase.from('profiles')...
+ *     const p = (profile ?? {}) as Record<string, unknown>;
+ *     const isAdmin = p.is_admin === true || ...
  *
- * © 2026 BAMBEH SARL / Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════
+ * The ERROR was thrown away. When that request dies - and on this project
+ * roughly a third of them do, with ERR_CONNECTION_RESET or
+ * ERR_HTTP2_PROTOCOL_ERROR - `profile` is null, `p` is {}, and isAdmin
+ * silently becomes FALSE. The code could not tell "this user is not an admin"
+ * apart from "I could not ask".
+ *
+ * Then it made it permanent:
+ *
+ *     profileCache = { userId, isVendor, isAdmin, fetchedAt: now };
+ *
+ * It cached that false for FIVE MINUTES. One dropped packet demoted the owner
+ * and the cache served the lie back without ever retrying.
+ *
+ * ===================================================================
+ * WHAT FIX385 CHANGES
+ * ===================================================================
+ *
+ * 1. THE PROFILE READ IS RETRIED - three attempts with a growing pause.
+ *    Ten sequential requests to this Supabase project succeed ten times out
+ *    of ten; it is the parallel storm that kills them. A retry is usually
+ *    enough.
+ *
+ * 2. A FAILED READ NEVER DEMOTES ANYONE. If we could not reach the server we
+ *    keep the roles we last knew for this user. We only lower someone's
+ *    rights when the SERVER actually tells us to.
+ *
+ * 3. A FAILED READ IS NEVER CACHED. The cache now only ever holds answers
+ *    that really came from the database, so a bad moment cannot lock the
+ *    owner out for the next five minutes.
+ *
+ * 4. getUser(), signInWithPassword() and signUp() ARE RETRIED TOO. That is
+ *    the "Failed to fetch" users report on the sign-in screen: the request
+ *    never completed, so supabase-js threw before any answer arrived.
+ *
+ * WHAT IS DELIBERATELY UNCHANGED
+ *   The exported shape - user, session, isVendor, isAdmin, loading, authReady,
+ *   refresh, login, register, logout. AuthContext spreads this object, so the
+ *   shape is load-bearing for the whole app and must not move.
+ *   FIX316's rule also stands: only a 401 or 403 signs anyone out. An
+ *   unreachable server keeps the stored session.
+ *
+ * NOTE: this does NOT reduce the number of parallel requests Bambeh fires.
+ * It makes auth survive them. Cutting the storm itself is the next job.
+ *
+ * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useState, useEffect, useCallback, createContext } from 'react';
 import type { Session, User }                              from '@supabase/supabase-js';
 import { supabase }                                        from '@/lib/supabase';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// -- Types -------------------------------------------------------------------
 
 export interface SupabaseAuthState {
   /** The verified Supabase user (null = not signed in) */
@@ -38,7 +75,7 @@ export interface SupabaseAuthState {
   isVendor:   boolean;
   /** True when profiles.is_admin is true, or admin_role is 'admin'/'super_admin', or role is 'admin' */
   isAdmin:    boolean;
-  /** True while the initial JWT verification is in flight — gate UI on this */
+  /** True while the initial JWT verification is in flight - gate UI on this */
   loading:    boolean;
   /** Exposed so components can manually refresh (e.g. after sign-in) */
   authReady:  boolean;
@@ -48,19 +85,52 @@ export interface SupabaseAuthState {
   logout:     () => Promise<void>;
 }
 
-// ── Profile cache (avoids hammering DB on every re-render) ────────────────────
+// -- Caches ------------------------------------------------------------------
 
 interface ProfileCache {
-  userId:   string;
-  isVendor: boolean;
-  isAdmin:  boolean;
-  fetchedAt: number; // ms timestamp
+  userId:    string;
+  isVendor:  boolean;
+  isAdmin:   boolean;
+  fetchedAt: number;
 }
 
+/** Short-lived cache. ONLY ever written from a real, successful DB read. */
 let profileCache: ProfileCache | null = null;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
-// ── Core hook ─────────────────────────────────────────────────────────────────
+/**
+ * The last roles we genuinely learned for a user, with no expiry.
+ * Used ONLY when the server could not be reached, so a dropped request
+ * cannot strip someone of rights they demonstrably have.
+ */
+let lastKnownRoles: { userId: string; isVendor: boolean; isAdmin: boolean } | null = null;
+
+// -- Retry helper ------------------------------------------------------------
+
+function pause(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Runs an async Supabase call up to three times.
+ * Returns { value, threw } - it never throws, so callers can decide what an
+ * unreachable server means for them instead of crashing.
+ */
+async function tryThrice<T>(fn: () => Promise<T>): Promise<{ value: T | null; threw: unknown }> {
+  let threw: unknown = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const value = await fn();
+      return { value, threw: null };
+    } catch (e) {
+      threw = e;
+      if (attempt < 2) await pause(400 * (attempt + 1));
+    }
+  }
+  return { value: null, threw };
+}
+
+// -- Core hook ---------------------------------------------------------------
 
 export function useSupabaseAuth(): SupabaseAuthState {
   const [state, setState] = useState<Omit<SupabaseAuthState, 'refresh' | 'login' | 'register' | 'logout'>>({
@@ -73,48 +143,44 @@ export function useSupabaseAuth(): SupabaseAuthState {
   });
   const [authReady, setAuthReady] = useState(false);
 
-  /**
-   * Resolve roles from DB (with cache).
-   * Called after every session change.
-   */
   const resolveSession = useCallback(async (session: Session | null) => {
-    // ── No session ──────────────────────────────────────────────────────────
+    // -- No session ----------------------------------------------------------
     if (!session) {
       profileCache = null;
       setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
       return;
     }
 
-    // ── Verify JWT server-side ───────────────────────────────────────────────
-    // getUser() makes a network call to Supabase Auth — the JWT is validated
-    // cryptographically on the server, NOT just decoded locally.
-    // FIX316 - a FAILED getUser() must NOT sign the user out.
-    // getUser() is a NETWORK call. On a slow or dropped connection it fails,
-    // and the old code treated that exactly like a rejected token: it called
-    // signOut(), which DELETED the saved session. That is why refreshing the
-    // app on a weak connection asked people to sign in again.
-    // Now we only sign out when Supabase actually REJECTS the token.
+    // -- Verify the JWT server-side -----------------------------------------
+    // FIX316's rule, kept: a FAILED getUser() must NOT sign the user out.
+    // getUser() is a network call. On a dropped connection it fails, and the
+    // original code treated that exactly like a rejected token - it called
+    // signOut(), which DELETED the saved session. FIX385 additionally retries
+    // before giving up, because one attempt is not a fair test on this network.
     let verifiedUser: User | null = null;
-    try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    const got = await tryThrice(() => supabase.auth.getUser());
+
+    if (got.threw) {
+      console.warn('[auth] getUser() unreachable after 3 tries, keeping stored session:', got.threw);
+      verifiedUser = session.user ?? null;
+    } else {
+      const userError = got.value?.error;
       if (userError) {
         const status = (userError as { status?: number }).status;
         if (status === 401 || status === 403) {
           // The server genuinely rejected this token. Sign out.
           await supabase.auth.signOut();
           profileCache = null;
+          lastKnownRoles = null;
           setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
           return;
         }
-        // Could not reach the server. Keep the session we already have.
-        console.warn('[auth] getUser() unreachable, keeping stored session:', userError.message);
+        console.warn('[auth] getUser() returned an error, keeping stored session:', userError.message);
         verifiedUser = session.user ?? null;
       } else {
-        verifiedUser = user;
+        verifiedUser = got.value?.data?.user ?? null;
       }
-    } catch (netErr) {
-      console.warn('[auth] getUser() threw, keeping stored session:', netErr);
-      verifiedUser = session.user ?? null;
     }
 
     const user = verifiedUser;
@@ -123,7 +189,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
       return;
     }
 
-    // ── Use profile cache if still fresh ────────────────────────────────────
+    // -- Fresh cache? --------------------------------------------------------
     const now = Date.now();
     if (
       profileCache &&
@@ -141,24 +207,44 @@ export function useSupabaseAuth(): SupabaseAuthState {
       return;
     }
 
-    // ── Fetch role from database ─────────────────────────────────────────────
-    // This is the AUTHORITATIVE source — cannot be spoofed via localStorage.
-    // FIX340 - this block was wrong in TWO ways at once, which is why no
-    // amount of editing the database ever opened the admin panel:
-    //   1. It queried .from('users'). The app's profile table is `profiles`.
-    //   2. It decided admin from role === 'admin'. The flag actually lives in
-    //      profiles.is_admin (boolean); profiles.admin_role separately holds
-    //      'admin' / 'super_admin'; profiles.role holds 'user' for everybody.
-    // select('*') and judge in JS on purpose: naming a column that does not
-    // exist makes PostgREST reject the WHOLE query, which would silently strip
-    // both admin AND vendor rights from every user. Same lesson as FIX96.
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
+    // -- Read the roles from the database -----------------------------------
+    // FIX340's lesson still applies: select('*') and judge in JS. Naming a
+    // column that does not exist makes PostgREST reject the WHOLE query, which
+    // would strip admin AND vendor rights from every user at once.
+    const read = await tryThrice(() =>
+      supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+    );
 
-    const p         = (profile ?? {}) as Record<string, unknown>;
+    const readFailed = !!read.threw || !!read.value?.error;
+
+    if (readFailed) {
+      // ===================================================================
+      // THE FIX. We could not ASK, so we must not ANSWER "no".
+      // Fall back to whatever we last genuinely knew about this user, and
+      // write NOTHING to the cache so the very next check tries again.
+      // ===================================================================
+      const known =
+        lastKnownRoles && lastKnownRoles.userId === user.id
+          ? lastKnownRoles
+          : (profileCache && profileCache.userId === user.id ? profileCache : null);
+
+      console.warn(
+        '[auth] profiles read failed after 3 tries - keeping last known roles, not caching.',
+        read.threw || read.value?.error
+      );
+
+      setState({
+        user,
+        session,
+        isVendor: known ? known.isVendor : false,
+        isAdmin:  known ? known.isAdmin  : false,
+        loading:  false,
+        authReady: true,
+      });
+      return;
+    }
+
+    const p         = (read.value?.data ?? {}) as Record<string, unknown>;
     const roleStr   = String(p.role ?? '').toLowerCase();
     const adminRole = String(p.admin_role ?? '').toLowerCase();
 
@@ -171,72 +257,96 @@ export function useSupabaseAuth(): SupabaseAuthState {
       adminRole === 'super_admin' ||
       roleStr === 'admin';
 
-    profileCache = { userId: user.id, isVendor, isAdmin, fetchedAt: now };
+    // Only a REAL answer is remembered.
+    profileCache   = { userId: user.id, isVendor, isAdmin, fetchedAt: now };
+    lastKnownRoles = { userId: user.id, isVendor, isAdmin };
 
     setState({ user, session, isVendor, isAdmin, loading: false, authReady: true });
   }, []);
 
-  // ── Expose a manual refresh ────────────────────────────────────────────────
+  // -- Manual refresh ---------------------------------------------------------
   const refresh = useCallback(async () => {
-    profileCache = null; // invalidate cache
-    const { data: { session } } = await supabase.auth.getSession();
-    await resolveSession(session);
+    profileCache = null; // force a fresh read; lastKnownRoles is deliberately kept
+    const got = await tryThrice(() => supabase.auth.getSession());
+    await resolveSession(got.value?.data?.session ?? null);
   }, [resolveSession]);
 
-  // ── Email + password sign-in ──────────────────────────────────────────────
+  // -- Email + password sign-in ----------------------------------------------
   const login = useCallback(
     async (email: string, password: string): Promise<{ error: string | null }> => {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const attempt = await tryThrice(() =>
+        supabase.auth.signInWithPassword({ email, password })
+      );
+
+      if (attempt.threw) {
+        // Never reached the server. Say so plainly instead of "Failed to fetch".
+        return { error: 'Could not reach Bambeh. Check your connection and try again.' };
+      }
+
+      const error = attempt.value?.error;
       if (error) return { error: error.message };
-      const { data: { session } } = await supabase.auth.getSession();
-      await resolveSession(session);
+
+      const got = await tryThrice(() => supabase.auth.getSession());
+      await resolveSession(got.value?.data?.session ?? null);
       return { error: null };
     },
     [resolveSession],
   );
 
-  // ── Email + password sign-up (FIX71) ──────────────────────────────────────
+  // -- Email + password sign-up ----------------------------------------------
   const register = useCallback(
     async (email: string, password: string, fullName?: string): Promise<{ error: string | null }> => {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: fullName ? { data: { full_name: fullName } } : undefined,
-      });
-      if (error) return { error: error.message };
-      // When "Confirm email" is OFF, signUp returns a live session → log the
-      // user straight in. When it is ON, session is null and the user must
-      // confirm first — the caller can route them to /login.
-      if (data.session) {
-        await resolveSession(data.session);
+      const attempt = await tryThrice(() =>
+        supabase.auth.signUp({
+          email,
+          password,
+          options: fullName ? { data: { full_name: fullName } } : undefined,
+        })
+      );
+
+      if (attempt.threw) {
+        return { error: 'Could not reach Bambeh. Check your connection and try again.' };
       }
+
+      const error = attempt.value?.error;
+      if (error) return { error: error.message };
+
+      // When "Confirm email" is OFF, signUp returns a live session - log the
+      // user straight in. When it is ON, session is null and the caller can
+      // route them to /login.
+      const newSession = attempt.value?.data?.session ?? null;
+      if (newSession) await resolveSession(newSession);
       return { error: null };
     },
     [resolveSession],
   );
 
   const logout = useCallback(async (): Promise<void> => {
-    await supabase.auth.signOut();
-    profileCache = null;
+    await tryThrice(() => supabase.auth.signOut());
+    profileCache   = null;
+    lastKnownRoles = null;
     await resolveSession(null);
   }, [resolveSession]);
 
-  // ── Bootstrap on mount ────────────────────────────────────────────────────
+  // -- Bootstrap on mount -----------------------------------------------------
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => {
-        if (mounted) resolveSession(session).finally(() => { if (mounted) setAuthReady(true); });
-      })
-      .catch((bootErr) => {
-        // FIX316 - if getSession() itself throws, never leave the app spinning.
-        console.warn('[auth] getSession() failed at bootstrap:', bootErr);
-        if (mounted) {
-          setAuthReady(true);
-          setState(prev => ({ ...prev, loading: false, authReady: true }));
-        }
-      });
+    (async () => {
+      const got = await tryThrice(() => supabase.auth.getSession());
+      if (!mounted) return;
+
+      if (got.threw) {
+        // FIX316 - if getSession() itself fails, never leave the app spinning.
+        console.warn('[auth] getSession() failed at bootstrap after 3 tries:', got.threw);
+        setAuthReady(true);
+        setState(prev => ({ ...prev, loading: false, authReady: true }));
+        return;
+      }
+
+      await resolveSession(got.value?.data?.session ?? null);
+      if (mounted) setAuthReady(true);
+    })();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -253,7 +363,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
   return { ...state, authReady, refresh, login, register, logout };
 }
 
-// ── Context (for use in AuthProvider) ────────────────────────────────────────
+// -- Context (for use in AuthProvider) ---------------------------------------
 
 export const SupabaseAuthContext = createContext<SupabaseAuthState>({
   user:     null,
@@ -268,6 +378,6 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
   logout:   async () => {},
 });
 
-/** Convenience hook — use this in components instead of prop drilling */
+/** Convenience hook - use this in components instead of prop drilling */
 export { useAuth } from "@/contexts/AuthContext";
-// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX340__COMPLETE
+// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX385__COMPLETE
