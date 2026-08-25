@@ -226,6 +226,7 @@ import BiometricLogin from "@/pages/auth/BiometricLogin";
 const ForgotPassword    = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ForgotCredentials = lazy(() => import("@/pages/auth/ForgotCredentials"));
 const SecurityRecovery  = lazy(() => import("@/pages/SecurityRecovery")); // FIX378
+const HowToUseBambeh    = lazy(() => import("@/pages/HowToUseBambeh")); // FIX392
 
 // CORE MARKETPLACE
 const Home            = lazy(() => import("@/pages/Home"));
@@ -1315,6 +1316,8 @@ export default function App() {
                         <Route path="/seller/:sellerId/rating" element={<MainLayout><SellerRatingPage /></MainLayout>} />
                         <Route path="/offline-mode" element={<MainLayout><OfflineModePage /></MainLayout>} />
                         <Route path="/meet-safely" element={<MainLayout><MeetSafelyPage /></MainLayout>} />
+                        <Route path="/how-to-use" element={<MainLayout><HowToUseBambeh /></MainLayout>} />
+                        <Route path="/help/how-to-use" element={<MainLayout><HowToUseBambeh /></MainLayout>} />
 
                         <Route
                           path="/community"

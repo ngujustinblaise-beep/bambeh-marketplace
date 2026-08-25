@@ -92,6 +92,7 @@ const PUBLIC_EXACT = [
   // information + legal
   "/about", "/privacy", "/privacy-policy", "/terms", "/terms-of-service",
   "/meet-safely", "/offline-mode", "/report-issue",
+  "/how-to-use",
 
   // company shop windows - items inside are still gated
   "/corporate", "/corporate/register",
