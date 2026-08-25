@@ -36,7 +36,7 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({
-  maxImages = 10,
+  maxImages = 5,
   maxSizeMB = 5,
   onImagesChange,
   existingImages = [],

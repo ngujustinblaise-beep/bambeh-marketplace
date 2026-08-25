@@ -1,6 +1,44 @@
-// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX388_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUPABASEAUTH_FIX395_CLEAN
 /**
- * src/hooks/useSupabaseAuth.ts - FIX388 (supersedes FIX385)
+ * src/hooks/useSupabaseAuth.ts - FIX395 (supersedes FIX388)
+ *
+ * ===================================================================
+ * FIX395 - THE ADMIN PANEL OPENS ONCE AND IS NEVER SEEN AGAIN.
+ * ===================================================================
+ *
+ * Big got into the admin centre exactly once and never again. FIX385
+ * explained half of it: a failed profiles read used to DEMOTE him and then
+ * cache that demotion. FIX395 fixes the other half, which is worse:
+ *
+ *   1. THE LAST KNOWN ROLES DIED ON EVERY RELOAD. lastKnownRoles lived in a
+ *      module variable, so it was wiped the moment the page reloaded. On a
+ *      connection where the profiles read often fails, the app therefore
+ *      started every session knowing nothing, and frequently never found out.
+ *
+ *      They are now kept in localStorage - but ONLY EVER written after a
+ *      genuine, successful read from the server. A failure still writes
+ *      nothing. So "I got in once" finally sticks.
+ *
+ *      Yes, someone could hand-edit that key. What they would get is an
+ *      EMPTY admin shell: every admin page fetches its own data and RLS
+ *      decides what comes back. The client flag opens a door; the server
+ *      still owns the room. The profiles privilege-escalation hole was
+ *      closed server-side in FIX328 and this does not reopen it.
+ *
+ *   2. A FAILED READ WAS NEVER RETRIED. FIX388 correctly cut the app-level
+ *      retry to one call and left retrying to the transport. But when those
+ *      also failed, that was the end of it - isAdmin stayed false for the
+ *      whole session with nothing scheduled to try again.
+ *
+ *      A failed read now schedules another attempt at 3s, 8s, 20s and 45s.
+ *      On a connection where roughly a third of requests die, four more
+ *      chances across 76 seconds is the difference between locked out and
+ *      in. The first success cancels the rest immediately.
+ *
+ * The query stays select('*'). FIX340's lesson has not expired: naming a
+ * column that does not exist makes PostgREST reject the WHOLE query, which
+ * would strip admin AND vendor rights from every user at once. A smaller
+ * response would survive a weak link better, but not at that risk.
  *
  * ===================================================================
  * FIX388 - THE TWO RETRY LAYERS WERE MULTIPLYING.
@@ -88,7 +126,7 @@
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 
-import { useState, useEffect, useCallback, createContext } from 'react';
+import { useState, useEffect, useCallback, useRef, createContext } from 'react';
 import type { Session, User }                              from '@supabase/supabase-js';
 import { supabase }                                        from '@/lib/supabase';
 
@@ -131,7 +169,79 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
  * Used ONLY when the server could not be reached, so a dropped request
  * cannot strip someone of rights they demonstrably have.
  */
-let lastKnownRoles: { userId: string; isVendor: boolean; isAdmin: boolean } | null = null;
+type KnownRoles = { userId: string; isVendor: boolean; isAdmin: boolean };
+
+/* ==========================================================================
+ * FIX395 - the last GENUINELY READ roles, remembered across reloads.
+ * Written ONLY after the server answers. A failed read never touches this.
+ * ========================================================================== */
+const ROLES_KEY = 'bambeh_known_roles';
+
+function loadKnownRoles(): KnownRoles | null {
+  try {
+    const raw = window.localStorage.getItem(ROLES_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as Record<string, unknown>;
+    if (
+      typeof p.userId === 'string' &&
+      typeof p.isVendor === 'boolean' &&
+      typeof p.isAdmin === 'boolean'
+    ) {
+      return { userId: p.userId, isVendor: p.isVendor, isAdmin: p.isAdmin };
+    }
+  } catch {
+    /* storage blocked or corrupt - behave as if we knew nothing */
+  }
+  return null;
+}
+
+function saveKnownRoles(r: KnownRoles): void {
+  try {
+    window.localStorage.setItem(ROLES_KEY, JSON.stringify(r));
+  } catch {
+    /* storage blocked - the in-memory copy still serves this session */
+  }
+}
+
+function clearKnownRoles(): void {
+  try {
+    window.localStorage.removeItem(ROLES_KEY);
+  } catch {
+    /* nothing to do */
+  }
+}
+
+let lastKnownRoles: KnownRoles | null = loadKnownRoles();
+
+/* ==========================================================================
+ * FIX395 - keep asking. A read that failed is not an answer.
+ * ========================================================================== */
+const ROLE_RETRY_STEPS_MS = [3000, 8000, 20000, 45000];
+let roleRetryTimer: ReturnType<typeof setTimeout> | null = null;
+let roleRetryIndex = 0;
+
+function scheduleRoleRetry(run: () => void): void {
+  if (roleRetryTimer !== null) clearTimeout(roleRetryTimer);
+  if (roleRetryIndex >= ROLE_RETRY_STEPS_MS.length) {
+    console.warn('[auth] roles still unknown after every retry - giving up for this session.');
+    return;
+  }
+  const wait = ROLE_RETRY_STEPS_MS[roleRetryIndex];
+  roleRetryIndex = roleRetryIndex + 1;
+  console.info('[auth] roles unknown - asking again in ' + wait + ' ms.');
+  roleRetryTimer = setTimeout(() => {
+    roleRetryTimer = null;
+    run();
+  }, wait);
+}
+
+function cancelRoleRetry(): void {
+  if (roleRetryTimer !== null) {
+    clearTimeout(roleRetryTimer);
+    roleRetryTimer = null;
+  }
+  roleRetryIndex = 0;
+}
 
 // -- Retry helper ------------------------------------------------------------
 
@@ -175,6 +285,10 @@ export function useSupabaseAuth(): SupabaseAuthState {
   });
   const [authReady, setAuthReady] = useState(false);
 
+  // FIX395 - lets resolveSession schedule another run of ITSELF without the
+  // circular reference a plain useCallback would create.
+  const resolveRef = useRef<((s: Session | null) => Promise<void>) | null>(null);
+
   const resolveSession = useCallback(async (session: Session | null) => {
     // -- No session ----------------------------------------------------------
     if (!session) {
@@ -204,8 +318,10 @@ export function useSupabaseAuth(): SupabaseAuthState {
         if (status === 401 || status === 403) {
           // The server genuinely rejected this token. Sign out.
           await supabase.auth.signOut();
+          cancelRoleRetry();
           profileCache = null;
           lastKnownRoles = null;
+          clearKnownRoles(); // FIX395 - the server rejected this token
           setState({ user: null, session: null, isVendor: false, isAdmin: false, loading: false, authReady: true });
           return;
         }
@@ -268,6 +384,11 @@ export function useSupabaseAuth(): SupabaseAuthState {
         read.threw || read.value?.error
       );
 
+      // FIX395 - and ASK AGAIN. Without this the session ended here: isAdmin
+      // stayed false until the next full reload, which is exactly why the
+      // admin centre opened once and never again.
+      scheduleRoleRetry(() => { void resolveRef.current?.(session); });
+
       setState({
         user,
         session,
@@ -293,7 +414,10 @@ export function useSupabaseAuth(): SupabaseAuthState {
       roleStr === 'admin';
 
     // Only a REAL answer is remembered.
+    // FIX395 - a real answer. Stop retrying, and remember it across reloads.
+    cancelRoleRetry();
     profileCache   = { userId: user.id, isVendor, isAdmin, fetchedAt: now };
+    saveKnownRoles({ userId: user.id, isVendor, isAdmin });
     lastKnownRoles = { userId: user.id, isVendor, isAdmin };
 
     setState({ user, session, isVendor, isAdmin, loading: false, authReady: true });
@@ -364,9 +488,16 @@ export function useSupabaseAuth(): SupabaseAuthState {
 
   const logout = useCallback(async (): Promise<void> => {
     await attempt(() => supabase.auth.signOut(), 1);
+    cancelRoleRetry();
     profileCache   = null;
     lastKnownRoles = null;
+    clearKnownRoles(); // FIX395 - signing out forgets the roles for good
     await resolveSession(null);
+  }, [resolveSession]);
+
+  // FIX395 - keep the retry pointer aimed at the current resolveSession.
+  useEffect(() => {
+    resolveRef.current = resolveSession;
   }, [resolveSession]);
 
   // -- Bootstrap on mount -----------------------------------------------------
@@ -421,4 +552,4 @@ export const SupabaseAuthContext = createContext<SupabaseAuthState>({
 
 /** Convenience hook - use this in components instead of prop drilling */
 export { useAuth } from "@/contexts/AuthContext";
-// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX388__COMPLETE
+// BAMBEH_END_TOKEN__USESUPABASEAUTH_FIX395__COMPLETE

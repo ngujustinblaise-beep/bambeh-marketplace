@@ -29,7 +29,7 @@ interface ImageUploadStepProps {
 const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
   title     = 'Add Photos',
   subtitle  = 'Better photos = more responses. First photo is the cover.',
-  maxImages = 8,
+  maxImages = 5,
   minImages = 1,
   required  = true,
   initialImages = [],

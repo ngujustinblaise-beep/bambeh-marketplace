@@ -286,9 +286,9 @@ export default function Rentals() {
             <span>{t("rentals.maxRent")}</span>
             <span className="font-semibold text-orange-600">{maxPrice.toLocaleString()} {t("rentals.perMonth")}</span>
           </div>
-          <input type="range" min={30000} max={1000000} step={10000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="w-full accent-orange-500" />
+          <input type="range" min={5000} max={1000000} step={5000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="w-full accent-orange-500" />
           <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>30,000</span><span>1,000,000</span>
+            <span>5,000</span><span>1,000,000</span>
           </div>
         </div>
 
