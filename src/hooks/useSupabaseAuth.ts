@@ -211,6 +211,41 @@ function clearKnownRoles(): void {
   }
 }
 
+/* ==========================================================================
+ * FIX398 - THE ADMIN FLAG, READ STRAIGHT OUT OF THE TOKEN.
+ *
+ * Supabase copies auth.users.raw_app_meta_data into the JWT, and the JWT
+ * arrives WITH the session. Nothing is fetched. So this answer cannot fail,
+ * cannot time out, and cannot be lost to a dead connection - which is the
+ * whole reason the admin centre has been shut since day one.
+ *
+ * app_metadata is writable only by SQL or the service role. A user cannot
+ * set their own, unlike user_metadata. This does not reopen the
+ * privilege-escalation hole FIX328 closed.
+ *
+ * Set it with:
+ *   update auth.users
+ *   set raw_app_meta_data = coalesce(raw_app_meta_data,'{}'::jsonb)
+ *                           || '{"is_admin": true}'::jsonb
+ *   where email = '<the admin address>';
+ *
+ * Then sign out and back in - a token is only rewritten when a new one is
+ * issued.
+ * ========================================================================== */
+function adminFromToken(user: User | null): boolean {
+  if (!user) return false;
+  try {
+    const meta = (user as unknown as { app_metadata?: Record<string, unknown> }).app_metadata;
+    if (!meta) return false;
+    if (meta.is_admin === true) return true;
+    if (String(meta.is_admin ?? '').toLowerCase() === 'true') return true;
+    const role = String(meta.role ?? '').toLowerCase();
+    return role === 'admin' || role === 'super_admin';
+  } catch {
+    return false;
+  }
+}
+
 let lastKnownRoles: KnownRoles | null = loadKnownRoles();
 
 /* ==========================================================================
@@ -393,7 +428,8 @@ export function useSupabaseAuth(): SupabaseAuthState {
         user,
         session,
         isVendor: known ? known.isVendor : false,
-        isAdmin:  known ? known.isAdmin  : false,
+        // FIX398 - the profiles read failed, but the TOKEN never does.
+        isAdmin:  adminFromToken(user) || (known ? known.isAdmin : false),
         loading:  false,
         authReady: true,
       });
@@ -408,6 +444,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     // Accept every convention this codebase has used, so renaming one of them
     // later cannot lock the owner out of his own admin panel a second time.
     const isAdmin =
+      adminFromToken(user) ||   // FIX398 - the token, first and always
       p.is_admin === true ||
       adminRole === 'admin' ||
       adminRole === 'super_admin' ||

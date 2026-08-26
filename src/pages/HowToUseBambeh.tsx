@@ -340,7 +340,7 @@ export default function HowToUseBambeh() {
         </div>
 
         <p className="mt-8 text-center text-xs text-gray-400">
-          BAMBEH SARL, Yaound\u00E9, Cameroon
+          {"BAMBEH SARL, Yaound\u00E9, Cameroon"}
         </p>
       </div>
     </div>
