@@ -35,6 +35,19 @@ interface Group {
 
 const CATEGORIES = ['All', 'General', 'Buy & Sell', 'Jobs', 'Housing', 'Farming', 'Tech', 'Faith', 'Sports', 'Women', 'Youth'];
 
+const CAT_LABELS: Record<string, Record<string, string>> = {
+  en: { "All": "All", "General": "General", "Buy & Sell": "Buy & Sell", "Jobs": "Jobs", "Housing": "Housing", "Farming": "Farming", "Tech": "Tech", "Faith": "Faith", "Sports": "Sports", "Women": "Women", "Youth": "Youth" },
+  fr: { "All": "Tout", "General": "G\u00e9n\u00e9ral", "Buy & Sell": "Achat & Vente", "Jobs": "Emplois", "Housing": "Logement", "Farming": "Agriculture", "Tech": "Tech", "Faith": "Foi", "Sports": "Sport", "Women": "Femmes", "Youth": "Jeunes" },
+  pidgin: { "All": "All", "General": "General", "Buy & Sell": "Buy & Sell", "Jobs": "Work", "Housing": "House", "Farming": "Farm", "Tech": "Tech", "Faith": "Church", "Sports": "Sport", "Women": "Women", "Youth": "Youth" },
+  ar: { "All": "\u0627\u0644\u0643\u0644", "General": "\u0639\u0627\u0645", "Buy & Sell": "\u0628\u064a\u0639 \u0648\u0634\u0631\u0627\u0621", "Jobs": "\u0648\u0638\u0627\u0626\u0641", "Housing": "\u0633\u0643\u0646", "Farming": "\u0632\u0631\u0627\u0639\u0629", "Tech": "\u062a\u0642\u0646\u064a\u0629", "Faith": "\u062f\u064a\u0646", "Sports": "\u0631\u064a\u0627\u0636\u0629", "Women": "\u0646\u0633\u0627\u0621", "Youth": "\u0634\u0628\u0627\u0628" },
+  ff: { "All": "Fof", "General": "Jaajngo", "Buy & Sell": "Coodgol e Njeeygu", "Jobs": "Golle", "Housing": "Cuu\u0257i", "Farming": "Ndema", "Tech": "Tekno", "Faith": "Diina", "Sports": "Coy", "Women": "Rew\u0253e", "Youth": "Sukaa\u0253e" },
+};
+
+function catLabel(c: string, langKey: string): string {
+  const table = CAT_LABELS[langKey] ?? CAT_LABELS.en;
+  return table[c] ?? CAT_LABELS.en[c] ?? c;
+}
+
 const T = {
   en: {
     title: 'Community Groups',
@@ -379,7 +392,7 @@ export default function CommunityPage() {
               cat === c ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-600 border-gray-200'
             }`}
           >
-            {c}
+            {catLabel(c, langKey)}
           </button>
         ))}
       </div>
@@ -478,7 +491,7 @@ export default function CommunityPage() {
                   <label className="text-xs font-medium text-gray-600">{t.category}</label>
                   <select value={cCat} onChange={(e) => setCCat(e.target.value)}
                     className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none bg-white">
-                    {CATEGORIES.filter((c) => c !== 'All').map((c) => <option key={c} value={c}>{c}</option>)}
+                    {CATEGORIES.filter((c) => c !== 'All').map((c) => <option key={c} value={c}>{catLabel(c, langKey)}</option>)}
                   </select>
                 </div>
                 <div>

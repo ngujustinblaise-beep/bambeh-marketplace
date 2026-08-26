@@ -1,20 +1,20 @@
-// BAMBEH_DEPLOY_TOKEN__FLASHDEALS_FIX174_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FLASHDEALS_FIX402_CLEAN
 /**
- * FlashDeals — FIX174 (matched to the REAL flash_deals schema)
- * ─────────────────────────────────────────────────────────────
- * FIX102 queried columns that do not exist in this database
- * (images, original_price_xaf, discounted_price_xaf, total_slots,
- * claimed_slots, status, vendor_profiles.store_name) → PostgREST 400
- * → "Could not load deals". FIX174 selects the columns the 07-22
- * schema recon actually shows: image_url, original_price, deal_price,
- * stock_total/stock_remaining, max_quantity/sold_count, is_active,
- * and vendor_name straight off the table — NO join at all, so no
- * relationship problem can ever blank this page again.
- *  • Only live deals: ends_at in the future, is_active not false
- *  • Claim writes `flash_deal_claims` (duplicate claim 23505 = already yours,
- *    same behavior as the working FlashDealDetail page)
- *  • Live countdown, slots progress, EN/FR, loading/empty/error states
- *  • Chat-only: no external share buttons
+ * src/routes/groups/community/FlashDeals.tsx - Bambeh Marketplace
+ *
+ * FIX402: the page only ever had English and French, and the resolver said
+ * `language === 'fr' ? 'fr' : 'en'`, so Pidgin, Arabic and Fulfulde all
+ * silently fell back to English. All five languages are now present and the
+ * resolver reads the real language code.
+ *  - RTL applied for Arabic
+ *  - translate="no" guards against Chrome auto-translate crashing React
+ *  - every string is a \u escape, so no encoding step can break the accents
+ *
+ * The data layer is UNCHANGED from FIX174: it selects the columns that really
+ * exist on flash_deals (image_url, original_price, deal_price, stock_total,
+ * stock_remaining, max_quantity, sold_count, is_active, vendor_name) with NO
+ * join, so no relationship problem can blank this page.
+ * (c) 2025-2026 BAMBEH SARL. All rights reserved.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -44,27 +44,101 @@ interface Deal {
 
 const T = {
   en: {
-    title: 'Flash Deals', subtitle: 'Limited-time offers — claim before they run out',
-    endsIn: 'Ends in', slots: 'slots left', claim: 'Claim deal', claimed: 'Claimed ✓',
-    soldOut: 'Sold out', ended: 'Ended', off: 'OFF',
-    empty: 'No live deals right now. Check back soon!',
-    loadError: 'Could not load deals. Check your connection.', retry: 'Retry',
-    needLogin: 'Please log in to claim deals.', claimFail: 'Could not claim. Please try again.',
-    back: 'Back', by: 'by',
+    title: "Flash Deals",
+    subtitle: "Limited-time offers. Claim before they run out",
+    endsIn: "Ends in",
+    slots: "left",
+    claim: "Claim deal",
+    claimed: "Claimed",
+    soldOut: "Sold out",
+    ended: "Ended",
+    off: "OFF",
+    empty: "No live deals right now. Check back soon",
+    loadError: "Could not load deals. Check your connection",
+    retry: "Try again",
+    needLogin: "Sign in to claim deals",
+    claimFail: "Could not claim. Please try again",
+    back: "Back",
+    by: "by",
   },
   fr: {
-    title: 'Ventes Flash', subtitle: 'Offres à durée limitée — réclamez avant la rupture',
-    endsIn: 'Se termine dans', slots: 'places restantes', claim: "Réclamer l'offre", claimed: 'Réclamé ✓',
-    soldOut: 'Épuisé', ended: 'Terminé', off: 'DE RÉDUC',
-    empty: 'Aucune offre en cours. Revenez bientôt !',
-    loadError: 'Impossible de charger les offres. Vérifiez votre connexion.', retry: 'Réessayer',
-    needLogin: 'Connectez-vous pour réclamer.', claimFail: 'Échec de la réclamation. Réessayez.',
-    back: 'Retour', by: 'par',
+    title: "Ventes Flash",
+    subtitle: "Offres \u00e0 dur\u00e9e limit\u00e9e. R\u00e9clamez avant la rupture",
+    endsIn: "Se termine dans",
+    slots: "restantes",
+    claim: "R\u00e9clamer l'offre",
+    claimed: "R\u00e9clam\u00e9",
+    soldOut: "\u00c9puis\u00e9",
+    ended: "Termin\u00e9",
+    off: "DE R\u00c9DUCTION",
+    empty: "Aucune offre en cours. Revenez bient\u00f4t",
+    loadError: "Impossible de charger les offres. V\u00e9rifiez votre connexion",
+    retry: "R\u00e9essayer",
+    needLogin: "Connectez-vous pour r\u00e9clamer",
+    claimFail: "\u00c9chec de la r\u00e9clamation. R\u00e9essayez",
+    back: "Retour",
+    by: "par",
+  },
+  pidgin: {
+    title: "Flash Deals",
+    subtitle: "Offer weh e get time. Claim am before e finish",
+    endsIn: "E go end for",
+    slots: "remain",
+    claim: "Claim the deal",
+    claimed: "You don claim",
+    soldOut: "E don finish",
+    ended: "E don end",
+    off: "DISCOUNT",
+    empty: "No deal dey now. Come check back soon",
+    loadError: "We no fit load the deals. Check your network",
+    retry: "Try again",
+    needLogin: "Login first before you claim",
+    claimFail: "We no fit claim am. Try again",
+    back: "Go back",
+    by: "from",
+  },
+  ar: {
+    title: "\u0639\u0631\u0648\u0636 \u0633\u0631\u064a\u0639\u0629",
+    subtitle: "\u0639\u0631\u0648\u0636 \u0644\u0648\u0642\u062a \u0645\u062d\u062f\u0648\u062f. \u0627\u062d\u062c\u0632 \u0642\u0628\u0644 \u0646\u0641\u0627\u062f\u0647\u0627",
+    endsIn: "\u062a\u0646\u062a\u0647\u064a \u062e\u0644\u0627\u0644",
+    slots: "\u0645\u062a\u0628\u0642\u064a\u0629",
+    claim: "\u0627\u062d\u062c\u0632 \u0627\u0644\u0639\u0631\u0636",
+    claimed: "\u062a\u0645 \u0627\u0644\u062d\u062c\u0632",
+    soldOut: "\u0646\u0641\u062f\u062a \u0627\u0644\u0643\u0645\u064a\u0629",
+    ended: "\u0627\u0646\u062a\u0647\u0649",
+    off: "\u062e\u0635\u0645",
+    empty: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0639\u0631\u0648\u0636 \u062d\u0627\u0644\u064a\u0627. \u0639\u062f \u0642\u0631\u064a\u0628\u0627",
+    loadError: "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0639\u0631\u0648\u0636. \u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u062a\u0635\u0627\u0644\u0643",
+    retry: "\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649",
+    needLogin: "\u0633\u062c\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u062d\u062c\u0632 \u0627\u0644\u0639\u0631\u0648\u0636",
+    claimFail: "\u062a\u0639\u0630\u0631 \u0627\u0644\u062d\u062c\u0632. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649",
+    back: "\u0631\u062c\u0648\u0639",
+    by: "\u0645\u0646",
+  },
+  ff: {
+    title: "Coggu Yaawngu",
+    subtitle: "Coggu jogingu sahaa. Jogo ado ngu gasde",
+    endsIn: "Ina gasa e",
+    slots: "heddii\u0257i",
+    claim: "Jogo coggu",
+    claimed: "A jogii",
+    soldOut: "Gasii",
+    ended: "Gasii",
+    off: "USTAAKE",
+    empty: "Coggu alaa jooni. Rutto law",
+    loadError: "Min mbaawaa loowde coggu. \u01b3eewto seede maa",
+    retry: "Eto kadi",
+    needLogin: "Naatnu ado maa jogaade coggu",
+    claimFail: "Min mbaawaa jogaade. Eto kadi",
+    back: "Rutto",
+    by: "e",
   },
 };
 
+type TL = typeof T.en;
+
 const fmtXAF = (n: number | null | undefined) =>
-  n == null || Number.isNaN(n) ? '—' : new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
+  n == null || Number.isNaN(n) ? '-' : new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
 
 const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
 
@@ -85,7 +159,11 @@ function Countdown({ endsAt, endedLabel, prefix }: { endsAt: string | null; ende
 export default function FlashDeals() {
   const navigate = useNavigate();
   const { language } = useLanguage() as { language?: string };
-  const t = T[language === 'fr' ? 'fr' : 'en'];
+  const langKey = language === 'fulfulde' || language === 'ful' ? 'ff'
+                : language === 'pcm' ? 'pidgin'
+                : (language ?? 'en');
+  const t: TL = (T as Record<string, TL>)[langKey] ?? T.en;
+  const isRtl = langKey === 'ar';
 
   const [deals, setDeals] = useState<Deal[]>([]);
   const [myClaims, setMyClaims] = useState<Set<string>>(new Set());
@@ -160,10 +238,10 @@ export default function FlashDeals() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24 notranslate" translate="no" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 pt-5 pb-6">
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-orange-100 text-sm mb-2">
-          <ArrowLeft className="w-4 h-4" /> {t.back}
+          <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} /> {t.back}
         </button>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Zap className="w-6 h-6" /> {t.title}</h1>
         <p className="text-orange-100 text-sm mt-1">{t.subtitle}</p>
@@ -253,4 +331,4 @@ export default function FlashDeals() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__FLASHDEALS__COMPLETE
+// BAMBEH_END_TOKEN__FLASHDEALS_FIX402__COMPLETE

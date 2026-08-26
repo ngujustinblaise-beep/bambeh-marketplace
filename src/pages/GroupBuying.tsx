@@ -1,14 +1,18 @@
-// BAMBEH_DEPLOY_TOKEN__GROUPBUYING_FIX102_CLEAN
+// BAMBEH_DEPLOY_TOKEN__GROUPBUYING_FIX403_CLEAN
 /**
- * GroupBuying — FIX102 (REAL data)
- * ────────────────────────────────
- * Replaces the mock list (0 Supabase calls + WhatsApp share buttons).
- *  • Deals load from Supabase `group_deals` (same table the working
- *    GroupBuyingDetail page uses): is_active, live current_buyers/max_buyers
- *  • Tap a deal → /group-buying/:id (the real, routed detail page) where
- *    joining happens
- *  • Live countdown, buyer progress, EN/FR, loading/empty/error states
- *  • Chat-only: no external share buttons
+ * src/pages/GroupBuying.tsx - Bambeh Marketplace
+ *
+ * FIX403: same bug as FlashDeals. The table held English and French only and
+ * the resolver was `language === 'fr' ? 'fr' : 'en'`, so Pidgin, Arabic and
+ * Fulfulde fell back to English without any warning. All five languages are
+ * present now and the resolver reads the real code.
+ *  - RTL applied for Arabic
+ *  - translate="no" guards against Chrome auto-translate crashing React
+ *  - every string is a \u escape, so no encoding step can break the accents
+ *
+ * The data layer is UNCHANGED from FIX102: real rows from `group_deals`,
+ * live current_buyers / max_buyers, tap through to /group-buying/:id.
+ * (c) 2025-2026 BAMBEH SARL. All rights reserved.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -32,23 +36,81 @@ interface GroupDeal {
 
 const T = {
   en: {
-    title: 'Group Buying', subtitle: 'Team up with other buyers to unlock lower prices',
-    endsIn: 'Ends in', ended: 'Ended', buyers: 'buyers', groupPrice: 'Group price',
-    regular: 'Regular', view: 'View deal',
-    empty: 'No group deals right now. Check back soon!',
-    loadError: 'Could not load group deals. Check your connection.', retry: 'Retry', back: 'Back',
+    title: "Group Buying",
+    subtitle: "Team up with other buyers to unlock a lower price",
+    endsIn: "Ends in",
+    ended: "Ended",
+    buyers: "buyers",
+    groupPrice: "Group price",
+    regular: "Normal price",
+    view: "View deal",
+    empty: "No group deals right now. Check back soon",
+    loadError: "Could not load group deals. Check your connection",
+    retry: "Try again",
+    back: "Back",
   },
   fr: {
-    title: 'Achat Groupé', subtitle: "Achetez ensemble pour débloquer de meilleurs prix",
-    endsIn: 'Se termine dans', ended: 'Terminé', buyers: 'acheteurs', groupPrice: 'Prix groupé',
-    regular: 'Normal', view: "Voir l'offre",
-    empty: "Aucun achat groupé en cours. Revenez bientôt !",
-    loadError: 'Impossible de charger les offres. Vérifiez votre connexion.', retry: 'Réessayer', back: 'Retour',
+    title: "Achat Group\u00e9",
+    subtitle: "Achetez ensemble pour d\u00e9bloquer un meilleur prix",
+    endsIn: "Se termine dans",
+    ended: "Termin\u00e9",
+    buyers: "acheteurs",
+    groupPrice: "Prix group\u00e9",
+    regular: "Prix normal",
+    view: "Voir l'offre",
+    empty: "Aucun achat group\u00e9 en cours. Revenez bient\u00f4t",
+    loadError: "Impossible de charger les offres. V\u00e9rifiez votre connexion",
+    retry: "R\u00e9essayer",
+    back: "Retour",
+  },
+  pidgin: {
+    title: "Group Buying",
+    subtitle: "Join hand with other buyers make price come down",
+    endsIn: "E go end for",
+    ended: "E don end",
+    buyers: "buyers",
+    groupPrice: "Group price",
+    regular: "Normal price",
+    view: "See the deal",
+    empty: "No group deal dey now. Come check back soon",
+    loadError: "We no fit load the deals. Check your network",
+    retry: "Try again",
+    back: "Go back",
+  },
+  ar: {
+    title: "\u0627\u0644\u0634\u0631\u0627\u0621 \u0627\u0644\u062c\u0645\u0627\u0639\u064a",
+    subtitle: "\u0627\u0634\u062a\u0631 \u0645\u0639 \u0645\u0634\u062a\u0631\u064a\u0646 \u0622\u062e\u0631\u064a\u0646 \u0644\u0644\u062d\u0635\u0648\u0644 \u0639\u0644\u0649 \u0633\u0639\u0631 \u0623\u0642\u0644",
+    endsIn: "\u064a\u0646\u062a\u0647\u064a \u062e\u0644\u0627\u0644",
+    ended: "\u0627\u0646\u062a\u0647\u0649",
+    buyers: "\u0645\u0634\u062a\u0631\u064a\u0646",
+    groupPrice: "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u062c\u0645\u0627\u0639\u064a",
+    regular: "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0639\u0627\u062f\u064a",
+    view: "\u0639\u0631\u0636 \u0627\u0644\u0635\u0641\u0642\u0629",
+    empty: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0635\u0641\u0642\u0627\u062a \u062c\u0645\u0627\u0639\u064a\u0629 \u062d\u0627\u0644\u064a\u0627. \u0639\u062f \u0642\u0631\u064a\u0628\u0627",
+    loadError: "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0635\u0641\u0642\u0627\u062a. \u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u062a\u0635\u0627\u0644\u0643",
+    retry: "\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649",
+    back: "\u0631\u062c\u0648\u0639",
+  },
+  ff: {
+    title: "Coodgol Dental",
+    subtitle: "Soodee e go\u0257\u0253e ngam ustude coggu",
+    endsIn: "Ina gasa e",
+    ended: "Gasii",
+    buyers: "coodoo\u0253e",
+    groupPrice: "Coggu dental",
+    regular: "Coggu jaajngu",
+    view: "Ndaar coggu",
+    empty: "Coodgol dental alaa jooni. Rutto law",
+    loadError: "Min mbaawaa loowde coggu. \u01b3eewto seede maa",
+    retry: "Eto kadi",
+    back: "Rutto",
   },
 };
 
+type TL = typeof T.en;
+
 const fmtXAF = (n: number | null | undefined) =>
-  n == null || Number.isNaN(n) ? '—' : new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
+  n == null || Number.isNaN(n) ? '-' : new Intl.NumberFormat('fr-CM', { maximumFractionDigits: 0 }).format(n) + ' FCFA';
 
 const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
 
@@ -69,7 +131,11 @@ function Countdown({ endsAt, endedLabel, prefix }: { endsAt: string | null; ende
 export default function GroupBuying() {
   const navigate = useNavigate();
   const { language } = useLanguage() as { language?: string };
-  const t = T[language === 'fr' ? 'fr' : 'en'];
+  const langKey = language === 'fulfulde' || language === 'ful' ? 'ff'
+                : language === 'pcm' ? 'pidgin'
+                : (language ?? 'en');
+  const t: TL = (T as Record<string, TL>)[langKey] ?? T.en;
+  const isRtl = langKey === 'ar';
 
   const [deals, setDeals] = useState<GroupDeal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,10 +169,10 @@ export default function GroupBuying() {
     (Array.isArray(d.tiers) && d.tiers[0]?.price != null ? d.tiers[0].price : d.regular_price) ?? null;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24 notranslate" translate="no" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 pt-5 pb-6">
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-purple-100 text-sm mb-2">
-          <ArrowLeft className="w-4 h-4" /> {t.back}
+          <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} /> {t.back}
         </button>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Users className="w-6 h-6" /> {t.title}</h1>
         <p className="text-purple-100 text-sm mt-1">{t.subtitle}</p>
@@ -178,4 +244,4 @@ export default function GroupBuying() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__GROUPBUYING__COMPLETE
+// BAMBEH_END_TOKEN__GROUPBUYING_FIX403__COMPLETE
