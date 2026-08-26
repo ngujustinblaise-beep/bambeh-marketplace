@@ -55,6 +55,7 @@ interface Copy {
   title: string;
   subtitle: string;
   steps: [Step, Step, Step, Step];
+  hiccup: string;
   more: string;
   back: string;
 }
@@ -85,6 +86,7 @@ const T: Record<LangCode, Copy> = {
           "You can add up to 5 pictures to any post. Make the first one your best - that is the one buyers see in the list. Good daylight and a plain background sell an item faster than anything else you can do.",
       },
     ],
+    hiccup: "Sometimes Bambeh says Failed to fetch. Do not panic - nothing is broken and nothing is lost. That is just the network catching its breath. Press the button again. It almost always works the second time, and if not, the third. Bambeh is stubborn, and so should you be.",
     more: "Need more help? Open the menu and tap Help.",
     back: "Back to Bambeh",
   },
@@ -113,6 +115,7 @@ const T: Record<LangCode, Copy> = {
           "Vous pouvez ajouter jusqu'\u00E0 5 photos par annonce. Mettez la meilleure en premier - c'est celle que les acheteurs voient dans la liste. Une bonne lumi\u00E8re du jour et un fond simple font vendre plus vite que tout le reste.",
       },
     ],
+    hiccup: "Parfois Bambeh affiche Failed to fetch. Pas de panique - rien n\u0027est cass\u00E9 et rien n\u0027est perdu. C\u0027est juste le r\u00E9seau qui reprend son souffle. Appuyez encore. \u00C7a marche presque toujours la deuxi\u00E8me fois, sinon la troisi\u00E8me. Bambeh est t\u00EAtu, soyez-le aussi.",
     more: "Besoin d'aide ? Ouvrez le menu et appuyez sur Aide.",
     back: "Retour \u00E0 Bambeh",
   },
@@ -141,6 +144,7 @@ const T: Record<LangCode, Copy> = {
           "You fit put up to 5 picture for any post. Make the first one na your best - na am buyers dey see for the list. Good daylight and clean background dey sell thing pass any other trick.",
       },
     ],
+    hiccup: "Sometime Bambeh go tell you Failed to fetch. No fear - nothing don spoil, nothing don loss. Na just network dey take small rest. Press the button again. E dey work the second time, and if e no work, the third one go do am. Bambeh no dey give up, make you too no give up.",
     more: "You need more help? Open the menu, press Help.",
     back: "Go back to Bambeh",
   },
@@ -169,6 +173,7 @@ const T: Record<LangCode, Copy> = {
           "\u064A\u0645\u0643\u0646\u0643 \u0625\u0636\u0627\u0641\u0629 \u062D\u062A\u0649 5 \u0635\u0648\u0631 \u0644\u0643\u0644 \u0625\u0639\u0644\u0627\u0646. \u0627\u062C\u0639\u0644 \u0627\u0644\u0623\u0648\u0644\u0649 \u0647\u064A \u0627\u0644\u0623\u0641\u0636\u0644 - \u0641\u0647\u064A \u0627\u0644\u062A\u064A \u064A\u0631\u0627\u0647\u0627 \u0627\u0644\u0645\u0634\u062A\u0631\u0648\u0646 \u0641\u064A \u0627\u0644\u0642\u0627\u0626\u0645\u0629. \u0627\u0644\u0625\u0636\u0627\u0621\u0629 \u0627\u0644\u062C\u064A\u062F\u0629 \u0648\u0627\u0644\u062E\u0644\u0641\u064A\u0629 \u0627\u0644\u0628\u0633\u064A\u0637\u0629 \u062A\u0628\u064A\u0639 \u0623\u0633\u0631\u0639 \u0645\u0646 \u0623\u064A \u0634\u064A\u0621 \u0622\u062E\u0631.",
       },
     ],
+    hiccup: "\u0634\u0628\u0643\u062A\u0646\u0627 \u062A\u062A\u0639\u062B\u0631 \u0623\u062D\u064A\u0627\u0646\u0627\u064B. \u0625\u0630\u0627 \u0631\u0623\u064A\u062A "Failed to fetch" - \u062D\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649. \u0644\u064A\u0633\u062A \u063A\u0644\u0637\u062A\u0643\u060C \u0648\u0644\u0645 \u064A\u0636\u0639 \u0623\u062D\u062F.",
     more: "\u062A\u062D\u062A\u0627\u062C \u0645\u0633\u0627\u0639\u062F\u0629\u061F \u0627\u0641\u062A\u062D \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0648\u0627\u0636\u063A\u0637 \u0639\u0644\u0649 \u0645\u0633\u0627\u0639\u062F\u0629.",
     back: "\u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u0649 \u0628\u0627\u0645\u0628\u064A\u0647",
   },
@@ -197,6 +202,7 @@ const T: Record<LangCode, Copy> = {
           "A waawi \u0253eydude haa nate 5 e kala jeeyngal. Wa\u0257u \u0253urnde mo\u0192\u0192ude arande - ko ndeen soodoo\u0253e njiyata e doggol. Annoora \u0272alorma mo\u0192\u0192o e \u0253aawo laa\u0253\u0257o ina yeeya law \u0253ural kala.",
       },
     ],
+    hiccup: "Sahaa feere Bambeh ina wi\u0027a Failed to fetch. Hulaa - alaa ko bonii, alaa ko majji. Ko rijaal tan hi\u0253\u0253ii seeda. \u00D1o\u0192\u0192u kadi. Ina golloo laawol \u0257i\u0257a\u0253ol, so wonaa \u0257uum, laawol tataabol. Bambeh accataa, ma a accataa kadi.",
     more: "A soklii ballal? Uddit doggol, \u00F1o\u0192\u0192u Ballal.",
     back: "Rutto to Bambeh",
   },
@@ -326,6 +332,16 @@ export default function HowToUseBambeh() {
             );
           })}
         </ol>
+
+        {/* FIX399 - the network hiccup note. A scary English error on a slow
+            line is worse than the slow line: people think they broke it, or
+            that Bambeh is broken, and they leave. */}
+        <div className="mt-6 rounded-2xl border border-amber-300 bg-amber-50 p-5">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl leading-none" aria-hidden="true">{"\u{1F4F6}"}</span>
+            <p className="text-sm leading-relaxed text-amber-900">{t.hiccup}</p>
+          </div>
+        </div>
 
         <p className="mt-6 text-center text-sm text-gray-500">{t.more}</p>
 
