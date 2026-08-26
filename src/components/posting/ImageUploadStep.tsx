@@ -9,6 +9,28 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Camera, Image, X, AlertCircle, CheckCircle2, Upload } from 'lucide-react';
 
+// FIX397 - the five-picture rule, written where people are actually looking,
+// in the five app languages, with the reason it matters.
+const PHOTO_NOTE: Record<string, string> = {
+  en: "Maximum 5 photos. The first one is the cover buyers see.",
+  fr: "5 photos maximum. La premi\u00E8re est la couverture que voient les acheteurs.",
+  pidgin: "Na 5 picture be the max. The first one na the cover wey buyers dey see.",
+  ar: "5 \u0635\u0648\u0631 \u0643\u062D\u062F \u0623\u0642\u0635\u0649. \u0627\u0644\u0623\u0648\u0644\u0649 \u0647\u064A \u0635\u0648\u0631\u0629 \u0627\u0644\u063A\u0644\u0627\u0641.",
+  ff: "Nate 5 tan. Arande ndee ko ngal soodoo\u0253e njiyata.",
+};
+
+function photoNoteLang(): string {
+  try {
+    const raw = String(window.localStorage.getItem("Bambeh_language") || "").toLowerCase();
+    if (raw === "pcm" || raw === "pidgin_english" || raw === "pidgin") return "pidgin";
+    if (raw === "ful" || raw === "fulfulde" || raw === "ff") return "ff";
+    if (raw === "fr" || raw === "ar" || raw === "en") return raw;
+  } catch {
+    /* storage blocked */
+  }
+  return "en";
+}
+
 interface UploadedImage {
   file:    File;
   preview: string;
@@ -150,7 +172,11 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
             Tap to take photo or choose from gallery
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            {totalCount} / {maxImages} photos added
+            {totalCount} / {maxImages}
+          </p>
+          {/* FIX397 - the five-picture rule, in the user's own language */}
+          <p className="text-xs font-semibold text-teal-700 mt-1">
+            {PHOTO_NOTE[photoNoteLang()] || PHOTO_NOTE.en}
           </p>
           {loading && (
             <div className="mt-3 flex items-center justify-center gap-2 text-xs text-teal-600">

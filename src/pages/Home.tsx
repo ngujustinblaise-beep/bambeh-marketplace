@@ -33,6 +33,29 @@ import {
   Eye,
   Building2,
 } from 'lucide-react';
+
+// FIX397 - "How to use Bambeh", in the five app languages. Written as plain
+// ASCII escapes so no encoding accident can ever mangle it, and read from the
+// same localStorage key every other Bambeh page reads.
+const HOW_TO_USE_LABEL: Record<string, string> = {
+  en: "How to use Bambeh",
+  fr: "Comment utiliser Bambeh",
+  pidgin: "How for use Bambeh",
+  ar: "\u0643\u064A\u0641\u064A\u0629 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0628\u0627\u0645\u0628\u064A\u0647",
+  ff: "No huutoraade Bambeh",
+};
+
+function howToUseLang(): string {
+  try {
+    const raw = String(window.localStorage.getItem("Bambeh_language") || "").toLowerCase();
+    if (raw === "pcm" || raw === "pidgin_english" || raw === "pidgin") return "pidgin";
+    if (raw === "ful" || raw === "fulfulde" || raw === "ff") return "ff";
+    if (raw === "fr" || raw === "ar" || raw === "en") return raw;
+  } catch {
+    /* storage blocked - fall through to English */
+  }
+  return "en";
+}
 import { useNavigate } from 'react-router-dom';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
@@ -486,6 +509,16 @@ export default function Home() {
             >
               <ShoppingBag className="w-5 h-5" />
               {t('home.sellBtn')}
+            </button>
+            {/* FIX397 - How to use Bambeh. Same width as the three above it,
+                outlined instead of filled so it reads as help, not an action
+                that costs anything. */}
+            <button
+              onClick={() => navigate('/how-to-use')}
+              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-teal-600 text-teal-700 rounded-lg hover:bg-teal-50 font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              <span aria-hidden="true">{"\u{1F4D6}"}</span>
+              {HOW_TO_USE_LABEL[howToUseLang()] || HOW_TO_USE_LABEL.en}
             </button>
           </div>
         </div>

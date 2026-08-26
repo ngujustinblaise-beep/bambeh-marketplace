@@ -90,7 +90,8 @@ const AuthGate: React.FC<AuthGateProps> = ({ require: level, children }) => {
   // FIX233 - the vendor branch is gone. It redirected to /vendor/register,
   // which is not a declared route, so it landed on Page Not Found.
 
-  if (level === "subscription" && !isSubscribed) {
+  // FIX397 - an admin is never held at the paywall.
+  if (level === "subscription" && !isSubscribed && !isAdmin) {
     // FIX320 - hold the spinner until the grace window closes. Only after
     // that is a "no" treated as a real answer.
     if (!graceOver) {

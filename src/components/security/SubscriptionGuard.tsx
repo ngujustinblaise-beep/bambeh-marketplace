@@ -241,7 +241,23 @@ function showsTeaser(path: string): boolean {
 
 export default function SubscriptionGuard({ children }: { children: ReactNode }) {
   const location = useLocation();
-  const { currentUser } = useAuth();
+  // FIX397 - TWO fixes in these lines.
+  //
+  // (a) currentUser OR user. useSupabaseAuth returns `user`. This file reads
+  //     `currentUser`; AuthGate reads `user`. If AuthContext does not map one
+  //     onto the other then currentUser is undefined here, every signed-in
+  //     visitor looks signed out to this guard, and /admin/center is sent to
+  //     /login before AuthGate ever runs. Reading both makes the mismatch
+  //     harmless whichever way round it is.
+  //
+  // (b) isAdmin is now read, and used below. It never was.
+  const auth = useAuth() as {
+    currentUser?: { id?: string } | null;
+    user?: { id?: string } | null;
+    isAdmin?: boolean;
+  };
+  const currentUser = auth.currentUser ?? auth.user ?? null;
+  const isAdmin = auth.isAdmin === true;
   const uid = currentUser?.id ?? null;
   const { isActive } = useSubscription(uid);
 
@@ -276,6 +292,14 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
   // ---- GROUP B: signed in is enough (posting, own data, own account,
   //      and since FIX299: confirming receipt and buying coins) ----
   if (!needsSubscription(path)) {
+    return <>{children}</>;
+  }
+
+  // ---- FIX397: AN ADMIN IS NEVER ASKED TO PAY FOR HIS OWN APP ----
+  // This guard only ever asked whether someone was subscribed. It never
+  // asked whether they ran the place. So the owner of Bambeh was told to
+  // subscribe to reach his own Zerm Coins wallet.
+  if (isAdmin) {
     return <>{children}</>;
   }
 
