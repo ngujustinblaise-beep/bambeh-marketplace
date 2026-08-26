@@ -787,7 +787,7 @@ export default function App() {
                         <Route path="/corporate/analytics" element={<MainLayout><AuthGate require="user"><CorporateAnalytics /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/support" element={<MainLayout><AuthGate require="user"><CorporatePrioritySupport /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/trash" element={<MainLayout><AuthGate require="user"><CorporateTrash /></AuthGate></MainLayout>} />{/* FIX156 */}
-                        <Route path="/quiz" element={<MainLayout><AuthGate require="subscription"><QuizPage /></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
+                        <Route path="/quiz" element={<MainLayout><AuthGate require="user"><QuizPage /></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
@@ -805,7 +805,7 @@ export default function App() {
                           path="/deals"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription">
+                              <AuthGate require="user">
                                 <FlashDeals />
                               </AuthGate>
                             </MainLayout>
@@ -817,7 +817,7 @@ export default function App() {
                           path="/group-buying"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription">
+                              <AuthGate require="user">
                                 <GroupBuying />
                               </AuthGate>
                             </MainLayout>
@@ -930,7 +930,7 @@ export default function App() {
                           path="/jobs/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><JobDetails /></AuthGate>
+                              <AuthGate require="user"><JobDetails /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -938,7 +938,7 @@ export default function App() {
                           path="/marketplace/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><MarketplaceItemDetails /></AuthGate>
+                              <AuthGate require="user"><MarketplaceItemDetails /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -946,7 +946,7 @@ export default function App() {
                           path="/services/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><ServiceDetails /></AuthGate>
+                              <AuthGate require="user"><ServiceDetails /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -954,7 +954,7 @@ export default function App() {
                           path="/rentals/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><RentalDetails /></AuthGate>
+                              <AuthGate require="user"><RentalDetails /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -962,7 +962,7 @@ export default function App() {
                           path="/vehicles/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><VehicleDetails /></AuthGate>
+                              <AuthGate require="user"><VehicleDetails /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -970,7 +970,7 @@ export default function App() {
                           path="/exchange/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><ExchangeItemDetails /></AuthGate>
+                              <AuthGate require="user"><ExchangeItemDetails /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1323,7 +1323,7 @@ export default function App() {
                           path="/community"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CommunityPage /></AuthGate>
+                              <AuthGate require="user"><CommunityPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1331,7 +1331,7 @@ export default function App() {
                           path="/community/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><CommunityDetail /></AuthGate>
+                              <AuthGate require="user"><CommunityDetail /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1363,7 +1363,7 @@ export default function App() {
                           path="/farm-fresh"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><FarmFreshPage /></AuthGate>
+                              <AuthGate require="user"><FarmFreshPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1371,7 +1371,7 @@ export default function App() {
                           path="/farm-fresh/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><FarmFreshDetail /></AuthGate>
+                              <AuthGate require="user"><FarmFreshDetail /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1379,7 +1379,7 @@ export default function App() {
                           path="/farm-fresh/order/:productId"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><FarmFreshOrderPage /></AuthGate>
+                              <AuthGate require="user"><FarmFreshOrderPage /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1403,7 +1403,7 @@ export default function App() {
                           path="/compare"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><ComparisonTool /></AuthGate>
+                              <AuthGate require="user"><ComparisonTool /></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1411,7 +1411,7 @@ export default function App() {
                           path="/group-buying/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription"><GroupBuyingDetail /></AuthGate>
+                              <AuthGate require="user"><GroupBuyingDetail /></AuthGate>
                             </MainLayout>
                           }
                         />

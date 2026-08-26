@@ -160,3 +160,9 @@ _quarantine/
 .env.bak
 .env*.bak
 *.report.html
+
+# FIX407 - never commit signing secrets
+android/keystore.properties
+android/*.keystore
+android/*.jks
+*.jks
