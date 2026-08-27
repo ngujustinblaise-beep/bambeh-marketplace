@@ -69,16 +69,104 @@ export const ROLE_LABEL: Record<AdminRole, string> = {
 };
 
 /** Fetch the signed-in user's admin role (null = ordinary user). */
+/* ============================================================================
+ * FIX417 - THE ADMIN LOCKOUT, FIXED AT THE ROOT.
+ *
+ * The old fetchMyRole did two things that guaranteed this failure:
+ *   1. getUser()  - a NETWORK call, when getSession() reads the token locally
+ *   2. const { data } = ...  - the error was DISCARDED, so a dead connection
+ *      and a genuine "you are not staff" produced the identical answer: null.
+ *
+ * A role you have been granted must not evaporate because a request timed out.
+ * ========================================================================== */
+
+const ROLE_CACHE_KEY = 'bambeh_admin_role';
+
+/** The role carried inside the JWT. No network. Cannot fail. Cannot time out. */
+function roleFromToken(user: unknown): AdminRole | null {
+  try {
+    const meta = (user as { app_metadata?: Record<string, unknown> } | null)?.app_metadata;
+    if (!meta) return null;
+    const r = String(meta.admin_role ?? meta.role ?? '').toLowerCase();
+    if (r === 'super_admin' || r === 'admin' || r === 'moderator') return r as AdminRole;
+    // is_admin: true is the simple flag set by SQL. Treat it as full admin.
+    if (meta.is_admin === true || String(meta.is_admin ?? '').toLowerCase() === 'true') {
+      return 'admin';
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function rememberRole(userId: string, role: AdminRole | null): void {
+  try {
+    if (role) {
+      window.localStorage.setItem(ROLE_CACHE_KEY, JSON.stringify({ userId, role }));
+    }
+  } catch { /* storage blocked - not fatal */ }
+}
+
+/** The last role we GENUINELY read for this user. Never used to grant a role
+ *  we never saw - only to avoid dropping one we did. */
+function recallRole(userId: string): AdminRole | null {
+  try {
+    const raw = window.localStorage.getItem(ROLE_CACHE_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as { userId?: string; role?: string };
+    if (p.userId !== userId) return null;
+    const r = String(p.role ?? '').toLowerCase();
+    if (r === 'super_admin' || r === 'admin' || r === 'moderator') return r as AdminRole;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchMyRole(): Promise<{ userId: string | null; role: AdminRole | null }> {
-  const { data: auth } = await supabase.auth.getUser();
-  const userId = auth?.user?.id ?? null;
+  // 1. THE SESSION, NOT getUser(). getSession() reads the stored token and
+  //    makes no request, so this step cannot be lost to a bad connection.
+  let userId: string | null = null;
+  let tokenRole: AdminRole | null = null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user ?? null;
+    userId = user?.id ?? null;
+    tokenRole = roleFromToken(user);
+  } catch {
+    userId = null;
+  }
+
   if (!userId) return { userId: null, role: null };
-  const { data } = await supabase
-    .from('profiles')
-    .select('admin_role')
-    .eq('id', userId)
-    .maybeSingle();
-  return { userId, role: (data?.admin_role as AdminRole | null) ?? null };
+
+  // 2. THE TOKEN WINS. app_metadata is writable only by SQL or the service
+  //    role - a user cannot grant themselves anything here.
+  if (tokenRole) {
+    rememberRole(userId, tokenRole);
+    return { userId, role: tokenRole };
+  }
+
+  // 3. The token said nothing, so ask the database - and KEEP THE ERROR.
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('admin_role')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) {
+      // COULD NOT ASK. That is not the same as "no". Keep what we last knew.
+      console.warn('[admin] role read failed - keeping last known role.', error);
+      return { userId, role: recallRole(userId) };
+    }
+
+    const dbRole = (data?.admin_role as AdminRole | null) ?? null;
+    rememberRole(userId, dbRole);
+    return { userId, role: dbRole };
+  } catch (e) {
+    console.warn('[admin] role read threw - keeping last known role.', e);
+    return { userId, role: recallRole(userId) };
+  }
 }
 
 /** Write an audit row for any privileged action. */
