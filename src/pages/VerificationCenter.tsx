@@ -253,7 +253,7 @@ export default function VerificationCenter() {
                           className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
                       </div>
                       <p className="text-xs text-gray-400">
-                        ?? Business registration documents upload coming soon. Submit now to be placed in the review queue.
+Send your business registration documents to support@bambeh.com and we will verify your account. Submit now to be placed in the review queue.
                       </p>
                     </>
                   )}

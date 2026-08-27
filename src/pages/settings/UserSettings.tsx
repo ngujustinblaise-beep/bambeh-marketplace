@@ -44,6 +44,9 @@ const S: Record<Lang, {
   privacyPolicy: string; termsOfService: string; security: string;
   changePassword: string; changePasswordHint: string; accountRecovery: string; accountRecoveryHint: string;
   dangerZone: string; dangerHint: string; deactivate: string;
+  deleteAccount: string; deleteHint: string; dlgTitle: string; dlgBody: string;
+  dlgType: string; dlgCancel: string; dlgConfirm: string; dlgWorking: string;
+  dlgDone: string; dlgFail: string;
   pageTitle: string; languageLabel: string; logout: string;
   myListings: string; favorites: string; orders: string;
 }> = {
@@ -79,6 +82,16 @@ const S: Record<Lang, {
     dangerZone: "Danger Zone",
     dangerHint: "These actions cannot be undone.",
     deactivate: "Deactivate Account",
+    deleteAccount: "Delete My Account",
+    deleteHint: "This permanently removes your account. It cannot be undone.",
+    dlgTitle: "Delete your account?",
+    dlgBody: "Your listings, messages and profile will be removed. Records of completed payments are kept because the law requires it. This cannot be undone.",
+    dlgType: "Type DELETE to confirm",
+    dlgCancel: "Cancel",
+    dlgConfirm: "Delete forever",
+    dlgWorking: "Deleting...",
+    dlgDone: "Your account has been deleted.",
+    dlgFail: "Could not delete your account. Please try again or contact support.",
     pageTitle: "Settings",
     languageLabel: "Language",
     logout: "Logout",
@@ -118,6 +131,16 @@ const S: Record<Lang, {
     dangerZone: "Zone de danger",
     dangerHint: "Ces actions sont irréversibles.",
     deactivate: "Désactiver le compte",
+    deleteAccount: "Supprimer mon compte",
+    deleteHint: "Ceci supprime votre compte d\u00e9finitivement. C'est irr\u00e9versible.",
+    dlgTitle: "Supprimer votre compte ?",
+    dlgBody: "Vos annonces, messages et profil seront supprim\u00e9s. Les enregistrements des paiements effectu\u00e9s sont conserv\u00e9s car la loi l'exige. C'est irr\u00e9versible.",
+    dlgType: "Tapez DELETE pour confirmer",
+    dlgCancel: "Annuler",
+    dlgConfirm: "Supprimer d\u00e9finitivement",
+    dlgWorking: "Suppression...",
+    dlgDone: "Votre compte a \u00e9t\u00e9 supprim\u00e9.",
+    dlgFail: "Impossible de supprimer votre compte. R\u00e9essayez ou contactez le support.",
     pageTitle: "Paramètres",
     languageLabel: "Langue",
     logout: "Déconnexion",
@@ -157,6 +180,16 @@ const S: Record<Lang, {
     dangerZone: "Danger Zone",
     dangerHint: "Dis actions no fit undo.",
     deactivate: "Deactivate Account",
+    deleteAccount: "Delete My Account",
+    deleteHint: "This one go remove your account for ever. You no fit bring am back.",
+    dlgTitle: "You wan delete your account?",
+    dlgBody: "Your things weh you put, your message and your profile go comot. Record of payment weh don finish go stay because law talk say make e stay. You no fit undo am.",
+    dlgType: "Type DELETE make e confirm",
+    dlgCancel: "Leave am",
+    dlgConfirm: "Delete am for ever",
+    dlgWorking: "E dey delete...",
+    dlgDone: "Dem don delete your account.",
+    dlgFail: "We no fit delete am. Try again or call support.",
     pageTitle: "Settings",
     languageLabel: "Language",
     logout: "Comot",
@@ -196,6 +229,16 @@ const S: Record<Lang, {
     dangerZone: "منطقة الخطر",
     dangerHint: "لا يمكن التراجع عن هذه الإجراءات.",
     deactivate: "تعطيل الحساب",
+    deleteAccount: "\u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u064a",
+    deleteHint: "\u0647\u0630\u0627 \u064a\u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643 \u0646\u0647\u0627\u0626\u064a\u0627. \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062a\u0631\u0627\u062c\u0639.",
+    dlgTitle: "\u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643\u061f",
+    dlgBody: "\u0633\u064a\u062a\u0645 \u062d\u0630\u0641 \u0625\u0639\u0644\u0627\u0646\u0627\u062a\u0643 \u0648\u0631\u0633\u0627\u0626\u0644\u0643 \u0648\u0645\u0644\u0641\u0643 \u0627\u0644\u0634\u062e\u0635\u064a. \u062a\u064f\u062d\u0641\u0638 \u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0645\u062f\u0641\u0648\u0639\u0627\u062a \u0627\u0644\u0645\u0643\u062a\u0645\u0644\u0629 \u0644\u0623\u0646 \u0627\u0644\u0642\u0627\u0646\u0648\u0646 \u064a\u0648\u062c\u0628 \u0630\u0644\u0643. \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0639\u0646 \u0647\u0630\u0627.",
+    dlgType: "\u0627\u0643\u062a\u0628 DELETE \u0644\u0644\u062a\u0623\u0643\u064a\u062f",
+    dlgCancel: "\u0625\u0644\u063a\u0627\u0621",
+    dlgConfirm: "\u0627\u062d\u0630\u0641 \u0646\u0647\u0627\u0626\u064a\u0627",
+    dlgWorking: "\u062c\u0627\u0631\u064a \u0627\u0644\u062d\u0630\u0641...",
+    dlgDone: "\u062a\u0645 \u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643.",
+    dlgFail: "\u062a\u0639\u0630\u0631 \u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649 \u0623\u0648 \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u062f\u0639\u0645.",
     pageTitle: "الإعدادات",
     languageLabel: "اللغة",
     logout: "تسجيل الخروج",
@@ -235,6 +278,16 @@ const S: Record<Lang, {
     dangerZone: "Nokku bonki",
     dangerHint: "Ɗii golle mbaawaa firteede.",
     deactivate: "Ɗaɗɗu konto",
+    deleteAccount: "Momtu konto am",
+    deleteHint: "\u018aum ina momta konto maa haa abada. A waawaa ruttude.",
+    dlgTitle: "Ada yi\u0257i momtude konto maa?",
+    dlgBody: "Bayyinaali maa, bataake maa e humpito maa fof momtete. Winndannde njo\u0253di gas\u0257e ina heddoo sabu laawol ina naamnoo \u0257um. A waawaa ruttude.",
+    dlgType: "Winndu DELETE ngam tee\u014btinde",
+    dlgCancel: "Accu",
+    dlgConfirm: "Momtu haa abada",
+    dlgWorking: "Ina momtee...",
+    dlgDone: "Konto maa momtaama.",
+    dlgFail: "Min mbaawaa momtude konto maa. Eto kadi walla noddu ballal.",
     pageTitle: "Teelte",
     languageLabel: "Ɗemngal",
     logout: "Yaltude",
@@ -278,6 +331,11 @@ async function compressImage(file: File): Promise<Blob> {
 
 const UserSettings: React.FC = () => {
   const navigate = useNavigate();
+  // FIX420 - account deletion state
+  const [delOpen, setDelOpen]   = useState(false);
+  const [delText, setDelText]   = useState("");
+  const [delBusy, setDelBusy]   = useState(false);
+  const [delError, setDelError] = useState("");
   const { currentUser, logout } = useAuth();
   const { language, setLanguage } = useLanguage();
   
@@ -525,6 +583,62 @@ const UserSettings: React.FC = () => {
             <button className="w-full py-3 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-xl font-semibold text-sm transition-colors">
               {s.deactivate}
             </button>
+
+            {/* FIX420 - real deletion, required by Google Play and Apple 5.1.1(v) */}
+            <button
+              onClick={() => { setDelText(""); setDelError(""); setDelOpen(true); }}
+              className="w-full mt-3 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold text-sm transition-colors"
+            >
+              {s.deleteAccount}
+            </button>
+            <p className="text-xs text-gray-400 mt-2">{s.deleteHint}</p>
+
+            {delOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div className="w-full max-w-sm rounded-2xl bg-white p-5">
+                  <h4 className="font-bold text-red-600 text-lg">{s.dlgTitle}</h4>
+                  <p className="mt-2 text-sm text-gray-600">{s.dlgBody}</p>
+                  <label className="mt-4 block text-xs font-semibold text-gray-500">{s.dlgType}</label>
+                  <input
+                    value={delText}
+                    onChange={(ev) => setDelText(ev.target.value)}
+                    className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                    placeholder="DELETE"
+                    autoComplete="off"
+                  />
+                  {delError && <p className="mt-2 text-xs text-red-600">{delError}</p>}
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => setDelOpen(false)}
+                      disabled={delBusy}
+                      className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-700"
+                    >
+                      {s.dlgCancel}
+                    </button>
+                    <button
+                      disabled={delBusy || delText.toUpperCase() !== "DELETE"}
+                      onClick={async () => {
+                        setDelBusy(true); setDelError("");
+                        try {
+                          const { data, error } = await supabase.rpc("delete_my_account", { confirm_text: delText });
+                          if (error) { setDelError(s.dlgFail); setDelBusy(false); return; }
+                          const res = data as { ok?: boolean } | null;
+                          if (!res || res.ok !== true) { setDelError(s.dlgFail); setDelBusy(false); return; }
+                          await supabase.auth.signOut();
+                          window.alert(s.dlgDone);
+                          navigate("/");
+                        } catch {
+                          setDelError(s.dlgFail); setDelBusy(false);
+                        }
+                      }}
+                      className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white disabled:opacity-40"
+                    >
+                      {delBusy ? s.dlgWorking : s.dlgConfirm}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
