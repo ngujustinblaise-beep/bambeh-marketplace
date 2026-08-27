@@ -204,6 +204,39 @@ export interface AdminUser {
   created_at: string;
 }
 
+/* FIX419 ---------------------------------------------------------------------
+ * Every admin fetcher used `const { data } = await ...` and threw the error
+ * away. Two different failures then looked identical to the UI:
+ *   - a real empty result
+ *   - a request that never came back
+ * and when the fetch THREW rather than returning an error object, the whole
+ * function threw, the caller's setLoading(false) never ran, and the panel span
+ * forever. That is the spinner on the Users tab.
+ *
+ * adminSafe() gives every fetcher the same contract: it never throws, it tries
+ * twice, and it tells the caller whether the answer is real.
+ * -------------------------------------------------------------------------- */
+export interface AdminFetch<T> { rows: T[]; failed: boolean }
+
+async function adminSafe<T>(run: () => Promise<{ data: unknown; error: unknown }>): Promise<AdminFetch<T>> {
+  for (let attemptNo = 0; attemptNo < 2; attemptNo++) {
+    try {
+      const res = await run();
+      if (res && res.error) {
+        if (attemptNo === 0) { await new Promise((r) => setTimeout(r, 600)); continue; }
+        console.warn('[admin] query failed after retry', res.error);
+        return { rows: [], failed: true };
+      }
+      return { rows: (res?.data ?? []) as T[], failed: false };
+    } catch (err) {
+      if (attemptNo === 0) { await new Promise((r) => setTimeout(r, 600)); continue; }
+      console.warn('[admin] query threw after retry', err);
+      return { rows: [], failed: true };
+    }
+  }
+  return { rows: [], failed: true };
+}
+
 export async function searchUsers(query: string): Promise<AdminUser[]> {
   let q = supabase
     .from('profiles')
@@ -211,8 +244,8 @@ export async function searchUsers(query: string): Promise<AdminUser[]> {
     .order('created_at', { ascending: false })
     .limit(50);
   if (query.trim()) q = q.or(`full_name.ilike.%${query}%,email.ilike.%${query}%`);
-  const { data } = await q;
-  return (data ?? []) as AdminUser[];
+  const out = await adminSafe<AdminUser>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+  return out.rows;
 }
 
 export async function setUserFrozen(
@@ -358,11 +391,11 @@ export async function deliverMessage(messageId: string) {
 }
 
 export async function fetchPendingMessages() {
-  const { data } = await supabase
+  const out = await adminSafe(() => supabase
     .from('admin_messages').select('*')
     .eq('status', 'pending_approval')
-    .order('created_at', { ascending: false });
-  return data ?? [];
+    .order('created_at', { ascending: false }) as unknown as Promise<{ data: unknown; error: unknown }>);
+  return out.rows;
 }
 
 export async function approveMessage(actorId: string, actorRole: AdminRole, messageId: string) {
@@ -387,10 +420,10 @@ export async function publishAnnouncement(actorId: string, actorRole: AdminRole,
 
 // ---- Reports feed (super sees shadow copies) ------------------------------
 export async function fetchReports() {
-  const { data } = await supabase
+  const out = await adminSafe(() => supabase
     .from('staff_reports').select('*')
-    .order('created_at', { ascending: false }).limit(100);
-  return data ?? [];
+    .order('created_at', { ascending: false }).limit(100) as unknown as Promise<{ data: unknown; error: unknown }>);
+  return out.rows;
 }
 
 // ---- Finances (super only; RLS on the underlying tables also enforces) ----
