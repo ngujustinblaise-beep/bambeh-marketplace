@@ -24,6 +24,26 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { usePlanLimits } from "@/hooks/usePlanLimits";
+
+/* FIX431 - the location split, in all five languages.
+ * "Yaounde, Bastos"  ->  free sees "Yaounde", premium sees the whole thing.
+ * A location with no comma is already just a city, so it shows unchanged. */
+const LOC_T: Record<string, Record<string, string>> = {
+  en: { unlock: "See exact location", hint: "Premium members see the neighbourhood and meeting point" },
+  fr: { unlock: "Voir le lieu exact", hint: "Les membres premium voient le quartier et le point de rencontre" },
+  pidgin: { unlock: "See the exact place", hint: "Premium member dey see the quarter and where una go meet" },
+  ar: { unlock: "\u0639\u0631\u0636 \u0627\u0644\u0645\u0648\u0642\u0639 \u0627\u0644\u062f\u0642\u064a\u0642", hint: "\u064a\u0631\u0649 \u0627\u0644\u0623\u0639\u0636\u0627\u0621 \u0627\u0644\u0645\u0645\u064a\u0632\u0648\u0646 \u0627\u0644\u062d\u064a \u0648\u0646\u0642\u0637\u0629 \u0627\u0644\u0644\u0642\u0627\u0621" },
+  ff: { unlock: "Yiy nokku laa\u0253\u0257o", hint: "Ter\u0253e premium ina njiya leydi e nokku fottirde" },
+};
+
+/** Everything before the first comma. Trimmed, and safe on null. */
+function cityOnly(full: string | null | undefined): string {
+  const s = String(full ?? "").trim();
+  if (!s) return "";
+  const i = s.indexOf(",");
+  return i > 0 ? s.slice(0, i).trim() : s;
+}
 import { useParams, useNavigate } from "react-router-dom";
 import {
   RefreshCw, ArrowLeft, Heart, ShoppingCart, Share2,
@@ -668,7 +688,43 @@ export default function MarketplaceItemDetails() {
 
         {/* Meta */}
         <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-          <div className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{listing.location}</div>
+          {/* FIX431 - free members see the city, premium sees the rest */}
+          {(() => {
+            const plan = usePlanLimits();
+            const lang = (() => {
+              try {
+                const l = String(window.localStorage.getItem("bambeh_lang") ?? "en").toLowerCase();
+                if (l === "fulfulde" || l === "ful") return "ff";
+                if (l === "pcm") return "pidgin";
+                return LOC_T[l] ? l : "en";
+              } catch { return "en"; }
+            })();
+            const lt = LOC_T[lang] ?? LOC_T.en;
+            const full = String(listing.location ?? "");
+            const city = cityOnly(full);
+            const hasMore = full.length > city.length;
+
+            if (plan.canSeeExactLocation || !hasMore) {
+              return (
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5" />{full || city}
+                </div>
+              );
+            }
+            return (
+              <button
+                type="button"
+                onClick={() => { window.location.hash = "#/subscription"; }}
+                className="flex items-center gap-1 text-teal-700 hover:underline"
+                title={lt.hint}
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                {city}
+                <Lock className="w-3 h-3 ml-0.5" />
+                <span className="text-[11px] font-semibold">{lt.unlock}</span>
+              </button>
+            );
+          })()}
           <div className="flex items-center gap-1"><Tag className="w-3.5 h-3.5" />{listing.category}</div>
           <div className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" />{listing.viewCount} {t("views")}</div>
           <div className="flex items-center gap-1">

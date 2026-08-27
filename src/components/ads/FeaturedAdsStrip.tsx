@@ -26,6 +26,8 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useLang } from "@/hooks/useAppLang";
 
+const STRIP_CACHE_KEY = "bambeh_strip_";
+
 import LocationLock from "@/components/security/LocationLock";
 // Kept broad so existing callers passing any old category value still compile.
 export type AdCategory =
@@ -106,6 +108,9 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
   const s = STRINGS[lang] ?? STRINGS.en;
 
   const [items, setItems] = useState<StripItem[]>([]);
+  // FIX428 - remember the last set that actually arrived. On a weak
+  // connection the user keeps seeing real adverts instead of an empty box.
+  const [loadFailed, setLoadFailed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [batch, setBatch] = useState(0);
 
@@ -203,8 +208,26 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
       collected.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       setItems(collected);
       setBatch(0);
+      setLoadFailed(false);
+      // FIX428 - keep a copy so a later failure has something real to show
+      try {
+        if (collected.length > 0) {
+          window.sessionStorage.setItem(
+            STRIP_CACHE_KEY + (category ?? "all"),
+            JSON.stringify(collected.slice(0, 12)),
+          );
+        }
+      } catch { /* storage blocked - not fatal */ }
     } catch {
-      setItems([]);
+      // FIX428 - THE BUG. This used to be setItems([]), which told the user
+      // there are no adverts when the truth was that we could not ask.
+      setLoadFailed(true);
+      let restored: StripItem[] = [];
+      try {
+        const cached = window.sessionStorage.getItem(STRIP_CACHE_KEY + (category ?? "all"));
+        if (cached) restored = JSON.parse(cached) as StripItem[];
+      } catch { restored = []; }
+      setItems(restored);
     } finally {
       setLoading(false);
     }
