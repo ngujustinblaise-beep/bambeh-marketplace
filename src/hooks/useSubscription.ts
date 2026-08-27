@@ -133,6 +133,15 @@ let currentUserId: string | null = null;
 let currentSub: CachedSub | null = null;
 let lastVerifyAt = 0;
 
+// FIX413 - lastVerifyAt means "we have a real answer". It is only set after a
+// completed round trip, so isLoading and AuthGate's grace window still behave.
+// lastAttemptAt means "we asked recently" and is set the moment a request is
+// created, whether or not it ever comes back. THE THROTTLE USES THIS ONE, so a
+// failing network can no longer switch the throttle off and start a stampede.
+let lastAttemptAt = 0;
+/** consecutive failures - each one widens the gap before we try again */
+let failStreak = 0;
+
 /** The single request in flight, if any. Everyone else awaits this one. */
 let inFlight: Promise<CachedSub | null> | null = null;
 
@@ -239,13 +248,26 @@ function verifyShared(
   if (inFlight && sameUser) return inFlight;
 
   // Asked recently enough. Reuse the answer we already have.
-  if (!opts.force && sameUser && lastVerifyAt > 0 && Date.now() - lastVerifyAt < MIN_REFETCH_MS) {
+  // FIX413 - throttle on lastAttemptAt, not lastVerifyAt. On a failing network
+  // lastVerifyAt stays 0 forever, which used to disable this guard entirely.
+  // Back off on repeated failures: 15s, 30s, 60s, 120s, capped at 2 minutes.
+  const backoff = Math.min(MIN_REFETCH_MS * Math.pow(2, Math.min(failStreak, 3)), 120000);
+  if (!opts.force && sameUser && lastAttemptAt > 0 && Date.now() - lastAttemptAt < backoff) {
     return Promise.resolve(currentSub);
   }
 
+  lastAttemptAt = Date.now(); // FIX413 - stamped on CREATION, not completion
   const request = verifyWithSupabase(userId, false)
-    .catch(() => (currentUserId === userId ? currentSub : null))
+    .catch(() => {
+      // FIX413 - a THROWN fetch never reached the line that sets lastVerifyAt,
+      // so isLoading stayed true forever and every gate span. Record it as
+      // answered, count the failure, and let the backoff widen.
+      failStreak = failStreak + 1;
+      lastVerifyAt = Date.now();
+      return currentUserId === userId ? currentSub : null;
+    })
     .then((sub) => {
+      failStreak = 0; // FIX413 - a good answer resets the backoff
       inFlight = null;
       publish();
       return sub;
