@@ -7,6 +7,11 @@
  */
 
 import React, { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Lock } from 'lucide-react';
+// FIX414 - the SAME hook AuthGate uses, so a paying member is never
+// blocked here after being let through elsewhere. It fails open.
+import { usePlanLimits, UPGRADE_COPY } from '@/hooks/usePlanLimits';
 import { Camera, Image, X, AlertCircle, CheckCircle2, Upload } from 'lucide-react';
 
 // FIX397 - the five-picture rule, written where people are actually looking,
@@ -65,7 +70,16 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
   const [loading,  setLoading]  = useState(false);
 
   const totalCount = images.length + initialImages.length;
-  const canAddMore = totalCount < maxImages;
+  // FIX414 - the caller asks for 5; the PLAN decides what they actually get.
+  // isPremium is true while the check is still loading, so nobody is ever
+  // blocked on a slow connection.
+  const plan = usePlanLimits();
+  const navigate = useNavigate();
+  const effectiveMax = Math.min(maxImages, plan.maxImagesPerListing);
+  const cappedByPlan = !plan.isPremium && effectiveMax < maxImages;
+  const up = UPGRADE_COPY[photoNoteLang()] || UPGRADE_COPY.en;
+
+  const canAddMore = totalCount < effectiveMax;
 
   const readAsDataURL = (file: File): Promise<string> =>
     new Promise((res, rej) => {
@@ -87,7 +101,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
       return;
     }
 
-    const remaining = maxImages - totalCount;
+    const remaining = effectiveMax - totalCount;
     const toProcess = allowed.slice(0, remaining);
 
     const newImages: UploadedImage[] = [];
@@ -100,7 +114,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
 
     setImages(prev => [...prev, ...newImages]);
     setLoading(false);
-  }, [maxImages, totalCount]);
+  }, [effectiveMax, totalCount]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) processFiles(e.target.files);
@@ -172,7 +186,7 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
             Tap to take photo or choose from gallery
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            {totalCount} / {maxImages}
+            {totalCount} / {effectiveMax}
           </p>
           {/* FIX397 - the five-picture rule, in the user's own language */}
           <p className="text-xs font-semibold text-teal-700 mt-1">
@@ -184,6 +198,29 @@ const ImageUploadStep: React.FC<ImageUploadStepProps> = ({
               Processing images...
             </div>
           )}
+        </div>
+      )}
+
+      {/* FIX414 - shown ONLY when the plan capped them, never as a nag */}
+      {cappedByPlan && totalCount >= effectiveMax && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <div className="rounded-xl bg-amber-100 p-2">
+              <Lock className="h-5 w-5 text-amber-700" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-amber-900">{up.title}</p>
+              <p className="mt-0.5 text-sm text-amber-800">{up.body}</p>
+              <button
+                type="button"
+                onClick={() => navigate('/subscription')}
+                className="mt-3 rounded-xl bg-amber-600 px-4 py-2 text-sm font-bold text-white active:scale-95"
+              >
+                {up.cta}
+              </button>
+              <p className="mt-1.5 text-xs text-amber-700">{up.from}</p>
+            </div>
+          </div>
         </div>
       )}
 
