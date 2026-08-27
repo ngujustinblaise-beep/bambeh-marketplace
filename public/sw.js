@@ -1,133 +1,77 @@
-/**
- * Bambeh Marketplace — Service Worker
- * Place this file at: /public/sw.js
- * It will be served at: https://yourdomain.com/sw.js
+/* Bambeh service worker - FIX410
  *
- * Strategy:
- *   - App shell (HTML/JS/CSS): Cache First
- *   - API requests: Network First with offline fallback
- *   - Images: Stale While Revalidate
+ * Rules, in order of importance:
+ *  1. NEVER touch Supabase, CamPay or any cross-origin request. Caching an
+ *     auth call or replaying a payment would be far worse than being offline.
+ *  2. index.html is NETWORK FIRST, so a new deploy is picked up immediately
+ *     and users are never stuck on an old build.
+ *  3. Hashed build assets are CACHE FIRST. Their filenames change on every
+ *     build, so a cached one is always the right one - and this is what makes
+ *     the app open instantly on a slow Yaounde connection.
+ *  4. On a failed navigation we serve the cached shell instead of the
+ *     browser's dinosaur page.
  */
+const VERSION    = 'bambeh-v1';
+const SHELL      = VERSION + '-shell';
+const ASSETS     = VERSION + '-assets';
+const SHELL_URLS = ['/', '/index.html', '/manifest.webmanifest'];
 
-const CACHE_NAME    = 'bambeh-v1';
-const API_CACHE     = 'bambeh-api-v1';
-const IMAGE_CACHE   = 'bambeh-images-v1';
-
-// App shell resources to pre-cache
-const PRECACHE_URLS = [
-  '/',
-  '/offline-mode',
-];
-
-// ── Install ───────────────────────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE_URLS))
+    caches.open(SHELL)
+      .then((c) => c.addAll(SHELL_URLS).catch(() => undefined))
       .then(() => self.skipWaiting())
   );
 });
 
-// ── Activate ──────────────────────────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames =>
-      Promise.all(
-        cacheNames
-          .filter(name => ![CACHE_NAME, API_CACHE, IMAGE_CACHE].includes(name))
-          .map(name => caches.delete(name))
-      )
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// ── Fetch ─────────────────────────────────────────────────────────────────────
+self.addEventListener('message', (e) => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+  const req = event.request;
 
-  // Skip non-GET and cross-origin requests
-  if (request.method !== 'GET') return;
-  if (!url.origin.includes(self.location.hostname) && !url.hostname.includes('supabase.co')) return;
+  // rule 1 - only ever same-origin GETs
+  if (req.method !== 'GET') return;
+  let url;
+  try { url = new URL(req.url); } catch (_e) { return; }
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/rest/')) return;
 
-  // Images → Stale While Revalidate
-  if (request.destination === 'image') {
-    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE));
-    return;
-  }
-
-  // API / Supabase → Network First
-  if (url.pathname.startsWith('/api/') || url.hostname.includes('supabase.co')) {
-    event.respondWith(networkFirst(request, API_CACHE));
-    return;
-  }
-
-  // Navigation (HTML) → Network First, fallback to /offline-mode
-  if (request.mode === 'navigate') {
+  // rule 2 - the app shell, network first
+  if (req.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
-      fetch(request)
-        .then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
-          return response;
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(SHELL).then((c) => c.put('/index.html', copy)).catch(() => undefined);
+          return res;
         })
-        .catch(() => caches.match('/offline-mode') || caches.match('/'))
+        .catch(() => caches.match('/index.html').then((r) => r || Response.error()))
     );
     return;
   }
 
-  // JS/CSS/fonts → Cache First
-  event.respondWith(cacheFirst(request, CACHE_NAME));
-});
-
-// ── Strategies ────────────────────────────────────────────────────────────────
-async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-  try {
-    const response = await fetch(request);
-    const cache = await caches.open(cacheName);
-    cache.put(request, response.clone());
-    return response;
-  } catch {
-    return new Response('Offline', { status: 503 });
-  }
-}
-
-async function networkFirst(request, cacheName) {
-  try {
-    const response = await fetch(request);
-    const cache = await caches.open(cacheName);
-    cache.put(request, response.clone());
-    return response;
-  } catch {
-    const cached = await caches.match(request);
-    return cached || new Response(JSON.stringify({ error: 'Offline' }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-}
-
-async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  const fetchPromise = fetch(request).then(response => {
-    cache.put(request, response.clone());
-    return response;
-  }).catch(() => cached);
-  return cached || fetchPromise;
-}
-
-// ── Background Sync (for offline actions) ─────────────────────────────────────
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-offline-actions') {
-    event.waitUntil(syncOfflineActions());
+  // rule 3 - hashed build output, cache first
+  if (url.pathname.startsWith('/assets/') || /\.(js|css|png|jpg|jpeg|webp|svg|woff2?)$/.test(url.pathname)) {
+    event.respondWith(
+      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+        if (res && res.status === 200 && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(ASSETS).then((c) => c.put(req, copy)).catch(() => undefined);
+        }
+        return res;
+      }).catch(() => hit))
+    );
   }
 });
-
-async function syncOfflineActions() {
-  // In production: read queued actions from IndexedDB and replay them
-  // e.g., messages sent while offline, orders placed while offline
-  console.log('[SW] Syncing offline actions...');
-}

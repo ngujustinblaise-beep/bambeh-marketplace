@@ -41,9 +41,26 @@
     <meta name="twitter:title" content="Bambeh: The Pulse of African Commerce" />
     <meta name="twitter:description" content="Buy, sell, find jobs, rent, and book services across Cameroon, Central Africa, and West Africa." />
     <meta name="twitter:image" content="https://bambeh.com/icon-512x512.png" />
+      <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#16a34a" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Bambeh" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+      <script>
+      // FIX410 - register ONLY on the real website. Never inside the
+      // Capacitor Android app, where a service worker fights the WebView.
+      if ('serviceWorker' in navigator &&
+          location.protocol === 'https:' &&
+          location.hostname.endsWith('bambeh.com')) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {});
+        });
+      }
+    </script>
   </body>
 </html>
