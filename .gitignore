@@ -166,3 +166,7 @@ android/keystore.properties
 android/*.keystore
 android/*.jks
 *.jks
+
+# FIX424 - machine specific
+android/local.properties
+local.properties

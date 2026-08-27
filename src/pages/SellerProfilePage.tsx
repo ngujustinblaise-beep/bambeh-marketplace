@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   ShieldCheck,
   Clock,
+  Ban,
 } from 'lucide-react';
 
 /* ============================================================
@@ -173,6 +174,16 @@ function StarRow({ value, size = 16 }: { value: number; size?: number }) {
   );
 }
 
+// FIX426 - Block, five languages. Calls block_user() from FIX416, which
+// enforces the block BOTH WAYS, so the seller also stops seeing this buyer.
+const SP_BLOCK_T: Record<string, Record<string, string>> = {
+  en: { block: "Block", title: "Block this seller?", body: "You will not see their listings and they cannot message you. You can undo this in Settings.", cancel: "Cancel", confirm: "Block seller", working: "Blocking...", done: "Seller blocked.", fail: "Could not block. Please try again." },
+  fr: { block: "Bloquer", title: "Bloquer ce vendeur ?", body: "Vous ne verrez plus ses annonces et il ne pourra pas vous contacter. Vous pouvez annuler dans les Param\u00e8tres.", cancel: "Annuler", confirm: "Bloquer", working: "Blocage...", done: "Vendeur bloqu\u00e9.", fail: "Impossible de bloquer. R\u00e9essayez." },
+  pidgin: { block: "Block", title: "You wan block this seller?", body: "You no go see dem things again and dem no fit message you. You fit undo am for Settings.", cancel: "Leave am", confirm: "Block am", working: "E dey block...", done: "You don block the seller.", fail: "We no fit block am. Try again." },
+  ar: { block: "\u062d\u0638\u0631", title: "\u062d\u0638\u0631 \u0647\u0630\u0627 \u0627\u0644\u0628\u0627\u0626\u0639\u061f", body: "\u0644\u0646 \u062a\u0631\u0649 \u0625\u0639\u0644\u0627\u0646\u0627\u062a\u0647 \u0648\u0644\u0646 \u064a\u062a\u0645\u0643\u0646 \u0645\u0646 \u0645\u0631\u0627\u0633\u0644\u062a\u0643. \u064a\u0645\u0643\u0646\u0643 \u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0645\u0646 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a.", cancel: "\u0625\u0644\u063a\u0627\u0621", confirm: "\u062d\u0638\u0631 \u0627\u0644\u0628\u0627\u0626\u0639", working: "\u062c\u0627\u0631\u064a \u0627\u0644\u062d\u0638\u0631...", done: "\u062a\u0645 \u062d\u0638\u0631 \u0627\u0644\u0628\u0627\u0626\u0639.", fail: "\u062a\u0639\u0630\u0631 \u0627\u0644\u062d\u0638\u0631. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649." },
+  ff: { block: "Falo", title: "Ada yi\u0257i falde oo njeeyoowo?", body: "A yiyataa bayyinaali makko, o waawataa neldude ma bataake. Ada waawi ruttude \u0257um e Teelte.", cancel: "Accu", confirm: "Falo njeeyoowo", working: "Ina falee...", done: "Njeeyoowo falaama.", fail: "Min mbaawaa falde. Eto kadi." },
+};
+
 export default function SellerProfilePage() {
   const params = useParams();
   const sellerId =
@@ -195,6 +206,12 @@ export default function SellerProfilePage() {
   const [listings, setListings] = useState<ListingRow[]>([]);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [reviewerMap, setReviewerMap] = useState<Record<string, ProfileRow>>({});
+  // FIX426 - block state
+  const [blkOpen, setBlkOpen] = useState(false);
+  const [blkBusy, setBlkBusy] = useState(false);
+  const [blkErr,  setBlkErr]  = useState('');
+  const bkey = lang === 'fulfulde' || lang === 'ful' ? 'ff' : lang === 'pcm' ? 'pidgin' : lang;
+  const bt = SP_BLOCK_T[bkey] ?? SP_BLOCK_T.en;
 
   useEffect(() => {
     if (sellerId) load();
@@ -332,10 +349,56 @@ export default function SellerProfilePage() {
             <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
           <h1 className="font-semibold text-gray-900">{tr(lang, 'seller')}</h1>
+
+          {/* FIX426 - Block. Hidden on your own profile and when signed out. */}
+          {me?.id && sellerId && me.id !== sellerId && (
+            <button
+              onClick={() => { setBlkErr(''); setBlkOpen(true); }}
+              title={bt.block}
+              className="ml-auto p-2 rounded-lg hover:bg-red-50 text-red-600"
+            >
+              <Ban className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-4">
+        {blkOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-5">
+              <h4 className="font-bold text-gray-900 text-lg">{bt.title}</h4>
+              <p className="mt-2 text-sm text-gray-600">{bt.body}</p>
+              {blkErr && <p className="mt-2 text-xs text-red-600">{blkErr}</p>}
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => setBlkOpen(false)}
+                  disabled={blkBusy}
+                  className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-700"
+                >
+                  {bt.cancel}
+                </button>
+                <button
+                  disabled={blkBusy}
+                  onClick={async () => {
+                    setBlkBusy(true); setBlkErr('');
+                    try {
+                      const { data, error } = await supabase.rpc('block_user', { target: sellerId, why: null });
+                      const res = data as { ok?: boolean } | null;
+                      if (error || !res || res.ok !== true) { setBlkErr(bt.fail); setBlkBusy(false); return; }
+                      setBlkOpen(false); setBlkBusy(false);
+                      window.alert(bt.done);
+                      navigate(-1);
+                    } catch { setBlkErr(bt.fail); setBlkBusy(false); }
+                  }}
+                  className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white disabled:opacity-40"
+                >
+                  {blkBusy ? bt.working : bt.confirm}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* profile card */}
         <div className="bg-white rounded-2xl shadow-sm mt-4 p-5">
           <div className="flex items-start gap-4">

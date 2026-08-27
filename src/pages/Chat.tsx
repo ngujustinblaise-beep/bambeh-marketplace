@@ -6,9 +6,31 @@
 //        recipient notification, so messages actually surface on the other side.
 //        (3) startChat no longer writes to the phantom conversation_participants.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+// FIX423 - Block, in all five languages. Calls the block_user() RPC that
+// FIX416 already put in the database. Blocking is enforced BOTH WAYS there,
+// so the blocked person also stops seeing this user.
+const BLOCK_T: Record<string, Record<string, string>> = {
+  en: { block: "Block", blockTitle: "Block this user?", blockBody: "They will not be able to message you, and you will not see their listings. You can undo this in Settings.", cancel: "Cancel", confirm: "Block user", working: "Blocking...", done: "User blocked.", fail: "Could not block. Please try again." },
+  fr: { block: "Bloquer", blockTitle: "Bloquer cet utilisateur ?", blockBody: "Il ne pourra plus vous envoyer de messages et vous ne verrez plus ses annonces. Vous pouvez annuler dans les Param\u00e8tres.", cancel: "Annuler", confirm: "Bloquer", working: "Blocage...", done: "Utilisateur bloqu\u00e9.", fail: "Impossible de bloquer. R\u00e9essayez." },
+  pidgin: { block: "Block", blockTitle: "You wan block this person?", blockBody: "Dem no go fit send you message again, and you no go see dem things. You fit undo am for Settings.", cancel: "Leave am", confirm: "Block am", working: "E dey block...", done: "You don block the person.", fail: "We no fit block am. Try again." },
+  ar: { block: "\u062d\u0638\u0631", blockTitle: "\u062d\u0638\u0631 \u0647\u0630\u0627 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u061f", blockBody: "\u0644\u0646 \u064a\u062a\u0645\u0643\u0646 \u0645\u0646 \u0645\u0631\u0627\u0633\u0644\u062a\u0643 \u0648\u0644\u0646 \u062a\u0631\u0649 \u0625\u0639\u0644\u0627\u0646\u0627\u062a\u0647. \u064a\u0645\u0643\u0646\u0643 \u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0645\u0646 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a.", cancel: "\u0625\u0644\u063a\u0627\u0621", confirm: "\u062d\u0638\u0631", working: "\u062c\u0627\u0631\u064a \u0627\u0644\u062d\u0638\u0631...", done: "\u062a\u0645 \u062d\u0638\u0631 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645.", fail: "\u062a\u0639\u0630\u0631 \u0627\u0644\u062d\u0638\u0631. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649." },
+  ff: { block: "Falo", blockTitle: "Ada yi\u0257i falde oo ne\u0257\u0257o?", blockBody: "O waawataa neldude ma bataake, a yiyataa bayyinaali makko. Ada waawi ruttude \u0257um e Teelte.", cancel: "Accu", confirm: "Falo mo", working: "Ina falee...", done: "Ne\u0257\u0257o oo falaama.", fail: "Min mbaawaa falde. Eto kadi." },
+};
+
+function blockLang(): string {
+  try {
+    const l = String(window.localStorage.getItem('bambeh_lang') ?? 'en').toLowerCase();
+    if (l === 'fulfulde' || l === 'ful') return 'ff';
+    if (l === 'pcm') return 'pidgin';
+    if (BLOCK_T[l]) return l;
+    return 'en';
+  } catch { return 'en'; }
+}
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
+  Ban,
   Check,
   CheckCheck,
   ChevronDown,
@@ -289,6 +311,11 @@ export default function ChatPage() {
 
   /* FIX290 */
   const [showEmoji, setShowEmoji] = useState(false);
+  // FIX423 - block state
+  const [blockOpen, setBlockOpen] = useState(false);
+  const [blockBusy, setBlockBusy] = useState(false);
+  const [blockErr, setBlockErr]   = useState('');
+  const bt = BLOCK_T[blockLang()] ?? BLOCK_T.en;
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -871,6 +898,60 @@ export default function ChatPage() {
             )}
           </p>
         </div>
+
+        {/* FIX423 - Block. Apple Guideline 1.2 requires this on any screen
+            where users can contact each other. */}
+        {otherParticipant?.id && (
+          <button
+            onClick={() => { setBlockErr(''); setBlockOpen(true); }}
+            title={bt.block}
+            className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+          >
+            <Ban className="w-5 h-5" />
+          </button>
+        )}
+
+        {blockOpen && otherParticipant?.id && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-5">
+              <h4 className="font-bold text-gray-900 text-lg">{bt.blockTitle}</h4>
+              <p className="mt-2 text-sm text-gray-600">{bt.blockBody}</p>
+              {blockErr && <p className="mt-2 text-xs text-red-600">{blockErr}</p>}
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => setBlockOpen(false)}
+                  disabled={blockBusy}
+                  className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-700"
+                >
+                  {bt.cancel}
+                </button>
+                <button
+                  disabled={blockBusy}
+                  onClick={async () => {
+                    setBlockBusy(true); setBlockErr('');
+                    try {
+                      const { data, error } = await supabase.rpc('block_user', {
+                        target: otherParticipant.id, why: null,
+                      });
+                      const res = data as { ok?: boolean } | null;
+                      if (error || !res || res.ok !== true) {
+                        setBlockErr(bt.fail); setBlockBusy(false); return;
+                      }
+                      setBlockOpen(false); setBlockBusy(false);
+                      setSelectedChatId(null);
+                      window.alert(bt.done);
+                    } catch {
+                      setBlockErr(bt.fail); setBlockBusy(false);
+                    }
+                  }}
+                  className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white disabled:opacity-40"
+                >
+                  {blockBusy ? bt.working : bt.confirm}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {selectedConv?.listingTitle && (
           <div className="hidden sm:block bg-teal-50 border border-teal-100 rounded-xl px-3 py-1.5 text-xs text-teal-700 font-medium max-w-[180px] truncate">
