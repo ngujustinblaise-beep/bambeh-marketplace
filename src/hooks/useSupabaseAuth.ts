@@ -248,6 +248,17 @@ function adminFromToken(user: User | null): boolean {
 
 let lastKnownRoles: KnownRoles | null = loadKnownRoles();
 
+/* FIX415 ---------------------------------------------------------------------
+ * profileCache records a SUCCESSFUL read. On failure nothing is written, which
+ * is correct - we must not cache "unknown" as an answer. But it also means the
+ * TTL guard cannot throttle a FAILING read, and a failing read is exactly the
+ * one that gets repeated. This second clock records that we ASKED, regardless
+ * of what came back, so a dead connection can no longer produce a stampede.
+ * Ten seconds is short enough that a genuine role change still lands quickly.
+ * -------------------------------------------------------------------------- */
+const PROFILE_ATTEMPT_MS = 10000;
+let lastProfileAttempt: { userId: string; at: number } | null = null;
+
 /* ==========================================================================
  * FIX395 - keep asking. A read that failed is not an answer.
  * ========================================================================== */
@@ -396,6 +407,30 @@ export function useSupabaseAuth(): SupabaseAuthState {
     // column that does not exist makes PostgREST reject the WHOLE query, which
     // would strip admin AND vendor rights from every user at once.
     // FIX388 - ONE call. The transport layer does the retrying.
+    // FIX415 - we asked about this user moments ago and are still waiting or
+    // were refused. Do NOT ask again. Answer from the token and the last roles
+    // we genuinely knew. adminFromToken() reads app_metadata, which arrives
+    // WITH the session and needs no network at all, so an admin stays an admin
+    // even when the database is unreachable.
+    if (
+      lastProfileAttempt &&
+      lastProfileAttempt.userId === user.id &&
+      Date.now() - lastProfileAttempt.at < PROFILE_ATTEMPT_MS
+    ) {
+      const seen =
+        lastKnownRoles && lastKnownRoles.userId === user.id ? lastKnownRoles : null;
+      setState({
+        user,
+        session,
+        isVendor: seen ? seen.isVendor : false,
+        isAdmin:  adminFromToken(user) || (seen ? seen.isAdmin : false),
+        loading:  false,
+        authReady: true,
+      });
+      return;
+    }
+    lastProfileAttempt = { userId: user.id, at: Date.now() };
+
     const read = await attempt(
       () => supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
       1,
