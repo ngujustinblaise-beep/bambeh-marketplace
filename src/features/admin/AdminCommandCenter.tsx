@@ -29,6 +29,7 @@ import {
   composeMessage, fetchPendingMessages, approveMessage, rejectMessage,
   publishAnnouncement, fetchReports, fetchFinanceSummary, fmtXAF,
   fetchFeedback, type FeedbackRow, setFeedbackHandled,
+  countUsers,
 } from './lib';
 
 type Section =
@@ -164,12 +165,14 @@ function ReasonModal({ title, onConfirm, onClose, busy }: { title: string; onCon
 
 // ---------- Overview ----------
 function Overview({ role, cap }: { role: AdminRole; cap: Capabilities }) {
-  const [counts, setCounts] = useState({ openDisputes: 0, pending: 0 });
+  const [counts, setCounts] = useState({ openDisputes: 0, pending: 0, users: 0 });
   useEffect(() => {
     (async () => {
       const disputes = await fetchDisputes('open');
       const pend = cap.approveMessages ? await fetchPendingMessages() : [];
-      setCounts({ openDisputes: disputes.length, pending: (pend as unknown[]).length });
+      // FIX435 - the total sign-up count, for every admin role.
+      const totalUsers = await countUsers();
+      setCounts({ openDisputes: disputes.length, pending: (pend as unknown[]).length, users: totalUsers });
     })();
   }, [cap.approveMessages]);
   return (
@@ -177,6 +180,7 @@ function Overview({ role, cap }: { role: AdminRole; cap: Capabilities }) {
       <h1 className="text-xl font-bold text-gray-900 mb-1">Welcome, {ROLE_LABEL[role]}</h1>
       <p className="text-sm text-gray-500 mb-4">Here's the state of the platform right now.</p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <Stat label="Total users" value={counts.users} icon={Users} />
         <Stat label="Open disputes" value={counts.openDisputes} icon={Gavel} />
         {cap.approveMessages ? <Stat label="Pending approvals" value={counts.pending} icon={CheckSquare} /> : null}
         <Stat label="Your role" value={ROLE_LABEL[role]} icon={Shield} isText />

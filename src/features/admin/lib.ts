@@ -248,6 +248,20 @@ export async function searchUsers(query: string): Promise<AdminUser[]> {
   return out.rows;
 }
 
+/**
+ * FIX435 - how many people have actually signed up.
+ * head:true sends no rows back, only the number, so this stays cheap even
+ * when the table is large. searchUsers above caps at 50 for the list; this
+ * is the real total and is what the Overview shows.
+ */
+export async function countUsers(): Promise<number> {
+  const { count, error } = await supabase
+    .from('profiles')
+    .select('id', { count: 'exact', head: true });
+  if (error) return 0;
+  return count ?? 0;
+}
+
 export async function setUserFrozen(
   actorId: string, actorRole: AdminRole, targetId: string, frozen: boolean, reason: string,
 ) {

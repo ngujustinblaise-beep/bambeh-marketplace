@@ -9,7 +9,7 @@
  * event the real LanguageProvider (in @/App) fires — so this page re-renders
  * and re-translates the instant the user switches language anywhere.
  *
- * Behaviour unchanged: avatar upload (base64, max 3MB), Supabase + localStorage
+ * FIX434: avatar upload goes to the avatars STORAGE bucket; only the public
  * load/save, logout clears session + local keys, Quick Links routes.
  */
 
@@ -388,36 +388,103 @@ export default function Profile() {
       return;
     }
 
-    // Convert to base64
-    const base64 = await new Promise<string>(resolve => {
+    // FIX434 — the photo goes to STORAGE. Only the short public URL is written
+    // to avatar_url. Writing base64 into that column is what put 9.6 MB into
+    // five profile rows, and it is why every avatar save fails today: the
+    // 500-character guard rejects it. The old code also swallowed the error,
+    // so the picture changed on screen and the user believed it had saved.
+    setAvatarError(null);
+
+    // 1. Instant preview, so the face changes the moment the file is picked.
+    const preview = await new Promise<string>(resolve => {
       const reader = new FileReader();
       reader.onload = ev => resolve(ev.target?.result as string);
       reader.readAsDataURL(file);
     });
+    const previousAvatar = profile?.avatar;
+    setProfile(prev => prev ? { ...prev, avatar: preview } : prev);
+    setForm(prev => ({ ...prev, avatar: preview }));
 
-    // Update profile immediately (optimistic)
-    setProfile(prev => prev ? { ...prev, avatar: base64 } : prev);
-    setForm(prev => ({ ...prev, avatar: base64 }));
-
-    // Persist
+    // 2. Shrink before sending. On Cameroonian mobile data a 3 MB upload is
+    //    the difference between a save that works and one that times out.
+    //    512px at 82% quality is roughly 60–90 KB. If anything below throws,
+    //    we simply send the original file instead.
+    let toUpload: Blob = file;
     try {
-      const raw = localStorage.getItem("Bambeh_user");
-      const existing = raw ? JSON.parse(raw) : {};
-      localStorage.setItem("Bambeh_user", JSON.stringify({ ...existing, avatar: base64 }));
-    } catch {}
+      const shrunk = await new Promise<Blob | null>(resolve => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX   = 512;
+          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          const w = Math.max(1, Math.round(img.width  * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) { resolve(null); return; }
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob(b => resolve(b), "image/jpeg", 0.82);
+        };
+        img.onerror = () => resolve(null);
+        img.src = preview;
+      });
+      if (shrunk && shrunk.size > 0) toUpload = shrunk;
+    } catch { /* keep the original file */ }
 
-    // Try to update Supabase storage if user is logged in
+    // 3. Upload to the avatars bucket, then store the URL — never the image.
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await supabase.auth.updateUser({ data: { avatar_url: base64 } });
-        // Also try profiles table
-        await supabase
-          .from("profiles")
-          .update({ avatar_url: base64 })
-          .eq("id", session.user.id);
-      }
-    } catch { /* Storage not configured — localStorage saved above is enough */ }
+      const { data: sessionData } = await supabase.auth.getSession();
+      const authedUser = sessionData?.session?.user;
+      if (!authedUser) throw new Error("not signed in");
+
+      const ext =
+        file.type === "image/png"  ? "png" :
+        file.type === "image/webp" ? "webp" : "jpg";
+
+      // user-id first: this is the folder shape the storage policy expects,
+      // so one account can never overwrite another account's picture.
+      const path = authedUser.id + "/avatar_" + Date.now() + "." + ext;
+
+      const up = await supabase.storage
+        .from("avatars")
+        .upload(path, toUpload, { upsert: true, contentType: toUpload.type || file.type });
+      if (up.error) throw up.error;
+
+      const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+      const url = pub?.publicUrl;
+      if (!url) throw new Error("no public URL returned");
+
+      const meta = await supabase.auth.updateUser({ data: { avatar_url: url } });
+      if (meta.error) throw meta.error;
+
+      const row = await supabase
+        .from("profiles")
+        .update({ avatar_url: url })
+        .eq("id", authedUser.id);
+      if (row.error) throw row.error;
+
+      // 4. Swap the heavy preview for the light URL everywhere, including
+      //    localStorage — a 3 MB base64 string there can fill the 5 MB quota
+      //    on its own and break unrelated parts of the app.
+      setProfile(prev => prev ? { ...prev, avatar: url } : prev);
+      setForm(prev => ({ ...prev, avatar: url }));
+      try {
+        const raw = localStorage.getItem("Bambeh_user");
+        const existing = raw ? JSON.parse(raw) : {};
+        localStorage.setItem("Bambeh_user", JSON.stringify({ ...existing, avatar: url }));
+      } catch { /* storage blocked or full — the server copy is what matters */ }
+    } catch (err) {
+      // 5. NEVER swallow this again. Put the old picture back and say what
+      //    went wrong, so nobody walks away believing it saved when it did not.
+      setProfile(prev => prev ? { ...prev, avatar: previousAvatar } : prev);
+      setForm(prev => ({ ...prev, avatar: previousAvatar }));
+      const msg = err instanceof Error ? err.message : String(err);
+      setAvatarError(s.saveFailed + " " + msg);
+    } finally {
+      // let the same file be chosen again after a failure
+      if (e.target) e.target.value = "";
+    }
   }
 
   // ── Save profile edits ────────────────────────────────────────────────────
