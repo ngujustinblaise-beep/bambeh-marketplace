@@ -417,6 +417,56 @@ export function activationWatch(
 // ==============================================================================
 // useSubscription HOOK - now a thin reader of the shared store.
 // It owns no request, no timer and no listener of its own.
+
+// -- FIX436: staff accounts see the whole app without buying a pass ------------
+//
+// The role is read from app_metadata on the SESSION TOKEN. That token is
+// signed by Supabase and app_metadata is writable only by SQL or the service
+// key, so a user cannot grant themselves staff access by editing localStorage.
+// This opens nothing to anyone who is not already staff.
+//
+// It hangs off isActive rather than off one gate, so every consumer of this
+// hook is covered at once: useSubscriptionGate, the plan limits, the corporate
+// pages, and anything added later.
+let cachedStaff = false;
+let staffWired = false;
+
+function setStaffFromSession(session: unknown): void {
+  let next = false;
+  try {
+    const s = session as { user?: { app_metadata?: Record<string, unknown> } } | null;
+    const meta = s && s.user ? s.user.app_metadata : null;
+    const role = meta ? String(meta.admin_role ?? meta.role ?? '') : '';
+    next = role === 'super_admin' || role === 'admin' || role === 'moderator';
+  } catch {
+    next = false;
+  }
+  if (next !== cachedStaff) {
+    cachedStaff = next;
+    // Wake the same listeners the subscription store already uses, so the
+    // page re-renders the moment the role is known. Without this the flag
+    // would change silently and the gate would stay shut until something
+    // else happened to re-render.
+    publish();
+  }
+}
+
+function wireStaffFlag(): void {
+  if (staffWired) return;
+  staffWired = true;
+  try {
+    void supabase.auth.getSession().then(({ data }) => setStaffFromSession(data ? data.session : null));
+    supabase.auth.onAuthStateChange((_event, session) => setStaffFromSession(session));
+  } catch {
+    cachedStaff = false;
+  }
+}
+
+export function isStaffSession(): boolean {
+  wireStaffFlag();
+  return cachedStaff;
+}
+
 // ==============================================================================
 export function useSubscription(userId?: string | null): SubscriptionStatus {
   const [, bump] = useState(0);
@@ -451,9 +501,21 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
   const mine = !!userId && currentUserId === userId;
   const answered = mine && lastVerifyAt > 0;
 
+  // FIX436 - staff accounts see the whole app without buying a pass.
+  //
+  // The role is read from app_metadata on the SESSION TOKEN, which is
+  // signed by Supabase and writable only by SQL or the service key. A
+  // user cannot give themselves this by editing localStorage, so this
+  // opens nothing to anybody who is not already staff.
+  //
+  // It sits on isActive rather than in the gate, so EVERY consumer of
+  // this hook is covered at once - useSubscriptionGate, the plan limits,
+  // the corporate pages and anything added later.
+  const staffPass = isStaffSession();
+
   return {
-    isActive: mine && currentSub !== null,
-    planType: mine && currentSub ? currentSub.planType : null,
+    isActive: staffPass || (mine && currentSub !== null),
+    planType: staffPass ? 'staff' : (mine && currentSub ? currentSub.planType : null),
     expiresAt: mine && currentSub ? currentSub.expiresAt : null,
     // Loading only until we have a verified answer for THIS user. A failed
     // check still counts as answered, so a weak connection can never leave a

@@ -21,6 +21,7 @@ import {
   Shield, Users, Gavel, Lock, Megaphone, Send, CheckSquare, UserCog,
   Wallet, FileText, LayoutGrid, Loader2, Search, Snowflake, Flame,
   AlertCircle, X, ChevronRight, ShieldAlert, Radio, MessageSquare,
+  Boxes,
 } from 'lucide-react';
 import {
   fetchMyRole, capabilitiesFor, ROLE_LABEL, type AdminRole, type Capabilities,
@@ -30,15 +31,18 @@ import {
   publishAnnouncement, fetchReports, fetchFinanceSummary, fmtXAF,
   fetchFeedback, type FeedbackRow, setFeedbackHandled,
   countUsers,
+  fetchAllListings, countListingsByType, type AdminListing,
 } from './lib';
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
-  | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback';
+  | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
+  | 'listings';
 
 const NAV: Array<{ key: Section; label: string; icon: React.ComponentType<{ className?: string }>; needs?: keyof Capabilities }> = [
   { key: 'overview',  label: 'Overview',       icon: LayoutGrid },
   { key: 'users',     label: 'Users',          icon: Users },
+  { key: 'listings',  label: 'Listings',       icon: Boxes },
   { key: 'disputes',  label: 'Disputes',       icon: Gavel,    needs: 'resolveDisputes' },
   { key: 'escrow',    label: 'Escrow',         icon: Lock,     needs: 'freezeEscrow' },
   { key: 'comms',     label: 'Communications', icon: Send },
@@ -116,6 +120,7 @@ export default function AdminCommandCenter() {
       <main className="flex-1 p-4 md:p-6 max-w-5xl">
         {section === 'overview'  && <Overview role={role} cap={cap} />}
         {section === 'users'     && <UsersSection userId={userId!} role={role} cap={cap} flash={flash} />}
+        {section === 'listings'  && <ListingsSection />}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
         {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}
         {section === 'comms'     && <CommsSection userId={userId!} role={role} flash={flash} />}
@@ -199,6 +204,98 @@ function Stat({ label, value, icon: Icon, isText }: { label: string; value: numb
       <Icon className="w-5 h-5 text-teal-600 mb-2" />
       <p className={`font-bold text-gray-900 ${isText ? 'text-base' : 'text-2xl'}`}>{value}</p>
       <p className="text-xs text-gray-500">{label}</p>
+    </div>
+  );
+}
+
+// ---------- Listings (FIX437) ----------
+function ListingsSection() {
+  const [rows, setRows] = useState<AdminListing[]>([]);
+  const [tally, setTally] = useState<Array<{ type: string; total: number }>>([]);
+  const [kind, setKind] = useState('');
+  const [query, setQuery] = useState('');
+  const [busy, setBusy] = useState(true);
+
+  const load = useCallback(async () => {
+    setBusy(true);
+    const [list, counts] = await Promise.all([fetchAllListings(kind, query), countListingsByType()]);
+    setRows(list);
+    setTally(counts);
+    setBusy(false);
+  }, [kind, query]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const total = tally.reduce((sum, t) => sum + t.total, 0);
+
+  return (
+    <div>
+      <h1 className="text-xl font-bold text-gray-900 mb-1">Listings</h1>
+      <p className="text-sm text-gray-500 mb-4">
+        Everything posted on Bambeh, newest first. Marketplace items, services and
+        exchanges all live in one table and are told apart by their type.
+      </p>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          type="button"
+          onClick={() => setKind('')}
+          className={`px-3 py-1.5 rounded-full text-sm font-semibold border ${kind === '' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300'}`}
+        >
+          All {total}
+        </button>
+        {tally.map((t) => (
+          <button
+            key={t.type}
+            type="button"
+            onClick={() => setKind(t.type)}
+            className={`px-3 py-1.5 rounded-full text-sm font-semibold border ${kind === t.type ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300'}`}
+          >
+            {t.type} {t.total}
+          </button>
+        ))}
+      </div>
+
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search title, category or town"
+        className="w-full mb-4 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+      />
+
+      {busy && <p className="text-sm text-gray-500">Loading...</p>}
+      {!busy && rows.length === 0 && (
+        <p className="text-sm text-gray-500">Nothing matches that.</p>
+      )}
+
+      <div className="space-y-2">
+        {rows.map((r) => (
+          <div key={r.id} className="border border-gray-200 rounded-xl p-3 bg-white">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 truncate">{r.title || '(no title)'}</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {r.type || 'untyped'}
+                  {r.category ? ' - ' + r.category : ''}
+                  {r.location ? ' - ' + r.location : ''}
+                </p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="font-bold text-gray-900 text-sm">
+                  {r.price === null ? '-' : Number(r.price).toLocaleString() + ' XAF'}
+                </p>
+                <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold ${r.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                  {r.status || 'no status'}
+                </span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">
+              {new Date(r.created_at).toLocaleDateString()}
+              {r.view_count !== null ? ' - ' + r.view_count + ' views' : ''}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

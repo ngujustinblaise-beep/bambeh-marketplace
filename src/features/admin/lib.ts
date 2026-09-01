@@ -242,7 +242,7 @@ export async function searchUsers(query: string): Promise<AdminUser[]> {
     .from('profiles')
     .select('id, full_name, email, admin_role, account_frozen, created_at')
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(500);   // FIX437 - was 50. You have 75 users; 50 hid a quarter of them.
   if (query.trim()) q = q.or(`full_name.ilike.%${query}%,email.ilike.%${query}%`);
   const out = await adminSafe<AdminUser>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
   return out.rows;
@@ -500,6 +500,60 @@ export async function setFeedbackHandled(
     .eq('id', feedbackId);
   if (error) throw error;
   await logAction(actorId, actorRole, handled ? 'feedback_handled' : 'feedback_reopened', 'feedback', feedbackId, {});
+}
+
+/* ==========================================================================
+   FIX437 - every listing on Bambeh, for staff eyes.
+
+   IMPORTANT, and it is why this reads only ONE table:
+   `listings` is where everything actually lives. Marketplace items,
+   services, exchanges and rentals are all rows in here separated by the
+   `type` column. The tables named services, rentals, vehicles and
+   marketplace_items are dead twins from the Firebase migration and hold
+   zero rows - reading them would show an empty page forever.
+   ========================================================================== */
+
+export type AdminListing = {
+  id: string;
+  title: string | null;
+  type: string | null;
+  status: string | null;
+  price: number | null;
+  category: string | null;
+  location: string | null;
+  user_id: string | null;
+  view_count: number | null;
+  created_at: string;
+};
+
+/** Everything, newest first. kind '' means all types. */
+export async function fetchAllListings(kind: string, query: string): Promise<AdminListing[]> {
+  let q = supabase
+    .from('listings')
+    .select('id, title, type, status, price, category, location, user_id, view_count, created_at')
+    .order('created_at', { ascending: false })
+    .limit(500);
+
+  if (kind.trim()) q = q.eq('type', kind.trim());
+  if (query.trim()) q = q.or(`title.ilike.%${query}%,category.ilike.%${query}%,location.ilike.%${query}%`);
+
+  const out = await adminSafe<AdminListing>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+  return out.rows;
+}
+
+/** How many listings exist, by type. Cheap: counts only, no rows returned. */
+export async function countListingsByType(): Promise<Array<{ type: string; total: number }>> {
+  const { data, error } = await supabase
+    .from('listings')
+    .select('type')
+    .limit(2000);
+  if (error || !data) return [];
+  const tally: Record<string, number> = {};
+  for (const row of data as Array<{ type: string | null }>) {
+    const key = row.type || 'untyped';
+    tally[key] = (tally[key] || 0) + 1;
+  }
+  return Object.keys(tally).map((t) => ({ type: t, total: tally[t] })).sort((a, b) => b.total - a.total);
 }
 
 // BAMBEH_END_TOKEN__ADMINLIB__COMPLETE
