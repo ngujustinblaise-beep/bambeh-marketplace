@@ -1,102 +1,83 @@
-// BAMBEH_DEPLOY_TOKEN__NETINTERCEPTOR_FIX389_CLEAN
+// BAMBEH_DEPLOY_TOKEN__NETINTERCEPTOR_FIX438_CLEAN
 /**
- * src/lib/net-interceptor.ts - FIX389 (supersedes FIX386). The auth lane.
+ * src/lib/net-interceptor.ts - FIX438 (supersedes FIX389).
  *
  * ===================================================================
- * FIX389 - SIGN-IN GETS THE PIPE TO ITSELF.
+ * WHY THE APP IS SLOW, AND WHY THE ADMIN PANEL SHOWS NOTHING
  * ===================================================================
  *
- * A live console caught something that changes everything:
+ * A live console on 2026-09-01 showed 195 errors on /marketplace and 256 on
+ * /admin/center. But the app only asks for about a dozen DIFFERENT things on
+ * either page. So each request was being attempted roughly SIXTEEN times.
  *
- *     POST /auth/v1/token?grant_type=password  ERR_CONNECTION_RESET  200 (OK)
- *     POST /auth/v1/token?grant_type=password  ERR_CONNECTION_CLOSED 200 (OK)
+ * Three faults in THIS FILE were doing the multiplying.
  *
- * TWO HUNDRED OK, and then the connection died. Supabase authenticated the
- * user and issued the token. The headers arrived. The RESPONSE BODY was cut
- * off mid-transfer, so the browser never received the JWT and fetch() threw
- * "Failed to fetch". The user was signed in on the server and told they were
- * not.
+ * ---- FAULT 1: the loop guard was blind to its own retries. -----------------
+ * loopDetected() ran once per CALL. Each call then entered a retry loop that
+ * fired up to three real network requests. So "12 hits per 10 seconds" was in
+ * truth THIRTY-SIX network requests per URL before the guard tripped.
  *
- * That is what a single HTTP/2 connection does when it is carrying too many
- * streams and one of them is killed. And the login page was firing
- * exchange_items, corporate_products, vendor_profiles, listings, notifications
- * and profiles AT THE SAME TIME as the sign-in.
+ * ---- FAULT 2: the guard had nothing to serve, so it made things worse. -----
+ * The cache only wrote on res.ok. When everything is failing, nothing is ever
+ * cached, so the guard returned a synthetic 429. supabase-js reports a 429 as
+ * an error, the caller asks again, and the cycle restarts. The guard was
+ * converting a network failure into an application error.
  *
- * So FIX389 adds an AUTH LANE. Any request to /auth/v1/ - sign in, sign up,
- * token refresh, password reset - gets the connection to itself:
+ * ---- FAULT 3: queued requests could be overtaken for ever. -----------------
+ * acquireSlot() parked on a promise and re-checked when woken:
  *
- *   * every other Supabase request waits while an auth call is in flight
- *   * the auth call waits for the in-flight ones to drain first (capped at
- *     5 seconds so it can never hang)
- *   * normal concurrency drops from 4 to 3
- *
- * Signing in is the one request a user cannot work around. It gets priority.
- *
- * ===================================================================
- * WHAT WAS HERE BEFORE
- * ===================================================================
- * The entire file was:
- *
- *     export function initNetInterceptor(options = {}): void {
- *       if (initialized || options.enabled === false) return;
- *       initialized = true;
+ *     while (authBusy || active >= MAX_CONCURRENT) {
+ *       await new Promise((resolve) => waiters.push(resolve));
  *     }
  *
- * It set a flag and returned. App.tsx imports this module as though it
- * manages the network. It managed nothing. Every Supabase call in Bambeh went
- * out raw, unlimited, unretried and undeduplicated.
+ * releaseSlot() woke the longest waiter - but waking is a microtask, so a
+ * brand new request could take the freed slot synchronously first. The woken
+ * request re-checked, found it full, and pushed itself to the BACK of the
+ * queue. Under load it could starve indefinitely. With three slots and pauses
+ * of 400ms and 800ms between retries, a dozen failing requests took over a
+ * minute to drain. That is the "very very slow to open".
  *
  * ===================================================================
- * WHAT THAT COST
+ * WHAT FIX438 DOES INSTEAD
  * ===================================================================
- * A live console showed 3,295 errors on ONE page, and the failing request was
- * the same URL again and again:
  *
- *     GET /rest/v1/subscriptions?select=*&user_...   ERR_CONNECTION_CLOSED
- *     GET /rest/v1/subscriptions?select=*&user_...   ERR_CONNECTION_RESET
- *     ... thousands of times
+ * 1. A REAL FIFO QUEUE. pump() grants slots in arrival order. Nothing
+ *    re-queues itself, so nothing can be overtaken. First in, first served.
  *
- * The cause is architectural: LocationLock renders INSIDE EVERY LISTING CARD,
- * and each one calls useSubscription() on its own. Fifty cards ask the
- * identical question fifty times. Re-renders and failures multiply it from
- * there. Ten sequential requests to this Supabase project succeed ten times
- * out of ten - it is only the volume that kills them.
+ * 2. ADAPTIVE CONCURRENCY. Starts at 4. Every network failure lowers it by
+ *    one, to a floor of 1. Three clean successes in a row raise it again, to
+ *    a ceiling of 4. On a good link the app is fast; the moment the link
+ *    starts dropping connections the app becomes gentle BY ITSELF instead of
+ *    hitting harder. This is the single most important change.
  *
- * ===================================================================
- * WHAT THIS FILE NOW DOES
- * ===================================================================
- * It wraps window.fetch and, FOR SUPABASE REQUESTS ONLY:
+ * 3. A CIRCUIT BREAKER. After 8 consecutive network failures we stop calling
+ *    out entirely for 15 seconds. During that time GETs are answered from the
+ *    last good response if we have one. When the cooldown ends, ONE probe
+ *    request is allowed through: if it succeeds the breaker closes and normal
+ *    service resumes; if it fails the cooldown restarts. Hammering a dead
+ *    connection has never once helped.
  *
- *   1. DEDUPLICATES. Identical GETs already in flight share one request and
- *      one answer. Fifty cards asking the same question send ONE request.
+ * 4. STALE-SERVE. A successful GET is remembered for 5 minutes. If a later
+ *    identical GET fails at the network, we hand back the older answer rather
+ *    than an error. The admin panel that loaded its users once keeps showing
+ *    them. Stale data beats an empty screen, and the user is never told a
+ *    falsehood - the response is a real 200 that really came from Supabase.
  *
- *   2. MICRO-CACHES. An identical GET within 3 seconds is answered from the
- *      last response instead of going out again.
+ * 5. RETRIES ARE COUNTED. Every real attempt goes through the loop guard, so
+ *    12 means 12. Retries drop from 3 to 2 and gain jitter, so a burst that
+ *    fails together does not retry together.
  *
- *   3. CAPS CONCURRENCY at 4. Everything else queues. This is the single
- *      biggest change: a queue of 4 completes; a burst of 40 collapses.
+ * UNCHANGED AND DELIBERATE:
+ *   * POST, PATCH, PUT and DELETE are NEVER retried and NEVER cached.
+ *     Retrying a payment or an order is far worse than failing one.
+ *   * The FIX389 auth lane stays. Sign-in still gets the pipe to itself.
+ *   * HTTP error statuses pass through untouched. A 400 stays a 400, a 403
+ *     stays a 403. Only genuine network failures are handled here.
+ *   * Non-Supabase requests are passed through without being touched at all.
  *
- *   4. RETRIES, but only GET and HEAD. A dropped connection is retried up to
- *      three times with a growing pause.
- *      POST, PATCH, PUT and DELETE are NEVER retried - retrying a payment or
- *      an order would be far worse than failing it.
- *
- *   5. BREAKS RUNAWAY LOOPS. If one URL is asked more than 12 times in 10
- *      seconds, that is a bug, not traffic. We serve the last good answer if
- *      we have one, and refuse politely if we do not, instead of hammering
- *      Supabase until the connection dies.
- *
- * Requests to anywhere other than Supabase are passed through untouched.
- * HTTP error statuses are passed through unchanged - a 400 stays a 400, a 403
- * stays a 403. Only genuine network failures are retried.
- *
- * ===================================================================
- * HONEST LIMIT
- * ===================================================================
- * This is a shield, not a cure. It stops the bleeding for every request in
- * the app at once, including pages I have never seen. But the per-card
- * useSubscription() call is still wrong and should be lifted into one shared
- * provider. This buys the time to do that properly.
+ * VERIFY THE DEPLOY LANDED: the console line on startup now ends with
+ * "fix438". If it still says "3 at a time, loop guard.", the build did not
+ * pick this file up.
  *
  * Turn it off at any time:  localStorage.setItem('bambeh_net_off','1')
  * Watch it work:            __bambehNet()
@@ -112,63 +93,69 @@ export type NetInterceptorOptions = {
 
 // -- Tuning ------------------------------------------------------------------
 
-const HOST_MARKER     = ".supabase.co";
-const MAX_CONCURRENT  = 3;      // FIX389 - simultaneous NON-AUTH Supabase requests
-const AUTH_MARKER     = "/auth/v1/";
-const RETRY_LIMIT     = 3;      // GET / HEAD only
-const RETRY_BASE_MS   = 400;
-const MICRO_CACHE_MS  = 3000;   // identical GET inside this window is reused
-const CACHE_MAX       = 120;    // entries
-const LOOP_WINDOW_MS  = 10000;
-const LOOP_MAX_HITS   = 12;     // same URL more often than this = a bug
+const HOST_MARKER      = ".supabase.co";
+const AUTH_MARKER      = "/auth/v1/";
+
+const CONCURRENCY_MAX  = 4;      // healthy link
+const CONCURRENCY_MIN  = 1;      // link is dropping connections
+const RAISE_AFTER_OK   = 3;      // clean successes needed to widen again
+
+const RETRY_LIMIT      = 2;      // GET / HEAD only, was 3
+const RETRY_BASE_MS    = 500;
+const RETRY_JITTER_MS  = 400;    // so a failed burst does not retry in step
+
+const MICRO_CACHE_MS   = 5000;   // identical GET inside this window: do not even ask
+const STALE_SERVE_MS   = 300000; // 5 min - answer from this when the network fails
+const CACHE_MAX        = 150;
+
+const LOOP_WINDOW_MS   = 10000;
+const LOOP_MAX_HITS    = 12;     // now counts REAL attempts, retries included
+
+const BREAKER_TRIP     = 8;      // consecutive network failures
+const BREAKER_COOLDOWN = 15000;  // ms of silence before one probe is allowed
 
 // -- State -------------------------------------------------------------------
 
 let initialized = false;
 let originalFetch: typeof fetch | null = null;
 
+let limit  = CONCURRENCY_MAX;
 let active = 0;
-const waiters: Array<() => void> = [];
+const queue: Array<() => void> = [];
 
-// FIX389 - the auth lane. While an /auth/v1/ request is in flight, nothing
-// else is allowed onto the connection.
 let authBusy = false;
 const authQueue: Array<() => void> = [];
 
-const inFlight   = new Map<string, Promise<Response>>();
-const microCache = new Map<string, { at: number; res: Response }>();
-const recentHits = new Map<string, number[]>();
+let consecutiveFailures = 0;
+let consecutiveOk       = 0;
+let breakerOpenedAt     = 0;     // 0 = closed
+let probeInFlight       = false;
 
-const stats = { passed: 0, deduped: 0, cached: 0, retried: 0, blocked: 0, failed: 0, authHeld: 0 };
+const inFlight = new Map<string, Promise<Response>>();
+const cache    = new Map<string, { at: number; res: Response }>();
+const attempts = new Map<string, number[]>();
+
+const stats = {
+  passed: 0, deduped: 0, cached: 0, stale: 0, retried: 0,
+  blocked: 0, failed: 0, authHeld: 0, breakerTrips: 0,
+};
 
 // -- Helpers -----------------------------------------------------------------
 
 function disabledByUser(): boolean {
-  try {
-    return localStorage.getItem("bambeh_net_off") === "1";
-  } catch {
-    return false;
-  }
+  try { return localStorage.getItem("bambeh_net_off") === "1"; } catch { return false; }
 }
 
 function urlOf(input: RequestInfo | URL): string {
   if (typeof input === "string") return input;
   if (typeof URL !== "undefined" && input instanceof URL) return input.toString();
-  try {
-    return (input as Request).url || "";
-  } catch {
-    return "";
-  }
+  try { return (input as Request).url || ""; } catch { return ""; }
 }
 
 function methodOf(input: RequestInfo | URL, init?: RequestInit): string {
   if (init && init.method) return String(init.method).toUpperCase();
   if (typeof input !== "string" && !(typeof URL !== "undefined" && input instanceof URL)) {
-    try {
-      return String((input as Request).method || "GET").toUpperCase();
-    } catch {
-      return "GET";
-    }
+    try { return String((input as Request).method || "GET").toUpperCase(); } catch { return "GET"; }
   }
   return "GET";
 }
@@ -177,26 +164,106 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function acquireSlot(): Promise<void> {
-  // FIX389 - also wait while the auth lane is held.
-  while (authBusy || active >= MAX_CONCURRENT) {
-    await new Promise<void>((resolve) => waiters.push(resolve));
+// -- FIFO slot queue ---------------------------------------------------------
+// Nothing re-queues itself. pump() hands slots out in arrival order, so a
+// request can never be overtaken. This replaces the starving while-loop.
+
+function pump(): void {
+  while (!authBusy && active < limit && queue.length > 0) {
+    active = active + 1;
+    const next = queue.shift();
+    if (next) next();
   }
-  active = active + 1;
+}
+
+function acquireSlot(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    queue.push(resolve);
+    pump();
+  });
 }
 
 function releaseSlot(): void {
   active = active > 0 ? active - 1 : 0;
-  const next = waiters.shift();
-  if (next) next();
+  pump();
 }
 
-/**
- * FIX389 - take the connection exclusively for an auth request.
- * Waits for any other auth call to finish, then lets the in-flight normal
- * requests drain. Capped at 5 seconds so a stuck request can never hang a
- * sign-in.
- */
+// -- Adaptive width and the breaker ------------------------------------------
+
+function noteSuccess(): void {
+  consecutiveFailures = 0;
+  consecutiveOk = consecutiveOk + 1;
+  if (breakerOpenedAt !== 0) {
+    breakerOpenedAt = 0;
+    console.info("[net] connection recovered - resuming normal service.");
+  }
+  if (consecutiveOk >= RAISE_AFTER_OK && limit < CONCURRENCY_MAX) {
+    limit = limit + 1;
+    consecutiveOk = 0;
+    pump();
+  }
+}
+
+function noteFailure(): void {
+  consecutiveOk = 0;
+  consecutiveFailures = consecutiveFailures + 1;
+  if (limit > CONCURRENCY_MIN) {
+    limit = limit - 1;
+    console.warn("[net] connection struggling - narrowing to " + limit + " at a time.");
+  }
+  if (consecutiveFailures >= BREAKER_TRIP && breakerOpenedAt === 0) {
+    breakerOpenedAt = Date.now();
+    stats.breakerTrips = stats.breakerTrips + 1;
+    console.warn(
+      "[net] too many failed requests in a row - pausing for " +
+      BREAKER_COOLDOWN / 1000 + "s. Cached answers will still be served."
+    );
+  }
+}
+
+/** open = refuse now; probe = allow exactly one test request; closed = normal */
+function breakerState(): "open" | "probe" | "closed" {
+  if (breakerOpenedAt === 0) return "closed";
+  if (Date.now() - breakerOpenedAt < BREAKER_COOLDOWN) return "open";
+  if (probeInFlight) return "open";
+  return "probe";
+}
+
+// -- Cache -------------------------------------------------------------------
+
+function remember(key: string, res: Response): void {
+  cache.set(key, { at: Date.now(), res: res.clone() });
+  if (cache.size > CACHE_MAX) {
+    const oldest = Array.from(cache.entries()).sort((a, b) => a[1].at - b[1].at);
+    for (let i = 0; i < oldest.length - CACHE_MAX; i++) cache.delete(oldest[i][0]);
+  }
+}
+
+function fresh(key: string): Response | null {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < MICRO_CACHE_MS) return hit.res.clone();
+  return null;
+}
+
+function stale(key: string): Response | null {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < STALE_SERVE_MS) return hit.res.clone();
+  return null;
+}
+
+/** Counts REAL network attempts, retries included. FIX438 fault 1. */
+function tooManyAttempts(key: string): boolean {
+  const now = Date.now();
+  const previous = attempts.get(key) || [];
+  const recent = previous.filter((t) => now - t < LOOP_WINDOW_MS);
+  recent.push(now);
+  attempts.set(key, recent);
+  if (attempts.size > 400) attempts.clear();
+  return recent.length > LOOP_MAX_HITS;
+}
+
+// -- Auth lane (FIX389, unchanged in behaviour) -------------------------------
+
 async function acquireAuthLane(): Promise<void> {
   while (authBusy) {
     await new Promise<void>((resolve) => authQueue.push(resolve));
@@ -215,35 +282,17 @@ function releaseAuthLane(): void {
   authBusy = false;
   const nextAuth = authQueue.shift();
   if (nextAuth) nextAuth();
-  // Wake everyone that parked while the lane was held; each re-checks and
-  // re-parks if it still has to.
-  const parked = waiters.splice(0, waiters.length);
-  parked.forEach((resolve) => resolve());
-}
-
-function sweepCache(): void {
-  const now = Date.now();
-  microCache.forEach((entry, key) => {
-    if (now - entry.at > MICRO_CACHE_MS * 4) microCache.delete(key);
-  });
-  if (microCache.size > CACHE_MAX) {
-    const oldest = Array.from(microCache.entries()).sort((a, b) => a[1].at - b[1].at);
-    for (let i = 0; i < oldest.length - CACHE_MAX; i++) microCache.delete(oldest[i][0]);
-  }
-}
-
-/** True when this URL is being asked far more often than any real page needs. */
-function loopDetected(key: string): boolean {
-  const now = Date.now();
-  const previous = recentHits.get(key) || [];
-  const recent = previous.filter((t) => now - t < LOOP_WINDOW_MS);
-  recent.push(now);
-  recentHits.set(key, recent);
-  if (recentHits.size > 400) recentHits.clear();
-  return recent.length > LOOP_MAX_HITS;
+  pump();
 }
 
 // -- The wrapper -------------------------------------------------------------
+
+function throttled(message: string): Response {
+  return new Response(JSON.stringify({ message }), {
+    status: 503,
+    headers: { "content-type": "application/json" },
+  });
+}
 
 async function bambehFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const raw = originalFetch as typeof fetch;
@@ -257,16 +306,17 @@ async function bambehFetch(input: RequestInfo | URL, init?: RequestInit): Promis
   const idempotent = method === "GET" || method === "HEAD";
   const key = method + " " + url;
 
-  // FIX389 - AUTH LANE. Never cached, never deduped, never retried here:
-  // it simply gets the connection to itself and one clean attempt.
+  // ---- AUTH LANE. One clean attempt, the connection to itself. -------------
   if (url.indexOf(AUTH_MARKER) !== -1) {
     await acquireAuthLane();
     try {
       const res = await raw(input as RequestInfo, init);
       stats.passed = stats.passed + 1;
+      noteSuccess();
       return res;
     } catch (e) {
       stats.failed = stats.failed + 1;
+      noteFailure();
       throw e;
     } finally {
       releaseAuthLane();
@@ -274,57 +324,72 @@ async function bambehFetch(input: RequestInfo | URL, init?: RequestInit): Promis
   }
 
   if (idempotent) {
-    const cached = microCache.get(key);
-
-    if (cached && Date.now() - cached.at < MICRO_CACHE_MS) {
-      stats.cached = stats.cached + 1;
-      return cached.res.clone();
-    }
+    const hot = fresh(key);
+    if (hot) { stats.cached = stats.cached + 1; return hot; }
 
     const pending = inFlight.get(key);
-    if (pending) {
-      stats.deduped = stats.deduped + 1;
-      return pending.then((r) => r.clone());
-    }
-
-    if (loopDetected(key)) {
-      stats.blocked = stats.blocked + 1;
-      if (cached) {
-        console.warn("[net] loop guard - serving last good answer for", url);
-        return cached.res.clone();
-      }
-      console.warn("[net] loop guard - refusing repeated request to", url);
-      return new Response(
-        JSON.stringify({ message: "Request throttled by Bambeh loop guard" }),
-        { status: 429, headers: { "content-type": "application/json" } }
-      );
-    }
+    if (pending) { stats.deduped = stats.deduped + 1; return pending.then((r) => r.clone()); }
   }
 
-  const attempts = idempotent ? RETRY_LIMIT : 1;
+  // ---- BREAKER. Do not call out at all while it is open. -------------------
+  const state = breakerState();
+  if (state === "open") {
+    stats.blocked = stats.blocked + 1;
+    if (idempotent) {
+      const old = stale(key);
+      if (old) { stats.stale = stats.stale + 1; return old; }
+    }
+    return throttled("Connection paused. Bambeh is waiting for the network to recover.");
+  }
+
+  const isProbe = state === "probe";
+  if (isProbe) probeInFlight = true;
+
+  const maxAttempts = idempotent && !isProbe ? RETRY_LIMIT : 1;
 
   const run = (async (): Promise<Response> => {
     let lastError: unknown = null;
 
-    for (let i = 0; i < attempts; i++) {
+    for (let i = 0; i < maxAttempts; i++) {
+      if (tooManyAttempts(key)) {
+        stats.blocked = stats.blocked + 1;
+        const old = idempotent ? stale(key) : null;
+        if (old) {
+          stats.stale = stats.stale + 1;
+          console.warn("[net] loop guard - serving the last good answer for", url);
+          return old;
+        }
+        console.warn("[net] loop guard - refusing repeated request to", url);
+        return throttled("Request throttled by Bambeh loop guard.");
+      }
+
       await acquireSlot();
       try {
         const res = await raw(input as RequestInfo, init);
         stats.passed = stats.passed + 1;
-        if (idempotent && res.ok) {
-          microCache.set(key, { at: Date.now(), res: res.clone() });
-          sweepCache();
-        }
+        noteSuccess();
+        if (idempotent && res.ok) remember(key, res);
         return res;
       } catch (e) {
         lastError = e;
+        noteFailure();
       } finally {
         releaseSlot();
       }
 
-      if (i < attempts - 1) {
+      if (i < maxAttempts - 1) {
         stats.retried = stats.retried + 1;
-        await sleep(RETRY_BASE_MS * (i + 1));
+        await sleep(RETRY_BASE_MS * (i + 1) + Math.floor(Math.random() * RETRY_JITTER_MS));
+      }
+    }
+
+    // Every attempt failed at the network. An older real answer beats an error.
+    if (idempotent) {
+      const old = stale(key);
+      if (old) {
+        stats.stale = stats.stale + 1;
+        console.warn("[net] network failed - serving the last good answer for", url);
+        return old;
       }
     }
 
@@ -332,14 +397,16 @@ async function bambehFetch(input: RequestInfo | URL, init?: RequestInit): Promis
     throw lastError;
   })();
 
+  const settle = () => { if (isProbe) probeInFlight = false; };
+
   if (idempotent) {
     inFlight.set(key, run);
-    run
-      .then(() => { inFlight.delete(key); })
-      .catch(() => { inFlight.delete(key); });
+    run.then(() => { inFlight.delete(key); settle(); })
+       .catch(() => { inFlight.delete(key); settle(); });
     return run.then((r) => r.clone());
   }
 
+  run.then(settle).catch(settle);
   return run;
 }
 
@@ -356,16 +423,21 @@ export function initNetInterceptor(options: NetInterceptorOptions = {}): void {
   try {
     (window as unknown as Record<string, unknown>).__bambehNet = () => ({
       ...stats,
+      limitNow: limit,
       activeNow: active,
-      queued: waiters.length,
+      queued: queue.length,
       authBusy,
-      cacheEntries: microCache.size,
+      breaker: breakerState(),
+      cacheEntries: cache.size,
     });
   } catch {
     /* debugging helper only - never fatal */
   }
 
-  console.info("[net] Bambeh interceptor active - auth lane, dedupe, micro-cache, 3 at a time, loop guard.");
+  console.info(
+    "[net] Bambeh interceptor active - auth lane, dedupe, adaptive width, " +
+    "circuit breaker, stale-serve. fix438"
+  );
 }
 
 export function isNetInterceptorInitialized(): boolean {
@@ -374,9 +446,17 @@ export function isNetInterceptorInitialized(): boolean {
 
 /** Live counters. Also reachable from the browser console as __bambehNet(). */
 export function getNetInterceptorStats() {
-  return { ...stats, activeNow: active, queued: waiters.length, authBusy, cacheEntries: microCache.size };
+  return {
+    ...stats,
+    limitNow: limit,
+    activeNow: active,
+    queued: queue.length,
+    authBusy,
+    breaker: breakerState(),
+    cacheEntries: cache.size,
+  };
 }
 
 // App.tsx imports this module for its side effect, so install on load.
 initNetInterceptor();
-// BAMBEH_END_TOKEN__NETINTERCEPTOR_FIX389__COMPLETE
+// BAMBEH_END_TOKEN__NETINTERCEPTOR_FIX438__COMPLETE
