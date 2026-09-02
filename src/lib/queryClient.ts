@@ -1,4 +1,4 @@
-﻿/**
+/**
  * queryClient.ts � Bambeh Marketplace
  * � 2026 Bambeh Marketplace. All rights reserved.
  *
@@ -113,7 +113,6 @@ export const queryKeys = {
     byUser: (userId: string) => ["offers", "user", userId] as const,
   },
 
-  // Tontine
   tontine: {
     all: ["tontine"] as const,
     detail: (id: string) => ["tontine", id] as const,

@@ -139,8 +139,8 @@ export default function CommunityDetail() {
     setLoading(true);
     setLoadError(false);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id ?? null;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id ?? null;
       setUserId(uid);
 
       const { data: g, error: gErr } = await supabase
@@ -203,9 +203,9 @@ export default function CommunityDetail() {
 
         try {
           const { data: prof } = await supabase.from('profiles').select('full_name').eq('id', uid).maybeSingle();
-          setMyName((prof?.full_name as string) || auth?.user?.email?.split('@')[0] || 'Bambeh user');
+          setMyName((prof?.full_name as string) || auth?.session?.user?.email?.split('@')[0] || 'Bambeh user');
         } catch {
-          setMyName(auth?.user?.email?.split('@')[0] || 'Bambeh user');
+          setMyName(auth?.session?.user?.email?.split('@')[0] || 'Bambeh user');
         }
       }
     } catch (e) {

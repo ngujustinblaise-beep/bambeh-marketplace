@@ -133,8 +133,8 @@ export default function CorporateBulkUpload() {
   useEffect(() => {
     (async () => {
       try {
-        const { data: auth } = await supabase.auth.getUser();
-        const uid = auth?.user?.id;
+        const { data: auth } = await supabase.auth.getSession();
+        const uid = auth?.session?.user?.id;
         if (!uid) { navigate('/login'); return; }
         const mine = await fetchMyStores(uid);
         setStore((mine && mine[0]) || null);

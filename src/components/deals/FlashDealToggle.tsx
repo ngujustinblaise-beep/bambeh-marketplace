@@ -309,8 +309,8 @@ export async function startDealConversation(deal: {
   seller_id?: string | null;
   vendor_id?: string | null;
 }): Promise<string | null> {
-  const { data: auth } = await supabase.auth.getUser();
-  const me = auth?.user?.id;
+  const { data: auth } = await supabase.auth.getSession();
+  const me = auth?.session?.user?.id;
   const sellerId = deal.seller_id ?? deal.vendor_id ?? null;
 
   if (!me) throw new Error('Please log in to message the seller.');

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "90048033792",
+    "project_id": "bambe-app-4e41d",
+    "storage_bucket": "bambe-app-4e41d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:90048033792:android:7659b07a68ba9b266614e5",
+        "android_client_info": {
+          "package_name": "cm.bambe.marketplace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBusrIgpjRMaATwQxnlf_hydIJoYYfMJ8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

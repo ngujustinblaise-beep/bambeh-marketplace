@@ -362,9 +362,6 @@ const OfflineModePage     = lazy(() => import("@/pages/OfflineModePage"));
 const MeetSafelyPage      = lazy(() => import("@/routes/groups/community/MeetSafelyPage"));
 const CommunityPage       = lazy(() => import("@/routes/groups/community/CommunityPage"));
 const CommunityDetail     = lazy(() => import("@/routes/groups/community/CommunityDetail"));
-const TontinePage         = lazy(() => import("@/routes/groups/community/TontinePage"));
-const TontineDetail       = lazy(() => import("@/routes/groups/community/TontineDetail"));
-const TontineCreate       = lazy(() => import("@/routes/groups/community/TontineCreate"));
 const FarmFreshPage       = lazy(() => import("@/routes/groups/community/FarmFreshPage"));
 const FarmFreshDetail     = lazy(() => import("@/routes/groups/community/FarmFreshDetail"));
 const FarmFreshOrderPage  = lazy(() => import("@/routes/groups/community/FarmFreshOrderPage"));
@@ -1332,30 +1329,6 @@ export default function App() {
                           element={
                             <MainLayout>
                               <AuthGate require="user"><CommunityDetail /></AuthGate>
-                            </MainLayout>
-                          }
-                        />
-                        <Route
-                          path="/tontine"
-                          element={
-                            <MainLayout>
-                              <AuthGate require="subscription"><TontinePage /></AuthGate>
-                            </MainLayout>
-                          }
-                        />
-                        <Route
-                          path="/tontine/create"
-                          element={
-                            <MainLayout>
-                              <AuthGate require="user"><TontineCreate /></AuthGate>
-                            </MainLayout>
-                          }
-                        />
-                        <Route
-                          path="/tontine/:id"
-                          element={
-                            <MainLayout>
-                              <AuthGate require="subscription"><TontineDetail /></AuthGate>
                             </MainLayout>
                           }
                         />

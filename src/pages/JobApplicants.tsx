@@ -265,8 +265,8 @@ export default function JobApplicants() {
   /* ── load the job + its applications ─────────────────────────────────── */
   const load = useCallback(async () => {
     setError('');
-    const { data: auth } = await supabase.auth.getUser();
-    const uid = auth?.user?.id ?? null;
+    const { data: auth } = await supabase.auth.getSession();
+    const uid = auth?.session?.user?.id ?? null;
     setUserId(uid);
 
     if (!uid || !jobId) { setChecking(false); return; }

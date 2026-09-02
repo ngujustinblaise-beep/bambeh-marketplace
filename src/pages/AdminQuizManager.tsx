@@ -68,9 +68,9 @@ export default function AdminQuizManager() {
   const loadRole = useCallback(async () => {
     setChecking(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth?.user) { setRole(null); return; }
-      const { data } = await supabase.from('profiles').select('admin_role').eq('id', auth.user.id).maybeSingle();
+      const { data: auth } = await supabase.auth.getSession();
+      if (!auth?.session?.user) { setRole(null); return; }
+      const { data } = await supabase.from('profiles').select('admin_role').eq('id', auth.session.user.id).maybeSingle();
       setRole(data?.admin_role ?? null);
     } catch { setRole(null); }
     finally { setChecking(false); }

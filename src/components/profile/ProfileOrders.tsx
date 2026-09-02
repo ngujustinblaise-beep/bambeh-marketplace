@@ -181,8 +181,8 @@ export default function ProfileOrders({ userId }: ProfileOrdersProps) {
     try {
       let uid = userId ?? null;
       if (!uid) {
-        const { data: auth } = await supabase.auth.getUser();
-        uid = auth?.user?.id ?? null;
+        const { data: auth } = await supabase.auth.getSession();
+        uid = auth?.session?.user?.id ?? null;
       }
       if (!uid) { setOrders([]); setLoading(false); return; }
 

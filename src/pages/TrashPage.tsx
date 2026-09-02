@@ -156,8 +156,8 @@ export default function TrashPage() {
     setLoading(true);
     setLoadError(false);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id ?? null;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id ?? null;
       setUserId(uid);
       if (!uid) { setItems([]); setLoading(false); return; }
 

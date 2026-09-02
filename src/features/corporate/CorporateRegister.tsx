@@ -56,8 +56,8 @@ export default function CorporateRegister() {
     if (!canSubmit) { setError(s.reqField); return; }
     setBusy(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { setError(s.needLogin); setBusy(false); return; }
 
       const { data, error: insErr } = await supabase

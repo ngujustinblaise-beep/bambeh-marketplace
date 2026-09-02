@@ -149,13 +149,13 @@ export default function JobRequirementsPanel({ jobId, onSaved }: Props) {
   async function handleSave() {
     setSaving(true); setError(''); setSaved(false);
     try {
-      const { data: auth } = await supabase.auth.getUser();
+      const { data: auth } = await supabase.auth.getSession();
 
       const { error: upErr } = await supabase
         .from('job_application_requirements')
         .upsert({
           job_id: jobId,
-          employer_id: auth?.user?.id ?? null,
+          employer_id: auth?.session?.user?.id ?? null,
           job_country: jobCountry.trim() || null,
           require_nationality: reqNationality,
           require_work_authorization: reqWorkAuth,

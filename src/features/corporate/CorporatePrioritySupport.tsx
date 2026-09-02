@@ -133,8 +133,8 @@ export default function CorporatePrioritySupport() {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { navigate('/login'); return; }
       const mine = await fetchMyStores(uid);
       setStoreId(mine && mine[0] ? mine[0].id : null);
@@ -158,8 +158,8 @@ export default function CorporatePrioritySupport() {
     if (!subject.trim() || !body.trim()) { setError(l.needFields); return; }
     setSubmitting(true); setError(null);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { navigate('/login'); return; }
       const { data, error: dbErr } = await supabase
         .from('support_tickets')
@@ -197,8 +197,8 @@ export default function CorporatePrioritySupport() {
     if (!openTicket || !replyBody.trim()) return;
     setSending(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) return;
       const { data, error: dbErr } = await supabase
         .from('support_ticket_replies')

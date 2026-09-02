@@ -111,8 +111,8 @@ export default function CorporateAnalytics() {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { navigate('/login'); return; }
       const mine = await fetchMyStores(uid);
       const st = (mine && mine[0]) || null;

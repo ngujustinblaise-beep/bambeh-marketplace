@@ -207,13 +207,13 @@ export default function JobApplyModal({
     setChecking(true); setError(''); setDone(false); setStep(0);
 
     (async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id ?? null;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id ?? null;
       if (cancelled) return;
       setUserId(uid);
 
       if (uid) {
-        const em = auth?.user?.email ?? '';
+        const em = auth?.session?.user?.email ?? '';
         if (em) setEmail(prev => prev || em);
       }
 

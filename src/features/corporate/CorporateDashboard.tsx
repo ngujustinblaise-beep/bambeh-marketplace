@@ -52,8 +52,8 @@ export default function CorporateDashboard() {
     setLoading(true);
     setLoadError(false);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { navigate('/login'); return; }
       const mine = await fetchMyStores(uid);
       if (mine.length === 0) { setStore(null); setLoading(false); return; }

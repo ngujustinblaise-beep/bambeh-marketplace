@@ -638,7 +638,6 @@ export async function fetchPlans(): Promise<Plan[]> {
     return [
       { id: "daily", name: "Daily Pass", price: 100, currency: "XAF", duration: "24 hours", features: ["Full marketplace access", "Browse all listings", "Contact sellers", "Chat"] },
       { id: "weekly", name: "Weekly Plan", price: 500, currency: "XAF", duration: "7 days", features: ["Everything in Daily", "Flash Deals", "Group Buying", "AI Assistant"] },
-      { id: "monthly", name: "Monthly Plan", price: 1500, currency: "XAF", duration: "30 days", features: ["Everything in Weekly", "Tontine", "FarmFresh", "Community", "Priority Support"] },
     ];
   }
 }

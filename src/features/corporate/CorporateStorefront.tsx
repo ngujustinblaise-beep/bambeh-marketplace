@@ -75,8 +75,8 @@ export default function CorporateStorefront() {
 
   const chatSales = async () => {
     if (!store) return;
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth?.user) { navigate('/login'); return; }
+    const { data: auth } = await supabase.auth.getSession();
+    if (!auth?.session?.user) { navigate('/login'); return; }
     // route into the existing chat with the store owner as the counterparty
     navigate(`/chat?userId=${store.owner_id}`);
   };
@@ -311,8 +311,8 @@ function QuoteForm({
     if (!q) { setError(s.reqField); return; }
     setBusy(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { onNeedLogin(); return; }
       await submitQuote({
         storeId: store.id, buyerId: uid, productId: product?.id ?? null,

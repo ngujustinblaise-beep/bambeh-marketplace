@@ -162,8 +162,8 @@ export default function BulkUpload() {
     setBusy(true);
     setResults(null);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { flash(t.needLogin); setBusy(false); return; }
 
       const out: RowResult[] = rows

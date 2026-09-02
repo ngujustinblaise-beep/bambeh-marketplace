@@ -69,8 +69,8 @@ export default function CorporatePage() {
 
   useEffect(() => {
     (async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { setHasStore(false); return; }
       try {
         const mine = await fetchMyStores(uid);

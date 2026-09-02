@@ -479,7 +479,7 @@ export default function FarmFreshPage() {
               }`}
             >
               {/*  FIX: t() resolves to the translated word, not the raw key */}
-              {t(key) as string}
+              {(tt as Record<string, string>)[key] ?? key}
             </button>
           ))}
         </div>

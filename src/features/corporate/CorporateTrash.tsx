@@ -91,8 +91,8 @@ export default function CorporateTrash() {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth?.session?.user?.id;
       if (!uid) { navigate('/login'); return; }
       const mine = await fetchMyStores(uid);
       const st = mine && mine[0] ? mine[0] : null;
