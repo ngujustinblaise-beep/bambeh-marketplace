@@ -379,6 +379,12 @@ export default function MarketplaceItemDetails() {
   const { user } = useAuth();
   const { isActive: isSubscribed } = useSubscription(user?.id ?? null);
 
+  // FIX449: usePlanLimits was called inside the JSX, AFTER the loading /
+  // error / expired early returns. React counts hooks per render, so the
+  // short first render and the long second render disagreed -> error #310.
+  // A hook must live at the top level. Same value, no crash.
+  const plan = usePlanLimits();
+
   const [sellerRating, setSellerRating] = useState<{ avg: number; count: number } | null>(null);
   useEffect(() => {
     const sid = listing?.sellerId;
@@ -690,7 +696,6 @@ export default function MarketplaceItemDetails() {
         <div className="flex flex-wrap gap-3 text-xs text-gray-500">
           {/* FIX431 - free members see the city, premium sees the rest */}
           {(() => {
-            const plan = usePlanLimits();
             const lang = (() => {
               try {
                 const l = String(window.localStorage.getItem("bambeh_lang") ?? "en").toLowerCase();
