@@ -56,7 +56,7 @@ const TR: Record<string, Record<Lang, string>> = {
   negotiable:     { en: "Price is negotiable",      fr: "Prix négociable",            ha: "Ana tattaunawa",         ar: "السعر قابل للتفاوض",           pcm: "Price nego",             ff: "Njaru hewtii" },
   next_photos:    { en: "Next — Add Photos",        fr: "Suivant — Ajouter des photos", ha: "Gaba — Ƙara hotuna",  ar: "التالي — أضف صوراً",           pcm: "Next — Add Photos",      ff: "Yeeso — Ɓeydu Foto" },
   add_photos:     { en: "Add Photos",               fr: "Ajouter des photos",         ha: "Ƙara hotuna",           ar: "أضف صوراً",                    pcm: "Add Photos",             ff: "Ɓeydu Foto" },
-  photos_hint:    { en: "Up to 6 photos. First photo is the cover.", fr: "Jusqu'à 6 photos. La première est la couverture.", ha: "Har hoto 6. Na farko shine cover.", ar: "حتى 6 صور. الأولى هي الغلاف.", pcm: "Max 6 pictures. First one na cover.", ff: "Haa 6 foto. Araniwol na cover." },
+  photos_hint:    { en: "Up to 8 photos. First photo is the cover.", fr: "Jusqu'à 8 photos. La première est la couverture.", ha: "Har hoto 8. Na farko shine cover.", ar: "حتى 8 صور. الأولى هي الغلاف.", pcm: "Max 8 pictures. First one na cover.", ff: "Haa 8 foto. Araniwol na cover." },
   cover:          { en: "COVER",                    fr: "COUVERTURE",                 ha: "COVER",                  ar: "غلاف",                         pcm: "COVER",                  ff: "COVER" },
   tap_upload:     { en: "Tap to upload photos",     fr: "Appuyez pour ajouter des photos", ha: "Danna don ɗora hotuna", ar: "اضغط لرفع الصور",           pcm: "Tap to add pictures",    ff: "Jokku ngam ɓeydu foto" },
   photo_formats:  { en: "JPG, PNG, WebP — max 6",  fr: "JPG, PNG, WebP — max 6",     ha: "JPG, PNG, WebP — max 6", ar: "JPG, PNG, WebP — الحد 6",      pcm: "JPG, PNG — max 6",       ff: "JPG, PNG — max 6" },
@@ -274,7 +274,7 @@ export default function PostMarketplaceItemPage() {
 
   // ── Photo handling ────────────────────────────────────────────────────────
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []).slice(0, 6 - photos.length);
+    const files = Array.from(e.target.files ?? []).slice(0, 8 - photos.length);
     setPhotos((prev) => [...prev, ...files]);
     files.forEach((f) => {
       const reader = new FileReader();

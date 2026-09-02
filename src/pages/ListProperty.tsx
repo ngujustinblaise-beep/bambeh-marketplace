@@ -251,10 +251,10 @@ const ListProperty: React.FC = () => {
 
   // ── Image handling ──────────────────────────────────────────────────────
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).slice(0, 5 - imageFiles.length);
+    const files = Array.from(e.target.files || []).slice(0, 8 - imageFiles.length);
     if (!files.length) return;
 
-    const newFiles    = [...imageFiles, ...files].slice(0, 5);
+    const newFiles    = [...imageFiles, ...files].slice(0, 8);
     const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
     setImageFiles(newFiles);
     setImagePreviews(newPreviews);

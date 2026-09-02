@@ -111,10 +111,10 @@ const PostProduct: React.FC = () => {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
 
-        if (formData.images.length + files.length > 10) {
+        if (formData.images.length + files.length > 8) {
             toast({
                 title: 'Too many images',
-                description: 'You can upload a maximum of 10 images',
+                description: 'You can upload a maximum of 8 images',
                 variant: 'destructive',
             });
             return;
@@ -248,7 +248,7 @@ const PostProduct: React.FC = () => {
                                 <Upload className="h-5 w-5" />
                                 Product Photos
                             </CardTitle>
-                            <CardDescription>Upload up to 10 photos of your product</CardDescription>
+                            <CardDescription>Upload up to 8 photos of your product</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
