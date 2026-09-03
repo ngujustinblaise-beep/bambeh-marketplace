@@ -138,7 +138,7 @@ interface Property {
 
 
 const CITIES = ["allCities", "Yaoundé", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaoundéré", "Bertoua", "Ebolowa", "Kumba"];
-const TYPES = ["allTypes", "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop"];
+const TYPES = ["allTypes", "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop", "Hotel", "Motel", "Guesthouse", "Warehouse", "Land", "Farm", "House for sale", "Land for sale", "Farm for sale"];
 
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
   if (!expiresAt) return false;

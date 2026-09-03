@@ -61,7 +61,21 @@ const EMPTY_FORM: FormState = {
 
 const PROPERTY_TYPES = [
   "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop",
+  "Hotel", "Motel", "Guesthouse", "Warehouse", "Land", "Farm",
+  "House for sale", "Land for sale", "Farm for sale",
 ];
+
+// FIX454 - pricing period per property type. Hotels, motels and guest houses
+// are priced per night; anything for sale is a one-off total price; every
+// other property stays monthly. Derived from the type so the person posting
+// only has to choose one thing.
+const PERIOD_BY_TYPE: Record<string, string> = {
+  "Hotel": "night", "Motel": "night", "Guesthouse": "night",
+  "House for sale": "total", "Land for sale": "total", "Farm for sale": "total",
+};
+function periodForType(t: string): string {
+  return PERIOD_BY_TYPE[t] || "month";
+}
 const CITIES = [
   "Yaound\u00e9", "Douala", "Bafoussam", "Garoua", "Maroua",
   "Bamenda", "Ngaound\u00e9r\u00e9", "Bertoua", "Ebolowa", "Kumba", "Other",
@@ -326,6 +340,7 @@ const ListProperty: React.FC = () => {
           expires_at:     expiresAt,
           extra: {
             propertyType: form.type,
+            pricePeriod:  periodForType(form.type),
             bedrooms:     form.bedrooms,
             bathrooms:    form.bathrooms,
             area:         form.area ? Number(form.area) : null,
