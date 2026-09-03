@@ -1,4 +1,9 @@
-// BAMBEH_DEPLOY_TOKEN__RENTALDETAILS_FIX83_CLEAN
+// BAMBEH_DEPLOY_TOKEN__RENTALDETAILS_FIX456_CLEAN
+// FIX456: The price suffix is no longer hardcoded to "/month". It now reads
+//         extra.pricePeriod (written by FIX454b) and renders "/night" for
+//         hotels, motels and guest houses, NO suffix at all for anything for
+//         sale, and "/month" for every other property - in all five app
+//         languages. This matches the browse page after FIX455b.
 // FIX83: Per-item chat (listingId passed to /chat) + real "Book Site Visit"
 //        now opens BookVisitModal (date/time/phone/note → booking-card message
 //        in chat) instead of a plain chat prefix. "Message Owner" stays chat.
@@ -22,27 +27,27 @@ const STR: Record<string, Record<string, string>> = {
         bedrooms: 'Bedrooms', bathrooms: 'Bathrooms', area: 'Area', details: 'Property Details', type: 'Type',
         furnished: 'Furnished', deposit: 'Deposit', posted: 'Posted', yes: 'Yes', no: 'No',
         description: 'Description', amenities: 'Amenities', owner: 'Owner', message: 'Message Owner',
-        book: 'Book Site Visit', share: 'Share', perMonth: 'month' },
+        book: 'Book Site Visit', share: 'Share', perMonth: 'month', perNight: 'night' },
   fr: { back: 'Retour', notFound: 'Logement introuvable.', backToList: 'Retour aux locations', verified: 'Vérifié',
         bedrooms: 'Chambres', bathrooms: 'Salles de bain', area: 'Surface', details: 'Détails du bien', type: 'Type',
         furnished: 'Meublé', deposit: 'Caution', posted: 'Publié', yes: 'Oui', no: 'Non',
         description: 'Description', amenities: 'Équipements', owner: 'Propriétaire', message: 'Contacter le propriétaire',
-        book: 'Réserver une visite', share: 'Partager', perMonth: 'mois' },
+        book: 'Réserver une visite', share: 'Partager', perMonth: 'mois', perNight: 'nuit' },
   pidgin: { back: 'Go back', notFound: 'We no fit find dis house.', backToList: 'Back to Rentals', verified: 'Verified',
         bedrooms: 'Bedrooms', bathrooms: 'Bathrooms', area: 'Area', details: 'Property Details', type: 'Type',
         furnished: 'Furnished', deposit: 'Deposit', posted: 'Posted', yes: 'Yes', no: 'No',
         description: 'Description', amenities: 'Amenities', owner: 'Owner', message: 'Message di Owner',
-        book: 'Book Site Visit', share: 'Share', perMonth: 'month' },
+        book: 'Book Site Visit', share: 'Share', perMonth: 'month', perNight: 'night' },
   ar: { back: 'رجوع', notFound: 'العقار غير موجود.', backToList: 'العودة إلى الإيجارات', verified: 'موثّق',
         bedrooms: 'غرف النوم', bathrooms: 'الحمامات', area: 'المساحة', details: 'تفاصيل العقار', type: 'النوع',
         furnished: 'مفروش', deposit: 'التأمين', posted: 'نُشر', yes: 'نعم', no: 'لا',
         description: 'الوصف', amenities: 'المرافق', owner: 'المالك', message: 'مراسلة المالك',
-        book: 'حجز زيارة', share: 'مشاركة', perMonth: 'شهر' },
+        book: 'حجز زيارة', share: 'مشاركة', perMonth: 'شهر', perNight: 'ليلة' },
   ff: { back: 'Rutto', notFound: 'Galle o heɓaaka.', backToList: 'Rutto e luwaali', verified: 'Goongɗinaaɗo',
         bedrooms: 'Suudu ɗaanorɗe', bathrooms: 'Suudu lootorɗe', area: 'Njaajeendi', details: 'Fannuuji galle', type: 'Sifaa',
         furnished: ' Hodoraaɗo', deposit: 'Dammbugol', posted: 'Winndaama', yes: 'Eey', no: 'Alaa',
         description: 'Sifa', amenities: 'Keɓe', owner: 'Jom galle', message: 'Neldu jom galle',
-        book: 'Waɗ yiilo', share: 'Lolluɗe', perMonth: 'lewru' },
+        book: 'Waɗ yiilo', share: 'Lolluɗe', perMonth: 'lewru', perNight: 'jamma' },
 };
 function tr(lang: string, k: string) { return (STR[lang] && STR[lang][k]) || STR.en[k] || k; }
 
@@ -104,8 +109,15 @@ export default function RentalDetails() {
   const area = pick(extra, 'area', 'surface', 'size');
   const furnished = pick(extra, 'furnished');
   const deposit = pick(extra, 'deposit', 'caution');
-  const propType = pick(extra, 'property_type', 'type', 'category') || row.category;
-  const period = pick(extra, 'period', 'frequency') || 'month';
+  const propType = pick(extra, 'property_type', 'propertyType', 'type', 'category') || row.category;
+
+  // FIX456 - "month" | "night" | "total". Written by ListProperty from the
+  // property type. Older rows have no pricePeriod and fall back to month.
+  const period = pick(extra, 'pricePeriod', 'price_period', 'period', 'frequency') || 'month';
+  const periodLabel = period === 'night' ? tr(lang, 'perNight')
+                    : period === 'total' ? null
+                    : tr(lang, 'perMonth');
+
   const amenities: string[] = Array.isArray(extra.amenities) ? extra.amenities : [];
   const feats = [
     bedrooms != null && { icon: Bed, label: tr(lang, 'bedrooms'), value: String(bedrooms) },
@@ -177,7 +189,9 @@ export default function RentalDetails() {
           )}
           <div className="text-3xl font-bold text-teal-600 mt-2">
             {Number(row.price || 0).toLocaleString()} {currency}
-            <span className="text-base font-normal text-gray-400">/{tr(lang, 'perMonth')}</span>
+            {periodLabel && (
+              <span className="text-base font-normal text-gray-400">/{periodLabel}</span>
+            )}
           </div>
         </div>
 
@@ -251,4 +265,4 @@ export default function RentalDetails() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__RENTALDETAILS_FIX83__COMPLETE
+// BAMBEH_END_TOKEN__RENTALDETAILS_FIX456__COMPLETE
