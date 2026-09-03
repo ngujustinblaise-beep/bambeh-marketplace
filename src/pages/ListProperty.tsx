@@ -39,6 +39,9 @@ interface FormState {
   title:        string;
   type:         string;
   price:        string;
+  priceUnit:    string;   // FIX458 primary unit
+  price2:       string;   // FIX458 optional second amount
+  priceUnit2:   string;   // FIX458 optional second unit
   location:     string;
   quartier:     string;
   region:       string;
@@ -54,6 +57,7 @@ interface FormState {
 
 const EMPTY_FORM: FormState = {
   title: "", type: "Apartment", price: "", location: "",
+  priceUnit: "month", price2: "", priceUnit2: "",
   quartier: "", region: "", bedrooms: "1", bathrooms: "1",
   area: "", isFurnished: false, description: "",
   amenities: "", contactPhone: "", contactName: "",
@@ -76,6 +80,29 @@ const PERIOD_BY_TYPE: Record<string, string> = {
 function periodForType(t: string): string {
   return PERIOD_BY_TYPE[t] || "month";
 }
+
+// FIX458 - which pricing units each property type may offer.
+const UNITS_BY_TYPE: Record<string, string[]> = {
+  "Hotel":          ["hour", "halfday", "night", "month"],
+  "Motel":          ["hour", "halfday", "night", "month"],
+  "Guesthouse":     ["hour", "halfday", "night", "month"],
+  "Land":           ["month", "year"],
+  "Farm":           ["month", "year"],
+  "Warehouse":      ["month", "year"],
+  "House for sale": ["total", "sqm"],
+  "Land for sale":  ["total", "sqm"],
+  "Farm for sale":  ["total", "sqm"],
+};
+function unitsForType(t: string): string[] {
+  return UNITS_BY_TYPE[t] || ["month"];
+}
+
+// Coarse period for the browse card and detail page until FIX459.
+const PERIOD_OF_UNIT: Record<string, string> = {
+  hour: "night", halfday: "night", night: "night",
+  month: "month", year: "month",
+  total: "total", sqm: "total",
+};
 const CITIES = [
   "Yaound\u00e9", "Douala", "Bafoussam", "Garoua", "Maroua",
   "Bamenda", "Ngaound\u00e9r\u00e9", "Bertoua", "Ebolowa", "Kumba", "Other",
@@ -131,6 +158,47 @@ const STR: Record<string, Record<string, string>> = {
   formPrice: {
     en: "Price (XAF/month)", fr: "Prix (XAF/mois)", pidgin: "Price (XAF/month)",
     ar: "\u0627\u0644\u0633\u0639\u0631 (\u0641\u0631\u0646\u0643/\u0634\u0647\u0631)", ff: "Coggu (XAF/lewru)",
+  },
+  formAmount: {
+    en: "Amount (XAF)", fr: "Montant (XAF)", pidgin: "How much (XAF)",
+    ar: "\u0627\u0644\u0645\u0628\u0644\u063a (XAF)", ff: "Coggu (XAF)",
+  },
+  formAmount2: {
+    en: "Second amount (XAF)", fr: "Deuxi\u00e8me montant (XAF)", pidgin: "Second amount (XAF)",
+    ar: "\u0627\u0644\u0645\u0628\u0644\u063a \u0627\u0644\u062b\u0627\u0646\u064a (XAF)", ff: "Coggu \u0257i\u0257i (XAF)",
+  },
+  formPriceUnit: {
+    en: "Priced per", fr: "Prix par", pidgin: "Price per",
+    ar: "\u0627\u0644\u0633\u0639\u0631 \u0644\u0643\u0644", ff: "Coggu e",
+  },
+  formPriceUnit2: {
+    en: "Second unit (optional)", fr: "Deuxi\u00e8me unit\u00e9 (facultatif)",
+    pidgin: "Second one (if you want)",
+    ar: "\u0648\u062d\u062f\u0629 \u062b\u0627\u0646\u064a\u0629 (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)", ff: "Sifa \u0257i\u0257i",
+  },
+  unit_hour: {
+    en: "hour", fr: "heure", pidgin: "hour", ar: "\u0633\u0627\u0639\u0629", ff: "waktu",
+  },
+  unit_halfday: {
+    en: "half day", fr: "demi-journ\u00e9e", pidgin: "half day",
+    ar: "\u0646\u0635\u0641 \u064a\u0648\u0645", ff: "feccere \u00f1alnde",
+  },
+  unit_night: {
+    en: "night", fr: "nuit", pidgin: "night", ar: "\u0644\u064a\u0644\u0629", ff: "jamma",
+  },
+  unit_month: {
+    en: "month", fr: "mois", pidgin: "month", ar: "\u0634\u0647\u0631", ff: "lewru",
+  },
+  unit_year: {
+    en: "year", fr: "an", pidgin: "year", ar: "\u0633\u0646\u0629", ff: "hitaande",
+  },
+  unit_total: {
+    en: "fixed price", fr: "prix total", pidgin: "full price",
+    ar: "\u0625\u062c\u0645\u0627\u0644\u064a", ff: "coggu fof",
+  },
+  unit_sqm: {
+    en: "square metre", fr: "m\u00e8tre carr\u00e9", pidgin: "square metre",
+    ar: "\u0645\u00b2", ff: "m\u00e8tre carr\u00e9",
   },
   formPricePlaceholder: {
     en: "e.g. 75000", fr: "ex. 75000", pidgin: "e.g. 75000", ar: "\u0645\u062b\u0627\u0644: 75000", ff: "misal. 75000",
@@ -264,6 +332,21 @@ const ListProperty: React.FC = () => {
     setForm((f) => ({ ...f, [field]: !f[field] }));
 
   // ── Image handling ──────────────────────────────────────────────────────
+  // FIX458 - changing the property type resets the pricing units to ones
+  // that type actually allows, so an hourly rate cannot survive a switch
+  // from Hotel to Apartment.
+  const onTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextType = e.target.value;
+    const allowed = unitsForType(nextType);
+    setForm((f) => ({
+      ...f,
+      type: nextType,
+      priceUnit: allowed[0],
+      priceUnit2: "",
+      price2: "",
+    }));
+  };
+
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).slice(0, 8 - imageFiles.length);
     if (!files.length) return;
@@ -288,7 +371,15 @@ const ListProperty: React.FC = () => {
 
     if (!user) { setError(tr("formLoginRequired")); return; }
     if (!form.title.trim())   { setError(tr("formTitle")    + " " + tr("isRequired")); return; }
-    if (!form.price.trim())   { setError(tr("formPrice")    + " " + tr("isRequired")); return; }
+    if (!form.price.trim())   { setError(tr("formAmount")   + " " + tr("isRequired")); return; }
+    // FIX458 - the primary unit must be one this property type allows.
+    if (!unitsForType(form.type).includes(form.priceUnit)) {
+      setError(tr("formPriceUnit") + " " + tr("isRequired")); return;
+    }
+    // FIX458 - a second unit without its amount is incomplete.
+    if (form.priceUnit2 && !form.price2.trim()) {
+      setError(tr("formAmount2") + " " + tr("isRequired")); return;
+    }
     if (!form.location.trim()){ setError(tr("formLocation") + " " + tr("isRequired")); return; }
     if (!form.contactPhone.trim()){ setError(tr("formPhone") + " " + tr("isRequired")); return; }
 
@@ -340,7 +431,14 @@ const ListProperty: React.FC = () => {
           expires_at:     expiresAt,
           extra: {
             propertyType: form.type,
-            pricePeriod:  periodForType(form.type),
+            pricePeriod:  PERIOD_OF_UNIT[form.priceUnit] || periodForType(form.type),
+            priceUnit:    form.priceUnit,
+            prices: [
+              { unit: form.priceUnit, amount: Number(form.price) },
+              ...(form.priceUnit2 && form.price2.trim()
+                ? [{ unit: form.priceUnit2, amount: Number(form.price2) }]
+                : []),
+            ],
             bedrooms:     form.bedrooms,
             bathrooms:    form.bathrooms,
             area:         form.area ? Number(form.area) : null,
@@ -447,7 +545,7 @@ const ListProperty: React.FC = () => {
               />
             </div>
 
-            {/* Type + Price */}
+            {/* Type + pricing unit - FIX458 */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
@@ -455,7 +553,7 @@ const ListProperty: React.FC = () => {
                 </label>
                 <select
                   value={form.type}
-                  onChange={set("type")}
+                  onChange={onTypeChange}
                   className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none bg-white"
                 >
                   {PROPERTY_TYPES.map((tp) => (
@@ -465,19 +563,70 @@ const ListProperty: React.FC = () => {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  {tr("formPrice")} *
+                  {tr("formPriceUnit")} *
                 </label>
-                <input
-                  required
-                  type="number"
-                  min={1}
-                  value={form.price}
-                  onChange={set("price")}
-                  placeholder={tr("formPricePlaceholder")}
-                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
-                />
+                <select
+                  value={form.priceUnit}
+                  onChange={set("priceUnit")}
+                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none bg-white"
+                >
+                  {unitsForType(form.type).map((u) => (
+                    <option key={u} value={u}>{tr("unit_" + u)}</option>
+                  ))}
+                </select>
               </div>
             </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                {tr("formAmount")} *
+              </label>
+              <input
+                required
+                type="number"
+                min={1}
+                value={form.price}
+                onChange={set("price")}
+                placeholder={tr("formPricePlaceholder")}
+                className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
+              />
+            </div>
+
+            {/* Optional second pricing unit - FIX458 */}
+            {unitsForType(form.type).length > 1 && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    {tr("formPriceUnit2")}
+                  </label>
+                  <select
+                    value={form.priceUnit2}
+                    onChange={set("priceUnit2")}
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none bg-white"
+                  >
+                    <option value="">{"\u2014"}</option>
+                    {unitsForType(form.type)
+                      .filter((u) => u !== form.priceUnit)
+                      .map((u) => (
+                        <option key={u} value={u}>{tr("unit_" + u)}</option>
+                      ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    {tr("formAmount2")}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    disabled={!form.priceUnit2}
+                    value={form.price2}
+                    onChange={set("price2")}
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none disabled:bg-gray-50"
+                  />
+                </div>
+              </div>
+            )}
           </section>
 
           {/* ── Section: Location ──────────────────────────────────── */}
