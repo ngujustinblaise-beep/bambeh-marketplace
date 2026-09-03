@@ -13,14 +13,14 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.listProperty": "List Property",
     "rentals.refresh": "Refresh",
     "rentals.search": "Search by name or neighbourhood?",
-    "rentals.maxRent": "Max Rent",
     "rentals.allCities": "All Cities",
     "rentals.allTypes": "All Types",
     "rentals.perMonth": "XAF/mo",
+    "rentals.perNight": "XAF/night",
+    "rentals.totalPrice": "XAF",
     "rentals.furnished": "Furnished",
     "rentals.views": "views",
     "rentals.view": "view",
-    "rentals.sampleListing": "Sample ? not a real listing",
     "rentals.expiringSoon": "Expiring soon",
     "rentals.propertiesFound": "{{count}} propert{{suffix}} found",
     "rentals.loading": "Loading properties?",
@@ -33,14 +33,14 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.listProperty": "Publier une location",
     "rentals.refresh": "Actualiser",
     "rentals.search": "Rechercher par nom ou quartier?",
-    "rentals.maxRent": "Loyer max",
     "rentals.allCities": "Toutes les villes",
     "rentals.allTypes": "Tous les types",
     "rentals.perMonth": "XAF/mois",
+    "rentals.perNight": "XAF/nuit",
+    "rentals.totalPrice": "XAF",
     "rentals.furnished": "Meubl?",
     "rentals.views": "vues",
     "rentals.view": "vue",
-    "rentals.sampleListing": "Exemple ? annonce fictive",
     "rentals.expiringSoon": "Bient?t expir?",
     "rentals.propertiesFound": "{{count}} propri?t?{{suffix}} trouv?e{{suffix}}",
     "rentals.loading": "Chargement des propri?t?s?",
@@ -53,14 +53,14 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.listProperty": "??? ??????",
     "rentals.refresh": "?????",
     "rentals.search": "???? ?????? ?? ?????",
-    "rentals.maxRent": "???? ?????",
     "rentals.allCities": "?? ?????",
     "rentals.allTypes": "?? ???????",
     "rentals.perMonth": "XAF/???",
+    "rentals.perNight": "XAF/ليلة",
+    "rentals.totalPrice": "XAF",
     "rentals.furnished": "?????",
     "rentals.views": "???????",
     "rentals.view": "??????",
-    "rentals.sampleListing": "???? ? ??? ??????? ???????",
     "rentals.expiringSoon": "????? ??????",
     "rentals.propertiesFound": "?? ?????? ??? {{count}} ????",
     "rentals.loading": "???? ????? ?????????",
@@ -73,14 +73,14 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.listProperty": "Windude suudu",
     "rentals.refresh": "Hes?itin",
     "rentals.search": "Yiilo innde wala wuro?",
-    "rentals.maxRent": "Coggu ?urtu?o",
     "rentals.allCities": "Gure fof",
     "rentals.allTypes": "Sifaaji fof",
     "rentals.perMonth": "XAF/lewru",
+    "rentals.perNight": "XAF/jamma",
+    "rentals.totalPrice": "XAF",
     "rentals.furnished": "Hee?aa?o",
     "rentals.views": "njiyaali",
     "rentals.view": "njiyaa",
-    "rentals.sampleListing": "Misal ? wonaa bayyinaango goonga",
     "rentals.expiringSoon": "Aray timmude",
     "rentals.propertiesFound": "{{count}} cuu?i ke?aama",
     "rentals.loading": "Loowugol cuu?i?",
@@ -93,14 +93,14 @@ const RENT_T: Record<string, Record<string, string>> = {
     "rentals.listProperty": "Post House",
     "rentals.refresh": "Refresh",
     "rentals.search": "Find by name or quarter?",
-    "rentals.maxRent": "Max Rent",
     "rentals.allCities": "All Towns",
     "rentals.allTypes": "All Types",
     "rentals.perMonth": "XAF/month",
+    "rentals.perNight": "XAF/night",
+    "rentals.totalPrice": "XAF",
     "rentals.furnished": "Get furniture",
     "rentals.views": "views",
     "rentals.view": "view",
-    "rentals.sampleListing": "Sample ? no be real listing",
     "rentals.expiringSoon": "E go soon finish",
     "rentals.propertiesFound": "{{count}} house dem dey",
     "rentals.loading": "E dey load houses?",
@@ -123,6 +123,7 @@ interface Property {
   id: string;
   title: string;
   type: string;
+  period?: string;
   price: number;
   location: string;
   quartier?: string;
@@ -139,6 +140,13 @@ interface Property {
 
 const CITIES = ["allCities", "Yaoundé", "Douala", "Bafoussam", "Garoua", "Maroua", "Bamenda", "Ngaoundéré", "Bertoua", "Ebolowa", "Kumba"];
 const TYPES = ["allTypes", "Apartment", "Villa", "Studio", "House", "Office", "Room", "Shop", "Hotel", "Motel", "Guesthouse", "Warehouse", "Land", "Farm", "House for sale", "Land for sale", "Farm for sale"];
+
+// FIX455b - which dictionary key labels this listing's price.
+function periodKey(period?: string): string {
+  if (period === "night") return "rentals.perNight";
+  if (period === "total") return "rentals.totalPrice";
+  return "rentals.perMonth";
+}
 
 function expiringWithin(expiresAt: string | undefined, days: number): boolean {
   if (!expiresAt) return false;
@@ -163,7 +171,6 @@ export default function Rentals() {
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("allCities");
   const [type, setType] = useState("allTypes");
-  const [maxPrice, setMaxPrice] = useState(1000000);
   const [locationFilters, setLocationFilters] = useState<LocationFilters>(EMPTY_LOCATION);
 
   const fetchProperties = useCallback(async () => {
@@ -185,6 +192,7 @@ export default function Rentals() {
           id: String(d.id),
           title: d.title || "Untitled Property",
           type: d.extra?.property_type ?? d.extra?.propertyType ?? d.extra?.type ?? "Apartment",
+          period: d.extra?.pricePeriod ?? d.extra?.price_period ?? "month",
           price: Number(d.price ?? 0),
           location: d.location || "",
           quartier: d.extra?.quartier ?? d.quartier ?? "",
@@ -226,7 +234,6 @@ export default function Rentals() {
       }
       if (city !== "allCities" && !p.location.toLowerCase().includes(city.toLowerCase())) return false;
       if (type !== "allTypes" && p.type !== type) return false;
-      if (p.price > maxPrice) return false;
       const loc = `${p.location} ${p.quartier || ""}`.toLowerCase();
       if (locationFilters.region && !loc.includes(locationFilters.region.toLowerCase())) return false;
       if (locationFilters.city && !loc.includes(locationFilters.city.toLowerCase())) return false;
@@ -279,17 +286,6 @@ export default function Rentals() {
           <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm bg-white">
             {TYPES.map((tp) => <option key={tp} value={tp}>{tp === "allTypes" ? t("rentals.allTypes") : tp}</option>)}
           </select>
-        </div>
-
-        <div className="mb-4 bg-white rounded-xl p-3 border">
-          <div className="flex justify-between text-sm text-gray-600 mb-1">
-            <span>{t("rentals.maxRent")}</span>
-            <span className="font-semibold text-orange-600">{maxPrice.toLocaleString()} {t("rentals.perMonth")}</span>
-          </div>
-          <input type="range" min={5000} max={1000000} step={5000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="w-full accent-orange-500" />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>5,000</span><span>1,000,000</span>
-          </div>
         </div>
 
         <LocationFilter onFilterChange={setLocationFilters} />
@@ -362,7 +358,7 @@ export default function Rentals() {
                     </div>
                     <span className="font-bold text-orange-600 flex items-center gap-0.5 text-sm">
                       <DollarSign className="w-3 h-3" />
-                      {p.price.toLocaleString()} {t("rentals.perMonth")}
+                      {p.price.toLocaleString()} {t(periodKey(p.period))}
                     </span>
                   </div>
 
