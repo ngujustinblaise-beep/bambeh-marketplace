@@ -556,4 +556,82 @@ export async function countListingsByType(): Promise<Array<{ type: string; total
   return Object.keys(tally).map((t) => ({ type: t, total: tally[t] })).sort((a, b) => b.total - a.total);
 }
 
+/* ------------------------------------------------------------------ *
+ * FIX460a - STATUS-AWARE READS.
+ *
+ * The originals above return [] or 0 on failure, which the UI then shows
+ * as fact. These return the failure flag adminSafe already computed, so
+ * the Command Center can say "could not reach the database" instead of
+ * inventing a zero. Old functions are left untouched for other callers.
+ * ------------------------------------------------------------------ */
+
+/** How many people have signed up. null means THE QUESTION COULD NOT BE ASKED. */
+export async function countUsersOrNull(): Promise<number | null> {
+  try {
+    const { count, error } = await supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: true });
+    if (error) {
+      console.warn('[admin] user count failed - not reporting a number.', error);
+      return null;
+    }
+    return count ?? 0;
+  } catch (err) {
+    console.warn('[admin] user count threw - not reporting a number.', err);
+    return null;
+  }
+}
+
+/** searchUsers, but it keeps the failed flag instead of discarding it. */
+export async function searchUsersWithStatus(query: string): Promise<AdminFetch<AdminUser>> {
+  let q = supabase
+    .from('profiles')
+    .select('id, full_name, email, admin_role, account_frozen, created_at')
+    .order('created_at', { ascending: false })
+    .limit(500);
+  if (query.trim()) q = q.or(`full_name.ilike.%${query}%,email.ilike.%${query}%`);
+  return adminSafe<AdminUser>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+/** fetchAllListings, but it keeps the failed flag instead of discarding it. */
+export async function fetchAllListingsWithStatus(
+  kind: string, query: string,
+): Promise<AdminFetch<AdminListing>> {
+  let q = supabase
+    .from('listings')
+    .select('id, title, type, status, price, category, location, user_id, view_count, created_at')
+    .order('created_at', { ascending: false })
+    .limit(500);
+  if (kind.trim()) q = q.eq('type', kind.trim());
+  if (query.trim()) {
+    q = q.or(`title.ilike.%${query}%,category.ilike.%${query}%,location.ilike.%${query}%`);
+  }
+  return adminSafe<AdminListing>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+/** The per-type tally, with an honest failure flag. */
+export async function countListingsByTypeWithStatus(): Promise<{
+  rows: Array<{ type: string; total: number }>; failed: boolean;
+}> {
+  try {
+    const { data, error } = await supabase.from('listings').select('type').limit(2000);
+    if (error || !data) {
+      console.warn('[admin] listing tally failed - not reporting a total.', error);
+      return { rows: [], failed: true };
+    }
+    const tally: Record<string, number> = {};
+    for (const row of data as Array<{ type: string | null }>) {
+      const key = row.type || 'untyped';
+      tally[key] = (tally[key] || 0) + 1;
+    }
+    const rows = Object.keys(tally)
+      .map((t) => ({ type: t, total: tally[t] }))
+      .sort((a, b) => b.total - a.total);
+    return { rows, failed: false };
+  } catch (err) {
+    console.warn('[admin] listing tally threw - not reporting a total.', err);
+    return { rows: [], failed: true };
+  }
+}
+
 // BAMBEH_END_TOKEN__ADMINLIB__COMPLETE
