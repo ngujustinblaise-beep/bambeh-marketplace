@@ -97,6 +97,14 @@ function unitsForType(t: string): string[] {
   return UNITS_BY_TYPE[t] || ["month"];
 }
 
+// FIX459b - a Flash Deal is a temporary cut off a one-off price, so it only
+// applies to property SALES. Rents, nightly rates and hourly rest rates are
+// recurring; the toggle stays hidden for them.
+const SALE_TYPES = ["House for sale", "Land for sale", "Farm for sale"];
+function isSaleType(t: string): boolean {
+  return SALE_TYPES.indexOf(t) !== -1;
+}
+
 // Coarse period for the browse card and detail page until FIX459.
 const PERIOD_OF_UNIT: Record<string, string> = {
   hour: "night", halfday: "night", night: "night",
@@ -345,6 +353,9 @@ const ListProperty: React.FC = () => {
       priceUnit2: "",
       price2: "",
     }));
+    // FIX459b - leaving a sale type clears any Flash Deal that was switched
+    // on, so it cannot follow the seller to a rental.
+    if (!isSaleType(nextType)) setDeal(emptyFlashDeal);
   };
 
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -454,7 +465,7 @@ const ListProperty: React.FC = () => {
       if (sbErr) throw sbErr;
 
       // FIX187 — publish the Flash Deal for this property, if requested.
-      if (deal.enabled && inserted?.id) {
+      if (deal.enabled && isSaleType(form.type) && inserted?.id) {
         await createFlashDealForListing({
           listingId:     inserted.id,
           title:         form.title.trim(),
@@ -869,12 +880,14 @@ const ListProperty: React.FC = () => {
           </section>
 
           {/* FIX187 — optional Flash Deal */}
-          <FlashDealToggle
-            originalPrice={Number(form.price) || 0}
-            value={deal}
-            onChange={setDeal}
-            lang={lang}
-          />
+          {isSaleType(form.type) && (
+            <FlashDealToggle
+              originalPrice={Number(form.price) || 0}
+              value={deal}
+              onChange={setDeal}
+              lang={lang}
+            />
+          )}
 
           {/* ── Submit button ─────────────────────────────────────────── */}
           <button
