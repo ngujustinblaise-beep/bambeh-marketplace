@@ -369,6 +369,7 @@ const FarmFreshSellerPage = lazy(() => import("@/routes/groups/community/FarmFre
 const MakeOfferPage       = lazy(() => import("@/pages/MakeOfferPage"));
 const ComparisonTool      = lazy(() => import("@/pages/ComparisonTool"));
 const QuizPage            = lazy(() => import("@/pages/QuizPage"));         // FIX166
+const PharmaciesOnCall    = lazy(() => import("@/pages/PharmaciesOnCall")); // FIX480
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
 const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
@@ -785,6 +786,10 @@ export default function App() {
                         <Route path="/corporate/support" element={<MainLayout><AuthGate require="user"><CorporatePrioritySupport /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/trash" element={<MainLayout><AuthGate require="user"><CorporateTrash /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/quiz" element={<MainLayout><AuthGate require="user"><QuizPage /></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
+                        {/* FIX480 - deliberately OUTSIDE AuthGate. Someone looking for
+                            medicine at 2am must never meet a sign-in wall. The database
+                            functions are granted to anon for exactly this reason. */}
+                        <Route path="/pharmacies" element={<MainLayout><PharmaciesOnCall /></MainLayout>} />
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
