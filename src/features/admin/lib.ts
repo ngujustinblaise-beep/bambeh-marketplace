@@ -729,3 +729,100 @@ export function whatsappResetUrl(phoneDigits: string, name: string | null, link:
     `Open it on your phone and choose a new password. It works once.\n\n${link}`;
   return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIX464 — ADS SECTION helpers
+//
+// These read and write `corporate_ads`, the table AdInterstitial already
+// displays from. It carries starts_at / ends_at for scheduling and
+// click_count / view_count so you can hand an advertiser a real number.
+//
+// This REPLACES PostFeaturedAdForm, which wrote to `featured_ads` — a table
+// nothing in the app has ever read. Anyone who used that form saw a green tick
+// and their advert went nowhere.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface CorporateAd {
+  id: string;
+  title: string;
+  description: string | null;
+  title_fr: string | null;
+  description_fr: string | null;
+  image_url: string | null;
+  link_url: string | null;
+  company_name: string | null;
+  tier: string | null;
+  is_active: boolean;
+  starts_at: string | null;
+  ends_at: string | null;
+  click_count: number | null;
+  view_count: number | null;
+  created_at: string;
+}
+
+const AD_COLUMNS =
+  'id, title, description, title_fr, description_fr, image_url, link_url, ' +
+  'company_name, tier, is_active, starts_at, ends_at, click_count, view_count, created_at';
+
+/** Every advert, newest first. Reports failure instead of returning []. */
+export async function fetchAds(): Promise<AdminFetch<CorporateAd>> {
+  const q = supabase
+    .from('corporate_ads')
+    .select(AD_COLUMNS)
+    .order('created_at', { ascending: false })
+    .limit(200);
+  return adminSafe<CorporateAd>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export type AdDraft = Omit<CorporateAd, 'id' | 'click_count' | 'view_count' | 'created_at'>;
+
+export async function createAd(
+  actorId: string, actorRole: AdminRole, draft: AdDraft,
+): Promise<string> {
+  const { data, error } = await supabase
+    .from('corporate_ads')
+    .insert(draft)
+    .select('id')
+    .single();
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'create_ad', 'ad', data.id, { title: draft.title });
+  return data.id as string;
+}
+
+export async function updateAd(
+  actorId: string, actorRole: AdminRole, id: string, patch: Partial<AdDraft>,
+): Promise<void> {
+  const { error } = await supabase.from('corporate_ads').update(patch).eq('id', id);
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'update_ad', 'ad', id, patch as Record<string, unknown>);
+}
+
+export async function setAdActive(
+  actorId: string, actorRole: AdminRole, id: string, active: boolean,
+): Promise<void> {
+  const { error } = await supabase.from('corporate_ads').update({ is_active: active }).eq('id', id);
+  if (error) throw error;
+  await logAction(actorId, actorRole, active ? 'activate_ad' : 'deactivate_ad', 'ad', id, {});
+}
+
+export async function deleteAd(
+  actorId: string, actorRole: AdminRole, id: string,
+): Promise<void> {
+  const { error } = await supabase.from('corporate_ads').delete().eq('id', id);
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'delete_ad', 'ad', id, {});
+}
+
+/**
+ * Is this advert actually running right now?
+ * AdInterstitial applies exactly these three rules, so the badge in the admin
+ * list and what a user sees can never disagree.
+ */
+export function adIsLive(ad: CorporateAd, now = Date.now()): boolean {
+  if (!ad.is_active) return false;
+  if (!ad.image_url) return false;                       // no image, never shown
+  if (ad.starts_at && new Date(ad.starts_at).getTime() > now) return false;
+  if (ad.ends_at && new Date(ad.ends_at).getTime() < now) return false;
+  return true;
+}
