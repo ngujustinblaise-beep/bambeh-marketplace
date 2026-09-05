@@ -826,3 +826,127 @@ export function adIsLive(ad: CorporateAd, now = Date.now()): boolean {
   if (ad.ends_at && new Date(ad.ends_at).getTime() < now) return false;
   return true;
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIX469 — PROMOTIONS helpers
+//
+// Featuring is sold in tiers: 100 XAF = 24 hours, 500 = a week, 1500 = a month.
+// None of those rules live here. They live in admin_promote_listing (FIX476),
+// which also enforces the one-featured-listing-per-user cap by standing down
+// the owner's other live features. That way the cap holds no matter which
+// screen or script does the promoting.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type PromotePlan = 'daily' | 'weekly' | 'monthly';
+
+/** A listing with its featuring state attached. */
+export type FeaturedListing = AdminListing & {
+  is_featured: boolean | null;
+  featured_until: string | null;
+};
+
+const FEATURED_COLUMNS =
+  'id, title, type, status, price, category, location, user_id, view_count, created_at, ' +
+  'is_featured, featured_until';
+
+/** Everything currently flagged featured, soonest to expire first. */
+export async function fetchFeaturedListings(): Promise<AdminFetch<FeaturedListing>> {
+  const q = supabase
+    .from('listings')
+    .select(FEATURED_COLUMNS)
+    .eq('is_featured', true)
+    .order('featured_until', { ascending: true, nullsFirst: false })
+    .limit(200);
+  return adminSafe<FeaturedListing>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+/** Search anything promotable. Featured state comes back with it. */
+export async function searchPromotableListings(query: string): Promise<AdminFetch<FeaturedListing>> {
+  let q = supabase
+    .from('listings')
+    .select(FEATURED_COLUMNS)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(60);
+  if (query.trim()) {
+    q = q.or(`title.ilike.%${query}%,category.ilike.%${query}%,location.ilike.%${query}%`);
+  }
+  return adminSafe<FeaturedListing>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export interface PromoteResult {
+  listing_id: string;
+  featured_until: string;
+  plan_used: string;
+  /** other live features by the same owner that were stood down for the cap */
+  stood_down: number;
+}
+
+export async function promoteListing(
+  actorId: string, actorRole: AdminRole, listingId: string, plan: PromotePlan,
+): Promise<PromoteResult> {
+  const { data, error } = await supabase.rpc('admin_promote_listing', {
+    p_listing_id: listingId,
+    p_plan: plan,
+  });
+  if (error) throw error;
+  const row = (Array.isArray(data) ? data[0] : data) as PromoteResult;
+  await logAction(actorId, actorRole, 'promote_listing', 'listing', listingId, {
+    plan, featured_until: row?.featured_until, stood_down: row?.stood_down,
+  });
+  return row;
+}
+
+export async function unpromoteListing(
+  actorId: string, actorRole: AdminRole, listingId: string,
+): Promise<void> {
+  const { error } = await supabase.rpc('admin_unpromote_listing', { p_listing_id: listingId });
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'unpromote_listing', 'listing', listingId, {});
+}
+
+/** Clears anything whose date has already passed. Returns how many. */
+export async function expireFeaturedListings(): Promise<number> {
+  const { data, error } = await supabase.rpc('expire_featured_listings');
+  if (error) throw error;
+  return Number(data ?? 0);
+}
+
+/** True only while the feature is actually running — the same test the strip
+ *  applies, so this screen can never disagree with what a user sees. */
+export function featureIsLive(l: FeaturedListing, now = Date.now()): boolean {
+  if (!l.is_featured) return false;
+  if (l.featured_until && new Date(l.featured_until).getTime() <= now) return false;
+  return true;
+}
+
+// ── platform switches ──────────────────────────────────────────────────────
+
+export interface PlatformSetting {
+  key: string;
+  value: unknown;
+  description: string | null;
+}
+
+export async function fetchPlatformSettings(): Promise<AdminFetch<PlatformSetting>> {
+  const q = supabase.from('platform_settings').select('key, value, description').order('key');
+  return adminSafe<PlatformSetting>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export async function setPlatformSetting(
+  actorId: string, actorRole: AdminRole, key: string, value: unknown,
+): Promise<void> {
+  const { error } = await supabase
+    .from('platform_settings')
+    .update({ value, updated_at: new Date().toISOString(), updated_by: actorId })
+    .eq('key', key);
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'platform_setting', 'setting', key, { value });
+}
+
+/** platform_settings.value is jsonb, so a boolean arrives as true or "true". */
+export function settingIsOn(s: PlatformSetting | undefined): boolean {
+  if (!s) return false;
+  return s.value === true || s.value === 'true';
+}
