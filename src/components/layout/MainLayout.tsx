@@ -1,6 +1,28 @@
-// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX176_CLEAN
+// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX465_CLEAN
 /**
  * src/components/layout/MainLayout.tsx — Bambeh Marketplace
+ *
+ * FIX465 — THE ADVERTISING STACK IS SWITCHED ON.
+ * ─────────────────────────────────────────────
+ * AdInterstitial.tsx has existed, finished and store-policy-compliant, since
+ * FIX430. A repo-wide search on 05 Sep 2026 found that NO FILE IMPORTED IT.
+ * It had never rendered once. That is why `corporate_ads` held a single row
+ * and no advert had ever been shown to anybody.
+ *
+ * Two lines fix that:
+ *   - useListingViewTracker() counts a view whenever the route becomes a
+ *     listing detail page, for all seven detail routes at once
+ *   - <AdInterstitial /> renders the advert when the rules allow it
+ *
+ * It sits AFTER <Footer /> deliberately. The interstitial is a fixed overlay
+ * with its own z-index, so its position in the tree does not affect layout,
+ * but keeping it last means it can never push page content around if the
+ * component is ever changed to render inline.
+ *
+ * It is OUTSIDE <SubscriptionGuard>. The guard blocks page content for users
+ * without a subscription — and those are precisely the users who should see
+ * adverts. Putting the interstitial inside the guard would have shown adverts
+ * only to the paying users who are exempt from them.
  *
  * FIX186 — HEADER + FOOTER, fixed bottom nav removed
  * ───────────────────────────────────────────────────
@@ -23,24 +45,41 @@
 import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import SubscriptionGuard from '@/components/security/SubscriptionGuard';
+import AdInterstitial from '@/components/ads/AdInterstitial';          // FIX465
+import { useListingViewTracker } from '@/lib/listingViewTracker';      // FIX465
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  // FIX465 - counts one listing view per detail-page visit, for every
+  // category at once. See src/lib/listingViewTracker.ts for why this is
+  // here and not repeated across seven detail pages.
+  useListingViewTracker();
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
       <main className="flex-1">
-        {children}
+        {/* FIX229 - the paywall. Posting, /subscription and /donate stay open;
+            everything else needs an active subscription verified in Supabase. */}
+        <SubscriptionGuard>
+          {children}
+        </SubscriptionGuard>
       </main>
 
       <Footer />
+
+      {/* FIX465 - outside the paywall on purpose: free users are the ones who
+          should see adverts, and premium users are exempt inside the
+          component itself. Renders nothing at all until the rules allow it. */}
+      <AdInterstitial />
     </div>
   );
 };
 
 export default MainLayout;
-// BAMBEH_END_TOKEN__MAINLAYOUT__COMPLETE
+// BAMBEH_END_TOKEN__MAINLAYOUT_FIX465__COMPLETE
