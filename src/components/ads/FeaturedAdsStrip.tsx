@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__FEATUREDADSSTRIP_FIX108_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FEATUREDADSSTRIP_FIX470_WAS_FIX108_CLEAN
 /**
  * FeaturedAdsStrip.tsx — Bambeh Marketplace (FIX108, REAL data + EXCHANGE)
  * FILE LOCATION: src/components/ads/FeaturedAdsStrip.tsx
@@ -43,6 +43,8 @@ interface StripItem {
   location: string | null;
   image: string | null;
   created_at: string;
+  /** FIX470 - true only while a paid feature is actually running. */
+  featured?: boolean;
 }
 
 interface FeaturedAdsStripProps {
@@ -127,7 +129,9 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
           : ["marketplace", "job", "service", "rental", "vehicle"];
         const { data, error } = await supabase
           .from("listings")
-          .select("id, type, title, price, location, images, status, created_at, expires_at")
+          // FIX470 - is_featured and featured_until were never requested, so
+          // this strip could not tell a paid feature from an ordinary post.
+          .select("id, type, title, price, location, images, status, created_at, expires_at, is_featured, featured_until")
           .in("type", typeFilter)
           .eq("status", "active")
           .order("created_at", { ascending: false })
@@ -142,14 +146,23 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
             id: string; type: string; title: string; price: number | null;
             location: string | null; images: string[] | null; created_at: string;
             expires_at: string | null;
+            is_featured: boolean | null; featured_until: string | null;
           }[]) {
             const kind = (r.type === "marketplace" ? "marketplace" : r.type) as StripItem["kind"];
             if (!KIND_META[kind]) continue;
             if (r.expires_at && new Date(r.expires_at).getTime() < nowMs) continue;
+            // FIX470 - a feature that has run out is NOT featured any more,
+            // whatever the flag still says. The sweeper clears the flag on its
+            // own schedule; this makes sure an expired feature never occupies
+            // the shop window even for the minutes in between.
+            const stillFeatured =
+              r.is_featured === true &&
+              (!r.featured_until || new Date(r.featured_until).getTime() > nowMs);
             collected.push({
               id: r.id, kind, title: r.title, price: r.price, location: r.location,
               image: Array.isArray(r.images) && r.images[0] ? r.images[0] : null,
               created_at: r.created_at,
+              featured: stillFeatured,
             });
           }
         }
@@ -205,7 +218,15 @@ export const FeaturedAdsStrip: React.FC<FeaturedAdsStripProps> = ({
         }
       }
 
-      collected.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      // FIX470 - THE POINT OF THIS FIX. Until now the sort was newest-first
+      // only, so a seller who PAID to be featured sank down the strip the
+      // moment somebody else posted. Featured items now hold the front,
+      // newest-first among themselves, and everything else follows behind in
+      // the same newest-first order it always had.
+      collected.sort((a, b) => {
+        if (!!a.featured !== !!b.featured) return a.featured ? -1 : 1;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
       setItems(collected);
       setBatch(0);
       setLoadFailed(false);
