@@ -1,28 +1,37 @@
-// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX465_CLEAN
+// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX465B_CLEAN
 /**
  * src/components/layout/MainLayout.tsx — Bambeh Marketplace
  *
- * FIX465 — THE ADVERTISING STACK IS SWITCHED ON.
- * ─────────────────────────────────────────────
- * AdInterstitial.tsx has existed, finished and store-policy-compliant, since
- * FIX430. A repo-wide search on 05 Sep 2026 found that NO FILE IMPORTED IT.
- * It had never rendered once. That is why `corporate_ads` held a single row
- * and no advert had ever been shown to anybody.
+ * FIX465b — REPAIRS THE BROKEN BUILD FROM FIX465.
+ * ───────────────────────────────────────────────
+ * The FIX465 version of this file imported "@/lib/listingViewTracker", a file
+ * that does not exist and was never written:
  *
- * Two lines fix that:
- *   - useListingViewTracker() counts a view whenever the route becomes a
- *     listing detail page, for all seven detail routes at once
- *   - <AdInterstitial /> renders the advert when the rules allow it
+ *     [UNLOADABLE_DEPENDENCY] Could not load src/lib/listingViewTracker
  *
- * It sits AFTER <Footer /> deliberately. The interstitial is a fixed overlay
- * with its own z-index, so its position in the tree does not affect layout,
- * but keeping it last means it can never push page content around if the
- * component is ever changed to render inline.
+ * That import came from an earlier plan where the route-view counter lived in
+ * its own hook. The counter was then built INSIDE AdInterstitial instead — but
+ * this file still carried the import for the hook that was never created. It
+ * is removed here. Nothing else about FIX465 changes.
  *
- * It is OUTSIDE <SubscriptionGuard>. The guard blocks page content for users
- * without a subscription — and those are precisely the users who should see
- * adverts. Putting the interstitial inside the guard would have shown adverts
- * only to the paying users who are exempt from them.
+ * FIX465 — THE ADVERT IS SWITCHED ON.
+ * ───────────────────────────────────
+ * AdInterstitial has existed and worked since FIX430, but no file in the app
+ * ever imported it, so it had never displayed once. That is why `corporate_ads`
+ * held a single row and no advertiser could ever be shown a number.
+ *
+ * It is mounted HERE, once, rather than in App.tsx, because:
+ *   - it must be inside the Router (it reads the current path to know when a
+ *     listing detail page has opened, and counts the view itself), and
+ *   - every page a user browses passes through MainLayout.
+ *
+ * It sits OUTSIDE SubscriptionGuard on purpose. The guard decides what content
+ * a user may see; the advert is not content, it is a fixed overlay that must be
+ * able to appear over any page the user is allowed to reach. Putting it inside
+ * would also mean it unmounted every time the guard swapped children.
+ *
+ * It renders null until it decides to show an advert, so it costs one component
+ * instance and no layout space. Premium and staff accounts never see one.
  *
  * FIX186 — HEADER + FOOTER, fixed bottom nav removed
  * ───────────────────────────────────────────────────
@@ -47,18 +56,12 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SubscriptionGuard from '@/components/security/SubscriptionGuard';
 import AdInterstitial from '@/components/ads/AdInterstitial';          // FIX465
-import { useListingViewTracker } from '@/lib/listingViewTracker';      // FIX465
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  // FIX465 - counts one listing view per detail-page visit, for every
-  // category at once. See src/lib/listingViewTracker.ts for why this is
-  // here and not repeated across seven detail pages.
-  useListingViewTracker();
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
@@ -73,13 +76,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       <Footer />
 
-      {/* FIX465 - outside the paywall on purpose: free users are the ones who
-          should see adverts, and premium users are exempt inside the
-          component itself. Renders nothing at all until the rules allow it. */}
+      {/* FIX465 - renders null until it decides to show an advert. It counts
+          listing views itself from the route, so no detail page had to change. */}
       <AdInterstitial />
     </div>
   );
 };
 
 export default MainLayout;
-// BAMBEH_END_TOKEN__MAINLAYOUT_FIX465__COMPLETE
+// BAMBEH_END_TOKEN__MAINLAYOUT_FIX465B__COMPLETE
