@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX121_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX475_WAS_FIX121_CLEAN
 /**
  * AdminCommandCenter.tsx — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/AdminCommandCenter.tsx
@@ -33,6 +33,7 @@ import {
   countUsers,
   fetchAllListings, countListingsByType, type AdminListing,
 } from './lib';
+import UserActionPanel from './UserActionPanel';   // FIX475
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
@@ -307,6 +308,8 @@ function UsersSection({ userId, role, cap, flash }: { userId: string; role: Admi
   const [loading, setLoading] = useState(true);
   const [target, setTarget] = useState<AdminUser | null>(null);
   const [busy, setBusy] = useState(false);
+  // FIX475 - the user whose action panel is open
+  const [panelUser, setPanelUser] = useState<AdminUser | null>(null);
 
   const load = useCallback(async () => { setLoading(true); setUsers(await searchUsers(q)); setLoading(false); }, [q]);
   useEffect(() => { load(); }, [load]);
@@ -339,14 +342,18 @@ function UsersSection({ userId, role, cap, flash }: { userId: string; role: Admi
       {loading ? <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div> : (
         <div className="space-y-2">
           {users.map((u) => (
-            <div key={u.id} className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3">
+            <div key={u.id}
+              onClick={() => setPanelUser(u)}
+              role="button" tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPanelUser(u); }}
+              className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3 cursor-pointer hover:border-teal-300 hover:shadow-sm transition-all">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 truncate">{u.full_name || 'Unnamed'} {u.admin_role ? <span className="text-[10px] bg-teal-100 text-teal-700 rounded-full px-1.5 py-0.5 ml-1">{ROLE_LABEL[u.admin_role]}</span> : null}</p>
                 <p className="text-xs text-gray-400 truncate">{u.email}</p>
               </div>
               {u.account_frozen ? <span className="text-[10px] font-bold text-red-600 bg-red-50 rounded-full px-2 py-0.5">Frozen</span> : null}
               {cap.freezeUsers ? (
-                <button onClick={() => setPending({ u, freeze: !u.account_frozen })}
+                <button onClick={(e) => { e.stopPropagation(); setPending({ u, freeze: !u.account_frozen }); }}
                   className={`p-2 rounded-xl ${u.account_frozen ? 'text-emerald-600 hover:bg-emerald-50' : 'text-blue-600 hover:bg-blue-50'}`}
                   title={u.account_frozen ? 'Unfreeze' : 'Freeze'}>
                   {u.account_frozen ? <Flame className="w-4 h-4" /> : <Snowflake className="w-4 h-4" />}
@@ -357,6 +364,18 @@ function UsersSection({ userId, role, cap, flash }: { userId: string; role: Admi
           {users.length === 0 ? <p className="text-center text-sm text-gray-400 py-8">No users found.</p> : null}
         </div>
       )}
+      {panelUser ? (
+        <UserActionPanel
+          user={panelUser}
+          role={role}
+          cap={cap}
+          actorId={userId}
+          onClose={() => setPanelUser(null)}
+          onChanged={load}
+          onFreezeRequest={(u, freeze) => setPending({ u, freeze })}
+          flash={flash}
+        />
+      ) : null}
       {pending ? (
         <ReasonModal
           title={`${pending.freeze ? 'Freeze' : 'Unfreeze'} ${pending.u.full_name || 'account'}`}

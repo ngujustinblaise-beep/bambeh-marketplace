@@ -635,3 +635,97 @@ export async function countListingsByTypeWithStatus(): Promise<{
 }
 
 // BAMBEH_END_TOKEN__ADMINLIB__COMPLETE
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIX475 — USER ACTION PANEL helpers
+// Added by the User Action Panel. Everything here goes through a server-side
+// function that gates itself, so the UI can never grant more than the database
+// allows even if someone edits the JavaScript in their browser.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type GrantPlan = 'daily' | 'weekly' | 'monthly';
+
+export interface GrantResult {
+  granted: number;
+  extended: number;
+  skipped: number;
+  plan_used: string;
+  days_used: number;
+}
+
+/**
+ * Give premium access to one user, a chosen list, or everyone.
+ *
+ * The rules live in admin_grant_subscription (FIX467b), not here: it writes
+ * `status` and `is_active` together so no reader can disagree with another,
+ * stamps every gift with price_xaf = 0 and an ADMIN_GRANT payment reference so
+ * a free month never lands in your revenue, and EXTENDS an existing
+ * subscription rather than stacking a second row.
+ *
+ * Expiry is not optional. useSubscription only counts a row whose expires_at is
+ * still in the future, so a grant ends by itself.
+ */
+export async function adminGrantSubscription(
+  scope: 'user' | 'list' | 'all',
+  userIds: string[] | null,
+  plan: GrantPlan,
+): Promise<GrantResult> {
+  const { data, error } = await supabase.rpc('admin_grant_subscription', {
+    p_scope: scope,
+    p_user_ids: scope === 'all' ? null : userIds,
+    p_plan: plan,
+  });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row ?? { granted: 0, extended: 0, skipped: 0, plan_used: plan, days_used: 0 }) as GrantResult;
+}
+
+export interface ResetLink {
+  link: string;
+  email: string;
+  full_name: string | null;
+  /** digits only, ready for a wa.me URL. null when no number is on file. */
+  phone: string | null;
+  /** true = an @phone.bambeh.com address, so email delivery cannot work */
+  email_is_synthetic: boolean;
+  note: string;
+}
+
+/**
+ * Mint a password recovery link WITHOUT sending it anywhere.
+ *
+ * Calls the admin-reset-link Edge Function, which holds the service-role key
+ * server-side and re-checks the caller's staff role against the database
+ * before it will mint anything. Staff then deliver the link themselves.
+ */
+export async function adminGenerateResetLink(targetUserId: string): Promise<ResetLink> {
+  const { data, error } = await supabase.functions.invoke('admin-reset-link', {
+    body: { user_id: targetUserId },
+  });
+  if (error) {
+    // functions.invoke hides the server's message inside the response body.
+    // Digging it out is the difference between "Edge Function returned a
+    // non-2xx status code" and "Only the Super Admin can reset a staff account".
+    let detail = error.message || 'Could not generate a link';
+    try {
+      const ctx = (error as unknown as { context?: Response }).context;
+      if (ctx && typeof ctx.json === 'function') {
+        const body = await ctx.json();
+        if (body?.error) detail = body.error;
+      }
+    } catch { /* keep the generic message */ }
+    throw new Error(detail);
+  }
+  if (!data?.link) throw new Error('The server returned no link.');
+  return data as ResetLink;
+}
+
+/** Builds a WhatsApp deep link with the message already typed. */
+export function whatsappResetUrl(phoneDigits: string, name: string | null, link: string): string {
+  const who = name ? `${name}, ` : '';
+  const msg =
+    `${who}here is your Bambeh password reset link. ` +
+    `Open it on your phone and choose a new password. It works once.\n\n${link}`;
+  return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
+}
