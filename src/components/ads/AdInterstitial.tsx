@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADINTERSTITIAL_FIX430_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADINTERSTITIAL_FIX465_CLEAN
 /**
  * src/components/ads/AdInterstitial.tsx - Bambeh Marketplace
  *
@@ -33,7 +33,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { usePlanLimits } from "@/hooks/usePlanLimits";
@@ -50,6 +50,20 @@ const LAST_KEY  = "bambeh_ad_last";
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
+
+/* FIX465 - the advert pool lives at MODULE level, not in a ref.
+   MainLayout wraps each route element, so it unmounts and remounts on every
+   navigation. A ref-held pool would refetch on every single page view. This
+   is fetched once per page load and reused. */
+let adPool: AdRow[] = [];
+let poolFetched = false;
+
+/* FIX465 - which paths count as "a listing was viewed".
+   Counting here instead of inside each detail page means a new detail page
+   added later is covered automatically, and no existing page had to change.
+   Singular and plural are both matched because this codebase uses both. */
+const LISTING_PATH =
+  /^\/(marketplace|item|items|jobs?|services?|rentals?|vehicles?|exchange|farm-fresh|farmfresh)\/[^/]+$/i;
 
 function readNum(key: string): number {
   try { return Number(window.sessionStorage.getItem(key) ?? "0") || 0; } catch { return 0; }
@@ -80,42 +94,60 @@ export interface AdRow {
 export default function AdInterstitial() {
   const plan = usePlanLimits();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [ad, setAd] = useState<AdRow | null>(null);
   const [open, setOpen] = useState(false);
   const [canClose, setCanClose] = useState(false);
   const [countdown, setCountdown] = useState(Math.ceil(CLOSE_AFTER_MS / 1000));
-  const pool = useRef<AdRow[]>([]);
-  const fetched = useRef(false);
+  const lastCounted = useRef<string>("");
 
   /* ---- load the pool once. Never blocks anything if it fails. ------------ */
   useEffect(() => {
-    if (fetched.current) return;
+    if (poolFetched) return;
     if (plan.loading) return;
     if (plan.isPremium) return;      // premium never sees an advert
-    fetched.current = true;
+    poolFetched = true;
 
     (async () => {
       try {
+        // FIX465 - the schedule is now honoured. Before this, an advert booked
+        // for next month ran today and an expired one ran forever, which is
+        // exactly the kind of thing an advertiser stops paying over.
+        // A null start means "already running"; a null end means "no end date".
+        const nowIso = new Date().toISOString();
         const { data, error } = await supabase
           .from("corporate_ads")
           .select("id, title, description, image_url, link_url, company_name")
           .eq("is_active", true)
           .not("image_url", "is", null)
+          .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+          .or(`ends_at.is.null,ends_at.gte.${nowIso}`)
           .limit(20);
         if (error || !Array.isArray(data)) return;   // silence is correct here
-        pool.current = data as AdRow[];
+        adPool = data as AdRow[];
       } catch {
         // an advert failing to load must never disturb the app
       }
     })();
   }, [plan.loading, plan.isPremium]);
 
+  /* ---- FIX465: count a listing view whenever the route becomes a detail page.
+     Guarded on the path so React StrictMode's double-invoke, a re-render, or
+     a query-string change cannot count the same page twice. --------------- */
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === lastCounted.current) return;
+    if (!LISTING_PATH.test(path)) return;
+    lastCounted.current = path;
+    countListingView();
+  }, [location.pathname]);
+
   /* ---- decide whether this view earns an advert ------------------------- */
   const maybeShow = useCallback(() => {
     if (plan.isPremium) return;
     if (open) return;
-    if (pool.current.length === 0) return;
+    if (adPool.length === 0) return;
 
     const views = readNum(VIEW_KEY);
     const shown = readNum(SHOWN_KEY);
@@ -125,7 +157,7 @@ export default function AdInterstitial() {
     if (views === 0 || views % VIEWS_PER_AD !== 0) return;
     if (last > 0 && Date.now() - last < MIN_GAP_MS) return;
 
-    const pick = pool.current[Math.floor(Math.random() * pool.current.length)];
+    const pick = adPool[Math.floor(Math.random() * adPool.length)];
     if (!pick) return;
 
     setAd(pick);
@@ -248,4 +280,4 @@ export default function AdInterstitial() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADINTERSTITIAL_FIX430__COMPLETE
+// BAMBEH_END_TOKEN__ADINTERSTITIAL_FIX465__COMPLETE

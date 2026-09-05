@@ -23,7 +23,6 @@
 import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import SubscriptionGuard from '@/components/security/SubscriptionGuard';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -35,11 +34,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Header />
 
       <main className="flex-1">
-        {/* FIX229 - the paywall. Posting, /subscription and /donate stay open;
-            everything else needs an active subscription verified in Supabase. */}
-        <SubscriptionGuard>
-          {children}
-        </SubscriptionGuard>
+        {children}
       </main>
 
       <Footer />
