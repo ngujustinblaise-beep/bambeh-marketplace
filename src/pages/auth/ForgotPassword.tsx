@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX478_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX478B_CLEAN
 /**
  * src/pages/auth/ForgotPassword.tsx — Bambeh Marketplace
  *
@@ -38,10 +38,11 @@
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import AfricanPhoneInput from '@/components/AfricanPhoneInput';
 
 /** Bambeh support. Reset requests arrive here. */
 const SUPPORT_WHATSAPP = '237652953607';
@@ -164,17 +165,12 @@ function tr(lang: string, k: string): string {
   return (STR[lang] && STR[lang][k]) || STR.en[k] || k;
 }
 
-/**
- * Cameroon numbers are nine digits. Anything the user types — spaces, +237,
- * a leading zero — becomes the same canonical form, so the message staff
- * receive always looks the same.
- */
-function normalisePhone(raw: string): string {
-  const d = raw.replace(/\D/g, '');
-  if (d.startsWith('237')) return d;
-  if (d.length === 9) return `237${d}`;
-  return d;
-}
+/* FIX478b — the hand-rolled phone normaliser that used to sit here is gone.
+   AfricanPhoneInput already picks the country (Cameroon by default), strips
+   every non-digit, caps the length per country and validates against that
+   country's pattern. Writing a second, weaker version of that here is exactly
+   how two rules end up disagreeing. It hands back the full international
+   number and whether it is valid; this page just uses both. */
 
 export default function ForgotPassword() {
   const langRaw: unknown = useLang();
@@ -183,13 +179,14 @@ export default function ForgotPassword() {
   const t = (k: string) => tr(lang, k);
 
   const [mode, setMode] = useState<'phone' | 'email'>('phone');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('');      // full international, from AfricanPhoneInput
+  const [phoneOk, setPhoneOk] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const digits = useMemo(() => normalisePhone(phone), [phone]);
+  const digits = phone.replace(/\D/g, '');
 
   const whatsappUrl = (withNumber: string) =>
     `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
@@ -197,7 +194,9 @@ export default function ForgotPassword() {
     )}`;
 
   const askOnWhatsApp = () => {
-    if (digits.length < 9) { setError(t('badPhone')); return; }
+    // AfricanPhoneInput has already validated against the chosen country's
+    // pattern, so this trusts its verdict instead of re-guessing the length.
+    if (!phoneOk || digits.length < 8) { setError(t('badPhone')); return; }
     setError(null);
     window.open(whatsappUrl(digits), '_blank', 'noopener,noreferrer');
   };
@@ -257,19 +256,21 @@ export default function ForgotPassword() {
           {/* ── PHONE ─────────────────────────────────────────────────── */}
           {mode === 'phone' ? (
             <div className="space-y-4">
-              <div>
-                <label htmlFor="fpPhone" className="block text-sm font-medium text-gray-700">
-                  {t('phoneLabel')}
-                </label>
-                <div className="mt-1 flex items-center gap-2">
-                  <span className="rounded-xl border border-gray-300 px-3 py-3 text-sm text-gray-500 bg-gray-50">
-                    +237
-                  </span>
-                  <input id="fpPhone" type="tel" inputMode="numeric" autoComplete="tel"
-                    value={phone} onChange={(e) => setPhone(e.target.value)}
-                    placeholder={t('phonePh')}
-                    className={`${INPUT} mt-0 flex-1`} dir="ltr" />
-                </div>
+              <div dir="ltr">
+                {/* FIX478b — the app's own phone input: country picker defaulting
+                    to Cameroon, per-country length caps and pattern validation.
+                    dir is forced ltr because a phone number reads left-to-right
+                    even on the Arabic layout. */}
+                <AfricanPhoneInput
+                  value={phone}
+                  label={t('phoneLabel')}
+                  required
+                  onChange={(full, valid) => {
+                    setPhone(full);
+                    setPhoneOk(valid);
+                    if (valid) setError(null);
+                  }}
+                />
                 <p className="mt-1 text-xs text-gray-500">{t('phoneHelp')}</p>
               </div>
 
@@ -332,4 +333,4 @@ export default function ForgotPassword() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX478__COMPLETE
+// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX478B__COMPLETE
