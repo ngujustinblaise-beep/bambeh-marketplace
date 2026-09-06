@@ -757,7 +757,7 @@ export default function App() {
                         <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
                         <Route
                           path="/forgot-password"
-                          element={<AuthLayout><SecurityRecovery /></AuthLayout>}
+                          element={<AuthLayout><ForgotPassword /></AuthLayout>}{/* FIX485 - was SecurityRecovery, which is email-only. This page offers PHONE first; the code-entry flow stays at /security-recovery, linked from inside. */}
                         />
                         <Route
                           path="/forgot-credentials"

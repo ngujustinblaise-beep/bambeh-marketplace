@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX478B_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX485_CLEAN
 /**
  * src/pages/auth/ForgotPassword.tsx — Bambeh Marketplace
  *
@@ -68,6 +68,7 @@ const STR: Record<string, Record<string, string>> = {
     badPhone: 'Please enter your phone number.',
     badEmail: 'Please enter a valid email address.',
     failed: 'That did not work. Please use WhatsApp below.',
+    haveCode: 'I already have a code',
     back: 'Back to sign in',
     waMsg: 'Hello Bambeh. I forgot my password. My number is',
   },
@@ -90,6 +91,7 @@ const STR: Record<string, Record<string, string>> = {
     badPhone: 'Veuillez saisir votre numéro de téléphone.',
     badEmail: 'Veuillez saisir une adresse e-mail valide.',
     failed: 'Cela n’a pas fonctionné. Utilisez WhatsApp ci-dessous.',
+    haveCode: 'J’ai déjà un code',
     back: 'Retour à la connexion',
     waMsg: 'Bonjour Bambeh. J’ai oublié mon mot de passe. Mon numéro est',
   },
@@ -112,6 +114,7 @@ const STR: Record<string, Record<string, string>> = {
     badPhone: 'Abeg put your phone number.',
     badEmail: 'Abeg put correct email.',
     failed: 'E no work. Abeg use WhatsApp for down.',
+    haveCode: 'I get code already',
     back: 'Go back to sign in',
     waMsg: 'Hello Bambeh. I don forget my password. My number na',
   },
@@ -134,6 +137,7 @@ const STR: Record<string, Record<string, string>> = {
     badPhone: 'من فضلك أدخل رقم هاتفك.',
     badEmail: 'من فضلك أدخل بريداً إلكترونياً صحيحاً.',
     failed: 'لم ينجح ذلك. استخدم واتساب بالأسفل.',
+    haveCode: 'لديّ رمز بالفعل',
     back: 'العودة إلى تسجيل الدخول',
     waMsg: 'مرحباً بامبيه. نسيت كلمة المرور. رقمي هو',
   },
@@ -156,6 +160,7 @@ const STR: Record<string, Record<string, string>> = {
     badPhone: 'Tiiɗno naatnu limngal noddirgal maa.',
     badEmail: 'Tiiɗno naatnu iimeel goongɗinaango.',
     failed: 'Ɗum gollaaki. Tiiɗno huutoro WhatsApp les ɗoo.',
+    haveCode: 'Mi jogii koodu',
     back: 'Rutto e naatgol',
     waMsg: 'Jam Bambeh. Mi yejjitii finnde am. Limngal am ko',
   },
@@ -323,7 +328,16 @@ export default function ForgotPassword() {
             <p className="mt-4 text-sm text-red-600 text-center">{error}</p>
           ) : null}
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          {/* FIX485 - SecurityRecovery still ACCEPTS a code and sets the new
+              password. It is no longer the front door, but it must stay one tap
+              away or anyone already holding a code has nowhere to type it. */}
+          <p className="mt-5 text-center">
+            <Link to="/security-recovery" className="text-sm text-gray-500 hover:text-teal-700 underline">
+              {t('haveCode')}
+            </Link>
+          </p>
+
+          <p className="mt-4 text-center text-sm text-gray-600">
             <Link to="/login" className="text-teal-700 font-semibold hover:underline">
               {t('back')}
             </Link>
@@ -333,4 +347,4 @@ export default function ForgotPassword() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX478B__COMPLETE
+// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX485__COMPLETE
