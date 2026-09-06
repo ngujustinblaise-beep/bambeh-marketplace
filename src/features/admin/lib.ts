@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX121_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX497_CLEAN
 /**
  * admin/lib.ts — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/lib.ts
@@ -169,15 +169,84 @@ export async function fetchMyRole(): Promise<{ userId: string | null; role: Admi
   }
 }
 
-/** Write an audit row for any privileged action. */
+/* ============================================================================
+ * FIX497 - WRITES THAT SURVIVE COLUMN DRIFT.
+ *
+ * This project's single biggest recurring bug is frontend code written against
+ * a column that has since moved or was never there: createPharmacy sends
+ * `created_by`, updatePharmacy sends `updated_at`, logAction sends six columns
+ * to `admin_actions`. If any one of those is not on the table, PostgREST
+ * rejects the WHOLE statement with a 400 and the action fails - or worse,
+ * fails quietly, which is how `admin_actions` stopped recording anything.
+ *
+ * writeTolerant sends the row, and if the server says a named column does not
+ * exist, it removes THAT column and sends again. It only ever drops a column
+ * the server itself named; any other error is thrown, untouched, so a real
+ * permission or constraint failure still reaches the user. It logs what it
+ * dropped, which is also the recon telling us what to correct properly.
+ * ========================================================================== */
+
+type PgResult = { data: unknown; error: unknown };
+
+/** The column name in a PostgREST "no such column" error, or null. */
+function missingColumn(err: unknown): string | null {
+  const e = err as { code?: string; message?: string } | null;
+  if (!e) return null;
+  const msg = String(e.message ?? '');
+  const looksLikeIt =
+    e.code === 'PGRST204' ||
+    /schema cache/i.test(msg) ||
+    /column .* does not exist/i.test(msg);
+  if (!looksLikeIt) return null;
+  const m = msg.match(/'([^']+)' column/i) || msg.match(/column "?([A-Za-z0-9_]+)"?/i);
+  return m ? m[1] : null;
+}
+
+const MAX_COLUMN_STRIPS = 5;
+
+async function writeTolerant<T = Record<string, unknown>>(
+  table: string,
+  payload: Record<string, unknown>,
+  opts: { match?: { column: string; value: string }; returning?: string } = {},
+): Promise<{ row: T | null; dropped: string[] }> {
+  const body: Record<string, unknown> = { ...payload };
+  const dropped: string[] = [];
+
+  for (let attempt = 0; attempt <= MAX_COLUMN_STRIPS; attempt++) {
+    const base = opts.match
+      ? supabase.from(table).update(body).eq(opts.match.column, opts.match.value)
+      : supabase.from(table).insert(body);
+    const runnable = opts.returning
+      ? (base as unknown as { select: (c: string) => { single: () => Promise<PgResult> } })
+          .select(opts.returning).single()
+      : (base as unknown as Promise<PgResult>);
+
+    const res = await runnable;
+    if (!res || !res.error) return { row: (res?.data ?? null) as T | null, dropped };
+
+    const bad = missingColumn(res.error);
+    if (!bad || !(bad in body)) throw res.error;   // a real failure - do not hide it
+    delete body[bad];
+    dropped.push(bad);
+    console.warn(`[admin] ${table}: column "${bad}" does not exist - removed it and retried.`);
+  }
+  throw new Error(`Could not write to ${table} after removing ${dropped.join(', ')}.`);
+}
+
+/** Write an audit row for any privileged action.
+ *  Never throws: an audit row failing must not undo the action it describes. */
 export async function logAction(
   actorId: string, actorRole: AdminRole, action: string,
   targetType: string, targetId: string | null, details: Record<string, unknown> = {},
 ) {
-  await supabase.from('admin_actions').insert({
-    actor_id: actorId, actor_role: actorRole, action,
-    target_type: targetType, target_id: targetId, details,
-  });
+  try {
+    await writeTolerant('admin_actions', {
+      actor_id: actorId, actor_role: actorRole, action,
+      target_type: targetType, target_id: targetId, details,
+    });
+  } catch (e) {
+    console.warn('[admin] audit row not written', e);
+  }
 }
 
 /** File a staff report (moderator reports auto-spawn a shadow copy via trigger). */
@@ -634,7 +703,8 @@ export async function countListingsByTypeWithStatus(): Promise<{
   }
 }
 
-// BAMBEH_END_TOKEN__ADMINLIB__COMPLETE
+// (FIX497: a stray END token sat here mid-file. Removed - a truncated
+//  download would have ended on it and passed the completeness check.)
 
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -965,12 +1035,16 @@ export interface Pharmacy {
   id: string;
   name: string;
   town: string;
+  /** FIX497 - region is NOT NULL on the table, so the form must supply it. */
+  region: string;
   quarter: string | null;
   address: string | null;
   phone: string | null;
   whatsapp: string | null;
   notes: string | null;
   is_active: boolean;
+  /** FIX497 - false until staff approve. Users only ever see verified rows. */
+  is_verified: boolean;
   owner_id: string | null;
   created_at: string;
 }
@@ -984,41 +1058,78 @@ export interface OnCallWindow {
   created_at: string;
 }
 
-export type PharmacyDraft = Omit<Pharmacy, 'id' | 'owner_id' | 'created_at'>;
+export type PharmacyDraft = Omit<Pharmacy, 'id' | 'owner_id' | 'created_at' | 'is_verified'>;
 
-const PHARM_COLUMNS =
+const PHARM_COLUMNS_BASE =
   'id, name, town, quarter, address, phone, whatsapp, notes, is_active, owner_id, created_at';
+const PHARM_COLUMNS = `${PHARM_COLUMNS_BASE}, region, is_verified`;
+
+/** The ten regions, used only if cm_regions cannot be read. Never block an
+ *  admin from adding a pharmacy because a lookup table did not load. */
+export const CM_REGIONS_FALLBACK = [
+  'Adamaoua', 'Centre', 'East', 'Far North', 'Littoral',
+  'North', 'North-West', 'South', 'South-West', 'West',
+];
+
+/** Region names for the selector. Reads cm_regions whatever its column is
+ *  called, because this schema drifts and a dropdown is not worth a 400. */
+export async function fetchRegions(): Promise<string[]> {
+  const out = await adminSafe<Record<string, unknown>>(() =>
+    supabase.from('cm_regions').select('*').limit(50) as unknown as Promise<{ data: unknown; error: unknown }>);
+  const names = out.rows
+    .map((r) => String(r.name ?? r.region ?? r.label ?? r.title ?? r.code ?? '').trim())
+    .filter(Boolean);
+  return names.length ? Array.from(new Set(names)).sort() : CM_REGIONS_FALLBACK;
+}
 
 export async function fetchPharmacies(query = ''): Promise<AdminFetch<Pharmacy>> {
-  let q = supabase.from('pharmacies').select(PHARM_COLUMNS).order('town').order('name').limit(300);
-  if (query.trim()) {
-    q = q.or(`name.ilike.%${query}%,town.ilike.%${query}%,quarter.ilike.%${query}%`);
-  }
-  return adminSafe<Pharmacy>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+  const build = (cols: string) => {
+    let q = supabase.from('pharmacies').select(cols).order('town').order('name').limit(300);
+    if (query.trim()) {
+      q = q.or(`name.ilike.%${query}%,town.ilike.%${query}%,quarter.ilike.%${query}%`);
+    }
+    return q as unknown as Promise<{ data: unknown; error: unknown }>;
+  };
+  const full = await adminSafe<Pharmacy>(() => build(PHARM_COLUMNS));
+  if (!full.failed) return full;
+  // Asking for a column that is not there fails the whole select. Rather than
+  // show an empty panel, ask again for the columns we know have always existed.
+  console.warn('[admin] pharmacies: full column list failed, retrying without region/is_verified.');
+  return adminSafe<Pharmacy>(() => build(PHARM_COLUMNS_BASE));
 }
 
 export async function createPharmacy(
   actorId: string, actorRole: AdminRole, draft: PharmacyDraft,
 ): Promise<string> {
-  const { data, error } = await supabase
-    .from('pharmacies')
-    .insert({ ...draft, created_by: actorId })
-    .select('id')
-    .single();
-  if (error) throw error;
-  await logAction(actorId, actorRole, 'create_pharmacy', 'pharmacy', data.id, { name: draft.name, town: draft.town });
-  return data.id as string;
+  const { row } = await writeTolerant<{ id: string }>(
+    'pharmacies', { ...draft, created_by: actorId }, { returning: 'id' },
+  );
+  const id = row?.id as string;
+  await logAction(actorId, actorRole, 'create_pharmacy', 'pharmacy', id ?? null, { name: draft.name, town: draft.town });
+  return id;
 }
 
 export async function updatePharmacy(
   actorId: string, actorRole: AdminRole, id: string, patch: Partial<PharmacyDraft>,
 ): Promise<void> {
-  const { error } = await supabase
-    .from('pharmacies')
-    .update({ ...patch, updated_at: new Date().toISOString() })
-    .eq('id', id);
-  if (error) throw error;
+  await writeTolerant(
+    'pharmacies',
+    { ...patch, updated_at: new Date().toISOString() },
+    { match: { column: 'id', value: id } },
+  );
   await logAction(actorId, actorRole, 'update_pharmacy', 'pharmacy', id, patch as Record<string, unknown>);
+}
+
+/** FIX497 - show a pharmacy to the public, or take it back off.
+ *  The public read functions all require is_verified = true, so this is the
+ *  switch between "a moderator has checked this" and "nobody sees it". */
+export async function setPharmacyVerified(
+  actorId: string, actorRole: AdminRole, id: string, verified: boolean,
+): Promise<void> {
+  await writeTolerant(
+    'pharmacies', { is_verified: verified }, { match: { column: 'id', value: id } },
+  );
+  await logAction(actorId, actorRole, verified ? 'verify_pharmacy' : 'unverify_pharmacy', 'pharmacy', id, {});
 }
 
 /** Every window for one pharmacy, newest first. */
@@ -1041,11 +1152,10 @@ export async function addOnCallWindow(
   if (new Date(endsAt) <= new Date(startsAt)) {
     throw new Error('The end time must be after the start time.');
   }
-  const { error } = await supabase.from('pharmacy_on_call').insert({
+  await writeTolerant('pharmacy_on_call', {
     pharmacy_id: pharmacyId, starts_at: startsAt, ends_at: endsAt,
     note: note?.trim() || null, created_by: actorId,
   });
-  if (error) throw error;
   await logAction(actorId, actorRole, 'add_on_call', 'pharmacy', pharmacyId, { startsAt, endsAt, note });
 }
 
@@ -1149,3 +1259,4 @@ export function resetWhatsappUrl(phoneDigits: string, link: string): string {
   const msg = `Bambeh: here is your password reset link. Open it on your phone and choose a new password. It works once.\n\n${link}`;
   return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
 }
+// BAMBEH_END_TOKEN__ADMINLIB_FIX497__COMPLETE

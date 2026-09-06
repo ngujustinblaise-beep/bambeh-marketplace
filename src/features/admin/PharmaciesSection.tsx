@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__PHARMACIESSECTION_FIX496_CLEAN
+// BAMBEH_DEPLOY_TOKEN__PHARMACIESSECTION_FIX497_CLEAN
 /**
  * src/features/admin/PharmaciesSection.tsx — Bambeh Admin Command Center
  *
@@ -20,6 +20,25 @@
  *   pharmacy, every week, is how a rota stops being maintained by February.
  *
  * LANGUAGE: English only, by decision. Staff chrome, never seen by a user.
+ *
+ * FIX497 - THE BANNER WAS NEVER ABOUT THE NETWORK.
+ *   The red "Could not load pharmacies" showed on EVERY load, success or not.
+ *   The reason was mundane and my earlier network diagnosis was wrong: these
+ *   fetchers return { rows, failed }, and this file was reading `list.ok` and
+ *   `list.error`, which are both undefined. `undefined ? a : b` always takes
+ *   the error branch, so the panel printed its fallback sentence forever while
+ *   the rows loaded perfectly underneath. `vite build` does not typecheck, so
+ *   nothing ever flagged it. Now it reads `failed`, the real flag.
+ *
+ * FIX497 - REGION, because the column is NOT NULL.
+ *   Without a region in the payload the insert is rejected outright, so
+ *   "Add pharmacy" could not work at all. Region is now a required selector,
+ *   filled from cm_regions and falling back to the ten if that lookup fails.
+ *
+ * FIX497 - PUBLISH / UNPUBLISH.
+ *   Every public read requires is_verified = true. Staff can now see that
+ *   state on each row and switch it, instead of a pharmacy being added and
+ *   silently never appearing to anyone.
  *
  * FIX496 — A FAILED REFRESH IS NOT A FAILED LOAD.
  *   The panel was showing a red "Could not load pharmacies" banner with the
@@ -44,12 +63,13 @@ import {
   fetchPharmacies, createPharmacy, updatePharmacy,
   fetchOnCallWindows, addOnCallWindow, deleteOnCallWindow,
   fetchRotaStatus, windowIsLive,
+  fetchRegions, setPharmacyVerified, CM_REGIONS_FALLBACK,   // FIX497
   type Pharmacy, type PharmacyDraft, type OnCallWindow, type RotaStatusRow,
   type AdminRole, type Capabilities,
 } from './lib';
 
 const EMPTY: PharmacyDraft = {
-  name: '', town: '', quarter: null, address: null,
+  name: '', town: '', region: '', quarter: null, address: null,
   phone: null, whatsapp: null, notes: null, is_active: true,
 };
 
@@ -86,6 +106,8 @@ export default function PharmaciesSection({
   const [saving, setSaving] = useState(false);
 
   const [rota, setRota] = useState<Pharmacy | null>(null);
+  const [regions, setRegions] = useState<string[]>(CM_REGIONS_FALLBACK);   // FIX497
+  const [publishing, setPublishing] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,18 +116,19 @@ export default function PharmaciesSection({
     // FIX496 — a failed load must never render as "no pharmacies", and must
     // never wipe a list we already have. Only overwrite on success, or when
     // the failure actually carried rows back.
+    const ok = !list.failed;              // FIX497 - the real flag
     const haveRows = list.rows.length > 0;
-    if (list.ok || haveRows) setRows(list.rows);
-    if (stat.rows.length > 0 || list.ok) setStatus(stat.rows);
+    if (ok || haveRows) setRows(list.rows);
+    if (stat.rows.length > 0 || ok) setStatus(stat.rows);
 
-    if (list.ok) {
+    if (ok) {
       setLoadError(null); setStaleNote(null);
     } else if (haveRows) {
       // We can still show something useful. Say so quietly, do not alarm.
       setLoadError(null);
-      setStaleNote(list.error || 'The last refresh did not complete.');
+      setStaleNote('The last refresh did not complete.');
     } else {
-      setLoadError(list.error || 'Could not load pharmacies.');
+      setLoadError('The list could not be read just now.');
       setStaleNote(null);
     }
     setLoading(false);
@@ -113,15 +136,21 @@ export default function PharmaciesSection({
 
   useEffect(() => { load(); }, [load]);
 
+  // FIX497 - region list once, on mount. Falls back to the ten on failure.
+  useEffect(() => { (async () => { setRegions(await fetchRegions()); })(); }, []);
+
   const save = async () => {
     if (!draft) return;
     if (!draft.name.trim() || !draft.town.trim()) { flash('Name and town are required.'); return; }
+    // FIX497 - region is NOT NULL on the table; without it the insert is refused.
+    if (!draft.region.trim()) { flash('Pick a region - the database requires one.'); return; }
     setSaving(true);
     try {
       const clean: PharmacyDraft = {
         ...draft,
         name: draft.name.trim(),
         town: draft.town.trim(),
+        region: draft.region.trim(),
         quarter: draft.quarter?.trim() || null,
         address: draft.address?.trim() || null,
         phone: draft.phone?.trim() || null,
@@ -139,6 +168,18 @@ export default function PharmaciesSection({
 
   const set = <K extends keyof PharmacyDraft>(k: K, v: PharmacyDraft[K]) =>
     setDraft((d) => (d ? { ...d, [k]: v } : d));
+
+  // FIX497 - show it to the public, or take it back off.
+  const togglePublished = async (p: Pharmacy) => {
+    setPublishing(p.id);
+    try {
+      await setPharmacyVerified(userId, role, p.id, !p.is_verified);
+      flash(p.is_verified ? 'Hidden from the public page.' : 'Published - users can see it now.');
+      await load();
+    } catch (e) {
+      flash(e instanceof Error ? e.message : 'Could not change that.');
+    } finally { setPublishing(null); }
+  };
 
   const uncovered = status.filter((s) => coverage(s).tone !== 'ok');
 
@@ -240,18 +281,29 @@ export default function PharmaciesSection({
                   {p.owner_id ? (
                     <span className="ml-2 text-[10px] bg-teal-50 text-teal-700 rounded-full px-2 py-0.5">CLAIMED</span>
                   ) : null}
+                  {p.is_verified === false ? (
+                    <span className="ml-2 text-[10px] bg-amber-100 text-amber-800 rounded-full px-2 py-0.5">NOT PUBLISHED</span>
+                  ) : null}
                 </p>
                 <p className="text-xs text-gray-400 truncate">
-                  {[p.quarter, p.town].filter(Boolean).join(' · ')}
+                  {[p.quarter, p.town, p.region].filter(Boolean).join(' · ')}
                   {p.phone ? ` · ${p.phone}` : ' · no number'}
                 </p>
               </div>
+              <button onClick={() => togglePublished(p)} disabled={publishing === p.id}
+                title={p.is_verified ? 'Hide from the public page' : 'Publish to the public page'}
+                className={`shrink-0 p-1.5 rounded-lg disabled:opacity-40 ${
+                  p.is_verified ? 'text-emerald-600 hover:bg-emerald-50' : 'text-amber-600 hover:bg-amber-50'
+                }`}>
+                {publishing === p.id ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : p.is_verified ? <CheckCircle2 className="w-4 h-4" /> : <X className="w-4 h-4" />}
+              </button>
               <button onClick={() => setRota(p)} title="On-call windows"
                 className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-2 rounded-xl">
                 <CalendarClock className="w-4 h-4" /> Rota
               </button>
               <button onClick={() => { setEditing(p); setDraft({
-                name: p.name, town: p.town, quarter: p.quarter, address: p.address,
+                name: p.name, town: p.town, region: p.region ?? '', quarter: p.quarter, address: p.address,
                 phone: p.phone, whatsapp: p.whatsapp, notes: p.notes, is_active: p.is_active,
               }); }} title="Edit" className="shrink-0 p-1.5 rounded-lg text-gray-500 hover:bg-gray-100">
                 <Pencil className="w-4 h-4" />
@@ -273,6 +325,12 @@ export default function PharmaciesSection({
           <Field label="Name" required>
             <input value={draft.name} onChange={(e) => set('name', e.target.value)}
               placeholder="Pharmacie du Centre" className={INPUT} />
+          </Field>
+          <Field label="Region" required hint="Required by the database. Yaoundé is Centre, Douala is Littoral.">
+            <select value={draft.region} onChange={(e) => set('region', e.target.value)} className={INPUT}>
+              <option value="">Choose a region…</option>
+              {regions.map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
           </Field>
           <div className="grid grid-cols-2 gap-2">
             <Field label="Town" required>
@@ -339,7 +397,7 @@ function RotaSheet({ pharmacy, userId, role, flash, onClose }: {
     setLoading(true);
     const res = await fetchOnCallWindows(pharmacy.id);
     setWins(res.rows);
-    setErr(res.ok ? null : (res.error || 'Could not load the rota.'));
+    setErr(res.failed ? 'Could not load the rota.' : null);   // FIX497
     setLoading(false);
   }, [pharmacy.id]);
 
@@ -476,4 +534,4 @@ function Field({ label, required, hint, children }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__PHARMACIESSECTION_FIX496__COMPLETE
+// BAMBEH_END_TOKEN__PHARMACIESSECTION_FIX497__COMPLETE
