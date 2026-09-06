@@ -61,6 +61,7 @@ import SocialShareButton from '@/components/social/SocialShareButton';
 import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from '@/lib/supabase';
+import ServicesRow from '@/components/home/ServicesRow';   // FIX481
 import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
 import CorporateAdsStrip from '@/features/corporate/CorporateAdsStrip';
 
@@ -535,6 +536,12 @@ export default function Home() {
         </div>
 
         {/* ── Featured Ads ──────────────────────────────────────────────── */}
+        {/* FIX481 - the free services. Deliberately placed directly ABOVE the
+            featured strip: anyone reaching for "Pharmacies on call" travels
+            past the adverts to get here, so the strip is seen on the way
+            without anybody being made to look at it. Do not move it below. */}
+        <ServicesRow />
+
                 {/* Featured Ads (FIX114: live rolling strip of REAL posts) */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">⭐ {t('home.badgeFeatured')}</h2>
