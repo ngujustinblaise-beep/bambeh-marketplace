@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX482_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX489_CLEAN
 /**
  * AdminCommandCenter.tsx — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/AdminCommandCenter.tsx
@@ -24,6 +24,7 @@ import {
   Boxes,
   Star,
   Cross,
+  Inbox,
 } from 'lucide-react';
 import {
   fetchMyRole, capabilitiesFor, ROLE_LABEL, type AdminRole, type Capabilities,
@@ -39,11 +40,12 @@ import UserActionPanel from './UserActionPanel';   // FIX475
 import AdsSection from './AdsSection';             // FIX464
 import PromotionsSection from './PromotionsSection'; // FIX469
 import PharmaciesSection from './PharmaciesSection'; // FIX482
+import RequestsSection from './RequestsSection';     // FIX489
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
-  | 'listings' | 'ads' | 'promos' | 'pharmacies';
+  | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'requests';
 
 const NAV: Array<{ key: Section; label: string; icon: React.ComponentType<{ className?: string }>; needs?: keyof Capabilities }> = [
   { key: 'overview',  label: 'Overview',       icon: LayoutGrid },
@@ -52,6 +54,7 @@ const NAV: Array<{ key: Section; label: string; icon: React.ComponentType<{ clas
   { key: 'ads',       label: 'Adverts',        icon: Megaphone },
   { key: 'promos',    label: 'Promotions',     icon: Star },
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
+  { key: 'requests',  label: 'Requests',      icon: Inbox },
   { key: 'disputes',  label: 'Disputes',       icon: Gavel,    needs: 'resolveDisputes' },
   { key: 'escrow',    label: 'Escrow',         icon: Lock,     needs: 'freezeEscrow' },
   { key: 'comms',     label: 'Communications', icon: Send },
@@ -132,6 +135,7 @@ export default function AdminCommandCenter() {
         {section === 'ads'       && <AdsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'promos'    && <PromotionsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'pharmacies' && <PharmaciesSection userId={userId!} role={role} cap={cap} flash={flash} />}
+        {section === 'requests'  && <RequestsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'listings'  && <ListingsSection />}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
         {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}

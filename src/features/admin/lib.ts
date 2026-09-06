@@ -1073,3 +1073,79 @@ export async function fetchRotaStatus(): Promise<AdminFetch<RotaStatusRow>> {
 export function windowIsLive(w: OnCallWindow, now = Date.now()): boolean {
   return new Date(w.starts_at).getTime() <= now && new Date(w.ends_at).getTime() > now;
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIX489 — REQUEST QUEUES: password resets, and providers awaiting a check
+//
+// Both go through SECURITY DEFINER functions that gate themselves on
+// is_bambeh_admin(). Nothing here decides who may act; the database does.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface ResetRequest {
+  id: string;
+  phone: string | null;
+  email: string | null;
+  status: string;
+  created_at: string;
+  matched_user_id: string | null;
+  account_name: string | null;
+  account_email: string | null;
+  registered_at: string | null;
+  listings_count: number | null;
+  last_sign_in: string | null;
+  /** how many of the four identity questions the SERVER matched */
+  verify_score: number | null;
+  /** which ones. Staff see this; the person asking never does. */
+  verify_detail: Record<string, boolean> | null;
+}
+
+export async function fetchResetRequests(): Promise<AdminFetch<ResetRequest>> {
+  const q = supabase.rpc('pending_reset_requests');
+  return adminSafe<ResetRequest>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export async function resolveResetRequest(
+  actorId: string, actorRole: AdminRole,
+  id: string, status: 'sent' | 'rejected' | 'done',
+  channel: string | null, note: string | null,
+): Promise<void> {
+  const { error } = await supabase.rpc('resolve_reset_request', {
+    p_id: id, p_status: status, p_channel: channel, p_note: note,
+  });
+  if (error) throw error;
+  await logAction(actorId, actorRole, `reset_${status}`, 'reset_request', id, { channel, note });
+}
+
+export interface ProviderSubmission {
+  kind: 'pharmacy' | 'hospital';
+  id: string;
+  name: string;
+  town: string;
+  quarter: string | null;
+  phone: string | null;
+  submitted_by: string | null;
+  created_at: string;
+}
+
+export async function fetchProviderSubmissions(): Promise<AdminFetch<ProviderSubmission>> {
+  const q = supabase.rpc('pending_provider_submissions');
+  return adminSafe<ProviderSubmission>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export async function verifyProvider(
+  actorId: string, actorRole: AdminRole,
+  kind: 'pharmacy' | 'hospital', id: string, approve: boolean, reason: string | null,
+): Promise<void> {
+  const { error } = await supabase.rpc('verify_provider', {
+    p_kind: kind, p_id: id, p_approve: approve, p_reason: reason,
+  });
+  if (error) throw error;
+  await logAction(actorId, actorRole, approve ? 'approve_provider' : 'reject_provider', kind, id, { reason });
+}
+
+/** Builds the WhatsApp deep link a moderator uses to send a reset link back. */
+export function resetWhatsappUrl(phoneDigits: string, link: string): string {
+  const msg = `Bambeh: here is your password reset link. Open it on your phone and choose a new password. It works once.\n\n${link}`;
+  return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
+}
