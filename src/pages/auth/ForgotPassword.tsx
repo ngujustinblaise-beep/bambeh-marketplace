@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX485_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX488_CLEAN
 /**
  * src/pages/auth/ForgotPassword.tsx — Bambeh Marketplace
  *
@@ -69,6 +69,23 @@ const STR: Record<string, Record<string, string>> = {
     badEmail: 'Please enter a valid email address.',
     failed: 'That did not work. Please use WhatsApp below.',
     haveCode: 'I already have a code',
+    vTitle: 'Prove this is your account',
+    vIntro: 'Answer any two correctly. We never tell anyone whether a number is registered.',
+    qLast: 'When did you last sign in?',
+    qMade: 'When did you create your account?',
+    qPosted: 'Have you posted anything on Bambeh?',
+    yes: 'Yes',
+    no: 'No',
+    qWhat: 'Name one thing you posted',
+    qName: 'What name did you enter when you created the account?',
+    checkBtn: 'Check my answers',
+    checking: 'Checking…',
+    gotN: 'matched so far',
+    needTwo: 'You need two.',
+    tooMany: 'Too many attempts. Please wait an hour and try again.',
+    verifiedOk: 'Verified. You can send your request now.',
+    triesLeft: 'tries left',
+    lockedHint: 'Answer the questions above first.',
     back: 'Back to sign in',
     waMsg: 'Hello Bambeh. I forgot my password. My number is',
   },
@@ -92,6 +109,23 @@ const STR: Record<string, Record<string, string>> = {
     badEmail: 'Veuillez saisir une adresse e-mail valide.',
     failed: 'Cela n’a pas fonctionné. Utilisez WhatsApp ci-dessous.',
     haveCode: 'J’ai déjà un code',
+    vTitle: 'Prouvez que ce compte est le vôtre',
+    vIntro: 'Répondez correctement à deux questions. Nous ne disons jamais si un numéro est enregistré.',
+    qLast: 'Quand vous êtes-vous connecté pour la dernière fois ?',
+    qMade: 'Quand avez-vous créé votre compte ?',
+    qPosted: 'Avez-vous publié quelque chose sur Bambeh ?',
+    yes: 'Oui',
+    no: 'Non',
+    qWhat: 'Citez une chose que vous avez publiée',
+    qName: 'Quel nom avez-vous saisi à la création du compte ?',
+    checkBtn: 'Vérifier mes réponses',
+    checking: 'Vérification…',
+    gotN: 'bonnes réponses',
+    needTwo: 'Il en faut deux.',
+    tooMany: 'Trop de tentatives. Attendez une heure et réessayez.',
+    verifiedOk: 'Vérifié. Vous pouvez envoyer votre demande.',
+    triesLeft: 'essais restants',
+    lockedHint: 'Répondez d’abord aux questions ci-dessus.',
     back: 'Retour à la connexion',
     waMsg: 'Bonjour Bambeh. J’ai oublié mon mot de passe. Mon numéro est',
   },
@@ -115,6 +149,23 @@ const STR: Record<string, Record<string, string>> = {
     badEmail: 'Abeg put correct email.',
     failed: 'E no work. Abeg use WhatsApp for down.',
     haveCode: 'I get code already',
+    vTitle: 'Show say na your account',
+    vIntro: 'Answer any two correct. We no dey tell anybody if number dey registered.',
+    qLast: 'When last you enter di account?',
+    qMade: 'When you open di account?',
+    qPosted: 'You don post anything for Bambeh?',
+    yes: 'Yes',
+    no: 'No',
+    qWhat: 'Talk one thing wey you post',
+    qName: 'Which name you put when you open di account?',
+    checkBtn: 'Check my answer',
+    checking: 'E dey check…',
+    gotN: 'correct so far',
+    needTwo: 'You need two.',
+    tooMany: 'You don try too much. Wait one hour.',
+    verifiedOk: 'E correct. You fit send your request now.',
+    triesLeft: 'try remain',
+    lockedHint: 'Answer di question dem first.',
     back: 'Go back to sign in',
     waMsg: 'Hello Bambeh. I don forget my password. My number na',
   },
@@ -138,6 +189,23 @@ const STR: Record<string, Record<string, string>> = {
     badEmail: 'من فضلك أدخل بريداً إلكترونياً صحيحاً.',
     failed: 'لم ينجح ذلك. استخدم واتساب بالأسفل.',
     haveCode: 'لديّ رمز بالفعل',
+    vTitle: 'أثبت أن هذا حسابك',
+    vIntro: 'أجب عن سؤالين بشكل صحيح. لا نخبر أحداً أبداً إن كان الرقم مسجّلاً.',
+    qLast: 'متى سجّلت الدخول آخر مرة؟',
+    qMade: 'متى أنشأت حسابك؟',
+    qPosted: 'هل نشرت شيئاً على بامبيه؟',
+    yes: 'نعم',
+    no: 'لا',
+    qWhat: 'اذكر شيئاً واحداً نشرته',
+    qName: 'ما الاسم الذي أدخلته عند إنشاء الحساب؟',
+    checkBtn: 'تحقّق من إجاباتي',
+    checking: 'جارٍ التحقق…',
+    gotN: 'إجابات صحيحة',
+    needTwo: 'تحتاج إلى اثنتين.',
+    tooMany: 'محاولات كثيرة. انتظر ساعة ثم حاول مجدداً.',
+    verifiedOk: 'تم التحقق. يمكنك إرسال طلبك الآن.',
+    triesLeft: 'محاولات متبقية',
+    lockedHint: 'أجب عن الأسئلة أعلاه أولاً.',
     back: 'العودة إلى تسجيل الدخول',
     waMsg: 'مرحباً بامبيه. نسيت كلمة المرور. رقمي هو',
   },
@@ -161,6 +229,23 @@ const STR: Record<string, Record<string, string>> = {
     badEmail: 'Tiiɗno naatnu iimeel goongɗinaango.',
     failed: 'Ɗum gollaaki. Tiiɗno huutoro WhatsApp les ɗoo.',
     haveCode: 'Mi jogii koodu',
+    vTitle: 'Hollu ko konte maa',
+    vIntro: 'Jaabo naamnde ɗiɗi e goonga. Min mbiyataa hay gooto so tawii limngal ina winndaa.',
+    qLast: 'Hol ndeen naatuɗaa sakkitii?',
+    qMade: 'Hol ndeen udditɗaa konte maa?',
+    qPosted: 'Aɗa winndi huunde e Bambeh?',
+    yes: 'Eey',
+    no: 'Alaa',
+    qWhat: 'Limtu huunde wootere nde winndu-ɗaa',
+    qName: 'Hol innde naatnu-ɗaa nde udditaa konte?',
+    checkBtn: 'Ƴeewto jaabawuuji am',
+    checking: 'Ina ƴeewee…',
+    gotN: 'goongɗi haa jooni',
+    needTwo: 'Aɗa soklli ɗiɗi.',
+    tooMany: 'Ndaarndo-ɗaa ko heewi. Fadu waktu gooto.',
+    verifiedOk: 'Ƴeewtaama. Aɗa waawi neldude ɗaɓɓaandu maa jooni.',
+    triesLeft: 'ndaarndogol heddii',
+    lockedHint: 'Jaabo naamnde dow ɗoo tawo.',
     back: 'Rutto e naatgol',
     waMsg: 'Jam Bambeh. Mi yejjitii finnde am. Limngal am ko',
   },
@@ -186,6 +271,19 @@ export default function ForgotPassword() {
   const [mode, setMode] = useState<'phone' | 'email'>('phone');
   const [phone, setPhone] = useState('');      // full international, from AfricanPhoneInput
   const [phoneOk, setPhoneOk] = useState(false);
+
+  /* FIX488 - the four questions. Nothing here decides anything: the answers go
+     to grade_reset_identity() and the DATABASE says pass or fail. If this
+     comparison lived in the browser, anyone could open DevTools and flip the
+     verdict. */
+  const [qLast, setQLast] = useState('');
+  const [qMade, setQMade] = useState('');
+  const [qPosted, setQPosted] = useState<'' | 'yes' | 'no'>('');
+  const [qWhat, setQWhat] = useState('');
+  const [qName, setQName] = useState('');
+  const [checking, setChecking] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [score, setScore] = useState<{ matched: number; left: number } | null>(null);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -197,6 +295,34 @@ export default function ForgotPassword() {
     `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
       `${t('waMsg')} +${withNumber}`,
     )}`;
+
+  const checkAnswers = async () => {
+    if (!phoneOk || digits.length < 8) { setError(t('badPhone')); return; }
+    setChecking(true);
+    setError(null);
+    try {
+      const { data, error: err } = await supabase.rpc('grade_reset_identity', {
+        p_phone: digits,
+        p_email: null,
+        p_answers: {
+          last_sign_in: qLast || null,
+          created_at: qMade || null,
+          posted: qPosted || null,
+          posted_what: qWhat || null,
+          full_name: qName || null,
+        },
+      });
+      if (err) throw err;
+      const r = Array.isArray(data) ? data[0] : data;
+      setScore({ matched: Number(r?.matched ?? 0), left: Number(r?.attempts_left ?? 0) });
+      // The server decides. The browser only renders what it was told.
+      setVerified(Boolean(r?.passed));
+    } catch {
+      setError(t('failed'));
+    } finally {
+      setChecking(false);
+    }
+  };
 
   const askOnWhatsApp = () => {
     // AfricanPhoneInput has already validated against the chosen country's
@@ -279,14 +405,83 @@ export default function ForgotPassword() {
                 <p className="mt-1 text-xs text-gray-500">{t('phoneHelp')}</p>
               </div>
 
+              {/* ── FIX488: prove it is your account ───────────────────── */}
+              <div className="rounded-2xl border border-gray-200 p-3 space-y-3">
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{t('vTitle')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('vIntro')}</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700">{t('qLast')}</label>
+                  <input type="date" value={qLast} onChange={(e) => setQLast(e.target.value)}
+                    className={INPUT} dir="ltr" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700">{t('qMade')}</label>
+                  <input type="month" value={qMade} onChange={(e) => setQMade(e.target.value)}
+                    className={INPUT} dir="ltr" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700">{t('qPosted')}</label>
+                  <div className="mt-1 grid grid-cols-2 gap-2">
+                    {(['yes', 'no'] as const).map((v) => (
+                      <button key={v} type="button" onClick={() => setQPosted(v)}
+                        className={`rounded-xl border py-2 text-sm font-semibold ${
+                          qPosted === v ? 'border-teal-500 bg-teal-50 text-teal-700'
+                                        : 'border-gray-200 text-gray-600'}`}>
+                        {t(v)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {qPosted === 'yes' ? (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700">{t('qWhat')}</label>
+                    <input value={qWhat} onChange={(e) => setQWhat(e.target.value)} className={INPUT} />
+                  </div>
+                ) : null}
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700">{t('qName')}</label>
+                  <input value={qName} onChange={(e) => setQName(e.target.value)} className={INPUT} />
+                </div>
+
+                <button type="button" onClick={checkAnswers} disabled={checking || verified}
+                  className="w-full rounded-xl bg-teal-600 hover:bg-teal-700 text-white py-2.5 text-sm font-semibold disabled:bg-gray-300">
+                  {checking ? t('checking') : t('checkBtn')}
+                </button>
+
+                {/* The count only. NEVER which answers matched - that would let
+                    somebody probe one field at a time and the attempt cap would
+                    mean nothing. */}
+                {score && !verified ? (
+                  <p className="text-xs text-amber-800 text-center">
+                    {score.left === 0
+                      ? t('tooMany')
+                      : `${score.matched} ${t('gotN')} — ${t('needTwo')} (${score.left} ${t('triesLeft')})`}
+                  </p>
+                ) : null}
+                {verified ? (
+                  <p className="text-xs text-emerald-700 font-semibold text-center">{t('verifiedOk')}</p>
+                ) : null}
+              </div>
+
               <div className="rounded-2xl bg-amber-50 border border-amber-100 p-3 text-xs text-amber-900">
                 {t('phoneNote')}
               </div>
 
-              <button type="button" onClick={askOnWhatsApp}
-                className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-3 font-semibold">
+              <button type="button" onClick={askOnWhatsApp} disabled={!verified}
+                title={!verified ? t('lockedHint') : undefined}
+                className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-3 font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed">
                 {t('askBtn')}
               </button>
+              {!verified ? (
+                <p className="text-[11px] text-gray-500 text-center -mt-2">{t('lockedHint')}</p>
+              ) : null}
             </div>
           ) : (
             /* ── EMAIL ──────────────────────────────────────────────── */
@@ -347,4 +542,4 @@ export default function ForgotPassword() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX485__COMPLETE
+// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX488__COMPLETE
