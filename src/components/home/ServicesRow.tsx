@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX481_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX484_CLEAN
 /**
  * src/components/home/ServicesRow.tsx — Bambeh Marketplace
  *
@@ -39,7 +39,7 @@ type Tile = {
 
 const TILES: Tile[] = [
   { key: 'pharmacy', to: '/pharmacies', icon: Cross,       tint: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { key: 'hospital',                    icon: Stethoscope, tint: 'text-rose-600',    bg: 'bg-rose-50' },
+  { key: 'hospital', to: '/hospitals',  icon: Stethoscope, tint: 'text-rose-600',    bg: 'bg-rose-50' },
   { key: 'utility',                     icon: Droplets,    tint: 'text-sky-600',     bg: 'bg-sky-50' },
   { key: 'fuel',                        icon: Fuel,        tint: 'text-amber-600',   bg: 'bg-amber-50' },
   { key: 'safety',                      icon: ShieldAlert, tint: 'text-red-600',     bg: 'bg-red-50' },
@@ -152,4 +152,4 @@ export default function ServicesRow() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX481__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX484__COMPLETE

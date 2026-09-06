@@ -370,6 +370,7 @@ const MakeOfferPage       = lazy(() => import("@/pages/MakeOfferPage"));
 const ComparisonTool      = lazy(() => import("@/pages/ComparisonTool"));
 const QuizPage            = lazy(() => import("@/pages/QuizPage"));         // FIX166
 const PharmaciesOnCall    = lazy(() => import("@/pages/PharmaciesOnCall")); // FIX480
+const HospitalsOnDuty     = lazy(() => import("@/pages/HospitalsOnDuty"));  // FIX484
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
 const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
@@ -790,6 +791,7 @@ export default function App() {
                             medicine at 2am must never meet a sign-in wall. The database
                             functions are granted to anon for exactly this reason. */}
                         <Route path="/pharmacies" element={<MainLayout><PharmaciesOnCall /></MainLayout>} />
+                        <Route path="/hospitals" element={<MainLayout><HospitalsOnDuty /></MainLayout>} />{/* FIX484 - also outside AuthGate */}
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
