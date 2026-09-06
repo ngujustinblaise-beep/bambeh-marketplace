@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__PHARMACIESONCALL_FIX480_CLEAN
+// BAMBEH_DEPLOY_TOKEN__PHARMACIESONCALL_FIX491_CLEAN
 /**
  * src/pages/PharmaciesOnCall.tsx — Bambeh Marketplace
  *
@@ -31,7 +31,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Phone, MessageCircle, MapPin, Clock, Loader2,
   AlertCircle, RefreshCw, Cross, Info,
@@ -52,6 +52,7 @@ interface TownRow { town: string; pharmacies: number }
 
 const STR: Record<string, Record<string, string>> = {
   en: {
+    listMine: 'Are you a pharmacy or a hospital? List yours',
     title: 'Pharmacies on call', back: 'Back',
     sub: 'Find a pharmacy open tonight near you. Free, always.',
     pickTown: 'Choose your town', loading: 'Loading…',
@@ -70,6 +71,7 @@ const STR: Record<string, Record<string, string>> = {
     warn: 'Rotas change. Please ring the pharmacy before you travel.',
   },
   fr: {
+    listMine: 'Vous êtes une pharmacie ou un hôpital ? Inscrivez-vous',
     title: 'Pharmacies de garde', back: 'Retour',
     sub: 'Trouvez une pharmacie ouverte cette nuit près de vous. Gratuit, toujours.',
     pickTown: 'Choisissez votre ville', loading: 'Chargement…',
@@ -88,6 +90,7 @@ const STR: Record<string, Record<string, string>> = {
     warn: 'Les gardes changent. Appelez la pharmacie avant de vous déplacer.',
   },
   pidgin: {
+    listMine: 'You be pharmacy or hospital? Put yours here',
     title: 'Pharmacy wey dey on call', back: 'Go back',
     sub: 'Find pharmacy wey open dis night near you. E free, always.',
     pickTown: 'Choose your town', loading: 'E dey load…',
@@ -106,6 +109,7 @@ const STR: Record<string, Record<string, string>> = {
     warn: 'On-call dey change. Abeg call di pharmacy before you commot.',
   },
   ar: {
+    listMine: 'هل أنت صيدلية أو مستشفى؟ أضف منشأتك',
     title: 'صيدليات المناوبة', back: 'رجوع',
     sub: 'اعثر على صيدلية مفتوحة الليلة بالقرب منك. مجاناً، دائماً.',
     pickTown: 'اختر مدينتك', loading: 'جارٍ التحميل…',
@@ -124,6 +128,7 @@ const STR: Record<string, Record<string, string>> = {
     warn: 'المناوبات تتغير. اتصل بالصيدلية قبل أن تذهب.',
   },
   ff: {
+    listMine: 'Aɗa woni farmasi walla opitaal? Winndu maaɗa',
     title: 'Farmasiiji e ndeenka', back: 'Rutto',
     sub: 'Yiytu farmasi udditiindi jemma hannde takko maa. Ko meere, sahaa kala.',
     pickTown: 'Suɓo saare maa', loading: 'Ina loowa…',
@@ -326,6 +331,13 @@ export default function PharmaciesOnCall() {
             ) : null}
           </>
         )}
+
+        <div className="pt-1">
+          <Link to="/list-my-service"
+            className="block text-center text-xs font-semibold text-emerald-700 border border-emerald-200 rounded-xl py-2.5 hover:bg-emerald-50">
+            {t('listMine')}
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -359,4 +371,4 @@ function Notice({ tone, icon, title, body, action }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__PHARMACIESONCALL_FIX480__COMPLETE
+// BAMBEH_END_TOKEN__PHARMACIESONCALL_FIX491__COMPLETE

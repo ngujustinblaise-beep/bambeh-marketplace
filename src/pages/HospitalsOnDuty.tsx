@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOSPITALSONDUTY_FIX484_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOSPITALSONDUTY_FIX491_CLEAN
 /**
  * src/pages/HospitalsOnDuty.tsx — Bambeh Marketplace
  *
@@ -27,7 +27,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Phone, MessageCircle, MapPin, Loader2, AlertCircle,
   RefreshCw, Stethoscope, Wind, Ambulance, Info, ShieldCheck,
@@ -45,6 +45,7 @@ interface TownRow { town: string; hospitals: number; with_oxygen: number; with_a
 
 const STR: Record<string, Record<string, string>> = {
   en: {
+    listMine: 'Are you a pharmacy or a hospital? List yours',
     title: 'Hospitals on duty', back: 'Back',
     sub: 'Find a hospital near you and call them directly. Free, always.',
     pickTown: 'Choose your town',
@@ -62,6 +63,7 @@ const STR: Record<string, Record<string, string>> = {
     verified: 'Checked by Bambeh',
   },
   fr: {
+    listMine: 'Vous êtes une pharmacie ou un hôpital ? Inscrivez-vous',
     title: 'Hôpitaux de garde', back: 'Retour',
     sub: 'Trouvez un hôpital près de vous et appelez-le directement. Gratuit, toujours.',
     pickTown: 'Choisissez votre ville',
@@ -79,6 +81,7 @@ const STR: Record<string, Record<string, string>> = {
     verified: 'Vérifié par Bambeh',
   },
   pidgin: {
+    listMine: 'You be pharmacy or hospital? Put yours here',
     title: 'Hospital wey dey on duty', back: 'Go back',
     sub: 'Find hospital near you, call dem direct. E free, always.',
     pickTown: 'Choose your town',
@@ -96,6 +99,7 @@ const STR: Record<string, Record<string, string>> = {
     verified: 'Bambeh don check am',
   },
   ar: {
+    listMine: 'هل أنت صيدلية أو مستشفى؟ أضف منشأتك',
     title: 'المستشفيات المناوبة', back: 'رجوع',
     sub: 'اعثر على مستشفى قريب منك واتصل به مباشرة. مجاناً، دائماً.',
     pickTown: 'اختر مدينتك',
@@ -113,6 +117,7 @@ const STR: Record<string, Record<string, string>> = {
     verified: 'تم التحقق من بامبيه',
   },
   ff: {
+    listMine: 'Aɗa woni farmasi walla opitaal? Winndu maaɗa',
     title: 'Opitaaluuji e ndeenka', back: 'Rutto',
     sub: 'Yiytu opitaal takko maa noddaa ɓe e hoore maa. Ko meere, sahaa kala.',
     pickTown: 'Suɓo saare maa',
@@ -283,6 +288,13 @@ export default function HospitalsOnDuty() {
             ))}
           </div>
         )}
+
+        <div className="pt-1">
+          <Link to="/list-my-service"
+            className="block text-center text-xs font-semibold text-rose-700 border border-rose-200 rounded-xl py-2.5 hover:bg-rose-50">
+            {t('listMine')}
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -322,4 +334,4 @@ function Notice({ tone, icon, title, body, action }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__HOSPITALSONDUTY_FIX484__COMPLETE
+// BAMBEH_END_TOKEN__HOSPITALSONDUTY_FIX491__COMPLETE

@@ -1,3 +1,4 @@
+// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX491_CLEAN
 /**
  * src/components/AfricanPhoneInput.tsx ? Bambeh Marketplace
  *
@@ -71,39 +72,39 @@ const c = (flag: string, name: string, dial: string, code: string, len: number, 
   Object.freeze({ flag, name, dial, code, len, pattern });
 
 export const CENTRAL_AFRICA: readonly Country[] = Object.freeze([
-  c("????", "Cameroon",     "+237", "CM",  9, /^6\d{8}$/),
-  c("????", "DR Congo",     "+243", "CD",  9, /^8\d{8}$/),
-  c("????", "Congo (Rep.)", "+242", "CG",  9, /^[056]\d{8}$/),
-  c("????", "Gabon",        "+241", "GA",  8, /^[067]\d{7}$/),
-  c("????", "Chad",         "+235", "TD",  8, /^6\d{7}$/),
-  c("????", "CAR",          "+236", "CF",  8, /^7\d{7}$/),
-  c("????", "Eq. Guinea",   "+240", "GQ",  9, /^[23]\d{8}$/),
-  c("????", "S?o Tom?",     "+239", "ST",  7, /^\d{7}$/),
-  c("????", "Burundi",      "+257", "BI",  8, /^[67]\d{7}$/),
-  c("????", "Rwanda",       "+250", "RW",  9, /^7\d{8}$/),
+  c("\uD83C\uDDE8\uD83C\uDDF2", "Cameroon",     "+237", "CM",  9, /^6\d{8}$/),
+  c("\uD83C\uDDE8\uD83C\uDDE9", "DR Congo",     "+243", "CD",  9, /^8\d{8}$/),
+  c("\uD83C\uDDE8\uD83C\uDDEC", "Congo (Rep.)", "+242", "CG",  9, /^[056]\d{8}$/),
+  c("\uD83C\uDDEC\uD83C\uDDE6", "Gabon",        "+241", "GA",  8, /^[067]\d{7}$/),
+  c("\uD83C\uDDF9\uD83C\uDDE9", "Chad",         "+235", "TD",  8, /^6\d{7}$/),
+  c("\uD83C\uDDE8\uD83C\uDDEB", "CAR",          "+236", "CF",  8, /^7\d{7}$/),
+  c("\uD83C\uDDEC\uD83C\uDDF6", "Eq. Guinea",   "+240", "GQ",  9, /^[23]\d{8}$/),
+  c("\uD83C\uDDF8\uD83C\uDDF9", "S?o Tom?",     "+239", "ST",  7, /^\d{7}$/),
+  c("\uD83C\uDDE7\uD83C\uDDEE", "Burundi",      "+257", "BI",  8, /^[67]\d{7}$/),
+  c("\uD83C\uDDF7\uD83C\uDDFC", "Rwanda",       "+250", "RW",  9, /^7\d{8}$/),
 ]);
 
 export const WEST_AFRICA: readonly Country[] = Object.freeze([
-  c("????", "Nigeria",       "+234", "NG", 10, /^[789]\d{9}$/),
-  c("????", "Ghana",         "+233", "GH",  9, /^[235]\d{8}$/),
-  c("????", "Senegal",       "+221", "SN",  9, /^[37]\d{8}$/),
-  c("????", "C?te d'Ivoire", "+225", "CI", 10, /^0[57]\d{8}$/),
-  c("????", "Burkina Faso",  "+226", "BF",  8, /^[67]\d{7}$/),
-  c("????", "Mali",          "+223", "ML",  8, /^[567]\d{7}$/),
-  c("????", "Guinea",        "+224", "GN",  9, /^[67]\d{8}$/),
-  c("????", "Benin",         "+229", "BJ",  8, /^[679]\d{7}$/),
-  c("????", "Togo",          "+228", "TG",  8, /^[79]\d{7}$/),
-  c("????", "Sierra Leone",  "+232", "SL",  8, /^[37]\d{7}$/),
-  c("????", "Liberia",       "+231", "LR",  8, /^\d{8}$/),
-  c("????", "Gambia",        "+220", "GM",  7, /^[23679]\d{6}$/),
-  c("????", "Guinea-Bissau", "+245", "GW",  7, /^[56]\d{6}$/),
-  c("????", "Cape Verde",    "+238", "CV",  7, /^9\d{6}$/),
-  c("????", "Niger",         "+227", "NE",  8, /^[89]\d{7}$/),
-  c("????", "Mauritania",    "+222", "MR",  8, /^[23]\d{7}$/),
+  c("\uD83C\uDDF3\uD83C\uDDEC", "Nigeria",       "+234", "NG", 10, /^[789]\d{9}$/),
+  c("\uD83C\uDDEC\uD83C\uDDED", "Ghana",         "+233", "GH",  9, /^[235]\d{8}$/),
+  c("\uD83C\uDDF8\uD83C\uDDF3", "Senegal",       "+221", "SN",  9, /^[37]\d{8}$/),
+  c("\uD83C\uDDE8\uD83C\uDDEE", "C?te d'Ivoire", "+225", "CI", 10, /^0[57]\d{8}$/),
+  c("\uD83C\uDDE7\uD83C\uDDEB", "Burkina Faso",  "+226", "BF",  8, /^[67]\d{7}$/),
+  c("\uD83C\uDDF2\uD83C\uDDF1", "Mali",          "+223", "ML",  8, /^[567]\d{7}$/),
+  c("\uD83C\uDDEC\uD83C\uDDF3", "Guinea",        "+224", "GN",  9, /^[67]\d{8}$/),
+  c("\uD83C\uDDE7\uD83C\uDDEF", "Benin",         "+229", "BJ",  8, /^[679]\d{7}$/),
+  c("\uD83C\uDDF9\uD83C\uDDEC", "Togo",          "+228", "TG",  8, /^[79]\d{7}$/),
+  c("\uD83C\uDDF8\uD83C\uDDF1", "Sierra Leone",  "+232", "SL",  8, /^[37]\d{7}$/),
+  c("\uD83C\uDDF1\uD83C\uDDF7", "Liberia",       "+231", "LR",  8, /^\d{8}$/),
+  c("\uD83C\uDDEC\uD83C\uDDF2", "Gambia",        "+220", "GM",  7, /^[23679]\d{6}$/),
+  c("\uD83C\uDDEC\uD83C\uDDFC", "Guinea-Bissau", "+245", "GW",  7, /^[56]\d{6}$/),
+  c("\uD83C\uDDE8\uD83C\uDDFB", "Cape Verde",    "+238", "CV",  7, /^9\d{6}$/),
+  c("\uD83C\uDDF3\uD83C\uDDEA", "Niger",         "+227", "NE",  8, /^[89]\d{7}$/),
+  c("\uD83C\uDDF2\uD83C\uDDF7", "Mauritania",    "+222", "MR",  8, /^[23]\d{7}$/),
 ]);
 
 const SUGGESTED: readonly Country[] = Object.freeze([
-  CENTRAL_AFRICA[0], // Cameroon ? always first
+  CENTRAL_AFRICA[0], // Cameroon - always first
   WEST_AFRICA[0],    // Nigeria
   WEST_AFRICA[1],    // Ghana
   WEST_AFRICA[2],    // Senegal
@@ -494,8 +495,4 @@ export default function AfricanPhoneInput({
 
 // -- Re-export helpers for parent use -----------------------------------------
 export { DIGITS_ONLY, sanitiseText, ALL_COUNTRIES };
-
-
-
-
-
+// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX491__COMPLETE
