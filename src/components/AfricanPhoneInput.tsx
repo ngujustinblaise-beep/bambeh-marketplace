@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX491_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX492_CLEAN
 /**
  * src/components/AfricanPhoneInput.tsx ? Bambeh Marketplace
  *
@@ -17,7 +17,7 @@
  *  ? Focus trap          ? dropdown closes on outside mousedown AND focusout
  *  ? WhatsApp URL sanitised ? phone stripped to digits, message encoded
  *  ? Rate limit guard    ? onChange fires only when value actually changed
- *  ? Immutable country list ? freeze prevents runtime mutation of dial/pattern
+ *  - Immutable country list - freeze prevents runtime mutation of dial/pattern
  * ----------------------------------------------------------------------------
  *
  * Usage:
@@ -375,11 +375,11 @@ export default function AfricanPhoneInput({
         }`}
       >
         {error
-          ? `? ${sanitiseText(error)}`
+          ? `\u26A0 ${sanitiseText(error)}`
           : isValid
-          ? `? Valid ? ${country.dial} ${digits}`
+          ? `\u2713 Valid \u00B7 ${country.dial} ${digits}`
           : isWrong
-          ? `? Not a valid ${country.name} number`
+          ? `\u2717 Not a valid ${country.name} number`
           : isTooShort
           ? `Need ${country.len} digits (${digits.length} so far)`
           : `Enter ${country.len}-digit ${country.name} number`}
@@ -476,7 +476,7 @@ export default function AfricanPhoneInput({
                   <span className="flex-1 text-gray-900 dark:text-white font-medium">{ct.name}</span>
                   <span className="font-mono text-xs text-gray-400">{ct.dial}</span>
                   {ct.code === country.code && (
-                    <span className="text-teal-600 text-xs font-bold" aria-label="selected">?</span>
+                    <span className="text-teal-600 text-xs font-bold" aria-label="selected">{"\u2713"}</span>
                   )}
                 </button>
               ))
@@ -495,4 +495,4 @@ export default function AfricanPhoneInput({
 
 // -- Re-export helpers for parent use -----------------------------------------
 export { DIGITS_ONLY, sanitiseText, ALL_COUNTRIES };
-// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX491__COMPLETE
+// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX492__COMPLETE
