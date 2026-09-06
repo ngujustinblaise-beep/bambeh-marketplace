@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX489_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX496_CLEAN
 /**
  * AdminCommandCenter.tsx — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/AdminCommandCenter.tsx
@@ -41,29 +41,44 @@ import AdsSection from './AdsSection';             // FIX464
 import PromotionsSection from './PromotionsSection'; // FIX469
 import PharmaciesSection from './PharmaciesSection'; // FIX482
 import RequestsSection from './RequestsSection';     // FIX489
+import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'requests';
 
-const NAV: Array<{ key: Section; label: string; icon: React.ComponentType<{ className?: string }>; needs?: keyof Capabilities }> = [
+const NAV: Array<{
+  key: Section;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  needs?: keyof Capabilities;
+  /** FIX496 — badge keys from admin_badge_counts(); summed into one number. */
+  badge?: BadgeKey[];
+}> = [
   { key: 'overview',  label: 'Overview',       icon: LayoutGrid },
   { key: 'users',     label: 'Users',          icon: Users },
-  { key: 'listings',  label: 'Listings',       icon: Boxes },
+  { key: 'listings',  label: 'Listings',       icon: Boxes,
+    badge: ['listings_pending'] },
   { key: 'ads',       label: 'Adverts',        icon: Megaphone },
   { key: 'promos',    label: 'Promotions',     icon: Star },
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
-  { key: 'requests',  label: 'Requests',      icon: Inbox },
-  { key: 'disputes',  label: 'Disputes',       icon: Gavel,    needs: 'resolveDisputes' },
-  { key: 'escrow',    label: 'Escrow',         icon: Lock,     needs: 'freezeEscrow' },
+  { key: 'requests',  label: 'Requests',      icon: Inbox,
+    badge: ['reset_requests', 'verify_pharmacies', 'verify_hospitals', 'verify_stores'] },
+  { key: 'disputes',  label: 'Disputes',       icon: Gavel,    needs: 'resolveDisputes',
+    badge: ['disputes'] },
+  { key: 'escrow',    label: 'Escrow',         icon: Lock,     needs: 'freezeEscrow',
+    badge: ['escrow_disputes'] },
   { key: 'comms',     label: 'Communications', icon: Send },
   { key: 'approvals', label: 'Approvals',      icon: CheckSquare, needs: 'approveMessages' },
   { key: 'announce',  label: 'Announcements',  icon: Megaphone, needs: 'publishAnnouncements' },
   { key: 'team',      label: 'Team & Roles',   icon: UserCog,  needs: 'createModerators' },
-  { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances' },
-  { key: 'reports',   label: 'Reports',        icon: FileText },
-  { key: 'feedback',  label: 'Share My Voice', icon: MessageSquare },
+  { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances',
+    badge: ['payments_pending', 'seller_payouts', 'event_payouts'] },
+  { key: 'reports',   label: 'Reports',        icon: FileText,
+    badge: ['reports_open'] },
+  { key: 'feedback',  label: 'Share My Voice', icon: MessageSquare,
+    badge: ['feedback'] },
 ];
 
 export default function AdminCommandCenter() {
@@ -76,6 +91,15 @@ export default function AdminCommandCenter() {
 
   const cap = useMemo(() => capabilitiesFor(role), [role]);
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 3000); };
+
+  // FIX496 — the signal. One RPC, polled; a failed poll keeps the old numbers.
+  const { sum: badgeSum, refresh: refreshBadges } = useBadgeCounts();
+
+  // Leaving a section usually means something in it was just handled, so the
+  // count it was showing is now wrong. Re-ask rather than wait out the poll.
+  const goTo = useCallback((next: Section) => {
+    setSection((prev) => { if (prev !== next) void refreshBadges(); return next; });
+  }, [refreshBadges]);
 
   useEffect(() => {
     (async () => {
@@ -116,12 +140,24 @@ export default function AdminCommandCenter() {
           {visibleNav.map((n) => {
             const Icon = n.icon;
             const active = section === n.key;
+            const waiting = badgeSum(n.badge);   // FIX496
             return (
-              <button key={n.key} onClick={() => setSection(n.key)}
+              <button key={n.key} onClick={() => goTo(n.key)}
+                title={waiting > 0 ? `${waiting} item${waiting === 1 ? '' : 's'} waiting` : undefined}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
                   active ? 'bg-teal-600 text-white' : 'hover:bg-gray-800 text-gray-300'
                 }`}>
-                <Icon className="w-4 h-4" /> {n.label}
+                <Icon className="w-4 h-4" />
+                <span className="flex-1 text-left">{n.label}</span>
+                {waiting > 0 ? (
+                  <span
+                    aria-label={`${waiting} waiting`}
+                    className={`ml-auto min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                      active ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
+                    }`}>
+                    {waiting > 99 ? '99+' : waiting}
+                  </span>
+                ) : null}
               </button>
             );
           })}
@@ -824,4 +860,4 @@ function ReportsSection({ role }: { role: AdminRole }) {
     </>
   );
 }
-// BAMBEH_END_TOKEN__ADMINCOMMANDCENTER__COMPLETE
+// BAMBEH_END_TOKEN__ADMINCOMMANDCENTER_FIX496__COMPLETE

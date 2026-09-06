@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__PHARMACIESSECTION_FIX482_CLEAN
+// BAMBEH_DEPLOY_TOKEN__PHARMACIESSECTION_FIX496_CLEAN
 /**
  * src/features/admin/PharmaciesSection.tsx — Bambeh Admin Command Center
  *
@@ -20,6 +20,17 @@
  *   pharmacy, every week, is how a rota stops being maintained by February.
  *
  * LANGUAGE: English only, by decision. Staff chrome, never seen by a user.
+ *
+ * FIX496 — A FAILED REFRESH IS NOT A FAILED LOAD.
+ *   The panel was showing a red "Could not load pharmacies" banner with the
+ *   pharmacies listed underneath it. Both cannot be true, and the confusing
+ *   one is the banner: on this connection a request can fail while the list we
+ *   already hold is perfectly good. So there are now two different states.
+ *     RED   — we have nothing to show. Something is genuinely wrong.
+ *     AMBER — the refresh did not complete; this is the last list we loaded.
+ *   And a failed load that comes back empty no longer wipes a good list off
+ *   the screen. Same principle as the badge counts: never let a network dip
+ *   render as "there is nothing here".
  *
  * © 2026 BAMBEH SARL. All rights reserved.
  */
@@ -66,6 +77,7 @@ export default function PharmaciesSection({
   const [rows, setRows] = useState<Pharmacy[]>([]);
   const [status, setStatus] = useState<RotaStatusRow[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [staleNote, setStaleNote] = useState<string | null>(null);   // FIX496
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
 
@@ -78,10 +90,24 @@ export default function PharmaciesSection({
   const load = useCallback(async () => {
     setLoading(true);
     const [list, stat] = await Promise.all([fetchPharmacies(q), fetchRotaStatus()]);
-    setRows(list.rows);
-    setStatus(stat.rows);
-    // A failed load must never render as "no pharmacies".
-    setLoadError(list.ok ? null : (list.error || 'Could not load pharmacies.'));
+
+    // FIX496 — a failed load must never render as "no pharmacies", and must
+    // never wipe a list we already have. Only overwrite on success, or when
+    // the failure actually carried rows back.
+    const haveRows = list.rows.length > 0;
+    if (list.ok || haveRows) setRows(list.rows);
+    if (stat.rows.length > 0 || list.ok) setStatus(stat.rows);
+
+    if (list.ok) {
+      setLoadError(null); setStaleNote(null);
+    } else if (haveRows) {
+      // We can still show something useful. Say so quietly, do not alarm.
+      setLoadError(null);
+      setStaleNote(list.error || 'The last refresh did not complete.');
+    } else {
+      setLoadError(list.error || 'Could not load pharmacies.');
+      setStaleNote(null);
+    }
     setLoading(false);
   }, [q]);
 
@@ -172,6 +198,19 @@ export default function PharmaciesSection({
             placeholder="Search name, town or quarter…" className="flex-1 py-2.5 text-sm outline-none" />
         </div>
       </div>
+
+      {staleNote ? (
+        <div className="flex items-start gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold">Showing the last list we loaded</p>
+            <p className="text-xs mt-0.5">{staleNote} Anything added in the last minute may be missing.</p>
+          </div>
+          <button onClick={load} className="shrink-0 text-xs font-bold text-amber-800 hover:underline flex items-center gap-1">
+            <RefreshCw className="w-3 h-3" /> Refresh
+          </button>
+        </div>
+      ) : null}
 
       {loadError ? (
         <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3 mb-3">
@@ -437,4 +476,4 @@ function Field({ label, required, hint, children }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__PHARMACIESSECTION_FIX482__COMPLETE
+// BAMBEH_END_TOKEN__PHARMACIESSECTION_FIX496__COMPLETE
