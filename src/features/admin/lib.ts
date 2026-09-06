@@ -950,3 +950,126 @@ export function settingIsOn(s: PlatformSetting | undefined): boolean {
   if (!s) return false;
   return s.value === true || s.value === 'true';
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIX482 — PHARMACY ROTA helpers
+//
+// The public page (FIX480) reads through SECURITY DEFINER functions granted to
+// anon, because a person looking for medicine at 2am must not meet a login.
+// These write, so they go through the tables directly and lean on the RLS
+// policy from FIX479: staff, or the pharmacy that owns the row.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface Pharmacy {
+  id: string;
+  name: string;
+  town: string;
+  quarter: string | null;
+  address: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  notes: string | null;
+  is_active: boolean;
+  owner_id: string | null;
+  created_at: string;
+}
+
+export interface OnCallWindow {
+  id: string;
+  pharmacy_id: string;
+  starts_at: string;
+  ends_at: string;
+  note: string | null;
+  created_at: string;
+}
+
+export type PharmacyDraft = Omit<Pharmacy, 'id' | 'owner_id' | 'created_at'>;
+
+const PHARM_COLUMNS =
+  'id, name, town, quarter, address, phone, whatsapp, notes, is_active, owner_id, created_at';
+
+export async function fetchPharmacies(query = ''): Promise<AdminFetch<Pharmacy>> {
+  let q = supabase.from('pharmacies').select(PHARM_COLUMNS).order('town').order('name').limit(300);
+  if (query.trim()) {
+    q = q.or(`name.ilike.%${query}%,town.ilike.%${query}%,quarter.ilike.%${query}%`);
+  }
+  return adminSafe<Pharmacy>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export async function createPharmacy(
+  actorId: string, actorRole: AdminRole, draft: PharmacyDraft,
+): Promise<string> {
+  const { data, error } = await supabase
+    .from('pharmacies')
+    .insert({ ...draft, created_by: actorId })
+    .select('id')
+    .single();
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'create_pharmacy', 'pharmacy', data.id, { name: draft.name, town: draft.town });
+  return data.id as string;
+}
+
+export async function updatePharmacy(
+  actorId: string, actorRole: AdminRole, id: string, patch: Partial<PharmacyDraft>,
+): Promise<void> {
+  const { error } = await supabase
+    .from('pharmacies')
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'update_pharmacy', 'pharmacy', id, patch as Record<string, unknown>);
+}
+
+/** Every window for one pharmacy, newest first. */
+export async function fetchOnCallWindows(pharmacyId: string): Promise<AdminFetch<OnCallWindow>> {
+  const q = supabase
+    .from('pharmacy_on_call')
+    .select('id, pharmacy_id, starts_at, ends_at, note, created_at')
+    .eq('pharmacy_id', pharmacyId)
+    .order('starts_at', { ascending: false })
+    .limit(50);
+  return adminSafe<OnCallWindow>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export async function addOnCallWindow(
+  actorId: string, actorRole: AdminRole,
+  pharmacyId: string, startsAt: string, endsAt: string, note: string | null,
+): Promise<void> {
+  // The database also enforces ends_at > starts_at, but catching it here gives
+  // the person a sentence instead of a constraint name.
+  if (new Date(endsAt) <= new Date(startsAt)) {
+    throw new Error('The end time must be after the start time.');
+  }
+  const { error } = await supabase.from('pharmacy_on_call').insert({
+    pharmacy_id: pharmacyId, starts_at: startsAt, ends_at: endsAt,
+    note: note?.trim() || null, created_by: actorId,
+  });
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'add_on_call', 'pharmacy', pharmacyId, { startsAt, endsAt, note });
+}
+
+export async function deleteOnCallWindow(
+  actorId: string, actorRole: AdminRole, windowId: string, pharmacyId: string,
+): Promise<void> {
+  const { error } = await supabase.from('pharmacy_on_call').delete().eq('id', windowId);
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'remove_on_call', 'pharmacy', pharmacyId, { windowId });
+}
+
+export interface RotaStatusRow {
+  town: string; pharmacies: number; on_call_now: number;
+  covered_until: string | null; last_updated: string | null;
+}
+
+/** Per town: how many pharmacies, how many on call now, how far the rota runs.
+ *  This is what tells you a town has gone uncovered before a user finds out. */
+export async function fetchRotaStatus(): Promise<AdminFetch<RotaStatusRow>> {
+  const q = supabase.rpc('pharmacy_rota_status', { p_town: null });
+  return adminSafe<RotaStatusRow>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+/** True while the window covers this exact moment. */
+export function windowIsLive(w: OnCallWindow, now = Date.now()): boolean {
+  return new Date(w.starts_at).getTime() <= now && new Date(w.ends_at).getTime() > now;
+}
