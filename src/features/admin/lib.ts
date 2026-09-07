@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX503_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX504_CLEAN
 /**
  * admin/lib.ts — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/lib.ts
@@ -1379,4 +1379,79 @@ export async function fetchQuarters(town: string): Promise<string[]> {
   return out.rows.map((r) => r.quarter).filter(Boolean);
 }
 
-// BAMBEH_END_TOKEN__ADMINLIB_FIX503__COMPLETE
+
+// FIX504 - FUEL AT NIGHT.
+// A station is two facts with two different lifetimes: its HOURS, which hold
+// for months and are entered by staff here, and whether it actually HAS fuel,
+// which changes hourly and can only come from users. Only the first lives in
+// this table; the second is fuel_reports, and it dies after six hours.
+
+export interface FuelStation {
+  id: string;
+  name: string;
+  brand: string | null;
+  region: string;
+  town: string;
+  quarter: string | null;
+  address: string | null;
+  phone: string | null;
+  is_24h: boolean;
+  opens_at: string | null;
+  closes_at: string | null;
+  has_petrol: boolean;
+  has_diesel: boolean;
+  has_gas: boolean;
+  notes: string | null;
+  is_active: boolean;
+  is_verified: boolean;
+  owner_id: string | null;
+  created_at: string;
+}
+
+export type FuelDraft = Omit<FuelStation, 'id' | 'owner_id' | 'created_at' | 'is_verified'>;
+
+const FUEL_COLUMNS =
+  'id, name, brand, region, town, quarter, address, phone, is_24h, opens_at, closes_at, ' +
+  'has_petrol, has_diesel, has_gas, notes, is_active, is_verified, owner_id, created_at';
+
+export async function fetchFuelStations(query = ''): Promise<AdminFetch<FuelStation>> {
+  let q = supabase.from('fuel_stations').select(FUEL_COLUMNS)
+    .order('town').order('name').limit(300);
+  if (query.trim()) {
+    q = q.or(`name.ilike.%${query}%,brand.ilike.%${query}%,town.ilike.%${query}%,quarter.ilike.%${query}%`);
+  }
+  return adminSafe<FuelStation>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+export async function createFuelStation(
+  actorId: string, actorRole: AdminRole, draft: FuelDraft,
+): Promise<string> {
+  const { row } = await writeTolerant<{ id: string }>(
+    'fuel_stations', { ...draft, created_by: actorId }, { returning: 'id' },
+  );
+  const id = row?.id as string;
+  await logAction(actorId, actorRole, 'create_fuel_station', 'fuel', id ?? null,
+    { name: draft.name, town: draft.town });
+  return id;
+}
+
+export async function updateFuelStation(
+  actorId: string, actorRole: AdminRole, id: string, patch: Partial<FuelDraft>,
+): Promise<void> {
+  await writeTolerant('fuel_stations', { ...patch, updated_at: new Date().toISOString() },
+    { match: { column: 'id', value: id } });
+  await logAction(actorId, actorRole, 'update_fuel_station', 'fuel', id, patch as Record<string, unknown>);
+}
+
+/** Every public read requires is_verified = true, so this is the switch
+ *  between "a moderator has checked this" and "nobody sees it". */
+export async function setFuelVerified(
+  actorId: string, actorRole: AdminRole, id: string, verified: boolean,
+): Promise<void> {
+  await writeTolerant('fuel_stations', { is_verified: verified },
+    { match: { column: 'id', value: id } });
+  await logAction(actorId, actorRole, verified ? 'verify_fuel_station' : 'unverify_fuel_station',
+    'fuel', id, {});
+}
+
+// BAMBEH_END_TOKEN__ADMINLIB_FIX504__COMPLETE

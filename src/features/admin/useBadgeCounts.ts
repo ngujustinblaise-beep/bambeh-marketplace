@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__USEBADGECOUNTS_FIX501_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USEBADGECOUNTS_FIX504_CLEAN
 /**
  * src/features/admin/useBadgeCounts.ts — Bambeh Admin Command Center
  *
@@ -50,7 +50,8 @@ export type BadgeKey =
   | 'event_payouts'
   | 'listings_pending'
   | 'reports_open'
-  | 'utility_live';   // FIX501
+  | 'utility_live'    // FIX501
+  | 'fuel_pending';   // FIX504
 
 export type BadgeMap = Partial<Record<BadgeKey, number>>;
 
@@ -114,4 +115,4 @@ export default function useBadgeCounts(intervalMs = 60000) {
 
   return { counts, sum, refresh, lastOk };
 }
-// BAMBEH_END_TOKEN__USEBADGECOUNTS_FIX501__COMPLETE
+// BAMBEH_END_TOKEN__USEBADGECOUNTS_FIX504__COMPLETE
