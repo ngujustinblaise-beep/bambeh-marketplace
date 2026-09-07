@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX501_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX502_CLEAN
 /**
  * src/components/home/ServicesRow.tsx — Bambeh Marketplace
  *
@@ -23,12 +23,30 @@
  *   unbuilt service renders as a flat, unclickable card that says SOON. When
  *   its page ships, one line here changes `to` and drops `soon`.
  *
+ * FIX502 — THE SIGNAL, ON THE TILE.
+ *   An announcement used to publish in silence and wait for somebody to
+ *   wander onto the page. Now the Water/Lights tile carries a count of what is
+ *   live for the town the user last chose, and a dot when something has
+ *   appeared since they last opened the page.
+ *
+ *   NOT a push notification, deliberately. A cut in Bastos means nothing to
+ *   somebody in Douala, and most accounts carry no reliable location. Sending
+ *   all of them would teach people to ignore Bambeh notifications, and that
+ *   lesson cannot be untaught. Everyone passes this row on the way into the
+ *   app; a number here reaches them without spending that channel.
+ *
+ *   THE COUNT NEVER BLOCKS THE PAGE. If the query fails, nothing renders and
+ *   Home is unaffected. A missing badge costs nothing; a broken Home costs
+ *   everything.
+ *
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cross, Stethoscope, Droplets, Fuel, ShieldAlert } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { supabase } from '@/lib/supabase';   // FIX502
 
 type Tile = {
   key: string;
@@ -101,7 +119,46 @@ const STR: Record<string, Record<string, string>> = {
 
 const tr = (l: string, k: string) => (STR[l] && STR[l][k]) || STR.en[k] || k;
 
+// Written by the Water/Lights page itself; read here. Same keys both sides.
+const TOWN_KEY = 'bambeh:utility:town';
+const SEEN_KEY = 'bambeh:utility:seen';
+
+function useUtilitySignal() {
+  const [count, setCount] = useState(0);
+  const [fresh, setFresh] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        let town: string | null = null;
+        let seen: string | null = null;
+        try {
+          town = window.localStorage.getItem(TOWN_KEY);
+          seen = window.localStorage.getItem(SEEN_KEY);
+        } catch { /* private mode - treat as no preference */ }
+
+        const { data, error } = await supabase.rpc('utility_signal', { p_town: town || null });
+        if (error || !alive) return;
+        const r = (Array.isArray(data) ? data[0] : data) as
+          { announcements: number; reports: number; newest: string | null } | undefined;
+        if (!r) return;
+
+        const n = Number(r.announcements ?? 0) + Number(r.reports ?? 0);
+        setCount(Number.isFinite(n) ? n : 0);
+        setFresh(Boolean(r.newest) && (!seen || new Date(r.newest as string) > new Date(seen)));
+      } catch {
+        /* silent on purpose - a badge must never break Home */
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  return { count, fresh };
+}
+
 export default function ServicesRow() {
+  const { count: utilityCount, fresh: utilityFresh } = useUtilitySignal();   // FIX502
   const { language } = useLanguage();
   const lang = typeof language === 'string' ? language : 'en';
   const t = (k: string) => tr(lang, k);
@@ -118,10 +175,22 @@ export default function ServicesRow() {
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
         {TILES.map((tile) => {
           const Icon = tile.icon;
+          const badge = tile.key === 'utility' ? utilityCount : 0;   // FIX502
+          const isFresh = tile.key === 'utility' && utilityFresh;
+
           const inner = (
             <>
-              <span className={`w-11 h-11 rounded-2xl ${tile.bg} flex items-center justify-center`}>
+              <span className={`relative w-11 h-11 rounded-2xl ${tile.bg} flex items-center justify-center`}>
                 <Icon className={`w-5 h-5 ${tile.tint}`} />
+                {badge > 0 ? (
+                  <span
+                    aria-label={`${badge} active`}
+                    className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center shadow">
+                    {badge > 99 ? '99+' : badge}
+                  </span>
+                ) : isFresh ? (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                ) : null}
               </span>
               <span className="text-[11px] sm:text-xs font-semibold leading-tight">
                 {t(tile.key)}
@@ -153,4 +222,4 @@ export default function ServicesRow() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX501__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX502__COMPLETE

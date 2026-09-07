@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__WATERLIGHTS_FIX500_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WATERLIGHTS_FIX502_CLEAN
 /**
  * src/pages/WaterLights.tsx - Bambeh free services
  * FILE LOCATION: src/pages/WaterLights.tsx
@@ -193,6 +193,9 @@ const STR: Record<string, Record<string, string>> = {
 const tr = (l: string, k: string) => (STR[l] && STR[l][k]) || STR.en[k] || k;
 
 const TOWN_KEY = 'bambeh:utility:town';
+// FIX502 - stamped only after a SUCCESSFUL load. A failed load must not
+// clear the Home badge, or a network dip would hide a real announcement.
+const SEEN_KEY = 'bambeh:utility:seen';
 
 function ago(iso: string, lang: string): string {
   const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
@@ -262,6 +265,7 @@ export default function WaterLights() {
       if (error) throw error;
       setRows((data ?? []) as Outage[]);
       setFailed(false);
+      try { window.localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch { /* private mode */ }
     } catch {
       setFailed(true);
     } finally { setLoading(false); }
@@ -543,4 +547,4 @@ export default function WaterLights() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WATERLIGHTS_FIX500__COMPLETE
+// BAMBEH_END_TOKEN__WATERLIGHTS_FIX502__COMPLETE
