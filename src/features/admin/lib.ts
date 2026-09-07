@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX504_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX505_CLEAN
 /**
  * admin/lib.ts — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/lib.ts
@@ -510,6 +510,40 @@ export async function fetchReports() {
 }
 
 // ---- Finances (super only; RLS on the underlying tables also enforces) ----
+/* FIX505 - THE FINANCES SCREEN WAS READING TABLES THAT DO NOT EXIST.
+ * fetchFinanceSummary below queries `subscription_payments` and
+ * `escrow_ledger`. The real tables are `payments` and `escrows` - proven when
+ * admin_badge_counts() returned ok on both. Every read failed, every failure
+ * was swallowed by a bare catch, and the page rendered 0 FCFA across the board
+ * while 14 pending and 11 successful payments sat in the database.
+ *
+ * fetchFinanceBreakdown replaces it. The aggregation happens in SQL, in a
+ * function that FINDS the amount column instead of assuming its name, groups
+ * by the real status values instead of guessing them, and reports a table it
+ * could not read as `unreadable` rather than as zero.
+ *
+ * The old function is kept only so nothing else that imports it breaks. Do not
+ * use it for anything. */
+
+export interface FinanceRow {
+  source: string;
+  status: string;
+  row_count: number;
+  amount: number | null;
+  amount_column: string | null;
+}
+
+export async function fetchFinanceBreakdown(): Promise<{ rows: FinanceRow[]; failed: boolean }> {
+  try {
+    const { data, error } = await supabase.rpc('bambeh_finance_summary');
+    if (error) return { rows: [], failed: true };
+    return { rows: (data ?? []) as FinanceRow[], failed: false };
+  } catch {
+    return { rows: [], failed: true };
+  }
+}
+
+/** @deprecated FIX505 - reads tables that do not exist. See above. */
 export async function fetchFinanceSummary() {
   const out = { subscriptionRevenue: 0, escrowHeld: 0, escrowReleased: 0, coinsSold: 0 };
   try {
@@ -1454,4 +1488,4 @@ export async function setFuelVerified(
     'fuel', id, {});
 }
 
-// BAMBEH_END_TOKEN__ADMINLIB_FIX504__COMPLETE
+// BAMBEH_END_TOKEN__ADMINLIB_FIX505__COMPLETE

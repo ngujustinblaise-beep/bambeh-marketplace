@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX504_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX505_CLEAN
 /**
  * AdminCommandCenter.tsx — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/AdminCommandCenter.tsx
@@ -27,13 +27,15 @@ import {
   Inbox,
   Droplet,   // FIX501
   Fuel,      // FIX504
+  RefreshCw, // FIX505
 } from 'lucide-react';
 import {
   fetchMyRole, capabilitiesFor, ROLE_LABEL, type AdminRole, type Capabilities,
   searchUsers, type AdminUser, setUserFrozen, setAdminFrozen, assignRole,
   fetchDisputes, type Dispute, resolveDispute, setEscrowFrozen,
   composeMessage, fetchPendingMessages, approveMessage, rejectMessage,
-  publishAnnouncement, fetchReports, fetchFinanceSummary, fmtXAF,
+  publishAnnouncement, fetchReports, fetchFinanceBreakdown, fmtXAF,
+  type FinanceRow,   // FIX505
   fetchFeedback, type FeedbackRow, setFeedbackHandled,
   countUsers,
   fetchAllListings, countListingsByType, type AdminListing,
@@ -72,7 +74,10 @@ const NAV: Array<{
   { key: 'fuel',      label: 'Fuel at night',  icon: Fuel,
     badge: ['fuel_pending'] },
   { key: 'requests',  label: 'Requests',      icon: Inbox,
-    badge: ['reset_requests', 'verify_pharmacies', 'verify_hospitals', 'verify_stores'] },
+    // FIX505 - verify_stores removed. The Requests page shows pharmacies and
+    // hospitals only, so counting corporate stores here made a badge that
+    // could never be cleared. A badge must only count what its page renders.
+    badge: ['reset_requests', 'verify_pharmacies', 'verify_hospitals'] },
   { key: 'disputes',  label: 'Disputes',       icon: Gavel,    needs: 'resolveDisputes',
     badge: ['disputes'] },
   { key: 'escrow',    label: 'Escrow',         icon: Lock,     needs: 'freezeEscrow',
@@ -729,31 +734,117 @@ function TeamSection({ userId, role, cap, flash }: { userId: string; role: Admin
 }
 
 // ---------- Finances ----------
+// FIX505 - rebuilt. The old version read `subscription_payments` and
+// `escrow_ledger`, neither of which exists here, caught the errors and printed
+// 0 FCFA. This one asks the database to group the REAL tables by their REAL
+// status values, and says plainly when something could not be read.
+const GOOD = ['SUCCESSFUL', 'SUCCESS', 'COMPLETED', 'PAID', 'RELEASED'];
+const WAIT = ['PENDING', 'PROCESSING', 'HELD', 'REQUESTED', 'FROZEN'];
+
+const SOURCE_LABEL: Record<string, string> = {
+  payments: 'Payments',
+  escrows: 'Buyer Protection',
+  seller_payouts: 'Seller payouts',
+  event_payouts: 'Event payouts',
+};
+
 function FinancesSection() {
-  const [sum, setSum] = useState({ subscriptionRevenue: 0, escrowHeld: 0, escrowReleased: 0, coinsSold: 0 });
+  const [rows, setRows] = useState<FinanceRow[]>([]);
+  const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(true);
-  useEffect(() => { (async () => { setSum(await fetchFinanceSummary()); setLoading(false); })(); }, []);
+
+  const load = async () => {
+    setLoading(true);
+    const res = await fetchFinanceBreakdown();
+    setRows(res.rows); setFailed(res.failed);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const sources = Array.from(new Set(rows.map((r) => r.source)));
+  const earned = rows
+    .filter((r) => r.source === 'payments' && GOOD.includes(r.status.toUpperCase()))
+    .reduce((t, r) => t + Number(r.amount ?? 0), 0);
+  const waiting = rows
+    .filter((r) => r.source === 'payments' && WAIT.includes(r.status.toUpperCase()))
+    .reduce((t, r) => t + Number(r.row_count ?? 0), 0);
+
   return (
     <>
-      <h1 className="text-xl font-bold text-gray-900 mb-1">Finances</h1>
-      <p className="text-sm text-gray-500 mb-4">Owner-only. This is the money flow across the whole platform.</p>
-      {loading ? <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div> : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <FinCard label="Subscription revenue" value={fmtXAF(sum.subscriptionRevenue)} />
-          <FinCard label="Escrow currently held" value={fmtXAF(sum.escrowHeld)} />
-          <FinCard label="Escrow released (completed)" value={fmtXAF(sum.escrowReleased)} />
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Finances</h1>
+          <p className="text-sm text-gray-500">Owner-only. Grouped by the status the database actually holds.</p>
         </div>
+        <button onClick={load} className="shrink-0 text-xs font-bold text-teal-700 hover:underline flex items-center gap-1">
+          <RefreshCw className="w-3 h-3" /> Refresh
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div>
+      ) : failed ? (
+        <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3 mt-4">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold">Could not read the finance figures</p>
+            <p className="text-xs mt-0.5">
+              This is a failure, not an empty platform. Run bambeh_finance_summary() in SQL to see why.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 mb-4">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+              <Wallet className="w-5 h-5 text-emerald-600 mb-2" />
+              <p className="text-2xl font-black text-gray-900">{fmtXAF(earned)}</p>
+              <p className="text-xs text-gray-500">Collected (payments that succeeded)</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+              <Wallet className="w-5 h-5 text-amber-600 mb-2" />
+              <p className="text-2xl font-black text-gray-900">{waiting}</p>
+              <p className="text-xs text-gray-500">Payments still waiting on an answer</p>
+            </div>
+          </div>
+
+          {sources.map((src) => (
+            <div key={src} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-3">
+              <p className="text-sm font-bold text-gray-900 mb-2">{SOURCE_LABEL[src] ?? src}</p>
+              <div className="space-y-1.5">
+                {rows.filter((r) => r.source === src).map((r, i) => {
+                  const up = r.status.toUpperCase();
+                  const tone = up === 'UNREADABLE' ? 'text-red-700'
+                    : GOOD.includes(up) ? 'text-emerald-700'
+                    : WAIT.includes(up) ? 'text-amber-700' : 'text-gray-500';
+                  return (
+                    <div key={src + i} className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className={`font-semibold ${tone}`}>{r.status}</span>
+                      <span className="flex-1 border-b border-dotted border-gray-200" />
+                      <span className="text-gray-500">{r.row_count}</span>
+                      <span className="font-bold text-gray-900 w-28 text-right">
+                        {r.amount === null ? '-' : fmtXAF(Number(r.amount))}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              {rows.find((r) => r.source === src)?.amount_column ? (
+                <p className="text-[11px] text-gray-400 mt-2">
+                  amount read from column "{rows.find((r) => r.source === src)?.amount_column}"
+                </p>
+              ) : null}
+            </div>
+          ))}
+
+          {sources.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-10">
+              The query ran and returned nothing at all. That means no payment table has any rows.
+            </p>
+          ) : null}
+        </>
       )}
     </>
-  );
-}
-function FinCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-      <Wallet className="w-5 h-5 text-teal-600 mb-2" />
-      <p className="text-2xl font-black text-gray-900">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
-    </div>
   );
 }
 
@@ -870,4 +961,4 @@ function ReportsSection({ role }: { role: AdminRole }) {
     </>
   );
 }
-// BAMBEH_END_TOKEN__ADMINCOMMANDCENTER_FIX504__COMPLETE
+// BAMBEH_END_TOKEN__ADMINCOMMANDCENTER_FIX505__COMPLETE
