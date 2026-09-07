@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX497_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX501_CLEAN
 /**
  * admin/lib.ts — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/lib.ts
@@ -1259,4 +1259,114 @@ export function resetWhatsappUrl(phoneDigits: string, link: string): string {
   const msg = `Bambeh: here is your password reset link. Open it on your phone and choose a new password. It works once.\n\n${link}`;
   return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
 }
-// BAMBEH_END_TOKEN__ADMINLIB_FIX497__COMPLETE
+
+// ════════════════════════════════════════════════════════════════════════════
+// FIX501 — WATER / LIGHTS control point
+//
+// Two different things live in one table and the difference is the whole
+// design. A REPORTED cut comes from a user and is visible the moment it is
+// filed, because holding it for a moderator makes the feature useless at 2am.
+// A SCHEDULED cut is an announcement and is visible only once staff verify it,
+// because a false claim that the power goes off tomorrow sends a whole quarter
+// charging their phones for nothing.
+//
+// Staff read the table directly (the RLS staff policy allows it) rather than
+// through utility_outages_active(), because admins must also see the rows
+// users cannot: unverified announcements, and reports that have aged out.
+// ════════════════════════════════════════════════════════════════════════════
+
+export type UtilityKind = 'water' | 'electricity';
+
+export interface UtilityOutage {
+  id: string;
+  utility: UtilityKind;
+  kind: 'reported' | 'scheduled';
+  region: string;
+  town: string;
+  quarter: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  note: string | null;
+  source: string | null;
+  reporter_id: string | null;
+  is_verified: boolean;
+  is_resolved: boolean;
+  confirm_count: number;
+  last_activity_at: string;
+  created_at: string;
+}
+
+export type ScheduledDraft = {
+  utility: UtilityKind;
+  region: string;
+  town: string;
+  quarter: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  note: string | null;
+  source: string | null;
+};
+
+const OUTAGE_COLUMNS =
+  'id, utility, kind, region, town, quarter, starts_at, ends_at, note, source, ' +
+  'reporter_id, is_verified, is_resolved, confirm_count, last_activity_at, created_at';
+
+/** Staff view. `live` = reports still inside their 8-hour window. */
+export async function fetchUtilityOutages(
+  view: 'live' | 'scheduled' | 'all' = 'live',
+): Promise<AdminFetch<UtilityOutage>> {
+  const eightHoursAgo = new Date(Date.now() - 8 * 3600 * 1000).toISOString();
+  let q = supabase.from('utility_outages').select(OUTAGE_COLUMNS)
+    .eq('is_resolved', false)
+    .order('last_activity_at', { ascending: false })
+    .limit(200);
+  if (view === 'live') {
+    q = q.eq('kind', 'reported').gt('last_activity_at', eightHoursAgo);
+  } else if (view === 'scheduled') {
+    q = q.eq('kind', 'scheduled');
+  }
+  return adminSafe<UtilityOutage>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+/** An announcement created BY staff is verified on the spot - the person
+ *  filing it is the person who would otherwise approve it. */
+export async function createScheduledCut(
+  actorId: string, actorRole: AdminRole, draft: ScheduledDraft,
+): Promise<string> {
+  const { row } = await writeTolerant<{ id: string }>(
+    'utility_outages',
+    { ...draft, kind: 'scheduled', is_verified: true, created_by: actorId },
+    { returning: 'id' },
+  );
+  const id = row?.id as string;
+  await logAction(actorId, actorRole, 'create_utility_cut', 'utility', id ?? null,
+    { utility: draft.utility, town: draft.town });
+  return id;
+}
+
+export async function updateScheduledCut(
+  actorId: string, actorRole: AdminRole, id: string, patch: Partial<ScheduledDraft>,
+): Promise<void> {
+  await writeTolerant('utility_outages', { ...patch }, { match: { column: 'id', value: id } });
+  await logAction(actorId, actorRole, 'update_utility_cut', 'utility', id, patch as Record<string, unknown>);
+}
+
+/** Publish or withdraw an announcement. Rejecting closes it rather than
+ *  leaving an unverified row nobody will ever look at again. */
+export async function setOutageVerified(
+  actorId: string, actorRole: AdminRole, id: string, approve: boolean,
+): Promise<void> {
+  const { error } = await supabase.rpc('verify_utility_outage', { p_id: id, p_approve: approve });
+  if (error) throw error;
+  await logAction(actorId, actorRole, approve ? 'verify_utility_cut' : 'reject_utility_cut', 'utility', id, {});
+}
+
+/** Mark it over. Staff may close anyone's report; a user may only close their own. */
+export async function closeOutage(
+  actorId: string, actorRole: AdminRole, id: string,
+): Promise<void> {
+  const { error } = await supabase.rpc('resolve_utility_outage', { p_id: id });
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'close_utility_outage', 'utility', id, {});
+}
+// BAMBEH_END_TOKEN__ADMINLIB_FIX501__COMPLETE

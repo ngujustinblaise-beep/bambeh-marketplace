@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX484_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX501_CLEAN
 /**
  * src/components/home/ServicesRow.tsx — Bambeh Marketplace
  *
@@ -17,7 +17,8 @@
  *   what pays for it. Do not move this block below the strip.
  *
  * WHY SOME TILES ARE MARKED "SOON"
- *   Hospitals, Water/Lights and Fuel are not built yet. A tile that navigates
+ *   Fuel and Safety alerts are not built yet. (Hospitals went live in
+ *   FIX484, Water/Lights in FIX500-501.) A tile that navigates
  *   nowhere is the same lie as a form that discards what you typed, so an
  *   unbuilt service renders as a flat, unclickable card that says SOON. When
  *   its page ships, one line here changes `to` and drops `soon`.
@@ -40,7 +41,7 @@ type Tile = {
 const TILES: Tile[] = [
   { key: 'pharmacy', to: '/pharmacies', icon: Cross,       tint: 'text-emerald-600', bg: 'bg-emerald-50' },
   { key: 'hospital', to: '/hospitals',  icon: Stethoscope, tint: 'text-rose-600',    bg: 'bg-rose-50' },
-  { key: 'utility',                     icon: Droplets,    tint: 'text-sky-600',     bg: 'bg-sky-50' },
+  { key: 'utility',  to: '/water-lights', icon: Droplets,    tint: 'text-sky-600',     bg: 'bg-sky-50' }, // FIX501 live
   { key: 'fuel',                        icon: Fuel,        tint: 'text-amber-600',   bg: 'bg-amber-50' },
   { key: 'safety',                      icon: ShieldAlert, tint: 'text-red-600',     bg: 'bg-red-50' },
 ];
@@ -152,4 +153,4 @@ export default function ServicesRow() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX484__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX501__COMPLETE
