@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__WATERLIGHTS_FIX502_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WATERLIGHTS_FIX503_CLEAN
 /**
  * src/pages/WaterLights.tsx - Bambeh free services
  * FILE LOCATION: src/pages/WaterLights.tsx
@@ -28,6 +28,22 @@
  * wall. Reporting needs an account, because that is what the rate limit and
  * the "it is back" permission hang on.
  *
+ * FIX503 - WATCH AN AREA.
+ *   The tile badge only works when somebody opens the app. Watching is the
+ *   pull: pick your town, or your quarter inside it, and an announced cut
+ *   there reaches you. It is OPT-IN on purpose. A cut in Bastos means nothing
+ *   to somebody in Douala, and notifying everyone would teach people to ignore
+ *   Bambeh notifications - a lesson that cannot be untaught.
+ *
+ *   ONLY ANNOUNCEMENTS NOTIFY, never live reports. A user report is one
+ *   person\u2019s word until several people confirm it; waking a whole quarter
+ *   over it would be the fastest way to make this feature untrustworthy.
+ *
+ *   QUARTER OR VILLAGE, TYPED OR PICKED. Cameroon calls it quartier, quarter
+ *   or kwata, and half of these places are villages with no list anywhere. So
+ *   the field suggests every quarter Bambeh already knows for that town and
+ *   still lets you type one nobody has entered before.
+ *
  * FIVE LANGUAGES, and every non-ASCII character is written as a \uXXXX escape.
  * This file is pure ASCII on disk, so no encoding pass can ever mangle it -
  * the same armour LocationFilter and AfricanPhoneInput carry after FIX379/491.
@@ -39,7 +55,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Droplet, Zap, Loader2, AlertCircle, RefreshCw,
-  MapPin, Clock, Plus, Check, Users, CalendarClock, Info, X,
+  MapPin, Clock, Plus, Check, Users, CalendarClock, Info, X, Bell,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
@@ -52,6 +68,10 @@ interface Outage {
   confirm_count: number; last_activity_at: string; mine: boolean;
 }
 interface TownRow { town: string; region: string }
+interface Watch {
+  id: string; region: string; town: string;
+  quarter: string | null; utility: 'water' | 'electricity' | null;
+}
 
 const REGIONS = [
   'Adamaoua', 'Centre', 'East', 'Far North', 'Littoral',
@@ -61,6 +81,15 @@ const REGIONS = [
 const STR: Record<string, Record<string, string>> = {
   en: {
     title: 'Water & Lights', back: 'Back',
+    watch: 'Watch this area', watchTitle: 'Watch an area',
+    watchSub: 'We will tell you when a cut is announced here. Nothing else.',
+    wholeTown: 'Whole town', bothUtil: 'Water and lights',
+    watching: 'You are watching', stopWatch: 'Stop',
+    watchAdded: 'Watching. You will be told about announced cuts here.',
+    watchRemoved: 'Stopped watching.',
+    tooManyWatches: 'That is enough areas for one account.',
+    quarterOrVillage: 'Quarter or village', pickOrType: 'Pick one or type your own',
+    save: 'Save',
     sub: 'Cuts reported by people around you. Free, no sign-in to read.',
     all: 'All', water: 'Water', power: 'Lights', allTowns: 'Everywhere',
     pickTown: 'Choose your town',
@@ -87,6 +116,15 @@ const STR: Record<string, Record<string, string>> = {
   },
   fr: {
     title: 'Eau & Courant', back: 'Retour',
+    watch: 'Suivre cette zone', watchTitle: 'Suivre une zone',
+    watchSub: 'Nous vous pr\u00e9viendrons quand une coupure est annonc\u00e9e ici. Rien d\u2019autre.',
+    wholeTown: 'Toute la ville', bothUtil: 'Eau et courant',
+    watching: 'Vous suivez', stopWatch: 'Arr\u00eater',
+    watchAdded: 'Suivi activ\u00e9. Vous serez pr\u00e9venu des coupures annonc\u00e9es ici.',
+    watchRemoved: 'Suivi arr\u00eat\u00e9.',
+    tooManyWatches: 'Cela fait beaucoup de zones pour un seul compte.',
+    quarterOrVillage: 'Quartier ou village', pickOrType: 'Choisissez ou \u00e9crivez le v\u00f4tre',
+    save: 'Enregistrer',
     sub: 'Coupures signal\u00e9es par les gens autour de vous. Gratuit, sans compte pour lire.',
     all: 'Tout', water: 'Eau', power: 'Courant', allTowns: 'Partout',
     pickTown: 'Choisissez votre ville',
@@ -113,6 +151,15 @@ const STR: Record<string, Record<string, string>> = {
   },
   pidgin: {
     title: 'Water & Light', back: 'Go back',
+    watch: 'Follow dis area', watchTitle: 'Follow one area',
+    watchSub: 'We go tell you when dem announce cut for here. Na only dat.',
+    wholeTown: 'Di whole town', bothUtil: 'Water and light',
+    watching: 'You dey follow', stopWatch: 'Stop',
+    watchAdded: 'You dey follow am now. We go tell you.',
+    watchRemoved: 'You no dey follow am again.',
+    tooManyWatches: 'Na plenty area for one account.',
+    quarterOrVillage: 'Quarter or village', pickOrType: 'Choose one or write your own',
+    save: 'Save am',
     sub: 'Wetin people for your side don talk say e cut. Free, you no need account for read.',
     all: 'All', water: 'Water', power: 'Light', allTowns: 'Everywhere',
     pickTown: 'Choose your town',
@@ -139,6 +186,15 @@ const STR: Record<string, Record<string, string>> = {
   },
   ar: {
     title: '\u0627\u0644\u0645\u0627\u0621 \u0648\u0627\u0644\u0643\u0647\u0631\u0628\u0627\u0621', back: '\u0631\u062c\u0648\u0639',
+    watch: '\u062a\u0627\u0628\u0639 \u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629', watchTitle: '\u062a\u0627\u0628\u0639 \u0645\u0646\u0637\u0642\u0629',
+    watchSub: '\u0633\u0646\u062e\u0628\u0631\u0643 \u0639\u0646\u062f \u0627\u0644\u0625\u0639\u0644\u0627\u0646 \u0639\u0646 \u0627\u0646\u0642\u0637\u0627\u0639 \u0647\u0646\u0627. \u0644\u0627 \u0634\u064a\u0621 \u063a\u064a\u0631 \u0630\u0644\u0643.',
+    wholeTown: '\u0627\u0644\u0645\u062f\u064a\u0646\u0629 \u0643\u0644\u0647\u0627', bothUtil: '\u0627\u0644\u0645\u0627\u0621 \u0648\u0627\u0644\u0643\u0647\u0631\u0628\u0627\u0621',
+    watching: '\u0623\u0646\u062a \u062a\u062a\u0627\u0628\u0639', stopWatch: '\u0625\u064a\u0642\u0627\u0641',
+    watchAdded: '\u062a\u0645\u062a \u0627\u0644\u0645\u062a\u0627\u0628\u0639\u0629. \u0633\u0646\u062e\u0628\u0631\u0643 \u0628\u0627\u0644\u0627\u0646\u0642\u0637\u0627\u0639\u0627\u062a \u0627\u0644\u0645\u0639\u0644\u0646\u0629 \u0647\u0646\u0627.',
+    watchRemoved: '\u062a\u0645 \u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0645\u062a\u0627\u0628\u0639\u0629.',
+    tooManyWatches: '\u0647\u0630\u0627 \u0639\u062f\u062f \u0643\u0628\u064a\u0631 \u0645\u0646 \u0627\u0644\u0645\u0646\u0627\u0637\u0642 \u0644\u062d\u0633\u0627\u0628 \u0648\u0627\u062d\u062f.',
+    quarterOrVillage: '\u0627\u0644\u062d\u064a \u0623\u0648 \u0627\u0644\u0642\u0631\u064a\u0629', pickOrType: '\u0627\u062e\u062a\u0631 \u0623\u0648 \u0627\u0643\u062a\u0628 \u0627\u0633\u0645\u0627 \u0622\u062e\u0631',
+    save: '\u062d\u0641\u0638',
     sub: '\u0627\u0646\u0642\u0637\u0627\u0639\u0627\u062a \u064a\u0628\u0644\u063a \u0639\u0646\u0647\u0627 \u0627\u0644\u0646\u0627\u0633 \u062d\u0648\u0644\u0643. \u0645\u062c\u0627\u0646\u064a\u060c \u062f\u0648\u0646 \u062a\u0633\u062c\u064a\u0644 \u062f\u062e\u0648\u0644.',
     all: '\u0627\u0644\u0643\u0644', water: '\u0645\u0627\u0621', power: '\u0643\u0647\u0631\u0628\u0627\u0621', allTowns: '\u0643\u0644 \u0627\u0644\u0645\u062f\u0646',
     pickTown: '\u0627\u062e\u062a\u0631 \u0645\u062f\u064a\u0646\u062a\u0643',
@@ -165,6 +221,15 @@ const STR: Record<string, Record<string, string>> = {
   },
   ff: {
     title: 'Ndiyam e Yiite', back: 'Rutto',
+    watch: 'Jokku nokku ngoo', watchTitle: 'Jokku nokku',
+    watchSub: 'Min mba\u0257anay ma habaru so ta\u01b4re anndinaama \u0257oo. Ko \u0257um tan.',
+    wholeTown: 'Saare fof', bothUtil: 'Ndiyam e yiite',
+    watching: 'A jokkii', stopWatch: 'Dartin',
+    watchAdded: 'A jokkii. Min mba\u0257anay ma habaru.',
+    watchRemoved: 'Jokkondiral dartinaama.',
+    tooManyWatches: '\u0189um ko nokkuuje \u0257uu\u0257\u0257e e konte gooto.',
+    quarterOrVillage: 'Leydi maa wuro', pickOrType: 'Su\u0253o maa winndu ko ngoodi maa',
+    save: 'Danndu',
     sub: 'Ta\u01b4re nde yim\u0253e \u0253e \u0253adii ma kaali. Meere, a alaa haaje se\u014baade ngam janngude.',
     all: 'Fof', water: 'Ndiyam', power: 'Yiite', allTowns: 'Nokkuuje fof',
     pickTown: 'Su\u0253o saare maa',
@@ -238,6 +303,14 @@ export default function WaterLights() {
   } | null>(null);
   const [sending, setSending] = useState(false);
 
+  // FIX503 - watching
+  const [watches, setWatches] = useState<Watch[]>([]);
+  const [quarters, setQuarters] = useState<string[]>([]);
+  const [watchForm, setWatchForm] = useState<{
+    region: string; town: string; quarter: string; utility: '' | 'water' | 'electricity';
+  } | null>(null);
+  const [savingWatch, setSavingWatch] = useState(false);
+
   const flash = (m: string) => { setToast(m); window.setTimeout(() => setToast(''), 3500); };
 
   // getSession reads the token locally - no network, so it cannot time out.
@@ -271,8 +344,30 @@ export default function WaterLights() {
     } finally { setLoading(false); }
   }, [filter, town]);
 
+  // FIX503 - what this person already watches. Silent on failure: a missing
+  // list must not stop anyone reading the page.
+  const loadWatches = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.rpc('my_utility_watches');
+      if (!error) setWatches((data ?? []) as Watch[]);
+    } catch { /* ignore */ }
+  }, []);
+
+  // Quarters Bambeh already knows for this town, as suggestions only. Half of
+  // these places are villages that appear on no list, so typing must still work.
+  const loadQuarters = useCallback(async (forTown: string) => {
+    try {
+      const { data, error } = await supabase.rpc('area_quarters', { p_town: forTown || null });
+      if (!error) {
+        setQuarters(((data ?? []) as Array<{ quarter: string }>).map((r) => r.quarter).filter(Boolean));
+      }
+    } catch { /* suggestions are a convenience, never a requirement */ }
+  }, []);
+
   useEffect(() => { loadTowns(); }, [loadTowns]);
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (signedIn) loadWatches(); }, [signedIn, loadWatches]);
+  useEffect(() => { loadQuarters(town); }, [town, loadQuarters]);
 
   const chooseTown = (v: string) => {
     setTown(v);
@@ -284,6 +379,7 @@ export default function WaterLights() {
     if (m.includes('BAMBEH_TOO_MANY_REPORTS')) return t('tooMany');
     if (m.includes('BAMBEH_AREA_REQUIRED')) return t('areaRequired');
     if (m.includes('BAMBEH_SIGN_IN_REQUIRED')) return t('signIn');
+    if (m.includes('BAMBEH_TOO_MANY_WATCHES')) return t('tooManyWatches');
     return t('failedSend');
   };
 
@@ -309,6 +405,33 @@ export default function WaterLights() {
       flash(t('restored'));
       await load();
     } catch (e) { flash(errText(e)); } finally { setBusy(null); }
+  };
+
+  const saveWatch = async () => {
+    if (!watchForm) return;
+    if (!watchForm.town.trim()) { flash(t('areaRequired')); return; }
+    setSavingWatch(true);
+    try {
+      const { error } = await supabase.rpc('utility_watch', {
+        p_region: watchForm.region.trim(),
+        p_town: watchForm.town.trim(),
+        p_quarter: watchForm.quarter.trim() || null,
+        p_utility: watchForm.utility || null,
+      });
+      if (error) throw error;
+      setWatchForm(null);
+      flash(t('watchAdded'));
+      await loadWatches();
+    } catch (e) { flash(errText(e)); } finally { setSavingWatch(false); }
+  };
+
+  const removeWatch = async (w: Watch) => {
+    try {
+      const { error } = await supabase.rpc('utility_unwatch', { p_id: w.id });
+      if (error) throw error;
+      flash(t('watchRemoved'));
+      await loadWatches();
+    } catch (e) { flash(errText(e)); }
   };
 
   const submit = async () => {
@@ -374,6 +497,37 @@ export default function WaterLights() {
             className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold py-3 rounded-xl">
             <Plus className="w-4 h-4" /> {signedIn ? t('report') : t('signIn')}
           </button>
+
+          {/* FIX503 - opt in to being told, rather than having to remember to look. */}
+          <button
+            onClick={() => {
+              if (!signedIn) { navigate('/login'); return; }
+              const known = towns.find((x) => x.town.toLowerCase() === town.toLowerCase());
+              setWatchForm({ region: known?.region ?? '', town: town, quarter: '', utility: '' });
+            }}
+            className="w-full flex items-center justify-center gap-2 border border-sky-200 text-sky-700 hover:bg-sky-50 text-sm font-bold py-2.5 rounded-xl">
+            <Bell className="w-4 h-4" /> {t('watch')}
+          </button>
+
+          {watches.length > 0 ? (
+            <div>
+              <p className="text-[11px] font-semibold text-gray-500 mb-1.5">{t('watching')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {watches.map((w) => (
+                  <span key={w.id}
+                    className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-800 text-[11px] font-semibold rounded-full pl-2.5 pr-1 py-1">
+                    {w.utility === 'water' ? <Droplet className="w-3 h-3" />
+                      : w.utility === 'electricity' ? <Zap className="w-3 h-3" /> : null}
+                    {[w.quarter, w.town].filter(Boolean).join(', ')}
+                    <button onClick={() => removeWatch(w)} title={t('stopWatch')}
+                      className="p-0.5 rounded-full hover:bg-sky-100">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -520,7 +674,8 @@ export default function WaterLights() {
             <input value={form.town} onChange={(e) => setForm({ ...form, town: e.target.value })}
               placeholder={t('town')} className={INPUT} />
             <input value={form.quarter} onChange={(e) => setForm({ ...form, quarter: e.target.value })}
-              placeholder={t('quarterPh')} className={INPUT} />
+              list="bambeh-quarters" placeholder={t('quarterOrVillage')} className={INPUT} />
+            <p className="text-[11px] text-gray-400 -mt-1">{t('pickOrType')}</p>
             <textarea value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
               placeholder={t('notePh')} rows={2} className={INPUT} />
 
@@ -539,6 +694,75 @@ export default function WaterLights() {
         </div>
       ) : null}
 
+      {/* One list, used by both forms. Suggestions only - typing always wins. */}
+      <datalist id="bambeh-quarters">
+        {quarters.map((q) => <option key={q} value={q} />)}
+      </datalist>
+
+      {watchForm ? (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center"
+          onClick={() => !savingWatch && setWatchForm(null)}>
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-4 space-y-3"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <Bell className="w-4 h-4 text-sky-600" /> {t('watchTitle')}
+              </h3>
+              <button onClick={() => !savingWatch && setWatchForm(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500">{t('watchSub')}</p>
+
+            <select value={watchForm.region} onChange={(e) => setWatchForm({ ...watchForm, region: e.target.value })}
+              className={INPUT}>
+              <option value="">{t('region')}</option>
+              {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
+
+            <input value={watchForm.town}
+              onChange={(e) => { setWatchForm({ ...watchForm, town: e.target.value }); loadQuarters(e.target.value); }}
+              placeholder={t('town')} className={INPUT} />
+
+            <div>
+              <input value={watchForm.quarter}
+                onChange={(e) => setWatchForm({ ...watchForm, quarter: e.target.value })}
+                list="bambeh-quarters" placeholder={t('quarterOrVillage')} className={INPUT} />
+              <p className="text-[11px] text-gray-400 mt-1">
+                {t('pickOrType')} \u2014 {t('wholeTown')}
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <button onClick={() => setWatchForm({ ...watchForm, utility: '' })}
+                className={`${TAB} ${watchForm.utility === '' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200'}`}>
+                {t('bothUtil')}
+              </button>
+              <button onClick={() => setWatchForm({ ...watchForm, utility: 'water' })}
+                className={`${TAB} ${watchForm.utility === 'water' ? 'bg-sky-600 text-white border-sky-600' : 'bg-white text-gray-600 border-gray-200'}`}>
+                <Droplet className="w-4 h-4" />
+              </button>
+              <button onClick={() => setWatchForm({ ...watchForm, utility: 'electricity' })}
+                className={`${TAB} ${watchForm.utility === 'electricity' ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-gray-600 border-gray-200'}`}>
+                <Zap className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button onClick={() => setWatchForm(null)} disabled={savingWatch}
+                className="flex-1 text-sm font-bold text-gray-600 border border-gray-200 py-2.5 rounded-xl disabled:opacity-50">
+                {t('cancel')}
+              </button>
+              <button onClick={saveWatch} disabled={savingWatch}
+                className="flex-1 flex items-center justify-center gap-2 text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 py-2.5 rounded-xl disabled:opacity-50">
+                {savingWatch ? <Loader2 className="w-4 h-4 animate-spin" /> : null} {t('save')}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {toast ? (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2.5 rounded-xl shadow-lg z-50">
           {toast}
@@ -547,4 +771,4 @@ export default function WaterLights() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WATERLIGHTS_FIX502__COMPLETE
+// BAMBEH_END_TOKEN__WATERLIGHTS_FIX503__COMPLETE

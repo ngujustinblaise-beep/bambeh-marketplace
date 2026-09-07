@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__UTILITIESSECTION_FIX501_CLEAN
+// BAMBEH_DEPLOY_TOKEN__UTILITIESSECTION_FIX503_CLEAN
 /**
  * src/features/admin/UtilitiesSection.tsx - Bambeh Admin Command Center
  *
@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import {
   fetchUtilityOutages, createScheduledCut, updateScheduledCut,
-  setOutageVerified, closeOutage, CM_REGIONS_FALLBACK, fetchRegions,
+  setOutageVerified, closeOutage, CM_REGIONS_FALLBACK, fetchRegions, fetchQuarters,
   type UtilityOutage, type ScheduledDraft, type UtilityKind,
   type AdminRole, type Capabilities,
 } from './lib';
@@ -84,6 +84,7 @@ export default function UtilitiesSection({
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [regions, setRegions] = useState<string[]>(CM_REGIONS_FALLBACK);
+  const [quarters, setQuarters] = useState<string[]>([]);   // FIX503 suggestions
   const [draft, setDraft] = useState<ScheduledDraft | null>(null);
   const [editing, setEditing] = useState<UtilityOutage | null>(null);
   const [saving, setSaving] = useState(false);
@@ -102,6 +103,17 @@ export default function UtilitiesSection({
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { (async () => { setRegions(await fetchRegions()); })(); }, []);
+
+  // FIX503 - suggest quarters already known for the town being typed.
+  const draftTown = draft?.town ?? '';
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const qs = await fetchQuarters(draftTown);
+      if (alive) setQuarters(qs);
+    })();
+    return () => { alive = false; };
+  }, [draftTown]);
 
   const set = <K extends keyof ScheduledDraft>(k: K, v: ScheduledDraft[K]) =>
     setDraft((d) => (d ? { ...d, [k]: v } : d));
@@ -369,9 +381,12 @@ export default function UtilitiesSection({
                 <input value={draft.town} onChange={(e) => set('town', e.target.value)}
                   placeholder="Yaounde" className={INPUT} />
               </Field>
-              <Field label="Quarter" hint="Leave empty for the whole town">
+              <Field label="Quarter or village" hint="Pick one or type your own. Empty = whole town.">
                 <input value={draft.quarter ?? ""} onChange={(e) => set('quarter', e.target.value)}
-                  placeholder="Bastos" className={INPUT} />
+                  list="bambeh-admin-quarters" placeholder="Bastos" className={INPUT} />
+                <datalist id="bambeh-admin-quarters">
+                  {quarters.map((q) => <option key={q} value={q} />)}
+                </datalist>
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -424,4 +439,4 @@ function Field({ label, required, hint, children }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__UTILITIESSECTION_FIX501__COMPLETE
+// BAMBEH_END_TOKEN__UTILITIESSECTION_FIX503__COMPLETE

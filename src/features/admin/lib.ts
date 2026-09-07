@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX501_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX503_CLEAN
 /**
  * admin/lib.ts — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/lib.ts
@@ -1369,4 +1369,14 @@ export async function closeOutage(
   if (error) throw error;
   await logAction(actorId, actorRole, 'close_utility_outage', 'utility', id, {});
 }
-// BAMBEH_END_TOKEN__ADMINLIB_FIX501__COMPLETE
+/** FIX503 - quarters Bambeh already knows for a town, as SUGGESTIONS.
+ *  Cameroon calls it quartier, quarter or kwata, and many of these places are
+ *  villages that appear on no official list, so this can never be a closed
+ *  dropdown - it feeds a datalist and typing always wins. */
+export async function fetchQuarters(town: string): Promise<string[]> {
+  const out = await adminSafe<{ quarter: string }>(() =>
+    supabase.rpc('area_quarters', { p_town: town || null }) as unknown as Promise<{ data: unknown; error: unknown }>);
+  return out.rows.map((r) => r.quarter).filter(Boolean);
+}
+
+// BAMBEH_END_TOKEN__ADMINLIB_FIX503__COMPLETE
