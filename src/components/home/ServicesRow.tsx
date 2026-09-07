@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX506_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX507_CLEAN
 /**
  * src/components/home/ServicesRow.tsx — Bambeh Marketplace
  *
@@ -17,8 +17,9 @@
  *   what pays for it. Do not move this block below the strip.
  *
  * WHY SOME TILES ARE MARKED "SOON"
- *   Safety alerts is not built yet. (Hospitals went live in FIX484,
- *   Water/Lights in FIX500-501, Fuel at night in FIX506.) A tile that navigates
+ *   All five are live: Pharmacies FIX480, Hospitals FIX484, Water/Lights
+ *   FIX500-501, Fuel at night FIX506, Safety alerts FIX507. The SOON
+ *   branch below stays - the next service will need it. A tile that navigates
  *   nowhere is the same lie as a form that discards what you typed, so an
  *   unbuilt service renders as a flat, unclickable card that says SOON. When
  *   its page ships, one line here changes `to` and drops `soon`.
@@ -61,7 +62,7 @@ const TILES: Tile[] = [
   { key: 'hospital', to: '/hospitals',  icon: Stethoscope, tint: 'text-rose-600',    bg: 'bg-rose-50' },
   { key: 'utility',  to: '/water-lights', icon: Droplets,    tint: 'text-sky-600',     bg: 'bg-sky-50' }, // FIX501 live
   { key: 'fuel',     to: '/fuel',       icon: Fuel,        tint: 'text-amber-600',   bg: 'bg-amber-50' }, // FIX506 live
-  { key: 'safety',                      icon: ShieldAlert, tint: 'text-red-600',     bg: 'bg-red-50' },
+  { key: 'safety',   to: '/safety',     icon: ShieldAlert, tint: 'text-red-600',     bg: 'bg-red-50' }, // FIX507 live
 ];
 
 const STR: Record<string, Record<string, string>> = {
@@ -123,6 +124,7 @@ const tr = (l: string, k: string) => (STR[l] && STR[l][k]) || STR.en[k] || k;
 const TOWN_KEY = 'bambeh:utility:town';
 const SEEN_KEY = 'bambeh:utility:seen';
 const FUEL_TOWN_KEY = 'bambeh:fuel:town';
+const SAFETY_TOWN_KEY = 'bambeh:safety:town';
 
 function useUtilitySignal() {
   const [count, setCount] = useState(0);
@@ -183,9 +185,34 @@ function useFuelSignal() {
   return count;
 }
 
+/** FIX507 - how many incidents are UNSAFE right now in the town this person
+ *  last chose. The one badge on this row that means danger rather than
+ *  availability, so it must never linger: safety_active only returns
+ *  incidents that have not expired. */
+function useSafetySignal() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        let stown: string | null = null;
+        try { stown = window.localStorage.getItem(SAFETY_TOWN_KEY); } catch { /* private mode */ }
+        const { data, error } = await supabase.rpc('safety_active', { p_town: stown || null });
+        if (error || !alive || !Array.isArray(data)) return;
+        setCount((data as Array<{ is_unsafe: boolean }>).filter((r) => r.is_unsafe).length);
+      } catch {
+        /* silent - a badge must never break Home */
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+  return count;
+}
+
 export default function ServicesRow() {
   const { count: utilityCount, fresh: utilityFresh } = useUtilitySignal();   // FIX502
   const fuelOpenCount = useFuelSignal();                                    // FIX506
+  const safetyCount = useSafetySignal();                                    // FIX507
   const { language } = useLanguage();
   const lang = typeof language === 'string' ? language : 'en';
   const t = (k: string) => tr(lang, k);
@@ -203,7 +230,8 @@ export default function ServicesRow() {
         {TILES.map((tile) => {
           const Icon = tile.icon;
           const badge = tile.key === 'utility' ? utilityCount
-            : tile.key === 'fuel' ? fuelOpenCount : 0;               // FIX502 / FIX506
+            : tile.key === 'fuel' ? fuelOpenCount
+            : tile.key === 'safety' ? safetyCount : 0;               // FIX502 / 506 / 507
           const isFresh = tile.key === 'utility' && utilityFresh;
 
           const inner = (
@@ -250,4 +278,4 @@ export default function ServicesRow() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX506__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX507__COMPLETE

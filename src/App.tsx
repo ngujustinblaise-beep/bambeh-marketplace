@@ -374,6 +374,7 @@ const HospitalsOnDuty     = lazy(() => import("@/pages/HospitalsOnDuty"));  // F
 const ListMyService       = lazy(() => import("@/pages/ListMyService"));   // FIX490
 const WaterLights         = lazy(() => import("@/pages/WaterLights"));     // FIX500
 const FuelAtNight         = lazy(() => import("@/pages/FuelAtNight"));     // FIX506
+const SafetyAlerts        = lazy(() => import("@/pages/SafetyAlerts"));    // FIX507
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
 const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
@@ -797,6 +798,7 @@ export default function App() {
                         <Route path="/hospitals" element={<MainLayout><HospitalsOnDuty /></MainLayout>} />
                         <Route path="/water-lights" element={<MainLayout><WaterLights /></MainLayout>} />{/* FIX500 - outside AuthGate on purpose */}
                         <Route path="/fuel" element={<MainLayout><FuelAtNight /></MainLayout>} />{/* FIX506 - outside AuthGate on purpose */}
+                        <Route path="/safety" element={<MainLayout><SafetyAlerts /></MainLayout>} />{/* FIX507 - outside AuthGate on purpose */}
                         <Route path="/list-my-service" element={<MainLayout><AuthGate require="user"><ListMyService /></AuthGate></MainLayout>} />{/* FIX484 - also outside AuthGate */}
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
