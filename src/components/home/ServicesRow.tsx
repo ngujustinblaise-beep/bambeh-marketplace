@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX502_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX506_CLEAN
 /**
  * src/components/home/ServicesRow.tsx — Bambeh Marketplace
  *
@@ -17,8 +17,8 @@
  *   what pays for it. Do not move this block below the strip.
  *
  * WHY SOME TILES ARE MARKED "SOON"
- *   Fuel and Safety alerts are not built yet. (Hospitals went live in
- *   FIX484, Water/Lights in FIX500-501.) A tile that navigates
+ *   Safety alerts is not built yet. (Hospitals went live in FIX484,
+ *   Water/Lights in FIX500-501, Fuel at night in FIX506.) A tile that navigates
  *   nowhere is the same lie as a form that discards what you typed, so an
  *   unbuilt service renders as a flat, unclickable card that says SOON. When
  *   its page ships, one line here changes `to` and drops `soon`.
@@ -60,7 +60,7 @@ const TILES: Tile[] = [
   { key: 'pharmacy', to: '/pharmacies', icon: Cross,       tint: 'text-emerald-600', bg: 'bg-emerald-50' },
   { key: 'hospital', to: '/hospitals',  icon: Stethoscope, tint: 'text-rose-600',    bg: 'bg-rose-50' },
   { key: 'utility',  to: '/water-lights', icon: Droplets,    tint: 'text-sky-600',     bg: 'bg-sky-50' }, // FIX501 live
-  { key: 'fuel',                        icon: Fuel,        tint: 'text-amber-600',   bg: 'bg-amber-50' },
+  { key: 'fuel',     to: '/fuel',       icon: Fuel,        tint: 'text-amber-600',   bg: 'bg-amber-50' }, // FIX506 live
   { key: 'safety',                      icon: ShieldAlert, tint: 'text-red-600',     bg: 'bg-red-50' },
 ];
 
@@ -122,6 +122,7 @@ const tr = (l: string, k: string) => (STR[l] && STR[l][k]) || STR.en[k] || k;
 // Written by the Water/Lights page itself; read here. Same keys both sides.
 const TOWN_KEY = 'bambeh:utility:town';
 const SEEN_KEY = 'bambeh:utility:seen';
+const FUEL_TOWN_KEY = 'bambeh:fuel:town';
 
 function useUtilitySignal() {
   const [count, setCount] = useState(0);
@@ -157,8 +158,34 @@ function useUtilitySignal() {
   return { count, fresh };
 }
 
+/** FIX506 - how many stations are open RIGHT NOW in the town this person last
+ *  chose. That is the only fuel number worth a badge: a count of stations that
+ *  exist tells you nothing at 1am, a count of stations you can drive to does. */
+function useFuelSignal() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        let ftown: string | null = null;
+        try { ftown = window.localStorage.getItem(FUEL_TOWN_KEY); } catch { /* private mode */ }
+        const { data, error } = await supabase.rpc('fuel_open_now', {
+          p_town: ftown || null, p_fuel: null,
+        });
+        if (error || !alive || !Array.isArray(data)) return;
+        setCount((data as Array<{ open_now: boolean }>).filter((r) => r.open_now).length);
+      } catch {
+        /* silent - a badge must never break Home */
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+  return count;
+}
+
 export default function ServicesRow() {
   const { count: utilityCount, fresh: utilityFresh } = useUtilitySignal();   // FIX502
+  const fuelOpenCount = useFuelSignal();                                    // FIX506
   const { language } = useLanguage();
   const lang = typeof language === 'string' ? language : 'en';
   const t = (k: string) => tr(lang, k);
@@ -175,7 +202,8 @@ export default function ServicesRow() {
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
         {TILES.map((tile) => {
           const Icon = tile.icon;
-          const badge = tile.key === 'utility' ? utilityCount : 0;   // FIX502
+          const badge = tile.key === 'utility' ? utilityCount
+            : tile.key === 'fuel' ? fuelOpenCount : 0;               // FIX502 / FIX506
           const isFresh = tile.key === 'utility' && utilityFresh;
 
           const inner = (
@@ -222,4 +250,4 @@ export default function ServicesRow() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX502__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX506__COMPLETE
