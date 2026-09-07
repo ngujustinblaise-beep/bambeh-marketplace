@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__REQUESTSSECTION_FIX489_CLEAN
+// BAMBEH_DEPLOY_TOKEN__REQUESTSSECTION_FIX500_CLEAN
 /**
  * src/features/admin/RequestsSection.tsx — Bambeh Admin Command Center
  *
@@ -74,8 +74,13 @@ export default function RequestsSection({
     setResets(r.rows);
     setProviders(p.rows);
     // A failed load must never render as "nothing is waiting".
-    setResetErr(r.ok ? null : (r.error || 'Could not load reset requests.'));
-    setProvErr(p.ok ? null : (p.error || 'Could not load submissions.'));
+    // FIX500 - these fetchers return { rows, failed }. This read `.ok` and
+    // `.error`, which are both undefined, so `undefined ? a : b` always took
+    // the error branch and BOTH queues showed "Could not load" on every load,
+    // success or not. Identical bug to FIX497 in PharmaciesSection, same day,
+    // same wrong contract. vite build does not typecheck, so nothing caught it.
+    setResetErr(r.failed ? 'Could not load reset requests.' : null);
+    setProvErr(p.failed ? 'Could not load submissions.' : null);
     setLoading(false);
   }, []);
 
@@ -290,4 +295,4 @@ function Queue({ error, onRetry, empty, emptyHint, rows }: {
   }
   return <div className="space-y-2">{rows}</div>;
 }
-// BAMBEH_END_TOKEN__REQUESTSSECTION_FIX489__COMPLETE
+// BAMBEH_END_TOKEN__REQUESTSSECTION_FIX500__COMPLETE
