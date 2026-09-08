@@ -145,15 +145,22 @@ export default function AdminCommandCenter() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="md:w-60 bg-gray-900 text-gray-300 md:min-h-screen">
-        <div className="px-4 py-4 flex items-center gap-2 border-b border-gray-800">
+      {/* FIX511 - fixed-height column that stays put while the page scrolls. */}
+      <aside className="md:w-60 md:shrink-0 bg-gray-900 text-gray-300 md:sticky md:top-0 md:h-screen md:flex md:flex-col">
+        <div className="px-4 py-4 flex items-center gap-2 border-b border-gray-800 md:shrink-0">
           <Shield className="w-6 h-6 text-teal-400" />
           <div>
             <p className="text-white font-bold text-sm leading-tight">Command Center</p>
             <p className="text-[11px] text-teal-400">{ROLE_LABEL[role]}</p>
           </div>
         </div>
-        <nav className="flex md:flex-col overflow-x-auto md:overflow-visible p-2 gap-1">
+        {/* FIX511 - the section list scrolls on its own. md:min-h-0 is the line
+            that makes it work: without it a flex child refuses to shrink below
+            its content and the overflow never engages. */}
+        <nav
+          className="flex md:flex-col overflow-x-auto md:overflow-y-auto md:flex-1 md:min-h-0 p-2 gap-1"
+          style={{ scrollbarWidth: 'thin', scrollbarColor: '#4b5563 transparent' }}
+        >
           {visibleNav.map((n) => {
             const Icon = n.icon;
             const active = section === n.key;
