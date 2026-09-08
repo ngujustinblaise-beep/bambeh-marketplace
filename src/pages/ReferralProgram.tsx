@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__REFERRALPROGRAM_FIX137_REAL_CLEAN
+// BAMBEH_DEPLOY_TOKEN__REFERRALPROGRAM_FIX512_CLEAN
 /**
  * ReferralProgram.tsx — Bambeh Marketplace (FIX137)
  * FILE LOCATION: src/pages/ReferralProgram.tsx  (REPLACES the mock version)
@@ -10,6 +10,22 @@
  *  • Live reward amount from zerm_reward_rules (admin-editable, no redeploy).
  *  • "Enter a friend's code" → apply_referral_code() RPC with clear feedback.
  *  • Copy + native Share. 5 languages + RTL.
+ *
+ * FIX512 - THE PAGE PROMISED 200 COINS BEFORE IT KNEW BETTER.
+ * ----------------------------------------------------------
+ * rewardAmount started at 200 and the real value (0.0025) only arrived after
+ * the fetch. So every visitor, in five languages, read "You earn 200 Zerm
+ * Coins" first. Worse, the fetch ignored its own error: on a dropped request -
+ * which this app gets constantly - 200 stayed on screen for good.
+ *
+ * The rule now: NEVER show a number the server has not confirmed. Until it
+ * answers, the sentence simply says coins are earned and names no figure. If
+ * the request fails, it stays that way rather than inventing one. A promise
+ * nobody can honour is more expensive than a vaguer sentence.
+ *
+ * Second bug, same family: earnings were printed with toLocaleString(), which
+ * rounds 0.0025 to "0.003" and three awards to "0.008". The screen and the
+ * ledger disagreed. formatCoins() below keeps four decimals.
  *
  * © 2026 BAMBEH SARL. All rights reserved.
  */
@@ -30,7 +46,8 @@ const strings = {
     share: 'Share with Friends', copied: 'Copied!',
     shareText: (code: string, amt: number) =>
       `Join me on Bambeh Marketplace! Use my referral code ${code} when you sign up. bambeh.com`,
-    perFriend: (amt: number) => `You earn ${amt} Zerm Coins for every friend who joins with your code.`,
+    perFriend: (amt: string) => `You earn ${amt} Zerm Coins for every friend who joins with your code.`,
+    perFriendUnknown: 'You earn Zerm Coins for every friend who joins with your code.',
     statFriends: 'Friends Joined', statEarned: 'Coins Earned',
     haveCode: 'Have a friend\u2019s code?', haveCodeHint: 'Enter it once to link your accounts.',
     codePlaceholder: 'Enter code', apply: 'Apply', applying: 'Applying\u2026',
@@ -49,7 +66,8 @@ const strings = {
     share: 'Partager avec des amis', copied: 'Copi\u00e9 !',
     shareText: (code: string, amt: number) =>
       `Rejoins-moi sur Bambeh Marketplace ! Utilise mon code ${code} \u00e0 l\u2019inscription. bambeh.com`,
-    perFriend: (amt: number) => `Vous gagnez ${amt} pi\u00e8ces Zerm pour chaque ami qui s\u2019inscrit avec votre code.`,
+    perFriend: (amt: string) => `Vous gagnez ${amt} pi\u00e8ces Zerm pour chaque ami qui s\u2019inscrit avec votre code.`,
+    perFriendUnknown: 'Vous gagnez des pi\u00e8ces Zerm pour chaque ami qui s\u2019inscrit avec votre code.',
     statFriends: 'Amis inscrits', statEarned: 'Pi\u00e8ces gagn\u00e9es',
     haveCode: 'Vous avez le code d\u2019un ami ?', haveCodeHint: 'Entrez-le une fois pour lier vos comptes.',
     codePlaceholder: 'Entrer le code', apply: 'Appliquer', applying: 'Application\u2026',
@@ -68,7 +86,8 @@ const strings = {
     share: 'Share give padi', copied: 'E don copy!',
     shareText: (code: string, amt: number) =>
       `Come join me for Bambeh Marketplace! Use my code ${code} when you register. bambeh.com`,
-    perFriend: (amt: number) => `You go get ${amt} Zerm Coins for every padi wey join with your code.`,
+    perFriend: (amt: string) => `You go get ${amt} Zerm Coins for every padi wey join with your code.`,
+    perFriendUnknown: 'You go get Zerm Coins for every padi wey join with your code.',
     statFriends: 'Padi wey join', statEarned: 'Coins wey you get',
     haveCode: 'You get padi code?', haveCodeHint: 'Enter am one time make una link.',
     codePlaceholder: 'Enter code', apply: 'Apply', applying: 'E dey apply\u2026',
@@ -87,7 +106,8 @@ const strings = {
     share: '\u0634\u0627\u0631\u0643 \u0645\u0639 \u0627\u0644\u0623\u0635\u062f\u0642\u0627\u0621', copied: '\u062a\u0645 \u0627\u0644\u0646\u0633\u062e!',
     shareText: (code: string, amt: number) =>
       `\u0627\u0646\u0636\u0645 \u0625\u0644\u064a\u0651 \u0641\u064a \u0628\u0627\u0645\u0628\u064a\u0647! \u0627\u0633\u062a\u062e\u062f\u0645 \u0631\u0645\u0632\u064a ${code} \u0639\u0646\u062f \u0627\u0644\u062a\u0633\u062c\u064a\u0644. bambeh.com`,
-    perFriend: (amt: number) => `\u062a\u0643\u0633\u0628 ${amt} \u0639\u0645\u0644\u0629 \u0632\u064a\u0631\u0645 \u0639\u0646 \u0643\u0644 \u0635\u062f\u064a\u0642 \u064a\u0646\u0636\u0645 \u0628\u0631\u0645\u0632\u0643.`,
+    perFriend: (amt: string) => `\u062a\u0643\u0633\u0628 ${amt} \u0639\u0645\u0644\u0629 \u0632\u064a\u0631\u0645 \u0639\u0646 \u0643\u0644 \u0635\u062f\u064a\u0642 \u064a\u0646\u0636\u0645 \u0628\u0631\u0645\u0632\u0643.`,
+    perFriendUnknown: '\u062a\u0643\u0633\u0628 \u0639\u0645\u0644\u0627\u062a \u0632\u064a\u0631\u0645 \u0639\u0646 \u0643\u0644 \u0635\u062f\u064a\u0642 \u064a\u0646\u0636\u0645 \u0628\u0631\u0645\u0632\u0643.',
     statFriends: '\u0623\u0635\u062f\u0642\u0627\u0621 \u0627\u0646\u0636\u0645\u0648\u0627', statEarned: '\u0639\u0645\u0644\u0627\u062a \u0645\u0643\u062a\u0633\u0628\u0629',
     haveCode: '\u0644\u062f\u064a\u0643 \u0631\u0645\u0632 \u0635\u062f\u064a\u0642\u061f', haveCodeHint: '\u0623\u062f\u062e\u0644\u0647 \u0645\u0631\u0629 \u0648\u0627\u062d\u062f\u0629 \u0644\u0631\u0628\u0637 \u062d\u0633\u0627\u0628\u064a\u0643\u0645\u0627.',
     codePlaceholder: '\u0623\u062f\u062e\u0644 \u0627\u0644\u0631\u0645\u0632', apply: '\u062a\u0637\u0628\u064a\u0642', applying: '\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u2026',
@@ -106,7 +126,8 @@ const strings = {
     share: 'Sar\u00f3 e sehilaa\u0253e', copied: 'Naatii!',
     shareText: (code: string, amt: number) =>
       `Ar naatu Bambeh Marketplace! Huutoro kod am ${code} so a winnditoto. bambeh.com`,
-    perFriend: (amt: number) => `A he\u0253ata ${amt} Zerm Coin\u0257e wonande sehil fof naat\u0257o e kod maa.`,
+    perFriend: (amt: string) => `A he\u0253ata ${amt} Zerm Coin\u0257e wonande sehil fof naat\u0257o e kod maa.`,
+    perFriendUnknown: 'A he\u0253ata Zerm Coin\u0257e wonande sehil fof naat\u0257o e kod maa.',
     statFriends: 'Sehilaa\u0253e naat\u0253e', statEarned: 'Coin\u0257e he\u0253aa\u0257e',
     haveCode: 'A jogii kod sehil?', haveCodeHint: 'Naatnu mo laawol gootol ngam jokkondirde.',
     codePlaceholder: 'Naatnu kod', apply: 'Huutoro', applying: '\u0257on huutoroo\u2026',
@@ -130,6 +151,17 @@ function useStrings(): { s: LangStrings; isRtl: boolean } {
   return { s, isRtl: key === 'ar' };
 }
 
+/**
+ * FIX512 - Zerm awards are 0.0025 a piece. toLocaleString() rounds that to
+ * "0.003", and a sum of three to "0.008", so the screen and the ledger stop
+ * agreeing. Four decimals, trailing zeros trimmed: 0.0025 stays 0.0025 and
+ * 1 stays 1.
+ */
+function formatCoins(n: number): string {
+  if (!Number.isFinite(n)) return '0';
+  return n.toFixed(4).replace(/\.?0+$/, '') || '0';
+}
+
 interface ReferralRow {
   id: string;
   rewarded: boolean;
@@ -141,7 +173,10 @@ export default function ReferralProgram() {
   const { s, isRtl } = useStrings();
 
   const [code, setCode] = useState<string>('');
-  const [rewardAmount, setRewardAmount] = useState<number>(200);
+  // FIX512 - null means "not known yet". It must NEVER start at a guess: the
+  // old 200 was shown to every visitor, in five languages, before the real
+  // 0.0025 arrived - and permanently whenever the request failed.
+  const [rewardAmount, setRewardAmount] = useState<number | null>(null);
   const [referrals, setReferrals] = useState<ReferralRow[]>([]);
   const [earned, setEarned] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -166,13 +201,21 @@ export default function ReferralProgram() {
         .maybeSingle();
       if (prof?.referral_code) setCode(prof.referral_code);
 
-      // Live reward amount (admin can edit zerm_reward_rules anytime)
-      const { data: rule } = await supabase
+      // Live reward amount (admin can edit zerm_reward_rules anytime).
+      // FIX512 - the error is read now. It used to be discarded, so a dropped
+      // request left the placeholder on screen looking like a real promise.
+      const { data: rule, error: ruleErr } = await supabase
         .from('zerm_reward_rules')
         .select('amount')
         .eq('rule_key', 'referral_signup')
         .maybeSingle();
-      if (rule?.amount != null) setRewardAmount(Number(rule.amount));
+      if (ruleErr) {
+        console.error('[ReferralProgram] reward rule unreadable:', ruleErr);
+        setRewardAmount(null);            // say nothing rather than say wrong
+      } else {
+        const amt = Number(rule?.amount);
+        setRewardAmount(Number.isFinite(amt) ? amt : null);
+      }
 
       // My referrals (RLS: I only see rows where I am referrer or referred)
       const { data: refs } = await supabase
@@ -205,7 +248,7 @@ export default function ReferralProgram() {
 
   async function shareCode() {
     if (!code) return;
-    const text = s.shareText(code, rewardAmount);
+    const text = s.shareText(code, rewardAmount ?? 0);
     try {
       if (navigator.share) await navigator.share({ text });
       else copyCode();
@@ -246,7 +289,8 @@ export default function ReferralProgram() {
           <Gift className="w-6 h-6 text-amber-300" /> {s.title}
         </h1>
         <p className="text-teal-100 text-sm mt-1 flex items-center gap-1.5">
-          <Zap className="w-4 h-4 text-amber-300 flex-shrink-0" /> {s.perFriend(rewardAmount)}
+          <Zap className="w-4 h-4 text-amber-300 flex-shrink-0" />{' '}
+          {rewardAmount == null ? s.perFriendUnknown : s.perFriend(formatCoins(rewardAmount))}
         </p>
       </div>
 
@@ -258,7 +302,7 @@ export default function ReferralProgram() {
             <div className="text-xs text-gray-500 mt-0.5">{s.statFriends}</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border text-center">
-            <div className="text-2xl font-bold text-teal-600">{loading ? '…' : earned.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-teal-600">{loading ? '\u2026' : formatCoins(earned)}</div>
             <div className="text-xs text-gray-500 mt-0.5">{s.statEarned}</div>
           </div>
         </div>
@@ -339,7 +383,9 @@ export default function ReferralProgram() {
                   <div className={`text-xs px-2 py-1 rounded-full font-medium ${
                     r.rewarded ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'
                   }`}>
-                    {r.rewarded ? `+${rewardAmount} · ${s.rewarded}` : s.pending}
+                    {r.rewarded
+                      ? (rewardAmount == null ? s.rewarded : `+${formatCoins(rewardAmount)} \u00b7 ${s.rewarded}`)
+                      : s.pending}
                   </div>
                 </div>
               ))}
@@ -350,4 +396,4 @@ export default function ReferralProgram() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__REFERRALPROGRAM_FIX137__COMPLETE
+// BAMBEH_END_TOKEN__REFERRALPROGRAM_FIX512__COMPLETE
