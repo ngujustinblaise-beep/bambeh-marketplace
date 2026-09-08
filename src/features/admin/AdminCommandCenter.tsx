@@ -15,7 +15,7 @@
  * © 2026 BAMBEH SARL. All rights reserved.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Shield, Users, Gavel, Lock, Megaphone, Send, CheckSquare, UserCog,
@@ -106,6 +106,42 @@ export default function AdminCommandCenter() {
   const [section, setSection] = useState<Section>('overview');
   const [toast, setToast] = useState('');
 
+  // FIX513 - how far down the screen the app header ends.
+  // Walking our own ancestors and their earlier siblings finds the stuck header
+  // in a handful of nodes. Hardcoding a pixel value would break the first time
+  // the header wraps, the window narrows, or a language makes the bar taller.
+  const asideRef = useRef<HTMLElement | null>(null);
+  const [chromeTop, setChromeTop] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (!window.matchMedia('(min-width: 768px)').matches) { setChromeTop(0); return; }
+      let best = 0;
+      let node: HTMLElement | null = asideRef.current;
+      while (node && node !== document.body) {
+        let sib = node.previousElementSibling as HTMLElement | null;
+        while (sib) {
+          const cs = window.getComputedStyle(sib);
+          if (cs.position === 'fixed' || cs.position === 'sticky') {
+            const r = sib.getBoundingClientRect();
+            // only something parked at the very top of the screen counts
+            if (r.top <= 1 && r.bottom > best) best = r.bottom;
+          }
+          sib = sib.previousElementSibling as HTMLElement | null;
+        }
+        node = node.parentElement;
+      }
+      setChromeTop(Math.max(0, Math.round(best)));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', measure, { passive: true });
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure);
+    };
+  }, []);
+
   const cap = useMemo(() => capabilitiesFor(role), [role]);
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 3000); };
 
@@ -146,7 +182,13 @@ export default function AdminCommandCenter() {
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Sidebar */}
       {/* FIX511 - fixed-height column that stays put while the page scrolls. */}
-      <aside className="md:w-60 md:shrink-0 bg-gray-900 text-gray-300 md:sticky md:top-0 md:h-screen md:flex md:flex-col">
+      {/* FIX513 - top and height come from the measured header, so the panel
+          parks just under it instead of sliding behind it. */}
+      <aside
+        ref={asideRef}
+        style={chromeTop > 0 ? { top: chromeTop, height: 'calc(100vh - ' + chromeTop + 'px)' } : undefined}
+        className="md:w-60 md:shrink-0 bg-gray-900 text-gray-300 md:sticky md:top-0 md:h-screen md:flex md:flex-col"
+      >
         <div className="px-4 py-4 flex items-center gap-2 border-b border-gray-800 md:shrink-0">
           <Shield className="w-6 h-6 text-teal-400" />
           <div>
