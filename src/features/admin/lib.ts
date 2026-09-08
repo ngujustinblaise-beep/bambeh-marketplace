@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX505_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINLIB_FIX508_CLEAN
 /**
  * admin/lib.ts — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/lib.ts
@@ -1488,4 +1488,148 @@ export async function setFuelVerified(
     'fuel', id, {});
 }
 
-// BAMBEH_END_TOKEN__ADMINLIB_FIX505__COMPLETE
+
+/* ============================================================================
+ * FIX508 - MARKETING AGENTS.
+ *
+ * WHY AGENTS DO NOT SHARE ONE LOGIN.
+ *   Big asked for shared accounts whose password rotates by town. That loses
+ *   the only number worth having: how many people THIS agent brought in THIS
+ *   town. One account per agent, each with its own code, means rotating a
+ *   credential touches one person and attribution survives.
+ *
+ * WHY WE COUNT ACTIVATED, NOT SIGNED UP.
+ *   Anyone with a SIM tray and an afternoon can create forty accounts. A raw
+ *   signup count does not just fail to catch that - it PAYS for it. An account
+ *   counts as activated only when the person came back on a later day or
+ *   actually posted something. Both numbers are shown; only the second one
+ *   means anything.
+ *
+ * WHY THE CODE IS NOT RANDOM.
+ *   Two of the four ReferralButton components in this codebase build their
+ *   code with Math.random() at render time, so it changes on every mount and
+ *   nothing can ever be traced. Agent codes are issued by the database, stored
+ *   once, and unique.
+ * ========================================================================== */
+
+export interface Agent {
+  id: string;
+  user_id: string | null;
+  full_name: string;
+  phone: string | null;
+  code: string;
+  region: string | null;
+  town: string | null;
+  country: string;
+  is_active: boolean;
+  note: string | null;
+  created_at: string;
+}
+
+export interface AgentStat {
+  agent_id: string;
+  full_name: string;
+  code: string;
+  town: string | null;
+  region: string | null;
+  is_active: boolean;
+  signups: number;
+  activated: number;
+  today: number;
+  this_week: number;
+  last_signup: string | null;
+}
+
+export interface AgentDay {
+  day: string;
+  signups: number;
+  activated: number;
+}
+
+export async function fetchAgents(): Promise<AdminFetch<Agent>> {
+  const q = supabase.from('agents')
+    .select('id, user_id, full_name, phone, code, region, town, country, is_active, note, created_at')
+    .order('created_at', { ascending: false })
+    .limit(300);
+  return adminSafe<Agent>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+}
+
+/** Stats are computed server-side. refresh_agent_activations() runs first so
+ *  the activated number is current without a cron job. */
+export async function fetchAgentStats(): Promise<{ rows: AgentStat[]; failed: boolean }> {
+  try {
+    await supabase.rpc('refresh_agent_activations');
+  } catch { /* stale activations beat no stats at all */ }
+  try {
+    const { data, error } = await supabase.rpc('agent_stats');
+    if (error) return { rows: [], failed: true };
+    return { rows: (data ?? []) as AgentStat[], failed: false };
+  } catch { return { rows: [], failed: true }; }
+}
+
+export async function fetchAgentDaily(agentId: string, days = 14): Promise<AgentDay[]> {
+  try {
+    const { data, error } = await supabase.rpc('agent_daily', { p_agent_id: agentId, p_days: days });
+    if (error) return [];
+    return (data ?? []) as AgentDay[];
+  } catch { return []; }
+}
+
+export async function createAgent(
+  actorId: string, actorRole: AdminRole,
+  fullName: string, phone: string | null, region: string | null, town: string | null,
+): Promise<{ id: string; code: string } | null> {
+  const { data, error } = await supabase.rpc('create_agent', {
+    p_full_name: fullName, p_phone: phone, p_region: region, p_town: town,
+  });
+  if (error) throw error;
+  const row = (Array.isArray(data) ? data[0] : data) as { id: string; code: string } | null;
+  await logAction(actorId, actorRole, 'create_agent', 'agent', row?.id ?? null, { name: fullName, town });
+  return row ?? null;
+}
+
+export async function setAgentActive(
+  actorId: string, actorRole: AdminRole, id: string, active: boolean,
+): Promise<void> {
+  const { error } = await supabase.rpc('set_agent_active', { p_id: id, p_active: active });
+  if (error) throw error;
+  await logAction(actorId, actorRole, active ? 'enable_agent' : 'disable_agent', 'agent', id, {});
+}
+
+/** New code, old one dead immediately. This is the "change it when we change
+ *  towns" control - it just changes one agent instead of all of them. */
+export async function rotateAgentCode(
+  actorId: string, actorRole: AdminRole, id: string,
+): Promise<string> {
+  const { data, error } = await supabase.rpc('rotate_agent_code', { p_id: id });
+  if (error) throw error;
+  await logAction(actorId, actorRole, 'rotate_agent_code', 'agent', id, {});
+  return String(data ?? '');
+}
+
+/** Try to give this agent a premium subscription so they can demo everything.
+ *  The subscriptions table shape has never been confirmed, so this reports
+ *  honestly instead of pretending. */
+export async function grantAgentPremium(
+  actorId: string, actorRole: AdminRole, agentUserId: string,
+): Promise<{ ok: boolean; detail: string }> {
+  try {
+    const { dropped } = await writeTolerant('subscriptions', {
+      user_id: agentUserId,
+      plan_type: 'premium',
+      status: 'active',
+      started_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString(),
+      source: 'agent_grant',
+    });
+    await logAction(actorId, actorRole, 'grant_agent_premium', 'agent', agentUserId, { dropped });
+    return {
+      ok: true,
+      detail: dropped.length ? `Granted, after dropping: ${dropped.join(', ')}` : 'Granted.',
+    };
+  } catch (e) {
+    return { ok: false, detail: e instanceof Error ? e.message : 'Could not grant premium.' };
+  }
+}
+
+// BAMBEH_END_TOKEN__ADMINLIB_FIX508__COMPLETE

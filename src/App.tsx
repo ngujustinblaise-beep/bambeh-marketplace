@@ -375,6 +375,7 @@ const ListMyService       = lazy(() => import("@/pages/ListMyService"));   // FI
 const WaterLights         = lazy(() => import("@/pages/WaterLights"));     // FIX500
 const FuelAtNight         = lazy(() => import("@/pages/FuelAtNight"));     // FIX506
 const SafetyAlerts        = lazy(() => import("@/pages/SafetyAlerts"));    // FIX507
+const AgentCapture        = lazy(() => import("@/features/agents/AgentCapture")); // FIX508
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
 const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
@@ -747,6 +748,10 @@ export default function App() {
                 <RouteTracker>
                   <OnboardingFlowGuard>
                     <Suspense fallback={<LoadingFallback />}>
+                      {/* FIX508 - renders nothing. Mounted here, not on a route, because the
+                          agent code must be captured on ANY page and claimed whenever a
+                          session appears - which may be long after the link was opened. */}
+                      <AgentCapture />
                       <Routes>
 
                         {/* ── 1. ONBOARDING ──────────────────────────────────────── */}

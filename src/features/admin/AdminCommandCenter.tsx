@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX505_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMINCOMMANDCENTER_FIX508_CLEAN
 /**
  * AdminCommandCenter.tsx — Bambeh Admin Command Center (FIX121)
  * FILE LOCATION: src/features/admin/AdminCommandCenter.tsx
@@ -28,6 +28,7 @@ import {
   Droplet,   // FIX501
   Fuel,      // FIX504
   RefreshCw, // FIX505
+  UserPlus,  // FIX508
 } from 'lucide-react';
 import {
   fetchMyRole, capabilitiesFor, ROLE_LABEL, type AdminRole, type Capabilities,
@@ -47,12 +48,14 @@ import PharmaciesSection from './PharmaciesSection'; // FIX482
 import RequestsSection from './RequestsSection';     // FIX489
 import UtilitiesSection from './UtilitiesSection';   // FIX501
 import FuelSection from './FuelSection';             // FIX504
+import AgentsSection from './AgentsSection';         // FIX508
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
-  | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel' | 'requests';
+  | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
+  | 'agents' | 'requests';
 
 const NAV: Array<{
   key: Section;
@@ -86,6 +89,7 @@ const NAV: Array<{
   { key: 'approvals', label: 'Approvals',      icon: CheckSquare, needs: 'approveMessages' },
   { key: 'announce',  label: 'Announcements',  icon: Megaphone, needs: 'publishAnnouncements' },
   { key: 'team',      label: 'Team & Roles',   icon: UserCog,  needs: 'createModerators' },
+  { key: 'agents',    label: 'Marketing agents', icon: UserPlus, needs: 'createModerators' },
   { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances',
     badge: ['payments_pending', 'seller_payouts', 'event_payouts'] },
   { key: 'reports',   label: 'Reports',        icon: FileText,
@@ -186,6 +190,7 @@ export default function AdminCommandCenter() {
         {section === 'pharmacies' && <PharmaciesSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'utilities'  && <UtilitiesSection  userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'fuel'       && <FuelSection       userId={userId!} role={role} cap={cap} flash={flash} />}
+        {section === 'agents'     && <AgentsSection     userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'requests'  && <RequestsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'listings'  && <ListingsSection />}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
@@ -961,4 +966,4 @@ function ReportsSection({ role }: { role: AdminRole }) {
     </>
   );
 }
-// BAMBEH_END_TOKEN__ADMINCOMMANDCENTER_FIX505__COMPLETE
+// BAMBEH_END_TOKEN__ADMINCOMMANDCENTER_FIX508__COMPLETE
