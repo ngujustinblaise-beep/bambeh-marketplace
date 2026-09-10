@@ -49,13 +49,14 @@ import RequestsSection from './RequestsSection';     // FIX489
 import UtilitiesSection from './UtilitiesSection';   // FIX501
 import FuelSection from './FuelSection';             // FIX504
 import AgentsSection from './AgentsSection';         // FIX508
+import PaywallSection from './PaywallSection';       // FIX536
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
-  | 'agents' | 'requests';
+  | 'agents' | 'requests' | 'paywall';
 
 const NAV: Array<{
   key: Section;
@@ -90,6 +91,7 @@ const NAV: Array<{
   { key: 'announce',  label: 'Announcements',  icon: Megaphone, needs: 'publishAnnouncements' },
   { key: 'team',      label: 'Team & Roles',   icon: UserCog,  needs: 'createModerators' },
   { key: 'agents',    label: 'Marketing agents', icon: UserPlus, needs: 'createModerators' },
+  { key: 'paywall',   label: 'Subscription wall', icon: Lock },
   { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances',
     badge: ['payments_pending', 'seller_payouts', 'event_payouts'] },
   { key: 'reports',   label: 'Reports',        icon: FileText,
@@ -241,6 +243,7 @@ export default function AdminCommandCenter() {
         {section === 'fuel'       && <FuelSection       userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'agents'     && <AgentsSection     userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'requests'  && <RequestsSection userId={userId!} role={role} cap={cap} flash={flash} />}
+        {section === 'paywall'   && <PaywallSection  userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'listings'  && <ListingsSection />}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
         {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}
