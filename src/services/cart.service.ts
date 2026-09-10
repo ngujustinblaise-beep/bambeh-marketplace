@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/services/cart.service.ts
  * Bambeh Marketplace � Cart Service
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";

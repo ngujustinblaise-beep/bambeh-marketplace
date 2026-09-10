@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/services/marketplace.service.ts � Bambeh Marketplace
  *
  * REWRITE � June 2026
@@ -11,7 +11,7 @@
  *  ? Expiry: listings expire 30 days after creation (stored in expires_at)
  *  ? Expiry reminders: getExpiringListings() helper for push notification service
  *
- * � 2026 BAMBEH SARL. All rights reserved.
+ * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";

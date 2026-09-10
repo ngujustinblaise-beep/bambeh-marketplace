@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * BAMB� MARKETPLACE - ADMIN PANEL COMPONENT
+ * BAMBEH MARKETPLACE - ADMIN PANEL COMPONENT
  * Complete administrative dashboard with all management features
  * Version: 1.0.0
  */

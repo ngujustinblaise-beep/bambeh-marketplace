@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/monitoring/ErrorMonitoring.ts
  * Bambeh Marketplace � Error Monitoring
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  *
  * FIXES: exports both errorMonitor (canonical) and errorMonitoring (alias)
  */

@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/analytics/AnalyticsManager.ts
  * Bambeh Marketplace � Analytics Manager + singleton
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";

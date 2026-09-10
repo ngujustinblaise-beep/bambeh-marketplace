@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/performance/PerformanceMonitor.ts
  * Bambeh Marketplace � Performance Monitor + singleton + formatBytes
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";

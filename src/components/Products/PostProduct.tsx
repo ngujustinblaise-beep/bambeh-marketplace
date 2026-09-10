@@ -209,7 +209,7 @@ const PostProduct: React.FC = () => {
             const existingProducts = JSON.parse(localStorage.getItem('bambe-products') || '[]');
             localStorage.setItem('bambe-products', JSON.stringify([productListing, ...existingProducts]));
 
-            toast({ title: 'Product posted successfully!', description: 'Your product is now listed on Bamb?' });
+            toast({ title: 'Product posted successfully!', description: 'Your product is now listed on Bambeh' });
             navigate('/products');
         } catch (error) {
             console.error('Error posting product:', error);
@@ -233,7 +233,7 @@ const PostProduct: React.FC = () => {
                         </Button>
                         <div>
                             <h1 className="text-xl font-bold">Post Product</h1>
-                            <p className="text-sm text-gray-600">Sell your products on Bamb?</p>
+                            <p className="text-sm text-gray-600">Sell your products on Bambeh</p>
                         </div>
                     </div>
                 </div>

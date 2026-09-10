@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/components/index.ts
  * Bambeh Marketplace � Component Barrel Exports
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // VerificationBadge � default export only (no named exports)

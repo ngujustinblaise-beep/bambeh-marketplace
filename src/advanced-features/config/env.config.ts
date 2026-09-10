@@ -1,5 +1,5 @@
-﻿/**
- * BAMB� MARKETPLACE - ENVIRONMENT CONFIGURATION
+/**
+ * BAMBEH MARKETPLACE - ENVIRONMENT CONFIGURATION
  * Advanced Features Configuration
  * Version: 1.0.0
  */
@@ -62,7 +62,7 @@ export const ENV_CONFIG = {
     SMTP_USER: "apikey",
     SMTP_PASSWORD: "YOUR_SENDGRID_API_KEY_HERE",
     FROM_EMAIL: "noreply@bambe.cm",
-    FROM_NAME: "Bamb� Marketplace",
+    FROM_NAME: "Bambeh Marketplace",
   },
 
   // Backend API Configuration

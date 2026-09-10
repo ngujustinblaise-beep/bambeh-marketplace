@@ -1,5 +1,5 @@
 /**
- * BAMB? MARKETPLACE - VOICE BUTTON COMPONENT
+ * BAMBEH MARKETPLACE - VOICE BUTTON COMPONENT
  * Animated microphone button for voice input
  * Version: 1.0.0
  */

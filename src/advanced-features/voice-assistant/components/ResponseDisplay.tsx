@@ -1,5 +1,5 @@
 /**
- * BAMBÉ MARKETPLACE - RESPONSE DISPLAY COMPONENT
+ * BAMBEH MARKETPLACE - RESPONSE DISPLAY COMPONENT
  * Shows Mama's response with suggestions
  * Version: 1.0.0
  */

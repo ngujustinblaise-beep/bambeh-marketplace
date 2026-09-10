@@ -10,7 +10,7 @@
  * 
  * Usage: Display when clicking "View Company Profile" and company doesn't exist
  * 
- * © 2025 Bambé. All rights reserved.
+ * © 2025 Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 

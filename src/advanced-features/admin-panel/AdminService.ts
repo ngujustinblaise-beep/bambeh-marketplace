@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * BAMB� MARKETPLACE - ADMIN SERVICE
+ * BAMBEH MARKETPLACE - ADMIN SERVICE
  * Complete backend integration for admin operations
  * Order, User, Dispute, and Analytics Management
  * Version: 1.0.0

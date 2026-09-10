@@ -1,4 +1,4 @@
-﻿/**
+/**
  * src/services/carRentals.service.ts � Bambeh Marketplace
  *
  * SECURITY REWRITE (original had critical issues):
@@ -16,7 +16,7 @@
  *               AND the `rentals` table for property rentals. This service targets
  *               listings (vehicles for hire/sale). Adjust table name if your schema differs.
  *
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { supabase } from "@/lib/supabase";

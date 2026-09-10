@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/services/properties.service.ts
  * Bambeh Marketplace � Properties / Rentals Service
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  *
  * --- FIX (June 2026) ----------------------------------------------------------
  * Previous version queried a "properties" table � does NOT exist in Supabase.

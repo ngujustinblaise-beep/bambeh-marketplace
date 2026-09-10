@@ -1,5 +1,5 @@
-﻿/**
- * BAMB� MARKETPLACE - USE CHAT HOOK
+/**
+ * BAMBEH MARKETPLACE - USE CHAT HOOK
  * Version: 1.0.0
  */
 

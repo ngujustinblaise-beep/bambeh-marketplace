@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/i18n/config.ts
  * Bambeh Marketplace � i18n Language Configuration
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // --- Supported Languages ------------------------------------------------------

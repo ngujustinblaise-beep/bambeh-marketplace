@@ -1,5 +1,5 @@
-﻿/**
- * BAMB� MARKETPLACE - VOICE ASSISTANT SERVICE
+/**
+ * BAMBEH MARKETPLACE - VOICE ASSISTANT SERVICE
  * Version: 1.0.0
  */
 
@@ -215,8 +215,8 @@ class VoiceAssistantService {
 
   private handleHelp(): VoiceResponse {
     const helpText = this.context?.language === "fr"
-      ? "Je suis Mama, votre assistante vocale Bamb�. Je peux vous aider � chercher des produits, passer des commandes, suivre vos livraisons et bien plus. Essayez de dire 'cherche des tomates' ou 'o� est ma commande'."
-      : "I'm Mama, your Bamb� voice assistant. I can help you search for products, place orders, track deliveries and more. Try saying 'search for tomatoes' or 'where is my order'.";
+      ? "Je suis Mama, votre assistante vocale Bambeh. Je peux vous aider � chercher des produits, passer des commandes, suivre vos livraisons et bien plus. Essayez de dire 'cherche des tomates' ou 'o� est ma commande'."
+      : "I'm Mama, your Bambeh voice assistant. I can help you search for products, place orders, track deliveries and more. Try saying 'search for tomatoes' or 'where is my order'.";
     return {
       text: helpText,
       suggestions: [

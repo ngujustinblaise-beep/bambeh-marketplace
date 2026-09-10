@@ -1,6 +1,6 @@
-﻿/**
+/**
  * imageUploadOptimizer.ts � Bambeh Marketplace
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  *
  * Client-side image optimization before Supabase Storage upload.
  * Compresses and converts to WebP using the browser Canvas API.

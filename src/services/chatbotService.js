@@ -28,9 +28,9 @@ class ChatbotService {
           "salut",
         ],
         responses: [
-          "Hello! 👋 Welcome to Bambé! I'm Mama, your AI shopping assistant. How can I help you today?",
+          "Hello! 👋 Welcome to Bambeh! I'm Mama, your AI shopping assistant. How can I help you today?",
           "Hi there! 😊 I'm Mama, here to make your shopping experience amazing. What can I do for you?",
-          "Hey! Welcome to Bambé! I'm Mama, your personal shopping guide. Ask me anything!",
+          "Hey! Welcome to Bambeh! I'm Mama, your personal shopping guide. Ask me anything!",
         ],
       },
 
@@ -63,7 +63,7 @@ class ChatbotService {
           "budget",
         ],
         responses: [
-          "💰 Prices on Bambé vary by seller and product condition. I can help you find items within your budget! What's your price range?",
+          "💰 Prices on Bambeh vary by seller and product condition. I can help you find items within your budget! What's your price range?",
           "Our marketplace has competitive prices! What's your budget, and I'll show you the best options available.",
           "Looking for the best deal? Tell me your budget and what you're shopping for, and I'll find great options!",
         ],
@@ -117,7 +117,7 @@ class ChatbotService {
           "list item",
         ],
         responses: [
-          "Want to sell on Bambé? Great! 🎉 Click the '+' button to create a listing. Add photos, set your price, and reach thousands of buyers!",
+          "Want to sell on Bambeh? Great! 🎉 Click the '+' button to create a listing. Add photos, set your price, and reach thousands of buyers!",
           "Selling is easy! Take photos, write a description, set your price, and publish. Our AI will even suggest the best price for you!",
           "List your item in 3 easy steps: 1) Upload photos 📸, 2) Add details ✍️, 3) Set price 💰. It's free to list!",
         ],
@@ -136,7 +136,7 @@ class ChatbotService {
         ],
         responses: [
           "🔐 Tap the profile icon to sign in or create an account. It only takes 30 seconds! You can also continue as guest.",
-          "Create your free Bambé account to save favorites, track orders, and message sellers instantly!",
+          "Create your free Bambeh account to save favorites, track orders, and message sellers instantly!",
           "Account issues? I can help! Are you trying to sign in, reset password, or create a new account?",
         ],
       },
@@ -155,7 +155,7 @@ class ChatbotService {
         ],
         responses: [
           "✅ Your safety is our priority! All sellers are verified, payments are secure, and we have buyer protection. Shop with confidence!",
-          "Bambé is 100% safe! We verify sellers, protect payments, and offer money-back guarantee on eligible items.",
+          "Bambeh is 100% safe! We verify sellers, protect payments, and offer money-back guarantee on eligible items.",
           "We've got your back! Verified sellers ✓, Secure payments ✓, Buyer protection ✓, Real reviews ✓",
         ],
       },
@@ -190,7 +190,7 @@ class ChatbotService {
         responses: [
           "🌟 Upgrade to Premium! Get: Free delivery, Exclusive deals, Early access to sales, and 500 Zerm Coins monthly!",
           "Zerm Coins are our reward currency! Earn them by shopping, reviewing products, and referring friends. Use them for discounts!",
-          "Join Bambé Premium: XAF 2,500/month. Benefits: Free delivery, 10% cashback, Priority support, and exclusive perks!",
+          "Join Bambeh Premium: XAF 2,500/month. Benefits: Free delivery, 10% cashback, Priority support, and exclusive perks!",
         ],
       },
 
@@ -242,7 +242,7 @@ class ChatbotService {
           "great",
         ],
         responses: [
-          "You're very welcome! 😊 Happy shopping on Bambé!",
+          "You're very welcome! 😊 Happy shopping on Bambeh!",
           "My pleasure! Let me know if you need anything else!",
           "Glad I could help! Enjoy your shopping experience! 🎉",
         ],

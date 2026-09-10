@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/BambehStore.ts
  * Bambeh Marketplace � Global Zustand Store + Missing Exports
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { create } from "zustand";

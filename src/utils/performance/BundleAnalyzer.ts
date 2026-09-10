@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/performance/BundleAnalyzer.ts
  * Bambeh Marketplace � Bundle Analysis Utilities
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";

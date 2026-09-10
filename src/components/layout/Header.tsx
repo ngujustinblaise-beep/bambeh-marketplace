@@ -71,7 +71,10 @@ export default function Header() {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert(t('voice.notSupported'));
+      // FIX534 - Android System WebView has no Web Speech API, so inside the
+      // packaged app this fired an alert on EVERY tap. Scolding a user for a
+      // limitation that is not theirs teaches them the app is broken. Fail
+      // quietly here; the native engine arrives in a later release.
       setIsVoiceActive(false);
       return;
     }
@@ -115,10 +118,42 @@ export default function Header() {
     { to: '/',            words: ['home', 'accueil', 'go home', 'الرئيسية', 'fuɗɗorde'] },
   ];
 
-  const handleVoiceCommand = (command: string) => {
-    for (const r of VOICE_ROUTES) {
-      if (r.words.some(w => command.includes(w))) { navigate(r.to); return; }
+  // FIX534 - whole-word matching. The old line was
+  //     r.words.some(w => command.includes(w))
+  // which fires a keyword inside ANY word containing it: "carte" hit "car",
+  // "scared" hit "car", "postal" hit "post", "coincidence" hit "coin",
+  // "workshop" and "homework" both hit "work". Eight of nine tested phrases
+  // went to the wrong page.
+  const foldVoice = (s: string) =>
+    (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\u0600-\u06FF ]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  const hasWholeWord = (haystack: string, needle: string) => {
+    if (!needle) return false;
+    let from = 0;
+    for (;;) {
+      const i = haystack.indexOf(needle, from);
+      if (i < 0) return false;
+      const before = i === 0 ? ' ' : haystack[i - 1];
+      const after  = i + needle.length >= haystack.length ? ' ' : haystack[i + needle.length];
+      if (before === ' ' && after === ' ') return true;
+      from = i + 1;
     }
+  };
+
+  const handleVoiceCommand = (command: string) => {
+    const said = foldVoice(command);
+    // longest keyword wins, so "farm fresh" is never swallowed by "farm"
+    let best: { to: string; len: number } | null = null;
+    for (const r of VOICE_ROUTES) {
+      for (const w of r.words) {
+        const k = foldVoice(w);
+        if (hasWholeWord(said, k) && (!best || k.length > best.len)) {
+          best = { to: r.to, len: k.length };
+        }
+      }
+    }
+    if (best) { navigate(best.to); return; }
     // No section keyword matched -> universal real search (FIX126).
     navigate(`/search?q=${encodeURIComponent(command)}`);
   };

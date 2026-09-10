@@ -6,7 +6,7 @@
  * ✅ BRANDING FIXED:
  * - Single "Bambeh" logo in BLACK
  * - NO teal/turquoise colors
- * - NO "Bambé" with accent
+ * - NO "Bambeh" with accent
  * - Clean, professional design
  * 
  * COPY THIS FILE TO: src/components/layout/AuthLayout.tsx

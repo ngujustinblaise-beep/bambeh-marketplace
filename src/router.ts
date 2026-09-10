@@ -26,7 +26,7 @@
  *   import { navigate, goToListing, goToChat } from '@/router';
  *
  * FILE: src/router.ts
- * � 2026 BAMBEH SARL
+ * (c) 2026 BAMBEH SARL
  * ---------------------------------------------------------------------------
  */
 

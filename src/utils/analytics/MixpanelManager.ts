@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/analytics/MixpanelManager.ts
  * Bambeh Marketplace � Mixpanel Analytics + singleton
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";

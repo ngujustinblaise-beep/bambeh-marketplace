@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /**
- * BAMB� MARKETPLACE - GPS TRACKING SERVICE
+ * BAMBEH MARKETPLACE - GPS TRACKING SERVICE
  * Real-time location tracking and route calculation
  * Version: 1.0.0
  */

@@ -1,6 +1,6 @@
 /**
  * queryClient.ts � Bambeh Marketplace
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  *
  * TanStack Query (React Query v5) global client configuration.
  *

@@ -1,5 +1,5 @@
-﻿/**
- * BAMB� MARKETPLACE - NATURAL LANGUAGE PROCESSING SERVICE
+/**
+ * BAMBEH MARKETPLACE - NATURAL LANGUAGE PROCESSING SERVICE
  * Parse voice commands and extract intent
  * Version: 1.0.0
  */

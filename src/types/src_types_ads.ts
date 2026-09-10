@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/types/src_types_ads.ts
  * Bambeh Marketplace � Advertisement & Promotion Types
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 // --- Ad Status ----------------------------------------------------------------

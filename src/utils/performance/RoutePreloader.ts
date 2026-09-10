@@ -1,7 +1,7 @@
-﻿/**
+/**
  * src/utils/performance/RoutePreloader.ts
  * Bambeh Marketplace � Route Preloading for Low-Latency Navigation
- * � 2026 Bambeh Marketplace. All rights reserved.
+ * (c) 2026 Bambeh Marketplace. All rights reserved.
  */
 
 import { logger } from "@/utils/logger";

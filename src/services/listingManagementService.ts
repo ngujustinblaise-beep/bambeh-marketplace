@@ -1,7 +1,7 @@
-﻿/**
+/**
  * LISTING MANAGEMENT SERVICE
  * FILE LOCATION: src/services/listingManagementService.ts
- * � 2025 Bamb�. All rights reserved.
+ * (c) 2025 Bambeh. All rights reserved.
  */
 
 export interface ListingMetadata {

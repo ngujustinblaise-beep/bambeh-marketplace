@@ -170,3 +170,10 @@ android/*.jks
 # FIX424 - machine specific
 android/local.properties
 local.properties
+
+# FIX518 - signing secrets, never commit
+keystore.properties
+**/keystore.properties
+*KEYSTORE*.txt
+bambeh-secrets/
+app/build.gradle.kts
