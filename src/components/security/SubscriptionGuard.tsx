@@ -49,6 +49,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import BrowseTeaser from "@/components/security/BrowseTeaser";
+import { usePaywall } from "@/hooks/usePaywall";   // FIX543b
 
 /* ==================================================================== *
  *  THE SWITCH
@@ -260,6 +261,8 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
   const isAdmin = auth.isAdmin === true;
   const uid = currentUser?.id ?? null;
   const { isActive } = useSubscription(uid);
+  // FIX543b - is the subscription wall switched off for this user right now?
+  const paywall = usePaywall();
 
   const path = location.pathname;
 
@@ -272,7 +275,9 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
     return () => clearTimeout(t);
   }, [path, uid]);
 
-  const teaser = !isActive && showsTeaser(path) ? <BrowseTeaser /> : null;
+  // FIX543b - no upsell while the wall is down. The app should not argue
+  // with itself: free today means free everywhere on the screen.
+  const teaser = !isActive && !paywall.free && showsTeaser(path) ? <BrowseTeaser /> : null;
 
   // ---- GROUP A: open to anyone, signed in or not ----
   if (isPublic(path)) {
@@ -304,11 +309,22 @@ export default function SubscriptionGuard({ children }: { children: ReactNode })
   }
 
   // ---- GROUP C: subscribers only ----
+  // ---- FIX543b: THE PAYWALL SWITCH ----
+  // Staff opened Bambeh, globally or for this region. It sits in the same
+  // place isActive sits because it means the same thing: this person may
+  // come in. The switch can only ever OPEN the wall, never close one.
+  if (paywall.free) {
+    return <>{children}</>;
+  }
+
   if (isActive) {
     return <>{children}</>;
   }
 
-  if (!graceOver) {
+  // FIX543b - hold for the switch as well as the subscription. Bouncing
+  // someone to /subscription a moment before the answer arrives saying the
+  // page was free is the worst possible timing.
+  if (!graceOver || !paywall.ready) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
