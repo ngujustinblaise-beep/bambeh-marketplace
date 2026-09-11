@@ -56,17 +56,24 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SubscriptionGuard from '@/components/security/SubscriptionGuard';
 import AdInterstitial from '@/components/ads/AdInterstitial';          // FIX465
+import { SponsorBanner } from '@/components/subscription/SponsorBanner';  // FIX541
+import { useLang } from '@/hooks/useAppLang';                            // FIX540
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const lang = useLang();   // FIX540 - the sponsor line in the user's language
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
       <main className="flex-1">
+        {/* FIX540 - renders NOTHING unless the paywall switch is on. It sits
+            above SubscriptionGuard so it shows on the very pages the wall
+            used to block, which is the point of announcing it. */}
+        <div className="px-4 pt-3"><SponsorBanner lang={lang as string} /></div>
         {/* FIX229 - the paywall. Posting, /subscription and /donate stay open;
             everything else needs an active subscription verified in Supabase. */}
         <SubscriptionGuard>
