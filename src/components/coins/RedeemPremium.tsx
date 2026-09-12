@@ -37,7 +37,14 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Coins, Crown, Loader2, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
+// FIX552 - only icons already used elsewhere in YOUR project.
+// The first version imported Coins, Crown and CheckCircle2. None of those
+// appear anywhere else in your codebase, so if your installed lucide version
+// does not export one of them it arrives as undefined and React throws
+// "Element type is invalid" the instant it renders - which is what took the
+// coins page down. Zap, RefreshCw, CheckCircle and Gift are proven by
+// CoinsPage itself; Loader2 and AlertCircle by PaywallSection, which works.
+import { Zap, Gift, Loader2, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 type Dict = {
@@ -137,7 +144,43 @@ interface Props {
   className?: string;
 }
 
-export default function RedeemPremium({ lang, onRedeemed, className = '' }: Props) {
+/**
+ * FIX552 - a boundary of its own.
+ *
+ * A coin-redemption widget must never be able to break the coins page. If
+ * anything in the card throws - a missing icon, a shape of data I did not
+ * anticipate, anything - the card disappears and the rest of /coins keeps
+ * working. Failing invisibly is the right behaviour for an optional extra;
+ * taking the whole screen down is not.
+ */
+class RedeemBoundary extends React.Component<
+  { children: React.ReactNode },
+  { dead: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { dead: false };
+  }
+  static getDerivedStateFromError() { return { dead: true }; }
+  componentDidCatch(err: unknown) {
+    // visible in the console for diagnosis, invisible to the user
+    console.error('[RedeemPremium] suppressed:', err);
+  }
+  render() {
+    if (this.state.dead) return null;
+    return this.props.children;
+  }
+}
+
+export default function RedeemPremium(props: Props) {
+  return (
+    <RedeemBoundary>
+      <RedeemPremiumInner {...props} />
+    </RedeemBoundary>
+  );
+}
+
+function RedeemPremiumInner({ lang, onRedeemed, className = '' }: Props) {
   const t = pick(lang);
   const rtl = String(lang || '').toLowerCase().startsWith('ar');
 
@@ -225,7 +268,7 @@ export default function RedeemPremium({ lang, onRedeemed, className = '' }: Prop
     return (
       <div dir={rtl ? 'rtl' : 'ltr'}
         className={'rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center ' + className}>
-        <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
+        <CheckCircle className="mx-auto h-10 w-10 text-emerald-600" />
         <p className="mt-2 font-bold text-emerald-900">{t.done}</p>
         <p className="mt-1 text-sm text-emerald-800">{t.until} {fmtDate(done)}</p>
       </div>
@@ -250,7 +293,7 @@ export default function RedeemPremium({ lang, onRedeemed, className = '' }: Prop
     <div dir={rtl ? 'rtl' : 'ltr'}
       className={'rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-5 ' + className}>
       <div className="flex items-start gap-3">
-        <Crown className="mt-0.5 h-6 w-6 shrink-0 text-amber-500" />
+        <Gift className="mt-0.5 h-6 w-6 shrink-0 text-amber-500" />
         <div className="min-w-0 flex-1">
           <p className="font-bold text-gray-900">{t.title}</p>
           <p className="mt-0.5 text-sm text-gray-600">{t.sub}</p>
@@ -263,7 +306,7 @@ export default function RedeemPremium({ lang, onRedeemed, className = '' }: Prop
             <div className="rounded-xl bg-white px-2 py-2 ring-1 ring-gray-200">
               <p className="text-[11px] text-gray-500">{t.cost}</p>
               <p className="flex items-center justify-center gap-1 text-sm font-bold text-gray-900">
-                <Coins className="h-3.5 w-3.5 text-amber-500" />{cost}
+                <Zap className="h-3.5 w-3.5 text-amber-500" />{cost}
               </p>
             </div>
             <div className="rounded-xl bg-white px-2 py-2 ring-1 ring-gray-200">
@@ -292,7 +335,7 @@ export default function RedeemPremium({ lang, onRedeemed, className = '' }: Prop
               <div className="mt-2 flex gap-2">
                 <button type="button" disabled={busy} onClick={() => void redeem()}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-3 py-2 text-sm font-bold text-white hover:bg-amber-700 disabled:bg-gray-300">
-                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crown className="h-4 w-4" />}
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Gift className="h-4 w-4" />}
                   {busy ? t.working : t.yes}
                 </button>
                 <button type="button" disabled={busy} onClick={() => setAsk(false)}
@@ -305,7 +348,7 @@ export default function RedeemPremium({ lang, onRedeemed, className = '' }: Prop
             <div className="mt-3 flex items-center gap-2">
               <button type="button" disabled={!can} onClick={() => { setError(null); setAsk(true); }}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-amber-700 disabled:bg-gray-300">
-                <Crown className="h-4 w-4" /> {t.redeem}
+                <Gift className="h-4 w-4" /> {t.redeem}
               </button>
               <button type="button" onClick={() => void load()} aria-label={t.refresh}
                 className="rounded-xl border border-gray-300 p-2.5 text-gray-600 hover:bg-gray-50">
