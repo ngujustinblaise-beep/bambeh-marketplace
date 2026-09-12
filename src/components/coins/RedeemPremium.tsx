@@ -46,6 +46,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 // CoinsPage itself; Loader2 and AlertCircle by PaywallSection, which works.
 import { Zap, Gift, Loader2, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+// FIX553 - read the language here instead of taking it as a prop. The first
+// wiring passed lang={raw}, but `raw` lives inside CoinsPage's useStrings()
+// helper, not in the component, so it did not exist at the card's location:
+//     ReferenceError: raw is not defined
+// A component that fetches its own language cannot be wired wrongly.
+import { useLang } from '@/hooks/useAppLang';
 
 type Dict = {
   title: string; sub: string; balance: string; cost: string; buys: string;
@@ -137,7 +143,7 @@ interface RedeemState {
 }
 
 interface Props {
-  /** language code - en, fr, pcm, ar, ff */
+  /** optional override; normally the card reads the language itself */
   lang?: string;
   /** called after a successful redemption so the page can refresh its balance */
   onRedeemed?: () => void;
@@ -181,8 +187,10 @@ export default function RedeemPremium(props: Props) {
 }
 
 function RedeemPremiumInner({ lang, onRedeemed, className = '' }: Props) {
-  const t = pick(lang);
-  const rtl = String(lang || '').toLowerCase().startsWith('ar');
+  const ctxLang = useLang() as string;
+  const code = lang || ctxLang;
+  const t = pick(code);
+  const rtl = String(code || '').toLowerCase().startsWith('ar');
 
   const [state, setState]   = useState<RedeemState | null>(null);
   const [loading, setLoad]  = useState(true);

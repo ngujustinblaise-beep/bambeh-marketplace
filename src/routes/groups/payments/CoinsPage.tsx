@@ -266,7 +266,7 @@ export default function CoinsPage() {
           state from bambeh_zerm_redeem_state(), so the button can never
           promise what the server will refuse. */}
       <div className="px-4 mb-4">
-        <RedeemPremium lang={raw} onRedeemed={() => void loadData(true)} />
+        <RedeemPremium onRedeemed={() => void loadData(true)} />
       </div>
 
       {/* Actions */}
