@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import RedeemPremium from '@/components/coins/RedeemPremium';   // FIX547
 
 // -- i18n ----------------------------------------------------------------------
 const strings = {
@@ -259,6 +260,13 @@ export default function CoinsPage() {
             <p className="text-xs text-gray-500 mt-0.5">{s.spent}</p>
           </div>
         </div>
+      </div>
+
+      {/* FIX547 - one Zerm coin buys a week of premium. Renders its own
+          state from bambeh_zerm_redeem_state(), so the button can never
+          promise what the server will refuse. */}
+      <div className="px-4 mb-4">
+        <RedeemPremium lang={raw} onRedeemed={() => void loadData(true)} />
       </div>
 
       {/* Actions */}
