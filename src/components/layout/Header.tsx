@@ -108,7 +108,8 @@ export default function Header() {
     { to: '/farm-fresh',  words: ['farm', 'food', 'tomato', 'vegetable', 'ferme', 'légume', 'chop', 'مزرعة', 'طعام', 'ndema', 'ñamdu', 'remuru'] },
     { to: '/exchange',    words: ['exchange', 'swap', 'trade', 'échange', 'troc', 'مقايضة', 'waylugol', 'waylu'] },
     { to: '/community',   words: ['community', 'group', 'communauté', 'groupe', 'مجتمع', 'renndo', 'goomu'] },
-    { to: '/tontine',     words: ['tontine', 'njangi', 'saving', 'épargne', 'توفير'] },
+    { to: '/become-courier', words: ['deliver', 'courier', 'rider', 'livrer', 'livreur'] },
+    { to: '/agent',          words: ['agent', 'marketing', 'marketeur'] },
     { to: '/coins',       words: ['coin', 'zerm', 'pièce', 'عملة'] },
     { to: '/corporate',   words: ['corporate', 'business', 'company', 'entreprise', 'société', 'شركة', 'sosiyete'] },
     { to: '/cart',        words: ['cart', 'basket', 'panier', 'سلة'] },
@@ -346,8 +347,11 @@ export default function Header() {
             <Link to="/farm-fresh" className="hover:text-teal-200 transition-colors">
               🌿 Farm Fresh
             </Link>
-            <Link to="/tontine" className="hover:text-teal-200 transition-colors">
-              💰 Njangi
+            <Link to="/become-courier" className="hover:text-teal-200 transition-colors">
+              🛵 {t('nav.deliverForUs') || 'Deliver for Bambeh'}
+            </Link>
+            <Link to="/agent" className="hover:text-teal-200 transition-colors">
+              📣 {t('nav.becomeAgent') || 'Marketing agent'}
             </Link>
           </div>
 
