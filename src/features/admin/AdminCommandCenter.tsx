@@ -50,6 +50,7 @@ import UtilitiesSection from './UtilitiesSection';   // FIX501
 import FuelSection from './FuelSection';             // FIX504
 import AgentsSection from './AgentsSection';         // FIX508
 import PaywallSection from './PaywallSection';       // FIX536
+import { supabase } from '@/lib/supabase';              // FIX558
 import ObligationsSection from './ObligationsSection'; // FIX550
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
