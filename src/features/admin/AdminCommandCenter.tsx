@@ -798,6 +798,111 @@ function TeamSection({ userId, role, cap, flash }: { userId: string; role: Admin
 // `escrow_ledger`, neither of which exists here, caught the errors and printed
 // 0 FCFA. This one asks the database to group the REAL tables by their REAL
 // status values, and says plainly when something could not be read.
+/**
+ * FIX557 - the individual payments behind a Finances card.
+ *
+ * Reads admin_payment_detail() from FIX555, which returns whichever of your
+ * twenty payment columns actually exist and refuses any caller who is not an
+ * admin. Shows `status` and `payment_status` side by side on purpose: they
+ * disagree on every pending row in your database, and a figure that is wrong
+ * in the open is safer than one that is wrong in the dark.
+ */
+function PaymentDrill({ bucket, onClose }: { bucket: 'succeeded' | 'pending'; onClose: () => void }) {
+  const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
+  const [err, setErr]   = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc('admin_payment_detail', {
+          p_bucket: bucket, p_limit: 100,
+        });
+        if (error) throw error;
+        if (alive) setRows((data || []) as Record<string, unknown>[]);
+      } catch (e: unknown) {
+        if (alive) setErr(e instanceof Error ? e.message : 'Could not read the payments.');
+      }
+    })();
+    return () => { alive = false; };
+  }, [bucket]);
+
+  const val = (r: Record<string, unknown>, k: string) => {
+    const v = r[k];
+    return v === null || v === undefined || v === '' ? null : String(v);
+  };
+  const hoursAgo = (iso: string | null) => {
+    if (!iso) return null;
+    const h = (Date.now() - new Date(iso).getTime()) / 3600000;
+    return Number.isFinite(h) ? Math.round(h) : null;
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-4">
+      <div className="flex items-center justify-between mb-2">
+        <p className="font-bold text-gray-900">
+          {bucket === 'pending' ? 'Waiting on an answer' : 'Payments that succeeded'}
+        </p>
+        <button type="button" onClick={onClose} className="text-sm text-gray-500 hover:text-gray-800">Close</button>
+      </div>
+
+      {err ? (
+        <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{err}</span>
+        </div>
+      ) : rows === null ? (
+        <div className="flex justify-center py-6 text-teal-600"><Loader2 className="w-5 h-5 animate-spin" /></div>
+      ) : rows.length === 0 ? (
+        <p className="text-sm text-gray-500 py-4">Nothing in this bucket.</p>
+      ) : (
+        <div className="space-y-2">
+          {rows.map((r: Record<string, unknown>, i: number) => {
+            const st  = val(r, 'status');
+            const pst = val(r, 'payment_status');
+            const hrs = hoursAgo(val(r, 'created_at'));
+            const clash = Boolean(pst && st && pst.toUpperCase() !== st.toUpperCase());
+            return (
+              <div key={i} className="border border-gray-100 rounded-xl p-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="font-bold text-gray-900">
+                    {val(r, 'phone') ?? (val(r, 'user_id') ?? '').slice(0, 8) ?? 'unknown payer'}
+                  </span>
+                  <span className="font-black text-gray-900">
+                    {fmtXAF(Number(val(r, 'total_charged') ?? val(r, 'amount') ?? 0))}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  {val(r, 'operator') ?? 'operator not recorded'}
+                  {val(r, 'payment_type') ? ' \u00b7 ' + val(r, 'payment_type') : ''}
+                  {val(r, 'plan_name') ? ' \u00b7 ' + val(r, 'plan_name') : ''}
+                </p>
+                <p className="text-xs mt-1">
+                  <span className="text-gray-500">status </span>
+                  <span className="font-semibold text-gray-800">{st ?? '-'}</span>
+                  <span className="text-gray-500"> / payment_status </span>
+                  <span className={'font-semibold ' + (clash ? 'text-amber-700' : 'text-gray-800')}>{pst ?? '-'}</span>
+                </p>
+                {(val(r, 'failure_reason') ?? val(r, 'cause')) ? (
+                  <p className="text-xs text-red-700 mt-1">{val(r, 'failure_reason') ?? val(r, 'cause')}</p>
+                ) : null}
+                <p className="text-[11px] text-gray-400 mt-1">
+                  {(val(r, 'created_at') ?? '').slice(0, 16).replace('T', ' ')}
+                  {hrs !== null ? '  \u00b7  ' + hrs + 'h ago' : ''}
+                  {val(r, 'reference') ? '  \u00b7  ' + val(r, 'reference') : ''}
+                </p>
+              </div>
+            );
+          })}
+          <p className="text-[11px] text-gray-400 pt-1">
+            Newest first, up to 100. Amber means status and payment_status disagree.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const GOOD = ['SUCCESSFUL', 'SUCCESS', 'COMPLETED', 'PAID', 'RELEASED'];
 const WAIT = ['PENDING', 'PROCESSING', 'HELD', 'REQUESTED', 'FROZEN'];
 
@@ -810,6 +915,8 @@ const SOURCE_LABEL: Record<string, string> = {
 
 function FinancesSection() {
   const [rows, setRows] = useState<FinanceRow[]>([]);
+  // FIX557 - which card is open, if any
+  const [drill, setDrill] = useState<'succeeded' | 'pending' | null>(null);
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -856,17 +963,24 @@ function FinancesSection() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 mb-4">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+            <button type="button" onClick={() => setDrill(drill === 'succeeded' ? null : 'succeeded')}
+              className="text-left bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-emerald-300 transition">
               <Wallet className="w-5 h-5 text-emerald-600 mb-2" />
               <p className="text-2xl font-black text-gray-900">{fmtXAF(earned)}</p>
               <p className="text-xs text-gray-500">Collected (payments that succeeded)</p>
-            </div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+              <p className="text-[11px] text-teal-700 font-semibold mt-1">Tap to see which</p>
+            </button>
+            <button type="button" onClick={() => setDrill(drill === 'pending' ? null : 'pending')}
+              className="text-left bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-amber-300 transition">
               <Wallet className="w-5 h-5 text-amber-600 mb-2" />
               <p className="text-2xl font-black text-gray-900">{waiting}</p>
               <p className="text-xs text-gray-500">Payments still waiting on an answer</p>
-            </div>
+              <p className="text-[11px] text-amber-700 font-semibold mt-1">Tap to see the numbers</p>
+            </button>
           </div>
+
+          {/* FIX557 - the payments behind whichever card was tapped */}
+          {drill ? <PaymentDrill bucket={drill} onClose={() => setDrill(null)} /> : null}
 
           {sources.map((src) => (
             <div key={src} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-3">
