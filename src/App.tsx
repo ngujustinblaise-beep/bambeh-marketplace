@@ -291,6 +291,7 @@ const SubscriptionPlans = lazy(() => import("@/pages/SubscriptionPlans"));
 const CoinsBuyPage      = lazy(() => import("@/routes/groups/payments/CoinsBuyPage"));
 const CoinsPage         = lazy(() => import("@/routes/groups/payments/CoinsPage"));
 const BecomeCourier     = lazy(() => import("@/routes/groups/delivery/BecomeCourier")); // FIX567
+const AgentPage         = lazy(() => import("@/routes/groups/delivery/AgentPage")); // FIX575
 const CoinsHistory      = lazy(() => import("@/routes/groups/payments/CoinsHistory"));
 const CoinsTransfer     = lazy(() => import("@/routes/groups/payments/CoinsTransfer"));
 
@@ -1170,6 +1171,17 @@ export default function App() {
                           element={
                             <MainLayout>
                               <AuthGate require="user"><BecomeCourier /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        {/* FIX575 - marketing agents see their own code and
+                            numbers here. FIX574 linked this before the route
+                            existed; this is that omission fixed. */}
+                        <Route
+                          path="/agent"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><AgentPage /></AuthGate>
                             </MainLayout>
                           }
                         />
