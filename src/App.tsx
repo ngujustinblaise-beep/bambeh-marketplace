@@ -290,6 +290,7 @@ const JobsCategory        = lazy(() => import("@/routes/groups/marketplace/JobsC
 const SubscriptionPlans = lazy(() => import("@/pages/SubscriptionPlans"));
 const CoinsBuyPage      = lazy(() => import("@/routes/groups/payments/CoinsBuyPage"));
 const CoinsPage         = lazy(() => import("@/routes/groups/payments/CoinsPage"));
+const BecomeCourier     = lazy(() => import("@/routes/groups/delivery/BecomeCourier")); // FIX567
 const CoinsHistory      = lazy(() => import("@/routes/groups/payments/CoinsHistory"));
 const CoinsTransfer     = lazy(() => import("@/routes/groups/payments/CoinsTransfer"));
 
@@ -1158,6 +1159,17 @@ export default function App() {
                           element={
                             <MainLayout>
                               <AuthGate require="user"><CoinsPage /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        {/* FIX567 - riders apply here. Without this route the
+                            page tree-shakes out and Delivery agents stays
+                            empty forever, the way RedeemPremium did. */}
+                        <Route
+                          path="/become-courier"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><BecomeCourier /></AuthGate>
                             </MainLayout>
                           }
                         />
