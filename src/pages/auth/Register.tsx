@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__REGISTER_FIX70_CLEAN
+// BAMBEH_DEPLOY_TOKEN__REGISTER_FIX587_CLEAN
 // DEPLOY TO THE ROUTED PATH: src/pages/auth/Register.tsx  (App.tsx imports @/pages/auth/Register)
 // Fixes signup: this actually calls register() from useAuth (the old routed copy
 // skipped it and jumped to biometric setup, so no account was ever created).
@@ -78,6 +78,8 @@ const STRINGS = {
     haveAccount: "Already have an account?", signIn: "Sign in",
     invalid: "Please fill all fields correctly.", passwordsNoMatch: "Passwords do not match.",
     terms: "I agree to the Terms of Service and Privacy Policy.", logoAlt: "Bambeh logo",
+    agentCode: "Agent code (optional)",
+    agentCodeHint: "If somebody from Bambeh brought you here, type their code. Leave it empty if nobody did.",
     failed: "Account creation failed. Please try again.",
   },
   fr: {
@@ -88,6 +90,8 @@ const STRINGS = {
     haveAccount: "Vous avez déjà un compte ?", signIn: "Se connecter",
     invalid: "Veuillez remplir correctement tous les champs.", passwordsNoMatch: "Les mots de passe ne correspondent pas.",
     terms: "J'accepte les conditions d'utilisation et la politique de confidentialité.", logoAlt: "Logo Bambeh",
+    agentCode: "Code d'agent (optionnel)",
+    agentCodeHint: "Si quelqu'un de Bambeh vous a amené ici, tapez son code. Laissez vide sinon.",
     failed: "La création du compte a échoué. Veuillez réessayer.",
   },
   ar: {
@@ -98,6 +102,8 @@ const STRINGS = {
     haveAccount: "هل لديك حساب بالفعل؟", signIn: "تسجيل الدخول",
     invalid: "يرجى تعبئة جميع الحقول بشكل صحيح.", passwordsNoMatch: "كلمتا المرور غير متطابقتين.",
     terms: "أوافق على شروط الخدمة وسياسة الخصوصية.", logoAlt: "شعار Bambeh",
+    agentCode: "\u0631\u0645\u0632 \u0627\u0644\u0648\u0643\u064a\u0644 (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)",
+    agentCodeHint: "\u0625\u0646 \u062f\u0644َّ\u0643 \u0623\u062d\u062f \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647 \u0639\u0644\u0649 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u060c \u0641\u0627\u0643\u062a\u0628 \u0631\u0645\u0632\u0647. \u0627\u062a\u0631\u0643\u0647 \u0641\u0627\u0631\u063a\u064b\u0627 \u0625\u0646 \u0644\u0645 \u064a\u062d\u062f\u062b.",
     failed: "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.",
   },
   pidgin: {
@@ -108,6 +114,8 @@ const STRINGS = {
     haveAccount: "You get account already?", signIn: "Sign in",
     invalid: "Please fill the form well well.", passwordsNoMatch: "Passwords no match.",
     terms: "I agree to the Terms and Privacy Policy.", logoAlt: "Bambeh logo",
+    agentCode: "Agent code (if you get one)",
+    agentCodeHint: "If somebody from Bambeh bring you here, type their code. If nobody bring you, leave am empty.",
     failed: "Account creation no work. Try again.",
   },
   ff: {
@@ -118,6 +126,8 @@ const STRINGS = {
     haveAccount: "A geɗaa njiya ndee?", signIn: "Seŋo",
     invalid: "Tiiɗno fuɗɗo keɓe ɗee e no ɓeydii.", passwordsNoMatch: "Moƴƴe ɗi ɗooɗaani.",
     terms: "Mi noddi e sarɗiiji golle e siyaasata kaɓɓaare.", logoAlt: "Bambeh logo",
+    agentCode: "Kode agent (so a hebɗi)",
+    agentCodeHint: "So goɗɗo Bambeh addi ma ɗoo, wintu kode makko. So alaa, accɗu meere.",
     failed: "Sosgol njiya waawaani. Etto kadi.",
   },
 } as const;
@@ -193,6 +203,7 @@ export default function Register() {
   const [error, setError] = useState("");
   const [showPw, setShowPw] = useState(false);      // FIX284
   const [showPw2, setShowPw2] = useState(false);    // FIX284
+  const [agentCode, setAgentCode] = useState("");   // FIX587
 
   const emailValid = useMemo(() => email.trim() === "" || /^\S+@\S+\.\S+$/.test(email), [email]); // FIX283: email is optional now
   const phoneValid = useMemo(() => phone.trim().length >= 7, [phone]);
@@ -225,6 +236,16 @@ export default function Register() {
       }, 50);
       return;
     }
+
+    /* FIX587 - hand a typed agent code to the same key the ?agent= link uses.
+       AgentCapture (FIX508) picks it up once a session exists and lets
+       claim_agent_code() decide whether it counts. Nothing here can block the
+       signup: a lost attribution costs a number on a dashboard, a thrown
+       error costs somebody their account. */
+    try {
+      const typed = agentCode.trim().toUpperCase();
+      if (typed) window.localStorage.setItem("bambeh:agent:code", typed);
+    } catch { /* storage unavailable - ignore */ }
 
     setLoading(true);
     setError("");
@@ -345,6 +366,17 @@ export default function Register() {
               </div>
             </div>
 
+            {/* FIX587 - somebody read a code out loud in a market. This is
+                where it goes. Optional, and it never blocks the form. */}
+            <div>
+              <label htmlFor="agentCode" className="block text-sm font-medium text-gray-700">{t.agentCode}</label>
+              <input id="agentCode" value={agentCode} autoComplete="off"
+                onChange={(e) => setAgentCode(e.target.value.toUpperCase())}
+                placeholder="AG12345" maxLength={16}
+                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 uppercase tracking-wider focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+              <p className="mt-1 text-xs text-gray-500">{t.agentCodeHint}</p>
+            </div>
+
             <div className="flex items-start gap-3">
               <input id="accepted" type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)}
                 className="mt-1 h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
@@ -381,3 +413,4 @@ export default function Register() {
   );
 }
 // BAMBEH_END_TOKEN__REGISTER__COMPLETE
+// BAMBEH_END_TOKEN__REGISTER_FIX587__COMPLETE
