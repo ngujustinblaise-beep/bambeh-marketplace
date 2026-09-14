@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HEADER_FIX127_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HEADER_FIX582_CLEAN
 /**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
@@ -47,6 +47,25 @@ export default function Header() {
   const [searchQuery, setSearchQuery]             = useState('');
   const [showLanguageMenu, setShowLanguageMenu]   = useState(false);
   const [showMobileLanguages, setShowMobileLanguages] = useState(false);
+
+  // FIX582 - the two utility-bar labels, in five languages.
+  // Root cause: t() from LanguageContext returns the KEY itself when a
+  // string is missing, and a key is a truthy string, so the old
+  //     t('nav.deliverForUs') || 'Deliver for Bambeh'
+  // fallback could never fire and the screen printed nav.deliverForUs.
+  // Icons and Arabic are pure \uXXXX escapes so no encoding can break them.
+  const NAV_ICON = { deliver: '\uD83D\uDEF5', agent: '\uD83D\uDCE3' };
+  const NAV_L: Record<string, { deliver: string; agent: string }> = {
+    en:  { deliver: 'Deliver for us',    agent: 'Marketing agent'  },
+    fr:  { deliver: 'Livrer pour nous',  agent: 'Agent commercial' },
+    pcm: { deliver: 'Carry load for us', agent: 'Marketing agent'  },
+    ff:  { deliver: 'Roondo e amen',     agent: 'Ajan marketing'   },
+    ar:  { deliver: '\u0627\u0644\u062A\u0648\u0635\u064A\u0644 \u0645\u0639\u0646\u0627',
+           agent:   '\u0648\u0643\u064A\u0644 \u062A\u0633\u0648\u064A\u0642' },
+  };
+  const NAV_ALIAS: Record<string, string> = { pidgin: 'pcm', pid: 'pcm', ful: 'ff' };
+  const navKey = NAV_ALIAS[String(language)] || String(language);
+  const navL = NAV_L[navKey] || NAV_L.en;
 
   const getCurrentLanguage = () =>
     AVAILABLE_LANGUAGES.find(l => l.code === language) || AVAILABLE_LANGUAGES[0];
@@ -348,10 +367,10 @@ export default function Header() {
               🌿 Farm Fresh
             </Link>
             <Link to="/become-courier" className="hover:text-teal-200 transition-colors">
-              🛵 {t('nav.deliverForUs') || 'Deliver for Bambeh'}
+              {NAV_ICON.deliver} {navL.deliver}
             </Link>
             <Link to="/agent" className="hover:text-teal-200 transition-colors">
-              📣 {t('nav.becomeAgent') || 'Marketing agent'}
+              {NAV_ICON.agent} {navL.agent}
             </Link>
           </div>
 
@@ -562,6 +581,8 @@ export default function Header() {
               {[
                 { to: '/coins',     label: `⚡ Zerm Coins Wallet`          },
                 { to: '/cart',      label: `🛒 ${t('nav.cart')}`      },
+                { to: '/become-courier', label: NAV_ICON.deliver + ' ' + navL.deliver },
+                { to: '/agent',          label: NAV_ICON.agent   + ' ' + navL.agent   },
                 { to: '/favorites', label: `❤️ ${t('nav.favorites')}` },
                 { to: '/referral',  label: '🎁 Referral Program'       },
               ].map(item => (
@@ -620,3 +641,4 @@ export default function Header() {
   );
 }
 // BAMBEH_END_TOKEN__HEADER__COMPLETE
+// BAMBEH_END_TOKEN__HEADER_FIX582__COMPLETE
