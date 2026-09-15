@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HEADER_FIX582_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HEADER_FIX601_CLEAN
 /**
  * 3-LEVEL HEADER - BAMBEH MARKETPLACE
  * FILE LOCATION: src/components/layout/Header.tsx
@@ -54,14 +54,18 @@ export default function Header() {
   //     t('nav.deliverForUs') || 'Deliver for Bambeh'
   // fallback could never fire and the screen printed nav.deliverForUs.
   // Icons and Arabic are pure \uXXXX escapes so no encoding can break them.
-  const NAV_ICON = { deliver: '\uD83D\uDEF5', agent: '\uD83D\uDCE3' };
-  const NAV_L: Record<string, { deliver: string; agent: string }> = {
-    en:  { deliver: 'Deliver for us',    agent: 'Marketing agent'  },
-    fr:  { deliver: 'Livrer pour nous',  agent: 'Agent commercial' },
-    pcm: { deliver: 'Carry load for us', agent: 'Marketing agent'  },
-    ff:  { deliver: 'Roondo e amen',     agent: 'Ajan marketing'   },
+  // FIX601 - a customer-facing way into delivery. 'Deliver for us' recruits
+  // riders; this is for the person who wants something carried. Two very
+  // different people, so two links rather than one clever one.
+  const NAV_ICON = { deliver: '\uD83D\uDEF5', agent: '\uD83D\uDCE3', send: '\uD83D\uDCE6' };
+  const NAV_L: Record<string, { deliver: string; agent: string; send: string }> = {
+    en:  { deliver: 'Deliver for us',    agent: 'Marketing agent',  send: 'Send a parcel' },
+    fr:  { deliver: 'Livrer pour nous',  agent: 'Agent commercial', send: 'Envoyer un colis' },
+    pcm: { deliver: 'Carry load for us', agent: 'Marketing agent',  send: 'Send something' },
+    ff:  { deliver: 'Roondo e amen',     agent: 'Ajan marketing',   send: 'Neldu huunde' },
     ar:  { deliver: '\u0627\u0644\u062A\u0648\u0635\u064A\u0644 \u0645\u0639\u0646\u0627',
-           agent:   '\u0648\u0643\u064A\u0644 \u062A\u0633\u0648\u064A\u0642' },
+           agent:   '\u0648\u0643\u064A\u0644 \u062A\u0633\u0648\u064A\u0642',
+           send:    '\u0627\u0637\u0644\u0628 \u062A\u0648\u0635\u064A\u0644\u0629' },
   };
   const NAV_ALIAS: Record<string, string> = { pidgin: 'pcm', pid: 'pcm', ful: 'ff' };
   const navKey = NAV_ALIAS[String(language)] || String(language);
@@ -127,6 +131,7 @@ export default function Header() {
     { to: '/farm-fresh',  words: ['farm', 'food', 'tomato', 'vegetable', 'ferme', 'légume', 'chop', 'مزرعة', 'طعام', 'ndema', 'ñamdu', 'remuru'] },
     { to: '/exchange',    words: ['exchange', 'swap', 'trade', 'échange', 'troc', 'مقايضة', 'waylugol', 'waylu'] },
     { to: '/community',   words: ['community', 'group', 'communauté', 'groupe', 'مجتمع', 'renndo', 'goomu'] },
+    { to: '/request-delivery', words: ['send', 'parcel', 'package', 'colis', 'envoyer', 'delivery'] },
     { to: '/become-courier', words: ['deliver', 'courier', 'rider', 'livrer', 'livreur'] },
     { to: '/agent',          words: ['agent', 'marketing', 'marketeur'] },
     { to: '/coins',       words: ['coin', 'zerm', 'pièce', 'عملة'] },
@@ -366,6 +371,9 @@ export default function Header() {
             <Link to="/farm-fresh" className="hover:text-teal-200 transition-colors">
               🌿 Farm Fresh
             </Link>
+            <Link to="/request-delivery" className="hover:text-teal-200 transition-colors">
+              {NAV_ICON.send} {navL.send}
+            </Link>
             <Link to="/become-courier" className="hover:text-teal-200 transition-colors">
               {NAV_ICON.deliver} {navL.deliver}
             </Link>
@@ -581,6 +589,7 @@ export default function Header() {
               {[
                 { to: '/coins',     label: `⚡ Zerm Coins Wallet`          },
                 { to: '/cart',      label: `🛒 ${t('nav.cart')}`      },
+                { to: '/request-delivery', label: NAV_ICON.send    + ' ' + navL.send    },
                 { to: '/become-courier', label: NAV_ICON.deliver + ' ' + navL.deliver },
                 { to: '/agent',          label: NAV_ICON.agent   + ' ' + navL.agent   },
                 { to: '/favorites', label: `❤️ ${t('nav.favorites')}` },
@@ -641,4 +650,4 @@ export default function Header() {
   );
 }
 // BAMBEH_END_TOKEN__HEADER__COMPLETE
-// BAMBEH_END_TOKEN__HEADER_FIX582__COMPLETE
+// BAMBEH_END_TOKEN__HEADER_FIX601__COMPLETE
