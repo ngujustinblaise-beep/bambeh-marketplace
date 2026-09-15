@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__BECOMECOURIER_FIX565_CLEAN
+// BAMBEH_DEPLOY_TOKEN__BECOMECOURIER_FIX594_CLEAN
 /**
  * src/routes/groups/delivery/BecomeCourier.tsx - Bambeh Marketplace
  *
@@ -56,6 +56,10 @@ type Dict = {
   rejected: string; suspended: string; support: string;
   onDuty: string; offDuty: string; goOn: string; goOff: string;
   deliveries: string; back: string; signIn: string;
+  jobsTitle: string; jobsMine: string; jobsOpen: string;
+  noOpen: string; noMine: string; offDutyHint: string;
+  take: string; pickedUp: string; delivered: string; handBack: string;
+  callIt: string; fromL: string; toL: string; refreshJobs: string;
   needName: string; needPhone: string; needRegion: string; needTown: string;
   failed: string;
 };
@@ -82,6 +86,11 @@ const STR: Record<string, Dict> = {
     onDuty: 'On duty', offDuty: 'Off duty',
     goOn: 'Go on duty', goOff: 'Go off duty',
     deliveries: 'deliveries done', back: 'Back',
+    jobsTitle: 'Deliveries', jobsMine: 'What you are carrying', jobsOpen: 'Waiting to be carried',
+    noOpen: 'Nothing waiting in your town right now.', noMine: 'You are not carrying anything.',
+    offDutyHint: 'Go on duty to see the jobs waiting in your town.',
+    take: 'Take this job', pickedUp: 'I have collected it', delivered: 'I have delivered it',
+    handBack: 'Hand it back', callIt: 'Call', fromL: 'From', toL: 'To', refreshJobs: 'Refresh',
     signIn: 'Sign in first, then come back to this page.',
     needName: 'Your full name is required.', needPhone: 'A phone number is required.',
     needRegion: 'Choose your region.', needTown: 'Your town is required.',
@@ -108,6 +117,11 @@ const STR: Record<string, Dict> = {
     onDuty: 'En service', offDuty: 'Hors service',
     goOn: 'Passer en service', goOff: 'Sortir du service',
     deliveries: 'livraisons effectu\u00e9es', back: 'Retour',
+    jobsTitle: 'Livraisons', jobsMine: 'Ce que vous transportez', jobsOpen: 'En attente',
+    noOpen: 'Rien en attente dans votre ville pour le moment.', noMine: 'Vous ne transportez rien.',
+    offDutyHint: 'Entrez en service pour voir les courses en attente.',
+    take: 'Prendre cette course', pickedUp: 'Colis r\u00e9cup\u00e9r\u00e9', delivered: 'Colis livr\u00e9',
+    handBack: 'Rendre la course', callIt: 'Appeler', fromL: 'De', toL: '\u00c0', refreshJobs: 'Actualiser',
     signIn: 'Connectez-vous d\u2019abord, puis revenez sur cette page.',
     needName: 'Votre nom complet est requis.', needPhone: 'Un num\u00e9ro de t\u00e9l\u00e9phone est requis.',
     needRegion: 'Choisissez votre r\u00e9gion.', needTown: 'Votre ville est requise.',
@@ -134,6 +148,11 @@ const STR: Record<string, Dict> = {
     onDuty: 'On duty', offDuty: 'Off duty',
     goOn: 'Go on duty', goOff: 'Go off duty',
     deliveries: 'delivery you don do', back: 'Go back',
+    jobsTitle: 'Delivery work', jobsMine: 'Wetin you dey carry', jobsOpen: 'Work dey wait',
+    noOpen: 'No work dey wait for your town now.', noMine: 'You no dey carry anything.',
+    offDutyHint: 'Enter duty so you go see the work wey dey wait.',
+    take: 'Take this work', pickedUp: 'I done collect am', delivered: 'I done deliver am',
+    handBack: 'Give am back', callIt: 'Call', fromL: 'From', toL: 'Go', refreshJobs: 'Refresh',
     signIn: 'Sign in first, then come back this page.',
     needName: 'We need your full name.', needPhone: 'We need phone number.',
     needRegion: 'Choose your region.', needTown: 'We need your town.',
@@ -161,6 +180,18 @@ const STR: Record<string, Dict> = {
     onDuty: '\u0641\u064a \u0627\u0644\u062e\u062f\u0645\u0629', offDuty: '\u062e\u0627\u0631\u062c \u0627\u0644\u062e\u062f\u0645\u0629',
     goOn: '\u0627\u0628\u062f\u0623 \u0627\u0644\u0639\u0645\u0644', goOff: '\u0623\u0648\u0642\u0641 \u0627\u0644\u0639\u0645\u0644',
     deliveries: '\u0639\u0645\u0644\u064a\u0627\u062a \u062a\u0648\u0635\u064a\u0644', back: '\u0631\u062c\u0648\u0639',
+    jobsTitle: '\u0627\u0644\u0637\u0644\u0628\u0627\u062A',
+    jobsMine: '\u0637\u0644\u0628\u0627\u062A\u0643 \u0627\u0644\u062D\u0627\u0644\u064A\u0629',
+    jobsOpen: '\u0637\u0644\u0628\u0627\u062A \u0645\u062A\u0627\u062D\u0629',
+    noOpen: '\u0644\u0627 \u062A\u0648\u062C\u062F \u0637\u0644\u0628\u0627\u062A \u0627\u0644\u0622\u0646',
+    noMine: '\u0644\u0627 \u064A\u0648\u062C\u062F \u0637\u0644\u0628 \u0628\u064A\u0646 \u064A\u062F\u064A\u0643',
+    offDutyHint: '\u0627\u062F\u062E\u0644 \u0627\u0644\u062E\u062F\u0645\u0629 \u0644\u0631\u0624\u064A\u0629 \u0627\u0644\u0637\u0644\u0628\u0627\u062A',
+    take: '\u062E\u0630 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628',
+    pickedUp: '\u062A\u0645 \u0627\u0644\u0627\u0633\u062A\u0644\u0627\u0645',
+    delivered: '\u062A\u0645 \u0627\u0644\u062A\u0648\u0635\u064A\u0644',
+    handBack: '\u0625\u0631\u062C\u0627\u0639 \u0627\u0644\u0637\u0644\u0628',
+    callIt: '\u0627\u062A\u0635\u0644', fromL: '\u0645\u0646', toL: '\u0625\u0644\u0649',
+    refreshJobs: '\u062A\u062D\u062F\u064A\u062B',
     signIn: '\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0623\u0648\u0644\u0627\u064b.',
     needName: '\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644 \u0645\u0637\u0644\u0648\u0628.',
     needPhone: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0645\u0637\u0644\u0648\u0628.',
@@ -188,6 +219,11 @@ const STR: Record<string, Dict> = {
     onDuty: 'E golle', offDuty: 'Alaa e golle',
     goOn: 'Naatu e golle', goOff: 'Yaltu e golle',
     deliveries: 'ronde\u0257e ga\u0257e', back: 'Rutto',
+    jobsTitle: 'Roondugol', jobsMine: 'Ko roondi\u0257aa', jobsOpen: 'Ko habbii',
+    noOpen: 'Alaa ko habbii e saare maa jooni.', noMine: 'A roondaaki hay huunde.',
+    offDutyHint: 'Naatu e golle ngam yi\u0263de ko habbii.',
+    take: 'Jogo \u0257um', pickedUp: 'Mi jogii \u0257um', delivered: 'Mi rokkii \u0257um',
+    handBack: 'Rutta \u0257um', callIt: 'Nod', fromL: 'Iwde', toL: 'Haa', refreshJobs: 'Hesnit',
     signIn: 'Naatu tawo, refti artu \u0257oo.',
     needName: 'Innde timmunde ko so\u01b4aa.', needPhone: 'Limngal noddirgal ko so\u01b4aa.',
     needRegion: 'Su\u0253o diiwaan maa.', needTown: 'Saare maa ko so\u01b4aa.',
@@ -237,6 +273,19 @@ class Boundary extends React.Component<
   }
 }
 
+type Job = {
+  id: string;
+  status?: string | null;
+  pickup_area?: string | null;
+  pickup_note?: string | null;
+  dropoff_area?: string | null;
+  dropoff_note?: string | null;
+  contact_phone?: string | null;   // FIX591 onwards
+  fee_xaf?: number | null;
+  distance_km?: number | null;
+  created_at?: string | null;
+};
+
 export default function BecomeCourier() {
   const lang = useLang() as string;
   const t = pick(lang);
@@ -267,6 +316,14 @@ function Inner() {
   const [region, setRegion] = useState('');
   const [town, setTown]     = useState('');
   const [quarters, setQ]    = useState('');
+
+  /* FIX594 - the rider's job board. The RPCs came in FIX589 and were proved by
+     the FIX590 self-test; this is the screen for them. contact_phone only
+     exists once FIX591 has run, so it is read defensively and the card simply
+     omits the Call button until then. */
+  const [openJobs, setOpenJobs] = useState<Job[]>([]);
+  const [myJobs, setMyJobs]     = useState<Job[]>([]);
+  const [jobBusy, setJobBusy]   = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoad(true);
@@ -326,6 +383,55 @@ function Inner() {
       setError(e instanceof Error ? e.message : t.failed);
     } finally {
       setBusy(false);
+    }
+  };
+
+  /* Both lists in one go. Failure is swallowed: an empty board is better than
+     a red page, and the rider can press Refresh. */
+  const loadJobs = useCallback(async () => {
+    try {
+      const [o, m] = await Promise.all([
+        supabase.rpc('bambeh_courier_jobs_open'),
+        supabase.rpc('bambeh_courier_my_jobs'),
+      ]);
+      setOpenJobs(Array.isArray(o.data) ? (o.data as Job[]) : []);
+      setMyJobs(Array.isArray(m.data) ? (m.data as Job[]) : []);
+    } catch {
+      setOpenJobs([]);
+      setMyJobs([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mine?.status === 'VERIFIED') void loadJobs();
+  }, [mine?.status, mine?.is_available, loadJobs]);
+
+  /* One handler for every button on a job card. The database decides whether
+     the move is allowed and hands back a reason, which is what we show. */
+  const jobAction = async (
+    id: string,
+    what: 'accept' | 'PICKED_UP' | 'DELIVERED' | 'release',
+  ) => {
+    setJobBusy(id);
+    setError(null);
+    try {
+      let res;
+      if (what === 'accept') {
+        res = await supabase.rpc('bambeh_courier_job_accept', { p_job_id: id });
+      } else if (what === 'release') {
+        res = await supabase.rpc('bambeh_courier_job_release', { p_job_id: id, p_reason: null });
+      } else {
+        res = await supabase.rpc('bambeh_courier_job_advance', { p_job_id: id, p_status: what });
+      }
+      if (res.error) throw res.error;
+      const out = res.data as { ok?: boolean; reason?: string } | null;
+      if (out && out.ok === false) setError(out.reason || t.failed);
+      await loadJobs();
+      await load();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t.failed);
+    } finally {
+      setJobBusy(null);
     }
   };
 
@@ -406,6 +512,109 @@ function Inner() {
               {mine?.is_available ? t.goOff : t.goOn}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------- FIX594 the job board */}
+      {st === 'VERIFIED' && (
+        <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-base font-bold text-gray-900">{t.jobsTitle}</h2>
+            <button type="button" onClick={() => void loadJobs()}
+              className="rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100">
+              {t.refreshJobs}
+            </button>
+          </div>
+
+          {/* what the rider is holding */}
+          <p className="mt-3 text-xs font-bold uppercase tracking-wide text-gray-500">{t.jobsMine}</p>
+          {myJobs.length === 0 ? (
+            <p className="mt-1 text-sm text-gray-500">{t.noMine}</p>
+          ) : (
+            <div className="mt-2 space-y-2">
+              {myJobs.map((j) => (
+                <div key={j.id} className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="min-w-0 text-sm font-semibold text-gray-900">
+                      {t.fromL} {j.pickup_area} &rarr; {t.toL} {j.dropoff_area}
+                    </p>
+                    <p className="shrink-0 text-sm font-black text-emerald-700">
+                      {j.fee_xaf} XAF
+                    </p>
+                  </div>
+                  {j.pickup_note ? (
+                    <p className="mt-1 text-xs text-gray-600">{j.pickup_note}</p>
+                  ) : null}
+                  {j.dropoff_note ? (
+                    <p className="mt-0.5 text-xs text-gray-600">{j.dropoff_note}</p>
+                  ) : null}
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {j.contact_phone ? (
+                      <a href={`tel:${j.contact_phone}`}
+                        className="min-h-[44px] inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-bold text-emerald-700 ring-1 ring-emerald-300">
+                        {t.callIt} {j.contact_phone}
+                      </a>
+                    ) : null}
+
+                    {j.status === 'ACCEPTED' ? (
+                      <>
+                        <button type="button" disabled={jobBusy === j.id}
+                          onClick={() => void jobAction(j.id, 'PICKED_UP')}
+                          className="min-h-[44px] rounded-lg bg-gray-900 px-3 py-2 text-xs font-bold text-white disabled:bg-gray-300">
+                          {jobBusy === j.id ? '...' : t.pickedUp}
+                        </button>
+                        <button type="button" disabled={jobBusy === j.id}
+                          onClick={() => void jobAction(j.id, 'release')}
+                          className="min-h-[44px] rounded-lg bg-white px-3 py-2 text-xs font-bold text-gray-700 ring-1 ring-gray-300 disabled:text-gray-300">
+                          {t.handBack}
+                        </button>
+                      </>
+                    ) : null}
+
+                    {j.status === 'PICKED_UP' ? (
+                      <button type="button" disabled={jobBusy === j.id}
+                        onClick={() => void jobAction(j.id, 'DELIVERED')}
+                        className="min-h-[44px] rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:bg-gray-300">
+                        {jobBusy === j.id ? '...' : t.delivered}
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* what is waiting */}
+          <p className="mt-4 text-xs font-bold uppercase tracking-wide text-gray-500">{t.jobsOpen}</p>
+          {!mine?.is_available ? (
+            <p className="mt-1 text-sm text-gray-500">{t.offDutyHint}</p>
+          ) : openJobs.length === 0 ? (
+            <p className="mt-1 text-sm text-gray-500">{t.noOpen}</p>
+          ) : (
+            <div className="mt-2 space-y-2">
+              {openJobs.map((j) => (
+                <div key={j.id} className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="min-w-0 text-sm font-semibold text-gray-900">
+                      {t.fromL} {j.pickup_area} &rarr; {t.toL} {j.dropoff_area}
+                    </p>
+                    <p className="shrink-0 text-sm font-black text-gray-900">
+                      {j.fee_xaf} XAF
+                    </p>
+                  </div>
+                  {j.pickup_note ? (
+                    <p className="mt-1 text-xs text-gray-600">{j.pickup_note}</p>
+                  ) : null}
+                  <button type="button" disabled={jobBusy === j.id}
+                    onClick={() => void jobAction(j.id, 'accept')}
+                    className="mt-2 min-h-[44px] w-full rounded-lg bg-gray-900 px-3 py-2 text-sm font-bold text-white disabled:bg-gray-300">
+                    {jobBusy === j.id ? '...' : t.take}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -512,3 +721,4 @@ function Inner() {
   );
 }
 // BAMBEH_END_TOKEN__BECOMECOURIER_FIX565__COMPLETE
+// BAMBEH_END_TOKEN__BECOMECOURIER_FIX594__COMPLETE
