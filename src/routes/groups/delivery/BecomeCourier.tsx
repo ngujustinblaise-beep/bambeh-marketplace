@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__BECOMECOURIER_FIX594_CLEAN
+// BAMBEH_DEPLOY_TOKEN__BECOMECOURIER_FIX597_CLEAN
 /**
  * src/routes/groups/delivery/BecomeCourier.tsx - Bambeh Marketplace
  *
@@ -60,6 +60,8 @@ type Dict = {
   noOpen: string; noMine: string; offDutyHint: string;
   take: string; pickedUp: string; delivered: string; handBack: string;
   callIt: string; fromL: string; toL: string; refreshJobs: string;
+  youEarn: string; clientPays: string; alreadyPaid: string; km: string;
+  earnedToday: string; earnedTotal: string; notYetEarned: string;
   needName: string; needPhone: string; needRegion: string; needTown: string;
   failed: string;
 };
@@ -91,6 +93,9 @@ const STR: Record<string, Dict> = {
     offDutyHint: 'Go on duty to see the jobs waiting in your town.',
     take: 'Take this job', pickedUp: 'I have collected it', delivered: 'I have delivered it',
     handBack: 'Hand it back', callIt: 'Call', fromL: 'From', toL: 'To', refreshJobs: 'Refresh',
+    youEarn: 'You earn', clientPays: 'Client pays', km: 'km',
+    alreadyPaid: 'Already paid - the money is with Bambeh before you ride',
+    earnedToday: 'Earned today', earnedTotal: 'Earned in total', notYetEarned: 'Not earned yet',
     signIn: 'Sign in first, then come back to this page.',
     needName: 'Your full name is required.', needPhone: 'A phone number is required.',
     needRegion: 'Choose your region.', needTown: 'Your town is required.',
@@ -122,6 +127,9 @@ const STR: Record<string, Dict> = {
     offDutyHint: 'Entrez en service pour voir les courses en attente.',
     take: 'Prendre cette course', pickedUp: 'Colis r\u00e9cup\u00e9r\u00e9', delivered: 'Colis livr\u00e9',
     handBack: 'Rendre la course', callIt: 'Appeler', fromL: 'De', toL: '\u00c0', refreshJobs: 'Actualiser',
+    youEarn: 'Vous gagnez', clientPays: 'Le client paie', km: 'km',
+    alreadyPaid: 'D\u00e9j\u00e0 pay\u00e9 - l\u2019argent est chez Bambeh avant votre d\u00e9part',
+    earnedToday: 'Gagn\u00e9 aujourd\u2019hui', earnedTotal: 'Gagn\u00e9 au total', notYetEarned: 'Pas encore gagn\u00e9',
     signIn: 'Connectez-vous d\u2019abord, puis revenez sur cette page.',
     needName: 'Votre nom complet est requis.', needPhone: 'Un num\u00e9ro de t\u00e9l\u00e9phone est requis.',
     needRegion: 'Choisissez votre r\u00e9gion.', needTown: 'Votre ville est requise.',
@@ -153,6 +161,9 @@ const STR: Record<string, Dict> = {
     offDutyHint: 'Enter duty so you go see the work wey dey wait.',
     take: 'Take this work', pickedUp: 'I done collect am', delivered: 'I done deliver am',
     handBack: 'Give am back', callIt: 'Call', fromL: 'From', toL: 'Go', refreshJobs: 'Refresh',
+    youEarn: 'You go take', clientPays: 'Client pay', km: 'km',
+    alreadyPaid: 'Dem done pay - the money dey with Bambeh before you start',
+    earnedToday: 'You take today', earnedTotal: 'All wey you take', notYetEarned: 'You no take yet',
     signIn: 'Sign in first, then come back this page.',
     needName: 'We need your full name.', needPhone: 'We need phone number.',
     needRegion: 'Choose your region.', needTown: 'We need your town.',
@@ -192,6 +203,9 @@ const STR: Record<string, Dict> = {
     handBack: '\u0625\u0631\u062C\u0627\u0639 \u0627\u0644\u0637\u0644\u0628',
     callIt: '\u0627\u062A\u0635\u0644', fromL: '\u0645\u0646', toL: '\u0625\u0644\u0649',
     refreshJobs: '\u062A\u062D\u062F\u064A\u062B',
+    youEarn: '\u0645\u0627 \u062A\u0631\u0628\u062D\u0647', clientPays: '\u064A\u062F\u0641\u0639 \u0627\u0644\u0639\u0645\u064A\u0644', km: '\u0643\u0645',
+    alreadyPaid: '\u0645\u062F\u0641\u0648\u0639 \u0645\u0633\u0628\u0642\u0627 - \u0627\u0644\u0645\u0628\u0644\u063A \u0639\u0646\u062F \u0628\u0627\u0645\u0628\u064A\u0647 \u0642\u0628\u0644 \u0627\u0646\u0637\u0644\u0627\u0642\u0643',
+    earnedToday: '\u0631\u0628\u062D \u0627\u0644\u064A\u0648\u0645', earnedTotal: '\u0627\u0644\u0631\u0628\u062D \u0627\u0644\u0643\u0644\u064A', notYetEarned: '\u0644\u0645 \u064A\u062D\u0633\u0628 \u0628\u0639\u062F',
     signIn: '\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0623\u0648\u0644\u0627\u064b.',
     needName: '\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644 \u0645\u0637\u0644\u0648\u0628.',
     needPhone: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0645\u0637\u0644\u0648\u0628.',
@@ -224,6 +238,9 @@ const STR: Record<string, Dict> = {
     offDutyHint: 'Naatu e golle ngam yi\u0263de ko habbii.',
     take: 'Jogo \u0257um', pickedUp: 'Mi jogii \u0257um', delivered: 'Mi rokkii \u0257um',
     handBack: 'Rutta \u0257um', callIt: 'Nod', fromL: 'Iwde', toL: 'Haa', refreshJobs: 'Hesnit',
+    youEarn: 'Ko heb\u0257aa', clientPays: 'Ko kliyan yo\u0253\u0257i', km: 'km',
+    alreadyPaid: 'Yo\u0253aama - kaalisi wo\u0257i e Bambeh haa a yaha',
+    earnedToday: 'Heb\u0257aa hannde', earnedTotal: 'Heb\u0257aa fof', notYetEarned: 'Heb\u0257aaka tawo',
     signIn: 'Naatu tawo, refti artu \u0257oo.',
     needName: 'Innde timmunde ko so\u01b4aa.', needPhone: 'Limngal noddirgal ko so\u01b4aa.',
     needRegion: 'Su\u0253o diiwaan maa.', needTown: 'Saare maa ko so\u01b4aa.',
@@ -281,6 +298,7 @@ type Job = {
   dropoff_area?: string | null;
   dropoff_note?: string | null;
   contact_phone?: string | null;   // FIX591 onwards
+  courier_fee_xaf?: number | null; // FIX596 onwards - what the rider earns
   fee_xaf?: number | null;
   distance_km?: number | null;
   created_at?: string | null;
@@ -324,6 +342,10 @@ function Inner() {
   const [openJobs, setOpenJobs] = useState<Job[]>([]);
   const [myJobs, setMyJobs]     = useState<Job[]>([]);
   const [jobBusy, setJobBusy]   = useState<string | null>(null);
+
+  /* FIX597 - earnings. bambeh_courier_earnings() counts only DELIVERED work,
+     so "earned" is money the rider has actually finished for. */
+  const [earn, setEarn] = useState<Record<string, number> | null>(null);
 
   const load = useCallback(async () => {
     setLoad(true);
@@ -396,6 +418,11 @@ function Inner() {
       ]);
       setOpenJobs(Array.isArray(o.data) ? (o.data as Job[]) : []);
       setMyJobs(Array.isArray(m.data) ? (m.data as Job[]) : []);
+      try {
+        const e = await supabase.rpc('bambeh_courier_earnings');
+        setEarn(e.data && typeof e.data === 'object'
+          ? (e.data as Record<string, number>) : null);
+      } catch { setEarn(null); }
     } catch {
       setOpenJobs([]);
       setMyJobs([]);
@@ -526,6 +553,30 @@ function Inner() {
             </button>
           </div>
 
+          {/* FIX597 - earned, and what is still riding on unfinished work. */}
+          {earn ? (
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <div className="rounded-xl bg-emerald-50 p-2 text-center">
+                <p className="text-lg font-black text-emerald-700">
+                  {Number(earn.today_xaf ?? 0).toLocaleString()}
+                </p>
+                <p className="text-[10px] font-semibold text-emerald-800">{t.earnedToday}</p>
+              </div>
+              <div className="rounded-xl bg-gray-50 p-2 text-center">
+                <p className="text-lg font-black text-gray-900">
+                  {Number(earn.earned_xaf ?? 0).toLocaleString()}
+                </p>
+                <p className="text-[10px] font-semibold text-gray-600">{t.earnedTotal}</p>
+              </div>
+              <div className="rounded-xl bg-amber-50 p-2 text-center">
+                <p className="text-lg font-black text-amber-700">
+                  {Number(earn.not_yet_earned_xaf ?? 0).toLocaleString()}
+                </p>
+                <p className="text-[10px] font-semibold text-amber-800">{t.notYetEarned}</p>
+              </div>
+            </div>
+          ) : null}
+
           {/* what the rider is holding */}
           <p className="mt-3 text-xs font-bold uppercase tracking-wide text-gray-500">{t.jobsMine}</p>
           {myJobs.length === 0 ? (
@@ -538,10 +589,18 @@ function Inner() {
                     <p className="min-w-0 text-sm font-semibold text-gray-900">
                       {t.fromL} {j.pickup_area} &rarr; {t.toL} {j.dropoff_area}
                     </p>
-                    <p className="shrink-0 text-sm font-black text-emerald-700">
-                      {j.fee_xaf} XAF
-                    </p>
+                    <div className="shrink-0 text-right">
+                      <p className="text-sm font-black text-emerald-700">
+                        {Number(j.courier_fee_xaf ?? j.fee_xaf ?? 0).toLocaleString()} XAF
+                      </p>
+                      <p className="text-[10px] font-semibold text-emerald-800">{t.youEarn}</p>
+                    </div>
                   </div>
+                  {j.distance_km ? (
+                    <p className="mt-0.5 text-xs font-semibold text-emerald-800">
+                      {j.distance_km} {t.km}
+                    </p>
+                  ) : null}
                   {j.pickup_note ? (
                     <p className="mt-1 text-xs text-gray-600">{j.pickup_note}</p>
                   ) : null}
@@ -599,10 +658,23 @@ function Inner() {
                     <p className="min-w-0 text-sm font-semibold text-gray-900">
                       {t.fromL} {j.pickup_area} &rarr; {t.toL} {j.dropoff_area}
                     </p>
-                    <p className="shrink-0 text-sm font-black text-gray-900">
-                      {j.fee_xaf} XAF
-                    </p>
+                    <div className="shrink-0 text-right">
+                      <p className="text-base font-black text-emerald-700">
+                        {Number(j.courier_fee_xaf ?? 0).toLocaleString()} XAF
+                      </p>
+                      <p className="text-[10px] font-semibold text-emerald-800">{t.youEarn}</p>
+                    </div>
                   </div>
+                  <p className="mt-0.5 text-xs text-gray-600">
+                    {j.distance_km ? `${j.distance_km} ${t.km} \u00b7 ` : ''}
+                    {t.clientPays} {Number(j.fee_xaf ?? 0).toLocaleString()} XAF
+                  </p>
+                  {/* FIX596 keeps unpaid jobs off this list entirely, so every
+                      job here is already paid for. Say so plainly - a rider
+                      should never wonder whether the money exists. */}
+                  <p className="mt-1 inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-800">
+                    <CheckCircle className="h-3 w-3" /> {t.alreadyPaid}
+                  </p>
                   {j.pickup_note ? (
                     <p className="mt-1 text-xs text-gray-600">{j.pickup_note}</p>
                   ) : null}
@@ -721,4 +793,4 @@ function Inner() {
   );
 }
 // BAMBEH_END_TOKEN__BECOMECOURIER_FIX565__COMPLETE
-// BAMBEH_END_TOKEN__BECOMECOURIER_FIX594__COMPLETE
+// BAMBEH_END_TOKEN__BECOMECOURIER_FIX597__COMPLETE
