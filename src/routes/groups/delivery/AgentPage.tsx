@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__AGENTPAGE_FIX587_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AGENTPAGE_FIX602_CLEAN
 /**
  * src/routes/groups/delivery/AgentPage.tsx - Bambeh Marketplace
  *
@@ -34,12 +34,13 @@
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Loader2, AlertCircle, CheckCircle, Clock, Shield, ArrowLeft, RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { qrSvg } from '@/lib/qrcode';
 import { useLang } from '@/hooks/useAppLang';
 
 type Dict = {
@@ -51,6 +52,7 @@ type Dict = {
   signups: string; activated: string; today: string; week: string;
   unavailable: string; daily: string; noDays: string;
   yourLink: string; shareIt: string; shareVia: string; linkHint: string;
+  qrTitle: string; qrShow: string; qrHide: string;
   back: string; signIn: string; refresh: string;
   needName: string; needPhone: string; needRegion: string; needTown: string;
   failed: string;
@@ -70,6 +72,7 @@ const STR: Record<string, Dict> = {
     active: 'You are an active Bambeh agent',
     yourCode: 'Your agent code', copied: 'Copied', copy: 'Copy',
     yourLink: 'Your invite link', shareIt: 'Share', shareVia: 'Send on WhatsApp',
+    qrTitle: 'Or let them scan this', qrShow: 'Show QR code', qrHide: 'Hide QR code',
     linkHint: 'Anyone who opens this link and creates an account is counted to you. They never type the code themselves.',
     signups: 'signed up', activated: 'came back', today: 'today', week: 'this week',
     unavailable: 'Counts are unavailable right now. Your code still works.',
@@ -93,6 +96,7 @@ const STR: Record<string, Dict> = {
     active: 'Vous \u00eates un agent Bambeh actif',
     yourCode: 'Votre code d\u2019agent', copied: 'Copi\u00e9', copy: 'Copier',
     yourLink: 'Votre lien d\u2019invitation', shareIt: 'Partager', shareVia: 'Envoyer sur WhatsApp',
+    qrTitle: 'Ou faites-leur scanner ceci', qrShow: 'Afficher le QR', qrHide: 'Masquer le QR',
     linkHint: 'Toute personne qui ouvre ce lien et cr\u00e9e un compte vous est compt\u00e9e. Elle ne tape jamais le code elle-m\u00eame.',
     signups: 'inscrits', activated: 'revenus', today: 'aujourd\u2019hui', week: 'cette semaine',
     unavailable: 'Les compteurs sont indisponibles. Votre code fonctionne toujours.',
@@ -116,6 +120,7 @@ const STR: Record<string, Dict> = {
     active: 'You be active Bambeh agent',
     yourCode: 'Your agent code', copied: 'Copied', copy: 'Copy am',
     yourLink: 'Your invite link', shareIt: 'Share am', shareVia: 'Send for WhatsApp',
+    qrTitle: 'Or make dem scan this one', qrShow: 'Show the QR', qrHide: 'Hide the QR',
     linkHint: 'Anybody who open this link and open account, dem go count am for you. E no need type the code.',
     signups: 'don register', activated: 'come back', today: 'today', week: 'this week',
     unavailable: 'The count no dey show now. Your code still dey work.',
@@ -142,6 +147,8 @@ const STR: Record<string, Dict> = {
     yourCode: '\u0631\u0645\u0632 \u0627\u0644\u0648\u0643\u064a\u0644 \u0627\u0644\u062e\u0627\u0635 \u0628\u0643',
     copied: '\u062a\u0645 \u0627\u0644\u0646\u0633\u062e', copy: '\u0646\u0633\u062e',
     yourLink: '\u0631\u0627\u0628\u0637 \u0627\u0644\u062f\u0639\u0648\u0629', shareIt: '\u0645\u0634\u0627\u0631\u0643\u0629',
+    qrTitle: '\u0623\u0648 \u062f\u0639\u0647\u0645 \u064a\u0645\u0633\u062d\u0648\u0646 \u0647\u0630\u0627',
+    qrShow: '\u0627\u0639\u0631\u0636 \u0631\u0645\u0632 QR', qrHide: '\u0623\u062e\u0641\u0650 \u0631\u0645\u0632 QR',
     shareVia: '\u0627\u0644\u0625\u0631\u0633\u0627\u0644 \u0639\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628',
     linkHint: '\u0643\u0644 \u0645\u0646 \u064a\u0641\u062a\u062d \u0647\u0630\u0627 \u0627\u0644\u0631\u0627\u0628\u0637 \u0648\u064a\u0646\u0634\u0626 \u062d\u0633\u0627\u0628\u064b\u0627 \u064a\u064f\u062d\u0633\u0628 \u0644\u0643.',
     signups: '\u0645\u0633\u062c\u0644', activated: '\u0639\u0627\u062f\u0648\u0627',
@@ -167,6 +174,7 @@ const STR: Record<string, Dict> = {
     active: 'A wonii agent Bambeh gollo\u0257o',
     yourCode: 'Kode agent maa', copied: 'Natta\u0257o', copy: 'Nattu',
     yourLink: 'Link noddugol maa', shareIt: 'Lollin', shareVia: 'Neldu e WhatsApp',
+    qrTitle: 'Walla ya\u0253\u0253u \u0257um QR', qrShow: 'Hollu QR', qrHide: 'Suu\u0257u QR',
     linkHint: 'Kala mo uddita link \u0257um e mo sosa konte, himo limtee e maa.',
     signups: 'winnditii\u0253e', activated: 'artu\u0253e', today: 'hannde', week: 'yontere nde',
     unavailable: 'Limooje ngalaa jooni. Kode maa ina golla.',
@@ -238,6 +246,8 @@ function Inner() {
   const [days, setDays]    = useState<Day[]>([]);
   const [regions, setReg]  = useState<Region[]>([]);
   const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(true);   // FIX602 - open by default;
+                                                // in a market speed matters
 
   const [name, setName]     = useState('');
   const [phone, setPhone]   = useState('');
@@ -299,12 +309,22 @@ function Inner() {
     } finally { setBusy(false); }
   };
 
+  /* FIX602 - the QR, built from the link. No library: src/lib/qrcode.ts is
+     a real encoder, checked by decoding its output with a scanner across
+     every version it supports. useMemo because encoding is not free and
+     the link only changes when the code does. */
+
   /* FIX587 - the invite link. AgentCapture (FIX508) already reads ?agent=
      from the search string OR from inside the hash and stores it until a
      session appears, so this link needs no new plumbing at all. */
   const inviteLink = mine?.code
     ? window.location.origin + '/?agent=' + encodeURIComponent(mine.code) + '#/register'
     : '';
+
+  const qrMarkup = useMemo(
+    () => (inviteLink ? qrSvg(inviteLink, 220) : ''),
+    [inviteLink],
+  );
 
   /* Clipboard fails in some Android WebViews. Fall back to a hidden textarea
      and execCommand, then to selecting the text so it can be long-pressed.
@@ -433,6 +453,26 @@ function Inner() {
               </button>
             </div>
             <p className="mt-2 text-[11px] leading-snug text-emerald-800">{t.linkHint}</p>
+
+            {/* FIX602 - the QR. An agent holds the phone up, the other person
+                scans, and nobody has to read letters across a noisy market. */}
+            {inviteLink ? (
+              <div className="mt-4 border-t border-emerald-200 pt-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-emerald-800">{t.qrTitle}</p>
+                  <button type="button" onClick={() => setShowQr(!showQr)}
+                    className="shrink-0 rounded-lg bg-white px-2.5 py-1 text-[11px] font-bold text-emerald-700 ring-1 ring-emerald-300">
+                    {showQr ? t.qrHide : t.qrShow}
+                  </button>
+                </div>
+                {showQr ? (
+                  <div className="mt-3 flex justify-center">
+                    <div className="rounded-xl bg-white p-3 ring-1 ring-emerald-200"
+                      dangerouslySetInnerHTML={{ __html: qrMarkup }} />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -537,4 +577,4 @@ function Inner() {
   );
 }
 // BAMBEH_END_TOKEN__AGENTPAGE_FIX572__COMPLETE
-// BAMBEH_END_TOKEN__AGENTPAGE_FIX587__COMPLETE
+// BAMBEH_END_TOKEN__AGENTPAGE_FIX602__COMPLETE
