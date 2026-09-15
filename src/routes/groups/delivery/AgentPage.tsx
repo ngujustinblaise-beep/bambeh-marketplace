@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__AGENTPAGE_FIX572_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AGENTPAGE_FIX587_CLEAN
 /**
  * src/routes/groups/delivery/AgentPage.tsx - Bambeh Marketplace
  *
@@ -50,6 +50,7 @@ type Dict = {
   active: string; yourCode: string; copied: string; copy: string;
   signups: string; activated: string; today: string; week: string;
   unavailable: string; daily: string; noDays: string;
+  yourLink: string; shareIt: string; shareVia: string; linkHint: string;
   back: string; signIn: string; refresh: string;
   needName: string; needPhone: string; needRegion: string; needTown: string;
   failed: string;
@@ -68,6 +69,8 @@ const STR: Record<string, Dict> = {
     pendingBody: 'Bambeh has your application. Your code appears here once it is approved.',
     active: 'You are an active Bambeh agent',
     yourCode: 'Your agent code', copied: 'Copied', copy: 'Copy',
+    yourLink: 'Your invite link', shareIt: 'Share', shareVia: 'Send on WhatsApp',
+    linkHint: 'Anyone who opens this link and creates an account is counted to you. They never type the code themselves.',
     signups: 'signed up', activated: 'came back', today: 'today', week: 'this week',
     unavailable: 'Counts are unavailable right now. Your code still works.',
     daily: 'Day by day', noDays: 'Nothing recorded yet.',
@@ -89,6 +92,8 @@ const STR: Record<string, Dict> = {
     pendingBody: 'Bambeh a votre candidature. Votre code appara\u00eetra ici apr\u00e8s approbation.',
     active: 'Vous \u00eates un agent Bambeh actif',
     yourCode: 'Votre code d\u2019agent', copied: 'Copi\u00e9', copy: 'Copier',
+    yourLink: 'Votre lien d\u2019invitation', shareIt: 'Partager', shareVia: 'Envoyer sur WhatsApp',
+    linkHint: 'Toute personne qui ouvre ce lien et cr\u00e9e un compte vous est compt\u00e9e. Elle ne tape jamais le code elle-m\u00eame.',
     signups: 'inscrits', activated: 'revenus', today: 'aujourd\u2019hui', week: 'cette semaine',
     unavailable: 'Les compteurs sont indisponibles. Votre code fonctionne toujours.',
     daily: 'Jour par jour', noDays: 'Rien enregistr\u00e9 pour le moment.',
@@ -110,6 +115,8 @@ const STR: Record<string, Dict> = {
     pendingBody: 'Bambeh get your application. Your code go show here after dem approve am.',
     active: 'You be active Bambeh agent',
     yourCode: 'Your agent code', copied: 'Copied', copy: 'Copy am',
+    yourLink: 'Your invite link', shareIt: 'Share am', shareVia: 'Send for WhatsApp',
+    linkHint: 'Anybody who open this link and open account, dem go count am for you. E no need type the code.',
     signups: 'don register', activated: 'come back', today: 'today', week: 'this week',
     unavailable: 'The count no dey show now. Your code still dey work.',
     daily: 'Day by day', noDays: 'Nothing dey yet.',
@@ -134,6 +141,9 @@ const STR: Record<string, Dict> = {
     active: '\u0623\u0646\u062a \u0648\u0643\u064a\u0644 \u0646\u0634\u0637 \u0644\u062f\u0649 \u0628\u0627\u0645\u0628\u064a\u0647',
     yourCode: '\u0631\u0645\u0632 \u0627\u0644\u0648\u0643\u064a\u0644 \u0627\u0644\u062e\u0627\u0635 \u0628\u0643',
     copied: '\u062a\u0645 \u0627\u0644\u0646\u0633\u062e', copy: '\u0646\u0633\u062e',
+    yourLink: '\u0631\u0627\u0628\u0637 \u0627\u0644\u062f\u0639\u0648\u0629', shareIt: '\u0645\u0634\u0627\u0631\u0643\u0629',
+    shareVia: '\u0627\u0644\u0625\u0631\u0633\u0627\u0644 \u0639\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628',
+    linkHint: '\u0643\u0644 \u0645\u0646 \u064a\u0641\u062a\u062d \u0647\u0630\u0627 \u0627\u0644\u0631\u0627\u0628\u0637 \u0648\u064a\u0646\u0634\u0626 \u062d\u0633\u0627\u0628\u064b\u0627 \u064a\u064f\u062d\u0633\u0628 \u0644\u0643.',
     signups: '\u0645\u0633\u062c\u0644', activated: '\u0639\u0627\u062f\u0648\u0627',
     today: '\u0627\u0644\u064a\u0648\u0645', week: '\u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0628\u0648\u0639',
     unavailable: '\u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u0627\u0644\u0622\u0646. \u0631\u0645\u0632\u0643 \u064a\u0639\u0645\u0644.',
@@ -156,6 +166,8 @@ const STR: Record<string, Dict> = {
     pendingBody: 'Bambeh jogii \u01b4amirgol maa. Kode maa ma feen\u01b4o \u0257oo caggal jaabagol.',
     active: 'A wonii agent Bambeh gollo\u0257o',
     yourCode: 'Kode agent maa', copied: 'Natta\u0257o', copy: 'Nattu',
+    yourLink: 'Link noddugol maa', shareIt: 'Lollin', shareVia: 'Neldu e WhatsApp',
+    linkHint: 'Kala mo uddita link \u0257um e mo sosa konte, himo limtee e maa.',
     signups: 'winnditii\u0253e', activated: 'artu\u0253e', today: 'hannde', week: 'yontere nde',
     unavailable: 'Limooje ngalaa jooni. Kode maa ina golla.',
     daily: '\u01b4alde e \u01b4alde', noDays: 'Hay huunde winnditaaka tawo.',
@@ -287,15 +299,67 @@ function Inner() {
     } finally { setBusy(false); }
   };
 
+  /* FIX587 - the invite link. AgentCapture (FIX508) already reads ?agent=
+     from the search string OR from inside the hash and stores it until a
+     session appears, so this link needs no new plumbing at all. */
+  const inviteLink = mine?.code
+    ? window.location.origin + '/?agent=' + encodeURIComponent(mine.code) + '#/register'
+    : '';
+
+  /* Clipboard fails in some Android WebViews. Fall back to a hidden textarea
+     and execCommand, then to selecting the text so it can be long-pressed.
+     An agent who cannot pass on their link earns nothing. */
+  const copyText = async (value: string): Promise<boolean> => {
+    if (!value) return false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+        return true;
+      }
+    } catch { /* fall through */ }
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = value;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, value.length);
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch { return false; }
+  };
+
+  const flashCopied = () => {
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
   const copyCode = async () => {
     if (!mine?.code) return;
+    if (await copyText(mine.code)) flashCopied(); else setError(t.failed);
+  };
+
+  const copyLink = async () => {
+    if (!inviteLink) return;
+    if (await copyText(inviteLink)) flashCopied(); else setError(t.failed);
+  };
+
+  /* Native share sheet where the phone has one - WhatsApp, SMS, anything.
+     Far more use in a market than a code read out letter by letter. */
+  const shareLink = async () => {
+    if (!inviteLink) return;
+    const text = t.lead + ' ' + inviteLink;
     try {
-      await navigator.clipboard.writeText(mine.code);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      setError(t.failed);
-    }
+      const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+      if (typeof nav.share === 'function') {
+        await nav.share({ title: t.title, text: t.lead, url: inviteLink });
+        return;
+      }
+    } catch { return; /* user dismissed the sheet - not an error */ }
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
   };
 
   // a dash, never a zero, when the server could not answer
@@ -348,6 +412,27 @@ function Inner() {
                 {copied ? t.copied : t.copy}
               </button>
             </div>
+
+            {/* FIX587 - the link is what actually gets shared. */}
+            <p className="mt-4 text-xs font-semibold text-emerald-800">{t.yourLink}</p>
+            <div className="mt-1 break-all rounded-lg bg-white px-3 py-2 text-xs font-semibold text-gray-800 ring-1 ring-emerald-200">
+              {inviteLink}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button type="button" onClick={() => void shareLink()}
+                className="min-h-[44px] rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700">
+                {t.shareIt}
+              </button>
+              <button type="button" onClick={() => void copyLink()}
+                className="min-h-[44px] rounded-lg bg-white px-4 py-2 text-xs font-bold text-emerald-700 ring-1 ring-emerald-300 hover:bg-emerald-50">
+                {copied ? t.copied : t.copy}
+              </button>
+              <button type="button" onClick={() => void shareLink()}
+                className="min-h-[44px] rounded-lg bg-white px-4 py-2 text-xs font-bold text-emerald-700 ring-1 ring-emerald-300 hover:bg-emerald-50">
+                {t.shareVia}
+              </button>
+            </div>
+            <p className="mt-2 text-[11px] leading-snug text-emerald-800">{t.linkHint}</p>
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -452,3 +537,4 @@ function Inner() {
   );
 }
 // BAMBEH_END_TOKEN__AGENTPAGE_FIX572__COMPLETE
+// BAMBEH_END_TOKEN__AGENTPAGE_FIX587__COMPLETE

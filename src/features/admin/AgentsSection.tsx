@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__AGENTSSECTION_FIX508_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AGENTSSECTION_FIX592_CLEAN
 /**
  * src/features/admin/AgentsSection.tsx - Bambeh Admin Command Center
  *
@@ -56,6 +56,8 @@ export default function AgentsSection({
   const [copied, setCopied] = useState<string | null>(null);
   const [draft, setDraft] = useState<{ full_name: string; phone: string; region: string; town: string } | null>(null);
   const [saving, setSaving] = useState(false);
+  // FIX592 - which stat card is being used as a filter, if any
+  const [focus, setFocus] = useState<null | 'signups' | 'activated' | 'stuck'>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -134,7 +136,29 @@ export default function AgentsSection({
 
   const totalSignups = stats.reduce((t, s) => t + Number(s.signups ?? 0), 0);
   const totalActive = stats.reduce((t, s) => t + Number(s.activated ?? 0), 0);
-  const rate = totalSignups > 0 ? Math.round((totalActive / totalSignups) * 100) : 0;
+
+  /* FIX592 - with no signups at all there is no rate to report. The old code
+     computed 0% activation and printed "100% stuck", which read as a disaster
+     when the truth was simply that nobody had signed anybody up yet. */
+  const hasData = totalSignups > 0;
+  const activationRate = hasData ? Math.round((totalActive / totalSignups) * 100) : 0;
+  const stuckRate = hasData ? 100 - activationRate : null;
+
+  /* FIX592 - tapping a card filters the list below it. Tapping it again clears. */
+  const shown = stats.filter((s) => {
+    const signups = Number(s.signups ?? 0);
+    const active = Number(s.activated ?? 0);
+    if (focus === 'signups') return signups > 0;
+    if (focus === 'activated') return active > 0;
+    if (focus === 'stuck') return signups > 0 && active < signups;
+    return true;
+  });
+
+  const focusLabel =
+    focus === 'signups' ? 'agents who have brought somebody in'
+    : focus === 'activated' ? 'agents whose people stayed'
+    : focus === 'stuck' ? 'agents whose signups are not sticking'
+    : '';
 
   return (
     <>
@@ -160,10 +184,30 @@ export default function AgentsSection({
       </div>
 
       <div className="grid grid-cols-3 gap-2 my-4">
-        <Stat label="Signed up" value={String(totalSignups)} tone="text-gray-900" />
-        <Stat label="Activated" value={String(totalActive)} tone="text-emerald-700" />
-        <Stat label="Stuck rate" value={`${100 - rate}%`} tone={rate < 40 ? 'text-red-700' : 'text-gray-900'} />
+        <Stat label="Signed up" value={String(totalSignups)} tone="text-gray-900"
+          active={focus === 'signups'}
+          onClick={() => setFocus(focus === 'signups' ? null : 'signups')} />
+        <Stat label="Activated" value={String(totalActive)} tone="text-emerald-700"
+          active={focus === 'activated'}
+          onClick={() => setFocus(focus === 'activated' ? null : 'activated')} />
+        <Stat label="Stuck rate"
+          value={stuckRate === null ? '\u2014' : `${stuckRate}%`}
+          tone={stuckRate !== null && stuckRate > 60 ? 'text-red-700' : 'text-gray-900'}
+          active={focus === 'stuck'}
+          onClick={() => setFocus(focus === 'stuck' ? null : 'stuck')} />
       </div>
+
+      {focus ? (
+        <div className="flex items-center justify-between gap-2 -mt-2 mb-3 rounded-xl bg-indigo-50 px-3 py-2">
+          <p className="text-xs font-semibold text-indigo-900">
+            {shown.length} of {stats.length} &middot; {focusLabel}
+          </p>
+          <button onClick={() => setFocus(null)}
+            className="shrink-0 rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-indigo-700 ring-1 ring-indigo-200">
+            Show all
+          </button>
+        </div>
+      ) : null}
 
       {failed ? (
         <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3 mb-3">
@@ -180,9 +224,13 @@ export default function AgentsSection({
         <div className="flex justify-center py-10 text-indigo-600"><Loader2 className="w-6 h-6 animate-spin" /></div>
       ) : (
         <div className="space-y-2">
-          {stats.map((a) => {
-            const pct = Number(a.signups) > 0
-              ? Math.round((Number(a.activated) / Number(a.signups)) * 100) : 0;
+          {shown.map((a) => {
+            /* FIX592 - this used to print the ACTIVATION percentage under the
+               word "stuck", so an agent converting everybody read as 100%
+               stuck. Stuck is what did NOT activate. */
+            const hasOwn = Number(a.signups) > 0;
+            const pct = hasOwn
+              ? 100 - Math.round((Number(a.activated) / Number(a.signups)) * 100) : null;
             return (
               <div key={a.agent_id} className="bg-white rounded-xl border border-gray-100">
                 <button onClick={() => openAgent(a.agent_id)}
@@ -209,7 +257,7 @@ export default function AgentsSection({
                       {a.activated}<span className="text-gray-300 font-bold"> / {a.signups}</span>
                     </p>
                     <p className={`text-[11px] font-bold ${pct >= 40 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                      {pct}% stuck
+                      {pct === null ? '\u2014' : `${pct}% stuck`}
                     </p>
                   </div>
                   <ChevronRight className={`w-4 h-4 shrink-0 text-gray-300 transition-transform ${
@@ -288,6 +336,17 @@ export default function AgentsSection({
               </p>
             </div>
           ) : null}
+
+          {stats.length > 0 && shown.length === 0 ? (
+            <div className="text-center py-10">
+              <TrendingUp className="w-8 h-8 text-gray-200 mx-auto mb-2" />
+              <p className="text-sm text-gray-400">No agent matches that yet.</p>
+              <button onClick={() => setFocus(null)}
+                className="mt-3 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white">
+                Show all agents
+              </button>
+            </div>
+          ) : null}
         </div>
       )}
 
@@ -346,12 +405,32 @@ export default function AgentsSection({
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
+/* FIX592 - a stat card is now a filter. Without onClick it renders exactly as
+   it did before, so nothing else using Stat changes behaviour. */
+function Stat({ label, value, tone, onClick, active }: {
+  label: string; value: string; tone: string;
+  onClick?: () => void; active?: boolean;
+}) {
+  const base = 'rounded-2xl border shadow-sm p-3 text-left w-full transition-colors';
+  const skin = active
+    ? 'bg-indigo-50 border-indigo-300 ring-2 ring-indigo-300'
+    : 'bg-white border-gray-100';
+
+  if (!onClick) {
+    return (
+      <div className={`${base} ${skin}`}>
+        <p className={`text-2xl font-black ${tone}`}>{value}</p>
+        <p className="text-[11px] text-gray-500">{label}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3">
+    <button type="button" onClick={onClick} aria-pressed={!!active}
+      className={`${base} ${skin} min-h-[64px] hover:border-indigo-300`}>
       <p className={`text-2xl font-black ${tone}`}>{value}</p>
       <p className="text-[11px] text-gray-500">{label}</p>
-    </div>
+    </button>
   );
 }
 
@@ -369,3 +448,4 @@ function Field({ label, required, hint, children }: {
   );
 }
 // BAMBEH_END_TOKEN__AGENTSSECTION_FIX508__COMPLETE
+// BAMBEH_END_TOKEN__AGENTSSECTION_FIX592__COMPLETE
