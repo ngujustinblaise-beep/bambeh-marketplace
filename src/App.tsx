@@ -292,6 +292,7 @@ const CoinsBuyPage      = lazy(() => import("@/routes/groups/payments/CoinsBuyPa
 const CoinsPage         = lazy(() => import("@/routes/groups/payments/CoinsPage"));
 const BecomeCourier     = lazy(() => import("@/routes/groups/delivery/BecomeCourier")); // FIX567
 const AgentPage         = lazy(() => import("@/routes/groups/delivery/AgentPage")); // FIX575
+const RequestDelivery   = lazy(() => import("@/routes/groups/delivery/RequestDelivery")); // FIX598
 const CoinsHistory      = lazy(() => import("@/routes/groups/payments/CoinsHistory"));
 const CoinsTransfer     = lazy(() => import("@/routes/groups/payments/CoinsTransfer"));
 
@@ -1182,6 +1183,18 @@ export default function App() {
                           element={
                             <MainLayout>
                               <AuthGate require="user"><AgentPage /></AuthGate>
+                            </MainLayout>
+                          }
+                        />
+                        {/* FIX598 - asking for a delivery. Every function
+                            behind this existed and was proved by the FIX596
+                            self-test, and none of it could run because there
+                            was no way in. This is that way in. */}
+                        <Route
+                          path="/request-delivery"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><RequestDelivery /></AuthGate>
                             </MainLayout>
                           }
                         />
