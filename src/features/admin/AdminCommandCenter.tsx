@@ -53,13 +53,16 @@ import PaywallSection from './PaywallSection';       // FIX536
 import { supabase } from '@/lib/supabase';              // FIX558
 import ObligationsSection from './ObligationsSection'; // FIX550
 import CouriersSection from './CouriersSection';       // FIX563
+import AdminListingsReactivate from './AdminListingsReactivate'; // FIX611
+import AdminAccountRecovery from './AdminAccountRecovery';       // FIX612
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
-  | 'agents' | 'requests' | 'paywall' | 'obligations' | 'couriers';
+  | 'agents' | 'requests' | 'paywall' | 'obligations' | 'couriers'
+  | 'revive' | 'recovery';
 
 const NAV: Array<{
   key: Section;
@@ -71,8 +74,10 @@ const NAV: Array<{
 }> = [
   { key: 'overview',  label: 'Overview',       icon: LayoutGrid },
   { key: 'users',     label: 'Users',          icon: Users },
+  { key: 'recovery',  label: 'Account recovery', icon: UserCog },     // FIX612
   { key: 'listings',  label: 'Listings',       icon: Boxes,
     badge: ['listings_pending'] },
+  { key: 'revive',    label: 'Reactivate adverts', icon: RefreshCw }, // FIX611
   { key: 'ads',       label: 'Adverts',        icon: Megaphone },
   { key: 'promos',    label: 'Promotions',     icon: Star },
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
@@ -252,6 +257,8 @@ export default function AdminCommandCenter() {
         {section === 'obligations' && <ObligationsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'couriers'   && <CouriersSection    userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'listings'  && <ListingsSection />}
+        {section === 'revive'    && <AdminListingsReactivate embedded />}{/* FIX611 */}
+        {section === 'recovery'  && <AdminAccountRecovery embedded />}{/* FIX612 */}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
         {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}
         {section === 'comms'     && <CommsSection userId={userId!} role={role} flash={flash} />}

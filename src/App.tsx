@@ -379,6 +379,7 @@ const WaterLights         = lazy(() => import("@/pages/WaterLights"));     // FI
 const FuelAtNight         = lazy(() => import("@/pages/FuelAtNight"));     // FIX506
 const SafetyAlerts        = lazy(() => import("@/pages/SafetyAlerts"));    // FIX507
 const AgentCapture        = lazy(() => import("@/features/agents/AgentCapture")); // FIX508
+const AccountGate         = lazy(() => import("@/components/auth/AccountGate")); // FIX613
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
 const GroupBuyingDetail   = lazy(() => import("@/pages/GroupBuyingDetail"));
@@ -755,6 +756,8 @@ export default function App() {
                           agent code must be captured on ANY page and claimed whenever a
                           session appears - which may be long after the link was opened. */}
                       <AgentCapture />
+                      {/* FIX613 - password change, paused account, security questions. Renders nothing for almost everyone. */}
+                      <AccountGate />
                       <Routes>
 
                         {/* ── 1. ONBOARDING ──────────────────────────────────────── */}
