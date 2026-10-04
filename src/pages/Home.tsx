@@ -62,6 +62,7 @@ import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from '@/lib/supabase';
 import ServicesRow from '@/components/home/ServicesRow';   // FIX481
+import { IS_STORE_APP, storeAllows } from '@/config/storeMode'; // FIX620
 import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
 import CorporateAdsStrip from '@/features/corporate/CorporateAdsStrip';
 
@@ -71,7 +72,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% Transaction Fee! — The lowest you will see online.",
+    "home.feeMsg": "Only 1% commission per sale (tax and service fee apply)",
     "home.shareBtn": "Share Bambeh with Friends",
     "home.sellBtn": "Sell an Item",
     "home.corporateBtn": "Corporate Login",
@@ -106,14 +107,14 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.typeNegotiable": "Negotiable",
     "home.typeItem": "item",
     "home.whyChoose": "Why Choose Bambeh?",
-    "home.whyFee": "1% Transaction Fee",
-    "home.whyFeeDesc": "Lowest fees anywhere! Only 1% per transaction.",
+    "home.whyFee": "1% commission",
+    "home.whyFeeDesc": "Only 1% commission when a sale completes. Tax and the service and payment charge are shown before anyone pays.",
     "home.whyEscrow": "Buyer Protection",
     "home.whyEscrowDesc": "Your money is protected until delivery confirmation.",
     "home.whyTracking": "Real-Time Tracking",
     "home.whyTrackingDesc": "Track your orders from purchase to delivery.",
     "home.ctaTitle": "Ready to Get Started?",
-    "home.ctaSubtitle": "Join thousands of users buying, selling, and trading on Bambeh!",
+    "home.ctaSubtitle": "Buy, sell, rent, hire and swap on Bambeh. Posting your advert is free.",
     "home.ctaShop": "Start Shopping",
     "home.ctaSell": "Sell an Item",
     "home.timeJustNow": "Just now",
@@ -127,7 +128,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Bienvenue sur ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Place de marché en ligne",
-    "home.feeMsg": "Seulement 1 % de frais de transaction ! — Les plus bas que vous trouverez en ligne.",
+    "home.feeMsg": "Seulement 1 % de commission par vente (taxes et frais de service en sus)",
     "home.shareBtn": "Partager Bambeh avec des amis",
     "home.sellBtn": "Vendre un article",
     "home.corporateBtn": "Espace Entreprise",
@@ -162,14 +163,14 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.typeNegotiable": "Négociable",
     "home.typeItem": "article",
     "home.whyChoose": "Pourquoi choisir Bambeh ?",
-    "home.whyFee": "Frais de transaction de 1 %",
-    "home.whyFeeDesc": "Les frais les plus bas partout ! Seulement 1 % par transaction.",
+    "home.whyFee": "1 % de commission",
+    "home.whyFeeDesc": "Seulement 1 % de commission quand une vente se conclut. Les taxes et les frais de service et de paiement sont affich\u00e9s avant tout paiement.",
     "home.whyEscrow": "Protection acheteur",
     "home.whyEscrowDesc": "Votre argent est protégé jusqu'à la confirmation de la livraison.",
     "home.whyTracking": "Suivi en temps réel",
     "home.whyTrackingDesc": "Suivez vos commandes de l'achat à la livraison.",
     "home.ctaTitle": "Prêt à commencer ?",
-    "home.ctaSubtitle": "Rejoignez des milliers d'utilisateurs achetant, vendant et troquant sur Bambeh !",
+    "home.ctaSubtitle": "Achetez, vendez, louez, embauchez et \u00e9changez sur Bambeh. Publier votre annonce est gratuit.",
     "home.ctaShop": "Commencer les achats",
     "home.ctaSell": "Vendre un article",
     "home.timeJustNow": "À l'instant",
@@ -183,7 +184,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "أهلا وسهلا ب ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "سوق إلكتروني",
-    "home.feeMsg": "فقط رسوم معاملة بنسبة 1 %! — الأقل الذي ستجده عبر الإنترنت.",
+    "home.feeMsg": "\u0639\u0645\u0648\u0644\u0629 1% \u0641\u0642\u0637 \u0639\u0644\u0649 \u0643\u0644 \u0639\u0645\u0644\u064a\u0629 \u0628\u064a\u0639 (\u062a\u064f\u0636\u0627\u0641 \u0627\u0644\u0636\u0631\u064a\u0628\u0629 \u0648\u0631\u0633\u0648\u0645 \u0627\u0644\u062e\u062f\u0645\u0629)",
     "home.shareBtn": "شارك Bambeh مع الأصدقاء",
     "home.sellBtn": "\u0628\u0650\u0639 \u0633\u0644\u0639\u0629",
     "home.corporateBtn": "دخول الشركات",
@@ -218,14 +219,14 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.typeNegotiable": "قابل للتفاوض",
     "home.typeItem": "عنصر",
     "home.whyChoose": "لماذا اختيار Bambeh؟",
-    "home.whyFee": "رسوم معاملة بنسبة 1٪",
-    "home.whyFeeDesc": "أقل الرسوم في كل مكان! فقط 1٪ لكل معاملة.",
+    "home.whyFee": "\u0639\u0645\u0648\u0644\u0629 1%",
+    "home.whyFeeDesc": "\u0639\u0645\u0648\u0644\u0629 1% \u0641\u0642\u0637 \u0639\u0646\u062f \u0625\u062a\u0645\u0627\u0645 \u0627\u0644\u0628\u064a\u0639. \u062a\u064f\u0639\u0631\u0636 \u0627\u0644\u0636\u0631\u064a\u0628\u0629 \u0648\u0631\u0633\u0648\u0645 \u0627\u0644\u062e\u062f\u0645\u0629 \u0648\u0627\u0644\u062f\u0641\u0639 \u0642\u0628\u0644 \u0623\u064a \u062f\u0641\u0639.",
     "home.whyEscrow": "ضمان آمن",
     "home.whyEscrowDesc": "أموالك محمية حتى تأكيد التسليم.",
     "home.whyTracking": "تتبع في الوقت الفعلي",
     "home.whyTrackingDesc": "تابع طلباتك من الشراء إلى التسليم.",
     "home.ctaTitle": "هل أنت مستعد للبدء؟",
-    "home.ctaSubtitle": "انضم إلى آلاف المستخدمين الذين يشترون ويبيعون ويتاجرون على Bambeh!",
+    "home.ctaSubtitle": "\u0627\u0634\u062a\u0631\u0650 \u0648\u0628\u0650\u0639 \u0648\u0627\u0633\u062a\u0623\u062c\u0631 \u0648\u0648\u0638\u0650\u0651\u0641 \u0648\u0628\u0627\u062f\u0650\u0644 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647. \u0646\u0634\u0631 \u0625\u0639\u0644\u0627\u0646\u0643 \u0645\u062c\u0627\u0646\u064a.",
     "home.ctaShop": "ابدأ التسوق",
     "home.ctaSell": "بيع عنصر",
     "home.timeJustNow": "للتو",
@@ -239,7 +240,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Welcome to ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Online Marketplace",
-    "home.feeMsg": "Only 1% money charge! — The lowest wey you go see anywhere online.",
+    "home.feeMsg": "Na only 1% commission for every sale (tax and service fee dey join)",
     "home.shareBtn": "Share Bambeh with your friends dem",
     "home.sellBtn": "Sell Your Thing",
     "home.corporateBtn": "Corporate Login",
@@ -274,14 +275,14 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.typeNegotiable": "E get room to negotiate",
     "home.typeItem": "thing",
     "home.whyChoose": "Why you go choose Bambeh?",
-    "home.whyFee": "1% Money Charge",
-    "home.whyFeeDesc": "The lowest money charge anywhere! Only 1% for every transaction.",
+    "home.whyFee": "1% commission",
+    "home.whyFeeDesc": "Na only 1% commission when sale complete. Tax and the service and payment charge go show before anybody pay.",
     "home.whyEscrow": "Buyer Protection",
     "home.whyEscrowDesc": "Your money safe until person confirm say e don arrive.",
     "home.whyTracking": "Real-Time Tracking",
     "home.whyTrackingDesc": "Follow your order from when you buy until person deliver am.",
     "home.ctaTitle": "You ready to start?",
-    "home.ctaSubtitle": "Join plenty people wey dey buy, sell, and swap things on Bambeh!",
+    "home.ctaSubtitle": "Buy, sell, rent, hire and swap for Bambeh. To post your advert na free.",
     "home.ctaShop": "Start shopping",
     "home.ctaSell": "Sell something",
     "home.timeJustNow": "Just now",
@@ -295,7 +296,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.welcomePrefix": "Salamaleekum ",
     "home.welcomeSuffix": "Bambeh",
     "home.tagline": "Taako Janngo Online",
-    "home.feeMsg": "Soo 1% ndiyam! — Ndiyam gadaa wey a dee gonngol online.",
+    "home.feeMsg": "Komisiyo\u014b 1% tan e kala njeeygu (lampo e njo\u0253di golle ina \u0253eydoo)",
     "home.shareBtn": "Jedd Bambeh e woot\u0257u",
     "home.sellBtn": "Yeey huunde",
     "home.corporateBtn": "Naat\u0257e Corporate",
@@ -330,14 +331,14 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.typeNegotiable": "E ko yaajanda",
     "home.typeItem": "jeɗ",
     "home.whyChoose": "Haa yidde Bambeh?",
-    "home.whyFee": "1% Ndiyam",
-    "home.whyFeeDesc": "Ndiyam gadaa dellal! Soo 1% ko taggal keɗ.",
+    "home.whyFee": "Komisiyo\u014b 1%",
+    "home.whyFeeDesc": "Komisiyo\u014b 1% tan so njeeygu timmii. Lampo e njo\u0253di golle e yo\u0253gol ina njiyee hade yo\u0253gol.",
     "home.whyEscrow": "Jalaani Haaltu",
     "home.whyEscrowDesc": "Ndiyam\u0227a haaltu haa-to jam nde moto jiyaama.",
     "home.whyTracking": "Jibintirde Real-Time",
     "home.whyTrackingDesc": "Jib\u0257in taggal\u0227a haa-to jam jam nde moto jiyaama.",
     "home.ctaTitle": "A\u0259 jom hanwi?",
-    "home.ctaSubtitle": "Lur\u0257u joguwe loowingol, gummingol, e roɓaaingol ngon Bambeh!",
+    "home.ctaSubtitle": "Soodu, yeeyu, luw e waylu e Bambeh. Winndugo anndinol maa ko meere.",
     "home.ctaShop": "Hanwi windu\u0257e",
     "home.ctaSell": "Gummaa jeɗ",
     "home.timeJustNow": "Gooto",
@@ -480,16 +481,16 @@ export default function Home() {
 
           {/* FIX122: Corporate login (left) + labelled Share (right) */}
           <div className="mt-6 flex flex-col items-center justify-center gap-3">
-            <button
+            {!IS_STORE_APP && (<button
               onClick={() => navigate('/corporate')}
               className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
               <Building2 className="w-5 h-5" />
               {t('home.corporateBtn')}
-            </button>
+            </button>)}
             <SocialShareButton
               title="Bambeh - Online Marketplace"
-              description="Join thousands buying, selling, and trading on Bambeh with only 1% transaction fee!"
+              description="Buy, sell, rent and find work on Bambeh. Posting is free."
               itemType="app"
               className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
@@ -519,10 +520,10 @@ export default function Home() {
         </div>
 
         {/* ── Special Features ──────────────────────────────────────────── */}
-        <div className="mb-16">
+        <div className="mb-16" style={specialFeatures.some((feature) => storeAllows(feature.link)) ? undefined : { display: 'none' }}>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">✨ {t('home.featuresHeading')}</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {specialFeatures.map((feature) => (
+            {specialFeatures.filter((feature) => storeAllows(feature.link)).map((feature) => (
               <Link
                 key={feature.labelKey}
                 to={feature.link}
@@ -540,7 +541,7 @@ export default function Home() {
             featured strip: anyone reaching for "Pharmacies on call" travels
             past the adverts to get here, so the strip is seen on the way
             without anybody being made to look at it. Do not move it below. */}
-        <ServicesRow />
+        {!IS_STORE_APP && <ServicesRow />}
 
                 {/* Featured Ads (FIX114: live rolling strip of REAL posts) */}
         <div className="mb-16">
@@ -549,13 +550,13 @@ export default function Home() {
         </div>
 
         {/* ── Corporate Adverts (FIX123: replaces Recently Posted) ─────── */}
-        <div className="mb-16">
+        {!IS_STORE_APP && (<div className="mb-16">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">🏢 {t('home.corporateAds')}</h2>
             <Link to="/corporate/ads" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
           </div>
           <CorporateAdsStrip maxVisible={8} />
-        </div>
+        </div>)}
 
         {/* ── Categories Grid ───────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">

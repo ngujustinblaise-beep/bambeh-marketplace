@@ -218,6 +218,7 @@ import AuthLayout from "@/components/layout/AuthLayout";
 // ─── 7. Eager Page Imports (first-screen only) ────────────────────────────────
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
+import { StoreRouteGuard } from "@/config/storeMode"; // FIX620
 import AuthPage from "@/pages/auth/AuthPage";
 import BiometricLogin from "@/pages/auth/BiometricLogin";
 
@@ -758,6 +759,8 @@ export default function App() {
                       <AgentCapture />
                       {/* FIX613 - password change, paused account, security questions. Renders nothing for almost everyone. */}
                       <AccountGate />
+                      {/* FIX620 - inside the Android app only: keeps the Play build to the six sections. */}
+                      <StoreRouteGuard />
                       <Routes>
 
                         {/* ── 1. ONBOARDING ──────────────────────────────────────── */}

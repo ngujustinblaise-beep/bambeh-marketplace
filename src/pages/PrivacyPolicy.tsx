@@ -1,406 +1,68 @@
+// BAMBEH_DEPLOY_TOKEN__PRIVACY_POLICY_FIX618_CLEAN
 /**
- * PrivacyPolicy.tsx — Bambeh Marketplace
- * ---------------------------------------------------------------------------
- * Play Store / App Store compliant — June 2026
- * Governed by: Cameroon Law No. 2024/017 of 23 December 2024 on Personal
- * Data Protection, and applicable principles of international privacy law.
- * ---------------------------------------------------------------------------
+ * FIX618 - Privacy Policy, in all five app languages.
+ * Route: /privacy-policy (wrapped in MainLayout by App.tsx).
+ *
+ * The text is the SAME text published at www.bambeh.com (updated by FIX616 on
+ * 4 October 2026): full in English and French, plain-language versions in Pidgin,
+ * Arabic and Fulfulde, with the note that the English and French versions govern.
+ * One text in two places, so the app and the website can never disagree.
+ *
+ * The page follows the language chosen in the app (useLang). Arabic reads right
+ * to left. The text is our own fixed content, never user input, which is why it
+ * is safe to render as HTML. Every non-ASCII character is escaped, so this file
+ * cannot be mojibaked. translate="no" keeps Chrome's translator from rewriting
+ * text React owns (the crash found in August).
  */
-
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang } from "@/hooks/useAppLang";
 
-interface Section {
-  id: string;
-  title: string;
-  body: React.ReactNode;
+type DocLang = "en" | "fr" | "pcm" | "ar" | "ff";
+
+function docLang(raw: unknown): DocLang {
+  const v = String(raw || "").toLowerCase();
+  if (v === "fr" || v.indexOf("fr-") === 0) return "fr";
+  if (v === "pidgin" || v === "pcm") return "pcm";
+  if (v === "ar" || v.indexOf("ar-") === 0) return "ar";
+  if (v === "ff" || v === "ful" || v === "fulfulde") return "ff";
+  return "en";
 }
 
-const COMPANY = {
-  legalName: "BAMBEH SARL",
-  registreDeCommerce: "CM -NSI-02-2026-B13-00179",
-  niu: "M022618405804C",
-  duns: "850379853",
-  emails: ["support@bambeh.com", "bambetheapp@gmail.com"],
-  city: "Yaoundé",
-  country: "Republic of Cameroon",
+const TITLE: Record<DocLang, string> = { en: "Privacy Policy", fr: "Politique de confidentialit\u00e9", pcm: "Privacy Policy", ar: "\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629", ff: "Sar\u0257iiji sirlu" };
+const EFFECTIVE: Record<DocLang, string> = { en: "In force from 4 October 2026", fr: "En vigueur depuis le 4 octobre 2026", pcm: "E start from 4 October 2026", ar: "\u0633\u0627\u0631\u064a\u0629 \u0645\u0646\u0630 4 \u0623\u0643\u062a\u0648\u0628\u0631 2026", ff: "Ina golla gila 4 oktoobar 2026" };
+const HOME_LINK: Record<DocLang, string> = { en: "Back to home", fr: "Retour \u00e0 l'accueil", pcm: "Go back home", ar: "\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629", ff: "Rutto e hello arandeere" };
+const L_TERMSOFSERVICE: Record<DocLang, string> = { en: "Terms of Use", fr: "Conditions d'utilisation", pcm: "Terms of Use", ar: "\u0634\u0631\u0648\u0637 \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645", ff: "Sar\u0257iiji gollitorde" };
+const CSS = ".bambeh-legal-page{background:#f8fafc;color:#0f172a}.bambeh-legal-page .bl-wrap{max-width:860px;margin:0 auto;padding:0 18px}.bambeh-legal-page .bl-hero{background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;padding:26px 0 20px}.bambeh-legal-page .bl-hero h1{font-size:28px;line-height:1.2;font-weight:800;margin:0 0 6px}.bambeh-legal-page .bl-hero p{margin:0;opacity:.9;font-size:14px}.bambeh-legal-page .bl-body{padding-top:16px;padding-bottom:24px;font-size:15px;line-height:1.65}.bambeh-legal-page .bl-body h2{font-size:19px;line-height:1.35;font-weight:800;margin:26px 0 8px;display:flex;align-items:center;gap:10px}.bambeh-legal-page .bl-body h2 .n{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;border-radius:999px;background:#ccfbf1;color:#115e59;font-size:13px;font-weight:800;flex-shrink:0}.bambeh-legal-page .bl-body h3{font-size:16px;font-weight:700;margin:16px 0 6px}.bambeh-legal-page .bl-body p{margin:8px 0}.bambeh-legal-page .bl-body ul,.bambeh-legal-page .bl-body ol{margin:8px 0;padding-inline-start:22px;list-style:disc}.bambeh-legal-page .bl-body ol{list-style:decimal}.bambeh-legal-page .bl-body li{margin:4px 0}.bambeh-legal-page .bl-body a{color:#0f766e;text-decoration:underline}.bambeh-legal-page .bl-body .note{background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:10px 14px;margin:12px 0}.bambeh-legal-page .bl-body .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px 14px;margin:12px 0}.bambeh-legal-page .bl-body .id-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 14px;margin:12px 0}.bambeh-legal-page .bl-body table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0;display:block;overflow-x:auto}.bambeh-legal-page .bl-body td,.bambeh-legal-page .bl-body th{border:1px solid #e2e8f0;padding:6px 8px;text-align:start;vertical-align:top}.bambeh-legal-page .bl-body .num{text-align:end;white-space:nowrap}.bambeh-legal-page .bl-body .total td{font-weight:800;background:#f0fdfa}.bambeh-legal-page .bl-foot{padding-bottom:36px;display:flex;gap:18px;flex-wrap:wrap;font-size:14px}.bambeh-legal-page .bl-foot a{color:#0f766e;font-weight:700;text-decoration:underline}";
+
+const BODY: Record<DocLang, string> = {
+  en: "  <div class=\"note\">\n    <p><strong>The short version.</strong> We collect what we need to run a marketplace and nothing more. We never see your mobile money PIN, your card number or your bank details. We do not sell your data to anybody. You can see, correct, export or delete your data at any time, free of charge. Your phone number is hidden from other users unless you switch it on yourself.</p>\n  </div>\n\n  <h2><span class=\"n\">1</span>Who is responsible for your data</h2>\n  <div class=\"id-card\">\n    <p><strong>Legal name:</strong> BAMBEH SARL</p>\n    <p><strong>Registre de commerce:</strong> CM-NSI-02-2026-B13-00179</p>\n    <p><strong>NIU:</strong> M022618405804C</p>\n    <p><strong>Head office:</strong> Yaound&eacute;, Republic of Cameroon</p>\n    <p><strong>Contact for privacy questions:</strong> support@bambeh.com</p>\n  </div>\n  <p>This policy covers the Bambeh website, the Bambeh app and everything offered through them. It should be read together with our <a href=\"#/terms-of-service\">Terms of Use</a>.</p>\n\n  <h2><span class=\"n\">2</span>What we collect</h2>\n  <h3>What you give us</h3>\n  <ul>\n    <li>Your name, phone number and email address</li>\n    <li>The delivery address you give when you place an order, so the seller can deliver to you</li>\n    <li>Documents you send us, such as a CV when you apply for a job, or a business certificate when you open a company store</li>\n    <li>Your password &mdash; stored only as a one-way scramble that nobody, including us, can read back</li>\n    <li>Your town or region, and your neighbourhood if you enter it</li>\n    <li>Your profile photo, if you add one</li>\n    <li>Your listings, their photos, their prices and their descriptions</li>\n    <li>Messages you send to other users through the app</li>\n    <li>Reviews and ratings you write</li>\n    <li>Messages you send to support</li>\n    <li>Business registration documents, only if you open a company store</li>\n  </ul>\n  <h3>What is created while you use Bambeh</h3>\n  <ul>\n    <li>Pages you open, searches you run, listings you save</li>\n    <li>Your device type, operating system and app version</li>\n    <li>Your IP address and the approximate area it points to</li>\n    <li>Your precise location, only if you switch location on and your phone asks you and you say yes</li>\n    <li>Error reports when something in the app breaks</li>\n  </ul>\n  <h3>What the payment partner tells us</h3>\n  <p>Whether a payment succeeded or failed, the amount, the currency, the reference number, and the phone number used to pay.</p>\n  <div class=\"warn\">\n    <p><strong>We never receive and never store your mobile money PIN, your card number, your CVV or your bank account details.</strong> You enter your PIN on your own phone, on your operator's own screen. Bambeh never sees it.</p>\n  </div>\n\n    <h3>Your security questions</h3>\n  <p>The answers to the security questions you choose (at least three of five). We keep them only as a one-way code (a hash), the same way passwords are kept: nobody at Bambeh can read them. They are used for one thing only: checking that it is really you when you have forgotten your password. When the Forgot-password page is used, we also record the phone number entered, the time, the network address and how many answers were correct, so that we can stop people guessing and so that staff can see the real owner passed before they help.</p>\n<h2><span class=\"n\">3</span>Why we use it</h2>\n  <table>\n    <tr><th>What for</th><th>What we use</th></tr>\n    <tr><td>Creating and running your account</td><td>Name, phone, email, password</td></tr>\n    <tr><td>Showing your listings to buyers</td><td>Listings, photos, price, town</td></tr>\n    <tr><td>Letting buyer and seller talk</td><td>Messages, name, profile</td></tr>\n    <tr><td>Taking payment and paying sellers</td><td>Payment reference, amount, phone number</td></tr>\n    <tr><td>Stopping fraud and keeping people safe</td><td>Device data, IP, reports, blocks, account history</td></tr>\n    <tr><td>Answering you when you write to support</td><td>Your message and your account details</td></tr>\n    <tr><td>Meeting our legal and tax obligations</td><td>Invoices, completed payment records</td></tr>\n    <tr><td>Improving the app</td><td>Anonymous usage data &mdash; only if you leave Analytics switched on</td></tr>\n  </table>\n\n  <h2><span class=\"n\">4</span>What allows us to do this</h2>\n  <ul>\n    <li><strong>Our agreement with you.</strong> We cannot run your account or complete a sale without the data needed to do it.</li>\n    <li><strong>Your consent.</strong> For precise location, analytics, push notifications and showing your phone number. You can withdraw any of these at any time in the app.</li>\n    <li><strong>Our legal obligations,</strong> including Cameroonian tax and accounting law and Law No. 2010/012 of 21 December 2010 on cybersecurity and cybercriminality.</li>\n    <li><strong>Our legitimate interest</strong> in keeping the platform safe from fraud and abuse.</li>\n  </ul>\n\n  <h2><span class=\"n\">5</span>What other users can see</h2>\n  <p>You control this yourself in the app, under <strong>Profile &rarr; Privacy &amp; Security</strong>:</p>\n  <table>\n    <tr><th>Setting</th><th>Default</th></tr>\n    <tr><td>Show my phone number on my listings</td><td>Off</td></tr>\n    <tr><td>Public profile visible to everyone</td><td>On</td></tr>\n    <tr><td>Show my town or city</td><td>On</td></tr>\n    <tr><td>Allow other users to message me</td><td>On</td></tr>\n    <tr><td>Analytics and personalisation</td><td>Off</td></tr>\n    <tr><td>Two-factor authentication</td><td>Off</td></tr>\n  </table>\n  <p>Whatever you choose, your display name and your rating appear on your own listings and on reviews you write. Your exact address is never shown to anybody unless you type it into a listing yourself.</p>\n\n  <h2><span class=\"n\">6</span>Who we share it with</h2>\n  <p>We share the minimum needed, with companies that work for us under contract:</p>\n  <ul>\n    <li><strong>Our hosting and database provider,</strong> which stores the data and runs the servers.</li>\n    <li><strong>Our licensed payment provider,</strong> which collects, holds and pays out money. They receive the amount, the phone number and a reference.</li>\n    <li><strong>Our notification provider,</strong> which delivers alerts to your phone.</li>\n    <li><strong>Our error monitoring service,</strong> which receives crash reports so we can fix faults.</li>\n    <li><strong>Our website host.</strong></li>\n  </ul>\n  <div class=\"note\">\n    <p><strong>We do not sell your personal data. We do not give it to advertisers. We do not swap it with other companies.</strong> Businesses that advertise on Bambeh see how many people viewed and clicked their advert &mdash; a number, never a name.</p>\n  </div>\n  <p>We will hand over data to the police, a court or a regulator when we receive a valid legal order, and we check that the order is valid before we do.</p>\n\n  <h2><span class=\"n\">7</span>Where your data is kept</h2>\n  <p>Bambeh runs on servers that may be located outside Cameroon. Wherever data sits, our providers are bound by contract to protect it and to use it only for us.</p>\n\n  <h2><span class=\"n\">8</span>How long we keep it</h2>\n  <ul>\n    <li><strong>Your account data:</strong> until you delete your account.</li>\n    <li><strong>Your listings:</strong> until you remove them, or 7 days after you put them in the trash.</li>\n    <li><strong>Your messages:</strong> until you delete your account, when they become &ldquo;[deleted]&rdquo;.</li>\n    <li><strong>Completed payment records and invoices: ten years.</strong> Cameroonian tax law and the OHADA accounting rules require this of every company. We cannot shorten it.</li>\n    <li><strong>Records about a suspended or banned account:</strong> kept so that the account cannot simply be recreated.</li>\n    <li><strong>Error reports:</strong> a short period, then deleted automatically.</li>\n  </ul>\n\n  <h2><span class=\"n\">9</span>Your rights</h2>\n  <p>You can, at any time and free of charge:</p>\n  <ul>\n    <li><strong>See</strong> the data we hold about you</li>\n    <li><strong>Correct</strong> anything that is wrong &mdash; most of it you can edit yourself in the app</li>\n    <li><strong>Export</strong> a copy of your data, from Privacy &amp; Security in the app</li>\n    <li><strong>Delete</strong> your account and your data, except what the law makes us keep</li>\n    <li><strong>Withdraw a consent</strong> you gave, such as location or analytics</li>\n    <li><strong>Object</strong> to a particular use, and ask us to explain it</li>\n    <li><strong>Complain</strong> to us, and to the competent authority in Cameroon</li>\n  </ul>\n  <p>Write to support@bambeh.com from the email address on your account, or use the chat inside the app. We answer within 30 days. We may ask you to confirm who you are before we hand over data &mdash; that check protects you.</p>\n\n  <h2><span class=\"n\">10</span>Deleting your account</h2>\n  <p>From <strong>Profile &rarr; Privacy &amp; Security &rarr; Delete My Account</strong> in the app, or from <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a> if you no longer have the app installed.</p>\n  <p><strong>Removed:</strong> your profile and photo, contact details, listings, saved searches, favourites, notifications and device tokens. Messages become &ldquo;[deleted]&rdquo;. Reviews you wrote keep the star rating but lose your name.</p>\n  <p><strong>Kept:</strong> records of completed payments and their invoices, for the ten years the law requires; a minimal note that the account existed and was deleted; and anything a court orders us to keep.</p>\n  <div class=\"warn\">\n    <p>Deletion is permanent. Zerm coins, any Premium pass still running and any Buyer Protection case in progress end with the account.</p>\n  </div>\n\n  <h2><span class=\"n\">11</span>How we protect your data</h2>\n  <ul>\n    <li>Everything travels encrypted, over HTTPS.</li>\n    <li>Passwords are stored as a one-way hash. No table that a browser can read has ever held a readable password.</li>\n    <li>Row-level security in the database: one account technically cannot read another account's private rows.</li>\n    <li>Optional two-factor authentication and biometric unlock.</li>\n    <li>Photos are size-limited and checked before they are stored.</li>\n  </ul>\n  <p>No online service can promise perfect security. If you notice anything wrong with your account, write to support@bambeh.com straight away.</p>\n\n  <h2><span class=\"n\">12</span>Children</h2>\n  <p>Bambeh is for people aged 18 and over. We do not knowingly collect data about anybody younger. If we learn that an account belongs to someone under 18, we close it and delete the data.</p>\n\n  <h2><span class=\"n\">13</span>What is stored on your own device</h2>\n  <p>Bambeh keeps a few small items in your browser or phone so it works properly: your sign-in session, your chosen language, the fact that you accepted the Terms, and a cache of pages so the app still opens on a weak connection. <strong>Bambeh does not use advertising cookies and does not track you across other websites.</strong> Clearing your browser data removes all of it.</p>\n\n  <h2><span class=\"n\">14</span>Changes to this policy</h2>\n  <p>Any new version is published on this page with a new date at the top. If a change matters to you, we will also show a notice in the app.</p>\n\n  <h2><span class=\"n\">15</span>Contact</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com &middot; or the chat inside the app. BAMBEH SARL, Yaound&eacute;, Cameroon.</p>",
+  fr: "  <div class=\"note\">\n    <p><strong>En bref.</strong> Nous collectons ce qui est n&eacute;cessaire au fonctionnement d'une place de march&eacute;, et rien de plus. Nous ne voyons jamais votre code Mobile Money, votre num&eacute;ro de carte ni vos coordonn&eacute;es bancaires. Nous ne vendons vos donn&eacute;es &agrave; personne. Vous pouvez consulter, corriger, exporter ou supprimer vos donn&eacute;es &agrave; tout moment et gratuitement. Votre num&eacute;ro de t&eacute;l&eacute;phone reste masqu&eacute; aux autres utilisateurs tant que vous ne l'affichez pas vous-m&ecirc;me.</p>\n  </div>\n\n  <h2><span class=\"n\">1</span>Responsable du traitement</h2>\n  <div class=\"id-card\">\n    <p><strong>D&eacute;nomination sociale&nbsp;:</strong> BAMBEH SARL</p>\n    <p><strong>Registre de commerce&nbsp;:</strong> CM-NSI-02-2026-B13-00179</p>\n    <p><strong>NIU&nbsp;:</strong> M022618405804C</p>\n    <p><strong>Si&egrave;ge&nbsp;:</strong> Yaound&eacute;, R&eacute;publique du Cameroun</p>\n    <p><strong>Contact vie priv&eacute;e&nbsp;:</strong> support@bambeh.com</p>\n  </div>\n  <p>La pr&eacute;sente politique couvre le site Bambeh, l'application Bambeh et l'ensemble des prestations propos&eacute;es par leur interm&eacute;diaire. Elle se lit avec nos <a href=\"#/terms-of-service\">Conditions d'utilisation</a>.</p>\n\n  <h2><span class=\"n\">2</span>Donn&eacute;es collect&eacute;es</h2>\n  <h3>Ce que vous nous fournissez</h3>\n  <ul>\n    <li>Vos nom, num&eacute;ro de t&eacute;l&eacute;phone et adresse &eacute;lectronique</li>\n    <li>L'adresse de livraison que vous indiquez lors d'une commande, afin que le vendeur puisse vous livrer</li>\n    <li>Les documents que vous nous envoyez, par exemple un CV lorsque vous postulez &agrave; une offre d'emploi, ou un certificat d'entreprise lorsque vous ouvrez une boutique professionnelle</li>\n    <li>Votre mot de passe &mdash; conserv&eacute; uniquement sous forme d'empreinte &agrave; sens unique, illisible y compris par nous</li>\n    <li>Votre ville ou r&eacute;gion, et votre quartier si vous le saisissez</li>\n    <li>Votre photo de profil, si vous en ajoutez une</li>\n    <li>Vos annonces, leurs photos, leurs prix et leurs descriptions</li>\n    <li>Les messages que vous adressez aux autres utilisateurs dans l'application</li>\n    <li>Les avis et les notes que vous r&eacute;digez</li>\n    <li>Les messages que vous adressez au support</li>\n    <li>Vos documents d'immatriculation, uniquement si vous ouvrez une boutique d'entreprise</li>\n  </ul>\n  <h3>Ce qui se cr&eacute;e pendant l'utilisation</h3>\n  <ul>\n    <li>Les pages ouvertes, les recherches effectu&eacute;es, les annonces enregistr&eacute;es</li>\n    <li>Le type d'appareil, le syst&egrave;me d'exploitation et la version de l'application</li>\n    <li>Votre adresse IP et la zone approximative qu'elle indique</li>\n    <li>Votre position pr&eacute;cise, uniquement si vous activez la localisation et l'autorisez sur votre t&eacute;l&eacute;phone</li>\n    <li>Les rapports d'erreur lorsqu'une fonction de l'application &eacute;choue</li>\n  </ul>\n  <h3>Ce que nous transmet le prestataire de paiement</h3>\n  <p>Le succ&egrave;s ou l'&eacute;chec d'un paiement, le montant, la devise, la r&eacute;f&eacute;rence et le num&eacute;ro de t&eacute;l&eacute;phone utilis&eacute;.</p>\n  <div class=\"warn\">\n    <p><strong>Nous ne recevons ni ne conservons jamais votre code Mobile Money, votre num&eacute;ro de carte, votre cryptogramme ou vos coordonn&eacute;es bancaires.</strong> Vous saisissez votre code sur votre propre t&eacute;l&eacute;phone, sur l'&eacute;cran de votre op&eacute;rateur. Bambeh ne le voit jamais.</p>\n  </div>\n\n    <h3>Vos questions de s&#233;curit&#233;</h3>\n  <p>Les r&#233;ponses aux questions de s&#233;curit&#233; que vous choisissez (au moins trois sur cinq). Nous ne les conservons que sous forme de code &#224; sens unique (un &#171; hachage &#187;), comme les mots de passe : personne chez Bambeh ne peut les lire. Elles ne servent qu'&#224; une chose : v&#233;rifier que c'est bien vous lorsque vous avez oubli&#233; votre mot de passe. Lorsque la page &#171; Mot de passe oubli&#233; &#187; est utilis&#233;e, nous enregistrons aussi le num&#233;ro saisi, l'heure, l'adresse r&#233;seau et le nombre de bonnes r&#233;ponses, afin d'emp&#234;cher les tentatives au hasard et de permettre &#224; l'&#233;quipe de voir que le vrai titulaire a r&#233;ussi avant de l'aider.</p>\n<h2><span class=\"n\">3</span>Finalit&eacute;s</h2>\n  <table>\n    <tr><th>Pour quoi faire</th><th>Donn&eacute;es utilis&eacute;es</th></tr>\n    <tr><td>Cr&eacute;er et g&eacute;rer votre compte</td><td>Nom, t&eacute;l&eacute;phone, courriel, mot de passe</td></tr>\n    <tr><td>Pr&eacute;senter vos annonces aux acheteurs</td><td>Annonces, photos, prix, ville</td></tr>\n    <tr><td>Permettre l'&eacute;change acheteur / vendeur</td><td>Messages, nom, profil</td></tr>\n    <tr><td>Encaisser et reverser les paiements</td><td>R&eacute;f&eacute;rence, montant, num&eacute;ro de t&eacute;l&eacute;phone</td></tr>\n    <tr><td>Lutter contre la fraude et prot&eacute;ger les personnes</td><td>Donn&eacute;es d'appareil, IP, signalements, blocages, historique</td></tr>\n    <tr><td>R&eacute;pondre &agrave; vos demandes au support</td><td>Votre message et vos identifiants de compte</td></tr>\n    <tr><td>Respecter nos obligations l&eacute;gales et fiscales</td><td>Factures, justificatifs de paiements aboutis</td></tr>\n    <tr><td>Am&eacute;liorer l'application</td><td>Donn&eacute;es d'usage anonymes &mdash; seulement si l'option Analytique reste activ&eacute;e</td></tr>\n  </table>\n\n  <h2><span class=\"n\">4</span>Bases l&eacute;gales</h2>\n  <ul>\n    <li><strong>Le contrat qui nous lie.</strong> Sans ces donn&eacute;es, ni votre compte ni une vente ne peuvent fonctionner.</li>\n    <li><strong>Votre consentement,</strong> pour la position pr&eacute;cise, l'analytique, les notifications et l'affichage de votre num&eacute;ro. Vous pouvez le retirer &agrave; tout moment dans l'application.</li>\n    <li><strong>Nos obligations l&eacute;gales,</strong> notamment le droit fiscal et comptable camerounais et la loi n&deg;&nbsp;2010/012 du 21 d&eacute;cembre 2010 relative &agrave; la cybers&eacute;curit&eacute; et &agrave; la cybercriminalit&eacute;.</li>\n    <li><strong>Notre int&eacute;r&ecirc;t l&eacute;gitime</strong> &agrave; prot&eacute;ger la plateforme contre la fraude et les abus.</li>\n  </ul>\n\n  <h2><span class=\"n\">5</span>Ce que les autres utilisateurs voient</h2>\n  <p>Vous le r&eacute;glez vous-m&ecirc;me dans <strong>Profil &rarr; Confidentialit&eacute; et s&eacute;curit&eacute;</strong>&nbsp;:</p>\n  <table>\n    <tr><th>R&eacute;glage</th><th>Par d&eacute;faut</th></tr>\n    <tr><td>Afficher mon num&eacute;ro sur mes annonces</td><td>D&eacute;sactiv&eacute;</td></tr>\n    <tr><td>Profil public visible de tous</td><td>Activ&eacute;</td></tr>\n    <tr><td>Afficher ma ville</td><td>Activ&eacute;</td></tr>\n    <tr><td>Autoriser les messages des autres utilisateurs</td><td>Activ&eacute;</td></tr>\n    <tr><td>Analytique et personnalisation</td><td>D&eacute;sactiv&eacute;</td></tr>\n    <tr><td>Double authentification</td><td>D&eacute;sactiv&eacute;</td></tr>\n  </table>\n  <p>Quel que soit votre choix, votre nom d'affichage et votre note apparaissent sur vos propres annonces et sur les avis que vous r&eacute;digez. Votre adresse exacte n'est jamais montr&eacute;e &agrave; qui que ce soit, sauf si vous la saisissez vous-m&ecirc;me dans une annonce.</p>\n\n  <h2><span class=\"n\">6</span>Destinataires</h2>\n  <p>Nous ne partageons que le strict n&eacute;cessaire, avec des prestataires li&eacute;s par contrat&nbsp;:</p>\n  <ul>\n    <li><strong>Notre h&eacute;bergeur et fournisseur de base de donn&eacute;es,</strong> qui stocke les donn&eacute;es et exploite les serveurs.</li>\n    <li><strong>Notre prestataire de paiement agr&eacute;&eacute;,</strong> qui encaisse, conserve et reverse les fonds. Il re&ccedil;oit le montant, le num&eacute;ro de t&eacute;l&eacute;phone et une r&eacute;f&eacute;rence.</li>\n    <li><strong>Notre prestataire de notifications,</strong> qui d&eacute;livre les alertes sur votre t&eacute;l&eacute;phone.</li>\n    <li><strong>Notre service de suivi des erreurs,</strong> qui re&ccedil;oit les rapports de plantage.</li>\n    <li><strong>Notre h&eacute;bergeur de site web.</strong></li>\n  </ul>\n  <div class=\"note\">\n    <p><strong>Nous ne vendons pas vos donn&eacute;es personnelles. Nous ne les communiquons pas aux annonceurs. Nous ne les &eacute;changeons avec aucune autre soci&eacute;t&eacute;.</strong> Les entreprises qui font de la publicit&eacute; sur Bambeh voient combien de personnes ont vu et cliqu&eacute; leur annonce &mdash; un nombre, jamais un nom.</p>\n  </div>\n  <p>Nous communiquons des donn&eacute;es &agrave; la police, &agrave; une juridiction ou &agrave; une autorit&eacute; sur pr&eacute;sentation d'une r&eacute;quisition r&eacute;guli&egrave;re, dont nous v&eacute;rifions la validit&eacute; au pr&eacute;alable.</p>\n\n  <h2><span class=\"n\">7</span>Lieu de conservation</h2>\n  <p>Bambeh fonctionne sur des serveurs pouvant se situer hors du Cameroun. Quel que soit le lieu, nos prestataires sont tenus par contrat de prot&eacute;ger ces donn&eacute;es et de ne les utiliser que pour notre compte.</p>\n\n  <h2><span class=\"n\">8</span>Dur&eacute;es de conservation</h2>\n  <ul>\n    <li><strong>Donn&eacute;es de compte&nbsp;:</strong> jusqu'&agrave; la suppression du compte.</li>\n    <li><strong>Annonces&nbsp;:</strong> jusqu'&agrave; leur retrait, ou 7 jours apr&egrave;s leur mise &agrave; la corbeille.</li>\n    <li><strong>Messages&nbsp;:</strong> jusqu'&agrave; la suppression du compte&nbsp;; ils deviennent alors &laquo;&nbsp;[supprim&eacute;]&nbsp;&raquo;.</li>\n    <li><strong>Justificatifs de paiements aboutis et factures&nbsp;: dix ans.</strong> Le droit fiscal camerounais et les r&egrave;gles comptables OHADA l'imposent &agrave; toute soci&eacute;t&eacute;. Nous ne pouvons pas raccourcir ce d&eacute;lai.</li>\n    <li><strong>&Eacute;l&eacute;ments relatifs &agrave; un compte suspendu&nbsp;:</strong> conserv&eacute;s afin que le compte ne soit pas simplement recr&eacute;&eacute;.</li>\n    <li><strong>Rapports d'erreur&nbsp;:</strong> une courte p&eacute;riode, puis suppression automatique.</li>\n  </ul>\n\n  <h2><span class=\"n\">9</span>Vos droits</h2>\n  <p>&Agrave; tout moment et gratuitement, vous pouvez&nbsp;:</p>\n  <ul>\n    <li><strong>Acc&eacute;der</strong> aux donn&eacute;es que nous d&eacute;tenons sur vous</li>\n    <li><strong>Rectifier</strong> ce qui est inexact &mdash; l'essentiel est modifiable directement dans l'application</li>\n    <li><strong>Exporter</strong> une copie de vos donn&eacute;es, depuis Confidentialit&eacute; et s&eacute;curit&eacute;</li>\n    <li><strong>Supprimer</strong> votre compte et vos donn&eacute;es, hors ce que la loi nous impose de conserver</li>\n    <li><strong>Retirer un consentement</strong> donn&eacute; (localisation, analytique&hellip;)</li>\n    <li><strong>Vous opposer</strong> &agrave; un usage pr&eacute;cis et nous demander de l'expliquer</li>\n    <li><strong>R&eacute;clamer</strong> aupr&egrave;s de nous et aupr&egrave;s de l'autorit&eacute; comp&eacute;tente au Cameroun</li>\n  </ul>\n  <p>&Eacute;crivez &agrave; support@bambeh.com depuis l'adresse rattach&eacute;e &agrave; votre compte, ou utilisez la messagerie de l'application. Nous r&eacute;pondons sous 30 jours. Nous pouvons vous demander de confirmer votre identit&eacute; avant toute communication&nbsp;: cette v&eacute;rification vous prot&egrave;ge.</p>\n\n  <h2><span class=\"n\">10</span>Suppression de votre compte</h2>\n  <p>Depuis <strong>Profil &rarr; Confidentialit&eacute; et s&eacute;curit&eacute; &rarr; Supprimer mon compte</strong>, ou depuis <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a> si l'application n'est plus install&eacute;e.</p>\n  <p><strong>Supprim&eacute;&nbsp;:</strong> profil et photo, coordonn&eacute;es, annonces, recherches enregistr&eacute;es, favoris, notifications et jetons d'appareil. Les messages deviennent &laquo;&nbsp;[supprim&eacute;]&nbsp;&raquo;. Les avis conservent la note mais perdent votre nom.</p>\n  <p><strong>Conserv&eacute;&nbsp;:</strong> les justificatifs des paiements aboutis et leurs factures, pendant les dix ans requis&nbsp;; une trace minimale de l'existence et de la suppression du compte&nbsp;; et tout &eacute;l&eacute;ment dont la conservation est ordonn&eacute;e par une juridiction.</p>\n  <div class=\"warn\">\n    <p>La suppression est d&eacute;finitive. Les pi&egrave;ces Zerm, tout pass Premium en cours et tout dossier de Protection Acheteur en cours prennent fin avec le compte.</p>\n  </div>\n\n  <h2><span class=\"n\">11</span>S&eacute;curit&eacute;</h2>\n  <ul>\n    <li>Toutes les communications sont chiffr&eacute;es, en HTTPS.</li>\n    <li>Les mots de passe sont conserv&eacute;s sous forme d'empreinte &agrave; sens unique. Aucune table lisible par un navigateur n'a jamais contenu de mot de passe en clair.</li>\n    <li>S&eacute;curit&eacute; au niveau des lignes dans la base&nbsp;: un compte ne peut techniquement pas lire les donn&eacute;es priv&eacute;es d'un autre.</li>\n    <li>Double authentification et d&eacute;verrouillage biom&eacute;trique, en option.</li>\n    <li>Les photos sont limit&eacute;es en taille et contr&ocirc;l&eacute;es avant stockage.</li>\n  </ul>\n  <p>Aucun service en ligne ne peut promettre une s&eacute;curit&eacute; parfaite. Si vous constatez une anomalie sur votre compte, &eacute;crivez imm&eacute;diatement &agrave; support@bambeh.com.</p>\n\n  <h2><span class=\"n\">12</span>Mineurs</h2>\n  <p>Bambeh s'adresse aux personnes de 18 ans et plus. Nous ne collectons pas sciemment de donn&eacute;es concernant une personne plus jeune. Si nous apprenons qu'un compte appartient &agrave; un mineur, nous le fermons et supprimons les donn&eacute;es.</p>\n\n  <h2><span class=\"n\">13</span>Ce qui est stock&eacute; sur votre appareil</h2>\n  <p>Bambeh conserve quelques &eacute;l&eacute;ments dans votre navigateur ou votre t&eacute;l&eacute;phone pour fonctionner&nbsp;: votre session, votre langue, l'acceptation des Conditions et un cache de pages pour que l'application s'ouvre m&ecirc;me avec une connexion faible. <strong>Bambeh n'utilise pas de cookies publicitaires et ne vous suit pas sur d'autres sites.</strong> Effacer les donn&eacute;es de votre navigateur supprime le tout.</p>\n\n  <h2><span class=\"n\">14</span>Modification de la pr&eacute;sente politique</h2>\n  <p>Toute nouvelle version est publi&eacute;e sur cette page avec une nouvelle date en t&ecirc;te. Si un changement vous concerne, un avis appara&icirc;tra &eacute;galement dans l'application.</p>\n\n  <h2><span class=\"n\">15</span>Contact</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com &middot; ou la messagerie de l'application. BAMBEH SARL, Yaound&eacute;, Cameroun.</p>",
+  pcm: "  <div class=\"note\">\n    <p>Na short explanation be dis. The complete policy dey for English and for French.</p>\n  </div>\n\n  <h2>Wetin we dey collect</h2>\n  <p>Your name, phone number, email, your town, your photo if you put am, your adverts and dem photo, the messages wey you send inside the app, and the reviews wey you write. The app also dey see which page you open, which phone you dey use, and your area from your internet. Your exact place only if you allow am for your phone.</p>\n\n  <h2>Wetin we NEVER dey see</h2>\n  <p><strong>We no dey see your MoMo PIN. We no dey see your card number. We no dey see your bank account.</strong> Na for your own phone, for your network own screen, you dey put your PIN. Bambeh no dey see am at all.</p>\n\n  <h2>Why we dey use am</h2>\n  <p>To open your account, show your advert give buyer, join you and the other person for chat, collect payment and pay seller, catch fraud, answer you when you write support, and keep the record wey the law say we must keep.</p>\n\n  <h2>Who dey see your number</h2>\n  <p>Nobody &mdash; unless na you switch am on yourself for <strong>Profile &rarr; Privacy &amp; Security</strong>. By default e dey OFF. Your name and your star rating dey show on your own advert, and your town dey show if you leave am on.</p>\n\n  <h2>Who we dey share am with</h2>\n  <p>Only the companies wey dey work for us: the one wey dey keep the database, the licensed payment company, the one wey dey send notification, and the one wey dey collect error report. <strong>We no dey sell your data. We no dey give am advertiser.</strong> Person wey buy advert only dey see number of view and click, no name.</p>\n  <p>If police or court bring proper order, we go give dem &mdash; but we go check say the order correct first.</p>\n\n  <h2>How long we dey keep am</h2>\n  <p>Your account thing dey until you delete am. But payment wey don complete, we must keep the record ten years &mdash; na accounting law talk am, no be we.</p>\n\n  <h2>Your right</h2>\n  <p>You fit see your data, correct am, download am, delete am, or comot permission wey you give (like location). Write support@bambeh.com from the email wey dey your account. We go answer inside 30 days, free.</p>\n\n  <h2>Delete your account</h2>\n  <p><strong>Profile &rarr; Privacy &amp; Security &rarr; Delete My Account</strong>, or use <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>. <strong>E no get reverse gear.</strong></p>\n\n  <h2>Contact</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com</p>  <h2>Your security question dem</h2>\n  <p>We keep your answer dem only as scrambled code wey nobody fit read, even Bambeh staff. We use dem only to check say na really you when you forget your password.</p>",
+  ar: "  <div class=\"note\">\n    <p>&#1607;&#1584;&#1575; &#1605;&#1604;&#1582;&#1589; &#1605;&#1576;&#1587;&#1617;&#1591;. &#1575;&#1604;&#1587;&#1610;&#1575;&#1587;&#1577; &#1575;&#1604;&#1603;&#1575;&#1605;&#1604;&#1577; &#1605;&#1606;&#1588;&#1608;&#1585;&#1577; &#1576;&#1575;&#1604;&#1573;&#1606;&#1580;&#1604;&#1610;&#1586;&#1610;&#1577; &#1608;&#1575;&#1604;&#1601;&#1585;&#1606;&#1587;&#1610;&#1577;.</p>\n  </div>\n\n  <h2>&#1605;&#1575; &#1606;&#1580;&#1605;&#1593;&#1607;</h2>\n  <p>&#1575;&#1587;&#1605;&#1603; &#1608;&#1585;&#1602;&#1605; &#1607;&#1575;&#1578;&#1601;&#1603; &#1608;&#1576;&#1585;&#1610;&#1583;&#1603; &#1575;&#1604;&#1573;&#1604;&#1603;&#1578;&#1585;&#1608;&#1606;&#1610;&#1548; &#1605;&#1583;&#1610;&#1606;&#1578;&#1603;&#1548; &#1589;&#1608;&#1585;&#1578;&#1603; &#1573;&#1606; &#1571;&#1590;&#1601;&#1578;&#1607;&#1575;&#1548; &#1573;&#1593;&#1604;&#1575;&#1606;&#1575;&#1578;&#1603; &#1608;&#1589;&#1608;&#1585;&#1607;&#1575;&#1548; &#1575;&#1604;&#1585;&#1587;&#1575;&#1574;&#1604; &#1575;&#1604;&#1578;&#1610; &#1578;&#1585;&#1587;&#1604;&#1607;&#1575; &#1583;&#1575;&#1582;&#1604; &#1575;&#1604;&#1578;&#1591;&#1576;&#1610;&#1602;&#1548; &#1608;&#1575;&#1604;&#1578;&#1602;&#1610;&#1610;&#1605;&#1575;&#1578; &#1575;&#1604;&#1578;&#1610; &#1578;&#1603;&#1578;&#1576;&#1607;&#1575;. &#1603;&#1605;&#1575; &#1606;&#1587;&#1580;&#1604; &#1606;&#1608;&#1593; &#1580;&#1607;&#1575;&#1586;&#1603; &#1608;&#1593;&#1606;&#1608;&#1575;&#1606; IP &#1608;&#1575;&#1604;&#1605;&#1606;&#1591;&#1602;&#1577; &#1575;&#1604;&#1578;&#1602;&#1585;&#1610;&#1576;&#1610;&#1577;. &#1571;&#1605;&#1575; &#1605;&#1608;&#1602;&#1593;&#1603; &#1575;&#1604;&#1583;&#1602;&#1610;&#1602; &#1601;&#1604;&#1575; &#1610;&#1615;&#1580;&#1605;&#1593; &#1573;&#1604;&#1575; &#1576;&#1573;&#1584;&#1606;&#1603;.</p>\n\n  <h2>&#1605;&#1575; &#1604;&#1575; &#1606;&#1585;&#1575;&#1607; &#1571;&#1576;&#1583;&#1611;&#1575;</h2>\n  <p><strong>&#1604;&#1575; &#1606;&#1585;&#1609; &#1585;&#1605;&#1586; &#1605;&#1581;&#1601;&#1592;&#1578;&#1603; &#1575;&#1604;&#1587;&#1585;&#1610;&#1548; &#1608;&#1604;&#1575; &#1585;&#1602;&#1605; &#1576;&#1591;&#1575;&#1602;&#1578;&#1603;&#1548; &#1608;&#1604;&#1575; &#1576;&#1610;&#1575;&#1606;&#1575;&#1578; &#1581;&#1587;&#1575;&#1576;&#1603; &#1575;&#1604;&#1605;&#1589;&#1585;&#1601;&#1610;.</strong> &#1571;&#1606;&#1578; &#1578;&#1583;&#1582;&#1604; &#1575;&#1604;&#1585;&#1605;&#1586; &#1593;&#1604;&#1609; &#1607;&#1575;&#1578;&#1601;&#1603; &#1571;&#1606;&#1578;&#1548; &#1593;&#1604;&#1609; &#1588;&#1575;&#1588;&#1577; &#1605;&#1588;&#1594;&#1617;&#1604; &#1575;&#1604;&#1588;&#1576;&#1603;&#1577;. &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1604;&#1575; &#1578;&#1585;&#1575;&#1607; &#1573;&#1591;&#1604;&#1575;&#1602;&#1611;&#1575;.</p>\n\n  <h2>&#1604;&#1605;&#1575;&#1584;&#1575; &#1606;&#1587;&#1578;&#1582;&#1583;&#1605;&#1607;</h2>\n  <p>&#1604;&#1573;&#1583;&#1575;&#1585;&#1577; &#1581;&#1587;&#1575;&#1576;&#1603;&#1548; &#1608;&#1593;&#1585;&#1590; &#1573;&#1593;&#1604;&#1575;&#1606;&#1575;&#1578;&#1603;&#1548; &#1608;&#1585;&#1576;&#1591;&#1603; &#1576;&#1575;&#1604;&#1591;&#1585;&#1601; &#1575;&#1604;&#1570;&#1582;&#1585;&#1548; &#1608;&#1578;&#1581;&#1589;&#1610;&#1604; &#1575;&#1604;&#1605;&#1583;&#1601;&#1608;&#1593;&#1575;&#1578; &#1608;&#1583;&#1601;&#1593; &#1575;&#1604;&#1576;&#1575;&#1574;&#1593;&#1610;&#1606;&#1548; &#1608;&#1605;&#1606;&#1593; &#1575;&#1604;&#1575;&#1581;&#1578;&#1610;&#1575;&#1604;&#1548; &#1608;&#1575;&#1604;&#1585;&#1583; &#1593;&#1604;&#1610;&#1603;&#1548; &#1608;&#1575;&#1604;&#1608;&#1601;&#1575;&#1569; &#1576;&#1575;&#1604;&#1578;&#1586;&#1575;&#1605;&#1575;&#1578;&#1606;&#1575; &#1575;&#1604;&#1602;&#1575;&#1606;&#1608;&#1606;&#1610;&#1577;.</p>\n\n  <h2>&#1605;&#1575; &#1610;&#1585;&#1575;&#1607; &#1575;&#1604;&#1570;&#1582;&#1585;&#1608;&#1606;</h2>\n  <p>&#1585;&#1602;&#1605; &#1607;&#1575;&#1578;&#1601;&#1603; <strong>&#1605;&#1582;&#1601;&#1610;&#1617; &#1575;&#1601;&#1578;&#1585;&#1575;&#1590;&#1610;&#1611;&#1575;</strong> &#1573;&#1604;&#1575; &#1573;&#1584;&#1575; &#1601;&#1593;&#1617;&#1604;&#1578;&#1607; &#1571;&#1606;&#1578; &#1605;&#1606; <strong>&#1575;&#1604;&#1605;&#1604;&#1601; &#1575;&#1604;&#1588;&#1582;&#1589;&#1610; &larr; &#1575;&#1604;&#1582;&#1589;&#1608;&#1589;&#1610;&#1577; &#1608;&#1575;&#1604;&#1571;&#1605;&#1575;&#1606;</strong>. &#1575;&#1587;&#1605;&#1603; &#1575;&#1604;&#1592;&#1575;&#1607;&#1585; &#1608;&#1578;&#1602;&#1610;&#1610;&#1605;&#1603; &#1610;&#1592;&#1607;&#1585;&#1575;&#1606; &#1593;&#1604;&#1609; &#1573;&#1593;&#1604;&#1575;&#1606;&#1575;&#1578;&#1603;.</p>\n\n  <h2>&#1605;&#1593; &#1605;&#1606; &#1606;&#1588;&#1575;&#1585;&#1603;</h2>\n  <p>&#1601;&#1602;&#1591; &#1605;&#1593; &#1605;&#1602;&#1583;&#1617;&#1605;&#1610; &#1575;&#1604;&#1582;&#1583;&#1605;&#1575;&#1578; &#1575;&#1604;&#1593;&#1575;&#1605;&#1604;&#1610;&#1606; &#1604;&#1589;&#1575;&#1604;&#1581;&#1606;&#1575;: &#1605;&#1590;&#1610;&#1601; &#1602;&#1575;&#1593;&#1583;&#1577; &#1575;&#1604;&#1576;&#1610;&#1575;&#1606;&#1575;&#1578;&#1548; &#1608;&#1605;&#1586;&#1608;&#1617;&#1583; &#1575;&#1604;&#1583;&#1601;&#1593; &#1575;&#1604;&#1605;&#1585;&#1582;&#1617;&#1589;&#1548; &#1608;&#1582;&#1583;&#1605;&#1577; &#1575;&#1604;&#1573;&#1588;&#1593;&#1575;&#1585;&#1575;&#1578;&#1548; &#1608;&#1582;&#1583;&#1605;&#1577; &#1578;&#1602;&#1575;&#1585;&#1610;&#1585; &#1575;&#1604;&#1571;&#1582;&#1591;&#1575;&#1569;. <strong>&#1604;&#1575; &#1606;&#1576;&#1610;&#1593; &#1576;&#1610;&#1575;&#1606;&#1575;&#1578;&#1603; &#1608;&#1604;&#1575; &#1606;&#1587;&#1604;&#1617;&#1605;&#1607;&#1575; &#1604;&#1604;&#1605;&#1593;&#1604;&#1606;&#1610;&#1606;.</strong> &#1606;&#1587;&#1604;&#1617;&#1605; &#1575;&#1604;&#1576;&#1610;&#1575;&#1606;&#1575;&#1578; &#1604;&#1604;&#1588;&#1585;&#1591;&#1577; &#1571;&#1608; &#1575;&#1604;&#1602;&#1590;&#1575;&#1569; &#1593;&#1606;&#1583; &#1608;&#1585;&#1608;&#1583; &#1571;&#1605;&#1585; &#1602;&#1575;&#1606;&#1608;&#1606;&#1610; &#1589;&#1581;&#1610;&#1581; &#1601;&#1602;&#1591;.</p>\n\n  <h2>&#1605;&#1583;&#1577; &#1575;&#1604;&#1575;&#1581;&#1578;&#1601;&#1575;&#1592;</h2>\n  <p>&#1576;&#1610;&#1575;&#1606;&#1575;&#1578; &#1581;&#1587;&#1575;&#1576;&#1603; &#1578;&#1576;&#1602;&#1609; &#1581;&#1578;&#1609; &#1578;&#1581;&#1584;&#1601;&#1607;. &#1571;&#1605;&#1575; &#1587;&#1580;&#1604;&#1575;&#1578; &#1575;&#1604;&#1605;&#1583;&#1601;&#1608;&#1593;&#1575;&#1578; &#1575;&#1604;&#1605;&#1603;&#1578;&#1605;&#1604;&#1577; &#1601;&#1578;&#1615;&#1581;&#1601;&#1592; &#1593;&#1588;&#1585; &#1587;&#1606;&#1608;&#1575;&#1578;&#1548; &#1603;&#1605;&#1575; &#1610;&#1601;&#1585;&#1590; &#1602;&#1575;&#1606;&#1608;&#1606; &#1575;&#1604;&#1605;&#1581;&#1575;&#1587;&#1576;&#1577;.</p>\n\n  <h2>&#1581;&#1602;&#1608;&#1602;&#1603;</h2>\n  <p>&#1610;&#1605;&#1603;&#1606;&#1603; &#1575;&#1604;&#1575;&#1591;&#1604;&#1575;&#1593; &#1593;&#1604;&#1609; &#1576;&#1610;&#1575;&#1606;&#1575;&#1578;&#1603;&#1548; &#1608;&#1578;&#1589;&#1581;&#1610;&#1581;&#1607;&#1575;&#1548; &#1608;&#1578;&#1589;&#1583;&#1610;&#1585;&#1607;&#1575;&#1548; &#1608;&#1581;&#1584;&#1601;&#1607;&#1575;&#1548; &#1608;&#1587;&#1581;&#1576; &#1571;&#1610; &#1605;&#1608;&#1575;&#1601;&#1602;&#1577; &#1605;&#1606;&#1581;&#1578;&#1607;&#1575;. &#1575;&#1603;&#1578;&#1576; &#1573;&#1604;&#1609; support@bambeh.com &#1605;&#1606; &#1575;&#1604;&#1576;&#1585;&#1610;&#1583; &#1575;&#1604;&#1605;&#1587;&#1580;&#1604; &#1601;&#1610; &#1581;&#1587;&#1575;&#1576;&#1603;. &#1606;&#1585;&#1583;&#1617; &#1582;&#1604;&#1575;&#1604; 30 &#1610;&#1608;&#1605;&#1611;&#1575;&#1548; &#1605;&#1580;&#1575;&#1606;&#1611;&#1575;.</p>\n\n  <h2>&#1581;&#1584;&#1601; &#1575;&#1604;&#1581;&#1587;&#1575;&#1576;</h2>\n  <p><strong>&#1575;&#1604;&#1605;&#1604;&#1601; &#1575;&#1604;&#1588;&#1582;&#1589;&#1610; &larr; &#1575;&#1604;&#1582;&#1589;&#1608;&#1589;&#1610;&#1577; &#1608;&#1575;&#1604;&#1571;&#1605;&#1575;&#1606; &larr; &#1581;&#1584;&#1601; &#1581;&#1587;&#1575;&#1576;&#1610;</strong>&#1548; &#1571;&#1608; <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>. &#1575;&#1604;&#1581;&#1584;&#1601; &#1606;&#1607;&#1575;&#1574;&#1610;.</p>\n\n  <h2>&#1575;&#1604;&#1578;&#1608;&#1575;&#1589;&#1604;</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com</p>  <h2>&#1571;&#1587;&#1574;&#1604;&#1577; &#1575;&#1604;&#1571;&#1605;&#1575;&#1606;</h2>\n  <p>&#1606;&#1581;&#1578;&#1601;&#1592; &#1576;&#1573;&#1580;&#1575;&#1576;&#1575;&#1578;&#1603; &#1601;&#1602;&#1591; &#1601;&#1610; &#1589;&#1608;&#1585;&#1577; &#1585;&#1605;&#1586; &#1605;&#1588;&#1601;&#1617;&#1585; &#1576;&#1575;&#1578;&#1580;&#1575;&#1607; &#1608;&#1575;&#1581;&#1583; &#1604;&#1575; &#1610;&#1587;&#1578;&#1591;&#1610;&#1593; &#1571;&#1581;&#1583; &#1602;&#1585;&#1575;&#1569;&#1578;&#1607;&#1548; &#1581;&#1578;&#1609; &#1601;&#1585;&#1610;&#1602; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607;. &#1608;&#1606;&#1587;&#1578;&#1582;&#1583;&#1605;&#1607;&#1575; &#1601;&#1602;&#1591; &#1604;&#1604;&#1578;&#1581;&#1602;&#1602; &#1605;&#1606; &#1571;&#1606;&#1603; &#1589;&#1575;&#1581;&#1576; &#1575;&#1604;&#1581;&#1587;&#1575;&#1576; &#1593;&#1606;&#1583;&#1605;&#1575; &#1578;&#1606;&#1587;&#1609; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;.</p>",
+  ff: "  <div class=\"note\">\n    <p>Ndee ko dunngu ra\u0253\u0253i\u0257inaandu. Politik timmunde ndee ko e Engale e Farayse.</p>\n  </div>\n\n  <h2>Ko min moo\u0253ata</h2>\n  <p>Innde maa, limngal telefon maa, e-mail maa, wuro maa, nate maa so a wa\u0257ii, kuutor\u0257e maa e nate mum en, winndan\u0257e njaltu\u0257e nder app ndee, e \u01b4eewndeeji \u0257i mbinnu-\u0257aa. App ndee ina yiya kadi kelle \u0257e udditu-\u0257aa, telefon mo kuutorto-\u0257aa, e nokku maa ra\u0253\u0253i\u0257\u0257o. Nokku maa laa\u0253nde ko so a ja\u0253ii tan e telefon maa.</p>\n\n  <h2>Ko min njiyataa hay sa'a</h2>\n  <p><strong>Min njiyataa PIN MoMo maa. Min njiyataa limngal kart maa. Min njiyataa konte banke maa.</strong> Ko e telefon maa, e ekraan sosiyete telefon maa, naatnataa PIN maa. Bambeh yiyataa \u0257um hay saa'i gooto.</p>\n\n  <h2>Ko min kuutortoo \u0257um</h2>\n  <p>Ngam udditde konte maa, hollirde kuutor\u0257e maa soodoo\u0253e, joltinde ma e ne\u0257\u0257o go\u0257\u0257o e winndannde, ja\u0253de yo\u0253di e neldude jeeyoowo, ha\u0257de jamfa, jaabaade ma so a winndii support, e reende seedeeji \u0257i laawol yamiri.</p>\n\n  <h2>Mbo yiyata limngal telefon maa</h2>\n  <p>Hay gooto &mdash; so wonaa aan hu\u0253\u0253i \u0257um e <strong>Andital &rarr; Sirlu e Kisal</strong>. E fu\u0257\u0257oode ina \u00f1ifi. Innde maa e \u01b4eewndeeji maa ina cuu\u0257a e kuutor\u0257e maa.</p>\n\n  <h2>Mbo min ndeenata e mum</h2>\n  <p>Ko sosiyeteeji golloowi ngam amen tan: joom baas donneeji, sosiyete yo\u0253di ja\u0253aande, sosiyete winndan\u0257e, e sosiyete \u01b4eewgol juumreeji. <strong>Min njeeyataa ke\u0253e maa, kadi min ngokkataa \u0257e wa\u0257oo\u0253e pubulisite.</strong> Wa\u0257oo\u0253e pubulisite ina njiya limoore \u01b4eewoo\u0253e tan, wonaa innde.</p>\n\n  <h2>Dumunna reenugol</h2>\n  <p>Ke\u0253e konte maa ina keddoo haa momtaa konte maa. Kono seedeeji yo\u0253e timmu\u0257e ina poti heddaade duu\u0253i sappo &mdash; ko laawol kompotaabilite yamiri.</p>\n\n  <h2>Hakkeeji maa</h2>\n  <p>Ada waawi \u01b4eewde ke\u0253e maa, feewnude \u0257e, aawtaade \u0257e, momtude \u0257e, walla ittude ja\u0253gol ngol mba\u0257-\u0257aa. Winndu support@bambeh.com e e-mail konte maa. Min njaaboo nder bal\u0257e 30, meere.</p>\n\n  <h2>Momtude konte maa</h2>\n  <p><strong>Andital &rarr; Sirlu e Kisal &rarr; Momtu konte am</strong>, walla <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>. Momtugol waawaa ruttude.</p>\n\n  <h2>Jokkondiral</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com</p>  <h2>Naamne reentaare maa</h2>\n  <p>Min ndanndata jaabawuuji maa tan e kod mo hay gooto waawaa janngude, hay gollo&#595;e Bambeh. Min kuutorta &#599;um tan ngam &#436;eewde ko an tigi si a yejjitii finnde maa.</p>",
 };
 
-const SECTIONS: Section[] = [
-  {
-    id: "1",
-    title: "1. Who We Are",
-    body: (
-      <>
-        <div className="bg-teal-50 border border-teal-100 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold text-teal-900 mb-2">Business Identity</h3>
-          <p><strong>Legal business name:</strong> {COMPANY.legalName}</p>
-          <p><strong>Registre de commerce:</strong> {COMPANY.registreDeCommerce}</p>
-          <p><strong>NIU:</strong> {COMPANY.niu}</p>
-          <p><strong>D-U-N-S No:</strong> {COMPANY.duns}</p>
-        </div>
-
-        <p>
-          This Privacy Policy describes how <strong>{COMPANY.legalName}</strong>{" "}
-          ("Bambeh", "we", "us", or "our"), operator of the Bambeh Marketplace
-          (bambeh.com), collects, uses, stores, and protects your personal data
-          when you use our platform. Our platform operates primarily in the
-          {COMPANY.country} and serves users across the Central and West African
-          region. Our registered address is in <strong>{COMPANY.city}, {COMPANY.country}</strong>. For privacy inquiries, contact:{" "}
-          <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-            support@bambeh.com
-          </a>
-          .
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "2",
-    title: "2. Information We Collect",
-    body: (
-      <>
-        <p className="font-medium text-gray-800 mb-2">We collect the following categories of personal data:</p>
-
-        <p className="font-medium text-gray-700 mt-3">A. Information you give us</p>
-        <ul className="list-disc pl-5 mt-1 space-y-1">
-          <li>Full name and display name</li>
-          <li>Email address</li>
-          <li>Phone number (used for account verification and Mobile Money payments)</li>
-          <li>Profile photo (optional)</li>
-          <li>Location (city/region, for local listings)</li>
-          <li>Listing content: titles, descriptions, prices, photos you upload</li>
-          <li>Messages sent via the in-app chat feature</li>
-          <li>Payment information (processed by CamPay/NotchPay — we do not store full payment card details)</li>
-        </ul>
-
-        <p className="font-medium text-gray-700 mt-4">B. Information collected automatically</p>
-        <ul className="list-disc pl-5 mt-1 space-y-1">
-          <li>IP address and approximate geographic location</li>
-          <li>Device type, operating system, browser version</li>
-          <li>Pages viewed, links clicked, time spent on pages</li>
-          <li>Search queries entered on the Platform</li>
-          <li>App crash reports and performance data (via analytics tools)</li>
-          <li>Language and region preferences</li>
-        </ul>
-
-        <p className="font-medium text-gray-700 mt-4">C. Information from third parties</p>
-        <ul className="list-disc pl-5 mt-1 space-y-1">
-          <li><strong>Google / Social sign-in:</strong> If you register using a social login, we receive your name and email from that provider.</li>
-          <li><strong>Payment providers (CamPay, NotchPay):</strong> We receive transaction confirmation references but not your full payment details.</li>
-          <li><strong>Supabase (our database provider):</strong> User data may be stored on Supabase infrastructure.</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "3",
-    title: "3. How We Use Your Information",
-    body: (
-      <>
-        <p>We use your personal data for the following purposes:</p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>To create and manage your account</li>
-          <li>To display your listings to other users</li>
-          <li>To process payments and issue transaction confirmations</li>
-          <li>To send you notifications about your listings, messages, and orders</li>
-          <li>To improve Platform features through usage analytics</li>
-          <li>To detect and prevent fraud, abuse, and security threats</li>
-          <li>To provide customer support</li>
-          <li>To comply with legal obligations under Cameroonian law</li>
-          <li>To power AI-assisted features such as smart search, chatbot, and recommendations</li>
-          <li>To send optional marketing communications, which you may opt out of at any time in Settings → Notifications</li>
-        </ul>
-        <p className="mt-3">
-          <strong>Legal basis for processing:</strong> We process your data based on contract performance, consent where applicable, legitimate interests in operating a safe marketplace, and compliance with applicable law.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "4",
-    title: "4. Third-Party Services and Disclosures",
-    body: (
-      <>
-        <p>
-          We share your personal data with trusted third-party service providers
-          only to the extent necessary to operate the Platform:
-        </p>
-        <div className="mt-3 space-y-3">
-          {[
-            { name: "Supabase", role: "Database and authentication", policy: "supabase.com/privacy" },
-            { name: "CamPay / NotchPay", role: "Mobile money payment processing", policy: "campay.net/privacy" },
-            { name: "Netlify", role: "Web hosting and CDN", policy: "netlify.com/privacy" },
-            { name: "Render", role: "Server hosting", policy: "render.com/privacy" },
-            { name: "AI service providers", role: "AI chatbot and smart recommendations", policy: "disclosed on request" },
-            { name: "Analytics providers", role: "Usage analytics for platform improvement", policy: "disclosed on request" },
-          ].map((p) => (
-            <div key={p.name} className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
-              <p className="font-medium text-sm text-gray-800">{p.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{p.role}</p>
-              <p className="text-xs text-teal-600 mt-0.5">{p.policy}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4">
-          We do not sell your personal data to advertisers or data brokers. We do not display third-party advertisements on the Platform.
-        </p>
-        <p className="mt-3">
-          We may disclose your data to law enforcement authorities if required by a valid legal order under Cameroonian law.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "5",
-    title: "5. Data Retention",
-    body: (
-      <>
-        <p>We retain your personal data for the following periods:</p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li><strong>Active accounts:</strong> As long as your account remains active.</li>
-          <li><strong>Deleted accounts:</strong> Profile data is removed from public view within 30 days of account deletion. Anonymised transaction data may be retained for up to 5 years for legal and fraud-prevention purposes.</li>
-          <li><strong>Messages:</strong> Chat messages are retained for 12 months after the last message, then automatically deleted.</li>
-          <li><strong>Analytics data:</strong> Aggregated, anonymised analytics data may be retained indefinitely.</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "6",
-    title: "6. Your Rights",
-    body: (
-      <>
-        <p>
-          Under Cameroon's Law No. 2024/017 and applicable international privacy
-          principles, you have the following rights:
-        </p>
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[
-            { right: "Right of Access", desc: "Request a copy of all personal data we hold about you." },
-            { right: "Right to Rectification", desc: "Request correction of inaccurate or incomplete data." },
-            { right: "Right to Erasure", desc: "Request deletion of your personal data." },
-            { right: "Right to Portability", desc: "Receive your data in a structured, machine-readable format." },
-            { right: "Right to Object", desc: "Object to certain processing, including direct marketing." },
-            { right: "Account Deletion", desc: "Delete your account directly from Settings → Account at any time." },
-          ].map((r) => (
-            <div key={r.right} className="bg-teal-50 rounded-lg px-4 py-3 border border-teal-100">
-              <p className="font-semibold text-xs text-teal-800">{r.right}</p>
-              <p className="text-xs text-teal-700 mt-1">{r.desc}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-sm">
-          To exercise any right, email{" "}
-          <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-            support@bambeh.com
-          </a>
-          . We will respond within <strong>30 days</strong>.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "7",
-    title: "7. Cookies and Tracking Technologies",
-    body: (
-      <>
-        <p>
-          Bambeh uses the following technologies to improve your experience and
-          analyse Platform usage:
-        </p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li><strong>Essential cookies:</strong> Required for authentication and security. Cannot be disabled.</li>
-          <li><strong>Analytics cookies:</strong> Help us understand how users navigate the Platform. May be disabled in browser settings.</li>
-          <li><strong>localStorage / sessionStorage:</strong> Used to store your language preference, onboarding state, and draft listings on your device.</li>
-        </ul>
-        <p className="mt-3">
-          We do not use advertising cookies or share tracking data with ad networks.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "8",
-    title: "8. Children's Privacy",
-    body: (
-      <p>
-        The Bambeh Platform is intended for users who are <strong>18 years of age or older</strong>. We do not knowingly collect personal data from children under 18. If we become aware that a child under 18 has provided us with personal data, we will delete that data immediately. If you believe a child has registered on our Platform, please contact us at{" "}
-        <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-          support@bambeh.com
-        </a>
-        .
-      </p>
-    ),
-  },
-  {
-    id: "9",
-    title: "9. Data Security",
-    body: (
-      <>
-        <p>
-          We take the security of your personal data seriously and implement
-          technical and organisational measures, including:
-        </p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>HTTPS/TLS encryption for all data in transit</li>
-          <li>Encrypted storage for sensitive fields and hashed passwords</li>
-          <li>Row-level security (RLS) policies on our Supabase database</li>
-          <li>JWT authentication with secure token handling</li>
-          <li>Regular security reviews and monitoring</li>
-          <li>Access controls limiting employee access to personal data on a need-to-know basis</li>
-        </ul>
-        <p className="mt-3">
-          Despite our best efforts, no data transmission over the internet is 100% secure. In the event of a data breach that affects your rights, we will notify you within <strong>72 hours</strong> of becoming aware, as required by applicable law.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "10",
-    title: "10. International Data Transfers",
-    body: (
-      <p>
-        Your data may be stored and processed outside Cameroon — including in the
-        United States and other countries where our service providers operate.
-        Where such transfers occur, we ensure appropriate safeguards are in place,
-        including data processing agreements that require our providers to protect
-        your data to at least the standard required by Cameroon's Law No. 2024/017.
-      </p>
-    ),
-  },
-  {
-    id: "11",
-    title: "11. Changes to This Policy",
-    body: (
-      <>
-        <p>
-          We may update this Privacy Policy periodically. When we make material
-          changes, we will:
-        </p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Update the "Last updated" date at the top of this page</li>
-          <li>Send you a notification via the app or email</li>
-        </ul>
-        <p className="mt-3">
-          Continued use of the Platform after the effective date of any update
-          constitutes your acceptance of the revised Policy.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "12",
-    title: "12. Contact and Complaints",
-    body: (
-      <>
-        <p>
-          For any questions, data requests, or complaints about this Privacy Policy or our data practices:
-        </p>
-        <div className="mt-3 bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-1 text-sm">
-          <p><strong>{COMPANY.legalName} — Bambeh Marketplace</strong></p>
-          <p>{COMPANY.city}, {COMPANY.country}</p>
-          <p>Email: <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">support@bambeh.com</a></p>
-          <p>Secondary email: <a href="mailto:bambetheapp@gmail.com" className="text-teal-600 hover:underline">bambetheapp@gmail.com</a></p>
-        </div>
-        <p className="mt-3 text-xs text-gray-500">
-          If you are unsatisfied with our response, you may lodge a complaint with the relevant Cameroonian data protection authority.
-        </p>
-      </>
-    ),
-  },
-];
-
-const PrivacyPolicy: React.FC = () => {
-  const [openSection, setOpenSection] = useState<string | null>("1");
-  useLang();
-
-  const toggle = (id: string) => setOpenSection((prev) => (prev === id ? null : id));
-
+export default function PrivacyPolicy() {
+  const raw: unknown = useLang();
+  const lang = docLang(typeof raw === "string" ? raw : raw && (raw as { lang?: string }).lang);
+  const rtl = lang === "ar";
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-teal-600 to-teal-800 text-white py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
-          <p className="text-teal-100 text-sm">Last updated: June 2026 · Effective immediately</p>
-          <p className="mt-4 text-sm text-teal-100 leading-relaxed max-w-2xl">
-            Your privacy matters to us. This policy explains what data we collect,
-            why we collect it, who we share it with, and the rights you have over
-            your data.
-          </p>
+    <div data-fix="FIX618" translate="no" className="notranslate bambeh-legal-page" dir={rtl ? "rtl" : "ltr"} lang={lang === "pcm" ? "en" : lang}>
+      <style>{CSS}</style>
+      <header className="bl-hero">
+        <div className="bl-wrap">
+          <h1>{TITLE[lang]}</h1>
+          <p>{EFFECTIVE[lang]}</p>
         </div>
-      </div>
-
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex gap-4 overflow-x-auto text-xs text-teal-700 font-medium">
-          {SECTIONS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => {
-                setOpenSection(s.id);
-                document.getElementById(`pp-section-${s.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="whitespace-nowrap hover:text-teal-900 transition-colors"
-            >
-              {s.id}. {s.title.replace(/^\d+\.\s*/, "")}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-3">
-        {SECTIONS.map((section) => {
-          const isOpen = openSection === section.id;
-          return (
-            <div id={`pp-section-${section.id}`} key={section.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggle(section.id)}
-                className="w-full flex justify-between items-center px-5 py-4 text-left group focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-inset"
-                aria-expanded={isOpen}
-              >
-                <span className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">
-                  {section.title}
-                </span>
-                <svg className={`w-5 h-5 text-teal-500 transition-transform duration-200 flex-shrink-0 ml-4 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {isOpen && (
-                <div className="px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50">
-                  <div className="pt-4">{section.body}</div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="max-w-3xl mx-auto px-4 pb-12">
-        <div className="bg-teal-50 rounded-xl p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border border-teal-100">
-          <div>
-            <p className="text-sm font-semibold text-teal-800">Also review our Terms of Service</p>
-            <p className="text-xs text-teal-600 mt-0.5">The rules governing your use of the Bambeh Marketplace.</p>
-          </div>
-          <Link
-            to="/terms-of-service"
-            className="flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
-          >
-            Terms of Service →
-          </Link>
-        </div>
-
-        <p className="text-center text-xs text-gray-400 mt-8">
-          © {new Date().getFullYear()} {COMPANY.legalName} — Bambeh Marketplace. All rights reserved.
-          <br />
-          Governed by Cameroon Law No. 2024/017 on Personal Data Protection.
-        </p>
+      </header>
+      <main className="bl-wrap bl-body" dangerouslySetInnerHTML={{ __html: BODY[lang] }} />
+      <div className="bl-wrap bl-foot">
+        <Link to="/terms-of-service">{L_TERMSOFSERVICE[lang]}</Link>
+        <Link to="/">{HOME_LINK[lang]}</Link>
       </div>
     </div>
   );
-};
+}
 
-export default PrivacyPolicy;
+export { PrivacyPolicy };
+// BAMBEH_END_TOKEN__PRIVACY_POLICY__COMPLETE

@@ -1,424 +1,70 @@
+// BAMBEH_DEPLOY_TOKEN__TERMS_OF_SERVICE_FIX619_CLEAN
 /**
- * TermsOfService.tsx — Bambeh Marketplace
- * ---------------------------------------------------------------------------
- * Play Store / App Store compliant — June 2026
- * Governed by: Cameroon Law No. 2024/017 of 23 December 2024 on Personal
- * Data Protection, OHADA Uniform Acts, and general principles of Cameroonian law.
- * ---------------------------------------------------------------------------
+ * FIX619 - Terms of Use, in all five app languages.
+ * Route: /terms-of-service (wrapped in MainLayout by App.tsx).
+ *
+ * The text is the SAME text published at www.bambeh.com (updated by FIX616 on
+ * 4 October 2026): full in English and French, plain-language versions in Pidgin,
+ * Arabic and Fulfulde, with the note that the English and French versions govern.
+ * One text in two places, so the app and the website can never disagree.
+ *
+ * The page follows the language chosen in the app (useLang). Arabic reads right
+ * to left. The text is our own fixed content, never user input, which is why it
+ * is safe to render as HTML. Every non-ASCII character is escaped, so this file
+ * cannot be mojibaked. translate="no" keeps Chrome's translator from rewriting
+ * text React owns (the crash found in August).
  */
-
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang } from "@/hooks/useAppLang";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-interface Section {
-  id: string;
-  title: string;
-  body: React.ReactNode;
+type DocLang = "en" | "fr" | "pcm" | "ar" | "ff";
+
+function docLang(raw: unknown): DocLang {
+  const v = String(raw || "").toLowerCase();
+  if (v === "fr" || v.indexOf("fr-") === 0) return "fr";
+  if (v === "pidgin" || v === "pcm") return "pcm";
+  if (v === "ar" || v.indexOf("ar-") === 0) return "ar";
+  if (v === "ff" || v === "ful" || v === "fulfulde") return "ff";
+  return "en";
 }
 
-const COMPANY = {
-  legalName: "BAMBEH SARL",
-  registreDeCommerce: "CM -NSI-02-2026-B13-00179",
-  niu: "M022618405804C",
-  duns: "850379853",
-  emails: ["support@bambeh.com", "bambetheapp@gmail.com"],
+const TITLE: Record<DocLang, string> = { en: "Terms of Use", fr: "Conditions d'utilisation", pcm: "Terms of Use", ar: "\u0634\u0631\u0648\u0637 \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645", ff: "Sar\u0257iiji gollitorde" };
+const EFFECTIVE: Record<DocLang, string> = { en: "In force from 4 October 2026", fr: "En vigueur depuis le 4 octobre 2026", pcm: "E start from 4 October 2026", ar: "\u0633\u0627\u0631\u064a\u0629 \u0645\u0646\u0630 4 \u0623\u0643\u062a\u0648\u0628\u0631 2026", ff: "Ina golla gila 4 oktoobar 2026" };
+const HOME_LINK: Record<DocLang, string> = { en: "Back to home", fr: "Retour \u00e0 l'accueil", pcm: "Go back home", ar: "\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629", ff: "Rutto e hello arandeere" };
+const L_PRIVACYPOLICY: Record<DocLang, string> = { en: "Privacy Policy", fr: "Politique de confidentialit\u00e9", pcm: "Privacy Policy", ar: "\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629", ff: "Sar\u0257iiji sirlu" };
+const L_GUARANTEE: Record<DocLang, string> = { en: "Money-back guarantee", fr: "Garantie de remboursement", pcm: "Money-back guarantee", ar: "\u0636\u0645\u0627\u0646 \u0627\u0633\u062a\u0631\u062f\u0627\u062f \u0627\u0644\u0645\u0627\u0644", ff: "Artirgol ceede" };
+const CSS = ".bambeh-legal-page{background:#f8fafc;color:#0f172a}.bambeh-legal-page .bl-wrap{max-width:860px;margin:0 auto;padding:0 18px}.bambeh-legal-page .bl-hero{background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;padding:26px 0 20px}.bambeh-legal-page .bl-hero h1{font-size:28px;line-height:1.2;font-weight:800;margin:0 0 6px}.bambeh-legal-page .bl-hero p{margin:0;opacity:.9;font-size:14px}.bambeh-legal-page .bl-body{padding-top:16px;padding-bottom:24px;font-size:15px;line-height:1.65}.bambeh-legal-page .bl-body h2{font-size:19px;line-height:1.35;font-weight:800;margin:26px 0 8px;display:flex;align-items:center;gap:10px}.bambeh-legal-page .bl-body h2 .n{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;border-radius:999px;background:#ccfbf1;color:#115e59;font-size:13px;font-weight:800;flex-shrink:0}.bambeh-legal-page .bl-body h3{font-size:16px;font-weight:700;margin:16px 0 6px}.bambeh-legal-page .bl-body p{margin:8px 0}.bambeh-legal-page .bl-body ul,.bambeh-legal-page .bl-body ol{margin:8px 0;padding-inline-start:22px;list-style:disc}.bambeh-legal-page .bl-body ol{list-style:decimal}.bambeh-legal-page .bl-body li{margin:4px 0}.bambeh-legal-page .bl-body a{color:#0f766e;text-decoration:underline}.bambeh-legal-page .bl-body .note{background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:10px 14px;margin:12px 0}.bambeh-legal-page .bl-body .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px 14px;margin:12px 0}.bambeh-legal-page .bl-body .id-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 14px;margin:12px 0}.bambeh-legal-page .bl-body table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0;display:block;overflow-x:auto}.bambeh-legal-page .bl-body td,.bambeh-legal-page .bl-body th{border:1px solid #e2e8f0;padding:6px 8px;text-align:start;vertical-align:top}.bambeh-legal-page .bl-body .num{text-align:end;white-space:nowrap}.bambeh-legal-page .bl-body .total td{font-weight:800;background:#f0fdfa}.bambeh-legal-page .bl-foot{padding-bottom:36px;display:flex;gap:18px;flex-wrap:wrap;font-size:14px}.bambeh-legal-page .bl-foot a{color:#0f766e;font-weight:700;text-decoration:underline}";
+
+const BODY: Record<DocLang, string> = {
+  en: "  <div class=\"note\">\n    <p><strong>These Terms are published in full in English and in French.</strong> Short plain-language summaries are also given in Pidgin, Arabic and Fulfulde so that everyone can understand the main points. Those summaries are for understanding only and have no legal effect. If the English and the French versions ever differ, the French version is the one that applies before a Cameroonian court.</p>\n  </div>\n\n  <h2><span class=\"n\">1</span>About this agreement</h2>\n  <p>These Terms of Use are an agreement between you and BAMBEH SARL. They cover the Bambeh website, the Bambeh app and everything we offer through them, which we call &ldquo;Bambeh&rdquo; or &ldquo;the Services&rdquo;.</p>\n  <p>By creating an account or by using Bambeh you accept these Terms. If you do not accept them, please do not use Bambeh.</p>\n\n  <h2><span class=\"n\">2</span>Who we are</h2>\n  <div class=\"id-card\">\n    <p><strong>Legal name:</strong> BAMBEH SARL</p>\n    <p><strong>Registre de commerce:</strong> CM-NSI-02-2026-B13-00179</p>\n    <p><strong>NIU:</strong> M022618405804C</p>\n    <p><strong>D-U-N-S:</strong> 850379853</p>\n    <p><strong>Head office:</strong> Yaound&eacute;, Republic of Cameroon</p>\n    <p><strong>Email:</strong> support@bambeh.com &middot; bambetheapp@gmail.com</p>\n  </div>\n  <p>Those are the only two email addresses Bambeh uses. Any message from another address that claims to be Bambeh is not from us.</p>\n\n  <h2><span class=\"n\">3</span>What Bambeh is, and what it is not</h2>\n  <p>Bambeh is software. It lets people in Cameroon post items, jobs, services, vehicles and property, find each other and agree a deal.</p>\n  <ul>\n    <li><strong>Bambeh is not the seller.</strong> The seller is the person or the business that posted the listing. The sale is a contract between the buyer and the seller. Bambeh is not a party to it.</li>\n    <li><strong>Bambeh is not a bank, a payment institution or an issuer of electronic money.</strong> Bambeh does not hold your money at any moment. Every payment is collected, held and paid out by a licensed payment service provider, in that provider's own account and under that provider's own authorisation.</li>\n    <li><strong>Bambeh does not see, own, inspect or store the goods</strong> that appear on the platform.</li>\n  </ul>\n\n  <h2><span class=\"n\">4</span>Who may use Bambeh</h2>\n  <p>You must be 18 years old or more. One person, one account, unless we agree otherwise in writing.</p>\n  <p>The information you give us must be true, and you must keep it up to date. You are responsible for everything that happens under your account and for keeping your password secret. Tell us immediately at support@bambeh.com if you think somebody else has got into your account.</p>\n\n  <h2><span class=\"n\">5</span>Free and Premium</h2>\n  <p>Bambeh has a free level and a paid level. Nobody is ever locked out of the marketplace.</p>\n  <h3>Free, with no time limit</h3>\n  <ul>\n    <li>Create an account</li>\n    <li>Browse every category and open any listing, and read the whole listing</li>\n    <li>See the town or city of a listing</li>\n    <li>Post one listing per week, with one photo</li>\n    <li>Receive messages about your own listings</li>\n  </ul>\n  <h3>Premium adds</h3>\n  <ul>\n    <li>Message any seller directly</li>\n    <li>Pay with Buyer Protection</li>\n    <li>See the neighbourhood and the exact address of a listing</li>\n    <li>Advanced filters, and search in other regions</li>\n    <li>Up to five photos per listing, and no weekly limit on listings</li>\n    <li>Boosted placement for your listings</li>\n    <li>Business tools and the AI assistant</li>\n  </ul>\n  <h3>Price of a Premium pass</h3>\n  <table>\n    <tr><th>Pass</th><th>Price</th></tr>\n    <tr><td>One day</td><td class=\"num\">100 XAF</td></tr>\n    <tr><td>One week</td><td class=\"num\">500 XAF</td></tr>\n    <tr><td>One month</td><td class=\"num\">1,500 XAF</td></tr>\n  </table>\n  <div class=\"note\">\n    <p><strong>A pass does not renew itself.</strong> There is no automatic subscription and no standing order. No money can ever leave your mobile money account unless you start a new payment yourself. When a pass finishes, the account simply returns to Free. Nothing you posted is deleted.</p>\n  </div>\n  <p>Prices may change in the future. A change never affects a pass you have already paid for.</p>\n\n  <h2><span class=\"n\">6</span>Refund of a pass</h2>\n  <p>Ask for a refund within 7 calendar days, by email to support@bambeh.com, with the phone number used and the date.</p>\n  <p>We refund a pass when the paid features were not delivered to you. We do not refund a pass that worked correctly but was not used.</p>\n\n  <h2><span class=\"n\">7</span>What a sale costs</h2>\n  <p>The seller sets the price and receives that price in full. The charges are added on top and are paid by the buyer, so the seller always knows exactly what will arrive.</p>\n  <p>Here is a real example of an item priced at 1,000 XAF, line by line:</p>\n  <table>\n    <tr><th>Line</th><th>Amount</th></tr>\n    <tr><td>Item price, set by the seller</td><td class=\"num\">1,000 XAF</td></tr>\n    <tr><td>Bambeh commission (1%)</td><td class=\"num\">10 XAF</td></tr>\n    <tr><td>Service and payment charge</td><td class=\"num\">60 XAF</td></tr>\n    <tr class=\"total\"><td>The buyer pays</td><td class=\"num\">1,070 XAF</td></tr>\n    <tr class=\"total\"><td>The seller receives</td><td class=\"num\">1,000 XAF</td></tr>\n  </table>\n  <p><strong>The Bambeh commission is 1% of the item price.</strong> It does not rise with the size of the sale.</p>\n  <p><strong>The service and payment charge</strong> is made of three things: a flat government tax of 4 XAF per transaction, VAT at 19.25% charged on our commission only, and the real cost of moving mobile money \u2014 once when the buyer pays in, and once again when the seller is paid out.</p>\n  <p>Every order shows these lines before you confirm, and again on the invoice afterwards.</p>\n\n    <h2><span class=\"n\">8</span>Buyer Protection and our money-back guarantee</h2>\n  <p>Buyer Protection is our safe way to pay a seller you have not met. It is included with Premium.</p>\n  <ul>\n    <li>The buyer pays. The money is collected and held by our licensed payment partner, <strong>in the partner's own account and under the partner's own licence.</strong> BAMBEH SARL never holds it and never touches it.</li>\n    <li>The seller is told the money is secured, and sends or delivers the item.</li>\n    <li>When the buyer confirms they have received the item, Bambeh instructs the partner to release the money to the seller. If nobody raises a problem, release happens automatically at the end of the confirmation window shown on the order.</li>\n    <li>If something is wrong, the buyer opens a dispute <strong>before confirming receipt</strong> and describes the problem. Both sides give their evidence. Bambeh reviews it and instructs the partner either to release the money to the seller or to refund the buyer as described below.</li>\n  </ul>\n  <h3>The money-back guarantee: 100% of the item price</h3>\n  <p>If you paid through Bambeh with Buyer Protection and your claim is accepted, you get back <strong>100% of the price of the item</strong> &#8212; the same amount that would otherwise have been paid to the seller &#8212; sent to the Mobile Money number you paid with. <strong>Bambeh's commission and the service and payment charge are not refunded</strong>, because they pay for the payment and the protection you already received.</p>\n  <p>A claim is accepted when:</p>\n  <ul>\n    <li>the item never reached you, or the seller never handed it over; or</li>\n    <li>the item is clearly different from its listing &#8212; the wrong item, a fake, broken when it was sold as working, or missing parts.</li>\n  </ul>\n  <p>Open the claim from your order <strong>before you confirm receipt</strong>, and within 48 hours of the agreed delivery or handover. Add photos and explain what is wrong. We aim to answer within 72 hours, and to send an accepted refund within 7 days. If you received an item, it is returned to the seller first.</p>\n  <p>Not covered: payments made in cash, Mobile Money sent directly to a seller, deals agreed outside Bambeh, orders you have already confirmed as received (confirming releases the money to the seller), and changing your mind about an item that matches its listing.</p>\n  <p>A Bambeh decision on a dispute is an administrative decision about that payment only. It does not decide who is right in law, and it does not stop either party going to court. A seller whose buyer is refunded may be suspended.</p>\n<h2><span class=\"n\">9</span>Zerm coins</h2>\n  <p>Zerm coins are points inside the app that reward you for using Bambeh. <strong>They are not money.</strong></p>\n  <ul>\n    <li>They cannot be bought. Bambeh does not sell them.</li>\n    <li>They cannot be sold, transferred or given to another user.</li>\n    <li>They cannot be withdrawn, cashed out or exchanged for money.</li>\n    <li>They have no value outside Bambeh and no value when an account closes.</li>\n    <li>We may change how they are earned or spent, or end them, at any time.</li>\n  </ul>\n  <p>This is deliberate. Zerm coins are a game inside the app, not a currency.</p>\n\n  <h2><span class=\"n\">10</span>Your listings and your content</h2>\n  <p>Everything you post stays yours. By posting it you give Bambeh permission, free of charge and not exclusive, to show it, resize it and feature it inside Bambeh and in Bambeh's own advertising of the platform, for as long as it is posted and for a short period afterwards in backups.</p>\n  <p>When you post something you confirm that: you have the right to post it, you own the item or are entitled to sell it, the photos are of the actual item, and the description is honest.</p>\n\n  <h2><span class=\"n\">11</span>What is not allowed</h2>\n  <ul>\n    <li>Anything illegal in Cameroon; weapons and ammunition; drugs; medicines and other regulated products; counterfeit or stolen goods; ivory, pangolin scales and other protected wildlife; human beings or human parts.</li>\n    <li>Fake listings, an item you do not have, a price you do not intend to honour, or a listing posted in the wrong category to get more views.</li>\n    <li>Fraud of any kind, laundering money, or using Bambeh to move the proceeds of a crime.</li>\n    <li>Pretending to be another person or another business, or creating a new account to escape a suspension.</li>\n    <li>Harassment, threats, insults, hate speech, and sexual or adult content.</li>\n    <li>Putting phone numbers, WhatsApp links or other contact details inside listings, photos or chat where the app blocks them. This rule exists to protect both sides from being taken off the platform and cheated.</li>\n    <li>Collecting other users' data, copying the site automatically, scraping, or trying to break, overload or reverse engineer the Services.</li>\n  </ul>\n\n  <h2><span class=\"n\">12</span>Disagreements between users</h2>\n  <p>Bambeh is not a party to the sale, so a disagreement about goods is between the buyer and the seller. We give you the tools to make it safer: Buyer Protection, ratings, reviews, reporting and blocking.</p>\n  <p>Meet in a busy public place in daylight. Inspect the item before you pay. For anything expensive, use Buyer Protection.</p>\n\n  <h2><span class=\"n\">13</span>Advertising</h2>\n  <p>Businesses can pay for placement on Bambeh. Paid placements are shown as such. Showing an advertisement is not an endorsement of that business, and any purchase you make from an advertiser is between you and them.</p>\n\n  <h2><span class=\"n\">14</span>Suspension and removal</h2>\n  <p>We may remove a listing, or suspend or close an account, if these Terms are broken, if we see fraud or a risk to other users, or if the law requires it. Where we are allowed to, we will tell you the reason, and you may reply to support@bambeh.com and ask us to look again.</p>\n\n  <h2><span class=\"n\">15</span>Closing your account</h2>\n  <p>You can close your account yourself at any time, from <strong>Profile &rarr; Privacy &amp; Security &rarr; Delete My Account</strong> in the app, or from the form at <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>.</p>\n  <h3>What is removed</h3>\n  <p>Your profile and photo, your contact details, your listings, your saved searches, your favourites, your notifications and your device tokens. Your messages become &ldquo;[deleted]&rdquo;. Reviews you wrote keep the star rating, because other people depend on it, but they lose your name.</p>\n  <h3>What we must keep, and why</h3>\n  <p>Records of completed payments, and the invoices attached to them. Commercial and tax law in Cameroon, and the OHADA accounting rules, require a company to keep its accounting records for ten years. We also keep a minimal note that the account existed and was deleted, so that it cannot be recreated to escape a suspension, and anything a court or a regulator orders us to keep.</p>\n  <div class=\"warn\">\n    <p><strong>Deleting is permanent and cannot be undone.</strong> Zerm coins, any Premium pass still running, and any Buyer Protection case in progress all end with the account. Finish or cancel your open orders before you delete.</p>\n  </div>\n\n  <h2><span class=\"n\">16</span>Bambeh's own property</h2>\n  <p>The Bambeh name, the logo, the design, the software, the database and the text of this site belong to BAMBEH SARL and are protected under Cameroonian law, the OAPI Bangui Agreement and international copyright. You may not copy, reproduce, decompile or reverse engineer them, and you may not use the Bambeh name or logo without our written permission.</p>\n\n  <h2><span class=\"n\">17</span>Availability and responsibility</h2>\n  <p>Bambeh is provided as it is and as it is available. We work hard to keep it running and correct, but we cannot promise it will never be interrupted, never contain an error, or that a listing posted by another user is accurate.</p>\n  <p>So far as the law allows, BAMBEH SARL is not responsible for indirect loss, loss of profit or loss of opportunity, nor for the behaviour of another user. Nothing here removes a responsibility that the law does not allow us to remove. Where the law allows a limit, our total responsibility to you is limited to the fees you actually paid to Bambeh in the six months before the event.</p>\n\n  <h2><span class=\"n\">18</span>Changes to these Terms</h2>\n  <p>We may update these Terms. The new version is published on this page with a new date at the top. If a change matters to you, we will also show a notice in the app. Continuing to use Bambeh after a change means you accept the new version.</p>\n\n  <h2><span class=\"n\">19</span>Law and courts</h2>\n  <p>These Terms are governed by the law of the Republic of Cameroon, including the OHADA Uniform Acts and Law No. 2010/012 of 21 December 2010 on cybersecurity and cybercriminality.</p>\n  <p>If there is a problem, please write to support@bambeh.com first &mdash; almost everything is settled that way. If it cannot be settled, the competent courts of Yaound&eacute; have jurisdiction.</p>\n\n    <h2><span class=\"n\">20</span>Getting back into your account</h2>\n  <p><strong>Only you may know your password.</strong> Bambeh staff never see it and will never ask for it.</p>\n  <ul>\n    <li><strong>Security questions.</strong> After you sign up, Bambeh asks you to answer at least three of five questions: your mother's middle name, your primary school, your best friend, the colour of your first car, and the town where you were born. Your answers are kept only as a one-way code: nobody at Bambeh can read them. If you forget your password, the Forgot-password page asks the same questions, and two correct answers prove the account is yours.</li>\n    <li><strong>Temporary password.</strong> If you cannot sign in, a Bambeh moderator or administrator may give you a one-time temporary password, but only after confirming it is really you (your security questions, a call to your registered number, or your identity card). When you sign in with it you must choose your own new password straight away, and you are signed out of every other device.</li>\n    <li><strong>Suspended accounts.</strong> Only a Bambeh administrator can switch a suspended account back on, and only after the same check.</li>\n    <li>Every one of these actions is recorded with the name of the staff member who took it.</li>\n  </ul>\n  <h2><span class=\"n\">21</span>Contact</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com &middot; or the chat inside the app.</p>",
+  fr: "  <div class=\"note\">\n    <p><strong>Les pr&eacute;sentes Conditions sont publi&eacute;es int&eacute;gralement en anglais et en fran&ccedil;ais.</strong> Des r&eacute;sum&eacute;s en langage simple sont &eacute;galement fournis en pidgin, en arabe et en fulfulde afin que chacun comprenne l'essentiel. Ces r&eacute;sum&eacute;s n'ont aucune valeur juridique. En cas de divergence entre la version anglaise et la version fran&ccedil;aise, la version fran&ccedil;aise pr&eacute;vaut devant une juridiction camerounaise.</p>\n  </div>\n\n  <h2><span class=\"n\">1</span>Objet</h2>\n  <p>Les pr&eacute;sentes Conditions d'utilisation constituent un contrat entre vous et BAMBEH SARL. Elles couvrent le site Bambeh, l'application Bambeh et l'ensemble des prestations propos&eacute;es par leur interm&eacute;diaire, ci-apr&egrave;s &laquo;&nbsp;Bambeh&nbsp;&raquo; ou &laquo;&nbsp;les Services&nbsp;&raquo;.</p>\n  <p>En cr&eacute;ant un compte ou en utilisant Bambeh, vous acceptez les pr&eacute;sentes Conditions. Si vous ne les acceptez pas, veuillez ne pas utiliser Bambeh.</p>\n\n  <h2><span class=\"n\">2</span>Qui nous sommes</h2>\n  <div class=\"id-card\">\n    <p><strong>D&eacute;nomination sociale&nbsp;:</strong> BAMBEH SARL</p>\n    <p><strong>Registre de commerce&nbsp;:</strong> CM-NSI-02-2026-B13-00179</p>\n    <p><strong>NIU&nbsp;:</strong> M022618405804C</p>\n    <p><strong>D-U-N-S&nbsp;:</strong> 850379853</p>\n    <p><strong>Si&egrave;ge&nbsp;:</strong> Yaound&eacute;, R&eacute;publique du Cameroun</p>\n    <p><strong>Courriel&nbsp;:</strong> support@bambeh.com &middot; bambetheapp@gmail.com</p>\n  </div>\n  <p>Ce sont les deux seules adresses &eacute;lectroniques utilis&eacute;es par Bambeh. Tout message provenant d'une autre adresse et se pr&eacute;sentant comme Bambeh n'&eacute;mane pas de nous.</p>\n\n  <h2><span class=\"n\">3</span>Ce qu'est Bambeh, et ce qu'il n'est pas</h2>\n  <p>Bambeh est un logiciel. Il permet aux personnes se trouvant au Cameroun de publier des articles, des emplois, des services, des v&eacute;hicules et des biens immobiliers, de se trouver et de conclure une transaction.</p>\n  <ul>\n    <li><strong>Bambeh n'est pas le vendeur.</strong> Le vendeur est la personne ou l'entreprise qui a publi&eacute; l'annonce. La vente est un contrat entre l'acheteur et le vendeur. Bambeh n'y est pas partie.</li>\n    <li><strong>Bambeh n'est ni une banque, ni un &eacute;tablissement de paiement, ni un &eacute;metteur de monnaie &eacute;lectronique.</strong> Bambeh ne d&eacute;tient vos fonds &agrave; aucun moment. Tout paiement est encaiss&eacute;, conserv&eacute; et revers&eacute; par un prestataire de services de paiement agr&eacute;&eacute;, sur le compte propre de ce prestataire et sous son propre agr&eacute;ment.</li>\n    <li><strong>Bambeh ne voit pas, ne poss&egrave;de pas, ne contr&ocirc;le pas et ne stocke pas les biens</strong> qui figurent sur la plateforme.</li>\n  </ul>\n\n  <h2><span class=\"n\">4</span>Qui peut utiliser Bambeh</h2>\n  <p>Vous devez avoir 18 ans r&eacute;volus. Une personne, un compte, sauf accord &eacute;crit contraire.</p>\n  <p>Les informations que vous nous communiquez doivent &ecirc;tre exactes et tenues &agrave; jour. Vous r&eacute;pondez de tout ce qui se produit sous votre compte et de la confidentialit&eacute; de votre mot de passe. Signalez-nous imm&eacute;diatement &agrave; support@bambeh.com si vous pensez qu'un tiers a acc&eacute;d&eacute; &agrave; votre compte.</p>\n\n  <h2><span class=\"n\">5</span>Gratuit et Premium</h2>\n  <p>Bambeh comporte un niveau gratuit et un niveau payant. Personne n'est jamais exclu du march&eacute;.</p>\n  <h3>Gratuit, sans limite de dur&eacute;e</h3>\n  <ul>\n    <li>Cr&eacute;er un compte</li>\n    <li>Parcourir toutes les cat&eacute;gories, ouvrir n'importe quelle annonce et la lire enti&egrave;rement</li>\n    <li>Voir la ville de l'annonce</li>\n    <li>Publier une annonce par semaine, avec une photo</li>\n    <li>Recevoir des messages concernant vos propres annonces</li>\n  </ul>\n  <h3>Premium ajoute</h3>\n  <ul>\n    <li>&Eacute;crire directement &agrave; n'importe quel vendeur</li>\n    <li>Payer avec la Protection Acheteur</li>\n    <li>Voir le quartier et l'adresse exacte d'une annonce</li>\n    <li>Filtres avanc&eacute;s et recherche dans d'autres r&eacute;gions</li>\n    <li>Jusqu'&agrave; cinq photos par annonce, sans limite hebdomadaire d'annonces</li>\n    <li>Mise en avant de vos annonces</li>\n    <li>Outils entreprise et assistant IA</li>\n  </ul>\n  <h3>Prix d'un pass Premium</h3>\n  <table>\n    <tr><th>Pass</th><th>Prix</th></tr>\n    <tr><td>Une journ&eacute;e</td><td class=\"num\">100 FCFA</td></tr>\n    <tr><td>Une semaine</td><td class=\"num\">500 FCFA</td></tr>\n    <tr><td>Un mois</td><td class=\"num\">1 500 FCFA</td></tr>\n  </table>\n  <div class=\"note\">\n    <p><strong>Un pass ne se renouvelle pas tout seul.</strong> Il n'y a ni abonnement automatique ni pr&eacute;l&egrave;vement permanent. Aucun montant ne peut quitter votre compte Mobile Money sans que vous lanciez vous-m&ecirc;me un nouveau paiement. &Agrave; la fin d'un pass, le compte revient simplement au niveau Gratuit. Rien de ce que vous avez publi&eacute; n'est supprim&eacute;.</p>\n  </div>\n  <p>Les prix peuvent &eacute;voluer. Une &eacute;volution n'affecte jamais un pass d&eacute;j&agrave; pay&eacute;.</p>\n\n  <h2><span class=\"n\">6</span>Remboursement d'un pass</h2>\n  <p>Toute demande doit &ecirc;tre adress&eacute;e dans un d&eacute;lai de 7 jours calendaires &agrave; support@bambeh.com, en indiquant le num&eacute;ro de t&eacute;l&eacute;phone utilis&eacute; et la date.</p>\n  <p>Nous remboursons un pass lorsque les fonctionnalit&eacute;s pay&eacute;es ne vous ont pas &eacute;t&eacute; fournies. Nous ne remboursons pas un pass qui a fonctionn&eacute; correctement mais n'a pas &eacute;t&eacute; utilis&eacute;.</p>\n\n  <h2><span class=\"n\">7</span>Ce que co&ucirc;te une vente</h2>\n  <p>Le vendeur fixe son prix et per&ccedil;oit ce prix int&eacute;gralement. Les frais s'ajoutent par-dessus et sont support&eacute;s par l'acheteur&nbsp;: le vendeur sait donc toujours exactement ce qu'il recevra.</p>\n  <p>Exemple r&eacute;el pour un article &agrave; 1 000 FCFA, ligne par ligne&nbsp;:</p>\n  <table>\n    <tr><th>Ligne</th><th>Montant</th></tr>\n    <tr><td>Prix de l'article, fix&eacute; par le vendeur</td><td class=\"num\">1 000 FCFA</td></tr>\n    <tr><td>Commission Bambeh (1&nbsp;%)</td><td class=\"num\">10 FCFA</td></tr>\n    <tr><td>Frais de service et de paiement</td><td class=\"num\">60 FCFA</td></tr>\n    <tr class=\"total\"><td>L'acheteur paie</td><td class=\"num\">1 070 FCFA</td></tr>\n    <tr class=\"total\"><td>Le vendeur re&ccedil;oit</td><td class=\"num\">1 000 FCFA</td></tr>\n  </table>\n  <p><strong>La commission Bambeh est de 1&nbsp;% du prix de l'article.</strong> Elle n'augmente pas avec le montant de la vente.</p>\n  <p><strong>Les frais de service et de paiement</strong> se composent de trois &eacute;l&eacute;ments&nbsp;: une taxe forfaitaire de l'&Eacute;tat de 4 FCFA par transaction, la TVA au taux de 19,25&nbsp;% appliqu&eacute;e &agrave; notre seule commission, et le co&ucirc;t r&eacute;el du transfert Mobile Money &mdash; une fois &agrave; l'encaissement et une fois au reversement au vendeur.</p>\n  <p>Chaque commande affiche ces lignes avant la confirmation, puis de nouveau sur la facture.</p>\n\n    <h2><span class=\"n\">8</span>Protection Acheteur et garantie de remboursement</h2>\n  <p>La Protection Acheteur est notre moyen s&#251;r de payer un vendeur que vous n'avez pas rencontr&#233;. Elle est incluse dans Premium.</p>\n  <ul>\n    <li>L'acheteur paie. Les fonds sont encaiss&#233;s et conserv&#233;s par notre partenaire de paiement agr&#233;&#233;, <strong>sur le compte propre du partenaire et sous son propre agr&#233;ment.</strong> BAMBEH SARL ne les d&#233;tient jamais et n'y touche jamais.</li>\n    <li>Le vendeur est inform&#233; que les fonds sont s&#233;curis&#233;s, et exp&#233;die ou livre l'article.</li>\n    <li>Lorsque l'acheteur confirme la r&#233;ception, Bambeh demande au partenaire de lib&#233;rer les fonds au profit du vendeur. En l'absence de contestation, la lib&#233;ration intervient automatiquement &#224; l'expiration du d&#233;lai indiqu&#233; sur la commande.</li>\n    <li>En cas de probl&#232;me, l'acheteur ouvre un litige <strong>avant de confirmer la r&#233;ception</strong> et le d&#233;crit. Chaque partie apporte ses &#233;l&#233;ments. Bambeh les examine et demande au partenaire soit de lib&#233;rer les fonds au vendeur, soit de rembourser l'acheteur comme indiqu&#233; ci-dessous.</li>\n  </ul>\n  <h3>La garantie : 100 % du prix de l'article</h3>\n  <p>Si vous avez pay&#233; via Bambeh avec la Protection Acheteur et que votre r&#233;clamation est accept&#233;e, vous r&#233;cup&#233;rez <strong>100 % du prix de l'article</strong> &#8212; le montant qui aurait &#233;t&#233; vers&#233; au vendeur &#8212; sur le num&#233;ro Mobile Money utilis&#233; pour payer. <strong>La commission de Bambeh et les frais de service et de paiement ne sont pas rembours&#233;s</strong> : ils r&#233;mun&#232;rent le paiement et la protection dont vous avez d&#233;j&#224; b&#233;n&#233;fici&#233;.</p>\n  <p>Une r&#233;clamation est accept&#233;e lorsque :</p>\n  <ul>\n    <li>l'article ne vous est jamais parvenu, ou le vendeur ne l'a jamais remis ; ou</li>\n    <li>l'article est nettement diff&#233;rent de l'annonce &#8212; mauvais article, contrefa&#231;on, en panne alors qu'il &#233;tait vendu en &#233;tat de marche, ou pi&#232;ces manquantes.</li>\n  </ul>\n  <p>Ouvrez la r&#233;clamation depuis votre commande <strong>avant de confirmer la r&#233;ception</strong>, et dans les 48 heures suivant la livraison ou la remise convenue. Ajoutez des photos et expliquez le probl&#232;me. Nous visons une r&#233;ponse sous 72 heures et le versement d'un remboursement accept&#233; sous 7 jours. Si vous avez re&#231;u un article, il est d'abord rendu au vendeur.</p>\n  <p>Ne sont pas couverts : les paiements en esp&#232;ces, le Mobile Money envoy&#233; directement &#224; un vendeur, les accords conclus en dehors de Bambeh, les commandes dont vous avez d&#233;j&#224; confirm&#233; la r&#233;ception (la confirmation lib&#232;re les fonds au vendeur), et le changement d'avis sur un article conforme &#224; son annonce.</p>\n  <p>Une d&#233;cision de Bambeh sur un litige est une d&#233;cision administrative portant uniquement sur ce paiement. Elle ne tranche pas le droit et n'emp&#234;che aucune des parties de saisir les tribunaux. Un vendeur dont l'acheteur est rembours&#233; peut &#234;tre suspendu.</p>\n<h2><span class=\"n\">9</span>Pi&egrave;ces Zerm</h2>\n  <p>Les pi&egrave;ces Zerm sont des points internes &agrave; l'application qui r&eacute;compensent votre activit&eacute;. <strong>Ce n'est pas de l'argent.</strong></p>\n  <ul>\n    <li>Elles ne peuvent pas &ecirc;tre achet&eacute;es. Bambeh n'en vend pas.</li>\n    <li>Elles ne peuvent &ecirc;tre ni vendues, ni transf&eacute;r&eacute;es, ni donn&eacute;es &agrave; un autre utilisateur.</li>\n    <li>Elles ne peuvent &ecirc;tre ni retir&eacute;es, ni converties en argent.</li>\n    <li>Elles n'ont aucune valeur en dehors de Bambeh ni &agrave; la fermeture d'un compte.</li>\n    <li>Nous pouvons en modifier les r&egrave;gles, ou y mettre fin, &agrave; tout moment.</li>\n  </ul>\n  <p>C'est volontaire&nbsp;: les pi&egrave;ces Zerm sont un jeu interne, pas une monnaie.</p>\n\n  <h2><span class=\"n\">10</span>Vos annonces et vos contenus</h2>\n  <p>Tout ce que vous publiez reste &agrave; vous. En le publiant, vous accordez &agrave; Bambeh l'autorisation, gratuite et non exclusive, de l'afficher, de le redimensionner et de le mettre en avant au sein de Bambeh et dans la promotion de la plateforme, pendant toute la dur&eacute;e de sa publication et durant une courte p&eacute;riode ensuite dans les sauvegardes.</p>\n  <p>En publiant, vous confirmez que&nbsp;: vous avez le droit de publier ce contenu, vous poss&eacute;dez l'article ou &ecirc;tes autoris&eacute; &agrave; le vendre, les photos sont celles de l'article r&eacute;el, et la description est sinc&egrave;re.</p>\n\n  <h2><span class=\"n\">11</span>Ce qui est interdit</h2>\n  <ul>\n    <li>Tout ce qui est ill&eacute;gal au Cameroun&nbsp;; armes et munitions&nbsp;; stup&eacute;fiants&nbsp;; m&eacute;dicaments et autres produits r&eacute;glement&eacute;s&nbsp;; contrefa&ccedil;ons et biens vol&eacute;s&nbsp;; ivoire, &eacute;cailles de pangolin et autres esp&egrave;ces prot&eacute;g&eacute;es&nbsp;; &ecirc;tres humains ou parties du corps humain.</li>\n    <li>Les fausses annonces, un article que vous ne poss&eacute;dez pas, un prix que vous n'entendez pas honorer, ou une annonce plac&eacute;e dans une mauvaise cat&eacute;gorie pour gagner en visibilit&eacute;.</li>\n    <li>Toute fraude, le blanchiment de capitaux, ou l'utilisation de Bambeh pour faire circuler le produit d'une infraction.</li>\n    <li>L'usurpation de l'identit&eacute; d'une personne ou d'une entreprise, et la cr&eacute;ation d'un nouveau compte pour contourner une suspension.</li>\n    <li>Le harc&egrave;lement, les menaces, les injures, les discours de haine, ainsi que les contenus sexuels ou pour adultes.</li>\n    <li>L'insertion de num&eacute;ros de t&eacute;l&eacute;phone, de liens WhatsApp ou d'autres coordonn&eacute;es dans les annonces, les photos ou la messagerie l&agrave; o&ugrave; l'application les bloque. Cette r&egrave;gle prot&egrave;ge les deux parties contre le fait d'&ecirc;tre sorties de la plateforme puis tromp&eacute;es.</li>\n    <li>La collecte des donn&eacute;es d'autres utilisateurs, l'aspiration automatis&eacute;e du site, ainsi que toute tentative de rupture, de surcharge ou de r&eacute;tro-ing&eacute;nierie des Services.</li>\n  </ul>\n\n  <h2><span class=\"n\">12</span>D&eacute;saccords entre utilisateurs</h2>\n  <p>Bambeh n'&eacute;tant pas partie &agrave; la vente, un d&eacute;saccord sur un bien oppose l'acheteur au vendeur. Nous fournissons les outils pour s&eacute;curiser l'&eacute;change&nbsp;: Protection Acheteur, notes, avis, signalement et blocage.</p>\n  <p>Retrouvez-vous dans un lieu public fr&eacute;quent&eacute;, de jour. Examinez l'article avant de payer. Pour tout achat co&ucirc;teux, utilisez la Protection Acheteur.</p>\n\n  <h2><span class=\"n\">13</span>Publicit&eacute;</h2>\n  <p>Des entreprises peuvent acheter un emplacement sur Bambeh. Les emplacements pay&eacute;s sont signal&eacute;s comme tels. L'affichage d'une publicit&eacute; ne vaut pas recommandation, et tout achat aupr&egrave;s d'un annonceur vous lie &agrave; lui seul.</p>\n\n  <h2><span class=\"n\">14</span>Suspension et retrait</h2>\n  <p>Nous pouvons retirer une annonce, suspendre ou fermer un compte en cas de manquement aux pr&eacute;sentes Conditions, de fraude, de risque pour les autres utilisateurs ou d'obligation l&eacute;gale. Lorsque cela nous est permis, nous vous en indiquons le motif&nbsp;; vous pouvez r&eacute;pondre &agrave; support@bambeh.com et demander un r&eacute;examen.</p>\n\n  <h2><span class=\"n\">15</span>Fermeture de votre compte</h2>\n  <p>Vous pouvez fermer votre compte &agrave; tout moment depuis <strong>Profil &rarr; Confidentialit&eacute; et s&eacute;curit&eacute; &rarr; Supprimer mon compte</strong> dans l'application, ou depuis le formulaire &agrave; l'adresse <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>.</p>\n  <h3>Ce qui est supprim&eacute;</h3>\n  <p>Votre profil et votre photo, vos coordonn&eacute;es, vos annonces, vos recherches enregistr&eacute;es, vos favoris, vos notifications et vos jetons d'appareil. Vos messages deviennent &laquo;&nbsp;[supprim&eacute;]&nbsp;&raquo;. Les avis que vous avez laiss&eacute;s conservent la note, dont d'autres personnes d&eacute;pendent, mais perdent votre nom.</p>\n  <h3>Ce que nous devons conserver, et pourquoi</h3>\n  <p>Les justificatifs des paiements aboutis et les factures qui s'y rattachent. Le droit commercial et fiscal camerounais, ainsi que les r&egrave;gles comptables OHADA, imposent &agrave; une soci&eacute;t&eacute; de conserver ses documents comptables pendant dix ans. Nous conservons &eacute;galement une trace minimale de l'existence et de la suppression du compte, afin qu'il ne soit pas recr&eacute;&eacute; pour contourner une suspension, ainsi que tout &eacute;l&eacute;ment dont la conservation nous est ordonn&eacute;e par une juridiction ou une autorit&eacute;.</p>\n  <div class=\"warn\">\n    <p><strong>La suppression est d&eacute;finitive et irr&eacute;versible.</strong> Les pi&egrave;ces Zerm, tout pass Premium en cours et tout dossier de Protection Acheteur en cours prennent fin avec le compte. Cl&ocirc;turez ou annulez vos commandes en cours avant de supprimer.</p>\n  </div>\n\n  <h2><span class=\"n\">16</span>Propri&eacute;t&eacute; intellectuelle de Bambeh</h2>\n  <p>Le nom Bambeh, le logo, le design, le logiciel, la base de donn&eacute;es et les textes de ce site appartiennent &agrave; BAMBEH SARL et sont prot&eacute;g&eacute;s par le droit camerounais, l'Accord de Bangui de l'OAPI et le droit d'auteur international. Vous ne pouvez ni les copier, ni les reproduire, ni les d&eacute;compiler, ni proc&eacute;der &agrave; leur r&eacute;tro-ing&eacute;nierie, ni utiliser le nom ou le logo Bambeh sans notre autorisation &eacute;crite.</p>\n\n  <h2><span class=\"n\">17</span>Disponibilit&eacute; et responsabilit&eacute;</h2>\n  <p>Bambeh est fourni en l'&eacute;tat et selon disponibilit&eacute;. Nous mettons tout en &oelig;uvre pour qu'il fonctionne et soit exact, mais nous ne pouvons garantir une absence totale d'interruption ou d'erreur, ni l'exactitude d'une annonce publi&eacute;e par un autre utilisateur.</p>\n  <p>Dans les limites permises par la loi, BAMBEH SARL n'est pas responsable des dommages indirects, du manque &agrave; gagner ou de la perte d'une chance, ni du comportement d'un autre utilisateur. Rien ici n'&eacute;carte une responsabilit&eacute; que la loi ne permet pas d'&eacute;carter. Lorsque la loi permet un plafonnement, notre responsabilit&eacute; totale envers vous est limit&eacute;e aux sommes que vous avez effectivement vers&eacute;es &agrave; Bambeh au cours des six mois pr&eacute;c&eacute;dant le fait g&eacute;n&eacute;rateur.</p>\n\n  <h2><span class=\"n\">18</span>Modification des Conditions</h2>\n  <p>Nous pouvons modifier les pr&eacute;sentes Conditions. La nouvelle version est publi&eacute;e sur cette page avec une nouvelle date en t&ecirc;te. Si un changement vous concerne, un avis appara&icirc;tra &eacute;galement dans l'application. Continuer &agrave; utiliser Bambeh apr&egrave;s une modification vaut acceptation.</p>\n\n  <h2><span class=\"n\">19</span>Droit applicable et juridiction</h2>\n  <p>Les pr&eacute;sentes Conditions sont r&eacute;gies par le droit de la R&eacute;publique du Cameroun, y compris les Actes uniformes OHADA et la loi n&deg;&nbsp;2010/012 du 21 d&eacute;cembre 2010 relative &agrave; la cybers&eacute;curit&eacute; et &agrave; la cybercriminalit&eacute;.</p>\n  <p>En cas de difficult&eacute;, &eacute;crivez d'abord &agrave; support@bambeh.com&nbsp;: presque tout s'y r&egrave;gle. &Agrave; d&eacute;faut de r&egrave;glement amiable, les tribunaux comp&eacute;tents de Yaound&eacute; sont seuls comp&eacute;tents.</p>\n\n    <h2><span class=\"n\">20</span>Retrouver l'acc&#232;s &#224; votre compte</h2>\n  <p><strong>Vous seul devez conna&#238;tre votre mot de passe.</strong> L'&#233;quipe Bambeh ne le voit jamais et ne vous le demandera jamais.</p>\n  <ul>\n    <li><strong>Questions de s&#233;curit&#233;.</strong> Apr&#232;s votre inscription, Bambeh vous demande de r&#233;pondre &#224; au moins trois des cinq questions suivantes : le deuxi&#232;me pr&#233;nom de votre m&#232;re, votre &#233;cole primaire, votre meilleur(e) ami(e), la couleur de votre premi&#232;re voiture et la ville o&#249; vous &#234;tes n&#233;(e). Vos r&#233;ponses sont conserv&#233;es uniquement sous forme de code &#224; sens unique : personne chez Bambeh ne peut les lire. Si vous oubliez votre mot de passe, la page &#171; Mot de passe oubli&#233; &#187; vous pose les m&#234;mes questions, et deux bonnes r&#233;ponses prouvent que le compte est le v&#244;tre.</li>\n    <li><strong>Mot de passe temporaire.</strong> Si vous ne pouvez plus vous connecter, un mod&#233;rateur ou un administrateur de Bambeh peut vous remettre un mot de passe temporaire &#224; usage unique, mais seulement apr&#232;s avoir v&#233;rifi&#233; que c'est bien vous (vos questions de s&#233;curit&#233;, un appel &#224; votre num&#233;ro enregistr&#233; ou votre carte d'identit&#233;). &#192; la connexion, vous devez imm&#233;diatement choisir votre propre nouveau mot de passe, et vous &#234;tes d&#233;connect&#233;(e) de tous vos autres appareils.</li>\n    <li><strong>Comptes suspendus.</strong> Seul un administrateur de Bambeh peut r&#233;activer un compte suspendu, et seulement apr&#232;s la m&#234;me v&#233;rification.</li>\n    <li>Chacune de ces actions est enregistr&#233;e avec le nom du membre de l'&#233;quipe qui l'a effectu&#233;e.</li>\n  </ul>\n  <h2><span class=\"n\">21</span>Contact</h2>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com &middot; ou la messagerie int&eacute;gr&eacute;e &agrave; l'application.</p>",
+  pcm: "  <div class=\"note\">\n    <p>Na short explanation be dis, for make everybody understand. The full agreement dey for English and for French &mdash; na dem be the correct legal one. If any palaver reach court, na the French one dem go use.</p>\n  </div>\n\n  <h2>Wetin Bambeh be</h2>\n  <p>Bambeh na software wey dey join buyer and seller. <strong>Bambeh no be the seller.</strong> The person wey post the thing na the seller, and na between una two the buying dey. <strong>Bambeh no be bank</strong> and Bambeh no dey hold your money at all &mdash; na licensed payment company dey collect am, keep am, and send am.</p>\n\n  <h2>Who fit use am</h2>\n  <p>You must don reach 18 years. One person, one account. Keep your password well &mdash; anything wey happen for your account, na you dey answer for am. If somebody enter your account, write support@bambeh.com sharp sharp.</p>\n\n  <h2>Free and Premium</h2>\n  <p><strong>Free (e no dey finish):</strong> open account, look all the categories, open any advert and read am complete, see the town wey the thing dey, post one advert every week with one photo.</p>\n  <p><strong>Premium:</strong> message any seller, pay with Buyer Protection, see the quarter and the exact address, better filters and search for other regions, five photos, no weekly limit, boost your advert, business tools and the AI.</p>\n  <p><strong>Price:</strong> 100 XAF for one day &middot; 500 XAF for one week &middot; 1,500 XAF for one month.</p>\n  <p><strong>The pass no dey renew by itself.</strong> No money fit comot for your MoMo unless na you start am. When e finish, your account just go back to Free &mdash; nothing wey you post go delete.</p>\n\n  <h2>Wetin selling dey cost</h2>\n  <p>Seller put him price and e go collect that price complete. Na buyer dey pay the charges on top. For 1,000 XAF thing: <strong>Bambeh commission 10 XAF, service and payment charge 60 XAF, buyer pay 1,070 XAF, seller collect 1,000 XAF.</strong> Bambeh commission na 1% only, e no dey grow.</p>\n\n  <h2>Buyer Protection</h2>\n  <p>You pay, and the licensed payment company hold the money for dem own account &mdash; no be Bambeh dey hold am. When you confirm say you don collect the thing, Bambeh tell dem make dem release am give the seller. If wahala dey, you open dispute, both of una talk, and Bambeh look am and decide say make dem release or make dem return your money.</p>\n\n  <h2>Zerm coins</h2>\n  <p><strong>Zerm coins no be money.</strong> You no fit buy dem, you no fit sell dem, you no fit send dem give another person, and you no fit comot dem as cash. Na play thing inside the app.</p>\n\n  <h2>Wetin you no go do</h2>\n  <p>No illegal thing, no gun, no drug, no fake or thief thing, no ivory or pangolin, no fake advert, no fraud, no impersonate person, no insult or harassment, no adult content, and no drop phone number or WhatsApp for place wey the app block am &mdash; that rule dey protect you.</p>\n\n  <h2>Delete your account</h2>\n  <p>Go <strong>Profile &rarr; Privacy &amp; Security &rarr; Delete My Account</strong>, or use the form for <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>. Your profile, adverts and messages go comot. But the record of payment wey don complete, we must keep am ten years &mdash; na accounting law talk am, no be we. <strong>Delete no get reverse gear.</strong></p>\n\n  <h2>Law</h2>\n  <p>Na Cameroon law, and na court for Yaound&eacute;. But write support@bambeh.com first &mdash; almost everything dey settle for there.</p>\n  <p>support@bambeh.com &middot; bambetheapp@gmail.com</p>  <h2>Money back</h2>\n  <p>If you pay through Bambeh with Buyer Protection and your complaint correct, we go send back <strong>100% of the item price</strong> to the Mobile Money number wey you use pay &#8212; the same money wey for go to the seller. Bambeh commission and the service and payment charge no dey come back. Open your complaint before you confirm say you don collect, and not pass 48 hours after delivery.</p>\n  <h2>If you forget your password</h2>\n  <p>Na only you suppose know your password. Answer your security question dem for the Forgot password page. If you no fit, our staff go first check say na really you, then dem go give you temporary password. As you sign in with am, you go choose your own new password.</p>",
+  ar: "  <div class=\"note\">\n    <p>&#1607;&#1584;&#1575; &#1605;&#1604;&#1582;&#1589; &#1605;&#1576;&#1587;&#1617;&#1591; &#1604;&#1610;&#1601;&#1607;&#1605; &#1575;&#1604;&#1580;&#1605;&#1610;&#1593;. &#1575;&#1604;&#1606;&#1589; &#1575;&#1604;&#1602;&#1575;&#1606;&#1608;&#1606;&#1610; &#1575;&#1604;&#1603;&#1575;&#1605;&#1604; &#1605;&#1606;&#1588;&#1608;&#1585; &#1576;&#1575;&#1604;&#1573;&#1606;&#1580;&#1604;&#1610;&#1586;&#1610;&#1577; &#1608;&#1575;&#1604;&#1601;&#1585;&#1606;&#1587;&#1610;&#1577;&#1548; &#1608;&#1601;&#1610; &#1581;&#1575;&#1604;&#1577; &#1575;&#1604;&#1606;&#1586;&#1575;&#1593; &#1571;&#1605;&#1575;&#1605; &#1575;&#1604;&#1602;&#1590;&#1575;&#1569; &#1575;&#1604;&#1603;&#1575;&#1605;&#1610;&#1585;&#1608;&#1606;&#1610; &#1610;&#1615;&#1593;&#1578;&#1605;&#1583; &#1575;&#1604;&#1606;&#1589; &#1575;&#1604;&#1601;&#1585;&#1606;&#1587;&#1610;.</p>\n  </div>\n\n  <h2>&#1605;&#1575; &#1607;&#1610; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607;</h2>\n  <p>&#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1576;&#1585;&#1605;&#1580;&#1610;&#1577; &#1578;&#1585;&#1576;&#1591; &#1575;&#1604;&#1605;&#1588;&#1578;&#1585;&#1610; &#1576;&#1575;&#1604;&#1576;&#1575;&#1574;&#1593;. <strong>&#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1604;&#1610;&#1587;&#1578; &#1575;&#1604;&#1576;&#1575;&#1574;&#1593;</strong>&#1563; &#1575;&#1604;&#1576;&#1575;&#1574;&#1593; &#1607;&#1608; &#1605;&#1606; &#1606;&#1588;&#1585; &#1575;&#1604;&#1573;&#1593;&#1604;&#1575;&#1606;&#1548; &#1608;&#1575;&#1604;&#1593;&#1602;&#1583; &#1610;&#1602;&#1608;&#1605; &#1576;&#1610;&#1606;&#1603; &#1608;&#1576;&#1610;&#1606;&#1607;. <strong>&#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1604;&#1610;&#1587;&#1578; &#1576;&#1606;&#1603;&#1611;&#1575;</strong> &#1608;&#1604;&#1575; &#1578;&#1581;&#1578;&#1601;&#1592; &#1576;&#1571;&#1605;&#1608;&#1575;&#1604;&#1603; &#1601;&#1610; &#1571;&#1610; &#1604;&#1581;&#1592;&#1577;&#1563; &#1601;&#1605;&#1586;&#1608;&#1617;&#1583; &#1582;&#1583;&#1605;&#1575;&#1578; &#1583;&#1601;&#1593; &#1605;&#1585;&#1582;&#1617;&#1589; &#1607;&#1608; &#1605;&#1606; &#1610;&#1581;&#1589;&#1617;&#1604; &#1575;&#1604;&#1571;&#1605;&#1608;&#1575;&#1604; &#1608;&#1610;&#1581;&#1578;&#1601;&#1592; &#1576;&#1607;&#1575; &#1608;&#1610;&#1589;&#1585;&#1601;&#1607;&#1575;.</p>\n\n  <h2>&#1605;&#1606; &#1610;&#1605;&#1603;&#1606;&#1607; &#1575;&#1604;&#1575;&#1587;&#1578;&#1582;&#1583;&#1575;&#1605;</h2>\n  <p>&#1610;&#1580;&#1576; &#1571;&#1604;&#1575; &#1610;&#1602;&#1604; &#1593;&#1605;&#1585;&#1603; &#1593;&#1606; 18 &#1587;&#1606;&#1577;. &#1581;&#1587;&#1575;&#1576; &#1608;&#1575;&#1581;&#1583; &#1604;&#1603;&#1604; &#1588;&#1582;&#1589;. &#1571;&#1606;&#1578; &#1605;&#1587;&#1572;&#1608;&#1604; &#1593;&#1606; &#1603;&#1604; &#1605;&#1575; &#1610;&#1580;&#1585;&#1610; &#1601;&#1610; &#1581;&#1587;&#1575;&#1576;&#1603; &#1608;&#1593;&#1606; &#1587;&#1585;&#1610;&#1577; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;.</p>\n\n  <h2>&#1575;&#1604;&#1605;&#1580;&#1575;&#1606;&#1610; &#1608;&#1575;&#1604;&#1605;&#1605;&#1610;&#1586;</h2>\n  <p><strong>&#1575;&#1604;&#1605;&#1580;&#1575;&#1606;&#1610; &#1576;&#1604;&#1575; &#1581;&#1583; &#1586;&#1605;&#1606;&#1610;:</strong> &#1573;&#1606;&#1588;&#1575;&#1569; &#1581;&#1587;&#1575;&#1576;&#1548; &#1578;&#1589;&#1601;&#1617;&#1581; &#1580;&#1605;&#1610;&#1593; &#1575;&#1604;&#1571;&#1602;&#1587;&#1575;&#1605;&#1548; &#1601;&#1578;&#1581; &#1571;&#1610; &#1573;&#1593;&#1604;&#1575;&#1606; &#1608;&#1602;&#1585;&#1575;&#1569;&#1578;&#1607; &#1603;&#1575;&#1605;&#1604;&#1611;&#1575;&#1548; &#1585;&#1572;&#1610;&#1577; &#1605;&#1583;&#1610;&#1606;&#1577; &#1575;&#1604;&#1573;&#1593;&#1604;&#1575;&#1606;&#1548; &#1608;&#1606;&#1588;&#1585; &#1573;&#1593;&#1604;&#1575;&#1606; &#1608;&#1575;&#1581;&#1583; &#1571;&#1587;&#1576;&#1608;&#1593;&#1610;&#1611;&#1575; &#1576;&#1589;&#1608;&#1585;&#1577; &#1608;&#1575;&#1581;&#1583;&#1577;.</p>\n  <p><strong>&#1575;&#1604;&#1605;&#1605;&#1610;&#1586; &#1610;&#1590;&#1610;&#1601;:</strong> &#1605;&#1585;&#1575;&#1587;&#1604;&#1577; &#1571;&#1610; &#1576;&#1575;&#1574;&#1593; &#1605;&#1576;&#1575;&#1588;&#1585;&#1577;&#1548; &#1575;&#1604;&#1583;&#1601;&#1593; &#1576;&#1606;&#1592;&#1575;&#1605; &#1581;&#1605;&#1575;&#1610;&#1577; &#1575;&#1604;&#1605;&#1588;&#1578;&#1585;&#1610;&#1548; &#1585;&#1572;&#1610;&#1577; &#1575;&#1604;&#1581;&#1610; &#1608;&#1575;&#1604;&#1593;&#1606;&#1608;&#1575;&#1606; &#1575;&#1604;&#1583;&#1602;&#1610;&#1602;&#1548; &#1601;&#1604;&#1575;&#1578;&#1585; &#1605;&#1578;&#1602;&#1583;&#1605;&#1577; &#1608;&#1575;&#1604;&#1576;&#1581;&#1579; &#1601;&#1610; &#1605;&#1606;&#1575;&#1591;&#1602; &#1571;&#1582;&#1585;&#1609;&#1548; &#1582;&#1605;&#1587; &#1589;&#1608;&#1585; &#1604;&#1603;&#1604; &#1573;&#1593;&#1604;&#1575;&#1606;&#1548; &#1608;&#1571;&#1583;&#1608;&#1575;&#1578; &#1575;&#1604;&#1571;&#1593;&#1605;&#1575;&#1604;.</p>\n  <p><strong>&#1575;&#1604;&#1587;&#1593;&#1585;:</strong> 100 &#1601;&#1585;&#1606;&#1603; &#1604;&#1604;&#1610;&#1608;&#1605; &middot; 500 &#1601;&#1585;&#1606;&#1603; &#1604;&#1604;&#1571;&#1587;&#1576;&#1608;&#1593; &middot; 1500 &#1601;&#1585;&#1606;&#1603; &#1604;&#1604;&#1588;&#1607;&#1585;.</p>\n  <p><strong>&#1575;&#1604;&#1575;&#1588;&#1578;&#1585;&#1575;&#1603; &#1604;&#1575; &#1610;&#1578;&#1580;&#1583;&#1617;&#1583; &#1578;&#1604;&#1602;&#1575;&#1574;&#1610;&#1611;&#1575;.</strong> &#1604;&#1575; &#1610;&#1605;&#1603;&#1606; &#1582;&#1589;&#1605; &#1571;&#1610; &#1605;&#1576;&#1604;&#1594; &#1605;&#1606; &#1605;&#1581;&#1601;&#1592;&#1578;&#1603; &#1573;&#1604;&#1575; &#1573;&#1584;&#1575; &#1576;&#1583;&#1571;&#1578; &#1571;&#1606;&#1578; &#1583;&#1601;&#1593;&#1577; &#1580;&#1583;&#1610;&#1583;&#1577;. &#1608;&#1593;&#1606;&#1583; &#1575;&#1604;&#1575;&#1606;&#1578;&#1607;&#1575;&#1569; &#1610;&#1593;&#1608;&#1583; &#1575;&#1604;&#1581;&#1587;&#1575;&#1576; &#1573;&#1604;&#1609; &#1575;&#1604;&#1605;&#1580;&#1575;&#1606;&#1610; &#1583;&#1608;&#1606; &#1581;&#1584;&#1601; &#1571;&#1610; &#1588;&#1610;&#1569;.</p>\n\n  <h2>&#1578;&#1603;&#1604;&#1601;&#1577; &#1575;&#1604;&#1576;&#1610;&#1593;</h2>\n  <p>&#1575;&#1604;&#1576;&#1575;&#1574;&#1593; &#1610;&#1581;&#1583;&#1617;&#1583; &#1587;&#1593;&#1585;&#1607; &#1608;&#1610;&#1587;&#1578;&#1604;&#1605;&#1607; &#1603;&#1575;&#1605;&#1604;&#1611;&#1575;. &#1604;&#1587;&#1604;&#1593;&#1577; &#1576;&#1642;1000 &#1601;&#1585;&#1606;&#1603;: <strong>&#1593;&#1605;&#1608;&#1604;&#1577; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; 10 &#1601;&#1585;&#1606;&#1603;&#1548; &#1585;&#1587;&#1608;&#1605; &#1575;&#1604;&#1582;&#1583;&#1605;&#1577; &#1608;&#1575;&#1604;&#1583;&#1601;&#1593; 60 &#1601;&#1585;&#1606;&#1603;&#1548; &#1610;&#1583;&#1601;&#1593; &#1575;&#1604;&#1605;&#1588;&#1578;&#1585;&#1610; 1070 &#1601;&#1585;&#1606;&#1603;&#1548; &#1608;&#1610;&#1587;&#1578;&#1604;&#1605; &#1575;&#1604;&#1576;&#1575;&#1574;&#1593; 1000 &#1601;&#1585;&#1606;&#1603;.</strong> &#1593;&#1605;&#1608;&#1604;&#1577; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; 1&#1642; &#1601;&#1602;&#1591;&#1548; &#1608;&#1604;&#1575; &#1578;&#1585;&#1578;&#1601;&#1593; &#1605;&#1593; &#1602;&#1610;&#1605;&#1577; &#1575;&#1604;&#1576;&#1610;&#1593;.</p>\n\n  <h2>&#1581;&#1605;&#1575;&#1610;&#1577; &#1575;&#1604;&#1605;&#1588;&#1578;&#1585;&#1610;</h2>\n  <p>&#1610;&#1583;&#1601;&#1593; &#1575;&#1604;&#1605;&#1588;&#1578;&#1585;&#1610;&#1548; &#1608;&#1610;&#1581;&#1578;&#1601;&#1592; &#1588;&#1585;&#1610;&#1603; &#1575;&#1604;&#1583;&#1601;&#1593; &#1575;&#1604;&#1605;&#1585;&#1582;&#1617;&#1589; &#1576;&#1575;&#1604;&#1605;&#1576;&#1604;&#1594; &#1601;&#1610; &#1581;&#1587;&#1575;&#1576;&#1607; &#1607;&#1608; &#1548; &#1604;&#1575; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607;. &#1593;&#1606;&#1583; &#1578;&#1571;&#1603;&#1610;&#1583; &#1575;&#1604;&#1575;&#1587;&#1578;&#1604;&#1575;&#1605; &#1610;&#1591;&#1604;&#1576; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1575;&#1604;&#1573;&#1601;&#1585;&#1575;&#1580; &#1593;&#1606;&#1607; &#1604;&#1604;&#1576;&#1575;&#1574;&#1593;. &#1608;&#1593;&#1606;&#1583; &#1608;&#1580;&#1608;&#1583; &#1605;&#1588;&#1603;&#1604;&#1577; &#1578;&#1601;&#1578;&#1581; &#1606;&#1586;&#1575;&#1593;&#1611;&#1575;&#1548; &#1608;&#1610;&#1602;&#1583;&#1617;&#1605; &#1575;&#1604;&#1591;&#1585;&#1601;&#1575;&#1606; &#1571;&#1583;&#1604;&#1578;&#1607;&#1605;&#1575;&#1548; &#1579;&#1605; &#1578;&#1602;&#1585;&#1585; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1575;&#1604;&#1573;&#1601;&#1585;&#1575;&#1580; &#1571;&#1608; &#1575;&#1604;&#1573;&#1593;&#1575;&#1583;&#1577;.</p>\n\n  <h2>&#1593;&#1605;&#1604;&#1575;&#1578; &#1586;&#1610;&#1585;&#1605;</h2>\n  <p><strong>&#1593;&#1605;&#1604;&#1575;&#1578; &#1586;&#1610;&#1585;&#1605; &#1604;&#1610;&#1587;&#1578; &#1606;&#1602;&#1608;&#1583;&#1611;&#1575;.</strong> &#1604;&#1575; &#1578;&#1615;&#1588;&#1578;&#1585;&#1609; &#1608;&#1604;&#1575; &#1578;&#1615;&#1576;&#1575;&#1593; &#1608;&#1604;&#1575; &#1578;&#1615;&#1581;&#1608;&#1617;&#1604; &#1573;&#1604;&#1609; &#1605;&#1587;&#1578;&#1582;&#1583;&#1605; &#1570;&#1582;&#1585; &#1608;&#1604;&#1575; &#1610;&#1605;&#1603;&#1606; &#1587;&#1581;&#1576;&#1607;&#1575; &#1606;&#1602;&#1583;&#1611;&#1575;. &#1607;&#1610; &#1606;&#1602;&#1575;&#1591; &#1583;&#1575;&#1582;&#1604; &#1575;&#1604;&#1578;&#1591;&#1576;&#1610;&#1602; &#1601;&#1602;&#1591;.</p>\n\n  <h2>&#1575;&#1604;&#1605;&#1605;&#1606;&#1608;&#1593;&#1575;&#1578;</h2>\n  <p>&#1603;&#1604; &#1605;&#1575; &#1607;&#1608; &#1594;&#1610;&#1585; &#1602;&#1575;&#1606;&#1608;&#1606;&#1610; &#1601;&#1610; &#1575;&#1604;&#1603;&#1575;&#1605;&#1610;&#1585;&#1608;&#1606;&#1563; &#1575;&#1604;&#1571;&#1587;&#1604;&#1581;&#1577; &#1608;&#1575;&#1604;&#1605;&#1582;&#1583;&#1585;&#1575;&#1578;&#1563; &#1575;&#1604;&#1587;&#1604;&#1593; &#1575;&#1604;&#1605;&#1602;&#1604;&#1617;&#1583;&#1577; &#1571;&#1608; &#1575;&#1604;&#1605;&#1587;&#1585;&#1608;&#1602;&#1577;&#1563; &#1575;&#1604;&#1573;&#1593;&#1604;&#1575;&#1606;&#1575;&#1578; &#1575;&#1604;&#1608;&#1607;&#1605;&#1610;&#1577;&#1563; &#1575;&#1604;&#1575;&#1581;&#1578;&#1610;&#1575;&#1604; &#1608;&#1575;&#1606;&#1578;&#1581;&#1575;&#1604; &#1575;&#1604;&#1588;&#1582;&#1589;&#1610;&#1577;&#1563; &#1575;&#1604;&#1578;&#1581;&#1585;&#1588; &#1608;&#1582;&#1591;&#1575;&#1576; &#1575;&#1604;&#1603;&#1585;&#1575;&#1607;&#1610;&#1577;&#1563; &#1575;&#1604;&#1605;&#1581;&#1578;&#1608;&#1609; &#1604;&#1604;&#1576;&#1575;&#1604;&#1594;&#1610;&#1606;&#1563; &#1608;&#1608;&#1590;&#1593; &#1571;&#1585;&#1602;&#1575;&#1605; &#1607;&#1608;&#1575;&#1578;&#1601; &#1571;&#1608; &#1585;&#1608;&#1575;&#1576;&#1591; &#1608;&#1575;&#1578;&#1587;&#1575;&#1576; &#1601;&#1610; &#1575;&#1604;&#1571;&#1605;&#1575;&#1603;&#1606; &#1575;&#1604;&#1578;&#1610; &#1610;&#1605;&#1606;&#1593;&#1607;&#1575; &#1575;&#1604;&#1578;&#1591;&#1576;&#1610;&#1602;.</p>\n\n  <h2>&#1581;&#1584;&#1601; &#1575;&#1604;&#1581;&#1587;&#1575;&#1576;</h2>\n  <p>&#1605;&#1606; <strong>&#1575;&#1604;&#1605;&#1604;&#1601; &#1575;&#1604;&#1588;&#1582;&#1589;&#1610; &larr; &#1575;&#1604;&#1582;&#1589;&#1608;&#1589;&#1610;&#1577; &#1608;&#1575;&#1604;&#1571;&#1605;&#1575;&#1606; &larr; &#1581;&#1584;&#1601; &#1581;&#1587;&#1575;&#1576;&#1610;</strong>&#1548; &#1571;&#1608; &#1593;&#1576;&#1585; &#1575;&#1604;&#1606;&#1605;&#1608;&#1584;&#1580; &#1593;&#1604;&#1609; <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>. &#1610;&#1615;&#1581;&#1584;&#1601; &#1605;&#1604;&#1601;&#1603; &#1608;&#1573;&#1593;&#1604;&#1575;&#1606;&#1575;&#1578;&#1603; &#1608;&#1585;&#1587;&#1575;&#1574;&#1604;&#1603;. &#1594;&#1610;&#1585; &#1571;&#1606; &#1587;&#1580;&#1604;&#1575;&#1578; &#1575;&#1604;&#1605;&#1583;&#1601;&#1608;&#1593;&#1575;&#1578; &#1575;&#1604;&#1605;&#1603;&#1578;&#1605;&#1604;&#1577; &#1610;&#1580;&#1576; &#1575;&#1604;&#1575;&#1581;&#1578;&#1601;&#1575;&#1592; &#1576;&#1607;&#1575; &#1593;&#1588;&#1585; &#1587;&#1606;&#1608;&#1575;&#1578; &#1576;&#1605;&#1608;&#1580;&#1576; &#1602;&#1608;&#1575;&#1593;&#1583; &#1575;&#1604;&#1605;&#1581;&#1575;&#1587;&#1576;&#1577;. <strong>&#1575;&#1604;&#1581;&#1584;&#1601; &#1606;&#1607;&#1575;&#1574;&#1610; &#1608;&#1604;&#1575; &#1610;&#1605;&#1603;&#1606; &#1575;&#1604;&#1578;&#1585;&#1575;&#1580;&#1593; &#1593;&#1606;&#1607;.</strong></p>\n\n  <h2>&#1575;&#1604;&#1602;&#1575;&#1606;&#1608;&#1606; &#1575;&#1604;&#1608;&#1575;&#1580;&#1576; &#1575;&#1604;&#1578;&#1591;&#1576;&#1610;&#1602;</h2>\n  <p>&#1602;&#1575;&#1606;&#1608;&#1606; &#1580;&#1605;&#1607;&#1608;&#1585;&#1610;&#1577; &#1575;&#1604;&#1603;&#1575;&#1605;&#1610;&#1585;&#1608;&#1606;&#1548; &#1608;&#1575;&#1604;&#1605;&#1581;&#1575;&#1603;&#1605; &#1575;&#1604;&#1605;&#1582;&#1578;&#1589;&#1577; &#1601;&#1610; &#1610;&#1575;&#1608;&#1606;&#1583;&#1610;. &#1575;&#1603;&#1578;&#1576; &#1571;&#1608;&#1604;&#1575;&#1611; &#1573;&#1604;&#1609; support@bambeh.com.</p>  <h2>&#1575;&#1587;&#1578;&#1585;&#1583;&#1575;&#1583; &#1575;&#1604;&#1605;&#1575;&#1604;</h2>\n  <p>&#1573;&#1584;&#1575; &#1583;&#1601;&#1593;&#1578; &#1593;&#1576;&#1585; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1605;&#1593; &#1581;&#1605;&#1575;&#1610;&#1577; &#1575;&#1604;&#1605;&#1588;&#1578;&#1585;&#1610; &#1608;&#1602;&#1615;&#1576;&#1604;&#1578; &#1588;&#1603;&#1608;&#1575;&#1603;&#1548; &#1606;&#1593;&#1610;&#1583; &#1573;&#1604;&#1610;&#1603; <strong>100% &#1605;&#1606; &#1587;&#1593;&#1585; &#1575;&#1604;&#1605;&#1606;&#1578;&#1580;</strong> &#1573;&#1604;&#1609; &#1585;&#1602;&#1605; &#1605;&#1608;&#1576;&#1575;&#1610;&#1604; &#1605;&#1608;&#1606;&#1610; &#1575;&#1604;&#1584;&#1610; &#1583;&#1601;&#1593;&#1578; &#1605;&#1606;&#1607; &#8212; &#1575;&#1604;&#1605;&#1576;&#1604;&#1594; &#1606;&#1601;&#1587;&#1607; &#1575;&#1604;&#1584;&#1610; &#1603;&#1575;&#1606; &#1587;&#1610;&#1615;&#1583;&#1601;&#1593; &#1604;&#1604;&#1576;&#1575;&#1574;&#1593;. &#1604;&#1575; &#1578;&#1615;&#1587;&#1578;&#1585;&#1583;&#1617; &#1593;&#1605;&#1608;&#1604;&#1577; &#1576;&#1575;&#1605;&#1576;&#1610;&#1607; &#1608;&#1604;&#1575; &#1585;&#1587;&#1608;&#1605; &#1575;&#1604;&#1582;&#1583;&#1605;&#1577; &#1608;&#1575;&#1604;&#1583;&#1601;&#1593;. &#1602;&#1583;&#1617;&#1605; &#1588;&#1603;&#1608;&#1575;&#1603; &#1602;&#1576;&#1604; &#1578;&#1571;&#1603;&#1610;&#1583; &#1575;&#1604;&#1575;&#1587;&#1578;&#1604;&#1575;&#1605; &#1608;&#1582;&#1604;&#1575;&#1604; 48 &#1587;&#1575;&#1593;&#1577; &#1605;&#1606; &#1605;&#1608;&#1593;&#1583; &#1575;&#1604;&#1578;&#1587;&#1604;&#1610;&#1605;.</p>\n  <h2>&#1573;&#1584;&#1575; &#1606;&#1587;&#1610;&#1578; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;</h2>\n  <p>&#1604;&#1575; &#1610;&#1593;&#1585;&#1601; &#1603;&#1604;&#1605;&#1577; &#1605;&#1585;&#1608;&#1585;&#1603; &#1571;&#1581;&#1583; &#1587;&#1608;&#1575;&#1603;. &#1571;&#1580;&#1576; &#1593;&#1606; &#1571;&#1587;&#1574;&#1604;&#1577; &#1575;&#1604;&#1571;&#1605;&#1575;&#1606; &#1601;&#1610; &#1589;&#1601;&#1581;&#1577; &#171;&#1606;&#1587;&#1610;&#1578; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;&#187;. &#1608;&#1573;&#1606; &#1604;&#1605; &#1578;&#1587;&#1578;&#1591;&#1593;&#1548; &#1610;&#1578;&#1581;&#1602;&#1602; &#1601;&#1585;&#1610;&#1602;&#1606;&#1575; &#1571;&#1608;&#1604;&#1611;&#1575; &#1605;&#1606; &#1571;&#1606;&#1603; &#1589;&#1575;&#1581;&#1576; &#1575;&#1604;&#1581;&#1587;&#1575;&#1576; &#1579;&#1605; &#1610;&#1593;&#1591;&#1610;&#1603; &#1603;&#1604;&#1605;&#1577; &#1605;&#1585;&#1608;&#1585; &#1605;&#1572;&#1602;&#1578;&#1577;&#1548; &#1608;&#1593;&#1606;&#1583; &#1578;&#1587;&#1580;&#1610;&#1604; &#1575;&#1604;&#1583;&#1582;&#1608;&#1604; &#1576;&#1607;&#1575; &#1578;&#1582;&#1578;&#1575;&#1585; &#1603;&#1604;&#1605;&#1577; &#1605;&#1585;&#1608;&#1585;&#1603; &#1575;&#1604;&#1580;&#1583;&#1610;&#1583;&#1577; &#1601;&#1608;&#1585;&#1611;&#1575;.</p>",
+  ff: "  <div class=\"note\">\n    <p>Ndee ko dunngu ra\u0253\u0253i\u0257inaandu ngam faamde. Sar\u0257iiji timmu\u0257i \u0257in ko e Engale e Farayse &mdash; ko \u0257in woni sar\u0257iiji laam\u0257i. So luural wa\u0257ii, ko sar\u0257iiji Farayse \u0257in nja\u0253etee e \u0253eeto Kameruun.</p>\n  </div>\n\n  <h2>Ko Bambeh woni</h2>\n  <p>Bambeh ko logisiyel joltinoowo soodoowo e jeeyoowo. <strong>Bambeh wonaa jeeyoowo.</strong> Jeeyoowo ko on ne\u0257\u0257o wa\u0257\u0257un\u0257o kuutorgal ngal, njeeygu ngun ko hakkunde moo\u0257on \u0257i\u0257o. <strong>Bambeh wonaa banke</strong> kadi Bambeh jogotaako kaalis maa hay saa'i gooto &mdash; ko sosiyete yo\u0253di ja\u0253aande woni mo jogoo mo neldi mo.</p>\n\n  <h2>Mbo waawi huutoraade</h2>\n  <p>Ada foti he\u0253de duu\u0253i 18. Ne\u0257\u0257o gooto, konte gooto. Reen finnde maa &mdash; kala ko wa\u0257i e konte maa, ko aan jaabotoo. So go\u0257\u0257o naatii e konte maa, winndu support@bambeh.com jaawi.</p>\n\n  <h2>Meere e Premium</h2>\n  <p><strong>Meere, walaa happu:</strong> udditde konte, \u01b4eewde kala fedde, uddite kala kuutorgal e taro ngal timmi, yiide wuro ngal kuutorgal woni, wa\u0257de kuutorgal gootal e yontere kala e nate gootel.</p>\n  <p><strong>Premium \u0253eydii:</strong> winndande kala jeeyoowo, yo\u0253de e Ndeenka Soodoowo, yiide leydi e \u00f1ii\u0253irde laa\u0253nde, filtiraaji \u0253ur\u0257i e \u0257a\u0253\u0253itde e diiwanuuji go\u0257\u0257i, nate joyi, kuutor\u0257e walaa happu, \u0253amtude kuutorgal maa, kuutor\u0257e sosiyete e ballal AI.</p>\n  <p><strong>Coggu:</strong> 100 XAF \u00f1alawma &middot; 500 XAF yontere &middot; 1 500 XAF lewru.</p>\n  <p><strong>Pass ngal wuttitotaako hoore mum.</strong> Kaalis waawaa yaltude e MoMo maa so wonaa aan pu\u0257\u0257i yo\u0253gol hesngol. So pass ngal timmi, konte ngon ruttoto e Meere &mdash; hay huunde nde mba\u0257-\u0257aa momtetaake.</p>\n\n  <h2>Ko njeeygu hoolnata</h2>\n  <p>Jeeyoowo wa\u0257a coggu mum, o he\u0253a coggu ngun timmi. Ngam kuutorgal 1 000 XAF: <strong>komisiyo\u014b Bambeh 10 XAF, njo\u0253di golle e yo\u0253di 60 XAF, soodoowo yo\u0253a 1 070 XAF, jeeyoowo he\u0253a 1 000 XAF.</strong> Komisiyo\u014b Bambeh ko 1% tan, nde \u0253eydotaako.</p>\n\n  <h2>Ndeenka Soodoowo</h2>\n  <p>Soodoowo yo\u0253a, kaalis on jogaa e konte sosiyete yo\u0253di ja\u0253aande &mdash; wonaa Bambeh jogii mo. So soodoowo tee\u014btinii ko o he\u0253i kuutorgal ngal, Bambeh yamira nde kaalis on neldee jeeyoowo. So ca\u0257eele ngoni, soodoowo udditta luural, \u0257i\u0257o fof ngadda seedeeji mum en, Bambeh \u01b4eewa \u0257um yamira neldugol walla ruttugol kaalis on.</p>\n\n  <h2>Kaalisaaji Zerm</h2>\n  <p><strong>Kaalisaaji Zerm wonaa kaalis.</strong> A waawaa soodde \u0257i, a waawaa jeeyde \u0257i, a waawaa neldude \u0257i go\u0257\u0257o, kadi a waawaa yaltinde \u0257i kaalis. Ko fijirde nder app ndee tan.</p>\n\n  <h2>Ko ha\u0257aa</h2>\n  <p>Kala ko wonaa laawol e Kameruun; kaafaaji; njamndi; ko waylaa walla ko wujjaa; \u00f1ii\u01b4e njamala e teppe pangolin; kuutor\u0257e fenaande; jamfa; nanngude innde ne\u0257\u0257o go\u0257\u0257o; ja\u0253\u0253itagol e konnaagu; ko yi\u0257aa e ne\u0257\u0257aagu; e wa\u0257tude limce telefon walla WhatsApp e nokkuuji \u0257i app ndee ha\u0257i &mdash; ndee laawol ina reena ma.</p>\n\n  <h2>Momtude konte maa</h2>\n  <p>Yah <strong>Andital &rarr; Sirlu e Kisal &rarr; Momtu konte am</strong>, walla huutoro fom oo: <a href=\"https://www.bambeh.com/delete-account.html\" target=\"_blank\" rel=\"noopener noreferrer\">bambeh.com/delete-account.html</a>. Andital maa, kuutor\u0257e maa e winndan\u0257e maa momtete. Kono seedeeji yo\u0253e timmu\u0257e ina poti heddaade duu\u0253i sappo &mdash; ko laawol kompotaabilite yamiri \u0257um. <strong>Momtugol waawaa ruttude.</strong></p>\n\n  <h2>Laawol</h2>\n  <p>Laawol Kameruun, e \u0253eeto Yaounde. Kono winndu support@bambeh.com adan &mdash; ko \u0257a\u0257i fof \u0257oon feewata.</p>  <h2>Artirgol ceede</h2>\n  <p>Si a yo&#595;ii e nder Bambeh e Reentaare Soodoowo, te ko wa&#599;i maa goonga, min artirta <strong>100% coggu huunde ndee</strong> e limngal Mobile Money mo yo&#595;ir&#599;aa &#8212; ceede &#599;e njeeyoowo he&#595;atno. Komisiyo&#331; Bambeh e njo&#595;di golle e yo&#595;gol ngartataa. Ummin &#599;um hade maa tee&#331;tinde a he&#595;ii, e nder waktuuji 48 caggal tottiral.</p>\n  <h2>Si a yejjitii finnde maa</h2>\n  <p>Ko an tan anndata finnde maa. Jaabo naamne reentaare maa e hello \"Finnde yejjitaa\". Si a waawaa, gollo&#595;e amen &#436;eewto ko an tigi, &#595;e kokke finnde laawol gootol. So a naatii, a su&#595;at finnde maa keso jooni jooni.</p>",
 };
 
-const CONTACT_EMAILS = COMPANY.emails;
-
-// ─── Content ─────────────────────────────────────────────────────────────────
-const SECTIONS: Section[] = [
-  {
-    id: "1",
-    title: "1. Acceptance of Terms",
-    body: (
-      <>
-        <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 mb-4">
-          <h3 className="font-semibold text-teal-900 mb-2">Business Identity</h3>
-          <p><strong>Legal business name:</strong> {COMPANY.legalName}</p>
-          <p><strong>Registre de commerce:</strong> {COMPANY.registreDeCommerce}</p>
-          <p><strong>NIU:</strong> {COMPANY.niu}</p>
-          <p><strong>D-U-N-S No:</strong> {COMPANY.duns}</p>
-        </div>
-
-        <p>
-          By accessing or using the Bambeh Marketplace platform — including our
-          website at <strong>bambeh.com</strong>, any mobile application, or any
-          related services (collectively, the "Platform") — you agree to be legally
-          bound by these Terms of Service ("Terms") and all applicable laws of the
-          Republic of Cameroon. If you do not agree to these Terms, you must
-          immediately stop using the Platform.
-        </p>
-        <p className="mt-3">
-          These Terms constitute a legally binding agreement between you and
-          <strong> {COMPANY.legalName}</strong> ("Bambeh", "we", "us", or "our"),
-          the operator of the Bambeh Marketplace, headquartered in Yaoundé,
-          Republic of Cameroon.
-        </p>
-        <p className="mt-3">
-          By creating an account, you confirm that you are at least{" "}
-          <strong>18 years of age</strong> or the legal age of majority in your
-          jurisdiction, and that you have the legal capacity to enter into a
-          binding contract. Persons under 18 may not register or use the Platform.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "2",
-    title: "2. Account Registration and Security",
-    body: (
-      <>
-        <p>
-          To access most features of the Platform, you must create an account by
-          providing accurate, current, and complete information including your
-          name, valid phone number, and email address. You agree to:
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>Keep your password and account credentials strictly confidential.</li>
-          <li>
-            Notify us immediately at{" "}
-            <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-              support@bambeh.com
-            </a>{" "}
-            if you suspect any unauthorized access to your account.
-          </li>
-          <li>Accept full responsibility for all activities that occur under your account.</li>
-          <li>Not share your account with any other person.</li>
-          <li>Not create more than one personal account. Duplicate accounts may be permanently removed.</li>
-        </ul>
-        <p className="mt-3">
-          Bambeh reserves the right to suspend or permanently terminate any account
-          that violates these Terms, without prior notice, at our sole discretion.
-        </p>
-        <p className="mt-3 font-medium text-gray-800">Account Deletion</p>
-        <p className="mt-1">
-          You may delete your account at any time from the <strong>Settings → Account</strong>
-          section of the Platform. Upon deletion, your personal profile and listings
-          will be removed from public view within <strong>30 days</strong>. Certain
-          data may be retained for fraud prevention and legal compliance as required
-          by Cameroon law and OHADA regulations.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "3",
-    title: "3. Marketplace Listings and Transactions",
-    body: (
-      <>
-        <p>
-          Bambeh is a platform that connects buyers and sellers in Cameroon and
-          the Central/West African region. We are <strong>not a party</strong> to
-          any transaction between users. All transactions are conducted directly
-          between buyers and sellers.
-        </p>
-        <ul className="list-disc pl-6 mt-3 space-y-1 text-sm text-gray-600">
-          <li>All listings must accurately describe the item, service, property, or job opportunity, and must comply with all applicable Cameroonian laws.</li>
-          <li>Prices must be stated in <strong>CFA Francs (FCFA)</strong>. Any currency other than FCFA must be clearly disclosed.</li>
-          <li>A <strong>1% transaction fee</strong> applies to all completed sales processed through Bambeh's payment system.</li>
-          <li>Payments processed via <strong>CamPay / NotchPay / Mobile Money</strong> (MTN MoMo, Orange Money) are subject to those providers' own terms.</li>
-          <li>Bambeh's escrow feature holds funds securely until both parties confirm the transaction is complete.</li>
-          <li>Bambeh does not guarantee the quality, safety, legality, or truth of any listing, or the ability of sellers to sell, or buyers to pay.</li>
-        </ul>
-        <p className="mt-3 font-medium text-gray-800">Seller Responsibilities</p>
-        <p className="mt-1">
-          You are solely responsible for all listings you post. You must have the
-          legal right to sell or rent any item or property you list. Misrepresenting
-          items is grounds for immediate account termination and may result in
-          legal action under Cameroonian commercial law.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "4",
-    title: "4. Prohibited Content and Conduct",
-    body: (
-      <>
-        <p>
-          You may not use the Platform to post, sell, offer, or promote any of the
-          following, which are strictly prohibited under Cameroonian law and our
-          platform policies:
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>Firearms, ammunition, explosives, or any weapons</li>
-          <li>Illegal drugs, controlled substances, or drug paraphernalia</li>
-          <li>Counterfeit, pirated, or stolen goods</li>
-          <li>Human trafficking, forced labor, or any exploitation of persons</li>
-          <li>Child sexual abuse material (CSAM) — violations will be reported immediately to law enforcement</li>
-          <li>Pornographic or sexually explicit content</li>
-          <li>Hate speech targeting individuals based on ethnicity, religion, gender, disability, or sexual orientation</li>
-          <li>Items prohibited under the laws of the Republic of Cameroon or applicable international law</li>
-          <li>Spam, pyramid schemes, misleading advertisements, or fraudulent offers</li>
-          <li>Unauthorized collection of other users' personal data</li>
-        </ul>
-        <p className="mt-3">
-          Violations result in <strong>immediate, permanent account termination</strong>
-          and may be reported to the appropriate Cameroonian authorities.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "5",
-    title: "5. Zerm Coins (Platform Currency)",
-    body: (
-      <>
-        <p>
-          Bambeh operates a virtual rewards currency called <strong>Zerm Coins</strong>.
-          You acknowledge and agree that:
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>Zerm Coins have <strong>no monetary value</strong> outside the Platform and cannot be exchanged, sold, or transferred for real money or goods outside of Bambeh.</li>
-          <li>Zerm Coins are non-transferable to other users (except via the Coins Transfer feature within the Platform).</li>
-          <li>Bambeh reserves the right to modify Zerm Coin policies, values, or expiry rules with <strong>30 days' written notice</strong> via in-app notification or email.</li>
-          <li>Unused Zerm Coins are forfeited upon account deletion.</li>
-          <li>Zerm Coins are granted as platform rewards and are not a financial instrument, investment, or cryptocurrency.</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "6",
-    title: "6. Subscriptions and Payments",
-    body: (
-      <>
-        <p>
-          Bambeh offers optional subscription plans that unlock premium features.
-          By subscribing, you agree to:
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>Pay all fees associated with your chosen subscription plan in FCFA via supported payment methods.</li>
-          <li>Subscriptions renew automatically unless cancelled at least <strong>24 hours before</strong> the renewal date from your account settings.</li>
-          <li>Payments are processed externally via approved mobile money payment providers.</li>
-          <li>Refunds are handled on a case-by-case basis. Contact <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">support@bambeh.com</a> within 7 days of a disputed charge.</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "7",
-    title: "7. Artificial Intelligence (AI) Features",
-    body: (
-      <>
-        <p>
-          Bambeh's platform includes AI-powered features including the <strong>Bambeh AI Chatbot</strong>,
-          smart recommendations, and search assistance.
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>AI responses are generated automatically and may not always be accurate. Do not rely solely on AI advice for financial, legal, or medical decisions.</li>
-          <li>By using AI features, you consent to your queries being processed by our AI service providers in accordance with our <Link to="/privacy-policy" className="text-teal-600 hover:underline">Privacy Policy</Link>.</li>
-          <li>Bambeh discloses when you are interacting with an AI system, as required under applicable transparency regulations.</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "8",
-    title: "8. Data Protection and Privacy",
-    body: (
-      <>
-        <p>
-          The collection and processing of your personal data is governed by Cameroon's
-          <strong> Law No. 2024/017 of 23 December 2024 on Personal Data Protection</strong>.
-          You have the right to:
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>Access the personal data we hold about you</li>
-          <li>Request correction of inaccurate data</li>
-          <li>Request deletion of your data ("right to be forgotten")</li>
-          <li>Object to certain processing of your data</li>
-          <li>Port your data in a structured, machine-readable format</li>
-        </ul>
-        <p className="mt-3">
-          To exercise any of these rights, contact us at{" "}
-          <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">
-            support@bambeh.com
-          </a>
-          . Full details are in our{" "}
-          <Link to="/privacy-policy" className="text-teal-600 hover:underline">Privacy Policy</Link>.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "9",
-    title: "9. Intellectual Property",
-    body: (
-      <>
-        <p>
-          All content, trademarks, logos, trade names, technology, source code,
-          designs, and platform features are owned by or licensed to{" "}
-          <strong>{COMPANY.legalName}</strong> and are protected under Cameroonian
-          intellectual property law and applicable international conventions.
-        </p>
-        <p className="mt-3">
-          You may not copy, reproduce, distribute, modify, reverse-engineer,
-          publicly display, or create derivative works from any part of the Platform
-          without our prior written permission.
-        </p>
-        <p className="mt-3">
-          By posting content on Bambeh (listings, images, descriptions), you grant
-          Bambeh a non-exclusive, royalty-free, worldwide license to display,
-          distribute, and promote that content within the Platform for the purpose
-          of operating the marketplace.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "10",
-    title: "10. Limitation of Liability",
-    body: (
-      <>
-        <p>To the maximum extent permitted by applicable Cameroonian law:</p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>Bambeh is not liable for indirect, incidental, special, consequential, or punitive damages arising from your use of the Platform, including lost profits or data.</li>
-          <li>Bambeh's total liability to you for any claim arising from these Terms shall not exceed the amount you paid to Bambeh in the 3 months preceding the claim.</li>
-          <li>Bambeh does not verify the identity of every user and is not responsible for any fraudulent activity by third parties. Always exercise caution in person-to-person transactions.</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "11",
-    title: "11. Dispute Resolution",
-    body: (
-      <>
-        <p>Any dispute, controversy, or claim arising out of or relating to these Terms or the Platform shall be resolved as follows:</p>
-        <ol className="list-decimal pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li><strong>Informal resolution:</strong> First, contact us at <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">support@bambeh.com</a> and we will attempt to resolve the matter within 14 business days.</li>
-          <li><strong>Arbitration:</strong> If unresolved, disputes shall be submitted to binding arbitration in <strong>Yaoundé, Cameroon</strong>, under the applicable OHADA Uniform Acts on Arbitration.</li>
-          <li><strong>Governing law:</strong> These Terms are governed exclusively by the laws of the <strong>Republic of Cameroon</strong>.</li>
-        </ol>
-      </>
-    ),
-  },
-  {
-    id: "12",
-    title: "12. Changes to These Terms",
-    body: (
-      <>
-        <p>Bambeh may modify these Terms at any time. When we make material changes, we will notify you via:</p>
-        <ul className="list-disc pl-6 mt-2 space-y-1 text-sm text-gray-600">
-          <li>An in-app notification</li>
-          <li>Email to your registered address</li>
-          <li>A prominent notice on the Platform</li>
-        </ul>
-        <p className="mt-3">
-          Continued use of the Platform after changes become effective constitutes
-          your acceptance of the updated Terms. If you disagree with any changes,
-          you must stop using the Platform and may delete your account.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "13",
-    title: "13. Contact Us",
-    body: (
-      <>
-        <p>For questions, complaints, or legal notices regarding these Terms:</p>
-        <div className="mt-3 space-y-1 text-sm text-gray-700">
-          <p><strong>Bambeh Marketplace</strong> — operated by {COMPANY.legalName}</p>
-          <p>Yaoundé, Republic of Cameroon</p>
-          <p>Email: <a href="mailto:support@bambeh.com" className="text-teal-600 hover:underline">support@bambeh.com</a></p>
-          <p>Secondary email: <a href="mailto:bambetheapp@gmail.com" className="text-teal-600 hover:underline">bambetheapp@gmail.com</a></p>
-          <p>Website: bambeh.com</p>
-        </div>
-      </>
-    ),
-  },
-];
-
-// ─── Component ────────────────────────────────────────────────────────────────
-const TermsOfService: React.FC = () => {
-  const [openSection, setOpenSection] = useState<string | null>("1");
-  useLang();
-
-  const toggle = (id: string) => setOpenSection((prev) => (prev === id ? null : id));
-
+export default function TermsOfService() {
+  const raw: unknown = useLang();
+  const lang = docLang(typeof raw === "string" ? raw : raw && (raw as { lang?: string }).lang);
+  const rtl = lang === "ar";
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-teal-600 to-teal-800 text-white py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-teal-100 text-sm">Last updated: June 2026 · Effective immediately</p>
-          <p className="mt-4 text-sm text-teal-100 leading-relaxed max-w-2xl">
-            Please read these Terms carefully before using Bambeh. They are a legal agreement between you and {COMPANY.legalName}, operator of the Bambeh Marketplace.
-          </p>
+    <div data-fix="FIX619" translate="no" className="notranslate bambeh-legal-page" dir={rtl ? "rtl" : "ltr"} lang={lang === "pcm" ? "en" : lang}>
+      <style>{CSS}</style>
+      <header className="bl-hero">
+        <div className="bl-wrap">
+          <h1>{TITLE[lang]}</h1>
+          <p>{EFFECTIVE[lang]}</p>
         </div>
-      </div>
-
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex gap-4 overflow-x-auto text-xs text-teal-700 font-medium">
-          {SECTIONS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => {
-                setOpenSection(s.id);
-                document.getElementById(`section-${s.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="whitespace-nowrap hover:text-teal-900 transition-colors"
-            >
-              {s.id}. {s.title.replace(/^\d+\.\s*/, "")}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-3">
-        {SECTIONS.map((section) => {
-          const isOpen = openSection === section.id;
-          return (
-            <div id={`section-${section.id}`} key={section.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggle(section.id)}
-                className="w-full flex justify-between items-center px-5 py-4 text-left group focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-inset"
-                aria-expanded={isOpen}
-              >
-                <span className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">
-                  {section.title}
-                </span>
-                <svg className={`w-5 h-5 text-teal-500 transition-transform duration-200 flex-shrink-0 ml-4 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {isOpen && (
-                <div className="px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50">
-                  <div className="pt-4">{section.body}</div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="max-w-3xl mx-auto px-4 pb-12">
-        <div className="bg-teal-50 rounded-xl p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border border-teal-100">
-          <div>
-            <p className="text-sm font-semibold text-teal-800">Also review our Privacy Policy</p>
-            <p className="text-xs text-teal-600 mt-0.5">Learn how we collect, use, and protect your personal data.</p>
-          </div>
-          <Link to="/privacy-policy" className="flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
-            Privacy Policy →
-          </Link>
-        </div>
-
-        <p className="text-center text-xs text-gray-400 mt-8">
-          © {new Date().getFullYear()} {COMPANY.legalName} — Bambeh Marketplace. All rights reserved.
-          <br />
-          Governed by the laws of the Republic of Cameroon.
-        </p>
+      </header>
+      <main className="bl-wrap bl-body" dangerouslySetInnerHTML={{ __html: BODY[lang] }} />
+      <div className="bl-wrap bl-foot">
+        <Link to="/privacy-policy">{L_PRIVACYPOLICY[lang]}</Link>
+        <a href="https://www.bambeh.com/guarantee.html" target="_blank" rel="noopener noreferrer">{L_GUARANTEE[lang]}</a>
+        <Link to="/">{HOME_LINK[lang]}</Link>
       </div>
     </div>
   );
-};
+}
 
-export default TermsOfService;
+export { TermsOfService };
+// BAMBEH_END_TOKEN__TERMS_OF_SERVICE__COMPLETE

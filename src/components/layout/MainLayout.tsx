@@ -1,55 +1,21 @@
-// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX465B_CLEAN
+// BAMBEH_DEPLOY_TOKEN__MAINLAYOUT_FIX621_CLEAN
 /**
- * src/components/layout/MainLayout.tsx — Bambeh Marketplace
+ * src/components/layout/MainLayout.tsx - Bambeh Marketplace
  *
- * FIX465b — REPAIRS THE BROKEN BUILD FROM FIX465.
- * ───────────────────────────────────────────────
- * The FIX465 version of this file imported "@/lib/listingViewTracker", a file
- * that does not exist and was never written:
+ * FIX621 - THE PLAY APP SHOWS NO PAYWALL, NO SPONSOR BANNER AND NO FULL-SCREEN ADVERT.
+ * In the browser nothing changes. Inside the Android app (IS_STORE_APP, FIX620):
+ *   - no SubscriptionGuard: everything a member could open is open. Google
+ *     requires its own billing for digital features sold inside a Play app, so
+ *     the Play app sells none;
+ *   - no SponsorBanner: there is nothing to announce when nothing is locked;
+ *   - no AdInterstitial: full-screen adverts are where Play's disruptive-ads rules
+ *     bite, and the store listing must then declare "contains ads".
  *
- *     [UNLOADABLE_DEPENDENCY] Could not load src/lib/listingViewTracker
- *
- * That import came from an earlier plan where the route-view counter lived in
- * its own hook. The counter was then built INSIDE AdInterstitial instead — but
- * this file still carried the import for the hook that was never created. It
- * is removed here. Nothing else about FIX465 changes.
- *
- * FIX465 — THE ADVERT IS SWITCHED ON.
- * ───────────────────────────────────
- * AdInterstitial has existed and worked since FIX430, but no file in the app
- * ever imported it, so it had never displayed once. That is why `corporate_ads`
- * held a single row and no advertiser could ever be shown a number.
- *
- * It is mounted HERE, once, rather than in App.tsx, because:
- *   - it must be inside the Router (it reads the current path to know when a
- *     listing detail page has opened, and counts the view itself), and
- *   - every page a user browses passes through MainLayout.
- *
- * It sits OUTSIDE SubscriptionGuard on purpose. The guard decides what content
- * a user may see; the advert is not content, it is a fixed overlay that must be
- * able to appear over any page the user is allowed to reach. Putting it inside
- * would also mean it unmounted every time the guard swapped children.
- *
- * It renders null until it decides to show an advert, so it costs one component
- * instance and no layout space. Premium and staff accounts never see one.
- *
- * FIX186 — HEADER + FOOTER, fixed bottom nav removed
- * ───────────────────────────────────────────────────
- * The fixed bottom navigation bar overlapped page content on every screen
- * that puts an action button at the bottom: "Apply now" on Jobs, "Book site
- * visit" and "Message client" on Rentals, and "Add to cart" on product
- * pages. Its collapse handle only folded it partway, so the buttons stayed
- * unreachable. It is now removed — navigation lives in the Header (hamburger
- * menu on mobile, full nav on desktop), which reaches every destination the
- * bottom bar did.
- *
- * The h-20 spacer that existed purely to clear the bottom bar is gone too,
- * so pages no longer end with a strip of dead space.
- *
- * Layout order:  Header (top)  →  page content  →  Footer
- *
- * To restore the bar: re-add the BottomNav import and render it after
- * <Footer />, together with a spacer div of at least h-20.
+ * Everything below is the FIX465b layout, unchanged:
+ * Header (top) -> page content -> Footer. The fixed bottom bar stays removed
+ * (FIX186) because it covered "Apply now", "Book site visit" and "Add to cart".
+ * AdInterstitial sits outside SubscriptionGuard (FIX465) so it can appear over
+ * any page the user may reach; it renders nothing until it decides to show one.
  */
 import React from 'react';
 import Header from '@/components/layout/Header';
@@ -58,6 +24,7 @@ import SubscriptionGuard from '@/components/security/SubscriptionGuard';
 import AdInterstitial from '@/components/ads/AdInterstitial';          // FIX465
 import { SponsorBanner } from '@/components/subscription/SponsorBanner';  // FIX541
 import { useLang } from '@/hooks/useAppLang';                            // FIX540
+import { IS_STORE_APP } from '@/config/storeMode';                       // FIX620
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -66,29 +33,22 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const lang = useLang();   // FIX540 - the sponsor line in the user's language
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col" data-fix="FIX621">
       <Header />
 
       <main className="flex-1">
-        {/* FIX540 - renders NOTHING unless the paywall switch is on. It sits
-            above SubscriptionGuard so it shows on the very pages the wall
-            used to block, which is the point of announcing it. */}
-        <div className="px-4 pt-3"><SponsorBanner lang={lang as string} /></div>
-        {/* FIX229 - the paywall. Posting, /subscription and /donate stay open;
-            everything else needs an active subscription verified in Supabase. */}
-        <SubscriptionGuard>
-          {children}
-        </SubscriptionGuard>
+        {IS_STORE_APP ? null : (
+          <div className="px-4 pt-3"><SponsorBanner lang={lang as string} /></div>
+        )}
+        {IS_STORE_APP ? children : <SubscriptionGuard>{children}</SubscriptionGuard>}
       </main>
 
       <Footer />
 
-      {/* FIX465 - renders null until it decides to show an advert. It counts
-          listing views itself from the route, so no detail page had to change. */}
-      <AdInterstitial />
+      {IS_STORE_APP ? null : <AdInterstitial />}
     </div>
   );
 };
 
 export default MainLayout;
-// BAMBEH_END_TOKEN__MAINLAYOUT_FIX465B__COMPLETE
+// BAMBEH_END_TOKEN__MAINLAYOUT_FIX621__COMPLETE

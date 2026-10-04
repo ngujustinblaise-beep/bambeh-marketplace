@@ -173,7 +173,7 @@ const TERMS: Record<Lang, TermsDoc> = {
         "All listings must be accurate and lawful under Cameroonian law.",
         "No counterfeit, stolen, or prohibited items are permitted.",
         "Bambeh reserves the right to remove listings at its discretion.",
-        "A 1% transaction fee applies to all completed sales — the lowest in Cameroon.",
+        "A 1% commission applies to every completed sale. Tax and the service and payment charge are added and shown before you pay.",
       ] },
       { k: "h3", t: "4. ZERM COINS" },
       { k: "ul", items: [
@@ -277,7 +277,7 @@ const TERMS: Record<Lang, TermsDoc> = {
         "Toutes les annonces doivent être exactes et licites au regard du droit camerounais.",
         "Aucun article contrefait, volé ou interdit n'est autorisé.",
         "Bambeh se réserve le droit de retirer des annonces à sa discrétion.",
-        "Des frais de transaction de 1 % s'appliquent à toutes les ventes conclues — les plus bas du Cameroun.",
+        "Une commission de 1 % s'applique \u00e0 chaque vente conclue. Les taxes et les frais de service et de paiement s'y ajoutent et sont affich\u00e9s avant le paiement.",
       ] },
       { k: "h3", t: "4. PIÈCES ZERM" },
       { k: "ul", items: [
@@ -386,7 +386,7 @@ const TERMS: Record<Lang, TermsDoc> = {
         "All listing must be correct and legal under Cameroon law.",
         "No fake, thief, or banned items dey allowed.",
         "Bambeh fit remove any listing as e see reason.",
-        "1% transaction fee dey apply to all sales wey complete — di lowest for Cameroon.",
+        "1% commission dey apply to every sale wey complete. Tax and the service and payment charge dey join, and you go see am before you pay.",
       ] },
       { k: "h3", t: "4. ZERM COINS" },
       { k: "ul", items: [
@@ -489,7 +489,7 @@ const TERMS: Record<Lang, TermsDoc> = {
         "يجب أن تكون جميع الإعلانات دقيقة وقانونية بموجب القانون الكاميروني.",
         "لا يُسمح بأي سلع مزيّفة أو مسروقة أو محظورة.",
         "يحتفظ بامبيه بالحق في إزالة الإعلانات وفق تقديره.",
-        "تُطبَّق رسوم معاملات بنسبة 1% على جميع المبيعات المكتملة — وهي الأدنى في الكاميرون.",
+        "\u062a\u064f\u0637\u0628\u064e\u0651\u0642 \u0639\u0645\u0648\u0644\u0629 \u0628\u0646\u0633\u0628\u0629 1% \u0639\u0644\u0649 \u0643\u0644 \u0639\u0645\u0644\u064a\u0629 \u0628\u064a\u0639 \u0645\u0643\u062a\u0645\u0644\u0629. \u062a\u064f\u0636\u0627\u0641 \u0627\u0644\u0636\u0631\u064a\u0628\u0629 \u0648\u0631\u0633\u0648\u0645 \u0627\u0644\u062e\u062f\u0645\u0629 \u0648\u0627\u0644\u062f\u0641\u0639 \u0648\u062a\u064f\u0639\u0631\u0636 \u0642\u0628\u0644 \u0627\u0644\u062f\u0641\u0639.",
       ] },
       { k: "h3", t: "4. عملات زيرم" },
       { k: "ul", items: [
@@ -591,7 +591,7 @@ const TERMS: Record<Lang, TermsDoc> = {
         "Bayanaaji fof ina foti wonde goonga e dagiiɗi e ley sariya Kamaru.",
         "Kaake fewjaaɗe, wujjaaɗe, walla haɗaaɗe njaɓaaka.",
         "Bambeh ina jogii hakke ittugol bayanaaji so o yiɗi.",
-        "Yoɓdi golle 1% ina liɓee e coggu fof timmuɗo — ɓurɗo famɗude e Kamaru.",
+        "Komisiyo\u014b 1% ina wa\u0257ee e kala njeeygu timmu\u0257o. Lampo e njo\u0253di golle e yo\u0253gol ina \u0253eydoo, ina njiyee hade maa yo\u0253de.",
       ] },
       { k: "h3", t: "4. ZERM COINS" },
       { k: "ul", items: [
