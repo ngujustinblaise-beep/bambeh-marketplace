@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX615_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX625_CLEAN
 /**
  * src/pages/auth/ForgotPassword.tsx - Bambeh Marketplace
  *
@@ -39,7 +39,7 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 import AfricanPhoneInput from '@/components/AfricanPhoneInput';
@@ -61,8 +61,6 @@ const STR: Record<string, Record<string, string>> = {
     emailLabel: "Your email address",
     emailPh: "you@example.com",
     phoneHelp: "This is the number you used to create your Bambeh account.",
-    askBtn: "Ask for a temporary password on WhatsApp",
-    phoneNote: "Bambeh cannot send text messages yet. Tap the button and our team will send you a temporary password on WhatsApp, usually within a few minutes. As soon as you sign in with it, Bambeh asks you to choose your own new password.",
     sendBtn: "Send reset link to my email",
     sending: "Sending\u2026",
     emailSent: "If that address is registered, a reset link is on its way. It can take a few minutes, and it sometimes lands in spam.",
@@ -94,6 +92,31 @@ const STR: Record<string, Record<string, string>> = {
     q_first_car_colour: "What was the colour of your first car?",
     q_birth_town: "In which town were you born?",
     carSkip: "Never had a car? Skip this one.",
+    tabCode: "Bambeh code",
+    codeHint: "Bambeh staff sent you a reset code? Use the \"Bambeh code\" tab.",
+    codeTitle: "Use the code Bambeh staff sent you",
+    codeIntro: "You do not need your old password. Enter your phone number, the 8-digit code from WhatsApp, and choose a new password. The code works once and expires after 24 hours.",
+    codeLabel: "Code from Bambeh (8 digits)",
+    codeSubmit: "Save my new password",
+    codeSaving: "Saving...",
+    codeDone: "Your new password is saved. Signing you in...",
+    codeDoneManual: "Your new password is saved. Sign in with your phone number and your new password.",
+    errCodeShort: "Enter all 8 digits of the code.",
+    errCodeInvalid: "That code is not right, has already been used, or has expired. Check the WhatsApp message, or ask Bambeh for a new code.",
+    errPwShort: "Your new password must be at least 8 characters.",
+    errPwMatch: "The two passwords do not match.",
+    errCodeNetwork: "We could not reach Bambeh. Check your connection and try again.",
+    askBtn: "Ask for a reset code on WhatsApp",
+    phoneNote: "Bambeh cannot send text messages yet. Tap the button and, once our team has checked it is really you, they will send you a reset code on WhatsApp. Enter it in the \"Bambeh code\" tab and choose your new password. You will not need your old one.",
+    newPass: "New password",
+    newPassPh: "At least 8 characters",
+    confirmPass: "Confirm password",
+    confirmPassPh: "Type it again",
+    show: "Show",
+    hide: "Hide",
+    ruleLength: "At least 8 characters",
+    ruleMatch: "The two passwords match",
+    ruleNoMatch: "The two passwords do not match yet",
   },
   fr: {
     title: "Mot de passe oubli\u00e9 ?",
@@ -105,8 +128,6 @@ const STR: Record<string, Record<string, string>> = {
     emailLabel: "Votre adresse e-mail",
     emailPh: "vous@exemple.com",
     phoneHelp: "Le num\u00e9ro utilis\u00e9 pour cr\u00e9er votre compte Bambeh.",
-    askBtn: "Demander un mot de passe temporaire sur WhatsApp",
-    phoneNote: "Bambeh ne peut pas encore envoyer de SMS. Appuyez sur le bouton et notre \u00e9quipe vous enverra un mot de passe temporaire sur WhatsApp, g\u00e9n\u00e9ralement en quelques minutes. D\u00e8s que vous vous connectez avec, Bambeh vous demande de choisir votre propre nouveau mot de passe.",
     sendBtn: "Envoyer le lien \u00e0 mon e-mail",
     sending: "Envoi\u2026",
     emailSent: "Si cette adresse est enregistr\u00e9e, un lien est en route. Cela peut prendre quelques minutes, et il arrive parfois dans les spams.",
@@ -138,6 +159,31 @@ const STR: Record<string, Record<string, string>> = {
     q_first_car_colour: "De quelle couleur \u00e9tait votre premi\u00e8re voiture ?",
     q_birth_town: "Dans quelle ville \u00eates-vous n\u00e9(e) ?",
     carSkip: "Jamais eu de voiture ? Passez cette question.",
+    tabCode: "Code Bambeh",
+    codeHint: "L'\u00e9quipe Bambeh vous a envoy\u00e9 un code ? Utilisez l'onglet \u00ab Code Bambeh \u00bb.",
+    codeTitle: "Utilisez le code envoy\u00e9 par l'\u00e9quipe Bambeh",
+    codeIntro: "Vous n'avez pas besoin de votre ancien mot de passe. Saisissez votre num\u00e9ro, le code \u00e0 8 chiffres re\u00e7u sur WhatsApp, et choisissez un nouveau mot de passe. Le code ne sert qu'une fois et expire apr\u00e8s 24 heures.",
+    codeLabel: "Code Bambeh (8 chiffres)",
+    codeSubmit: "Enregistrer mon nouveau mot de passe",
+    codeSaving: "Enregistrement...",
+    codeDone: "Votre nouveau mot de passe est enregistr\u00e9. Connexion en cours...",
+    codeDoneManual: "Votre nouveau mot de passe est enregistr\u00e9. Connectez-vous avec votre num\u00e9ro et votre nouveau mot de passe.",
+    errCodeShort: "Saisissez les 8 chiffres du code.",
+    errCodeInvalid: "Ce code est incorrect, d\u00e9j\u00e0 utilis\u00e9 ou expir\u00e9. V\u00e9rifiez le message WhatsApp ou demandez un nouveau code \u00e0 Bambeh.",
+    errPwShort: "Le nouveau mot de passe doit contenir au moins 8 caract\u00e8res.",
+    errPwMatch: "Les deux mots de passe ne correspondent pas.",
+    errCodeNetwork: "Impossible de joindre Bambeh. V\u00e9rifiez votre connexion et r\u00e9essayez.",
+    askBtn: "Demander un code de r\u00e9initialisation sur WhatsApp",
+    phoneNote: "Bambeh ne peut pas encore envoyer de SMS. Appuyez sur le bouton : une fois que notre \u00e9quipe aura v\u00e9rifi\u00e9 que c'est bien vous, elle vous enverra un code de r\u00e9initialisation sur WhatsApp. Saisissez-le dans l'onglet \u00ab Code Bambeh \u00bb et choisissez votre nouveau mot de passe. Vous n'aurez pas besoin de l'ancien.",
+    newPass: "Nouveau mot de passe",
+    newPassPh: "Au moins 8 caract\u00e8res",
+    confirmPass: "Confirmez le mot de passe",
+    confirmPassPh: "Saisissez-le \u00e0 nouveau",
+    show: "Afficher",
+    hide: "Masquer",
+    ruleLength: "Au moins 8 caract\u00e8res",
+    ruleMatch: "Les deux mots de passe correspondent",
+    ruleNoMatch: "Les deux mots de passe ne correspondent pas encore",
   },
   pidgin: {
     title: "You don forget your password?",
@@ -149,8 +195,6 @@ const STR: Record<string, Record<string, string>> = {
     emailLabel: "Your email",
     emailPh: "you@example.com",
     phoneHelp: "Na di number wey you take open your Bambeh account.",
-    askBtn: "Ask for temporary password for WhatsApp",
-    phoneNote: "Bambeh no fit send SMS yet. Press the button and our team go send you temporary password for WhatsApp, e no dey take long. As you sign in with am, Bambeh go ask you make you choose your own new password.",
     sendBtn: "Send di reset link go my email",
     sending: "E dey go\u2026",
     emailSent: "If dat email dey registered, di link don comot. E fit take small time, and sometimes e dey enter spam.",
@@ -182,6 +226,31 @@ const STR: Record<string, Record<string, string>> = {
     q_first_car_colour: "Wetin be the colour of your first motor?",
     q_birth_town: "Which town dem born you?",
     carSkip: "You never get motor? Leave this one.",
+    tabCode: "Bambeh code",
+    codeHint: "Bambeh staff don send you reset code? Use the \"Bambeh code\" tab.",
+    codeTitle: "Use the code wey Bambeh staff send you",
+    codeIntro: "You no need your old password. Put your phone number, the 8-number code from WhatsApp, and choose new password. The code work only one time and e go expire after 24 hours.",
+    codeLabel: "Code from Bambeh (8 number)",
+    codeSubmit: "Save my new password",
+    codeSaving: "E dey save...",
+    codeDone: "Your new password don save. We dey sign you in...",
+    codeDoneManual: "Your new password don save. Sign in with your phone number and your new password.",
+    errCodeShort: "Put all the 8 number for the code.",
+    errCodeInvalid: "That code no correct, or dem don use am, or e don expire. Check the WhatsApp message, or ask Bambeh for new code.",
+    errPwShort: "Your new password must reach 8 character.",
+    errPwMatch: "The two password no match.",
+    errCodeNetwork: "We no fit reach Bambeh. Check your connection and try again.",
+    askBtn: "Ask for reset code for WhatsApp",
+    phoneNote: "Bambeh no fit send SMS yet. Press the button; when our team don check say na really you, dem go send you reset code for WhatsApp. Put am for the \"Bambeh code\" tab and choose your new password. You no go need the old one.",
+    newPass: "New password",
+    newPassPh: "At least 8 character",
+    confirmPass: "Confirm password",
+    confirmPassPh: "Type am again",
+    show: "Show",
+    hide: "Hide",
+    ruleLength: "At least 8 character",
+    ruleMatch: "The two password dem match",
+    ruleNoMatch: "The two password never match",
   },
   ar: {
     title: "\u0647\u0644 \u0646\u0633\u064a\u062a \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061f",
@@ -193,8 +262,6 @@ const STR: Record<string, Record<string, string>> = {
     emailLabel: "\u0628\u0631\u064a\u062f\u0643 \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a",
     emailPh: "you@example.com",
     phoneHelp: "\u0647\u0630\u0627 \u0647\u0648 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u0623\u0646\u0634\u0623\u062a \u0628\u0647 \u062d\u0633\u0627\u0628\u0643 \u0641\u064a \u0628\u0627\u0645\u0628\u064a\u0647.",
-    askBtn: "\u0627\u0637\u0644\u0628 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628",
-    phoneNote: "\u0644\u0627 \u064a\u0633\u062a\u0637\u064a\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0625\u0631\u0633\u0627\u0644 \u0631\u0633\u0627\u0626\u0644 \u0646\u0635\u064a\u0629 \u0628\u0639\u062f. \u0627\u0636\u063a\u0637 \u0639\u0644\u0649 \u0627\u0644\u0632\u0631 \u0648\u0633\u064a\u0631\u0633\u0644 \u0644\u0643 \u0641\u0631\u064a\u0642\u0646\u0627 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628\u060c \u0639\u0627\u062f\u0629\u064b \u062e\u0644\u0627\u0644 \u062f\u0642\u0627\u0626\u0642. \u0628\u0645\u062c\u0631\u062f \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0647\u0627\u060c \u064a\u0637\u0644\u0628 \u0645\u0646\u0643 \u0628\u0627\u0645\u0628\u064a\u0647 \u0627\u062e\u062a\u064a\u0627\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643.",
     sendBtn: "\u0623\u0631\u0633\u0644 \u0627\u0644\u0631\u0627\u0628\u0637 \u0625\u0644\u0649 \u0628\u0631\u064a\u062f\u064a",
     sending: "\u062c\u0627\u0631\u064d \u0627\u0644\u0625\u0631\u0633\u0627\u0644\u2026",
     emailSent: "\u0625\u0630\u0627 \u0643\u0627\u0646 \u0647\u0630\u0627 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0645\u0633\u062c\u0651\u0644\u0627\u064b \u0641\u0627\u0644\u0631\u0627\u0628\u0637 \u0641\u064a \u0627\u0644\u0637\u0631\u064a\u0642. \u0642\u062f \u064a\u0633\u062a\u063a\u0631\u0642 \u062f\u0642\u0627\u0626\u0642\u060c \u0648\u0623\u062d\u064a\u0627\u0646\u0627\u064b \u064a\u0635\u0644 \u0625\u0644\u0649 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0645\u0632\u0639\u062c.",
@@ -226,6 +293,31 @@ const STR: Record<string, Record<string, string>> = {
     q_first_car_colour: "\u0645\u0627 \u0644\u0648\u0646 \u0633\u064a\u0627\u0631\u062a\u0643 \u0627\u0644\u0623\u0648\u0644\u0649\u061f",
     q_birth_town: "\u0641\u064a \u0623\u064a \u0645\u062f\u064a\u0646\u0629 \u0648\u064f\u0644\u062f\u062a\u061f",
     carSkip: "\u0644\u0645 \u062a\u0645\u062a\u0644\u0643 \u0633\u064a\u0627\u0631\u0629 \u0642\u0637\u061f \u062a\u062e\u0637\u064e\u0651 \u0647\u0630\u0627 \u0627\u0644\u0633\u0624\u0627\u0644.",
+    tabCode: "\u0631\u0645\u0632 \u0628\u0627\u0645\u0628\u064a\u0647",
+    codeHint: "\u0647\u0644 \u0623\u0631\u0633\u0644 \u0644\u0643 \u0641\u0631\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0631\u0645\u0632\u064b\u0627\u061f \u0627\u0633\u062a\u062e\u062f\u0645 \u062a\u0628\u0648\u064a\u0628 \u00ab\u0631\u0645\u0632 \u0628\u0627\u0645\u0628\u064a\u0647\u00bb.",
+    codeTitle: "\u0627\u0633\u062a\u062e\u062f\u0645 \u0627\u0644\u0631\u0645\u0632 \u0627\u0644\u0630\u064a \u0623\u0631\u0633\u0644\u0647 \u0644\u0643 \u0641\u0631\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647",
+    codeIntro: "\u0644\u0627 \u062a\u062d\u062a\u0627\u062c \u0625\u0644\u0649 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0642\u062f\u064a\u0645\u0629. \u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0648\u0627\u0644\u0631\u0645\u0632 \u0627\u0644\u0645\u0643\u0648\u0651\u0646 \u0645\u0646 8 \u0623\u0631\u0642\u0627\u0645 \u0645\u0646 \u0648\u0627\u062a\u0633\u0627\u0628\u060c \u0648\u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629. \u064a\u0639\u0645\u0644 \u0627\u0644\u0631\u0645\u0632 \u0645\u0631\u0629 \u0648\u0627\u062d\u062f\u0629 \u0648\u062a\u0646\u062a\u0647\u064a \u0635\u0644\u0627\u062d\u064a\u062a\u0647 \u0628\u0639\u062f 24 \u0633\u0627\u0639\u0629.",
+    codeLabel: "\u0631\u0645\u0632 \u0628\u0627\u0645\u0628\u064a\u0647 (8 \u0623\u0631\u0642\u0627\u0645)",
+    codeSubmit: "\u062d\u0641\u0638 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062c\u062f\u064a\u062f\u0629",
+    codeSaving: "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638...",
+    codeDone: "\u062a\u0645 \u062d\u0641\u0638 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062c\u062f\u064a\u062f\u0629. \u062c\u0627\u0631\u064d \u062a\u0633\u062c\u064a\u0644 \u062f\u062e\u0648\u0644\u0643...",
+    codeDoneManual: "\u062a\u0645 \u062d\u0641\u0638 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062c\u062f\u064a\u062f\u0629. \u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062c\u062f\u064a\u062f\u0629.",
+    errCodeShort: "\u0623\u062f\u062e\u0644 \u0623\u0631\u0642\u0627\u0645 \u0627\u0644\u0631\u0645\u0632 \u0627\u0644\u062b\u0645\u0627\u0646\u064a\u0629 \u0643\u0644\u0647\u0627.",
+    errCodeInvalid: "\u0647\u0630\u0627 \u0627\u0644\u0631\u0645\u0632 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d \u0623\u0648 \u0627\u0633\u062a\u064f\u062e\u062f\u0645 \u0645\u0646 \u0642\u0628\u0644 \u0623\u0648 \u0627\u0646\u062a\u0647\u062a \u0635\u0644\u0627\u062d\u064a\u062a\u0647. \u0631\u0627\u062c\u0639 \u0631\u0633\u0627\u0644\u0629 \u0648\u0627\u062a\u0633\u0627\u0628 \u0623\u0648 \u0627\u0637\u0644\u0628 \u0631\u0645\u0632\u064b\u0627 \u062c\u062f\u064a\u062f\u064b\u0627 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647.",
+    errPwShort: "\u064a\u062c\u0628 \u0623\u0646 \u062a\u062a\u0643\u0648\u0646 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062c\u062f\u064a\u062f\u0629 \u0645\u0646 8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.",
+    errPwMatch: "\u0643\u0644\u0645\u062a\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u064a\u0631 \u0645\u062a\u0637\u0627\u0628\u0642\u062a\u064a\u0646.",
+    errCodeNetwork: "\u062a\u0639\u0630\u0651\u0631 \u0627\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647. \u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u062a\u0635\u0627\u0644\u0643 \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
+    askBtn: "\u0627\u0637\u0644\u0628 \u0631\u0645\u0632 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u0639\u064a\u064a\u0646 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628",
+    phoneNote: "\u0644\u0627 \u064a\u0633\u062a\u0637\u064a\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0625\u0631\u0633\u0627\u0644 \u0631\u0633\u0627\u0626\u0644 \u0646\u0635\u064a\u0629 \u0628\u0639\u062f. \u0627\u0636\u063a\u0637 \u0639\u0644\u0649 \u0627\u0644\u0632\u0631\u060c \u0648\u0628\u0639\u062f \u0623\u0646 \u064a\u062a\u062d\u0642\u0642 \u0641\u0631\u064a\u0642\u0646\u0627 \u0645\u0646 \u0647\u0648\u064a\u062a\u0643 \u0633\u064a\u0631\u0633\u0644 \u0625\u0644\u064a\u0643 \u0631\u0645\u0632 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u0639\u064a\u064a\u0646 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628. \u0623\u062f\u062e\u0644\u0647 \u0641\u064a \u062a\u0628\u0648\u064a\u0628 \u00ab\u0631\u0645\u0632 \u0628\u0627\u0645\u0628\u064a\u0647\u00bb \u0648\u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629. \u0644\u0646 \u062a\u062d\u062a\u0627\u062c \u0625\u0644\u0649 \u0627\u0644\u0642\u062f\u064a\u0645\u0629.",
+    newPass: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062c\u062f\u064a\u062f\u0629",
+    newPassPh: "8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644",
+    confirmPass: "\u062a\u0623\u0643\u064a\u062f \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631",
+    confirmPassPh: "\u0623\u0639\u062f \u0625\u062f\u062e\u0627\u0644 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631",
+    show: "\u0625\u0638\u0647\u0627\u0631",
+    hide: "\u0625\u062e\u0641\u0627\u0621",
+    ruleLength: "8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644",
+    ruleMatch: "\u0643\u0644\u0645\u062a\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u0645\u062a\u0637\u0627\u0628\u0642\u062a\u0627\u0646",
+    ruleNoMatch: "\u0643\u0644\u0645\u062a\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u064a\u0631 \u0645\u062a\u0637\u0627\u0628\u0642\u062a\u064a\u0646 \u0628\u0639\u062f",
   },
   ff: {
     title: "A yejjitii finnde maa?",
@@ -237,8 +329,6 @@ const STR: Record<string, Record<string, string>> = {
     emailLabel: "Iimeel maa",
     emailPh: "you@example.com",
     phoneHelp: "Ko ngal limngal huutor\u0257aa udditde konte maa Bambeh.",
-    askBtn: "\u01b3am finnde laawol gootol e WhatsApp",
-    phoneNote: "Bambeh waawaa neldude SMS tawo. \u00d1o\u01b4\u01b4u buton oo, gollo\u0253e amen neldete finnde laawol gootol e WhatsApp, ko \u0253uri heewde e nder hojomaaji see\u0257a. So a naatii e mayre, Bambeh naamnete su\u0253aa finnde maa keso.",
     sendBtn: "Neldu ce\u014bngal e iimeel am",
     sending: "Ina nelda\u2026",
     emailSent: "So tawii iimeel ngal ina winndaa, ce\u014bngal ngal ina ara. Ina waawi \u01b4ettude hojomaaji see\u0257a, kadi ina waawi naatde e spam.",
@@ -270,6 +360,31 @@ const STR: Record<string, Record<string, string>> = {
     q_first_car_colour: "Hol noone oto maa aranoowo?",
     q_birth_town: "Hol wuro ndo njibinaa?",
     carSkip: "A jogaaki oto abada? Acc ndee.",
+    tabCode: "Kod Bambeh",
+    codeHint: "Gollo\u0253e Bambeh neldii ma kod? Huutoro hello \"Kod Bambeh\".",
+    codeTitle: "Huutoro kod mo gollo\u0253e Bambeh neldi ma",
+    codeIntro: "A haajaaki finnde maa hii\u0257nde. Naatnu limngal tilifon maa, kod limngal 8 immorde e WhatsApp, su\u0253o finnde keso. Kod oo ina golla laawol gootol tan, ina timma caggal waktuuji 24.",
+    codeLabel: "Kod Bambeh (limngal 8)",
+    codeSubmit: "Danndu finnde am keso",
+    codeSaving: "Eno dannda...",
+    codeDone: "Finnde maa keso danndaama. Eno naatnde ma...",
+    codeDoneManual: "Finnde maa keso danndaama. Naatir e limngal tilifon maa e finnde maa keso.",
+    errCodeShort: "Naatnu limngal kod oo fof 8.",
+    errCodeInvalid: "Kod oo selli, walla huutoraama, walla timmii. \u01b3eewu mesaas WhatsApp oo, walla \u01b4am kod keso e Bambeh.",
+    errPwShort: "Finnde keso ina foti heewde alkule 8.",
+    errPwMatch: "Finndeeji \u0257i\u0257i \u0257in nanndaani.",
+    errCodeNetwork: "Min mbaawaani he\u0253de Bambeh. \u01b3eewu jokkondiral maa nda\u0257\u0257a kadi.",
+    askBtn: "\u01b3am kod kes\u0257itingol e WhatsApp",
+    phoneNote: "Bambeh waawaa neldude SMS tawo. \u00d1o\u01b4\u01b4u buton oo; so gollo\u0253e amen \u01b4eewtii ko an tigi, \u0253e neldete kod kes\u0257itingol e WhatsApp. Naatnu \u0257um e hello \"Kod Bambeh\", su\u0253o finnde maa keso. A haajaaki hii\u0257nde nde.",
+    newPass: "Finnde keso",
+    newPassPh: "Ko fam\u0257i fof alkule 8",
+    confirmPass: "Tee\u014btinu finnde",
+    confirmPassPh: "Winndu \u0257um kadi",
+    show: "Hollu",
+    hide: "Suu\u0257u",
+    ruleLength: "Ko fam\u0257i fof alkule 8",
+    ruleMatch: "Finndeeji \u0257i\u0257i \u0257in nanndi",
+    ruleNoMatch: "Finndeeji \u0257i\u0257i \u0257in nanndaani tawo",
   },
 };
 
@@ -290,7 +405,7 @@ export default function ForgotPassword() {
   const isRtl = lang === 'ar';
   const t = (k: string) => tr(lang, k);
 
-  const [mode, setMode] = useState<'phone' | 'email'>('phone');
+  const [mode, setMode] = useState<'phone' | 'email' | 'code'>('phone');
   const [phone, setPhone] = useState('');      // full international, from AfricanPhoneInput
   const [phoneOk, setPhoneOk] = useState(false);
 
@@ -308,6 +423,80 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  /* FIX625 - a reset code from Bambeh staff. The owner does NOT need the old
+     password: the database checks the code (bambeh_redeem_reset_code, FIX623),
+     sets the new password, signs out every other device, and the page then
+     signs straight in. Works once, expires after 24 hours, 5 tries. */
+  const navigate = useNavigate();
+  const [cPhone, setCPhone] = useState('');
+  const [cPhoneOk, setCPhoneOk] = useState(false);
+  const [cCode, setCCode] = useState('');
+  const [cPw1, setCPw1] = useState('');
+  const [cPw2, setCPw2] = useState('');
+  const [cShow, setCShow] = useState(false);
+  const [cBusy, setCBusy] = useState(false);
+  const [cDone, setCDone] = useState<'' | 'signed_in' | 'manual'>('');
+  const cDigits = cPhone.replace(/\D/g, '');
+  const cCodeDigits = cCode.replace(/\D/g, '');
+  const cLong = cPw1.length >= 8;
+  const cMatch = cPw1.length > 0 && cPw1 === cPw2;
+  const cReady = cPhoneOk && cCodeDigits.length === 8 && cLong && cMatch && !cBusy;
+
+  const redeemResetCode = async () => {
+    if (!cPhoneOk || cDigits.length < 8) { setError(t('badPhone')); return; }
+    if (cCodeDigits.length !== 8) { setError(t('errCodeShort')); return; }
+    if (!cLong) { setError(t('errPwShort')); return; }
+    if (!cMatch) { setError(t('errPwMatch')); return; }
+    setCBusy(true);
+    setError(null);
+    try {
+      let res: { data: unknown; error: { message?: string } | null } | null = null;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        res = (await supabase.rpc('bambeh_redeem_reset_code', {
+          p_phone: cDigits,
+          p_code: cCodeDigits,
+          p_new_password: cPw1,
+        })) as unknown as { data: unknown; error: { message?: string } | null };
+        if (res && res.error && attempt === 0 && /fetch|network|timeout/i.test(String(res.error.message || ''))) {
+          await new Promise((r) => setTimeout(r, 900));
+          continue;
+        }
+        break;
+      }
+      if (!res || res.error) { setError(t('errCodeNetwork')); return; }
+      const d = (res.data || {}) as { ok?: boolean; reason?: string; login?: string };
+      if (d.ok !== true) {
+        setError(
+          d.reason === 'too_many' ? t('tooMany')
+            : d.reason === 'weak_password' ? t('errPwShort')
+              : d.reason === 'code_format' ? t('errCodeShort')
+                : d.reason === 'bad_phone' ? t('badPhone')
+                  : t('errCodeInvalid'),
+        );
+        return;
+      }
+      // The new password is in place. Sign straight in with it.
+      let signedIn = false;
+      if (d.login) {
+        try {
+          const s = await supabase.auth.signInWithPassword({ email: String(d.login), password: cPw1 });
+          signedIn = !s.error;
+        } catch { signedIn = false; }
+      }
+      setCPw1(''); setCPw2(''); setCCode('');
+      if (signedIn) {
+        setCDone('signed_in');
+        window.setTimeout(() => navigate('/', { replace: true }), 1200);
+      } else {
+        setCDone('manual');
+      }
+    } catch {
+      setError(t('errCodeNetwork'));
+    } finally {
+      setCBusy(false);
+    }
+  };
 
   const digits = phone.replace(/\D/g, '');
 
@@ -394,7 +583,7 @@ export default function ForgotPassword() {
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8">
-          <div className="grid grid-cols-2 gap-3 mb-5">
+          <div className="grid grid-cols-3 gap-2 mb-5">
             <button type="button" onClick={() => { setMode('phone'); setError(null); }}
               className={`${TAB} ${mode === 'phone'
                 ? 'bg-teal-600 text-white border-teal-600'
@@ -407,10 +596,75 @@ export default function ForgotPassword() {
                 : 'bg-white text-gray-700 border-gray-200'}`}>
               {t('tabEmail')}
             </button>
+            <button type="button" onClick={() => { setMode('code'); setError(null); }}
+              className={`${TAB} ${mode === 'code'
+                ? 'bg-teal-600 text-white border-teal-600'
+                : 'bg-white text-gray-700 border-gray-200'}`}>
+              {t('tabCode')}
+            </button>
           </div>
 
           {/* -- PHONE --------------------------------------------------- */}
-          {mode === 'phone' ? (
+          {mode === 'code' ? (
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-teal-50 border border-teal-100 p-3">
+                <p className="text-sm font-semibold text-teal-900">{t('codeTitle')}</p>
+                <p className="text-xs text-teal-800 mt-1">{t('codeIntro')}</p>
+              </div>
+              {cDone ? (
+                <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800 font-semibold text-center">
+                  {cDone === 'signed_in' ? t('codeDone') : t('codeDoneManual')}
+                  {cDone === 'manual' ? (
+                    <div className="mt-3">
+                      <Link to="/login" className="underline">{t('back')}</Link>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void redeemResetCode(); }}>
+                  <div dir="ltr">
+                    <AfricanPhoneInput
+                      value={cPhone}
+                      label={t('phoneLabel')}
+                      required
+                      onChange={(full, valid) => {
+                        setCPhone(full);
+                        setCPhoneOk(valid);
+                        if (valid) setError(null);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="fpCode" className="block text-sm font-medium text-gray-700">{t('codeLabel')}</label>
+                    <input id="fpCode" inputMode="numeric" autoComplete="one-time-code" maxLength={11}
+                      value={cCode} onChange={(e) => setCCode(e.target.value)} placeholder="1234 5678"
+                      className={INPUT + ' tracking-widest text-center text-lg'} dir="ltr" />
+                  </div>
+                  <div>
+                    <label htmlFor="fpNew1" className="block text-sm font-medium text-gray-700">{t('newPass')}</label>
+                    <input id="fpNew1" type={cShow ? 'text' : 'password'} autoComplete="new-password"
+                      value={cPw1} onChange={(e) => setCPw1(e.target.value)} placeholder={t('newPassPh')} className={INPUT} />
+                  </div>
+                  <div>
+                    <label htmlFor="fpNew2" className="block text-sm font-medium text-gray-700">{t('confirmPass')}</label>
+                    <input id="fpNew2" type={cShow ? 'text' : 'password'} autoComplete="new-password"
+                      value={cPw2} onChange={(e) => setCPw2(e.target.value)} placeholder={t('confirmPassPh')} className={INPUT} />
+                  </div>
+                  <button type="button" onClick={() => setCShow((v) => !v)} className="text-xs font-semibold text-teal-700 underline">
+                    {cShow ? t('hide') : t('show')}
+                  </button>
+                  <div className="text-xs space-y-1">
+                    <p className={cLong ? 'text-emerald-700' : 'text-gray-500'}>{cLong ? '\u2713' : '\u2022'} {t('ruleLength')}</p>
+                    <p className={cMatch ? 'text-emerald-700' : 'text-gray-500'}>{cMatch ? '\u2713' : '\u2022'} {cMatch ? t('ruleMatch') : t('ruleNoMatch')}</p>
+                  </div>
+                  <button type="submit" disabled={!cReady}
+                    className="w-full rounded-xl bg-teal-600 hover:bg-teal-700 text-white py-3 font-semibold disabled:bg-gray-300">
+                    {cBusy ? t('codeSaving') : t('codeSubmit')}
+                  </button>
+                </form>
+              )}
+            </div>
+          ) : mode === 'phone' ? (
             <div className="space-y-4">
               <div dir="ltr">
                 {/* FIX478b - the app's own phone input: country picker defaulting
@@ -428,6 +682,10 @@ export default function ForgotPassword() {
                   }}
                 />
                 <p className="mt-1 text-xs text-gray-500">{t('phoneHelp')}</p>
+                <button type="button" onClick={() => { setMode('code'); setError(null); }}
+                  className="mt-2 text-xs font-semibold text-teal-700 underline text-start">
+                  {t('codeHint')}
+                </button>
               </div>
 
               {/* -- FIX488: prove it is your account --------------------- */}
@@ -550,4 +808,4 @@ export default function ForgotPassword() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX615__COMPLETE
+// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX625__COMPLETE
