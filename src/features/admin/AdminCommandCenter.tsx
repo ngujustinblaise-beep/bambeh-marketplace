@@ -55,6 +55,7 @@ import ObligationsSection from './ObligationsSection'; // FIX550
 import CouriersSection from './CouriersSection';       // FIX563
 import AdminListingsReactivate from './AdminListingsReactivate'; // FIX611
 import AdminAccountRecovery from './AdminAccountRecovery';       // FIX612
+import AdminRefunds from './AdminRefunds';                   // FIX636
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
 type Section =
@@ -62,7 +63,7 @@ type Section =
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
   | 'agents' | 'requests' | 'paywall' | 'obligations' | 'couriers'
-  | 'revive' | 'recovery';
+  | 'revive' | 'recovery' | 'refunds';
 
 const NAV: Array<{
   key: Section;
@@ -78,6 +79,7 @@ const NAV: Array<{
   { key: 'listings',  label: 'Listings',       icon: Boxes,
     badge: ['listings_pending'] },
   { key: 'revive',    label: 'Reactivate adverts', icon: RefreshCw }, // FIX611
+  { key: 'refunds',   label: 'Refund claims', icon: RefreshCw },   // FIX636
   { key: 'ads',       label: 'Adverts',        icon: Megaphone },
   { key: 'promos',    label: 'Promotions',     icon: Star },
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
@@ -259,6 +261,7 @@ export default function AdminCommandCenter() {
         {section === 'listings'  && <ListingsSection />}
         {section === 'revive'    && <AdminListingsReactivate embedded />}{/* FIX611 */}
         {section === 'recovery'  && <AdminAccountRecovery embedded />}{/* FIX612 */}
+        {section === 'refunds'   && <AdminRefunds embedded />}{/* FIX636 */}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
         {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}
         {section === 'comms'     && <CommsSection userId={userId!} role={role} flash={flash} />}

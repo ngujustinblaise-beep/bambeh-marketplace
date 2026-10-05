@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__ESCROWACTIONPANEL_FIX209_AUTOCONFIRM
+// BAMBEH_DEPLOY_TOKEN__ESCROWACTIONPANEL_FIX637_CLEAN
 /**
  * EscrowActionPanel.tsx - Bambeh Marketplace (FIX206)
  * FILE LOCATION: src/components/EscrowActionPanel.tsx
@@ -12,7 +12,11 @@
  *
  * NO STUBS. Every button calls something that exists:
  *   Confirm receipt + pay seller -> POST <payments>/release-escrow
- *   Request refund               -> POST <payments>/refund-escrow
+ *   Report a problem (a claim)   -> POST <payments>/refund-escrow
+ *     FIX637/FIX634: this no longer refunds anyone. It opens a CLAIM that
+ *     Bambeh staff decide within 72 hours; only an admin can send the money
+ *     back, and only the item price. While a claim is open the order shows
+ *     as "under review" and no money button is offered.
  *   Message the seller           -> /chat?userId=<seller_id>&listingTitle=...
  *   View breakdown / Refresh     -> pure client, reads the order row
  *
@@ -100,15 +104,15 @@ const strings = {
     refundedTitle: 'Refund issued',
     refundedBody: 'This order was declined and the money was sent back to the number that paid.',
     disputedTitle: 'Under review',
-    disputedBody: 'This order is frozen while it is reviewed. No money moves until it is resolved.',
+    disputedBody: "A claim on this order is being reviewed by Bambeh, who replies within 72 hours. No money moves until it is decided.",
     noEscrowTitle: 'Direct payment',
     noEscrowBody: 'This order was not placed under Buyer Protection, so there is nothing to hold or release.',
     closedTitle: 'Order closed',
     closedBody: 'This order was cancelled or did not complete. No money is being held for it.',
     sellerTitle: 'You are the seller on this order',
-    sellerBody: 'Only the buyer can confirm receipt or request a refund. You will be paid as soon as the buyer confirms.',
+    sellerBody: "Only the buyer can confirm receipt or report a problem. You are paid as soon as they confirm, or when Bambeh decides a claim in your favour.",
     btnConfirm: 'Confirm receipt and pay seller',
-    btnRefund: 'Not received - request refund',
+    btnRefund: "Not received, or wrong item? Report a problem",
     btnChat: 'Message the seller',
     showBreak: 'View breakdown',
     hideBreak: 'Hide breakdown',
@@ -128,15 +132,15 @@ const strings = {
     confirmLine1: 'This releases {amount} to the seller straight away.',
     confirmLine2: 'It cannot be undone. Only confirm if the item is in your hands and it is what you ordered.',
     confirmCta: 'Yes, release the payment',
-    refundTitle: 'Request a refund',
-    refundBody: 'Tell us what went wrong. The money goes back to the number that paid.',
+    refundTitle: "Report a problem with this order",
+    refundBody: "Tell us what went wrong. Bambeh reviews every claim within 72 hours. If the item never arrived, or is clearly wrong, fake or broken, you get the item price back to the number that paid. Commission and charges are not refunded. The seller is not paid while your claim is open.",
     refundPlaceholder: 'For example: the item never arrived, or it is not what was described.',
     refundNeedReason: 'Please describe the problem in at least 10 characters.',
-    refundCta: 'Request the refund',
+    refundCta: "Send my claim",
     cancel: 'Cancel',
     working: 'Working...',
     okReleased: 'Done. The payment has been released to the seller.',
-    okRefunded: 'Refund requested. You will be notified when it lands.',
+    okRefunded: "Claim received. Bambeh will review it within 72 hours. The seller is not paid while it is open.",
     signIn: 'Please sign in again to continue.',
     loadErr: 'Could not load the protection details.',
     notFound: 'Order not found, or it belongs to another account.',
@@ -153,15 +157,15 @@ const strings = {
     refundedTitle: 'Remboursement effectu\u00e9',
     refundedBody: 'Cette commande a \u00e9t\u00e9 refus\u00e9e et l\u2019argent a \u00e9t\u00e9 renvoy\u00e9 au num\u00e9ro qui a pay\u00e9.',
     disputedTitle: 'En cours d\u2019examen',
-    disputedBody: 'Cette commande est gel\u00e9e pendant l\u2019examen. Aucun mouvement d\u2019argent avant r\u00e9solution.',
+    disputedBody: "Une r\u00e9clamation sur cette commande est en cours d'examen par Bambeh, qui r\u00e9pond sous 72 heures. Aucun argent ne bouge avant la d\u00e9cision.",
     noEscrowTitle: 'Paiement direct',
     noEscrowBody: 'Cette commande n\u2019est pas sous Protection Acheteur, il n\u2019y a donc rien \u00e0 lib\u00e9rer.',
     closedTitle: 'Commande cl\u00f4tur\u00e9e',
     closedBody: 'Cette commande a \u00e9t\u00e9 annul\u00e9e ou n\u2019a pas abouti. Aucun argent n\u2019est conserv\u00e9.',
     sellerTitle: 'Vous \u00eates le vendeur de cette commande',
-    sellerBody: 'Seul l\u2019acheteur peut confirmer la r\u00e9ception ou demander un remboursement. Vous serez pay\u00e9 d\u00e8s sa confirmation.',
+    sellerBody: "Seul l'acheteur peut confirmer la r\u00e9ception ou signaler un probl\u00e8me. Vous \u00eates pay\u00e9 d\u00e8s sa confirmation, ou quand Bambeh tranche une r\u00e9clamation en votre faveur.",
     btnConfirm: 'Confirmer la r\u00e9ception et payer le vendeur',
-    btnRefund: 'Non re\u00e7u - demander un remboursement',
+    btnRefund: "Pas re\u00e7u, ou mauvais article ? Signaler un probl\u00e8me",
     btnChat: 'Contacter le vendeur',
     showBreak: 'Voir le d\u00e9tail',
     hideBreak: 'Masquer le d\u00e9tail',
@@ -181,15 +185,15 @@ const strings = {
     confirmLine1: 'Cela verse imm\u00e9diatement {amount} au vendeur.',
     confirmLine2: 'C\u2019est irr\u00e9versible. Ne confirmez que si vous avez l\u2019article et qu\u2019il correspond \u00e0 la commande.',
     confirmCta: 'Oui, lib\u00e9rer le paiement',
-    refundTitle: 'Demander un remboursement',
-    refundBody: 'Expliquez le probl\u00e8me. L\u2019argent retourne au num\u00e9ro qui a pay\u00e9.',
+    refundTitle: "Signaler un probl\u00e8me avec cette commande",
+    refundBody: "Dites-nous ce qui ne va pas. Bambeh examine chaque r\u00e9clamation sous 72 heures. Si l'article n'est jamais arriv\u00e9, ou s'il est manifestement faux, contrefait ou cass\u00e9, le prix de l'article vous est rembours\u00e9 sur le num\u00e9ro qui a pay\u00e9. La commission et les frais ne sont pas rembours\u00e9s. Le vendeur n'est pas pay\u00e9 tant que votre r\u00e9clamation est ouverte.",
     refundPlaceholder: 'Par exemple : l\u2019article n\u2019est jamais arriv\u00e9, ou il ne correspond pas \u00e0 la description.',
     refundNeedReason: 'Merci de d\u00e9crire le probl\u00e8me en 10 caract\u00e8res minimum.',
-    refundCta: 'Demander le remboursement',
+    refundCta: "Envoyer ma r\u00e9clamation",
     cancel: 'Annuler',
     working: 'Traitement...',
     okReleased: 'C\u2019est fait. Le paiement a \u00e9t\u00e9 lib\u00e9r\u00e9 au vendeur.',
-    okRefunded: 'Remboursement demand\u00e9. Vous serez notifi\u00e9 d\u00e8s r\u00e9ception.',
+    okRefunded: "R\u00e9clamation re\u00e7ue. Bambeh l'examinera sous 72 heures. Le vendeur n'est pas pay\u00e9 tant qu'elle est ouverte.",
     signIn: 'Veuillez vous reconnecter pour continuer.',
     loadErr: 'Impossible de charger les d\u00e9tails de la protection.',
     notFound: 'Commande introuvable, ou elle appartient \u00e0 un autre compte.',
@@ -206,15 +210,15 @@ const strings = {
     refundedTitle: 'Money don come back',
     refundedBody: 'You refuse this order and the money go back to the number wey pay.',
     disputedTitle: 'Dem dey check am',
-    disputedBody: 'This order freeze while dem check am. No money go move until dem settle am.',
+    disputedBody: "Bambeh dey check one claim for this order, and dem go answer inside 72 hours. No money go move until dem decide.",
     noEscrowTitle: 'Direct payment',
     noEscrowBody: 'This order no pass through Buyer Protection, so nothing dey for hold or release.',
     closedTitle: 'Order don close',
     closedBody: 'Dem cancel this order or e no complete. No money dey hold for am.',
     sellerTitle: 'You be the seller for this order',
-    sellerBody: 'Only buyer fit confirm say e receive am or ask for refund. You go collect once buyer confirm.',
+    sellerBody: "Na only the buyer fit confirm say e receive or report problem. You go collect your money once e confirm, or when Bambeh decide claim for your side.",
     btnConfirm: 'I don receive am - pay seller',
-    btnRefund: 'I no receive am - I want my money',
+    btnRefund: "E no reach, or e no correct? Report problem",
     btnChat: 'Message the seller',
     showBreak: 'See how dem share am',
     hideBreak: 'Hide am',
@@ -234,15 +238,15 @@ const strings = {
     confirmLine1: 'This one go send {amount} give seller now now.',
     confirmLine2: 'You no go fit undo am. Only confirm if the thing dey your hand and e correct.',
     confirmCta: 'Yes, release the money',
-    refundTitle: 'Ask for your money back',
-    refundBody: 'Tell us wetin happen. The money go back to the number wey pay.',
+    refundTitle: "Report problem for this order",
+    refundBody: "Tell us wetin happen. Bambeh go check every claim inside 72 hours. If the thing never reach, or e clear say e wrong, fake or spoil, you go get the item price back for the number wey pay. Commission and charges no dey come back. Seller no go collect money while your claim still open.",
     refundPlaceholder: 'Like: the thing never reach, or e no be wetin dem talk.',
     refundNeedReason: 'Abeg write wetin happen, at least 10 letters.',
-    refundCta: 'Ask for refund',
+    refundCta: "Send my claim",
     cancel: 'Cancel',
     working: 'E dey work...',
     okReleased: 'Done. Seller don collect the money.',
-    okRefunded: 'You don ask for refund. We go tell you when e land.',
+    okRefunded: "We don receive your claim. Bambeh go check am inside 72 hours. Seller no go collect money while e still open.",
     signIn: 'Abeg login again.',
     loadErr: 'The protection details no gree load.',
     notFound: 'Order no dey, or e belong to another account.',
@@ -259,15 +263,15 @@ const strings = {
     refundedTitle: '\u062a\u0645 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f',
     refundedBody: '\u062a\u0645 \u0631\u0641\u0636 \u0627\u0644\u0637\u0644\u0628 \u0648\u0623\u0639\u064a\u062f \u0627\u0644\u0645\u0628\u0644\u063a \u0625\u0644\u0649 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u062f\u0641\u0639.',
     disputedTitle: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629',
-    disputedBody: '\u0627\u0644\u0637\u0644\u0628 \u0645\u062c\u0645\u062f \u0623\u062b\u0646\u0627\u0621 \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629. \u0644\u0627 \u062a\u062a\u062d\u0631\u0643 \u0627\u0644\u0623\u0645\u0648\u0627\u0644 \u062d\u062a\u0649 \u0627\u0644\u062d\u0644.',
+    disputedBody: "\u064a\u0631\u0627\u062c\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0645\u0637\u0627\u0644\u0628\u0629 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0648\u064a\u0631\u062f \u062e\u0644\u0627\u0644 72 \u0633\u0627\u0639\u0629. \u0644\u0627 \u062a\u062a\u062d\u0631\u0643 \u0623\u064a \u0623\u0645\u0648\u0627\u0644 \u062d\u062a\u0649 \u064a\u062a\u0645 \u0627\u0644\u0642\u0631\u0627\u0631.",
     noEscrowTitle: '\u062f\u0641\u0639 \u0645\u0628\u0627\u0634\u0631',
     noEscrowBody: '\u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0644\u064a\u0633 \u062a\u062d\u062a \u0627\u0644\u0636\u0645\u0627\u0646\u060c \u0644\u0630\u0644\u0643 \u0644\u0627 \u0634\u064a\u0621 \u0644\u062a\u062d\u0631\u064a\u0631\u0647.',
     closedTitle: '\u0627\u0644\u0637\u0644\u0628 \u0645\u063a\u0644\u0642',
     closedBody: '\u062a\u0645 \u0625\u0644\u063a\u0627\u0621 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0623\u0648 \u0644\u0645 \u064a\u0643\u062a\u0645\u0644. \u0644\u0627 \u062a\u0648\u062c\u062f \u0623\u0645\u0648\u0627\u0644 \u0645\u062d\u062a\u0641\u0638 \u0628\u0647\u0627.',
     sellerTitle: '\u0623\u0646\u062a \u0627\u0644\u0628\u0627\u0626\u0639 \u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628',
-    sellerBody: '\u0627\u0644\u0645\u0634\u062a\u0631\u064a \u0648\u062d\u062f\u0647 \u064a\u0645\u0643\u0646\u0647 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0623\u0648 \u0637\u0644\u0628 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f. \u0633\u062a\u0633\u062a\u0644\u0645 \u0627\u0644\u0645\u0628\u0644\u063a \u0628\u0639\u062f \u062a\u0623\u0643\u064a\u062f\u0647.',
+    sellerBody: "\u0648\u062d\u062f\u0647 \u0627\u0644\u0645\u0634\u062a\u0631\u064a \u064a\u0645\u0643\u0646\u0647 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0623\u0648 \u0627\u0644\u0625\u0628\u0644\u0627\u063a \u0639\u0646 \u0645\u0634\u0643\u0644\u0629. \u062a\u062d\u0635\u0644 \u0639\u0644\u0649 \u0627\u0644\u0645\u0627\u0644 \u0641\u0648\u0631 \u062a\u0623\u0643\u064a\u062f\u0647\u060c \u0623\u0648 \u0639\u0646\u062f\u0645\u0627 \u064a\u0641\u0635\u0644 \u0628\u0627\u0645\u0628\u064a\u0647 \u0641\u064a \u0645\u0637\u0627\u0644\u0628\u0629 \u0644\u0635\u0627\u0644\u062d\u0643.",
     btnConfirm: '\u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0648\u062f\u0641\u0639 \u0627\u0644\u0628\u0627\u0626\u0639',
-    btnRefund: '\u0644\u0645 \u064a\u0635\u0644 - \u0637\u0644\u0628 \u0627\u0633\u062a\u0631\u062f\u0627\u062f',
+    btnRefund: "\u0644\u0645 \u064a\u0635\u0644 \u0623\u0648 \u0627\u0644\u0645\u0646\u062a\u062c \u062e\u0627\u0637\u0626\u061f \u0623\u0628\u0644\u063a \u0639\u0646 \u0645\u0634\u0643\u0644\u0629",
     btnChat: '\u0645\u0631\u0627\u0633\u0644\u0629 \u0627\u0644\u0628\u0627\u0626\u0639',
     showBreak: '\u0639\u0631\u0636 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644',
     hideBreak: '\u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644',
@@ -287,15 +291,15 @@ const strings = {
     confirmLine1: '\u0633\u064a\u062a\u0645 \u062a\u062d\u0648\u064a\u0644 {amount} \u0644\u0644\u0628\u0627\u0626\u0639 \u0641\u0648\u0631\u064b\u0627.',
     confirmLine2: '\u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062a\u0631\u0627\u062c\u0639. \u0623\u0643\u062f \u0641\u0642\u0637 \u0625\u0646 \u0643\u0627\u0646 \u0627\u0644\u0645\u0646\u062a\u062c \u0645\u0639\u0643 \u0648\u0645\u0637\u0627\u0628\u0642\u064b\u0627 \u0644\u0644\u0637\u0644\u0628.',
     confirmCta: '\u0646\u0639\u0645\u060c \u062d\u0631\u0631 \u0627\u0644\u0645\u0628\u0644\u063a',
-    refundTitle: '\u0637\u0644\u0628 \u0627\u0633\u062a\u0631\u062f\u0627\u062f',
-    refundBody: '\u0623\u062e\u0628\u0631\u0646\u0627 \u0645\u0627 \u062d\u062f\u062b. \u064a\u0639\u0648\u062f \u0627\u0644\u0645\u0628\u0644\u063a \u0625\u0644\u0649 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u062f\u0641\u0639.',
+    refundTitle: "\u0627\u0644\u0625\u0628\u0644\u0627\u063a \u0639\u0646 \u0645\u0634\u0643\u0644\u0629 \u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628",
+    refundBody: "\u0623\u062e\u0628\u0631\u0646\u0627 \u0628\u0645\u0627 \u062d\u062f\u062b. \u064a\u0631\u0627\u062c\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0643\u0644 \u0645\u0637\u0627\u0644\u0628\u0629 \u062e\u0644\u0627\u0644 72 \u0633\u0627\u0639\u0629. \u0625\u0630\u0627 \u0644\u0645 \u064a\u0635\u0644 \u0627\u0644\u0645\u0646\u062a\u062c\u060c \u0623\u0648 \u0643\u0627\u0646 \u062e\u0627\u0637\u0626\u064b\u0627 \u0623\u0648 \u0645\u0632\u064a\u0641\u064b\u0627 \u0623\u0648 \u0645\u0643\u0633\u0648\u0631\u064b\u0627 \u0628\u0634\u0643\u0644 \u0648\u0627\u0636\u062d\u060c \u064a\u064f\u0639\u0627\u062f \u0625\u0644\u064a\u0643 \u0633\u0639\u0631 \u0627\u0644\u0645\u0646\u062a\u062c \u0625\u0644\u0649 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u062f\u0641\u0639. \u0644\u0627 \u062a\u064f\u0631\u062f \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0648\u0627\u0644\u0631\u0633\u0648\u0645. \u0644\u0627 \u064a\u062d\u0635\u0644 \u0627\u0644\u0628\u0627\u0626\u0639 \u0639\u0644\u0649 \u0627\u0644\u0645\u0627\u0644 \u0645\u0627 \u062f\u0627\u0645\u062a \u0645\u0637\u0627\u0644\u0628\u062a\u0643 \u0645\u0641\u062a\u0648\u062d\u0629.",
     refundPlaceholder: '\u0645\u062b\u0627\u0644: \u0627\u0644\u0645\u0646\u062a\u062c \u0644\u0645 \u064a\u0635\u0644\u060c \u0623\u0648 \u0644\u0627 \u064a\u0637\u0627\u0628\u0642 \u0627\u0644\u0648\u0635\u0641.',
     refundNeedReason: '\u0627\u0643\u062a\u0628 \u0648\u0635\u0641 \u0627\u0644\u0645\u0634\u0643\u0644\u0629 \u0628\u0639\u0634\u0631\u0629 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.',
-    refundCta: '\u0637\u0644\u0628 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f',
+    refundCta: "\u0625\u0631\u0633\u0627\u0644 \u0645\u0637\u0627\u0644\u0628\u062a\u064a",
     cancel: '\u0625\u0644\u063a\u0627\u0621',
     working: '\u062c\u0627\u0631\u064d...',
     okReleased: '\u062a\u0645. \u062a\u0645 \u062a\u062d\u0631\u064a\u0631 \u0627\u0644\u0645\u0628\u0644\u063a \u0644\u0644\u0628\u0627\u0626\u0639.',
-    okRefunded: '\u062a\u0645 \u0637\u0644\u0628 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f. \u0633\u0646\u062e\u0628\u0631\u0643 \u0639\u0646\u062f \u0648\u0635\u0648\u0644\u0647.',
+    okRefunded: "\u062a\u0645 \u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u0645\u0637\u0627\u0644\u0628\u0629. \u0633\u064a\u0631\u0627\u062c\u0639\u0647\u0627 \u0628\u0627\u0645\u0628\u064a\u0647 \u062e\u0644\u0627\u0644 72 \u0633\u0627\u0639\u0629. \u0644\u0627 \u064a\u062d\u0635\u0644 \u0627\u0644\u0628\u0627\u0626\u0639 \u0639\u0644\u0649 \u0627\u0644\u0645\u0627\u0644 \u0645\u0627 \u062f\u0627\u0645\u062a \u0645\u0641\u062a\u0648\u062d\u0629.",
     signIn: '\u064a\u0631\u062c\u0649 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.',
     loadErr: '\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0636\u0645\u0627\u0646.',
     notFound: '\u0627\u0644\u0637\u0644\u0628 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f\u060c \u0623\u0648 \u064a\u062a\u0628\u0639 \u062d\u0633\u0627\u0628\u064b\u0627 \u0622\u062e\u0631.',
@@ -312,15 +316,15 @@ const strings = {
     refundedTitle: 'Kaalisi rutti',
     refundedBody: 'Yamiroore nde salminaama, kaalisi rutti to limngal yo\u0253unoo.',
     disputedTitle: 'Ina yi\u0257ee',
-    disputedBody: 'Yamiroore nde \u0257accaama haa yi\u0257ee. Kaalisi dilloytaa haa \u0257um \u0257oftaa.',
+    disputedBody: "Bambeh ina \u01b4eewta \u0257a\u0253\u0253aande e ndee yamiroore, ina jaabta nder waktuuji 72. Kaalis dillataa haa \u0257um ta\u01b4aa.",
     noEscrowTitle: 'Yo\u0253gol laa\u0253i',
     noEscrowBody: 'Yamiroore nde alaa e escrow, hay hu\u0263\u0263o alaa e neldee.',
     closedTitle: 'Yamiroore uddaama',
     closedBody: 'Yamiroore nde haaytaama walla nde timmaani. Kaalisi alaa e jogaa\u0257e.',
     sellerTitle: 'A woni jeeyoowo e yamiroore nde',
-    sellerBody: 'Ko so\u0257oowo tan wa\u0257ata tee\u014btingol walla \u0257a\u0253\u0253ere ruttingol. A yo\u0253ete so o tee\u014btinii.',
+    sellerBody: "Soodoowo tan waawi tabitinde he\u0253gol walla habrude ca\u0257eele. A yo\u0253ete so o tabitinii, walla so Bambeh ta\u01b4ii \u0257a\u0253\u0253aande e no mo\u01b4\u01b4anta ma.",
     btnConfirm: 'Tee\u014btin jaggol e yo\u0253 jeeyoowo',
-    btnRefund: 'Mi he\u0253aani - mi \u0257a\u0253\u0253ii rutti',
+    btnRefund: "He\u0253aani, walla ngonaa ko nji\u0257-\u0257aa? Habru ca\u0257eele",
     btnChat: 'Winndu jeeyoowo',
     showBreak: '\u01b4i\u0253\u0253u peccugol',
     hideBreak: 'Suu\u0257u peccugol',
@@ -340,15 +344,15 @@ const strings = {
     confirmLine1: '\u0186um neldata {amount} to jeeyoowo jaka jooni.',
     confirmLine2: 'A waawaa firtude \u0257um. Tee\u014btin tan so ku\u0257e \u0257on e jun\u0257e ma\u0257a e \u0257e goonga.',
     confirmCta: 'Eey, neld kaalisi',
-    refundTitle: '\u01b4a\u0253\u0253ere rutti kaalisi',
-    refundBody: 'Wi\u2019 min ko hewti. Kaalisi rutta to limngal yo\u0253unoo.',
+    refundTitle: "Habru ca\u0257eele e ndee yamiroore",
+    refundBody: "Wiy min ko woni. Bambeh ina \u01b4eewta kala \u0257a\u0253\u0253aande nder waktuuji 72. So ku\u0257e \u0257ee yottaaki, walla \u0257e ngonaa \u0257e nji\u0257aa, \u0257e njamminaaka walla \u0257e kel\u0257i, coggu ku\u0257e \u0257ee ina rutte e limngal yo\u0253\u0257ungal. Komisiyo\u014b e njo\u0253di ruttetaake. Jeeyoowo yo\u0253etaake tawa \u0257a\u0253\u0253aande maa ina uddita.",
     refundPlaceholder: 'Misal: ku\u0257e yottaaki, walla \u0257e nanndaani e sifaa.',
     refundNeedReason: 'Winndu caggal caraa\u0257i sappo e nder.',
-    refundCta: '\u01b4a\u0253\u0253u rutti',
+    refundCta: "Neldu \u0257a\u0253\u0253aande am",
     cancel: 'Haaytu',
     working: 'Ina golloo...',
     okReleased: 'Timmii. Kaalisi neldaama to jeeyoowo.',
-    okRefunded: '\u01b4a\u0253\u0253ere rutti nelaama. A humpitete so \u0257um yottiima.',
+    okRefunded: "\u018aa\u0253\u0253aande maa he\u0253aama. Bambeh \u01b4eewtat nde nder waktuuji 72. Jeeyoowo yo\u0253etaake tawa nde ina uddita.",
     signIn: 'Tii\u0257no naatu kadi.',
     loadErr: 'Kabaruuji escrow loowaaki.',
     notFound: 'Yamiroore alaa, walla nde wonaa e konte ma\u0257a.',
@@ -356,7 +360,8 @@ const strings = {
   },
 } as const;
 
-type LangStrings = (typeof strings)['en'];
+// FIX637 - every language has the same keys, each a plain string (type-only; no runtime change)
+type LangStrings = { [K in keyof (typeof strings)['en']]: string };
 
 function useStrings(): { s: LangStrings; isRtl: boolean } {
   const raw = useLang() as string;
@@ -385,6 +390,8 @@ interface EscrowOrderRow {
   payment_ref: string | null;
   paid_at: string | null;
   items: unknown;
+  claim_status?: string | null;      // FIX637 - set by the payments function when a buyer reports a problem
+  claim_opened_at?: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -393,6 +400,10 @@ const SELECT_COLS =
   'id, order_number, buyer_id, seller_id, status, escrow, escrow_status, total_xaf, ' +
   'seller_payout_xaf, platform_fee_xaf, payment_method, payment_reference, payment_ref, ' +
   'paid_at, items, created_at, updated_at';
+
+// FIX637 - the claim columns (added by FIX635). Asked for separately so the panel
+// still loads, with the old columns, if FIX635 has not been run yet.
+const SELECT_COLS_CLAIM = SELECT_COLS + ', claim_status, claim_opened_at';
 
 type EscrowState =
   | 'held'
@@ -421,6 +432,7 @@ function deriveState(o: EscrowOrderRow): EscrowState {
   if (es === 'released') return 'released';
   if (es.startsWith('refund')) return 'refunded';
   if (es.includes('disput') || es === 'frozen' || es === 'under_review') return 'disputed';
+  if ((o.claim_status || '').toLowerCase() === 'open') return 'disputed'; // FIX637 - a claim is being reviewed
   if (o.escrow !== true) return 'no_escrow';
   if (!isConfirmedPaid(o)) return 'awaiting_payment';
   return 'held';
@@ -476,11 +488,21 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
       const { data: sessionData } = await supabase.auth.getSession();
       setViewerId(sessionData?.session?.user?.id ?? null);
 
-      const { data, error } = await supabase
+      // FIX637 - ask for the claim columns; before FIX635 they do not exist, so
+      // fall back to the old list instead of showing an error.
+      let { data, error } = await supabase
         .from('orders')
-        .select(SELECT_COLS)
+        .select(SELECT_COLS_CLAIM)
         .eq('id', orderId)
         .maybeSingle();
+      if (error && /claim_status|claim_opened_at|42703|does not exist|schema cache/i.test(
+        String(error.message || '') + ' ' + String((error as { code?: string }).code || ''))) {
+        ({ data, error } = await supabase
+          .from('orders')
+          .select(SELECT_COLS)
+          .eq('id', orderId)
+          .maybeSingle());
+      }
 
       if (error) { setLoadError(error.message || s.loadErr); setOrder(null); return; }
       if (!data) { setLoadError(s.notFound); setOrder(null); return; }
@@ -725,7 +747,7 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
   const lockedByPayment = state === 'awaiting_payment' && isBuyer;
 
   return (
-    <div dir={isRtl ? 'rtl' : 'ltr'} className={className ?? ''}>
+    <div dir={isRtl ? 'rtl' : 'ltr'} className={className ?? ''} data-fix="FIX637">
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
 
         {/* header */}
@@ -994,4 +1016,4 @@ function Modal({
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ESCROWACTIONPANEL_FIX209__COMPLETE
+// BAMBEH_END_TOKEN__ESCROWACTIONPANEL_FIX637__COMPLETE
