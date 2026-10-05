@@ -1,4 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX632_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX646_CLEAN
+// FIX646 - subscriptions are switched off everywhere (SUBSCRIPTIONS_ENABLED in
+// storeMode.ts): every signed-in member is a member, on the website too.
 // FIX632 - inside the Google Play app nothing digital is sold (Play would require
 // its own billing), so there every signed-in member is treated as a member: no
 // paywall, no subscribe prompt, no locked inbox. The browser app is unchanged.
@@ -84,7 +86,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 // FIX356 - the same translator FIX352 gave the cart path.
 import { campayFailureMessage } from "@/lib/campayReasons";
-import { IS_STORE_APP } from "@/config/storeMode"; // FIX632
+import { IS_STORE_APP, SUBSCRIPTIONS_ENABLED } from "@/config/storeMode"; // FIX632 / FIX646
 
 const BACKEND_URL =
   (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL ||
@@ -336,9 +338,9 @@ function unwireGlobals(): void {
 
 // -- getActiveSubscription (sync snapshot of last verified answer) -------------
 export function getActiveSubscription(): SubscriptionStatus {
-  if (IS_STORE_APP) {
+  if (IS_STORE_APP || !SUBSCRIPTIONS_ENABLED) {
     // FIX632 - the Play app sells nothing; everyone signed in is a member there.
-    return { isActive: currentUserId !== null, planType: currentUserId !== null ? "store" : null, expiresAt: null, isLoading: false, error: null };
+    return { isActive: currentUserId !== null, planType: currentUserId !== null ? (IS_STORE_APP ? "store" : "free") : null, expiresAt: null, isLoading: false, error: null };
   }
   return {
     isActive: currentSub !== null,
@@ -523,8 +525,8 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
 
   // FIX632 - inside the Google Play app nothing is sold, so a signed-in member
   // is never held at a paywall there. (After every hook above: hook order holds.)
-  if (IS_STORE_APP) {
-    return { isActive: !!userId, planType: userId ? "store" : null, expiresAt: null, isLoading: false, error: null };
+  if (IS_STORE_APP || !SUBSCRIPTIONS_ENABLED) {
+    return { isActive: !!userId, planType: userId ? (IS_STORE_APP ? "store" : "free") : null, expiresAt: null, isLoading: false, error: null };
   }
 
   return {
@@ -695,4 +697,4 @@ export async function initiateSubscription(
     ussd_code: (j.ussd_code || inner.ussd_code) as string | undefined,
   };
 }
-// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX632__COMPLETE
+// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX646__COMPLETE

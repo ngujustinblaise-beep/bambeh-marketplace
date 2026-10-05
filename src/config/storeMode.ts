@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__STORE_MODE_FIX631_CLEAN
+// BAMBEH_DEPLOY_TOKEN__STORE_MODE_FIX645_CLEAN
 /**
  * FIX620 - THE STORE BUILD SWITCH.
  * src/config/storeMode.ts
@@ -81,10 +81,39 @@ function cleanPath(path: string | null | undefined): string {
 }
 
 /** True when this path may be shown here. Always true in a browser. */
+/**
+ * FIX645 - Big's decision, 5 Oct 2026: NO subscriptions and no paid use of any
+ * feature, on the website AND in the Play app. Bambeh earns from protected
+ * payments instead (1% commission + Buyer Protection on each sale).
+ * One switch: set it back to true only if subscriptions ever return on the
+ * website (they can never return inside the Play app - Google Play billing).
+ */
+export const SUBSCRIPTIONS_ENABLED: boolean = false;
+
+/** Pages that only exist to sell access: plans, premium gifts, coin purchases. */
+export const PAID_ACCESS_ROUTES: readonly string[] = [
+  "/subscription",
+  "/donate",
+  "/coins/buy",
+  "/coins/purchase",
+  "/zerm/purchase",
+];
+
+function hits(p: string, list: readonly string[]): boolean {
+  return list.some((b) => p === b || p.indexOf(b + "/") === 0);
+}
+
+/** Every route this runtime must not offer (Play app cuts + paid-access pages). */
+export function hiddenRoutes(): string[] {
+  const paid = SUBSCRIPTIONS_ENABLED ? [] : [...PAID_ACCESS_ROUTES];
+  return IS_STORE_APP ? Array.from(new Set([...STORE_BLOCKED, ...paid])) : paid;
+}
+
 export function storeAllows(path: string | null | undefined): boolean {
-  if (!IS_STORE_APP) return true;
   const p = cleanPath(path);
-  return !STORE_BLOCKED.some((b) => p === b || p.indexOf(b + "/") === 0);
+  if (!SUBSCRIPTIONS_ENABLED && hits(p, PAID_ACCESS_ROUTES)) return false; // FIX645 - web and app
+  if (!IS_STORE_APP) return true;
+  return !hits(p, STORE_BLOCKED);
 }
 
 /** The public address of the app. Shares from inside the Play app use this. */
@@ -105,7 +134,7 @@ export function publicShareUrl(): string {
 /** CSS that hides every link to a cut route (both "#/x" and "/x" forms). */
 export function storeHideCss(): string {
   const sel: string[] = [];
-  for (const b of STORE_BLOCKED) {
+  for (const b of hiddenRoutes()) {
     for (const p of ["#" + b, b]) {
       sel.push('a[href="' + p + '"]', 'a[href^="' + p + '/"]', 'a[href^="' + p + '?"]');
     }
@@ -123,21 +152,21 @@ export function StoreRouteGuard(): null {
   const navigate = useNavigate();
   useEffect(() => {
     // FIX631 - hide links to cut sections everywhere in the Play app
-    if (!IS_STORE_APP || typeof document === "undefined") return;
+    // FIX645 - and links to paid-access pages on the website too
+    if (typeof document === "undefined" || hiddenRoutes().length === 0) return;
     if (document.getElementById("bambeh-store-hide")) return;
     const el = document.createElement("style");
     el.id = "bambeh-store-hide";
+    el.setAttribute("data-fix", "FIX645");
     el.textContent = storeHideCss();
     document.head.appendChild(el);
   }, []);
   useEffect(() => {
-    if (IS_STORE_APP && !storeAllows(location.pathname)) {
-      console.info("[FIX620] store build - not available in the Play app:", location.pathname);
-      navigate("/", { replace: true });
-    }
+    // FIX645 - a cut section (Play app) or a paid-access page (anywhere) goes home
+    if (!storeAllows(location.pathname)) navigate("/", { replace: true });
   }, [location.pathname, navigate]);
   return null;
 }
 
 export default StoreRouteGuard;
-// BAMBEH_END_TOKEN__STORE_MODE_FIX631__COMPLETE
+// BAMBEH_END_TOKEN__STORE_MODE_FIX645__COMPLETE

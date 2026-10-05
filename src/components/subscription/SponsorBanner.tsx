@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SPONSORBANNER_FIX541_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SPONSORBANNER_FIX647_CLEAN
 /**
  * src/components/subscription/SponsorBanner.tsx - Bambeh Marketplace
  *
@@ -31,11 +31,17 @@
  * IT RENDERS NOTHING WHEN THE WALL STANDS
  *   Safe to leave mounted forever. No layout space, no flicker, no cost.
  *
+ * FIX647 - subscriptions are switched off everywhere (FIX645), so there is no
+ *          wall for a sponsor to open: the banner would announce a sponsor who
+ *          does not exist. It renders nothing - and does not even ask the
+ *          database - unless subscriptions are switched back on.
+ *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 
 import React from 'react';
 import { usePaywall, paywallMessage } from '@/hooks/usePaywall';
+import { SUBSCRIPTIONS_ENABLED } from '@/config/storeMode'; // FIX647
 
 interface SponsorBannerProps {
   /** user's language code - en, fr, pcm, ar, ff */
@@ -43,7 +49,7 @@ interface SponsorBannerProps {
   className?: string;
 }
 
-export function SponsorBanner({ lang, className = '' }: SponsorBannerProps) {
+function SponsorBannerInner({ lang, className = '' }: SponsorBannerProps) {
   const paywall = usePaywall();
 
   // nothing to say until the switch has answered, and nothing to say when
@@ -70,5 +76,11 @@ export function SponsorBanner({ lang, className = '' }: SponsorBannerProps) {
   );
 }
 
+/** FIX647 - nothing to announce while subscriptions are off. */
+export function SponsorBanner(props: SponsorBannerProps): React.ReactElement | null {
+  if (!SUBSCRIPTIONS_ENABLED) return null;
+  return <SponsorBannerInner {...props} />;
+}
+
 export default SponsorBanner;
-// BAMBEH_END_TOKEN__SPONSORBANNER_FIX541__COMPLETE
+// BAMBEH_END_TOKEN__SPONSORBANNER_FIX647__COMPLETE
