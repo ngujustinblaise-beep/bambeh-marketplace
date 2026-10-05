@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__STORE_MODE_FIX620_CLEAN
+// BAMBEH_DEPLOY_TOKEN__STORE_MODE_FIX631_CLEAN
 /**
  * FIX620 - THE STORE BUILD SWITCH.
  * src/config/storeMode.ts
@@ -22,6 +22,15 @@
  *     corporate, quiz, spotlight: outside the six sections;
  *   - voice and fingerprint sign-in: browser features that do not work inside the
  *     Android app's web view, so a reviewer would meet a dead button.
+ *
+ * FIX631 - a safety net for links. StoreRouteGuard also installs one stylesheet
+ * in the Play app that hides EVERY <a> pointing at a cut route, wherever it
+ * sits - footer, profile, help pages, pages nobody has re-read yet. A tap on a
+ * link that silently bounces home is exactly what a reviewer files as "broken
+ * functionality". Buttons that call navigate() still land on the guard's
+ * redirect; those are patched one by one.
+ * Also: publicShareUrl() - inside the Android app window.location is
+ * https://localhost/..., which is useless to share. Shares use the real address.
  */
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -78,6 +87,32 @@ export function storeAllows(path: string | null | undefined): boolean {
   return !STORE_BLOCKED.some((b) => p === b || p.indexOf(b + "/") === 0);
 }
 
+/** The public address of the app. Shares from inside the Play app use this. */
+export const PUBLIC_APP_URL = "https://app.bambeh.com";
+
+/** A link worth sending to someone: the real address, never https://localhost. */
+export function publicShareUrl(): string {
+  try {
+    const host = String(window.location.hostname || "").toLowerCase();
+    if (!IS_STORE_APP && /(^|\.)bambeh\.com$/.test(host)) return window.location.href;
+    const hash = window.location.hash && window.location.hash.length > 1 ? window.location.hash : "#/";
+    return PUBLIC_APP_URL + "/" + hash;
+  } catch {
+    return PUBLIC_APP_URL + "/";
+  }
+}
+
+/** CSS that hides every link to a cut route (both "#/x" and "/x" forms). */
+export function storeHideCss(): string {
+  const sel: string[] = [];
+  for (const b of STORE_BLOCKED) {
+    for (const p of ["#" + b, b]) {
+      sel.push('a[href="' + p + '"]', 'a[href^="' + p + '/"]', 'a[href^="' + p + '?"]');
+    }
+  }
+  return sel.join(",\n") + " { display: none !important; }";
+}
+
 /**
  * Mounted once in App.tsx beside AccountGate. Inside the Android app, any route
  * that is not part of the store build is sent back to the home page - including
@@ -86,6 +121,15 @@ export function storeAllows(path: string | null | undefined): boolean {
 export function StoreRouteGuard(): null {
   const location = useLocation();
   const navigate = useNavigate();
+  useEffect(() => {
+    // FIX631 - hide links to cut sections everywhere in the Play app
+    if (!IS_STORE_APP || typeof document === "undefined") return;
+    if (document.getElementById("bambeh-store-hide")) return;
+    const el = document.createElement("style");
+    el.id = "bambeh-store-hide";
+    el.textContent = storeHideCss();
+    document.head.appendChild(el);
+  }, []);
   useEffect(() => {
     if (IS_STORE_APP && !storeAllows(location.pathname)) {
       console.info("[FIX620] store build - not available in the Play app:", location.pathname);
@@ -96,4 +140,4 @@ export function StoreRouteGuard(): null {
 }
 
 export default StoreRouteGuard;
-// BAMBEH_END_TOKEN__STORE_MODE__COMPLETE
+// BAMBEH_END_TOKEN__STORE_MODE_FIX631__COMPLETE

@@ -1,4 +1,7 @@
-// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX387_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX632_CLEAN
+// FIX632 - inside the Google Play app nothing digital is sold (Play would require
+// its own billing), so there every signed-in member is treated as a member: no
+// paywall, no subscribe prompt, no locked inbox. The browser app is unchanged.
 // src/hooks/useSubscription.ts - Supabase-only source of truth. NO localStorage.
 //
 // ===================================================================
@@ -81,6 +84,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 // FIX356 - the same translator FIX352 gave the cart path.
 import { campayFailureMessage } from "@/lib/campayReasons";
+import { IS_STORE_APP } from "@/config/storeMode"; // FIX632
 
 const BACKEND_URL =
   (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL ||
@@ -332,6 +336,10 @@ function unwireGlobals(): void {
 
 // -- getActiveSubscription (sync snapshot of last verified answer) -------------
 export function getActiveSubscription(): SubscriptionStatus {
+  if (IS_STORE_APP) {
+    // FIX632 - the Play app sells nothing; everyone signed in is a member there.
+    return { isActive: currentUserId !== null, planType: currentUserId !== null ? "store" : null, expiresAt: null, isLoading: false, error: null };
+  }
   return {
     isActive: currentSub !== null,
     planType: currentSub ? currentSub.planType : null,
@@ -513,6 +521,12 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
   // the corporate pages and anything added later.
   const staffPass = isStaffSession();
 
+  // FIX632 - inside the Google Play app nothing is sold, so a signed-in member
+  // is never held at a paywall there. (After every hook above: hook order holds.)
+  if (IS_STORE_APP) {
+    return { isActive: !!userId, planType: userId ? "store" : null, expiresAt: null, isLoading: false, error: null };
+  }
+
   return {
     isActive: staffPass || (mine && currentSub !== null),
     planType: staffPass ? 'staff' : (mine && currentSub ? currentSub.planType : null),
@@ -681,4 +695,4 @@ export async function initiateSubscription(
     ussd_code: (j.ussd_code || inner.ussd_code) as string | undefined,
   };
 }
-// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX387__COMPLETE
+// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX632__COMPLETE

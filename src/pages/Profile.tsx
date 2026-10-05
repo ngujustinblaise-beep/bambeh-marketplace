@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { storeAllows } from "@/config/storeMode"; // FIX633 - no quick links to cut sections in the Play app
 import {
   User, Mail, Phone, MapPin, Edit2, Save,
   X, LogOut, Camera, AlertCircle, Wallet, CheckCircle2,
@@ -861,7 +862,7 @@ export default function Profile() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <h3 className="font-semibold text-gray-900 mb-3">{s.quickLinks}</h3>
           <div className="space-y-1">
-            {quickLinks.map(([label, route]) => (
+            {quickLinks.filter(([, route]) => storeAllows(route)).map(([label, route]) => (
               <button
                 key={route}
                 onClick={() => navigate(route)}

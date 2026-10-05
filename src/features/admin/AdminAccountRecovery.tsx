@@ -1,6 +1,11 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_ACCOUNT_RECOVERY_FIX624_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_ACCOUNT_RECOVERY_FIX628_CLEAN
 /**
  * FIX612 - Command Center tool: account recovery.
+ * FIX628 - "Password requests waiting": owners who forgot their password ask from
+ *          the sign-in screen; staff approve the exact request whose 4-digit number
+ *          the owner reads to them, and the owner then chooses a new password on
+ *          that phone - no old password. Every decision names the staff member,
+ *          visible to every moderator, admin and the super admin.
  * FIX624 - "Send a reset code" replaces the temporary password: the owner never needs
  *          the old password. Staff verify, the code goes to the owner's WhatsApp, the
  *          owner types it under Forgot password -> Bambeh code and chooses a new password.
@@ -108,6 +113,9 @@ const ACTION_LABELS: Record<string, string> = {
   password_changed_after_reset: "changed their own password:",
   reset_code_issued: "sent a reset code to",
   reset_code_redeemed: "set a new password with a reset code:",
+  reset_request_approved: "approved a password request for",
+  reset_request_refused: "refused a password request for",
+  reset_request_completed: "chose a new password through an approved request:",
   password_reset: "reset the password of",
   account_activated: "activated",
   account_deactivated: "deactivated",
@@ -498,6 +506,290 @@ function ActionPanel({ a, rank, onDone }: { a: Account; rank: number; onDone: ()
   );
 }
 
+
+/* ============================ FIX628 - PASSWORD REQUESTS ============================ */
+type HelpRequest = {
+  id: string;
+  request_no: string;
+  created_at: string;
+  expires_at: string;
+  phone: string;
+  user_id: string;
+  full_name?: string | null;
+  is_you?: boolean;
+  can_manage?: boolean;
+  paused?: boolean;
+  security_answers?: number;
+  passed_check_at?: string | null;
+  open_requests?: number;
+};
+type HelpRecent = {
+  id: string;
+  request_no: string;
+  status: string;
+  created_at: string;
+  decided_at?: string | null;
+  completed_at?: string | null;
+  approved_until?: string | null;
+  method?: string | null;
+  note?: string | null;
+  phone: string;
+  full_name?: string | null;
+  decided_by_name?: string | null;
+};
+type HelpList = { ok?: boolean; reason?: string; rank?: number; pending?: HelpRequest[]; recent?: HelpRecent[] };
+type DecideResult = { ok?: boolean; reason?: string; status?: string; approved_until?: string | null; request_no?: string; full_name?: string | null };
+
+const REQ_REASONS: Record<string, string> = {
+  not_pending: "Someone already decided this request. The list has been refreshed.",
+  expired: "This request expired before anyone decided. Ask the owner to make a new one.",
+  no_request: "That request no longer exists.",
+  no_account: "That number has no Bambeh account.",
+};
+const METHOD_SHORT: Record<string, string> = {
+  security_questions: "passed the security questions",
+  called_registered_number: "called the registered number",
+  id_card_seen: "saw the ID card",
+  in_person: "met in person",
+};
+const errBox: React.CSSProperties = { color: "#991b1b", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: "8px 10px", fontSize: 14 };
+
+function minutesAgo(v: unknown): string {
+  const d = new Date(String(v || ""));
+  if (isNaN(d.getTime())) return "";
+  const m = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+  return m < 1 ? "just now" : m === 1 ? "1 minute ago" : m + " minutes ago";
+}
+
+function clock(v: unknown): string {
+  const d = new Date(String(v || ""));
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+}
+
+function RequestCard({ r, onDone }: { r: HelpRequest; onDone: (msg: string) => void }) {
+  const [method, setMethod] = useState("");
+  const [note, setNote] = useState("");
+  const [confirming, setConfirming] = useState<"" | "approve" | "refuse">("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const passed = !!r.passed_check_at;
+  const who = r.full_name || prettyPhone(r.phone) || "this account";
+
+  async function decide(approve: boolean): Promise<void> {
+    setBusy(true);
+    setErr(null);
+    const res = await rpcRetry<DecideResult>("bambeh_admin_reset_request_decide", {
+      p_request_id: r.id,
+      p_approve: approve,
+      p_verified_by: approve ? method : null,
+      p_note: note.trim() || null,
+    });
+    setBusy(false);
+    setConfirming("");
+    if (res.error || !res.data) {
+      setErr("Not done: " + (res.error || "no answer from Bambeh") + ".");
+      return;
+    }
+    if (res.data.ok === false) {
+      const why = String(res.data.reason || "");
+      setErr(REQ_REASONS[why] || REASONS[why] || "Refused: " + why);
+      if (why === "not_pending" || why === "expired") onDone("");
+      return;
+    }
+    onDone(
+      approve
+        ? "Approved request #" + r.request_no + " for " + who + ". Their phone now asks them to choose a new password, until " +
+            clock(res.data.approved_until) + ". The approval works only on the phone that asked."
+        : "Refused request #" + r.request_no + " for " + who + ". Their screen now says the request was closed.",
+    );
+  }
+
+  return (
+    <div style={{ ...card, display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
+        <div>
+          <div style={{ fontSize: 12, color: "#64748b" }}>Number on the owner's screen</div>
+          <div style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", fontSize: 30, fontWeight: 800, letterSpacing: 4 }}>
+            {r.request_no}
+          </div>
+        </div>
+        <div style={{ textAlign: "end", fontSize: 13, color: "#334155" }}>
+          <div><b>{r.full_name || "(no name on the account)"}</b></div>
+          <div>{prettyPhone(r.phone)}</div>
+          <div style={{ color: "#64748b" }}>asked {minutesAgo(r.created_at)}, open until {clock(r.expires_at)}</div>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        {passed ? (
+          <span style={pill("#15803d")}>Passed the security questions {minutesAgo(r.passed_check_at)}</span>
+        ) : Number(r.security_answers || 0) >= 3 ? (
+          <span style={pill("#64748b")}>No passed security check yet</span>
+        ) : (
+          <span style={pill("#b45309")}>Has not set security questions</span>
+        )}
+        {Number(r.open_requests || 0) > 1 ? (
+          <span style={pill("#b91c1c")}>{r.open_requests} open requests for this account - approve only the number the owner reads to you</span>
+        ) : null}
+        {r.paused ? <span style={pill("#b91c1c")}>Account paused - switch it on in the account search below too</span> : null}
+      </div>
+      {!r.can_manage ? (
+        <div style={{ fontSize: 13, color: "#475569" }}>{r.is_you ? REASONS.self : REASONS.rank}</div>
+      ) : (
+        <>
+          <div style={{ fontSize: 13, color: "#334155", lineHeight: 1.5 }}>
+            First confirm it is the owner: call or message the number registered on the account, or see them or their ID card.
+            Then ask them to read you the number on their screen. Approve only if they say <b>{r.request_no}</b>.
+          </div>
+          <select style={input} value={method} onChange={(e) => setMethod(e.target.value)}>
+            <option value="">How did you confirm it is really them? (needed to approve)</option>
+            {METHODS.map((m) => (
+              <option key={m.key} value={m.key} disabled={m.key === "security_questions" && !passed}>
+                {m.label}
+                {m.key === "security_questions" && !passed ? " - no passed check yet" : ""}
+              </option>
+            ))}
+          </select>
+          <input
+            style={input}
+            maxLength={300}
+            placeholder={"Note for the audit log, e.g. 'called their number, they read " + r.request_no + "'"}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+          {err ? <div style={errBox}>{err}</div> : null}
+          {confirming ? (
+            <div style={{ ...card, background: "#fffbeb", borderColor: "#fde68a" }}>
+              <div style={{ marginBottom: 8, fontSize: 14 }}>
+                {confirming === "approve" ? (
+                  <>
+                    Approve request <b>#{r.request_no}</b> for <b>{who}</b>? They will choose a new password on their phone.
+                    This is logged with your name and every staff member can see it.
+                  </>
+                ) : (
+                  <>
+                    Refuse request <b>#{r.request_no}</b>? Their screen will say the request was closed.
+                  </>
+                )}
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button type="button" style={btn(confirming === "approve" ? "primary" : "danger", !busy)} disabled={busy}
+                  onClick={() => void decide(confirming === "approve")}>
+                  {busy ? <Loader2 size={16} style={{ animation: "fix612spin 1s linear infinite" }} /> : null} Yes
+                </button>
+                <button type="button" style={btn("plain", !busy)} disabled={busy} onClick={() => setConfirming("")}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button type="button" style={btn("primary", method !== "")} disabled={method === ""} onClick={() => setConfirming("approve")}>
+                <CheckCircle size={16} /> Approve - let them choose a new password
+              </button>
+              <button type="button" style={btn("danger", true)} onClick={() => setConfirming("refuse")}>
+                Refuse
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function RequestsPanel() {
+  const [pending, setPending] = useState<HelpRequest[]>([]);
+  const [decided, setDecided] = useState<HelpRecent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [missing, setMissing] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [flash, setFlash] = useState("");
+
+  const load = useCallback(async () => {
+    const res = await rpcRetry<HelpList>("bambeh_admin_reset_requests", { p_limit: 40 });
+    if (res.missing) {
+      setMissing(true);
+    } else if (res.error || !res.data) {
+      setErr(res.error || "No answer from Bambeh.");
+    } else if (res.data.ok === false) {
+      setErr(REASONS[String(res.data.reason || "")] || String(res.data.reason));
+    } else {
+      setErr(null);
+      setPending(res.data.pending || []);
+      setDecided(res.data.recent || []);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void load();
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "visible") void load();
+    }, 15000);
+    return () => window.clearInterval(id);
+  }, [load]);
+
+  if (missing) {
+    return (
+      <div style={{ ...card, background: "#fffbeb", borderColor: "#fde68a", marginBottom: 14, fontSize: 14 }}>
+        <b>Password requests are not switched on yet.</b> Run FIX626 in Supabase, SQL Editor.
+      </div>
+    );
+  }
+
+  return (
+    <section style={{ marginBottom: 18 }} data-fix="FIX628">
+      <h2 style={{ fontSize: 17, margin: "6px 0 8px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <Lock size={18} /> Password requests waiting
+        {pending.length ? <span style={pill("#b91c1c")}>{pending.length}</span> : null}
+        <button type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}
+          style={{ ...btn("plain", !loading), marginInlineStart: "auto", padding: "6px 10px" }}>
+          <RefreshCw size={14} /> Refresh
+        </button>
+      </h2>
+      <p style={{ margin: "0 0 10px", color: "#475569", fontSize: 13, lineHeight: 1.5 }}>
+        An owner who forgot their password types their number on the sign-in screen and asks Bambeh. Their request shows here
+        with the 4-digit number on their phone. Approve only the number the owner reads to you: the approval then works on that
+        phone alone, for 15 minutes, and they choose a new password without the old one. Your name goes on every decision.
+      </p>
+      {flash ? (
+        <div style={{ ...card, background: "#f0fdf4", borderColor: "#bbf7d0", color: "#14532d", marginBottom: 8, fontSize: 14 }}>{flash}</div>
+      ) : null}
+      {err ? <div style={{ ...errBox, marginBottom: 8 }}>{err}</div> : null}
+      {loading && pending.length === 0 ? (
+        <div style={{ ...card, color: "#475569", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
+          <Loader2 size={16} style={{ animation: "fix612spin 1s linear infinite" }} /> Loading requests...
+        </div>
+      ) : pending.length === 0 ? (
+        <div style={{ ...card, color: "#475569", fontSize: 14 }}>No requests waiting. This list refreshes by itself.</div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {pending.map((r) => (
+            <RequestCard key={r.id} r={r} onDone={(msg) => { if (msg) setFlash(msg); void load(); }} />
+          ))}
+        </div>
+      )}
+      {decided.length ? (
+        <div style={{ ...card, marginTop: 10, fontSize: 13, display: "flex", flexDirection: "column", gap: 6 }}>
+          <b style={{ fontSize: 14 }}>Decided in the last 48 hours</b>
+          {decided.map((x) => (
+            <div key={x.id}>
+              <span style={{ color: "#64748b" }}>{fmtWhen(x.decided_at || x.created_at)}</span>{" \u2014 "}
+              #{x.request_no} <b>{x.full_name || prettyPhone(x.phone)}</b> ({prettyPhone(x.phone)}):{" "}
+              {x.status === "refused" ? "refused" : "approved"} by <b>{x.decided_by_name || "staff"}</b>
+              {x.method ? " (" + (METHOD_SHORT[String(x.method)] || String(x.method)) + ")" : ""}
+              {x.status === "done" ? <span style={{ color: "#15803d" }}>{" \u2014 new password chosen at " + clock(x.completed_at)}</span> : null}
+              {x.status === "approved" ? <span style={{ color: "#b45309" }}>{" \u2014 waiting for them to choose a password"}</span> : null}
+              {x.note ? <span style={{ color: "#64748b" }}>{" \u2014 " + x.note}</span> : null}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function Inner({ embedded }: { embedded: boolean }) {
   const [query, setQuery] = useState("");
   const [onlyFlagged, setOnlyFlagged] = useState(true);
@@ -560,7 +852,7 @@ function Inner({ embedded }: { embedded: boolean }) {
   }
 
   return (
-    <div data-fix="FIX624" translate="no" className="notranslate" style={embedded ? { ...page, padding: "4px 0 24px" } : page}>
+    <div data-fix="FIX628" translate="no" className="notranslate" style={embedded ? { ...page, padding: "4px 0 24px" } : page}>
       <style>{"@keyframes fix612spin{to{transform:rotate(360deg)}}"}</style>
       <div style={{ display: embedded ? "none" : "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <a href="#/admin/center" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#0f766e", fontWeight: 600, textDecoration: "none" }}>
@@ -575,9 +867,12 @@ function Inner({ embedded }: { embedded: boolean }) {
         <Users size={22} /> Account recovery
       </h1>
       <p style={{ margin: "0 0 14px", color: "#475569", fontSize: 14, lineHeight: 1.5 }}>
-        Switch an account back on, make its owner choose a new password, or send a reset code to an owner who forgot their password.
-        You are signed in as <b>{RANK_LABEL[rank] || "staff"}</b>. Everything here is written to the audit log with your name.
+        Approve password requests, switch an account back on, make its owner choose a new password, or send a reset code to an
+        owner who is not at their phone. You are signed in as <b>{RANK_LABEL[rank] || "staff"}</b>. Everything here is written to
+        the audit log with your name.
       </p>
+
+      <RequestsPanel />
 
       <form
         style={{ ...card, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}
