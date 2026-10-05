@@ -1,6 +1,7 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_ACCOUNT_RECOVERY_FIX628_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_ACCOUNT_RECOVERY_FIX642_CLEAN
 /**
  * FIX612 - Command Center tool: account recovery.
+ * FIX642 - the staff activity feed names refund decisions too (who, when, for whom).
  * FIX628 - "Password requests waiting": owners who forgot their password ask from
  *          the sign-in screen; staff approve the exact request whose 4-digit number
  *          the owner reads to them, and the owner then chooses a new password on
@@ -116,6 +117,9 @@ const ACTION_LABELS: Record<string, string> = {
   reset_request_approved: "approved a password request for",
   reset_request_refused: "refused a password request for",
   reset_request_completed: "chose a new password through an approved request:",
+  refund_sent: "sent a refund (item price) to",          // FIX642 - money decisions, by name
+  refund_failed: "tried to refund, transfer failed, for",
+  claim_rejected: "closed a refund claim (seller paid) for",
   password_reset: "reset the password of",
   account_activated: "activated",
   account_deactivated: "deactivated",

@@ -1,7 +1,18 @@
+// BAMBEH_DEPLOY_TOKEN__ITEMCARD_COMMON_FIX639_CLEAN
 // @ts-nocheck
 /**
- * ItemCard.tsx ? Military Grade Item Display Component
- * FILE LOCATION: src/components/common/ItemCard.tsx
+ * ItemCard.tsx - item card (src/components/common/ItemCard.tsx)
+ *
+ * FIX639 - three real bugs, fixed:
+ *  1. Membership was read from `subscription.tier`, a field useSubscription has
+ *     never returned - so EVERY user, paying or not, was treated as unpaid and
+ *     every "Contact" on a marketplace item sent them to the subscription page.
+ *     It now asks usePlanLimits(), the one place the whole app asks.
+ *  2. Taps went to /items/<id>, a route that does not exist (NotFound). Each type
+ *     now opens its real page: /marketplace, /jobs, /rentals, /services.
+ *  3. Inside the Google Play app nothing is sold digitally, so this card never
+ *     sends anyone to /subscription there, and a signed-out person goes to sign
+ *     in instead of to a paywall. Shares use the real address, never localhost.
  */
 
 import React, { useState } from 'react';
@@ -10,7 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { MapPin, Heart, Share2, MessageCircle, Star, Clock, Building, Home, Briefcase, Lock, Crown, Tag } from 'lucide-react';
 import { AnyItem } from '@/types/items';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/hooks/useSubscription';
+import { usePlanLimits } from '@/hooks/usePlanLimits';                    // FIX639
+import { IS_STORE_APP, PUBLIC_APP_URL, storeAllows } from '@/config/storeMode'; // FIX639
 import { useFavorites } from '@/hooks/useFavorites';
 import { formatCurrency } from '@/utils/currency';
 import { formatDistanceToNow } from 'date-fns';
@@ -27,16 +39,26 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const subscriptionCtx = useSubscription();
-  const subscription = (subscriptionCtx as any).subscription;
+  const { isPremium } = usePlanLimits();                 // FIX639 - the app's one membership answer
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const [imageError, setImageError] = useState(false);
 
-  const isPremiumUser    = subscription?.tier === 'premium' || subscription?.tier === 'gold';
+  const isPremiumUser    = isPremium === true;
   const isJobItem        = item.type === 'job';
   const isMarketplaceItem = item.type === 'marketplace';
   const isRentalItem     = item.type === 'rental';
   const isServiceItem    = item.type === 'service';
+
+  // FIX639 - the page that really exists for each kind of item
+  const itemPath = (): string => {
+    const id = encodeURIComponent(String(item.id));
+    if (isJobItem) return `/jobs/${id}`;
+    if (isRentalItem) return `/rentals/${id}`;
+    if (isServiceItem) return `/services/${id}`;
+    return `/marketplace/${id}`;
+  };
+  // only offer an upgrade where one can actually be bought (never in the Play app)
+  const showUpgrade = !!currentUser && isMarketplaceItem && !isPremiumUser && storeAllows('/subscription');
 
   const getItemPrice = (): string => {
     if (isMarketplaceItem && (item as any).price) {
@@ -79,11 +101,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
   };
 
   const handleContactClick = () => {
-    if (!isPremiumUser && isMarketplaceItem) { navigate('/subscription'); return; }
+    if (!currentUser) { navigate('/login'); return; }                 // FIX639
+    if (showUpgrade) { navigate('/subscription'); return; }
     if (onContact) {
       onContact(item);
     } else {
-      navigate(`/items/${item.id}`);
+      navigate(itemPath());
     }
   };
 
@@ -102,11 +125,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
     if (onShare) {
       onShare(item);
     } else if (navigator.share) {
-      navigator.share({ title: item.title, text: item.description, url: `${window.location.origin}/items/${item.id}` });
+      const base = !IS_STORE_APP && typeof window !== 'undefined' ? window.location.origin : PUBLIC_APP_URL; // FIX639
+      navigator.share({ title: item.title, text: item.description, url: `${base}/#${itemPath()}` }).catch(() => {});
     }
   };
 
-  const handleCardClick = () => { navigate(`/items/${item.id}`); };
+  const handleCardClick = () => { navigate(itemPath()); };            // FIX639
 
   // -- GRID ----------------------------------------------------------
   if (variant === 'grid') {
@@ -181,8 +205,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
             </div>
           )}
           <button onClick={(e) => { e.stopPropagation(); handleContactClick(); }}
-            className={`w-full py-3 rounded-xl font-semibold transition-all ${!isPremiumUser && isMarketplaceItem ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:shadow-lg' : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'}`}>
-            {!isPremiumUser && isMarketplaceItem ? (
+            className={`w-full py-3 rounded-xl font-semibold transition-all ${showUpgrade ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:shadow-lg' : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'}`}>
+            {showUpgrade ? (
               <span className="flex items-center justify-center gap-2"><Lock className="w-4 h-4" />{t('upgrade_to_contact')}</span>
             ) : (
               <span className="flex items-center justify-center gap-2"><MessageCircle className="w-4 h-4" />{t('contact_seller')}</span>
@@ -244,8 +268,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
             </div>
           )}
           <button onClick={(e) => { e.stopPropagation(); handleContactClick(); }}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all ${!isPremiumUser && isMarketplaceItem ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-            {!isPremiumUser && isMarketplaceItem ? (
+            className={`px-6 py-2 rounded-lg font-semibold transition-all ${showUpgrade ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+            {showUpgrade ? (
               <span className="flex items-center gap-2"><Lock className="w-4 h-4" />{t('upgrade')}</span>
             ) : t('contact')}
           </button>
@@ -256,8 +280,4 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
 };
 
 export default ItemCard;
-
-
-
-
-
+// BAMBEH_END_TOKEN__ITEMCARD_COMMON_FIX639__COMPLETE
