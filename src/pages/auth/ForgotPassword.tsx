@@ -1,7 +1,13 @@
-// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX649_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX654_CLEAN
 /**
  * src/pages/auth/ForgotPassword.tsx - Bambeh Marketplace
  *
+ * FIX654 - PHONE NUMBER OR EMAIL (Big: "users should be allowed to use email or
+ *          number"). The Temporary password tab takes whichever the person
+ *          remembers. The database (bambeh_finish_temp_password, FIX653) finds the
+ *          account however it was created, checks the temporary password staff
+ *          issued, sets the new password, clears the flag and signs out every
+ *          other device; the page then signs straight in with the new password.
  * FIX649 - ONE WAY BACK IN: THE TEMPORARY PASSWORD (Big, 5 Oct 2026).
  *          The 8-digit reset code (FIX623) and the request number (FIX626) are
  *          gone. The owner answers their security questions, asks Bambeh on
@@ -150,10 +156,8 @@ const STR: Record<string, Record<string, string>> = {
     reqNew: "Make a new request",
     codeKindReset: "8-digit reset code",
     codeKindTemp: "Temporary password",
-    errTempInvalid: "That temporary password did not work with this number. Check the WhatsApp message, or ask Bambeh for a new one. If you signed up with an email address, sign in with that email and this temporary password instead.",
     tabCode: "Temporary password",
     codeTitle: "Use the temporary password Bambeh sent you",
-    codeIntro: "You do not need your old password. Enter your phone number and the temporary password Bambeh sent you on WhatsApp, then choose your own new password.",
     codeLabel: "Temporary password from Bambeh",
     codeHint: "Bambeh sent you a temporary password? Use the \"Temporary password\" tab.",
     codeHintBad: "Enter the temporary password (letters and numbers) that Bambeh sent you on WhatsApp.",
@@ -163,6 +167,11 @@ const STR: Record<string, Record<string, string>> = {
     verifiedOk: "Verified. Now message Bambeh on WhatsApp to receive your temporary password.",
     phoneNote: "Bambeh cannot send text messages yet. After checking it is really you, our team sends a temporary password to the WhatsApp of the number on your account. Sign in with it, or use the \"Temporary password\" tab, and choose your own new password.",
     askBtn: "Ask Bambeh for a temporary password on WhatsApp",
+    tempIdLabel: "Phone number or email you signed up with",
+    errTempId: "Enter the phone number or the email you signed up with.",
+    errSameAsTemp: "Choose your own new password, not the temporary one.",
+    errTempInvalid: "That temporary password does not match this phone number or email. Check the WhatsApp message, or ask Bambeh for a new one.",
+    codeIntro: "You do not need your old password. Enter the phone number or email you signed up with, the temporary password Bambeh sent you, and choose your own new password.",
   },
   fr: {
     title: "Mot de passe oubli\u00e9 ?",
@@ -242,10 +251,8 @@ const STR: Record<string, Record<string, string>> = {
     reqNew: "Faire une nouvelle demande",
     codeKindReset: "Code de r\u00e9initialisation \u00e0 8 chiffres",
     codeKindTemp: "Mot de passe temporaire",
-    errTempInvalid: "Ce mot de passe temporaire ne fonctionne pas avec ce num\u00e9ro. V\u00e9rifiez le message WhatsApp ou demandez-en un nouveau \u00e0 Bambeh. Si vous vous \u00eates inscrit avec une adresse e-mail, connectez-vous plut\u00f4t avec cet e-mail et ce mot de passe temporaire.",
     tabCode: "Mot de passe temporaire",
     codeTitle: "Utilisez le mot de passe temporaire envoy\u00e9 par Bambeh",
-    codeIntro: "Vous n'avez pas besoin de votre ancien mot de passe. Saisissez votre num\u00e9ro et le mot de passe temporaire envoy\u00e9 par Bambeh sur WhatsApp, puis choisissez votre propre nouveau mot de passe.",
     codeLabel: "Mot de passe temporaire de Bambeh",
     codeHint: "Bambeh vous a envoy\u00e9 un mot de passe temporaire ? Utilisez l'onglet \u00ab Mot de passe temporaire \u00bb.",
     codeHintBad: "Saisissez le mot de passe temporaire (lettres et chiffres) envoy\u00e9 par Bambeh sur WhatsApp.",
@@ -255,6 +262,11 @@ const STR: Record<string, Record<string, string>> = {
     verifiedOk: "V\u00e9rifi\u00e9. \u00c9crivez maintenant \u00e0 Bambeh sur WhatsApp pour recevoir votre mot de passe temporaire.",
     phoneNote: "Bambeh ne peut pas encore envoyer de SMS. Apr\u00e8s avoir v\u00e9rifi\u00e9 que c'est bien vous, notre \u00e9quipe envoie un mot de passe temporaire sur le WhatsApp du num\u00e9ro de votre compte. Connectez-vous avec, ou utilisez l'onglet \u00ab Mot de passe temporaire \u00bb, puis choisissez votre propre nouveau mot de passe.",
     askBtn: "Demander un mot de passe temporaire \u00e0 Bambeh sur WhatsApp",
+    tempIdLabel: "Num\u00e9ro de t\u00e9l\u00e9phone ou e-mail utilis\u00e9 \u00e0 l'inscription",
+    errTempId: "Saisissez le num\u00e9ro de t\u00e9l\u00e9phone ou l'e-mail utilis\u00e9 \u00e0 l'inscription.",
+    errSameAsTemp: "Choisissez votre propre nouveau mot de passe, pas le mot de passe temporaire.",
+    errTempInvalid: "Ce mot de passe temporaire ne correspond pas \u00e0 ce num\u00e9ro ou \u00e0 cet e-mail. V\u00e9rifiez le message WhatsApp ou demandez-en un nouveau \u00e0 Bambeh.",
+    codeIntro: "Vous n'avez pas besoin de votre ancien mot de passe. Saisissez le num\u00e9ro ou l'e-mail utilis\u00e9 \u00e0 l'inscription, le mot de passe temporaire envoy\u00e9 par Bambeh, puis choisissez votre propre nouveau mot de passe.",
   },
   pidgin: {
     title: "You don forget your password?",
@@ -334,10 +346,8 @@ const STR: Record<string, Record<string, string>> = {
     reqNew: "Make new request",
     codeKindReset: "8-number reset code",
     codeKindTemp: "Temporary password",
-    errTempInvalid: "That temporary password no work with this number. Check the WhatsApp message, or ask Bambeh for new one. If you sign up with email, sign in with that email and this temporary password.",
     tabCode: "Temporary password",
     codeTitle: "Use the temporary password wey Bambeh send you",
-    codeIntro: "You no need your old password. Put your phone number and the temporary password wey Bambeh send you for WhatsApp, then choose your own new password.",
     codeLabel: "Temporary password from Bambeh",
     codeHint: "Bambeh don send you temporary password? Use the \"Temporary password\" tab.",
     codeHintBad: "Put the temporary password (letters and numbers) wey Bambeh send you for WhatsApp.",
@@ -347,6 +357,11 @@ const STR: Record<string, Record<string, string>> = {
     verifiedOk: "E correct. Now message Bambeh for WhatsApp make dem send you your temporary password.",
     phoneNote: "Bambeh no fit send SMS yet. When our team don check say na really you, dem go send temporary password for the WhatsApp of the number for your account. Sign in with am, or use the \"Temporary password\" tab, and choose your own new password.",
     askBtn: "Ask Bambeh for temporary password for WhatsApp",
+    tempIdLabel: "Phone number or email wey you take sign up",
+    errTempId: "Put the phone number or the email wey you take sign up.",
+    errSameAsTemp: "Choose your own new password, no use the temporary one.",
+    errTempInvalid: "That temporary password no match this phone number or email. Check the WhatsApp message, or ask Bambeh for new one.",
+    codeIntro: "You no need your old password. Put the phone number or email wey you take sign up, the temporary password wey Bambeh send you, and choose your own new password.",
   },
   ar: {
     title: "\u0647\u0644 \u0646\u0633\u064a\u062a \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061f",
@@ -426,10 +441,8 @@ const STR: Record<string, Record<string, string>> = {
     reqNew: "\u062a\u0642\u062f\u064a\u0645 \u0637\u0644\u0628 \u062c\u062f\u064a\u062f",
     codeKindReset: "\u0631\u0645\u0632 \u0625\u0639\u0627\u062f\u0629 \u062a\u0639\u064a\u064a\u0646 \u0645\u0646 8 \u0623\u0631\u0642\u0627\u0645",
     codeKindTemp: "\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629",
-    errTempInvalid: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0647\u0630\u0647 \u0644\u0627 \u062a\u0639\u0645\u0644 \u0645\u0639 \u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645. \u0631\u0627\u062c\u0639 \u0631\u0633\u0627\u0644\u0629 \u0648\u0627\u062a\u0633\u0627\u0628 \u0623\u0648 \u0627\u0637\u0644\u0628 \u0648\u0627\u062d\u062f\u0629 \u062c\u062f\u064a\u062f\u0629 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647. \u0625\u0630\u0627 \u0633\u062c\u0644\u062a \u0628\u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a\u060c \u0641\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0630\u0644\u0643 \u0627\u0644\u0628\u0631\u064a\u062f \u0648\u0628\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0647\u0630\u0647.",
     tabCode: "\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629",
     codeTitle: "\u0627\u0633\u062a\u062e\u062f\u0645 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0627\u0644\u062a\u064a \u0623\u0631\u0633\u0644\u0647\u0627 \u0628\u0627\u0645\u0628\u064a\u0647",
-    codeIntro: "\u0644\u0627 \u062a\u062d\u062a\u0627\u062c \u0625\u0644\u0649 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0642\u062f\u064a\u0645\u0629. \u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0627\u0644\u062a\u064a \u0623\u0631\u0633\u0644\u0647\u0627 \u0628\u0627\u0645\u0628\u064a\u0647 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628\u060c \u062b\u0645 \u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643.",
     codeLabel: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647",
     codeHint: "\u0647\u0644 \u0623\u0631\u0633\u0644 \u0644\u0643 \u0628\u0627\u0645\u0628\u064a\u0647 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629\u061f \u0627\u0633\u062a\u062e\u062f\u0645 \u062a\u0628\u0648\u064a\u0628 \u00ab\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629\u00bb.",
     codeHintBad: "\u0623\u062f\u062e\u0644 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 (\u062d\u0631\u0648\u0641 \u0648\u0623\u0631\u0642\u0627\u0645) \u0627\u0644\u062a\u064a \u0623\u0631\u0633\u0644\u0647\u0627 \u0628\u0627\u0645\u0628\u064a\u0647 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628.",
@@ -439,6 +452,11 @@ const STR: Record<string, Record<string, string>> = {
     verifiedOk: "\u062a\u0645 \u0627\u0644\u062a\u062d\u0642\u0642. \u0631\u0627\u0633\u0644 \u0628\u0627\u0645\u0628\u064a\u0647 \u0627\u0644\u0622\u0646 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628 \u0644\u062a\u062d\u0635\u0644 \u0639\u0644\u0649 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629.",
     phoneNote: "\u0644\u0627 \u064a\u0633\u062a\u0637\u064a\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0625\u0631\u0633\u0627\u0644 \u0631\u0633\u0627\u0626\u0644 \u0646\u0635\u064a\u0629 \u0628\u0639\u062f. \u0628\u0639\u062f \u0627\u0644\u062a\u0623\u0643\u062f \u0645\u0646 \u0647\u0648\u064a\u062a\u0643\u060c \u064a\u0631\u0633\u0644 \u0641\u0631\u064a\u0642\u0646\u0627 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629 \u0625\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0645\u0633\u062c\u0644 \u0641\u064a \u062d\u0633\u0627\u0628\u0643. \u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0647\u0627\u060c \u0623\u0648 \u0627\u0633\u062a\u062e\u062f\u0645 \u062a\u0628\u0648\u064a\u0628 \u00ab\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629\u00bb\u060c \u062b\u0645 \u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643.",
     askBtn: "\u0627\u0637\u0644\u0628 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628",
+    tempIdLabel: "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0623\u0648 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0627\u0644\u0630\u064a \u0633\u062c\u0644\u062a \u0628\u0647",
+    errTempId: "\u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0623\u0648 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0627\u0644\u0630\u064a \u0633\u062c\u0644\u062a \u0628\u0647.",
+    errSameAsTemp: "\u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643\u060c \u0648\u0644\u064a\u0633 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629.",
+    errTempInvalid: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0647\u0630\u0647 \u0644\u0627 \u062a\u0637\u0627\u0628\u0642 \u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u0623\u0648 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a. \u0631\u0627\u062c\u0639 \u0631\u0633\u0627\u0644\u0629 \u0648\u0627\u062a\u0633\u0627\u0628 \u0623\u0648 \u0627\u0637\u0644\u0628 \u0648\u0627\u062d\u062f\u0629 \u062c\u062f\u064a\u062f\u0629 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647.",
+    codeIntro: "\u0644\u0627 \u062a\u062d\u062a\u0627\u062c \u0625\u0644\u0649 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0642\u062f\u064a\u0645\u0629. \u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0623\u0648 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0627\u0644\u0630\u064a \u0633\u062c\u0644\u062a \u0628\u0647\u060c \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0627\u0644\u062a\u064a \u0623\u0631\u0633\u0644\u0647\u0627 \u0628\u0627\u0645\u0628\u064a\u0647\u060c \u062b\u0645 \u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643.",
   },
   ff: {
     title: "A yejjitii finnde maa?",
@@ -518,10 +536,8 @@ const STR: Record<string, Record<string, string>> = {
     reqNew: "Wa\u0257 \u0257a\u0253\u0253aande keso",
     codeKindReset: "Kod kes\u0257itingol limngal 8",
     codeKindTemp: "Finnde sahaa",
-    errTempInvalid: "Finnde sahaa ndee gollaaki e ngal limngal. \u01b3eewu mesaas WhatsApp oo, walla \u01b4am Bambeh keso. So a winndii\u0257o e email, naatir e ndee email e ndee finnde sahaa.",
     tabCode: "Finnde sahaa",
     codeTitle: "Huutoro finnde sahaa nde Bambeh neldi ma",
-    codeIntro: "A haajaaki finnde maa hii\u0257nde. Naatnu limngal tilifon maa e finnde sahaa nde Bambeh neldi ma e WhatsApp, caggal \u0257uum su\u0253o finnde maa keso.",
     codeLabel: "Finnde sahaa immorde e Bambeh",
     codeHint: "Bambeh neldii ma finnde sahaa? Huutoro hello \"Finnde sahaa\".",
     codeHintBad: "Naatnu finnde sahaa (alkule e limle) nde Bambeh neldi ma e WhatsApp.",
@@ -531,6 +547,11 @@ const STR: Record<string, Record<string, string>> = {
     verifiedOk: "\u01b3eewtaama. Jooni winndan Bambeh e WhatsApp ngam he\u0253de finnde maa sahaa.",
     phoneNote: "Bambeh waawaa neldude SMS tawo. So gollo\u0253e amen \u01b4eewtii ko an tigi, \u0253e neldan finnde sahaa e WhatsApp limngal konte maa. Naatir e mayre, walla huutoro hello \"Finnde sahaa\", su\u0253o finnde maa keso.",
     askBtn: "\u01b3am Bambeh finnde sahaa e WhatsApp",
+    tempIdLabel: "Limngal tilifon walla email mo winndiraa",
+    errTempId: "Naatnu limngal tilifon walla email mo winndiraa.",
+    errSameAsTemp: "Su\u0253o finnde maa keso, wonaa finnde sahaa ndee.",
+    errTempInvalid: "Finnde sahaa ndee yahdaani e ngal limngal walla ndee email. \u01b3eewu mesaas WhatsApp oo, walla \u01b4am Bambeh keso.",
+    codeIntro: "A haajaaki finnde maa hii\u0257nde. Naatnu limngal tilifon walla email mo winndiraa, finnde sahaa nde Bambeh neldi ma, su\u0253o finnde maa keso.",
   },
 };
 
@@ -589,15 +610,18 @@ export default function ForgotPassword() {
      old password: they type their number, the temporary password and a new one;
      the page signs in with the temporary one, sets the new one, clears the
      "must change" flag and reloads signed in. (The 8-digit reset code is retired.) */
-  const [cPhone, setCPhone] = useState('');
-  const [cPhoneOk, setCPhoneOk] = useState(false);
+  // FIX654 - one field: the phone number OR the email they signed up with
+  const [cId, setCId] = useState(() => urlEmail || urlPhone || '');
   const [cCode, setCCode] = useState('');
   const [cPw1, setCPw1] = useState('');
   const [cPw2, setCPw2] = useState('');
   const [cShow, setCShow] = useState(false);
   const [cBusy, setCBusy] = useState(false);
   const [cDone, setCDone] = useState<'' | 'signed_in' | 'manual'>('');
-  const cDigits = cPhone.replace(/\D/g, '');
+  const cIdRaw = cId.trim();
+  const cIdIsEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cIdRaw);
+  const cIdDigits = cIdRaw.replace(/\D/g, '');
+  const cIdOk = cIdIsEmail || (cIdRaw.indexOf('@') < 0 && cIdDigits.length >= 8);
   // FIX643 - which kind of code is this? 8 digits = reset code; letters and
   // numbers = a temporary password from the staff recovery screen.
   const cCodeRaw = cCode.trim();
@@ -606,38 +630,44 @@ export default function ForgotPassword() {
   const cCodeOk = cIsTempPw; // FIX649 - reset codes are retired
   const cLong = cPw1.length >= 8;
   const cMatch = cPw1.length > 0 && cPw1 === cPw2;
-  const cReady = cPhoneOk && cCodeOk && cLong && cMatch && !cBusy;
+  const cReady = cIdOk && cCodeOk && cLong && cMatch && !cBusy;
 
-  /* FIX643 - a TEMPORARY PASSWORD works in the same box: sign in with it, set
-     the new password straight away, clear the "must change password" flag
-     (bambeh_password_change_done, FIX610), then reload so every screen sees the
-     account signed in with its new password. No old password is ever asked. */
-  const signInWithTempPassword = async () => {
+  /* FIX654 - the database finds the account from the phone number OR the email
+     (however it was created), checks the temporary password staff issued, sets
+     the new password, clears the "must change" flag and signs out every other
+     device (bambeh_finish_temp_password, FIX653). The page then signs in. */
+  const finishWithTempPassword = async () => {
     setCBusy(true);
     setError(null);
     try {
-      const intlDigits = cDigits.length === 9 && cDigits.charAt(0) === '6' ? '237' + cDigits : cDigits;
-      const login = intlDigits + '@phone.bambeh.com';
-      // staff passwords are capitals; a phone keyboard may have typed small letters
-      const attempts = Array.from(new Set([cTempPw, cTempPw.toUpperCase()]));
-      let signedIn = false;
-      for (const pw of attempts) {
-        const s = await supabase.auth.signInWithPassword({ email: login, password: pw });
-        if (!s.error) { signedIn = true; break; }
-        if (/fetch|network|timeout/i.test(String(s.error.message || ''))) { setError(t('errCodeNetwork')); return; }
+      let res: { data: unknown; error: { message?: string } | null } | null = null;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        res = (await supabase.rpc('bambeh_finish_temp_password', {
+          p_identifier: cIdIsEmail ? cIdRaw.toLowerCase() : cIdDigits,
+          p_temp_password: cTempPw,
+          p_new_password: cPw1,
+        })) as unknown as { data: unknown; error: { message?: string } | null };
+        if (!res.error || !/fetch|network|timeout|load failed/i.test(String(res.error.message || ''))) break;
+        await new Promise((r) => setTimeout(r, 1500));
       }
-      if (!signedIn) { setError(t('errTempInvalid')); return; }
-      const u = await supabase.auth.updateUser({ password: cPw1 });
-      if (u.error) {
-        // signed in with the temporary password: the app itself will now ask for a new one
-        setError(t('errCodeNetwork'));
-        window.setTimeout(() => window.location.replace(window.location.pathname + '#/'), 1800);
+      if (!res || res.error) {
+        setError(/fetch|network|timeout|load failed/i.test(String(res?.error?.message || '')) ? t('errCodeNetwork') : t('errTempInvalid'));
         return;
       }
-      try { await supabase.rpc('bambeh_password_change_done'); } catch { /* the account screen re-checks on load */ }
-      setCPw1('');
+      const r = (res.data || {}) as { ok?: boolean; reason?: string; login?: string };
+      if (!r.ok || !r.login) {
+        const why = String(r.reason || '');
+        setError(why === 'weak_password' ? t('errPwShort') : why === 'too_many' ? t('tooMany') : why === 'same_as_temp' ? t('errSameAsTemp') : t('errTempInvalid'));
+        return;
+      }
       setCPw2('');
       setCCode('');
+      const s = await supabase.auth.signInWithPassword({ email: r.login, password: cPw1 });
+      setCPw1('');
+      if (s.error) {
+        setCDone('manual');
+        return;
+      }
       setCDone('signed_in');
       window.setTimeout(() => window.location.replace(window.location.pathname + '#/'), 1200);
     } catch {
@@ -649,11 +679,11 @@ export default function ForgotPassword() {
 
   // FIX649 - this box only takes the temporary password staff send (reset codes are retired)
   const redeemResetCode = async () => {
-    if (!cPhoneOk || cDigits.length < 8) { setError(t('badPhone')); return; }
+    if (!cIdOk) { setError(t('errTempId')); return; }
     if (!cCodeOk) { setError(t('codeHintBad')); return; }
     if (!cLong) { setError(t('errPwShort')); return; }
     if (!cMatch) { setError(t('errPwMatch')); return; }
-    await signInWithTempPassword();
+    await finishWithTempPassword();
   };
 
   const digits = phone.replace(/\D/g, '');
@@ -783,17 +813,13 @@ export default function ForgotPassword() {
                 </div>
               ) : (
                 <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void redeemResetCode(); }}>
-                  <div dir="ltr">
-                    <AfricanPhoneInput
-                      value={cPhone}
-                      label={t('phoneLabel')}
-                      required
-                      onChange={(full, valid) => {
-                        setCPhone(full);
-                        setCPhoneOk(valid);
-                        if (valid) setError(null);
-                      }}
-                    />
+                  <div>
+                    <label htmlFor="fpTempId" className="block text-sm font-medium text-gray-700">{t('tempIdLabel')}</label>
+                    <input id="fpTempId" type="text" inputMode="email" autoComplete="username" autoCapitalize="none"
+                      autoCorrect="off" spellCheck={false} dir="ltr" data-fix="FIX654"
+                      value={cId} onChange={(e) => { setCId(e.target.value); setError(null); }}
+                      placeholder="6XX XXX XXX / name@example.com" className={INPUT} />
+                    {cIdRaw && !cIdOk ? <p className="mt-1 text-xs text-amber-700">{t('errTempId')}</p> : null}
                   </div>
                   <div>
                     <label htmlFor="fpCode" className="block text-sm font-medium text-gray-700">{t('codeLabel')}</label>
@@ -984,4 +1010,4 @@ export default function ForgotPassword() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX649__COMPLETE
+// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX654__COMPLETE

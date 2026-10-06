@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX629_CLEAN
+// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX656_CLEAN
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, AlertTriangle, KeyRound } from "lucide-react";
@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
 import { authIdentity } from "@/utils/phoneAuth";
+import { supabase } from "@/lib/supabase"; // FIX656
 
 /*
  * FIX629 - a wrong password is no longer a dead end.
@@ -200,7 +201,18 @@ export default function Login() {
     setError("");
     setHelpOpen(false);
     try {
-      const result = await login(authIdentity(email) || email, password); // FIX283
+      let result = await login(authIdentity(email) || email, password); // FIX283
+      // FIX656 - an account created with an EMAIL can still sign in with its phone number:
+      // the database answers with its sign-in email only when this password is right.
+      if (result?.error && email.indexOf("@") < 0 && email.replace(/\D/g, "").length >= 8) {
+        try {
+          const { data } = await supabase.rpc("bambeh_login_email_for", { p_identifier: email, p_password: password });
+          const r = (data || {}) as { ok?: boolean; login?: string };
+          if (r.ok && r.login) result = await login(r.login, password);
+        } catch {
+          /* keep the first answer */
+        }
+      }
       if (result?.error) {
         const f = friendly(result.error); // FIX629
         setError(f.msg);
@@ -328,4 +340,4 @@ export default function Login() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__LOGIN_FIX629__COMPLETE
+// BAMBEH_END_TOKEN__LOGIN_FIX656__COMPLETE

@@ -1,6 +1,9 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_ACCOUNT_RECOVERY_FIX650_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_ACCOUNT_RECOVERY_FIX655_CLEAN
 /**
  * FIX612 - Command Center tool: account recovery.
+ * FIX655 - the WhatsApp message names how they sign in - their phone number OR
+ *          their email - and an account with no WhatsApp number gets "Copy the
+ *          message" to send another way.
  * FIX650 - ONE way back in: the TEMPORARY PASSWORD. "Send a reset code" and the
  *          password-request queue are gone. Staff verify the owner, create a
  *          temporary password, send it to the number on the account; the owner
@@ -75,11 +78,11 @@ type RecoverResult = {
 };
 
 const WA_TEXT: Record<string, string> = {
-  en: "Bambeh: your temporary password is {pw}. Open Bambeh and sign in with your phone number and this temporary password. The app will then ask you to choose your own new password. Bambeh staff will never ask for your password.",
-  fr: "Bambeh : votre mot de passe temporaire est {pw}. Ouvrez Bambeh et connectez-vous avec votre num\u00e9ro de t\u00e9l\u00e9phone et ce mot de passe temporaire. L'application vous demandera ensuite de choisir votre propre nouveau mot de passe. L'\u00e9quipe Bambeh ne vous demandera jamais votre mot de passe.",
-  pidgin: "Bambeh: your temporary password na {pw}. Open Bambeh and sign in with your phone number and this temporary password. The app go ask you make you choose your own new password. Bambeh staff no go ever ask you for your password.",
-  ar: "\u0628\u0627\u0645\u0628\u064a\u0647: \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0627\u0644\u062e\u0627\u0635\u0629 \u0628\u0643 \u0647\u064a {pw}. \u0627\u0641\u062a\u062d \u0628\u0627\u0645\u0628\u064a\u0647 \u0648\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0647\u0630\u0647. \u0633\u064a\u0637\u0644\u0628 \u0645\u0646\u0643 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0628\u0639\u062f \u0630\u0644\u0643 \u0627\u062e\u062a\u064a\u0627\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643. \u0644\u0646 \u064a\u0637\u0644\u0628 \u0645\u0646\u0643 \u0641\u0631\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0623\u0628\u062f\u064b\u0627.",
-  ff: "Bambeh: finnde maa sahaa ko {pw}. Uddit Bambeh, naatir e limngal tilifon maa e ndee finnde sahaa. Caggal \u0257uum App oo \u01b4amete su\u0253aade finnde maa keso. Gollo\u0253e Bambeh \u01b4amataa ma finnde maa abada.",
+  en: "Bambeh: your temporary password is {pw}. Open Bambeh and sign in with {id} and this temporary password. The app will then ask you to choose your own new password. Bambeh staff will never ask for your password.",
+  fr: "Bambeh : votre mot de passe temporaire est {pw}. Ouvrez Bambeh et connectez-vous avec {id} et ce mot de passe temporaire. L'application vous demandera ensuite de choisir votre propre nouveau mot de passe. L'\u00e9quipe Bambeh ne vous demandera jamais votre mot de passe.",
+  pidgin: "Bambeh: your temporary password na {pw}. Open Bambeh and sign in with {id} and this temporary password. The app go ask you make you choose your own new password. Bambeh staff no go ever ask you for your password.",
+  ar: "\u0628\u0627\u0645\u0628\u064a\u0647: \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0627\u0644\u062e\u0627\u0635\u0629 \u0628\u0643 \u0647\u064a {pw}. \u0627\u0641\u062a\u062d \u0628\u0627\u0645\u0628\u064a\u0647 \u0648\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0627\u0633\u062a\u062e\u062f\u0627\u0645 {id} \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0647\u0630\u0647. \u0633\u064a\u0637\u0644\u0628 \u0645\u0646\u0643 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0628\u0639\u062f \u0630\u0644\u0643 \u0627\u062e\u062a\u064a\u0627\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062c\u062f\u064a\u062f\u0629 \u062e\u0627\u0635\u0629 \u0628\u0643. \u0644\u0646 \u064a\u0637\u0644\u0628 \u0645\u0646\u0643 \u0641\u0631\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0623\u0628\u062f\u064b\u0627.",
+  ff: "Bambeh: finnde maa sahaa ko {pw}. Uddit Bambeh, naatir e {id} e ndee finnde sahaa. Caggal \u0257uum App oo \u01b4amete su\u0253aade finnde maa keso. Gollo\u0253e Bambeh \u01b4amataa ma finnde maa abada.",
 };
 
 const REASONS: Record<string, string> = {
@@ -305,6 +308,7 @@ function ActionPanel({ a, rank, onDone }: { a: Account; rank: number; onDone: ()
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<RecoverResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedMsg, setCopiedMsg] = useState(false); // FIX655
   const passedRecently = !!a.passed_check_at && Date.now() - new Date(String(a.passed_check_at)).getTime() < 24 * 60 * 60 * 1000;
 
   if (!a.can_manage) {
@@ -347,7 +351,10 @@ function ActionPanel({ a, rank, onDone }: { a: Account; rank: number; onDone: ()
   if (result) {
     const pw = String(result.temp_password || "");
     const lang = String(result.lang || "");
-    const textFor = (l: string) => (WA_TEXT[l] || "").split("{pw}").join(pw);
+    // FIX655 - how they sign in: their phone number, or their email for an email account
+    const hint = String(result.login_hint || a.phone || a.email || "");
+    const idText = hint.indexOf("@") > 0 ? hint : prettyPhone(hint) || hint;
+    const textFor = (l: string) => (WA_TEXT[l] || "").split("{pw}").join(pw).split("{id}").join(idText);
     const waMessage = lang && WA_TEXT[lang] ? textFor(lang) : textFor("en") + "\n\n" + textFor("fr");
     const wa = waDigits(result.login_hint || a.phone);
     const cleared = result.cleared || [];
@@ -371,7 +378,7 @@ function ActionPanel({ a, rank, onDone }: { a: Account; rank: number; onDone: ()
               {pw}
             </div>
             <div style={{ fontSize: 13, color: "#475569", marginBottom: 10 }}>
-              They sign in with {prettyPhone(result.login_hint || a.phone) || "their phone number"} and this temporary password (or use
+              They sign in with <b>{idText}</b> and this temporary password (or use
               Forgot password, then the Temporary password tab), then choose their own new password. If someone else asks you to send
               it to a different number, refuse unless you have seen the owner's ID card in person.
             </div>
@@ -382,9 +389,13 @@ function ActionPanel({ a, rank, onDone }: { a: Account; rank: number; onDone: ()
               {wa ? (
                 <a href={"https://wa.me/" + wa + "?text=" + encodeURIComponent(waMessage)} target="_blank" rel="noopener noreferrer"
                   style={{ ...btn("primary", true), textDecoration: "none" }}>
-                  Send on WhatsApp to {prettyPhone(result.login_hint || a.phone)}
+                  Send on WhatsApp to {prettyPhone(wa)}
                 </a>
-              ) : null}
+              ) : (
+                <button type="button" style={btn("primary", true)} onClick={async () => { setCopiedMsg(await copyText(waMessage)); }}>
+                  {copiedMsg ? "Message copied" : "Copy the message - no WhatsApp number on this account"}
+                </button>
+              )}
             </div>
           </div>
         ) : null}
