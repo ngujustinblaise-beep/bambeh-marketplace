@@ -1,6 +1,10 @@
-// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX646_CLEAN
-// FIX646 - subscriptions are switched off everywhere (SUBSCRIPTIONS_ENABLED in
-// storeMode.ts): every signed-in member is a member, on the website too.
+// BAMBEH_DEPLOY_TOKEN__USESUBSCRIPTION_FIX659_CLEAN
+// FIX659 - THE COMMAND CENTER SWITCH DECIDES. Subscriptions are back on the website
+// (FIX658). When staff set the paywall switch to free (FIX535/FIX536, read by
+// usePaywall - per region, else global), every signed-in user is a member, so
+// EVERY gate opens at once: chat, AuthGate, SubscriptionGuard, FeatureGate, the
+// plan limits. When the switch stands, the real subscription check applies.
+// The switch is asked once per session and FAILS CLOSED (no answer = wall stands).
 // FIX632 - inside the Google Play app nothing digital is sold (Play would require
 // its own billing), so there every signed-in member is treated as a member: no
 // paywall, no subscribe prompt, no locked inbox. The browser app is unchanged.
@@ -87,6 +91,7 @@ import { supabase } from "@/lib/supabase";
 // FIX356 - the same translator FIX352 gave the cart path.
 import { campayFailureMessage } from "@/lib/campayReasons";
 import { IS_STORE_APP, SUBSCRIPTIONS_ENABLED } from "@/config/storeMode"; // FIX632 / FIX646
+import { loadPaywallState } from "@/hooks/usePaywall"; // FIX659 - the Command Center switch
 
 const BACKEND_URL =
   (import.meta as { env?: Record<string, string> }).env?.VITE_BACKEND_URL ||
@@ -137,6 +142,23 @@ interface CachedSub {
 
 let currentUserId: string | null = null;
 let currentSub: CachedSub | null = null;
+
+// FIX659 - the Command Center paywall switch, asked once per session.
+let paywallFree = false;      // fails closed: until a real answer says free, the wall stands
+let paywallPending = true;
+let paywallAsked = false;
+function askPaywallOnce(): void {
+  if (paywallAsked || IS_STORE_APP || !SUBSCRIPTIONS_ENABLED) return;
+  paywallAsked = true;
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000));
+  Promise.race([loadPaywallState().catch(() => null), timeout])
+    .then((s) => {
+      paywallFree = !!(s && s.free);
+      if (paywallFree) console.info("[FIX659] the Command Center switch has opened Bambeh for everyone signed in");
+    })
+    .catch(() => { paywallFree = false; })
+    .then(() => { paywallPending = false; publish(); });
+}
 let lastVerifyAt = 0;
 
 // FIX413 - lastVerifyAt means "we have a real answer". It is only set after a
@@ -342,9 +364,10 @@ export function getActiveSubscription(): SubscriptionStatus {
     // FIX632 - the Play app sells nothing; everyone signed in is a member there.
     return { isActive: currentUserId !== null, planType: currentUserId !== null ? (IS_STORE_APP ? "store" : "free") : null, expiresAt: null, isLoading: false, error: null };
   }
+  const switchOpen = currentUserId !== null && paywallFree; // FIX659
   return {
-    isActive: currentSub !== null,
-    planType: currentSub ? currentSub.planType : null,
+    isActive: switchOpen || currentSub !== null,
+    planType: currentSub ? currentSub.planType : switchOpen ? "free" : null,
     expiresAt: currentSub ? currentSub.expiresAt : null,
     isLoading: false,
     error: null,
@@ -485,6 +508,7 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
     const listener: Listener = () => bump((n) => n + 1);
     listeners.add(listener);
     wireGlobals();
+    askPaywallOnce(); // FIX659
 
     if (userId) {
       // A different user than the store holds: the old answer is not theirs.
@@ -529,14 +553,17 @@ export function useSubscription(userId?: string | null): SubscriptionStatus {
     return { isActive: !!userId, planType: userId ? (IS_STORE_APP ? "store" : "free") : null, expiresAt: null, isLoading: false, error: null };
   }
 
+  // FIX659 - the Command Center switch set to free opens every gate for anyone signed in.
+  const switchOpen = !!userId && paywallFree;
+  const paid = mine && currentSub !== null;
   return {
-    isActive: staffPass || (mine && currentSub !== null),
-    planType: staffPass ? 'staff' : (mine && currentSub ? currentSub.planType : null),
+    isActive: staffPass || switchOpen || paid,
+    planType: staffPass ? 'staff' : paid && currentSub ? currentSub.planType : switchOpen ? 'free' : null,
     expiresAt: mine && currentSub ? currentSub.expiresAt : null,
-    // Loading only until we have a verified answer for THIS user. A failed
-    // check still counts as answered, so a weak connection can never leave a
-    // gate spinning forever.
-    isLoading: !!userId && !answered,
+    // Loading only until we have a verified answer for THIS user (and the switch
+    // has answered). A failed check still counts as answered, and the switch
+    // times out after 8 seconds, so a weak connection never leaves a gate spinning.
+    isLoading: !!userId && !staffPass && ((!answered && !switchOpen) || paywallPending),
     error: null,
   };
 }
@@ -697,4 +724,4 @@ export async function initiateSubscription(
     ussd_code: (j.ussd_code || inner.ussd_code) as string | undefined,
   };
 }
-// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX646__COMPLETE
+// BAMBEH_END_TOKEN__USESUBSCRIPTION_FIX659__COMPLETE

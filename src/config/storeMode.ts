@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__STORE_MODE_FIX645_CLEAN
+// BAMBEH_DEPLOY_TOKEN__STORE_MODE_FIX658_CLEAN
 /**
  * FIX620 - THE STORE BUILD SWITCH.
  * src/config/storeMode.ts
@@ -82,13 +82,16 @@ function cleanPath(path: string | null | undefined): string {
 
 /** True when this path may be shown here. Always true in a browser. */
 /**
- * FIX645 - Big's decision, 5 Oct 2026: NO subscriptions and no paid use of any
- * feature, on the website AND in the Play app. Bambeh earns from protected
- * payments instead (1% commission + Buyer Protection on each sale).
- * One switch: set it back to true only if subscriptions ever return on the
- * website (they can never return inside the Play app - Google Play billing).
+ * FIX658 - Big's decision, 6 Oct 2026: customers come through FIELD AGENTS, not
+ * app stores. Subscriptions and their levels are BACK on the website, and the
+ * Command Center paywall switch (FIX535/FIX536) decides whether they are
+ * required: switched to free, everyone signed in uses everything (FIX659);
+ * switched on, members only. This constant only says subscriptions EXIST on the
+ * website; the switch in the Command Center turns the wall on and off.
+ * (FIX645 had set it to false - no subscriptions anywhere - on 5 Oct.)
+ * Inside a Google Play build nothing is ever sold (STORE_BLOCKED still applies).
  */
-export const SUBSCRIPTIONS_ENABLED: boolean = false;
+export const SUBSCRIPTIONS_ENABLED: boolean = true;
 
 /** Pages that only exist to sell access: plans, premium gifts, coin purchases. */
 export const PAID_ACCESS_ROUTES: readonly string[] = [
@@ -157,7 +160,7 @@ export function StoreRouteGuard(): null {
     if (document.getElementById("bambeh-store-hide")) return;
     const el = document.createElement("style");
     el.id = "bambeh-store-hide";
-    el.setAttribute("data-fix", "FIX645");
+    el.setAttribute("data-fix", "FIX658");
     el.textContent = storeHideCss();
     document.head.appendChild(el);
   }, []);
@@ -169,4 +172,4 @@ export function StoreRouteGuard(): null {
 }
 
 export default StoreRouteGuard;
-// BAMBEH_END_TOKEN__STORE_MODE_FIX645__COMPLETE
+// BAMBEH_END_TOKEN__STORE_MODE_FIX658__COMPLETE
