@@ -25,6 +25,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useCamPay, validateCamPhone, normalizePhone, detectOperator } from '@/hooks/useCamPay';
 import { supabase } from '@/lib/supabase';
 import { useLang, t } from "@/hooks/useAppLang";
+import SecuredPayNote from '@/components/payment/SecuredPayNote'; // FIX684
 
 // --- Helpers ------------------------------------------------------------------
 
@@ -545,11 +546,12 @@ export default function Cart() {
             <h2 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Order Summary</h2>
             <FeeRow label="Item" amount={`${fmt(subtotal)} XAF`} />
             <FeeRow label="Bambeh commission (1%)" amount={`${fmt(appFee)} XAF`} muted
-              tooltip="Bambeh keeps 1% of the item price. That is the whole of what Bambeh earns." />
+              tooltip="Bambeh's commission: 1% of the item price." />
             <FeeRow label="Service and payment charge" amount={`${fmt(serviceCharge)} XAF`} muted
-              tooltip="Government tax, VAT and the mobile money charges for collecting and paying out. Bambeh keeps none of this." />
+              tooltip="Government tax, VAT, the mobile money charges for collecting and paying out, and a small Bambeh margin." />
             <div className="border-t border-gray-100 my-3"/>
             <FeeRow label="Total" amount={`${fmt(total)} XAF`} bold />
+            <SecuredPayNote />{/* FIX684 - every purchase is protected (FIX663) */}
           </div>
 
           <p className="text-xs text-gray-400 text-center mb-5">
