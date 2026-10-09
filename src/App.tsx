@@ -219,6 +219,8 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import LanguageSelection from "@/pages/LanguageSelection";
 import TermsAcceptance from "@/pages/TermsAcceptance";
 import { StoreRouteGuard } from "@/config/storeMode"; // FIX620
+import ActivityPing from "@/components/analytics/ActivityPing"; // FIX665
+import InstallPrompt from "@/components/pwa/InstallPrompt"; // FIX669
 import AuthPage from "@/pages/auth/AuthPage";
 import BiometricLogin from "@/pages/auth/BiometricLogin";
 
@@ -761,6 +763,8 @@ export default function App() {
                       <AccountGate />
                       {/* FIX620 - inside the Android app only: keeps the Play build to the six sections. */}
                       <StoreRouteGuard />
+                      <ActivityPing />{/* FIX665 - counts app opens for Command Center > App usage */}
+                      <InstallPrompt />{/* FIX669 - offers to put Bambeh on the home screen */}
                       <Routes>
 
                         {/* ── 1. ONBOARDING ──────────────────────────────────────── */}
