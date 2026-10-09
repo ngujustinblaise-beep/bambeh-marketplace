@@ -86,6 +86,7 @@ import {
   useNavigate
 } from "react-router-dom";
 import AuthGate from "@/components/security/AuthGate";
+import SectionGate from "@/components/security/SectionGate"; // FIX673
 import { NavigationService } from "@/utils/auth/safeRedirect";
 import { logger, logDevBanner } from "@/utils/logger";
 import { Capacitor } from "@capacitor/core";
@@ -942,7 +943,7 @@ export default function App() {
                           path="/exchange/offer/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><ExchangeOfferPage /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="exchange"><ExchangeOfferPage /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -960,7 +961,7 @@ export default function App() {
                           path="/jobs/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><JobDetails /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="jobs"><JobDetails /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -968,7 +969,7 @@ export default function App() {
                           path="/marketplace/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><MarketplaceItemDetails /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="marketplace"><MarketplaceItemDetails /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -976,7 +977,7 @@ export default function App() {
                           path="/services/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><ServiceDetails /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="services"><ServiceDetails /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -984,7 +985,7 @@ export default function App() {
                           path="/rentals/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><RentalDetails /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="rentals"><RentalDetails /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -992,7 +993,7 @@ export default function App() {
                           path="/vehicles/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><VehicleDetails /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="vehicles"><VehicleDetails /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1000,7 +1001,7 @@ export default function App() {
                           path="/exchange/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><ExchangeItemDetails /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="exchange"><ExchangeItemDetails /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1297,7 +1298,7 @@ export default function App() {
                           element={
                             <MainLayout>
                               <RouteErrorBoundary routeName="Chat">
-                                <AuthGate require="subscription"><Chat /></AuthGate>
+                                <AuthGate require="user"><SectionGate section="chat"><Chat /></SectionGate></AuthGate>
                               </RouteErrorBoundary>
                             </MainLayout>
                           }
@@ -1411,7 +1412,7 @@ export default function App() {
                           path="/farm-fresh/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><FarmFreshDetail /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="farm_fresh"><FarmFreshDetail /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />

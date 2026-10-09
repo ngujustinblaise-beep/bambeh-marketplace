@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__USEPLANLIMITS_FIX412B_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USEPLANLIMITS_FIX674_CLEAN
 /**
  * src/hooks/usePlanLimits.ts - Bambeh Marketplace
  *
@@ -15,33 +15,50 @@
  * It does NOT query the database itself. It asks useSubscription, which is
  * the same hook AuthGate and SubscriptionGuard already use.
  *
+ * FIX674 - CHAT FOLLOWS THE COMMAND CENTER (Members-only sections, FIX671). canMessage
+ *          is true for members as before, for everyone signed in when chat is switched
+ *          to free, and for anyone with an active advert while "Sellers answering" is
+ *          free - so a seller can always reply to a paying member. The limits are now
+ *          typed as numbers and true/false (the old literal types made FREE_LIMITS fail
+ *          strict type checks), and the Fulfulde "from 100 XAF a day" lost a Cyrillic
+ *          letter that had slipped into it.
+ *
  * (c) 2025-2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useSectionGates } from '@/hooks/useSectionGates'; // FIX674
+
+/** Everything a plan allows. */
+export interface PlanLimits {
+  maxImagesPerListing: number;
+  maxPostsPerWeek: number;
+  canMessage: boolean;
+  canUseAdvancedFilters: boolean;
+  canSearchOtherRegions: boolean;
+  canSeeExactLocation: boolean;
+}
 
 /** What a FREE account may do. Change these numbers here and nowhere else. */
-export const FREE_LIMITS = {
+export const FREE_LIMITS: Readonly<PlanLimits> = {
   maxImagesPerListing: 1,
   maxPostsPerWeek:     1,
   canMessage:          false,
   canUseAdvancedFilters: false,
   canSearchOtherRegions: false,
   canSeeExactLocation:   false,
-} as const;
+};
 
 /** What a PREMIUM account may do. */
-export const PREMIUM_LIMITS = {
+export const PREMIUM_LIMITS: Readonly<PlanLimits> = {
   maxImagesPerListing: 5,
   maxPostsPerWeek:     999,
   canMessage:          true,
   canUseAdvancedFilters: true,
   canSearchOtherRegions: true,
   canSeeExactLocation:   true,
-} as const;
-
-export type PlanLimits = typeof PREMIUM_LIMITS;
+};
 
 export interface PlanState extends PlanLimits {
   loading:   boolean;
@@ -65,15 +82,25 @@ export interface PlanState extends PlanLimits {
  */
 export function usePlanLimits(): PlanState {
   const { user, isAdmin } = useAuth();
-  const { isActive, isLoading } = useSubscription(user?.id ?? null);
+  const uid = user?.id ?? null;
+  const { isActive, isLoading } = useSubscription(uid);
+  const sections = useSectionGates(uid); // FIX674
 
   // FAIL OPEN. While the answer is still coming, treat the user as premium.
   // A free user briefly getting 5 photos costs nothing. A PAYING user blocked
   // at 1 photo costs a customer, a refund and a one-star review.
   const isPremium = isAdmin === true || isActive === true || isLoading === true;
 
+  const base = isPremium ? PREMIUM_LIMITS : FREE_LIMITS;
+
+  // FIX674 - chat: switched to free in the Command Center, everyone signed in may
+  // message; and anyone with an active advert may always answer (Sellers answering).
+  const chatFree = sections.gates.chat === false;
+  const sellerPass = sections.gates.chat_sellers === false && sections.advertiser === true;
+
   return {
-    ...(isPremium ? PREMIUM_LIMITS : FREE_LIMITS),
+    ...base,
+    canMessage: base.canMessage || (uid !== null && (chatFree || sellerPass)),
     loading:   isLoading === true,
     isPremium,
     isAdmin:   isAdmin === true,
@@ -118,7 +145,7 @@ export const UPGRADE_COPY: Record<string, {
     title: 'Beydu nate goo\u0257\u0257e',
     body:  'Bayyinaali \u0257i njogii nate keewe ina njeeyee no yaawi. Naatu premium ngam beydude haa nate 5.',
     cta:   'Naatu premium',
-    from:  'gila 100 XAF \u04531 \u00f1alawma',
+    from:  'gila 100 XAF e \u00f1alawma',
   },
 };
-// BAMBEH_END_TOKEN__USEPLANLIMITS_FIX412B__COMPLETE
+// BAMBEH_END_TOKEN__USEPLANLIMITS_FIX674__COMPLETE
