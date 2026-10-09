@@ -1,19 +1,28 @@
-// BAMBEH_DEPLOY_TOKEN__SECTION_GATE_FIX673_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SECTION_GATE_FIX679_CLEAN
 /**
- * src/components/security/SectionGate.tsx - FIX673
+ * src/components/security/SectionGate.tsx - FIX679 (replaces FIX673)
  *
- * Members-only detail pages and chat, section by section, decided in the Command
- * Center (Members-only sections, FIX671/FIX675). Wraps a page in App.tsx:
+ * Members-only parts of Bambeh, module by module, decided in the Command Center
+ * (Members-only sections, FIX671 + FIX677). Wraps a page in App.tsx:
  *   <AuthGate require="user"><SectionGate section="rentals"><RentalDetails /></SectionGate></AuthGate>
  *
  * WHO PASSES
  *   - members (useSubscription - which already counts the Command Center "free"
- *     switch, the staff pass and every way of paying), admins, and the Play build
- *   - everyone, when the section is switched to free
- *   - chat only: anyone with an active advert, while "Sellers answering" is free -
- *     a paying member must never write to a seller who cannot reply
- * Everyone else sees a short card in their language: what is members-only, the
+ *     switch, the staff pass and every way of paying) and admins
+ *   - everyone, when the module is switched to free - signed in or not
+ *   - chat: buyers (no live advert) follow the "chat" switch, sellers (a live
+ *     advert, Farm Fresh produce or an exchange item) follow "chat_sellers"
+ * Everyone else sees a short card in their language - what is members-only, the
  * plans button, and Go back. The page itself is not loaded behind the card.
+ *
+ * FIX679
+ *   - every module: Bambeh AI, bulk buying, flash deals, community, compare, quiz,
+ *     Zerm coins, corporate stores and the free public services get their own card
+ *     ("This part of Bambeh is for subscribers"), not the advert wording
+ *   - a seller held at the chat wall is told so in seller words ("Subscribe to
+ *     answer your buyers")
+ *   - Fulfulde: "uddude" means to CLOSE - the card now says "udditde" (to open)
+ *   - the Android app has the wall too (IS_STORE_APP is false since FIX682)
  *
  * THE TWO RULES AuthGate LEARNED (FIX320, FIX397), kept here
  *   - "no answer yet" means WAIT, never NO: a 2-second grace and a spinner, so a
@@ -28,7 +37,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
-import { SECTION_DEFAULTS, useSectionGates } from '@/hooks/useSectionGates';
+import { sectionIsMembersOnly, useSectionGates } from '@/hooks/useSectionGates';
 import type { SectionKey } from '@/hooks/useSectionGates';
 import { PLAN_PRICES } from '@/hooks/usePlanLimits';
 import { useLang } from '@/hooks/useAppLang';
@@ -44,6 +53,11 @@ function normLang(v: unknown): Lang {
   return 'en';
 }
 
+/** Adverts open to a detail page; tools open as a whole. */
+const ADVERT_SECTIONS: readonly SectionKey[] = [
+  'marketplace', 'farm_fresh', 'food_gas', 'rentals', 'vehicles', 'services', 'exchange', 'jobs',
+];
+
 const TEXT: Record<Lang, Record<string, string>> = {
   en: {
     title: 'Subscribe to see the full details',
@@ -51,6 +65,10 @@ const TEXT: Record<Lang, Record<string, string>> = {
     chatTitle: 'Chat is for subscribers',
     chatBody: 'Subscribe to message landlords, sellers and service providers on Bambeh. Your money stays protected by Bambeh Secured Pay when you buy.',
     sellerNote: 'Have an active advert on Bambeh? You can always open your messages and answer them.',
+    sellerTitle: 'Subscribe to answer your buyers',
+    sellerBody: 'Chat for sellers is for subscribers right now. Subscribe to read and answer the messages about your adverts.',
+    featureTitle: 'This part of Bambeh is for subscribers',
+    featureBody: 'Subscribe to Bambeh to open it, together with every other members-only part of the app.',
     plans: 'See subscription plans',
     from: 'from {n} XAF a day',
     back: 'Go back',
@@ -63,6 +81,10 @@ const TEXT: Record<Lang, Record<string, string>> = {
     chatTitle: 'La messagerie est r\u00e9serv\u00e9e aux abonn\u00e9s',
     chatBody: 'Abonnez-vous pour \u00e9crire aux propri\u00e9taires, vendeurs et prestataires sur Bambeh. Quand vous achetez, votre argent reste prot\u00e9g\u00e9 par Bambeh Secured Pay.',
     sellerNote: 'Vous avez une annonce active sur Bambeh ? Vous pouvez toujours ouvrir vos messages et y r\u00e9pondre.',
+    sellerTitle: 'Abonnez-vous pour r\u00e9pondre \u00e0 vos acheteurs',
+    sellerBody: 'La messagerie des vendeurs est r\u00e9serv\u00e9e aux abonn\u00e9s pour le moment. Abonnez-vous pour lire les messages sur vos annonces et y r\u00e9pondre.',
+    featureTitle: 'Cette partie de Bambeh est r\u00e9serv\u00e9e aux abonn\u00e9s',
+    featureBody: "Abonnez-vous \u00e0 Bambeh pour l'ouvrir, ainsi que toutes les autres parties r\u00e9serv\u00e9es aux membres.",
     plans: 'Voir les abonnements',
     from: '\u00e0 partir de {n} XAF par jour',
     back: 'Retour',
@@ -75,6 +97,10 @@ const TEXT: Record<Lang, Record<string, string>> = {
     chatTitle: 'Chat na for people wey don subscribe',
     chatBody: 'Subscribe make you fit message landlord, seller and service people for Bambeh. When you buy, your money dey safe with Bambeh Secured Pay.',
     sellerNote: 'You get advert wey dey active for Bambeh? You fit always open your messages and answer dem.',
+    sellerTitle: 'Subscribe make you answer your buyers',
+    sellerBody: 'For now, chat for sellers na for people wey don subscribe. Subscribe make you read and answer the messages about your adverts.',
+    featureTitle: 'This part of Bambeh na for people wey don subscribe',
+    featureBody: 'Subscribe for Bambeh make you open am, plus all the other parts wey be for members.',
     plans: 'See subscription plans',
     from: 'start for {n} XAF each day',
     back: 'Go back',
@@ -87,6 +113,10 @@ const TEXT: Record<Lang, Record<string, string>> = {
     chatTitle: '\u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u0644\u0644\u0645\u0634\u062a\u0631\u0643\u064a\u0646 \u0641\u0642\u0637',
     chatBody: '\u0627\u0634\u062a\u0631\u0643 \u0644\u0645\u0631\u0627\u0633\u0644\u0629 \u0627\u0644\u0645\u0624\u062c\u0631\u064a\u0646 \u0648\u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646 \u0648\u0645\u0642\u062f\u0645\u064a \u0627\u0644\u062e\u062f\u0645\u0627\u062a \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647. \u0639\u0646\u062f \u0627\u0644\u0634\u0631\u0627\u0621 \u062a\u0628\u0642\u0649 \u0623\u0645\u0648\u0627\u0644\u0643 \u0645\u062d\u0645\u064a\u0629 \u0628\u0627\u0644\u062f\u0641\u0639 \u0627\u0644\u0622\u0645\u0646 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647.',
     sellerNote: '\u0644\u062f\u064a\u0643 \u0625\u0639\u0644\u0627\u0646 \u0646\u0634\u0637 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647\u061f \u064a\u0645\u0643\u0646\u0643 \u062f\u0627\u0626\u0645\u064b\u0627 \u0641\u062a\u062d \u0631\u0633\u0627\u0626\u0644\u0643 \u0648\u0627\u0644\u0631\u062f \u0639\u0644\u064a\u0647\u0627.',
+    sellerTitle: '\u0627\u0634\u062a\u0631\u0643 \u0644\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0645\u0634\u062a\u0631\u064a\u0646',
+    sellerBody: '\u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u0644\u0644\u0628\u0627\u0626\u0639\u064a\u0646 \u0645\u062a\u0627\u062d\u0629 \u0644\u0644\u0645\u0634\u062a\u0631\u0643\u064a\u0646 \u0641\u0642\u0637 \u062d\u0627\u0644\u064a\u064b\u0627. \u0627\u0634\u062a\u0631\u0643 \u0644\u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u0645\u062a\u0639\u0644\u0642\u0629 \u0628\u0625\u0639\u0644\u0627\u0646\u0627\u062a\u0643 \u0648\u0627\u0644\u0631\u062f \u0639\u0644\u064a\u0647\u0627.',
+    featureTitle: '\u0647\u0630\u0627 \u0627\u0644\u0642\u0633\u0645 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647 \u0644\u0644\u0645\u0634\u062a\u0631\u0643\u064a\u0646 \u0641\u0642\u0637',
+    featureBody: '\u0627\u0634\u062a\u0631\u0643 \u0641\u064a \u0628\u0627\u0645\u0628\u064a\u0647 \u0644\u0641\u062a\u062d\u0647\u060c \u0645\u0639 \u0643\u0644 \u0627\u0644\u0623\u0642\u0633\u0627\u0645 \u0627\u0644\u0623\u062e\u0631\u0649 \u0627\u0644\u0645\u062e\u0635\u0635\u0629 \u0644\u0644\u0623\u0639\u0636\u0627\u0621.',
     plans: '\u0639\u0631\u0636 \u062e\u0637\u0637 \u0627\u0644\u0627\u0634\u062a\u0631\u0627\u0643',
     from: '\u0627\u0628\u062a\u062f\u0627\u0621\u064b \u0645\u0646 {n} \u0641\u0631\u0646\u0643 \u064a\u0648\u0645\u064a\u064b\u0627',
     back: '\u0631\u062c\u0648\u0639',
@@ -95,10 +125,14 @@ const TEXT: Record<Lang, Record<string, string>> = {
   },
   ff: {
     title: 'Naatu premium ngam yiyde fof',
-    body: '\u01b3eewde doggol ngol ko yo\u0253aaki. Ngam uddude ndee bayyinaango, yiyde fof e haalde e jom mayre, naatu premium Bambeh.',
+    body: '\u01b3eewde doggol ngol ko yo\u0253aaki. Ngam udditde ndee bayyinaango, yiyde fof e haalde e jom mayre, naatu premium Bambeh.',
     chatTitle: 'Chat ko won\u0253e e premium tan',
-    chatBody: 'Naatu premium ngam winndude jom cuu\u0257i, coggoo\u0253e e golloo\u0253e e Bambeh. So a soodii, kaalis maa ina reenaa e Bambeh Secured Pay.',
-    sellerNote: 'A jogii bayyinaango e Bambeh? A waawii uddude mesaasji maa e jaabaade \u0257i sahaa kala.',
+    chatBody: 'Naatu premium ngam winndude jom cuu\u0257i, jeeyoo\u0253e e golloo\u0253e e Bambeh. So a soodii, kaalis maa ina reenaa e Bambeh Secured Pay.',
+    sellerNote: 'A jogii bayyinaango e Bambeh? A waawii udditde mesaasji maa e jaabaade \u0257i sahaa kala.',
+    sellerTitle: 'Naatu premium ngam jaabaade soodoo\u0253e maa',
+    sellerBody: 'Jooni, chat jeeyoo\u0253e ko won\u0253e e premium tan. Naatu premium ngam ja\u014bde e jaabaade mesaasji bayyinaali maa.',
+    featureTitle: 'Ngal ge\u0257al Bambeh ko won\u0253e e premium tan',
+    featureBody: 'Naatu premium Bambeh ngam udditde ngal e ge\u0257e go\u0257\u0257e fof.',
     plans: 'Naatu premium',
     from: 'gila {n} XAF e \u00f1alawma',
     back: 'Rutto',
@@ -125,20 +159,17 @@ export default function SectionGate({ section, children }: { section: SectionKey
     return () => window.clearTimeout(timer);
   }, [section, uid]);
 
-  // members, staff and the Play build always pass
+  // members and staff always pass (and a Google Play build, should one ever be made again)
   if (IS_STORE_APP || isAdmin === true || isActive === true) return <>{children}</>;
 
-  // a section that is free (or free by default while the switches load) opens at once
-  const membersOnly = ready ? gates[section] === true : SECTION_DEFAULTS[section] === true;
-  if (!membersOnly) return <>{children}</>;
-
-  // chat: people with an active advert can always open and answer their messages
-  if (section === 'chat' && ready && gates.chat_sellers === false && advertiser) return <>{children}</>;
+  // a module that is free for this person opens at once - from the remembered
+  // switches while the fresh answer is on its way
+  if (!sectionIsMembersOnly(section, gates, advertiser)) return <>{children}</>;
 
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
   if (!ready || isLoading || !graceOver) {
     return (
-      <div dir={dir} role="status" aria-busy="true" data-fix="FIX673"
+      <div dir={dir} role="status" aria-busy="true" data-fix="FIX679"
         className="min-h-[50vh] flex flex-col items-center justify-center gap-3 px-4 text-sm text-gray-500">
         <Loader2 className="h-8 w-8 animate-spin text-teal-600" aria-hidden="true" />
         <span>{t.checking}</span>
@@ -146,20 +177,25 @@ export default function SectionGate({ section, children }: { section: SectionKey
     );
   }
 
-  const isChat = section === 'chat';
+  const isChat = section === 'chat' || section === 'chat_sellers';
+  const kind: 'advert' | 'chat' | 'seller' | 'feature' = isChat
+    ? (advertiser ? 'seller' : 'chat')
+    : (ADVERT_SECTIONS.indexOf(section) >= 0 ? 'advert' : 'feature');
+  const title = kind === 'chat' ? t.chatTitle : kind === 'seller' ? t.sellerTitle : kind === 'feature' ? t.featureTitle : t.title;
+  const body = kind === 'chat' ? t.chatBody : kind === 'seller' ? t.sellerBody : kind === 'feature' ? t.featureBody : t.body;
   const goBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) navigate(-1);
     else navigate('/', { replace: true });
   };
   return (
-    <div dir={dir} data-fix="FIX673" className="min-h-[60vh] flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl border border-teal-100 bg-white p-6 text-center shadow-lg" role="region" aria-label={isChat ? t.chatTitle : t.title}>
+    <div dir={dir} data-fix="FIX679" data-kind={kind} className="min-h-[60vh] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md rounded-3xl border border-teal-100 bg-white p-6 text-center shadow-lg" role="region" aria-label={title}>
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
           <Lock className="h-7 w-7 text-teal-700" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900">{isChat ? t.chatTitle : t.title}</h2>
-        <p className="mt-2 text-sm leading-6 text-gray-600">{isChat ? t.chatBody : t.body}</p>
-        {isChat && gates.chat_sellers === false ? (
+        <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-gray-600">{body}</p>
+        {kind === 'chat' && gates.chat_sellers === false ? (
           <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-900">{t.sellerNote}</p>
         ) : null}
         {uid ? (
@@ -184,4 +220,4 @@ export default function SectionGate({ section, children }: { section: SectionKey
     </div>
   );
 }
-// BAMBEH_END_TOKEN__SECTION_GATE_FIX673__COMPLETE
+// BAMBEH_END_TOKEN__SECTION_GATE_FIX679__COMPLETE

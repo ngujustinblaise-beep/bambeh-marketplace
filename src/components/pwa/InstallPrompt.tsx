@@ -15,7 +15,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { useLang } from '@/hooks/useAppLang';
-import { IS_STORE_APP } from '@/config/storeMode';
+import { IS_NATIVE_APP } from '@/config/storeMode'; // FIX683
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 function normLang(v: unknown): Lang {
@@ -107,7 +107,7 @@ export default function InstallPrompt() {
   const deferred = useRef<InstallEvent | null>(null);
 
   useEffect(() => {
-    if (IS_STORE_APP) return undefined;
+    if (IS_NATIVE_APP) return undefined;
     try {
       const secure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
       if (secure && 'serviceWorker' in navigator) {

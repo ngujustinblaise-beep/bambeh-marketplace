@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__USEPLANLIMITS_FIX674_CLEAN
+// BAMBEH_DEPLOY_TOKEN__USEPLANLIMITS_FIX680_CLEAN
 /**
  * src/hooks/usePlanLimits.ts - Bambeh Marketplace
  *
@@ -22,13 +22,16 @@
  *          typed as numbers and true/false (the old literal types made FREE_LIMITS fail
  *          strict type checks), and the Fulfulde "from 100 XAF a day" lost a Cyrillic
  *          letter that had slipped into it.
+ * FIX680 - CHAT FOR BUYERS AND SELLERS SEPARATELY (FIX677). A seller (anyone with a live
+ *          advert) follows the "chat_sellers" switch, everyone else follows "chat" - the
+ *          same rule as the chat page, from chatIsMembersOnly() in useSectionGates.
  *
  * (c) 2025-2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
-import { useSectionGates } from '@/hooks/useSectionGates'; // FIX674
+import { chatIsMembersOnly, useSectionGates } from '@/hooks/useSectionGates'; // FIX674, FIX680
 
 /** Everything a plan allows. */
 export interface PlanLimits {
@@ -93,14 +96,13 @@ export function usePlanLimits(): PlanState {
 
   const base = isPremium ? PREMIUM_LIMITS : FREE_LIMITS;
 
-  // FIX674 - chat: switched to free in the Command Center, everyone signed in may
-  // message; and anyone with an active advert may always answer (Sellers answering).
-  const chatFree = sections.gates.chat === false;
-  const sellerPass = sections.gates.chat_sellers === false && sections.advertiser === true;
+  // FIX680 - chat follows the Command Center for this person: buyers (no live advert)
+  // the "chat" switch, sellers (a live advert) the "chat_sellers" switch.
+  const chatOpen = !chatIsMembersOnly(sections.gates, sections.advertiser);
 
   return {
     ...base,
-    canMessage: base.canMessage || (uid !== null && (chatFree || sellerPass)),
+    canMessage: base.canMessage || (uid !== null && chatOpen),
     loading:   isLoading === true,
     isPremium,
     isAdmin:   isAdmin === true,
@@ -148,4 +150,4 @@ export const UPGRADE_COPY: Record<string, {
     from:  'gila 100 XAF e \u00f1alawma',
   },
 };
-// BAMBEH_END_TOKEN__USEPLANLIMITS_FIX674__COMPLETE
+// BAMBEH_END_TOKEN__USEPLANLIMITS_FIX680__COMPLETE

@@ -37,7 +37,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { NotificationBell } from '@/components/NotificationBell';
 import { useLang } from "@/hooks/useAppLang";
-import { IS_STORE_APP, storeAllows, publicShareUrl } from "@/config/storeMode"; // FIX630
+import { IS_NATIVE_APP, storeAllows, publicShareUrl } from "@/config/storeMode"; // FIX630, FIX683 - the mic is a web-view limit
 
 type LanguageCode = "en" | "fr" | "pcm" | "ff" | "ar";
 const AVAILABLE_LANGUAGES: { code: LanguageCode; name: string; flag: string }[] = [
@@ -210,7 +210,7 @@ function markVoiceOff(): void {
 }
 /** True only where a tap on the mic can actually do something. */
 function voiceAvailable(): boolean {
-  return !IS_STORE_APP && !!speechCtor() && !voiceMarkedOff();
+  return !IS_NATIVE_APP && !!speechCtor() && !voiceMarkedOff();
 }
 
 export default function Header() {
@@ -303,7 +303,7 @@ export default function Header() {
   };
 
   const startVoiceRecognition = () => {
-    const Ctor = IS_STORE_APP ? null : speechCtor();
+    const Ctor = IS_NATIVE_APP ? null : speechCtor();
     if (!Ctor) { giveUpOnVoice(); return; }
     let recognition: SpeechRec;
     try { recognition = new Ctor(); } catch { giveUpOnVoice(); return; }

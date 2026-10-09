@@ -13,7 +13,7 @@
  */
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { IS_STORE_APP } from '@/config/storeMode';
+import { IS_NATIVE_APP } from '@/config/storeMode'; // FIX683
 
 const DEVICE_KEY = 'bambeh_device_id';
 const LIVE_EVERY_MS = 120000;
@@ -43,7 +43,7 @@ function deviceId(): string {
 }
 
 function platform(): string {
-  if (IS_STORE_APP) return 'android-app';
+  if (IS_NATIVE_APP) return 'android-app';
   try {
     const installed = window.matchMedia('(display-mode: standalone)').matches ||
       (navigator as unknown as { standalone?: boolean }).standalone === true;

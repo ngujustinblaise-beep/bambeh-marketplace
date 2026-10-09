@@ -801,7 +801,7 @@ export default function App() {
                         {/* ── CORPORATE (replaces vendor) ────────────────────────── */}
                         <Route path="/corporate" element={<MainLayout><CorporatePage /></MainLayout>} />
                         <Route path="/corporate/register" element={<MainLayout><AuthGate require="user"><CorporateRegister /></AuthGate></MainLayout>} />
-                        <Route path="/corporate/store/:key" element={<MainLayout><CorporateStorefront /></MainLayout>} />
+                        <Route path="/corporate/store/:key" element={<MainLayout><SectionGate section="corporate"><CorporateStorefront /></SectionGate></MainLayout>} />
                         <Route path="/corporate/dashboard" element={<MainLayout><AuthGate require="user"><CorporateDashboard /></AuthGate></MainLayout>} />
                         <Route path="/corporate/ads" element={<MainLayout><CorporateAdsPage /></MainLayout>} />
                         <Route path="/corporate/settings" element={<MainLayout><AuthGate require="user"><CorporateStoreSettings /></AuthGate></MainLayout>} />{/* FIX149 */}
@@ -809,15 +809,15 @@ export default function App() {
                         <Route path="/corporate/analytics" element={<MainLayout><AuthGate require="user"><CorporateAnalytics /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/support" element={<MainLayout><AuthGate require="user"><CorporatePrioritySupport /></AuthGate></MainLayout>} />{/* FIX156 */}
                         <Route path="/corporate/trash" element={<MainLayout><AuthGate require="user"><CorporateTrash /></AuthGate></MainLayout>} />{/* FIX156 */}
-                        <Route path="/quiz" element={<MainLayout><AuthGate require="user"><QuizPage /></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
+                        <Route path="/quiz" element={<MainLayout><AuthGate require="user"><SectionGate section="quiz"><QuizPage /></SectionGate></AuthGate></MainLayout>} />{/* FIX167: subscribers only */}
                         {/* FIX480 - deliberately OUTSIDE AuthGate. Someone looking for
                             medicine at 2am must never meet a sign-in wall. The database
                             functions are granted to anon for exactly this reason. */}
-                        <Route path="/pharmacies" element={<MainLayout><PharmaciesOnCall /></MainLayout>} />
-                        <Route path="/hospitals" element={<MainLayout><HospitalsOnDuty /></MainLayout>} />
-                        <Route path="/water-lights" element={<MainLayout><WaterLights /></MainLayout>} />{/* FIX500 - outside AuthGate on purpose */}
-                        <Route path="/fuel" element={<MainLayout><FuelAtNight /></MainLayout>} />{/* FIX506 - outside AuthGate on purpose */}
-                        <Route path="/safety" element={<MainLayout><SafetyAlerts /></MainLayout>} />{/* FIX507 - outside AuthGate on purpose */}
+                        <Route path="/pharmacies" element={<MainLayout><SectionGate section="free_services"><PharmaciesOnCall /></SectionGate></MainLayout>} />
+                        <Route path="/hospitals" element={<MainLayout><SectionGate section="free_services"><HospitalsOnDuty /></SectionGate></MainLayout>} />
+                        <Route path="/water-lights" element={<MainLayout><SectionGate section="free_services"><WaterLights /></SectionGate></MainLayout>} />{/* FIX500 - outside AuthGate on purpose */}
+                        <Route path="/fuel" element={<MainLayout><SectionGate section="free_services"><FuelAtNight /></SectionGate></MainLayout>} />{/* FIX506 - outside AuthGate on purpose */}
+                        <Route path="/safety" element={<MainLayout><SectionGate section="free_services"><SafetyAlerts /></SectionGate></MainLayout>} />{/* FIX507 - outside AuthGate on purpose */}
                         <Route path="/list-my-service" element={<MainLayout><AuthGate require="user"><ListMyService /></AuthGate></MainLayout>} />{/* FIX484 - also outside AuthGate */}
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
@@ -836,9 +836,9 @@ export default function App() {
                           path="/deals"
                           element={
                             <MainLayout>
-                              <AuthGate require="user">
+                              <AuthGate require="user"><SectionGate section="flash_deals">
                                 <FlashDeals />
-                              </AuthGate>
+                              </SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -858,9 +858,9 @@ export default function App() {
                           path="/ai-chat"
                           element={
                             <MainLayout>
-                              <AuthGate require="subscription">
+                              <AuthGate require="user"><SectionGate section="ai">
                                 <BambehAIChatbot />
-                              </AuthGate>
+                              </SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1171,7 +1171,7 @@ export default function App() {
                           path="/coins"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><CoinsPage /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="coins"><CoinsPage /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1388,7 +1388,7 @@ export default function App() {
                           path="/community"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><CommunityPage /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="community"><CommunityPage /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1396,7 +1396,7 @@ export default function App() {
                           path="/community/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><CommunityDetail /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="community"><CommunityDetail /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1444,7 +1444,7 @@ export default function App() {
                           path="/compare"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><ComparisonTool /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="compare"><ComparisonTool /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />
@@ -1452,7 +1452,7 @@ export default function App() {
                           path="/group-buying/:id"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><GroupBuyingDetail /></AuthGate>
+                              <AuthGate require="user"><SectionGate section="group_buying"><GroupBuyingDetail /></SectionGate></AuthGate>
                             </MainLayout>
                           }
                         />

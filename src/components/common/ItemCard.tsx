@@ -22,7 +22,7 @@ import { MapPin, Heart, Share2, MessageCircle, Star, Clock, Building, Home, Brie
 import { AnyItem } from '@/types/items';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlanLimits } from '@/hooks/usePlanLimits';                    // FIX639
-import { IS_STORE_APP, PUBLIC_APP_URL, storeAllows } from '@/config/storeMode'; // FIX639
+import { IS_NATIVE_APP, PUBLIC_APP_URL, storeAllows } from '@/config/storeMode'; // FIX639, FIX683
 import { useFavorites } from '@/hooks/useFavorites';
 import { formatCurrency } from '@/utils/currency';
 import { formatDistanceToNow } from 'date-fns';
@@ -125,7 +125,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onContact, onShare, variant =
     if (onShare) {
       onShare(item);
     } else if (navigator.share) {
-      const base = !IS_STORE_APP && typeof window !== 'undefined' ? window.location.origin : PUBLIC_APP_URL; // FIX639
+      const base = !IS_NATIVE_APP && typeof window !== 'undefined' ? window.location.origin : PUBLIC_APP_URL; // FIX639, FIX683
       navigator.share({ title: item.title, text: item.description, url: `${base}/#${itemPath()}` }).catch(() => {});
     }
   };
