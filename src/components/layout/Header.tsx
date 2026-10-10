@@ -39,6 +39,9 @@ import { NotificationBell } from '@/components/NotificationBell';
 import { useLang } from "@/hooks/useAppLang";
 import { IS_NATIVE_APP, storeAllows, publicShareUrl } from "@/config/storeMode"; // FIX630, FIX683 - the mic is a web-view limit
 
+// FIX696 - "Gas & food" in the five app languages, kept here so the header stays light
+const FOOD_NAV: Record<string, string> = { en: 'Gas & food', fr: 'Gaz & resto', pcm: 'Gas & chop', pidgin: 'Gas & chop', ar: '\u0627\u0644\u063A\u0627\u0632\u0020\u0648\u0627\u0644\u0637\u0639\u0627\u0645', ff: 'Gaas e \u00F1aamdu', ful: 'Gaas e \u00F1aamdu' };
+
 type LanguageCode = "en" | "fr" | "pcm" | "ff" | "ar";
 const AVAILABLE_LANGUAGES: { code: LanguageCode; name: string; flag: string }[] = [
   { code: "en",  name: "English",       flag: "\uD83C\uDDEC\uD83C\uDDE7" },
@@ -356,6 +359,7 @@ export default function Header() {
     { to: '/vehicles',    words: ['vehicles', 'cars', 'voitures', 'vehicules', 'motos', 'car rental', 'car', 'vehicle', 'moto', 'voiture', 'v\u00E9hicule', 'motto', '\u0633\u064A\u0627\u0631\u0629', 'oto'] },
     { to: '/services',    words: ['services', 'service', '\u062E\u062F\u0645\u0629', 'sarwis'] },
     { to: '/farm-fresh',  words: ['farm', 'food', 'tomato', 'vegetable', 'ferme', 'l\u00E9gume', 'chop', '\u0645\u0632\u0631\u0639\u0629', '\u0637\u0639\u0627\u0645', 'ndema', '\u00F1amdu', 'remuru'] },
+    { to: '/food-gas',    words: ['gas', 'cooking gas', 'gaz', 'gas bottle', 'restaurant', 'restaurants', 'resto', 'chop house', 'soya', 'suya', 'grill', 'barbecue', 'bbq', 'roast fish', 'roasted fish', 'grilled fish', 'fish', 'poisson', 'poisson braise', 'braise', 'liingu', 'gaas', '\u063A\u0627\u0632', '\u0645\u0637\u0639\u0645', '\u0634\u0648\u0627\u0621', '\u0633\u0645\u0643'] }, // FIX696
     { to: '/exchange',    words: ['exchanges', 'echanges', 'swaps', 'exchange', 'swap', 'trade', '\u00E9change', 'troc', '\u0645\u0642\u0627\u064A\u0636\u0629', 'waylugol', 'waylu'] },
     { to: '/community',   words: ['community', 'group', 'communaut\u00E9', 'groupe', '\u0645\u062C\u062A\u0645\u0639', 'renndo', 'goomu'] },
     { to: '/request-delivery', words: ['send', 'parcel', 'package', 'colis', 'envoyer', 'delivery'] },
@@ -609,6 +613,7 @@ export default function Header() {
             {[
               { to: '/community',        label: '\uD83D\uDC65 ' + t('nav.community') },
               { to: '/farm-fresh',       label: '\uD83C\uDF3F Farm Fresh' },
+              { to: '/food-gas',         label: '\uD83D\uDD25 ' + (FOOD_NAV[String(lang)] || FOOD_NAV.en) }, // FIX696
               { to: '/request-delivery', label: NAV_ICON.send + ' ' + navL.send },
               { to: '/become-courier',   label: NAV_ICON.deliver + ' ' + navL.deliver },
               { to: '/agent',            label: NAV_ICON.agent + ' ' + navL.agent },
@@ -783,6 +788,7 @@ export default function Header() {
                 { to: '/services',    label: `\uD83D\uDD27 ${t('nav.services')}`    },
                 { to: '/rentals',     label: `\uD83C\uDFE0 ${t('nav.rentals')}`     },
                 { to: '/vehicles',    label: `\uD83D\uDE97 ${t('nav.vehicles')}`    },
+                { to: '/food-gas',    label: '\uD83D\uDD25 ' + (FOOD_NAV[String(lang)] || FOOD_NAV.en) }, // FIX696
               ].map(item => (
                 <Link
                   key={item.to}

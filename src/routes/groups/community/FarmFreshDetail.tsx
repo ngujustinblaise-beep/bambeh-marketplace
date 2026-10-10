@@ -1,17 +1,23 @@
-// BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX342_CLEAN
-// BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX105_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FARMFRESHDETAIL_FIX695_CLEAN
+// FIX695 (10 Oct 2026) - built on FIX342 / FIX105:
+//   - "WhatsApp Farmer" (it showed the farmer's phone number) is now "Chat with the farmer":
+//     Bambeh chat only, so every sale stays inside Bambeh Secured Pay (Big, 8 Oct 2026).
+//   - The freshness note no longer promises a "full refund": a refund is the item price,
+//     after Bambeh staff check the report (the refund rule of FIX634-638).
+//   - Share links use the real address (was bambeh.cm), and the pictures that an old
+//     encoding accident turned into "??" are back. Words for the new lines in 5 languages.
 /**
- * src/pages/FarmFreshDetail.tsx ? Bambeh Marketplace
+ * FarmFreshDetail.tsx - Bambeh Marketplace
  *
  * FIXED & REWRITTEN:
- *  ? Loads real product from Supabase (was only showing hardcoded mock data)
- *  ? Falls back gracefully to demo products if no DB match
- *  ? i18n ? reacts instantly when user changes language (useLang / t)
- *  ? "Buy via app" ? navigates to /farm-fresh/order/:id
- *  ? "Contact Seller via WhatsApp" ? if seller_phone is available
- *  ? Add to cart uses CartContext
- *  ? Increments view_count in Supabase on mount
- *  ? Handles s1-s8 demo IDs as well as UUID real products
+ *  - Loads real product from Supabase (was only showing hardcoded mock data)
+ *  - Falls back gracefully to demo products if no DB match
+ *  - i18n - reacts instantly when user changes language (useLang / t)
+ *  - "Buy via app" - navigates to /farm-fresh/order/:id
+ *  - Contact: Bambeh chat with the farmer (FIX695; was WhatsApp)
+ *  - Add to cart uses CartContext
+ *  - Increments view_count in Supabase on mount
+ *  - Handles s1-s8 demo IDs as well as UUID real products
  */
 
 import React, { useState, useEffect } from "react";
@@ -25,6 +31,50 @@ import { supabase } from "@/lib/supabase";
 import SellerReviews from "@/components/reviews/SellerReviews";  // FIX342
 import { useCart } from "@/contexts/CartContext";
 import { useLang, t } from "@/hooks/useAppLang";
+import { publicShareUrl } from "@/config/storeMode"; // FIX695
+
+// FIX695 - the new words on this page, in the five app languages.
+type FarmLang = "en" | "fr" | "pidgin" | "ar" | "ff";
+function farmLang(v: unknown): FarmLang {
+  const l = String(v || "en").toLowerCase();
+  if (l.indexOf("fr") === 0) return "fr";
+  if (l === "pcm" || l.indexOf("pid") === 0) return "pidgin";
+  if (l.indexOf("ar") === 0) return "ar";
+  if (l === "ff" || l === "ful" || l === "fulfulde") return "ff";
+  return "en";
+}
+const FARM_T: Record<FarmLang, { chatFarmer: string; freshness: string; copied: string; shareText: string }> = {
+  en: {
+    chatFarmer: "Chat with the farmer",
+    freshness: "If your produce arrives below standard, report it within 24 hours in My Orders. Bambeh checks it and arranges a replacement or a refund of the item price.",
+    copied: "Copied!",
+    shareText: "Fresh on Bambeh Farm Fresh: {title}, {price} / {unit}.",
+  },
+  fr: {
+    chatFarmer: "Discuter avec le producteur",
+    freshness: "Si vos produits arrivent en mauvais \u00e9tat, signalez-le sous 24 heures dans Mes commandes. Bambeh v\u00e9rifie et organise un remplacement ou le remboursement du prix de l\u2019article.",
+    copied: "Copi\u00e9 !",
+    shareText: "Frais sur Bambeh Farm Fresh : {title}, {price} / {unit}.",
+  },
+  pidgin: {
+    chatFarmer: "Chat with the farmer",
+    freshness: "If your produce reach and e no good, report am inside 24 hours for My Orders. Bambeh go check am and arrange another one or refund the price of the thing.",
+    copied: "E don copy!",
+    shareText: "Fresh for Bambeh Farm Fresh: {title}, {price} / {unit}.",
+  },
+  ar: {
+    chatFarmer: "\u062a\u062d\u062f\u0651\u062b \u0645\u0639 \u0627\u0644\u0645\u0632\u0627\u0631\u0639",
+    freshness: "\u0625\u0630\u0627 \u0648\u0635\u0644\u062a \u0645\u0646\u062a\u062c\u0627\u062a\u0643 \u0628\u062c\u0648\u062f\u0629 \u0623\u0642\u0644 \u0645\u0646 \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u060c \u0623\u0628\u0644\u063a \u0639\u0646 \u0630\u0644\u0643 \u062e\u0644\u0627\u0644 24 \u0633\u0627\u0639\u0629 \u0641\u064a \u0637\u0644\u0628\u0627\u062a\u064a. \u062a\u062a\u062d\u0642\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0645\u0646 \u0627\u0644\u0623\u0645\u0631 \u0648\u062a\u0631\u062a\u0651\u0628 \u0627\u0633\u062a\u0628\u062f\u0627\u0644\u0647\u0627 \u0623\u0648 \u0627\u0633\u062a\u0631\u062f\u0627\u062f \u0633\u0639\u0631 \u0627\u0644\u0645\u0646\u062a\u062c.",
+    copied: "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e!",
+    shareText: "\u0637\u0627\u0632\u062c \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647 \u0641\u0627\u0631\u0645 \u0641\u0631\u064a\u0634: {title}\u060c {price} / {unit}.",
+  },
+  ff: {
+    chatFarmer: "Haal e ndemoowo",
+    freshness: "So ko ndemaa ngal yottii ko mo\u01b4\u01b4aani, habru e nder saa\u2019aaji 24 e Yamiroore am. Bambeh \u01b4eewtan, wa\u0257a lomtugol walla artirde coggu huunde nde.",
+    copied: "Nattaama!",
+    shareText: "Kesum e Bambeh Farm Fresh: {title}, {price} / {unit}.",
+  },
+};
 
 // -- Types ---------------------------------------------------------------------
 interface RealProduct {
@@ -42,14 +92,13 @@ interface RealProduct {
   seller_id?: string;
   farmer_id?: string;
   seller_name?: string;
-  seller_phone?: string;
   available_for_delivery?: boolean;
   stock_quantity?: number;
   view_count?: number;
   created_at?: string;
 }
 
-// FIX105: demo products removed — detail loads real DB rows only.
+// FIX105: demo products removed - detail loads real DB rows only.
 
 function isUUID(s: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
@@ -63,10 +112,11 @@ const FarmFreshDetail: React.FC = () => {
   const navigate  = useNavigate();
   const { addToCart } = useCart();
   const lang      = useLang();
+  const ft        = FARM_T[farmLang(lang)]; // FIX695
 
   const [product,      setProduct]      = useState<RealProduct | null>(null);
   const [loading,      setLoading]      = useState(true);
-  const [isDemo,       setIsDemo]       = useState(false);
+  const [,             setIsDemo]       = useState(false); // FIX695: the old demo flag is never shown
   const [qty,          setQty]          = useState(1);
   const [addedToCart,  setAddedToCart]  = useState(false);
   const [wishlisted,   setWishlisted]   = useState(false);
@@ -109,7 +159,6 @@ const FarmFreshDetail: React.FC = () => {
             seller_id:              data.seller_id || data.farmer_id,
             farmer_id:              data.farmer_id || data.seller_id,
             seller_name:            data.seller_name,
-            seller_phone:           data.seller_phone,
             available_for_delivery: data.available_for_delivery ?? false,
             stock_quantity:         data.stock_quantity,
             view_count:             data.view_count ?? 0,
@@ -178,7 +227,7 @@ const FarmFreshDetail: React.FC = () => {
     setTimeout(() => setAddedToCart(false), 2500);
   }
 
-  const shareUrl = `https://bambeh.cm/farm-fresh/${id}`;
+  const shareUrl = publicShareUrl(); // FIX695: the real address (was bambeh.cm)
 
   // -- Loading --------------------------------------------------------------
   if (loading) {
@@ -242,7 +291,7 @@ const FarmFreshDetail: React.FC = () => {
             </div>
           ) : (
             <div className="h-40 flex items-center justify-center">
-              <span className="text-8xl">??</span>
+              <span className="text-8xl">{'\ud83e\udd6c'}</span>
             </div>
           )}
           <div className="p-5">
@@ -326,11 +375,11 @@ const FarmFreshDetail: React.FC = () => {
         </div>
 
         {/* Seller / farmer info */}
-        {(product.seller_name || product.seller_phone) && (
+        {(product.seller_name || product.seller_id) && (
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             <h2 className="font-bold text-gray-900 mb-4">{t("yourFarmer", lang) || "Your Farmer"}</h2>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">??</div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">{'\ud83e\uddd1\u200d\ud83c\udf3e'}</div>
               <div className="flex-1">
                 <p className="font-bold text-gray-900">{product.seller_name || "Farmer"}</p>
                 <div className="flex items-center gap-1 text-gray-500 text-xs mt-0.5">
@@ -338,13 +387,13 @@ const FarmFreshDetail: React.FC = () => {
                 </div>
               </div>
             </div>
-            {product.seller_phone && (
-              <a
-                href={`https://wa.me/${product.seller_phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I saw your listing for ${product.title} on Bambeh. I'm interested!`)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm hover:bg-[#1da851] transition-colors">
-                <MessageCircle className="w-4 h-4" />{t("whatsappSeller", lang) || "WhatsApp Farmer"}
-              </a>
+            {product.seller_id && (
+              <button
+                type="button"
+                onClick={() => navigate(`/chat?userId=${encodeURIComponent(product.seller_id || "")}&listingTitle=${encodeURIComponent(product.title)}${mainImage ? "&listingImage=" + encodeURIComponent(mainImage) : ""}`)}
+                className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-colors">
+                <MessageCircle className="w-4 h-4" />{ft.chatFarmer}
+              </button>
             )}
           </div>
         )}
@@ -358,7 +407,7 @@ const FarmFreshDetail: React.FC = () => {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-bold text-gray-900">{t("moreFarm", lang) || "More Farm Products"}</h2>
-              <Link to="/farm-fresh" className="text-green-600 text-sm font-semibold">{t("seeAll", lang) || "See all"} ?</Link>
+              <Link to="/farm-fresh" className="text-green-600 text-sm font-semibold">{t("seeAll", lang) || "See all"} {'\u2192'}</Link>
             </div>
             <div className="space-y-3">
               {relatedItems.map(rp => (
@@ -367,7 +416,7 @@ const FarmFreshDetail: React.FC = () => {
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-green-50 flex-shrink-0">
                     {rp.image_url
                       ? <img src={rp.image_url} alt={rp.title} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center text-2xl">??</div>
+                      : <div className="w-full h-full flex items-center justify-center text-2xl">{'\ud83e\udd6c'}</div>
                     }
                   </div>
                   <div className="flex-1 min-w-0">
@@ -387,7 +436,7 @@ const FarmFreshDetail: React.FC = () => {
           <div>
             <p className="font-semibold text-green-800 text-sm">{t("freshnessGuarantee", lang) || "Freshness Guarantee"}</p>
             <p className="text-green-700 text-xs mt-0.5">
-              {t("freshnessDesc", lang) || "If your produce arrives below standard, report within 24 hours and we will arrange a replacement or full refund."}
+              {ft.freshness}
             </p>
           </div>
         </div>
@@ -409,7 +458,7 @@ const FarmFreshDetail: React.FC = () => {
             </div>
             <div className="text-right">
               <div className="text-lg font-black text-gray-900">{fmtXAF(totalPrice)}</div>
-              <div className="text-xs text-gray-400">{qty} ? {product.unit}</div>
+              <div className="text-xs text-gray-400">{qty} {'\u00d7'} {product.unit}</div>
             </div>
           </div>
           <div className="flex gap-3">
@@ -423,7 +472,7 @@ const FarmFreshDetail: React.FC = () => {
             </button>
             <button onClick={() => navigate(`/farm-fresh/order/${product.id}?quantity=${qty}`)}
               className="flex-1 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700 transition-all shadow-md">
-              ?? {t("orderNow", lang) || "Order Now"}
+              {'\u26a1'} {t("orderNow", lang) || "Order Now"}
             </button>
           </div>
         </div>
@@ -435,14 +484,14 @@ const FarmFreshDetail: React.FC = () => {
           <div className="bg-white rounded-3xl w-full max-w-md mx-auto p-5" onClick={e => e.stopPropagation()}>
             <h3 className="font-bold text-gray-900 text-lg mb-4">{t("shareProduct", lang) || "Share This Product"}</h3>
             <div className="space-y-3">
-              <a href={`https://wa.me/?text=${encodeURIComponent(`?? Check this on Bambeh FarmFresh! ${product.title} ? ${fmtXAF(product.price_per_unit_xaf)}/${product.unit}. Fresh from Cameroon! ${shareUrl}`)}`}
+              <a href={`https://wa.me/?text=${encodeURIComponent(ft.shareText.split("{title}").join(product.title).split("{price}").join(fmtXAF(product.price_per_unit_xaf)).split("{unit}").join(product.unit) + " " + shareUrl)}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-2xl text-[#128C7E] font-semibold">
                 <MessageCircle className="w-5 h-5" />{t("shareWhatsApp", lang) || "Share on WhatsApp"}
               </a>
               <button onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                 className="w-full flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-700 font-semibold">
-                <Copy className="w-5 h-5 text-gray-400" />{copied ? "? Copied!" : (t("copyLink", lang) || "Copy Link")}
+                <Copy className="w-5 h-5 text-gray-400" />{copied ? "\u2713 " + ft.copied : (t("copyLink", lang) || "Copy Link")}
               </button>
             </div>
             <button onClick={() => setShareOpen(false)} className="w-full mt-3 py-3 text-gray-500 text-sm">{t("cancel", lang) || "Cancel"}</button>
@@ -463,5 +512,4 @@ export default FarmFreshDetail;
 
 
 
-// BAMBEH_END_TOKEN__FARMFRESHDETAIL__COMPLETE
-// BAMBEH_END_TOKEN__FARMFRESHDETAIL_FIX342__COMPLETE
+// BAMBEH_END_TOKEN__FARMFRESHDETAIL_FIX695__COMPLETE

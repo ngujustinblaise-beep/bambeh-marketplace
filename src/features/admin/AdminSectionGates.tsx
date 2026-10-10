@@ -36,7 +36,7 @@ const INFO: Record<string, Info> = {
     why: "Every sale pays Bambeh 1% through Secured Pay. A wall here blocks the purchase itself." },
   farm_fresh: { label: "Farm Fresh details", covers: "Produce pages, bought with Secured Pay.", recommended: false,
     why: "Same as the marketplace: the sale is where Bambeh earns." },
-  food_gas: { label: "Gas & food details", covers: "Gas sellers, restaurants, grills and roasted fish (section coming).", recommended: true,
+  food_gas: { label: "Gas & food details", covers: "Gas sellers, restaurants, grills and roasted fish: the business page, menu, chat and booking.", recommended: true,
     why: "People pay for convenience: finding gas or a meal nearby, fast. The businesses still pay to be featured." },
   rentals: { label: "Rental details", covers: "House and room pages.", recommended: true,
     why: "The house-agent replacement - the strongest reason to subscribe." },

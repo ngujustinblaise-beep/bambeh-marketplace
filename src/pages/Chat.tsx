@@ -1,4 +1,16 @@
-// BAMBEH_DEPLOY_TOKEN__CHAT_FIX82_CLEAN
+// BAMBEH_DEPLOY_TOKEN__CHAT_FIX694_CLEAN
+// FIX694 (10 Oct 2026):
+//   (1) the old "Chat is Premium" card is gone. It checked a subscription on its own and
+//       ignored the Command Center: sellers with a live advert, and everyone while the
+//       Subscription wall is set to free, were still locked out. App.tsx decides now
+//       (<SectionGate section="chat">, FIX676 / FIX683): members only for buyers, while
+//       anyone with a live advert or a live gas & food business can always answer.
+//   (2) a booking never closes the chat any more. The box used to vanish after a booking
+//       ("the host will contact you directly" - by phone, which Bambeh does not allow).
+//       Now the business answers right there; a line under the card says so.
+//   (3) every word follows the app language (English, French, Pidgin, Arabic right to
+//       left, Fulfulde); the Block dialog read the wrong language key and now follows it too.
+//   Nothing else changed: same tables, same realtime, same startChat() for other pages.
 // FIX64: (1) conversation list reads participant_ids + a single separate profiles
 //        fetch (the conversation_participants embed hit a table that does not
 //        exist, so names/avatars were blank). (2) sendMessage now updates the
@@ -18,15 +30,242 @@ const BLOCK_T: Record<string, Record<string, string>> = {
   ff: { block: "Falo", blockTitle: "Ada yi\u0257i falde oo ne\u0257\u0257o?", blockBody: "O waawataa neldude ma bataake, a yiyataa bayyinaali makko. Ada waawi ruttude \u0257um e Teelte.", cancel: "Accu", confirm: "Falo mo", working: "Ina falee...", done: "Ne\u0257\u0257o oo falaama.", fail: "Min mbaawaa falde. Eto kadi." },
 };
 
-function blockLang(): string {
-  try {
-    const l = String(window.localStorage.getItem('bambeh_lang') ?? 'en').toLowerCase();
-    if (l === 'fulfulde' || l === 'ful') return 'ff';
-    if (l === 'pcm') return 'pidgin';
-    if (BLOCK_T[l]) return l;
-    return 'en';
-  } catch { return 'en'; }
+// FIX694 - the language the app is set to (Bambeh_language), whatever its spelling.
+type ChatLang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
+function normChatLang(v: unknown): ChatLang {
+  const l = String(v || 'en').toLowerCase();
+  if (l.indexOf('fr') === 0) return 'fr';
+  if (l === 'pcm' || l.indexOf('pid') === 0) return 'pidgin';
+  if (l.indexOf('ar') === 0) return 'ar';
+  if (l === 'ff' || l === 'ful' || l === 'fulfulde') return 'ff';
+  return 'en';
 }
+
+// FIX694 - every other word on this page, in the five languages.
+interface ChatText {
+  messages: string;
+  search: string;
+  none: string;
+  noneHint: string;
+  signInTitle: string;
+  signInBody: string;
+  signIn: string;
+  user: string;
+  unknown: string;
+  online: string;
+  offline: string;
+  re: string;
+  typing: string;
+  loading: string;
+  start: string;
+  askAbout: string;
+  sayHello: string;
+  noMessages: string;
+  select: string;
+  selectHint: string;
+  typeMessage: string;
+  emoji: string;
+  close: string;
+  sendPhoto: string;
+  send: string;
+  notPicture: string;
+  tooLarge: string;
+  photoFailed: string;
+  startFailed: string;
+  bookingTitle: string;
+  bookingCard: string;
+  bookingFooter: string;
+  bookingSent: string;
+  bookingReceived: string;
+  photo: string;
+}
+const CHAT_T: Record<ChatLang, ChatText> = {
+  en: {
+    messages: "Messages",
+    search: "Search conversations...",
+    none: "No conversations yet",
+    noneHint: "Contact a seller to start chatting",
+    signInTitle: "Sign in to chat",
+    signInBody: "Connect with sellers and buyers directly",
+    signIn: "Sign in",
+    user: "User",
+    unknown: "Unknown",
+    online: "Online",
+    offline: "Offline",
+    re: "Re:",
+    typing: "{name} is typing...",
+    loading: "Loading messages...",
+    start: "Start the conversation",
+    askAbout: "Ask about \"{t}\"",
+    sayHello: "Say hello to get started",
+    noMessages: "No messages yet",
+    select: "Select a conversation",
+    selectHint: "Choose from the list to start messaging",
+    typeMessage: "Type a message...",
+    emoji: "Emoji",
+    close: "Close",
+    sendPhoto: "Send a photo",
+    send: "Send",
+    notPicture: "That file is not a picture.",
+    tooLarge: "That picture is too large. Please choose a smaller one.",
+    photoFailed: "Could not send the picture. Please try again.",
+    startFailed: "Could not open this chat. Please try again.",
+    bookingTitle: "Booking request",
+    bookingCard: "Booking notification",
+    bookingFooter: "Booking request - answer below in this chat.",
+    bookingSent: "Booking sent. The answer comes here in this chat.",
+    bookingReceived: "New booking request. Answer here to confirm it or to agree another time.",
+    photo: "Photo",
+  },
+  fr: {
+    messages: "Messages",
+    search: "Rechercher une conversation...",
+    none: "Aucune conversation pour le moment",
+    noneHint: "Contactez un vendeur pour commencer \u00e0 discuter",
+    signInTitle: "Connectez-vous pour discuter",
+    signInBody: "\u00c9changez directement avec les vendeurs et les acheteurs",
+    signIn: "Se connecter",
+    user: "Utilisateur",
+    unknown: "Inconnu",
+    online: "En ligne",
+    offline: "Hors ligne",
+    re: "Objet :",
+    typing: "{name} \u00e9crit...",
+    loading: "Chargement des messages...",
+    start: "Commencez la conversation",
+    askAbout: "Posez une question sur \u00ab {t} \u00bb",
+    sayHello: "Dites bonjour pour commencer",
+    noMessages: "Aucun message pour le moment",
+    select: "Choisissez une conversation",
+    selectHint: "Choisissez dans la liste pour \u00e9crire",
+    typeMessage: "\u00c9crire un message...",
+    emoji: "\u00c9moji",
+    close: "Fermer",
+    sendPhoto: "Envoyer une photo",
+    send: "Envoyer",
+    notPicture: "Ce fichier n\u2019est pas une photo.",
+    tooLarge: "Cette photo est trop lourde. Choisissez-en une plus petite.",
+    photoFailed: "Impossible d\u2019envoyer la photo. R\u00e9essayez.",
+    startFailed: "Impossible d\u2019ouvrir ce chat. R\u00e9essayez.",
+    bookingTitle: "Demande de r\u00e9servation",
+    bookingCard: "Notification de r\u00e9servation",
+    bookingFooter: "Demande de r\u00e9servation - r\u00e9pondez ci-dessous dans ce chat.",
+    bookingSent: "R\u00e9servation envoy\u00e9e. La r\u00e9ponse arrive ici, dans ce chat.",
+    bookingReceived: "Nouvelle demande de r\u00e9servation. R\u00e9pondez ici pour la confirmer ou proposer un autre moment.",
+    photo: "Photo",
+  },
+  pidgin: {
+    messages: "Messages",
+    search: "Find one conversation...",
+    none: "No conversation dey yet",
+    noneHint: "Contact one seller make you start to chat",
+    signInTitle: "Sign in make you chat",
+    signInBody: "Talk direct with sellers and buyers",
+    signIn: "Sign in",
+    user: "Person",
+    unknown: "Person",
+    online: "Dey online",
+    offline: "No dey online",
+    re: "About:",
+    typing: "{name} dey write...",
+    loading: "E dey load the messages...",
+    start: "Start the talk",
+    askAbout: "Ask about \"{t}\"",
+    sayHello: "Talk hello make you start",
+    noMessages: "No message dey yet",
+    select: "Choose one conversation",
+    selectHint: "Choose for the list make you start to write",
+    typeMessage: "Write your message...",
+    emoji: "Emoji",
+    close: "Close",
+    sendPhoto: "Send photo",
+    send: "Send",
+    notPicture: "That file no be picture.",
+    tooLarge: "That picture too big. Choose one wey small.",
+    photoFailed: "The picture no fit send. Try again.",
+    startFailed: "This chat no fit open. Try again.",
+    bookingTitle: "Booking request",
+    bookingCard: "Booking notice",
+    bookingFooter: "Booking request - answer down here for this chat.",
+    bookingSent: "Booking don go. The answer go come here for this chat.",
+    bookingReceived: "New booking request. Answer here make you confirm am or agree another time.",
+    photo: "Photo",
+  },
+  ar: {
+    messages: "\u0627\u0644\u0631\u0633\u0627\u0626\u0644",
+    search: "\u0627\u0628\u062d\u062b \u0639\u0646 \u0645\u062d\u0627\u062f\u062b\u0629...",
+    none: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u062d\u0627\u062f\u062b\u0627\u062a \u0628\u0639\u062f",
+    noneHint: "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0628\u0627\u0626\u0639 \u0644\u0628\u062f\u0621 \u0627\u0644\u062f\u0631\u062f\u0634\u0629",
+    signInTitle: "\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u062f\u0631\u062f\u0634\u0629",
+    signInBody: "\u062a\u0648\u0627\u0635\u0644 \u0645\u0628\u0627\u0634\u0631\u0629 \u0645\u0639 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646 \u0648\u0627\u0644\u0645\u0634\u062a\u0631\u064a\u0646",
+    signIn: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644",
+    user: "\u0645\u0633\u062a\u062e\u062f\u0645",
+    unknown: "\u063a\u064a\u0631 \u0645\u0639\u0631\u0648\u0641",
+    online: "\u0645\u062a\u0635\u0644",
+    offline: "\u063a\u064a\u0631 \u0645\u062a\u0635\u0644",
+    re: "\u0628\u062e\u0635\u0648\u0635:",
+    typing: "{name} \u064a\u0643\u062a\u0628...",
+    loading: "\u062c\u0627\u0631\u064d \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0631\u0633\u0627\u0626\u0644...",
+    start: "\u0627\u0628\u062f\u0623 \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629",
+    askAbout: "\u0627\u0633\u0623\u0644 \u0639\u0646 \u00ab{t}\u00bb",
+    sayHello: "\u0642\u0644 \u0645\u0631\u062d\u0628\u064b\u0627 \u0644\u0644\u0628\u062f\u0621",
+    noMessages: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0631\u0633\u0627\u0626\u0644 \u0628\u0639\u062f",
+    select: "\u0627\u062e\u062a\u0631 \u0645\u062d\u0627\u062f\u062b\u0629",
+    selectHint: "\u0627\u062e\u062a\u0631 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0644\u0628\u062f\u0621 \u0627\u0644\u0645\u0631\u0627\u0633\u0644\u0629",
+    typeMessage: "\u0627\u0643\u062a\u0628 \u0631\u0633\u0627\u0644\u0629...",
+    emoji: "\u0631\u0645\u0648\u0632 \u062a\u0639\u0628\u064a\u0631\u064a\u0629",
+    close: "\u0625\u063a\u0644\u0627\u0642",
+    sendPhoto: "\u0623\u0631\u0633\u0644 \u0635\u0648\u0631\u0629",
+    send: "\u0625\u0631\u0633\u0627\u0644",
+    notPicture: "\u0647\u0630\u0627 \u0627\u0644\u0645\u0644\u0641 \u0644\u064a\u0633 \u0635\u0648\u0631\u0629.",
+    tooLarge: "\u0647\u0630\u0647 \u0627\u0644\u0635\u0648\u0631\u0629 \u0643\u0628\u064a\u0631\u0629 \u062c\u062f\u064b\u0627. \u0627\u062e\u062a\u0631 \u0635\u0648\u0631\u0629 \u0623\u0635\u063a\u0631.",
+    photoFailed: "\u062a\u0639\u0630\u0651\u0631 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0635\u0648\u0631\u0629. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
+    startFailed: "\u062a\u0639\u0630\u0651\u0631 \u0641\u062a\u062d \u0647\u0630\u0647 \u0627\u0644\u062f\u0631\u062f\u0634\u0629. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
+    bookingTitle: "\u0637\u0644\u0628 \u062d\u062c\u0632",
+    bookingCard: "\u0625\u0634\u0639\u0627\u0631 \u062d\u062c\u0632",
+    bookingFooter: "\u0637\u0644\u0628 \u062d\u062c\u0632 - \u0623\u062c\u0628 \u0623\u062f\u0646\u0627\u0647 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u062f\u0631\u062f\u0634\u0629.",
+    bookingSent: "\u062a\u0645 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u062d\u062c\u0632. \u0633\u064a\u0635\u0644 \u0627\u0644\u0631\u062f \u0647\u0646\u0627 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u062f\u0631\u062f\u0634\u0629.",
+    bookingReceived: "\u0637\u0644\u0628 \u062d\u062c\u0632 \u062c\u062f\u064a\u062f. \u0623\u062c\u0628 \u0647\u0646\u0627 \u0644\u062a\u0623\u0643\u064a\u062f\u0647 \u0623\u0648 \u0644\u0644\u0627\u062a\u0641\u0627\u0642 \u0639\u0644\u0649 \u0648\u0642\u062a \u0622\u062e\u0631.",
+    photo: "\u0635\u0648\u0631\u0629",
+  },
+  ff: {
+    messages: "Bataaje",
+    search: "Yiilo yeewtere...",
+    none: "Yeewtere alaa tawo",
+    noneHint: "Jokkondir e jeeyoowo ngam fu\u0257\u0257aade haalde",
+    signInTitle: "Naatu e konte maa ngam haalde",
+    signInBody: "Haal e jeeyoo\u0253e e soodoo\u0253e",
+    signIn: "Naatu e konte maa",
+    user: "Kuutoroowo",
+    unknown: "Anndaaka",
+    online: "E ley",
+    offline: "Alaa e ley",
+    re: "Ko faati:",
+    typing: "{name} ina winnda...",
+    loading: "Ina loowa bataaje...",
+    start: "Fu\u0257\u0257o yeewtere",
+    askAbout: "Naamno faati e \"{t}\"",
+    sayHello: "Salmino ngam fu\u0257\u0257aade",
+    noMessages: "Bataaje alaa tawo",
+    select: "Su\u0253o yeewtere",
+    selectHint: "Su\u0253o e doggol ngam fu\u0257\u0257aade winndude",
+    typeMessage: "Winndu bataake...",
+    emoji: "Emoji",
+    close: "Uddu",
+    sendPhoto: "Neldu natal",
+    send: "Neldu",
+    notPicture: "Ndee fiile wonaa natal.",
+    tooLarge: "Natal ngal mawni no feewi. Su\u0253o natal fam\u0257ungal.",
+    photoFailed: "Natal ngal waawaa neldeede. Eto kadi.",
+    startFailed: "Chat ngal waawaa udditeede. Eto kadi.",
+    bookingTitle: "Hokkere",
+    bookingCard: "Tintinol hokkere",
+    bookingFooter: "Hokkere - jaabo les e chat ngal.",
+    bookingSent: "Hokkere neldaama. Jaabawol arataa \u0257oo e chat ngal.",
+    bookingReceived: "Hokkere hesere. Jaabo \u0257oo ngam tee\u014btinde walla su\u0253aade saa\u2019a go\u0257\u0257o.",
+    photo: "Natal",
+  },
+};
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -36,7 +275,6 @@ import {
   ChevronDown,
   Circle,
   Image as ImageIcon,
-  Lock,
   MessageSquare,
   Loader2,
   Search,
@@ -47,7 +285,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/contexts/AuthContext";
-import { isSubscribed } from '@/utils/subscriptionUtils';
+import { useLang } from '@/hooks/useAppLang'; // FIX694
 import { logger } from '@/utils/logger';
 import { AvatarImage, BambehImage } from '@/components/ui/BambehImage';
 
@@ -82,7 +320,7 @@ interface ChatConversation {
   listingImage?: string;
 }
 
-const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
+const TypingIndicator: React.FC<{ name: string; label: string }> = ({ name, label }) => (
   <div className="flex items-end gap-2 px-4 py-1">
     <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex-shrink-0 flex items-center justify-center">
       <span className="text-white text-xs font-bold">{name[0]?.toUpperCase()}</span>
@@ -94,13 +332,13 @@ const TypingIndicator: React.FC<{ name: string }> = ({ name }) => (
         <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </div>
-    <span className="text-xs text-gray-400 mb-1">{name} is typing…</span>
+    <span className="text-xs text-gray-400 mb-1">{label}</span>
   </div>
 );
 
-const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => {
+const BookingMessageCard: React.FC<{ message: ChatMessage; tx: ChatText }> = ({ message, tx }) => {
   const lines = message.content.split('\n').filter(Boolean);
-  const title = lines[0] ?? 'Booking Request';
+  const title = lines[0] ?? tx.bookingTitle;
   const details = lines.slice(1);
   const time = new Date(message.createdAt).toLocaleTimeString('fr-CM', {
     hour: '2-digit',
@@ -112,7 +350,7 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
       <div className="w-full max-w-sm bg-teal-50 border border-teal-200 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-lg flex-shrink-0">
-            📩
+            {'\ud83d\udce9'}
           </div>
           <div>
             <p className="font-bold text-teal-800 text-sm leading-tight">{title}</p>
@@ -135,12 +373,12 @@ const BookingMessageCard: React.FC<{ message: ChatMessage }> = ({ message }) => 
               );
             })
           ) : (
-            <p className="text-xs text-teal-700">Booking notification</p>
+            <p className="text-xs text-teal-700">{tx.bookingCard}</p>
           )}
         </div>
 
         <p className="text-[10px] text-teal-400 mt-3 pt-2 border-t border-teal-100 italic text-center">
-          This is a booking notification — replies are disabled for this message.
+          {tx.bookingFooter}
         </p>
       </div>
     </div>
@@ -152,8 +390,9 @@ const MessageBubble: React.FC<{
   isMine: boolean;
   showAvatar: boolean;
   otherParticipant?: ChatParticipant;
-}> = ({ message, isMine, showAvatar, otherParticipant }) => {
-  if (message.isBookingMessage) return <BookingMessageCard message={message} />;
+  tx: ChatText;
+}> = ({ message, isMine, showAvatar, otherParticipant, tx }) => {
+  if (message.isBookingMessage) return <BookingMessageCard message={message} tx={tx} />;
 
   const time = new Date(message.createdAt).toLocaleTimeString('fr-CM', {
     hour: '2-digit',
@@ -182,7 +421,7 @@ const MessageBubble: React.FC<{
       <div className={`max-w-[72%] ${isMine ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
         {message.type === 'image' && message.imageUrl ? (
           <div className={`rounded-2xl overflow-hidden shadow-sm ${isMine ? 'rounded-br-sm' : 'rounded-bl-sm'}`}>
-            <BambehImage src={message.imageUrl} alt="Shared image" width={300} height={240} objectFit="cover" />
+            <BambehImage src={message.imageUrl} alt={tx.photo} width={300} height={240} objectFit="cover" />
           </div>
         ) : (
           <div
@@ -209,7 +448,8 @@ const ConversationItem: React.FC<{
   isActive: boolean;
   currentUserId: string;
   onClick: () => void;
-}> = ({ conv, isActive, currentUserId, onClick }) => {
+  tx: ChatText;
+}> = ({ conv, isActive, currentUserId, onClick, tx }) => {
   const other = conv.participantDetails.find(p => p.id !== currentUserId);
   const time = conv.lastMessageAt
     ? new Date(conv.lastMessageAt).toLocaleTimeString('fr-CM', { hour: '2-digit', minute: '2-digit' })
@@ -236,14 +476,14 @@ const ConversationItem: React.FC<{
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-0.5">
           <span className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-semibold text-gray-800'}`}>
-            {other?.name ?? 'Unknown'}
+            {other?.name ?? tx.unknown}
           </span>
           <span className="text-[10px] text-gray-400 flex-shrink-0 ml-1">{time}</span>
         </div>
         <div className="flex items-center justify-between gap-1">
           <p className={`text-xs truncate ${conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500'}`}>
             {conv.listingTitle ? <span className="text-teal-600 font-medium mr-1">[{conv.listingTitle}]</span> : null}
-            {conv.lastMessage || 'No messages yet'}
+            {conv.lastMessage || tx.noMessages}
           </p>
           {conv.unreadCount > 0 && (
             <span className="flex-shrink-0 w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] font-bold flex items-center justify-center">
@@ -297,6 +537,9 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const lang = normChatLang(useLang()); // FIX694
+  const tx = CHAT_T[lang];
+  const dir = lang === 'ar' ? 'rtl' : 'ltr';
 
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(searchParams.get('chat') ?? null);
@@ -315,7 +558,7 @@ export default function ChatPage() {
   const [blockOpen, setBlockOpen] = useState(false);
   const [blockBusy, setBlockBusy] = useState(false);
   const [blockErr, setBlockErr]   = useState('');
-  const bt = BLOCK_T[blockLang()] ?? BLOCK_T.en;
+  const bt = BLOCK_T[lang] ?? BLOCK_T.en; // FIX694: the app language, not the old bambeh_lang key
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -326,11 +569,10 @@ export default function ChatPage() {
   const channelRef = useRef<any>(null);
   const presenceChannelRef = useRef<any>(null);
 
-  const userIsSubscriber = user ? isSubscribed(user) : false;
   const selectedConv = useMemo(() => conversations.find(c => c.id === selectedChatId), [conversations, selectedChatId]);
   const otherParticipant = selectedConv?.participantDetails.find(p => p.id !== user?.id);
   const lastMessage = messages[messages.length - 1];
-  const isBookingOnlyThread = !!lastMessage?.isBookingMessage;
+  const lastIsBooking = !!lastMessage?.isBookingMessage; // FIX694: a booking never closes the chat
 
   useEffect(() => {
     const check = () => setIsMobileView(window.innerWidth < 1024);
@@ -357,7 +599,7 @@ export default function ChatPage() {
         }
       } catch (e) {
         logger.warn('Could not start conversation from userId param:', e);
-        if (!cancelled) setStartError(e instanceof Error ? e.message : 'Could not open this chat. Please try again.');
+        if (!cancelled) setStartError(e instanceof Error ? e.message : tx.startFailed);
       }
     })();
     return () => { cancelled = true; };
@@ -621,11 +863,11 @@ export default function ChatPage() {
     setImageError(null);
 
     if (!file.type.startsWith('image/')) {
-      setImageError('That file is not a picture.');
+      setImageError(tx.notPicture);
       return;
     }
     if (file.size > MAX_PICK_BYTES) {
-      setImageError('That picture is too large. Please choose a smaller one.');
+      setImageError(tx.tooLarge);
       return;
     }
 
@@ -676,12 +918,12 @@ export default function ChatPage() {
     } catch (err: any) {
       logger.warn('FIX290 image send failed:', err);
       const detail = err?.message ? ' (' + err.message + ')' : '';
-      setImageError('Could not send the picture. Please try again.' + detail);
+      setImageError(tx.photoFailed + detail);
     } finally {
       setIsUploadingImage(false);
       if (imageInputRef.current) imageInputRef.current.value = '';
     }
-  }, [selectedChatId, user?.id]);
+  }, [selectedChatId, user?.id, tx]);
 
   const sendMessage = useCallback(async () => {
     const content = newMessage.trim();
@@ -766,45 +1008,23 @@ export default function ChatPage() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-[80vh]">
+      <div dir={dir} className="flex items-center justify-center min-h-[80vh]">
         <div className="text-center max-w-sm px-6">
           <div className="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-5">
             <MessageSquare className="w-10 h-10 text-teal-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign in to chat</h2>
-          <p className="text-gray-500 mb-6">Connect with sellers and buyers directly</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{tx.signInTitle}</h2>
+          <p className="text-gray-500 mb-6">{tx.signInBody}</p>
           <Button onClick={() => navigate('/login')} className="bg-teal-600 hover:bg-teal-700 w-full">
-            Sign In
+            {tx.signIn}
           </Button>
         </div>
       </div>
     );
   }
 
-  if (!userIsSubscriber) {
-    return (
-      <div className="flex items-center justify-center min-h-[80vh] p-4">
-        <div className="bg-gradient-to-br from-teal-600 to-blue-700 rounded-3xl p-8 text-white text-center max-w-md w-full shadow-2xl">
-          <div className="w-16 h-16 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <Lock className="w-8 h-8 text-white" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Chat is Premium</h2>
-          <p className="text-teal-100 mb-6">Subscribe to message sellers and buyers directly in real-time</p>
-          <div className="bg-white/10 backdrop-blur rounded-2xl p-4 mb-6 text-left space-y-2">
-            {['Real-time messaging', 'Typing indicators', 'Image sharing', 'Online status'].map(f => (
-              <div key={f} className="flex items-center gap-2 text-sm">
-                <CheckCheck className="w-4 h-4 text-teal-300 flex-shrink-0" />
-                <span>{f}</span>
-              </div>
-            ))}
-          </div>
-          <Button onClick={() => navigate('/subscription')} className="bg-white text-teal-700 hover:bg-teal-50 w-full font-semibold">
-            View Plans
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // FIX694: the old "Chat is Premium" card was here. It ignored the Command Center
+  // switches; App.tsx wraps this page in <SectionGate section="chat"> instead.
 
   const filteredConvs = conversations.filter(c => {
     if (!searchQuery) return true;
@@ -818,13 +1038,13 @@ export default function ChatPage() {
   const ConversationList = (
     <div className="flex flex-col h-full bg-white">
       <div className="px-4 pt-5 pb-3 border-b border-gray-100">
-        <h1 className="text-xl font-bold text-gray-900 mb-3">Messages</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-3">{tx.messages}</h1>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search conversations…"
+            placeholder={tx.search}
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
           />
         </div>
@@ -839,8 +1059,8 @@ export default function ChatPage() {
         {filteredConvs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
             <MessageSquare className="w-12 h-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 font-medium text-sm">No conversations yet</p>
-            <p className="text-gray-400 text-xs mt-1">Contact a seller to start chatting</p>
+            <p className="text-gray-500 font-medium text-sm">{tx.none}</p>
+            <p className="text-gray-400 text-xs mt-1">{tx.noneHint}</p>
           </div>
         ) : (
           <div>
@@ -851,6 +1071,7 @@ export default function ChatPage() {
                 isActive={selectedChatId === conv.id}
                 currentUserId={user.id}
                 onClick={() => setSelectedChatId(conv.id)}
+                tx={tx}
               />
             ))}
           </div>
@@ -887,14 +1108,14 @@ export default function ChatPage() {
         </div>
 
         <div className="flex-1">
-          <p className="font-semibold text-gray-900 text-sm leading-tight">{otherParticipant?.name ?? 'User'}</p>
+          <p className="font-semibold text-gray-900 text-sm leading-tight">{otherParticipant?.name ?? tx.user}</p>
           <p className="text-xs text-gray-500">
             {otherParticipant?.isOnline ? (
               <span className="text-green-600 font-medium flex items-center gap-1">
-                <Circle className="w-2 h-2 fill-green-500" /> Online
+                <Circle className="w-2 h-2 fill-green-500" /> {tx.online}
               </span>
             ) : (
-              'Offline'
+              tx.offline
             )}
           </p>
         </div>
@@ -955,7 +1176,7 @@ export default function ChatPage() {
 
         {selectedConv?.listingTitle && (
           <div className="hidden sm:block bg-teal-50 border border-teal-100 rounded-xl px-3 py-1.5 text-xs text-teal-700 font-medium max-w-[180px] truncate">
-            Re: {selectedConv.listingTitle}
+            {tx.re} {selectedConv.listingTitle}
           </div>
         )}
 
@@ -968,7 +1189,7 @@ export default function ChatPage() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
-              <p className="text-sm text-gray-400">Loading messages…</p>
+              <p className="text-sm text-gray-400">{tx.loading}</p>
             </div>
           </div>
         ) : messages.length === 0 ? (
@@ -976,9 +1197,9 @@ export default function ChatPage() {
             <div className="w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center mb-4">
               <MessageSquare className="w-8 h-8 text-teal-500" />
             </div>
-            <p className="font-semibold text-gray-700">Start the conversation</p>
+            <p className="font-semibold text-gray-700">{tx.start}</p>
             <p className="text-sm text-gray-400 mt-1">
-              {selectedConv?.listingTitle ? `Ask about "${selectedConv.listingTitle}"` : 'Say hello to get started'}
+              {selectedConv?.listingTitle ? tx.askAbout.split('{t}').join(selectedConv.listingTitle) : tx.sayHello}
             </p>
           </div>
         ) : (
@@ -992,13 +1213,14 @@ export default function ChatPage() {
                   isMine={msg.senderId === user.id}
                   showAvatar={isLastInGroup && msg.senderId !== user.id}
                   otherParticipant={otherParticipant}
+                  tx={tx}
                 />
               );
             })}
 
             {typingUsers.map(userId => {
               const typer = selectedConv?.participantDetails.find(p => p.id === userId);
-              return typer ? <TypingIndicator key={userId} name={typer.name} /> : null;
+              return typer ? <TypingIndicator key={userId} name={typer.name} label={tx.typing.split('{name}').join(typer.name)} /> : null;
             })}
           </>
         )}
@@ -1015,19 +1237,21 @@ export default function ChatPage() {
         )}
       </div>
 
-      {isBookingOnlyThread ? (
-        <div className="bg-teal-50 border-t border-teal-100 px-4 py-4 text-center">
-          <p className="text-xs text-teal-600 font-medium">
-            Booking request sent. The host will contact you directly to confirm.
+      {/* FIX694: a booking never closes the chat - the business answers right here. */}
+      {lastIsBooking && (
+        <div className="bg-teal-50 border-t border-teal-100 px-4 py-2 text-center">
+          <p className="text-xs text-teal-700 font-medium">
+            {lastMessage?.senderId === user.id ? tx.bookingSent : tx.bookingReceived}
           </p>
         </div>
-      ) : (
+      )}
+      {(
         <div className="bg-white border-t border-gray-100 px-3 py-3">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowEmoji((v) => !v)}
-              aria-label="Emoji"
+              aria-label={tx.emoji}
               className={
                 'p-2 rounded-xl transition-colors flex-shrink-0 ' +
                 (showEmoji ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-teal-600 hover:bg-teal-50')
@@ -1050,7 +1274,7 @@ export default function ChatPage() {
               type="button"
               disabled={isUploadingImage}
               onClick={() => imageInputRef.current?.click()}
-              aria-label="Send a photo"
+              aria-label={tx.sendPhoto}
               className="p-2 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex-shrink-0 disabled:opacity-50"
             >
               {isUploadingImage
@@ -1063,7 +1287,7 @@ export default function ChatPage() {
                 value={newMessage}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a message…"
+                placeholder={tx.typeMessage}
                 className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
               />
             </div>
@@ -1071,6 +1295,7 @@ export default function ChatPage() {
             {newMessage.trim() ? (
               <button
                 onClick={sendMessage}
+                aria-label={tx.send}
                 className="w-10 h-10 bg-teal-600 hover:bg-teal-700 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-95 shadow-md shadow-teal-200"
               >
                 <Send className="w-4 h-4 text-white" />
@@ -1087,11 +1312,11 @@ export default function ChatPage() {
           {showEmoji && (
             <div className="mt-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg">
               <div className="mb-1 flex items-center justify-between px-1">
-                <span className="text-xs font-semibold text-gray-500">Emoji</span>
+                <span className="text-xs font-semibold text-gray-500">{tx.emoji}</span>
                 <button
                   type="button"
                   onClick={() => setShowEmoji(false)}
-                  aria-label="Close"
+                  aria-label={tx.close}
                   className="rounded-full p-1 text-gray-400 hover:bg-gray-100"
                 >
                   <XIcon className="w-3.5 h-3.5" />
@@ -1120,18 +1345,18 @@ export default function ChatPage() {
         <div className="w-20 h-20 bg-white rounded-full shadow-md flex items-center justify-center mx-auto mb-4">
           <MessageSquare className="w-10 h-10 text-teal-400" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-700 mb-1">Select a conversation</h3>
-        <p className="text-sm text-gray-400">Choose from the list to start messaging</p>
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">{tx.select}</h3>
+        <p className="text-sm text-gray-400">{tx.selectHint}</p>
       </div>
     </div>
   );
 
   if (isMobileView) {
-    return <div className="h-[calc(100vh-64px)]">{selectedChatId ? ChatInterface : ConversationList}</div>;
+    return <div dir={dir} className="h-[calc(100vh-64px)]">{selectedChatId ? ChatInterface : ConversationList}</div>;
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex overflow-hidden shadow-inner">
+    <div dir={dir} className="h-[calc(100vh-64px)] flex overflow-hidden shadow-inner">
       <div className="w-80 border-r border-gray-200 flex-shrink-0 overflow-hidden">{ConversationList}</div>
       <div className="flex-1 relative overflow-hidden">{ChatInterface}</div>
     </div>
@@ -1189,9 +1414,9 @@ export async function startChat(
     throw new Error(`Failed to create conversation: ${error.message}`);
   }
 
-  // FIX64: no conversation_participants table exists — participant_ids on the
+  // FIX64: no conversation_participants table exists - participant_ids on the
   // conversation row is the single source of truth.
   return data.id;
 }
 
-// BAMBEH_END_TOKEN__CHAT_FIX82__COMPLETE
+// BAMBEH_END_TOKEN__CHAT_FIX694__COMPLETE

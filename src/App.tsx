@@ -383,6 +383,9 @@ const WaterLights         = lazy(() => import("@/pages/WaterLights"));     // FI
 const FuelAtNight         = lazy(() => import("@/pages/FuelAtNight"));     // FIX506
 const SafetyAlerts        = lazy(() => import("@/pages/SafetyAlerts"));    // FIX507
 const AgentCapture        = lazy(() => import("@/features/agents/AgentCapture")); // FIX508
+const FoodGasPage   = lazy(() => import("@/features/foodgas/FoodGasPage"));   // FIX690
+const FoodGasDetail = lazy(() => import("@/features/foodgas/FoodGasDetail")); // FIX691
+const FoodGasManage = lazy(() => import("@/features/foodgas/FoodGasManage")); // FIX692
 const AccountGate         = lazy(() => import("@/components/auth/AccountGate")); // FIX613
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
@@ -814,6 +817,7 @@ export default function App() {
                             medicine at 2am must never meet a sign-in wall. The database
                             functions are granted to anon for exactly this reason. */}
                         <Route path="/pharmacies" element={<MainLayout><SectionGate section="free_services"><PharmaciesOnCall /></SectionGate></MainLayout>} />
+                        <Route path="/food-gas" element={<MainLayout><FoodGasPage /></MainLayout>} />
                         <Route path="/hospitals" element={<MainLayout><SectionGate section="free_services"><HospitalsOnDuty /></SectionGate></MainLayout>} />
                         <Route path="/water-lights" element={<MainLayout><SectionGate section="free_services"><WaterLights /></SectionGate></MainLayout>} />{/* FIX500 - outside AuthGate on purpose */}
                         <Route path="/fuel" element={<MainLayout><SectionGate section="free_services"><FuelAtNight /></SectionGate></MainLayout>} />{/* FIX506 - outside AuthGate on purpose */}
@@ -1416,6 +1420,10 @@ export default function App() {
                             </MainLayout>
                           }
                         />
+                        <Route path="/food-gas/place/:id" element={<AuthGate require="user"><SectionGate section="food_gas"><FoodGasDetail /></SectionGate></AuthGate>} />
+                        <Route path="/food-gas/mine" element={<AuthGate require="user"><FoodGasManage /></AuthGate>} />
+                        <Route path="/food-gas/new" element={<AuthGate require="user"><FoodGasManage /></AuthGate>} />
+                        <Route path="/food-gas/edit/:id" element={<AuthGate require="user"><FoodGasManage /></AuthGate>} />
                         <Route
                           path="/farm-fresh/order/:productId"
                           element={

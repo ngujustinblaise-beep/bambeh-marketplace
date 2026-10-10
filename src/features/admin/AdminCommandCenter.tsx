@@ -51,6 +51,8 @@ import FuelSection from './FuelSection';             // FIX504
 import AgentsSection from './AgentsSection';         // FIX508
 import PaywallSection from './PaywallSection';       // FIX536
 import AdminSectionGates from './AdminSectionGates';  // FIX675
+import AdminFoodGas from './AdminFoodGas';  // FIX693
+import { Flame as FoodGasIcon } from 'lucide-react'; // FIX693
 import { ToggleRight as GatesIcon } from 'lucide-react'; // FIX675
 import { supabase } from '@/lib/supabase';              // FIX558
 import ObligationsSection from './ObligationsSection'; // FIX550
@@ -66,7 +68,7 @@ type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
-  | 'agents' | 'requests' | 'paywall' | 'gates' | 'obligations' | 'couriers'
+  | 'agents' | 'requests' | 'paywall' | 'gates' | 'foodgas' | 'obligations' | 'couriers'
   | 'revive' | 'recovery' | 'refunds' | 'usage';
 
 const NAV: Array<{
@@ -110,6 +112,7 @@ const NAV: Array<{
   { key: 'obligations', label: 'Bambeh payments', icon: Wallet },
   { key: 'paywall',   label: 'Subscription wall', icon: Lock },
   { key: 'gates',     label: 'Members-only sections', icon: GatesIcon }, // FIX675
+  { key: 'foodgas',   label: 'Gas & food', icon: FoodGasIcon }, // FIX693
   { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances',
     badge: ['payments_pending', 'seller_payouts', 'event_payouts'] },
   { key: 'reports',   label: 'Reports',        icon: FileText,
@@ -263,6 +266,7 @@ export default function AdminCommandCenter() {
         {section === 'requests'  && <RequestsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'paywall'   && <PaywallSection  userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'gates'     && <AdminSectionGates embedded />}{/* FIX675 */}
+        {section === 'foodgas'   && <AdminFoodGas embedded />}{/* FIX693 */}
         {section === 'obligations' && <ObligationsSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'couriers'   && <CouriersSection    userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'listings'  && <ListingsSection />}
