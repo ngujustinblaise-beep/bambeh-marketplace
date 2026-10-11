@@ -1,57 +1,92 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_PAGE_FIX690_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_PAGE_FIX700_CLEAN
 /**
- * src/features/foodgas/FoodGasPage.tsx - FIX690   (route: /food-gas)
+ * src/features/foodgas/FoodGasPage.tsx - FIX700 (replaces FIX690)
+ *   routes: /food-gas       the two buttons: Cooking gas and Food (old links land here)
+ *           /food-gas/gas   COOKING GAS - who has which brand and bottle size, gas today
+ *           /food-gas/food  FOOD - restaurants, grill & soya, roasted fish; meats and local dishes
  *
- * GAS & FOOD - the list buyers search: cooking gas, restaurants, grill & soya,
- * roasted fish, by city, neighbourhood and words ("soya", "12.5 kg", a name).
- *   - Browsing the list is free for everyone, signed in or not. Opening a business
- *     (menu, directions, chat, booking) follows the "Gas & food" members switch in
- *     the Command Center (SectionGate in App.tsx).
- *   - Featured businesses come first in their neighbourhood, taking turns each day.
- *   - "Gas available today" only counts an answer the seller gave today.
- *   - Up Station and Mimboman are offered first (where Bambeh starts).
- *   - The last city, neighbourhood and kind are remembered on the phone.
+ * Big, 10 Oct 2026: "is food page different from gas page? please separate them so they
+ * have two separate buttons". The two sections share one database (FIX697) and one
+ * business page, but each has its own search, filters and neighbourhood counts.
+ *   - Gas: brand chips (SCTM, CAMGAS, GLOCAL, TOTAL, TRADEX and any brand a seller typed),
+ *     bottle sizes, "Gas available today". Each card shows the gas in stock with prices.
+ *   - Food: Restaurants / Grill & soya / Roasted fish, meat chips (beef, goat, pork,
+ *     chicken, fish) and dish chips by local name (achu, eru, ndole, okok...).
+ *   - Browsing is free for everyone, signed in or not. Opening a business (ordering gas,
+ *     booking, chat) follows the "Gas & food" members switch (SectionGate in App.tsx).
+ *   - Featured businesses come first, taking turns each day. Up Station and Mimboman
+ *     are offered first. The city, neighbourhood and filters are remembered on the phone.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Clock, Loader2, MapPin, Plus, RefreshCw, Search, Star, Store, Truck } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Clock, Flame, Loader2, MapPin, Plus, RefreshCw, Search, Star, Store, Truck, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  AREAS, CITY_KEYS, FOOD_KINDS, KIND_ICON, LAUNCH_AREAS, cityLabel, doualaNow, fmtXaf, isCityKey, kindLabel,
-  openState, opensLaterToday, reasonText, useFoodText,
+  AREAS, CITY_KEYS, DISH_PICKS, FOOD_SECTION_KINDS, GAS_BRANDS, KIND_ICON, LAUNCH_AREAS, MEATS, SIZE_PICKS, brandLabel,
+  cityLabel, doualaNow, fmtXaf, foldDish, isCityKey, isMeat, kindLabel, meatLabel, openState, opensLaterToday,
+  reasonText, sizeText, useFoodText,
 } from './foodGasText';
-import type { CityKey, FoodKind, FoodLang, FoodKey } from './foodGasText';
+import type { CityKey, FoodKey, FoodKind, FoodLang, Meat } from './foodGasText';
 import { listPlaces } from './foodGasApi';
-import type { AreaCount, FoodCard } from './foodGasApi';
+import type { AreaCount, BrandCount, DishCount, FoodCard, MeatCount, SizeCount } from './foodGasApi';
 
-const FILTER_KEY = 'bambeh_food_filters';
+type Section = 'gas' | 'food';
+type T = (key: FoodKey, vars?: Record<string, string | number>) => string;
+
+const WHERE_KEY = 'bambeh_food_where';   // city and neighbourhood, shared by both sections
+const GAS_KEY = 'bambeh_food_gas';       // brand and bottle size
+const FOOD_KEY = 'bambeh_food_food';     // kind, meat and dish
+const OLD_KEY = 'bambeh_food_filters';   // FIX690 (one page): its city and neighbourhood carry over
 const PAGE = 30;
 
-interface Filters { city: CityKey | ''; area: string; kind: FoodKind | '' }
+interface Where { city: CityKey | ''; area: string }
+interface GasFilters { brand: string; size: number | null }
+interface FoodFilters { kind: FoodKind | ''; meat: Meat | ''; dish: string }
 
-function loadFilters(): Filters {
+function readJson(key: string): Record<string, unknown> | null {
   try {
-    const raw = window.localStorage.getItem(FILTER_KEY);
-    if (raw) {
-      const v = JSON.parse(raw) as Partial<Filters>;
-      const city = isCityKey(v.city) ? v.city : '';
-      const kind = (FOOD_KINDS as readonly string[]).indexOf(String(v.kind)) >= 0 ? (v.kind as FoodKind) : '';
-      const area = city && typeof v.area === 'string' && /^[a-z0-9_]{2,40}$/.test(v.area) ? v.area : '';
-      return { city, area, kind };
-    }
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return null;
+    const v = JSON.parse(raw) as unknown;
+    return v && typeof v === 'object' ? (v as Record<string, unknown>) : null;
   } catch {
-    /* private window or blocked storage: start fresh */
+    return null; // private window or blocked storage: start fresh
   }
-  return { city: '', area: '', kind: '' };
 }
 
-function saveFilters(f: Filters): void {
-  try { window.localStorage.setItem(FILTER_KEY, JSON.stringify(f)); } catch { /* not kept - fine */ }
+function writeJson(key: string, v: object): void {
+  try { window.localStorage.setItem(key, JSON.stringify(v)); } catch { /* not kept - fine */ }
 }
 
-type T = (key: FoodKey, vars?: Record<string, string | number>) => string;
+function loadWhere(): Where {
+  const v = readJson(WHERE_KEY) || readJson(OLD_KEY) || {};
+  const city = isCityKey(v.city) ? v.city : '';
+  const area = city && typeof v.area === 'string' && /^[a-z0-9_]{2,40}$/.test(v.area) ? v.area : '';
+  return { city, area };
+}
+
+function loadGas(): GasFilters {
+  const v = readJson(GAS_KEY) || {};
+  const brand = typeof v.brand === 'string' && v.brand.trim().length >= 2 && v.brand.length <= 30 ? v.brand.trim() : '';
+  const size = typeof v.size === 'number' && v.size >= 1 && v.size <= 100 ? v.size : null;
+  return { brand, size };
+}
+
+function loadFood(): FoodFilters {
+  const v = readJson(FOOD_KEY) || {};
+  const kind = (FOOD_SECTION_KINDS as readonly string[]).indexOf(String(v.kind)) >= 0 ? (v.kind as FoodKind) : '';
+  const meat = isMeat(v.meat) ? v.meat : '';
+  const dish = typeof v.dish === 'string' && foldDish(v.dish).length >= 2 && v.dish.length <= 30 ? v.dish : '';
+  return { kind, meat, dish };
+}
+
+function chipCls(on: boolean, tone: 'dark' | 'red' | 'amber'): string {
+  const onCls = tone === 'red' ? 'bg-red-600 text-white shadow' : tone === 'amber' ? 'bg-amber-500 text-amber-950 shadow' : 'bg-gray-900 text-white';
+  return 'inline-flex flex-shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-sm font-bold transition ' +
+    (on ? onCls : 'border border-gray-200 bg-white text-gray-700 hover:border-orange-300');
+}
 
 function GasBadge({ p, t }: { p: FoodCard; t: T }) {
   if (p.kinds.indexOf('gas') < 0) return null;
@@ -78,8 +113,48 @@ function OpenLine({ p, t }: { p: FoodCard; t: T }) {
   );
 }
 
-export function PlaceCard({ p, lang, t, onOpen }: { p: FoodCard; lang: FoodLang; t: T; onOpen: () => void }) {
-  const Icon = KIND_ICON[p.kinds[0] || 'restaurant'];
+/** The gas in stock: "TRADEX 12.5 kg ... 6,500 XAF", up to four lines. */
+function GasLines({ p, lang, t }: { p: FoodCard; lang: FoodLang; t: T }) {
+  const offers = p.offers || [];
+  if (offers.length === 0) return null;
+  const more = (p.offer_count || 0) - offers.length;
+  return (
+    <ul className="space-y-0.5 rounded-xl bg-red-50/60 px-2.5 py-1.5" data-gas-lines={p.id}>
+      {offers.map((o) => (
+        <li key={o.id} className="flex items-center justify-between gap-2 text-xs">
+          <span className="font-bold text-gray-900">{brandLabel(o.brand, o.brand_other)} <span className="font-semibold text-gray-600">{sizeText(lang, o.size_kg)}</span></span>
+          <span className="font-extrabold text-teal-700">{o.refill_xaf !== null ? fmtXaf(o.refill_xaf, lang) + ' XAF' : t('askPrice')}</span>
+        </li>
+      ))}
+      {more > 0 && <li className="text-[11px] font-semibold text-gray-500">{t('gasMore', { n: more })}</li>}
+    </ul>
+  );
+}
+
+/** Meats and the first dishes, by their local names. */
+function FoodLines({ p, lang, t }: { p: FoodCard; lang: FoodLang; t: T }) {
+  const meats = p.meats || [];
+  const dishes = p.dishes || [];
+  const moreDishes = (p.dish_count || dishes.length) - Math.min(dishes.length, 4);
+  return (
+    <>
+      {meats.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {meats.map((m) => <span key={m} className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">{meatLabel(lang, m)}</span>)}
+        </div>
+      )}
+      {dishes.length > 0 && (
+        <p className="line-clamp-2 text-xs font-semibold text-gray-700" data-dishes={p.id}>
+          {dishes.slice(0, 4).join(' \u00b7 ')}{moreDishes > 0 ? ' \u00b7 ' + t('gasMore', { n: moreDishes }) : ''}
+        </p>
+      )}
+    </>
+  );
+}
+
+export function PlaceCard({ p, lang, t, onOpen, section = 'food' }: { p: FoodCard; lang: FoodLang; t: T; onOpen: () => void; section?: Section }) {
+  const Icon = KIND_ICON[section === 'gas' ? 'gas' : p.kinds.filter((k) => k !== 'gas')[0] || p.kinds[0] || 'restaurant'];
+  const hasGasLines = section === 'gas' && (p.offers || []).length > 0;
   return (
     <button
       type="button"
@@ -87,11 +162,11 @@ export function PlaceCard({ p, lang, t, onOpen }: { p: FoodCard; lang: FoodLang;
       data-place={p.id}
       className="group w-full overflow-hidden rounded-2xl border border-gray-100 bg-white text-start shadow-sm transition hover:shadow-md active:scale-[0.99]"
     >
-      <div className="relative h-36 w-full bg-gradient-to-br from-orange-100 to-amber-50">
+      <div className={'relative h-36 w-full bg-gradient-to-br ' + (section === 'gas' ? 'from-red-100 to-orange-50' : 'from-orange-100 to-amber-50')}>
         {p.photo ? (
           <img src={p.photo} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-orange-300"><Icon className="h-14 w-14" /></div>
+          <div className={'flex h-full w-full items-center justify-center ' + (section === 'gas' ? 'text-red-300' : 'text-orange-300')}><Icon className="h-14 w-14" /></div>
         )}
         {p.featured && (
           <span className="absolute start-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-extrabold text-amber-950 shadow">
@@ -118,16 +193,15 @@ export function PlaceCard({ p, lang, t, onOpen }: { p: FoodCard; lang: FoodLang;
           <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{p.area_label}, {cityLabel(p.city, lang)}</span>
           <OpenLine p={p} t={t} />
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <GasBadge p={p} t={t} />
-          {p.key_price_xaf !== null && (
-            <span className="text-sm font-bold text-teal-700">
-              {t('fromPrice', { n: fmtXaf(p.key_price_xaf, lang) })}
-              {p.key_price_label ? <span className="font-medium text-gray-500"> {'\u00b7'} {p.key_price_label}</span> : null}
-            </span>
-          )}
-        </div>
-        {p.preview.length > 0 && (
+        {section === 'gas' && <div className="flex flex-wrap items-center gap-2"><GasBadge p={p} t={t} /></div>}
+        {section === 'gas' ? <GasLines p={p} lang={lang} t={t} /> : <FoodLines p={p} lang={lang} t={t} />}
+        {!hasGasLines && p.key_price_xaf !== null && (
+          <p className="text-sm font-bold text-teal-700">
+            {t('fromPrice', { n: fmtXaf(p.key_price_xaf, lang) })}
+            {p.key_price_label ? <span className="font-medium text-gray-500"> {'\u00b7'} {p.key_price_label}</span> : null}
+          </p>
+        )}
+        {section === 'food' && p.preview.length > 0 && (
           <p className="line-clamp-1 text-xs text-gray-500">
             {p.preview.slice(0, 3).map((i) => i.name + (i.price_xaf !== null ? ' ' + fmtXaf(i.price_xaf, lang) : '')).join(' \u00b7 ')}
           </p>
@@ -137,12 +211,64 @@ export function PlaceCard({ p, lang, t, onOpen }: { p: FoodCard; lang: FoodLang;
   );
 }
 
-export default function FoodGasPage() {
+// ------------------------------------------------------------------ /food-gas : the two buttons
+function Hub() {
+  const { dir, t } = useFoodText();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  return (
+    <div dir={dir} data-fix="FIX700" data-section="hub" className="min-h-screen bg-gray-50 pb-24">
+      <header className="bg-gradient-to-br from-orange-500 via-red-500 to-rose-600 px-4 pb-10 pt-6 text-white">
+        <div className="mx-auto max-w-5xl">
+          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t('hubTitle')}</h1>
+        </div>
+      </header>
+      <div className="mx-auto -mt-6 grid max-w-5xl gap-4 px-4 sm:grid-cols-2">
+        <button type="button" data-go="gas" onClick={() => navigate('/food-gas/gas')}
+          className="rounded-2xl bg-white p-5 text-start shadow-md transition hover:shadow-lg active:scale-[0.99]">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600 text-white"><Flame className="h-8 w-8" /></span>
+          <span className="mt-3 block text-xl font-extrabold text-gray-900">{t('navGas')}</span>
+          <span className="mt-1 block text-sm text-gray-600">{t('hubGas')}</span>
+          <span className="mt-3 flex flex-wrap gap-1">
+            {GAS_BRANDS.map((b) => <span key={b} className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-800">{b}</span>)}
+          </span>
+        </button>
+        <button type="button" data-go="food" onClick={() => navigate('/food-gas/food')}
+          className="rounded-2xl bg-white p-5 text-start shadow-md transition hover:shadow-lg active:scale-[0.99]">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500 text-white"><UtensilsCrossed className="h-8 w-8" /></span>
+          <span className="mt-3 block text-xl font-extrabold text-gray-900">{t('navFood')}</span>
+          <span className="mt-1 block text-sm text-gray-600">{t('hubFood')}</span>
+          <span className="mt-3 flex flex-wrap gap-1">
+            {DISH_PICKS.slice(0, 6).map((d) => <span key={d} className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-900">{d}</span>)}
+          </span>
+        </button>
+      </div>
+      <div className="mx-auto mt-5 flex max-w-5xl flex-wrap gap-2 px-4">
+        <button type="button" onClick={() => navigate('/food-gas/new')}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-sm font-bold text-white hover:bg-orange-700">
+          <Plus className="h-4 w-4" />{t('addBusiness')}
+        </button>
+        {user && (
+          <button type="button" onClick={() => navigate('/food-gas/mine')}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-orange-300 bg-white px-3 py-2 text-sm font-bold text-orange-800">
+            <Store className="h-4 w-4" />{t('myBusinesses')}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ /food-gas/gas and /food-gas/food
+function ListView({ section }: { section: Section }) {
   const { lang, dir, t } = useFoodText();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isGas = section === 'gas';
 
-  const [f, setF] = useState<Filters>(loadFilters);
+  const [where, setWhere] = useState<Where>(loadWhere);
+  const [gf, setGf] = useState<GasFilters>(loadGas);
+  const [ff, setFf] = useState<FoodFilters>(loadFood);
   const [typed, setTyped] = useState('');
   const [query, setQuery] = useState('');
   const [gasToday, setGasToday] = useState(false);
@@ -150,6 +276,10 @@ export default function FoodGasPage() {
   const [rows, setRows] = useState<FoodCard[]>([]);
   const [total, setTotal] = useState(0);
   const [areas, setAreas] = useState<AreaCount[]>([]);
+  const [brands, setBrands] = useState<BrandCount[]>([]);
+  const [sizes, setSizes] = useState<SizeCount[]>([]);
+  const [meats, setMeats] = useState<MeatCount[]>([]);
+  const [dishes, setDishes] = useState<DishCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [err, setErr] = useState('');
@@ -160,17 +290,31 @@ export default function FoodGasPage() {
     return () => window.clearTimeout(h);
   }, [typed]);
 
-  useEffect(() => { saveFilters(f); }, [f]);
+  useEffect(() => { writeJson(WHERE_KEY, where); }, [where]);
+  useEffect(() => { if (isGas) writeJson(GAS_KEY, gf); }, [isGas, gf]);
+  useEffect(() => { if (!isGas) writeJson(FOOD_KEY, ff); }, [isGas, ff]);
 
   const load = useCallback(async (offset: number) => {
     const id = ++reqId.current;
     if (offset === 0) { setLoading(true); setErr(''); } else { setLoadingMore(true); }
-    const r = await listPlaces({ city: f.city || null, area: f.area || null, kind: f.kind || null, query, gasToday, limit: PAGE, offset });
+    const r = await listPlaces({
+      city: where.city || null, area: where.area || null,
+      kind: isGas ? 'gas' : (ff.kind || 'food'),
+      query, gasToday: isGas && gasToday, limit: PAGE, offset,
+      brand: isGas ? gf.brand || null : null, size: isGas ? gf.size : null,
+      meat: isGas ? null : ff.meat || null, dish: isGas ? null : ff.dish || null,
+    });
     if (id !== reqId.current) return;
     if (r.ok) {
       setRows((prev) => (offset === 0 ? r.rows : prev.concat(r.rows)));
       setTotal(r.total);
-      if (offset === 0) setAreas(r.areas);
+      if (offset === 0) {
+        setAreas(r.areas || []);
+        setBrands(r.brands || []);
+        setSizes(r.sizes || []);
+        setMeats(r.meats || []);
+        setDishes(r.dishes || []);
+      }
     } else if (offset === 0) {
       setRows([]);
       setTotal(0);
@@ -180,34 +324,67 @@ export default function FoodGasPage() {
     setLoadingMore(false);
     // t and lang only change the error wording; the list itself does not depend on them
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [f.city, f.area, f.kind, query, gasToday]);
+  }, [isGas, where.city, where.area, gf.brand, gf.size, ff.kind, ff.meat, ff.dish, query, gasToday]);
 
   useEffect(() => { void load(0); }, [load]);
 
   const shown = openNow ? rows.filter((r) => openState(r.open_days, r.opens_at, r.closes_at) === 'open') : rows;
 
-  // the neighbourhoods offered for the chosen city: the known list, then any others owners typed
+  // neighbourhoods of the chosen city: the known list, then any others owners typed
   const areaChips: Array<{ key: string; label: string; n: number | null }> = [];
-  if (f.city) {
-    for (const a of AREAS[f.city]) {
-      const hit = areas.filter((x) => x.city === f.city && x.area === a.key);
+  if (where.city) {
+    for (const a of AREAS[where.city]) {
+      const hit = areas.filter((x) => x.city === where.city && x.area === a.key);
       areaChips.push({ key: a.key, label: a.label, n: hit.length ? hit[0].n : null });
     }
     for (const x of areas) {
-      if (x.city === f.city && !areaChips.some((c) => c.key === x.area)) areaChips.push({ key: x.area, label: x.area_label, n: x.n });
+      if (x.city === where.city && !areaChips.some((c) => c.key === x.area)) areaChips.push({ key: x.area, label: x.area_label, n: x.n });
     }
   }
-  const filtersOn = !!(f.city || f.area || f.kind || query || gasToday || openNow);
 
-  const setCity = (c: string) => setF({ city: isCityKey(c) ? c : '', area: '', kind: f.kind });
-  const clearAll = () => { setF({ city: '', area: '', kind: '' }); setTyped(''); setQuery(''); setGasToday(false); setOpenNow(false); };
+  // gas: the five brands, then any brand sellers typed; the sizes in stock and the usual ones
+  const brandChips: Array<{ value: string; label: string; n: number | null }> = GAS_BRANDS.map((b) => {
+    const hit = brands.filter((x) => x.brand === b);
+    return { value: b, label: b, n: hit.length ? hit[0].n : null };
+  });
+  for (const x of brands) {
+    if (x.brand === 'OTHER' && x.label) brandChips.push({ value: x.label, label: x.label, n: x.n });
+  }
+  if (gf.brand && !brandChips.some((c) => foldDish(c.value) === foldDish(gf.brand))) brandChips.push({ value: gf.brand, label: gf.brand, n: 0 });
+  const sizeSet: number[] = [];
+  for (const s of SIZE_PICKS.concat(sizes.map((x) => Number(x.size_kg)))) if (isFinite(s) && sizeSet.indexOf(s) < 0) sizeSet.push(s);
+  if (gf.size !== null && sizeSet.indexOf(gf.size) < 0) sizeSet.push(gf.size);
+  sizeSet.sort((a, b) => a - b);
+  const sizeCount = (s: number): number | null => {
+    const hit = sizes.filter((x) => Number(x.size_kg) === s);
+    return hit.length ? hit[0].n : null;
+  };
+
+  // food: dishes the businesses here cook first (with counts), then the usual local dishes
+  const dishChips: Array<{ label: string; n: number | null }> = dishes.map((d) => ({ label: d.dish, n: d.n }));
+  for (const d of DISH_PICKS) if (!dishChips.some((c) => foldDish(c.label) === foldDish(d))) dishChips.push({ label: d, n: null });
+  if (ff.dish && !dishChips.some((c) => foldDish(c.label) === foldDish(ff.dish))) dishChips.unshift({ label: ff.dish, n: 0 });
+  const meatCount = (m: Meat): number | null => {
+    const hit = meats.filter((x) => x.meat === m);
+    return hit.length ? hit[0].n : null;
+  };
+
+  const sectionOn = isGas ? !!(gf.brand || gf.size !== null || gasToday) : !!(ff.kind || ff.meat || ff.dish);
+  const filtersOn = !!(where.city || where.area || query || openNow || sectionOn);
+  const setCity = (c: string) => setWhere({ city: isCityKey(c) ? c : '', area: '' });
+  const clearAll = () => {
+    setWhere({ city: '', area: '' });
+    if (isGas) setGf({ brand: '', size: null }); else setFf({ kind: '', meat: '', dish: '' });
+    setTyped(''); setQuery(''); setGasToday(false); setOpenNow(false);
+  };
+  const countLine = (n: number): string => (n === 1 ? t('countOne') : t('countPlaces', { n }));
 
   return (
-    <div dir={dir} data-fix="FIX690" className="min-h-screen bg-gray-50 pb-24">
-      <header className="bg-gradient-to-br from-orange-500 via-red-500 to-rose-600 px-4 pb-5 pt-6 text-white">
+    <div dir={dir} data-fix="FIX700" data-section={section} className="min-h-screen bg-gray-50 pb-24">
+      <header className={'bg-gradient-to-br px-4 pb-5 pt-6 text-white ' + (isGas ? 'from-red-600 via-orange-600 to-amber-500' : 'from-amber-500 via-orange-500 to-rose-500')}>
         <div className="mx-auto max-w-5xl">
-          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t('title')}</h1>
-          <p className="mt-1 text-sm text-orange-50">{t('subtitle')}</p>
+          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t(isGas ? 'gasTitle' : 'foodTitle')}</h1>
+          <p className="mt-1 text-sm text-orange-50">{t(isGas ? 'gasSubtitle' : 'foodSubtitle')}</p>
           <form
             className="mt-4 flex overflow-hidden rounded-xl bg-white shadow-lg"
             onSubmit={(e) => { e.preventDefault(); setQuery(typed.trim()); }}
@@ -216,81 +393,125 @@ export default function FoodGasPage() {
             <input
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
-              placeholder={t('searchPh')}
-              aria-label={t('searchPh')}
+              placeholder={t(isGas ? 'gasSearchPh' : 'foodSearchPh')}
+              aria-label={t(isGas ? 'gasSearchPh' : 'foodSearchPh')}
               maxLength={60}
               className="min-w-0 flex-1 px-3 py-3 text-sm text-gray-900 outline-none"
             />
             <button type="submit" className="bg-orange-600 px-4 text-sm font-bold text-white hover:bg-orange-700">{t('searchBtn')}</button>
           </form>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => navigate('/food-gas/new')}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-white/95 px-3 py-2 text-sm font-bold text-orange-700 shadow hover:bg-white"
-            >
+            <button type="button" onClick={() => navigate('/food-gas/new')}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-white/95 px-3 py-2 text-sm font-bold text-orange-700 shadow hover:bg-white">
               <Plus className="h-4 w-4" />{t('addBusiness')}
             </button>
             {user && (
-              <button
-                type="button"
-                onClick={() => navigate('/food-gas/mine')}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/60 px-3 py-2 text-sm font-bold text-white hover:bg-white/10"
-              >
+              <button type="button" onClick={() => navigate('/food-gas/mine')}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/60 px-3 py-2 text-sm font-bold text-white hover:bg-white/10">
                 <Store className="h-4 w-4" />{t('myBusinesses')}
               </button>
             )}
+            <button type="button" data-go={isGas ? 'food' : 'gas'} onClick={() => navigate(isGas ? '/food-gas/food' : '/food-gas/gas')}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/60 px-3 py-2 text-sm font-bold text-white hover:bg-white/10">
+              {isGas ? <UtensilsCrossed className="h-4 w-4" /> : <Flame className="h-4 w-4" />}{t(isGas ? 'navFood' : 'navGas')}
+            </button>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-4">
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-3" role="tablist">
-          {(['', ...FOOD_KINDS] as Array<FoodKind | ''>).map((k) => {
-            const on = f.kind === k;
-            const KI = k ? KIND_ICON[k] : null;
-            return (
-              <button
-                key={k || 'all'}
-                type="button"
-                role="tab"
-                aria-selected={on}
-                onClick={() => setF({ ...f, kind: k })}
-                className={'inline-flex flex-shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition ' +
-                  (on ? 'bg-orange-600 text-white shadow' : 'border border-gray-200 bg-white text-gray-700 hover:border-orange-300')}
-              >
-                {KI ? <KI className="h-4 w-4" /> : null}
-                {k ? kindLabel(lang, k, true) : t('kAll')}
+        {isGas ? (
+          <>
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-3" role="tablist" aria-label={t('colBrand')} data-row="brands">
+              <button type="button" role="tab" aria-selected={!gf.brand} onClick={() => setGf({ ...gf, brand: '' })} className={chipCls(!gf.brand, 'red')}>
+                {t('allBrands')}
               </button>
-            );
-          })}
-        </div>
+              {brandChips.map((c) => {
+                const on = !!gf.brand && foldDish(gf.brand) === foldDish(c.value);
+                return (
+                  <button key={c.value} type="button" role="tab" aria-selected={on} data-brand={c.value}
+                    onClick={() => setGf({ ...gf, brand: on ? '' : c.value })} className={chipCls(on, 'red')}>
+                    {c.label}{c.n ? ' (' + c.n + ')' : ''}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3" data-row="sizes">
+              <button type="button" aria-pressed={gf.size === null} onClick={() => setGf({ ...gf, size: null })} className={chipCls(gf.size === null, 'dark')}>
+                {t('allSizes')}
+              </button>
+              {sizeSet.map((s) => {
+                const on = gf.size === s;
+                const n = sizeCount(s);
+                return (
+                  <button key={s} type="button" aria-pressed={on} data-size={s} onClick={() => setGf({ ...gf, size: on ? null : s })} className={chipCls(on, 'dark')}>
+                    {sizeText(lang, s)}{n ? ' (' + n + ')' : ''}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-3" role="tablist" data-row="kinds">
+              {(['', ...FOOD_SECTION_KINDS] as Array<FoodKind | ''>).map((k) => {
+                const on = ff.kind === k;
+                const KI = k ? KIND_ICON[k] : UtensilsCrossed;
+                return (
+                  <button key={k || 'all'} type="button" role="tab" aria-selected={on} onClick={() => setFf({ ...ff, kind: k })}
+                    className={'inline-flex flex-shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition ' +
+                      (on ? 'bg-orange-600 text-white shadow' : 'border border-gray-200 bg-white text-gray-700 hover:border-orange-300')}>
+                    <KI className="h-4 w-4" />{k ? kindLabel(lang, k, true) : t('kFood')}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2" data-row="meats" aria-label={t('meatsTitle')}>
+              <button type="button" aria-pressed={!ff.meat} onClick={() => setFf({ ...ff, meat: '' })} className={chipCls(!ff.meat, 'amber')}>
+                {t('meatsTitle')}
+              </button>
+              {MEATS.map((m) => {
+                const on = ff.meat === m;
+                const n = meatCount(m);
+                return (
+                  <button key={m} type="button" aria-pressed={on} data-meat={m} onClick={() => setFf({ ...ff, meat: on ? '' : m })} className={chipCls(on, 'amber')}>
+                    {meatLabel(lang, m)}{n ? ' (' + n + ')' : ''}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3" data-row="dishes" aria-label={t('dishFilter')}>
+              {dishChips.map((c) => {
+                const on = !!ff.dish && foldDish(ff.dish) === foldDish(c.label);
+                return (
+                  <button key={c.label} type="button" aria-pressed={on} data-dish={c.label} onClick={() => setFf({ ...ff, dish: on ? '' : c.label })} className={chipCls(on, 'dark')}>
+                    {c.label}{c.n ? ' (' + c.n + ')' : ''}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         <div className="flex flex-wrap items-center gap-2">
           <label className="sr-only" htmlFor="food-city">{t('city')}</label>
           <select
             id="food-city"
-            value={f.city}
+            value={where.city}
             onChange={(e) => setCity(e.target.value)}
             className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800"
           >
             <option value="">{t('allCities')}</option>
             {CITY_KEYS.map((c) => <option key={c} value={c}>{cityLabel(c, lang)}</option>)}
           </select>
-          <button
-            type="button"
-            aria-pressed={gasToday}
-            onClick={() => setGasToday(!gasToday)}
-            className={'rounded-xl px-3 py-2 text-sm font-bold ' + (gasToday ? 'bg-green-600 text-white' : 'border border-gray-200 bg-white text-gray-700')}
-          >
-            {t('gasTodayFilter')}
-          </button>
-          <button
-            type="button"
-            aria-pressed={openNow}
-            onClick={() => setOpenNow(!openNow)}
-            className={'rounded-xl px-3 py-2 text-sm font-bold ' + (openNow ? 'bg-teal-600 text-white' : 'border border-gray-200 bg-white text-gray-700')}
-          >
+          {isGas && (
+            <button type="button" aria-pressed={gasToday} onClick={() => setGasToday(!gasToday)}
+              className={'rounded-xl px-3 py-2 text-sm font-bold ' + (gasToday ? 'bg-green-600 text-white' : 'border border-gray-200 bg-white text-gray-700')}>
+              {t('gasTodayFilter')}
+            </button>
+          )}
+          <button type="button" aria-pressed={openNow} onClick={() => setOpenNow(!openNow)}
+            className={'rounded-xl px-3 py-2 text-sm font-bold ' + (openNow ? 'bg-teal-600 text-white' : 'border border-gray-200 bg-white text-gray-700')}>
             {t('openNowFilter')}
           </button>
           {filtersOn && (
@@ -300,17 +521,13 @@ export default function FoodGasPage() {
           )}
         </div>
 
-        {!f.city && (
+        {!where.city && (
           <div className="mt-3">
             <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-gray-500">{t('startHere')}</p>
             <div className="flex flex-wrap gap-2">
               {LAUNCH_AREAS.map(({ city, area }) => (
-                <button
-                  key={city + area.key}
-                  type="button"
-                  onClick={() => setF({ city, area: area.key, kind: f.kind })}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-800 hover:bg-orange-100"
-                >
+                <button key={city + area.key} type="button" onClick={() => setWhere({ city, area: area.key })}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-800 hover:bg-orange-100">
                   <MapPin className="h-4 w-4" />{area.label} {'\u00b7'} {cityLabel(city, lang)}
                 </button>
               ))}
@@ -318,22 +535,13 @@ export default function FoodGasPage() {
           </div>
         )}
 
-        {f.city && (
-          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
-            <button
-              type="button"
-              onClick={() => setF({ ...f, area: '' })}
-              className={'flex-shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ' + (f.area === '' ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-gray-700')}
-            >
+        {where.city && (
+          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1" data-row="areas">
+            <button type="button" onClick={() => setWhere({ ...where, area: '' })} className={chipCls(where.area === '', 'dark')}>
               {t('allAreas')}
             </button>
             {areaChips.map((a) => (
-              <button
-                key={a.key}
-                type="button"
-                onClick={() => setF({ ...f, area: a.key })}
-                className={'flex-shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ' + (f.area === a.key ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-gray-700')}
-              >
+              <button key={a.key} type="button" onClick={() => setWhere({ ...where, area: a.key })} className={chipCls(where.area === a.key, 'dark')}>
                 {a.label}{a.n !== null ? ' (' + a.n + ')' : ''}
               </button>
             ))}
@@ -341,8 +549,8 @@ export default function FoodGasPage() {
         )}
 
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-600">
-            {loading ? t('loading') : shown.length === 1 && !openNow && total === 1 ? t('countOne') : t('countPlaces', { n: openNow ? shown.length : total })}
+          <p className="text-sm font-semibold text-gray-600" data-count="1">
+            {loading ? t('loading') : countLine(openNow ? shown.length : total)}
           </p>
         </div>
 
@@ -351,11 +559,8 @@ export default function FoodGasPage() {
         ) : err ? (
           <div className="mt-6 rounded-2xl border border-red-100 bg-red-50 p-5 text-center">
             <p className="text-sm font-semibold text-red-700">{err}</p>
-            <button
-              type="button"
-              onClick={() => void load(0)}
-              className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white"
-            >
+            <button type="button" onClick={() => void load(0)}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white">
               <RefreshCw className="h-4 w-4" />{t('retry')}
             </button>
           </div>
@@ -364,11 +569,8 @@ export default function FoodGasPage() {
             <Store className="mx-auto h-10 w-10 text-orange-300" />
             <h2 className="mt-3 text-lg font-extrabold text-gray-900">{t('emptyTitle')}</h2>
             <p className="mx-auto mt-1 max-w-md text-sm text-gray-600">{t('emptyBody')}</p>
-            <button
-              type="button"
-              onClick={() => navigate('/food-gas/new')}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-orange-700"
-            >
+            <button type="button" onClick={() => navigate('/food-gas/new')}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-orange-700">
               <Plus className="h-4 w-4" />{t('addBusiness')}
             </button>
           </div>
@@ -376,17 +578,13 @@ export default function FoodGasPage() {
           <>
             <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((p) => (
-                <PlaceCard key={p.id} p={p} lang={lang} t={t} onOpen={() => navigate('/food-gas/place/' + p.id)} />
+                <PlaceCard key={p.id} p={p} lang={lang} t={t} section={section} onOpen={() => navigate('/food-gas/place/' + p.id)} />
               ))}
             </div>
             {rows.length < total && (
               <div className="mt-6 flex justify-center">
-                <button
-                  type="button"
-                  disabled={loadingMore}
-                  onClick={() => void load(rows.length)}
-                  className="inline-flex items-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-2.5 text-sm font-bold text-orange-700 disabled:opacity-50"
-                >
+                <button type="button" disabled={loadingMore} onClick={() => void load(rows.length)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-2.5 text-sm font-bold text-orange-700 disabled:opacity-50">
                   {loadingMore ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{t('loadMore')}
                 </button>
               </div>
@@ -397,4 +595,11 @@ export default function FoodGasPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_PAGE_FIX690__COMPLETE
+
+export default function FoodGasPage() {
+  const { pathname } = useLocation();
+  const section: Section | 'hub' = /\/food-gas\/gas\/?$/.test(pathname) ? 'gas' : /\/food-gas\/food\/?$/.test(pathname) ? 'food' : 'hub';
+  if (section === 'hub') return <Hub />;
+  return <ListView key={section} section={section} />;
+}
+// BAMBEH_END_TOKEN__FOOD_GAS_PAGE_FIX700__COMPLETE

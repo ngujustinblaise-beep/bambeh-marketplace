@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_API_FIX689_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_API_FIX699_CLEAN
 /**
- * src/features/foodgas/foodGasApi.ts - FIX689
+ * src/features/foodgas/foodGasApi.ts - FIX699 (replaces FIX689)
  *
  * GAS & FOOD - the only door between the pages and the database (FIX687).
  * Every call answers { ok: true, ... } or { ok: false, reason }, and the pages turn
@@ -12,17 +12,56 @@
  *     same payments server as the rest of Bambeh; the payment itself switches it on
  *   - photos: shrunk on the phone (a 4 MB picture becomes about 200 KB), then stored
  *     in the public "food-places" bucket under the uploader's own folder
+ *   - FIX699 (database FIX697): the gas each seller has (brand, bottle size, refill and
+ *     new-bottle prices, in stock), gas orders on those lines, the meats a grill cooks
+ *     and the local dishes; the search takes brand, size, meat and dish filters.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { supabase } from '@/lib/supabase';
-import type { CityKey, FoodKind } from './foodGasText';
+import type { CityKey, FoodKind, GasBrand, Meat } from './foodGasText';
 
 export type PlaceStatus = 'pending' | 'live' | 'rejected' | 'hidden';
 export type BookingKind = 'table' | 'order' | 'gas';
 export type BookingStatus = 'sent' | 'confirmed' | 'declined' | 'cancelled';
 
 export interface FoodPreviewItem { name: string; price_xaf: number | null }
+
+/** One line of a seller's gas list (FIX697). */
+export interface GasOffer {
+  id: string;
+  brand: GasBrand;
+  brand_other: string;
+  label: string;
+  size_kg: number;
+  refill_xaf: number | null;
+  full_xaf: number | null;
+  in_stock: boolean;
+}
+
+export interface GasOfferInput {
+  id?: string;
+  brand: GasBrand;
+  brand_other: string;
+  size_kg: number;
+  refill_xaf: number | null;
+  full_xaf: number | null;
+  in_stock: boolean;
+}
+
+export type GasMode = 'refill' | 'full';
+
+/** What a gas order was, worked out by the database from the seller's line. */
+export interface GasOrderDetails {
+  offer_id: string;
+  brand: GasBrand;
+  label: string;
+  size_kg: number;
+  mode: GasMode;
+  quantity: number;
+  unit_xaf: number | null;
+  total_xaf: number | null;
+}
 
 export interface FoodCard {
   id: string;
@@ -43,6 +82,11 @@ export interface FoodCard {
   takes_bookings: boolean;
   delivers: boolean;
   preview: FoodPreviewItem[];
+  meats?: Meat[];
+  dishes?: string[];
+  dish_count?: number;
+  offers?: GasOffer[];
+  offer_count?: number;
 }
 
 export interface FoodItem {
@@ -69,6 +113,8 @@ export interface FoodPlace extends FoodCard {
   featured_until?: string | null;
   owner_name?: string | null;
   agent_name?: string | null;
+  meats_saved?: Meat[];
+  dishes_saved?: string[];
 }
 
 export interface FoodMe {
@@ -94,6 +140,7 @@ export interface MyPlace extends FoodCard {
   owner_name: string | null;
   items_count: number;
   open_bookings: number;
+  gas_offers?: GasOffer[];
   created_at: string;
 }
 
@@ -113,9 +160,14 @@ export interface FoodBooking {
   created_at: string;
   answered_at: string | null;
   buyer_name: string | null;
+  details?: GasOrderDetails | null;
 }
 
 export interface AreaCount { area: string; area_label: string; city: CityKey; n: number }
+export interface BrandCount { brand: GasBrand; label: string; n: number }
+export interface SizeCount { size_kg: number; n: number }
+export interface MeatCount { meat: Meat; n: number }
+export interface DishCount { dish: string; n: number }
 
 export interface PlaceInput {
   name: string;
@@ -135,6 +187,8 @@ export interface PlaceInput {
   delivers: boolean;
   owner_identifier?: string;
   agent_identifier?: string;
+  meats?: Meat[];
+  dishes?: string[];
 }
 
 export interface Fail { ok: false; reason: string; detail?: string }
@@ -162,11 +216,24 @@ export async function foodRpc<T>(fn: string, args?: Record<string, unknown>): Pr
 }
 
 // ------------------------------------------------------------------ buyers
+export interface ListResult {
+  total: number;
+  rows: FoodCard[];
+  areas: AreaCount[];
+  today: string;
+  brands?: BrandCount[];
+  sizes?: SizeCount[];
+  meats?: MeatCount[];
+  dishes?: DishCount[];
+}
+
+/** kind: 'gas' (Cooking gas page), 'food' (Food page: restaurants, grills, roasted fish) or one kind. */
 export function listPlaces(p: {
   city?: string | null; area?: string | null; kind?: string | null; query?: string | null;
   gasToday?: boolean; limit?: number; offset?: number;
-}): Promise<Res<{ total: number; rows: FoodCard[]; areas: AreaCount[]; today: string }>> {
-  return foodRpc('bambeh_food_list', {
+  brand?: string | null; size?: number | null; meat?: string | null; dish?: string | null;
+}): Promise<Res<ListResult>> {
+  const args: Record<string, unknown> = {
     p_city: p.city || null,
     p_area: p.area || null,
     p_kind: p.kind || null,
@@ -174,7 +241,13 @@ export function listPlaces(p: {
     p_gas_today: !!p.gasToday,
     p_limit: p.limit ?? 30,
     p_offset: p.offset ?? 0,
-  });
+  };
+  // the FIX697 filters are only sent when used
+  if (p.brand) args.p_brand = p.brand;
+  if (typeof p.size === 'number' && isFinite(p.size) && p.size > 0) args.p_size = p.size;
+  if (p.meat) args.p_meat = p.meat;
+  if (p.dish) args.p_dish = p.dish.slice(0, 40);
+  return foodRpc('bambeh_food_list', args);
 }
 
 export function getPlace(id: string): Promise<Res<{ place: FoodPlace; me: FoodMe }>> {
@@ -188,11 +261,15 @@ export function openChat(placeId: string): Promise<Res<{ conversation_id: string
 export function book(a: {
   placeId: string; kind: BookingKind; wantAt: string; people: number | null; items: string;
   delivery: boolean; note: string; message: string;
-}): Promise<Res<{ booking_id: string; conversation_id: string }>> {
-  return foodRpc('bambeh_food_book', {
+  gas?: { offerId: string; quantity: number; mode: GasMode } | null;
+}): Promise<Res<{ booking_id: string; conversation_id: string; details?: GasOrderDetails | null }>> {
+  const args: Record<string, unknown> = {
     p_place: a.placeId, p_kind: a.kind, p_want_at: a.wantAt, p_people: a.people, p_items: a.items,
     p_delivery: a.delivery, p_note: a.note, p_message: a.message,
-  });
+  };
+  // FIX697: an order on one of the seller's gas lines - the price is worked out by the database
+  if (a.gas) args.p_details = { offer_id: a.gas.offerId, quantity: a.gas.quantity, mode: a.gas.mode };
+  return foodRpc('bambeh_food_book', args);
 }
 
 export function listBookings(role: 'owner' | 'buyer'): Promise<Res<{ rows: FoodBooking[] }>> {
@@ -217,6 +294,24 @@ export function saveItems(placeId: string, items: FoodItem[]): Promise<Res<{ cou
     p_place: placeId,
     p_items: items.map((i) => ({ name: i.name, price_xaf: i.price_xaf, note: i.note, available: i.available })),
   });
+}
+
+/** The seller's whole gas list (30 lines at most); each line keeps its id. Also today's gas answer. */
+export function saveGas(placeId: string, offers: GasOfferInput[]): Promise<Res<{
+  count: number; gas_available: boolean; gas_checked_at: string | null; offers: GasOffer[];
+}>> {
+  return foodRpc('bambeh_food_save_gas', {
+    p_place: placeId,
+    p_offers: offers.map((o) => ({
+      id: o.id || null, brand: o.brand, brand_other: o.brand === 'OTHER' ? o.brand_other : '', size_kg: o.size_kg,
+      refill_xaf: o.refill_xaf, full_xaf: o.full_xaf, in_stock: o.in_stock,
+    })),
+  });
+}
+
+/** One tap: this bottle is in stock / out of stock today. */
+export function setOfferStock(offerId: string, inStock: boolean): Promise<Res<{ in_stock: boolean; gas_available: boolean; gas_checked_at: string }>> {
+  return foodRpc('bambeh_food_gas_stock', { p_offer: offerId, p_in_stock: inStock });
 }
 
 export function setGas(placeId: string, available: boolean): Promise<Res<{ gas_available: boolean; gas_checked_at: string }>> {
@@ -337,4 +432,4 @@ export async function uploadPhoto(uid: string, file: File): Promise<{ ok: true; 
     return { ok: false, reason: 'upload', detail: e instanceof Error ? e.message : String(e) };
   }
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_API_FIX689__COMPLETE
+// BAMBEH_END_TOKEN__FOOD_GAS_API_FIX699__COMPLETE

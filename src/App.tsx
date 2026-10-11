@@ -818,6 +818,8 @@ export default function App() {
                             functions are granted to anon for exactly this reason. */}
                         <Route path="/pharmacies" element={<MainLayout><SectionGate section="free_services"><PharmaciesOnCall /></SectionGate></MainLayout>} />
                         <Route path="/food-gas" element={<MainLayout><FoodGasPage /></MainLayout>} />
+                        <Route path="/food-gas/gas" element={<MainLayout><FoodGasPage /></MainLayout>} />
+                        <Route path="/food-gas/food" element={<MainLayout><FoodGasPage /></MainLayout>} />
                         <Route path="/hospitals" element={<MainLayout><SectionGate section="free_services"><HospitalsOnDuty /></SectionGate></MainLayout>} />
                         <Route path="/water-lights" element={<MainLayout><SectionGate section="free_services"><WaterLights /></SectionGate></MainLayout>} />{/* FIX500 - outside AuthGate on purpose */}
                         <Route path="/fuel" element={<MainLayout><SectionGate section="free_services"><FuelAtNight /></SectionGate></MainLayout>} />{/* FIX506 - outside AuthGate on purpose */}

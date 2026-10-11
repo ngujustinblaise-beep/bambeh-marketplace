@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_FOOD_GAS_FIX693_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_FOOD_GAS_FIX703_CLEAN
 /**
- * AdminFoodGas.tsx - FIX693 - Command Center > Gas & food
+ * AdminFoodGas.tsx - FIX703 (replaces FIX693) - Command Center > Gas & food
  *
  * Every gas seller, restaurant, grill & soya spot and roasted-fish seller is checked by
  * Bambeh staff before buyers can see it (FIX687):
@@ -13,6 +13,9 @@
  *                            hand when mobile money was late (with a note)
  * Moderators, admins and the super admin approve; every decision keeps the staff
  * member's name and the time, and the owner (and the agent) get a notification.
+ * FIX703: each card also shows the seller's gas lines (brand, size, refill and new-bottle
+ * prices, in stock), the meats a grill cooks and the dishes it lists - the dish names are
+ * typed by the seller, so a change to them puts the business under "Changed after approval".
  * English, like the rest of the Command Center.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
@@ -20,8 +23,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Check, EyeOff, Loader2, RefreshCw, ShieldCheck, Star, X } from 'lucide-react';
 import { foodRpc } from '@/features/foodgas/foodGasApi';
-import type { FoodItem, FoodPreviewItem, PlaceStatus } from '@/features/foodgas/foodGasApi';
-import { cityLabel, daysText, fmtXaf, kindLabel } from '@/features/foodgas/foodGasText';
+import type { FoodItem, FoodPreviewItem, GasOffer, PlaceStatus } from '@/features/foodgas/foodGasApi';
+import { brandLabel, cityLabel, daysText, fmtSize, fmtXaf, kindLabel, meatLabel } from '@/features/foodgas/foodGasText';
 import type { FoodKind } from '@/features/foodgas/foodGasText';
 
 type View = 'pending' | 'changed' | 'live' | 'closed' | 'payments';
@@ -57,6 +60,9 @@ interface AdminPlace {
   updated_at: string;
   items: FoodItem[];
   preview: FoodPreviewItem[];
+  meats?: string[];
+  dishes?: string[];
+  offers?: GasOffer[];
   history: Array<{ action: string; note: string | null; at: string; by: string | null }>;
 }
 
@@ -174,6 +180,21 @@ function PlaceCard({ p, view, onDone }: { p: AdminPlace; view: View; onDone: (ms
           {' \u00b7 '}<b>Bookings:</b> {p.takes_bookings ? 'yes' : 'no'}{' \u00b7 '}<b>Delivers:</b> {p.delivers ? 'yes' : 'no'}
         </p>
         {p.key_price_xaf !== null && <p><b>Main price:</b> {fmtXaf(p.key_price_xaf, 'en')} XAF {p.key_price_label ? '(' + p.key_price_label + ')' : ''}</p>}
+        {(p.offers || []).length > 0 && (
+          <div data-admin-gas={p.id}>
+            <b>Gas lines ({(p.offers || []).length}):</b>
+            <ul className="ms-4 list-disc">
+              {(p.offers || []).map((o) => (
+                <li key={o.id}>
+                  {brandLabel(o.brand, o.brand_other)}{o.brand === 'OTHER' ? ' (typed)' : ''} {fmtSize(o.size_kg, 'en')} kg - refill {o.refill_xaf !== null ? fmtXaf(o.refill_xaf, 'en') + ' XAF' : 'price in chat'}
+                  {' - new bottle '}{o.full_xaf !== null ? fmtXaf(o.full_xaf, 'en') + ' XAF' : 'not sold'}{o.in_stock ? '' : ' - OUT OF STOCK'}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {(p.meats || []).length > 0 && <p><b>Meat and fish:</b> {(p.meats || []).map((m) => meatLabel('en', m)).join(', ')}</p>}
+        {(p.dishes || []).length > 0 && <p data-admin-dishes={p.id}><b>Dishes ({(p.dishes || []).length}):</b> {(p.dishes || []).join(' \u00b7 ')}</p>}
         {items.length > 0 && (
           <p><b>Menu ({items.length}):</b> {items.slice(0, 8).map((i) => i.name + (i.price_xaf !== null ? ' ' + fmtXaf(i.price_xaf, 'en') : '')).join(' \u00b7 ')}{items.length > 8 ? ' ...' : ''}</p>
         )}
@@ -324,7 +345,7 @@ export default function AdminFoodGas({ embedded = false }: { embedded?: boolean 
   ];
 
   return (
-    <div data-fix="FIX693" className={embedded ? 'space-y-4' : 'mx-auto max-w-5xl space-y-4 p-4'}>
+    <div data-fix="FIX703" className={embedded ? 'space-y-4' : 'mx-auto max-w-5xl space-y-4 p-4'}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h2 className="text-xl font-extrabold text-slate-900">Gas &amp; food</h2>
@@ -362,4 +383,4 @@ export default function AdminFoodGas({ embedded = false }: { embedded?: boolean 
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADMIN_FOOD_GAS_FIX693__COMPLETE
+// BAMBEH_END_TOKEN__ADMIN_FOOD_GAS_FIX703__COMPLETE

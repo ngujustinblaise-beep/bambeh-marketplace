@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_TEXT_FIX688_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_TEXT_FIX698_CLEAN
 /**
- * src/features/foodgas/foodGasText.ts - FIX688
+ * src/features/foodgas/foodGasText.ts - FIX698 (replaces FIX688)
  *
  * GAS & FOOD - every word in the five app languages (English, French, Pidgin,
  * Arabic right-to-left, Fulfulde), the cities and neighbourhoods, and the small
@@ -10,6 +10,12 @@
  * Launch neighbourhoods (Big, 9 Oct 2026): Up Station (Bamenda) and Mimboman
  * (Yaounde) come first; the rest of the list follows; "Other" lets an owner type
  * any neighbourhood.
+ *
+ * FIX698 (Big, 10 Oct 2026): "Cooking gas" and "Food" are two sections with two
+ * buttons. Added: the gas brands (SCTM, CAMGAS, GLOCAL, TOTAL, TRADEX, or any brand
+ * the seller types), bottle sizes, ordering gas, the meats a grill cooks (beef, goat,
+ * pork, chicken, fish), the local dishes offered with one tap (achu, eru, ndole,
+ * okok, emince, puff-puff...) and the words of the seller's gas list.
  *
  * Words are written as \\u escapes on purpose, so the file stays plain ASCII.
  * Fulfulde and Pidgin are best effort - a native speaker should read them.
@@ -284,6 +290,91 @@ export interface FoodStrings {
   e_network: string;
   e_generic: string;
   e_upload: string;
+  navGas: string;
+  navFood: string;
+  hubTitle: string;
+  hubGas: string;
+  hubFood: string;
+  gasTitle: string;
+  gasSubtitle: string;
+  foodTitle: string;
+  foodSubtitle: string;
+  gasSearchPh: string;
+  foodSearchPh: string;
+  kFood: string;
+  allBrands: string;
+  allSizes: string;
+  brandOther: string;
+  brandOtherPh: string;
+  sizeKg: string;
+  sizeOther: string;
+  sizeOtherPh: string;
+  gasHave: string;
+  gasMore: string;
+  gasNoneListed: string;
+  colBrand: string;
+  colSize: string;
+  colRefill: string;
+  colNew: string;
+  inStock: string;
+  outStock: string;
+  orderGas: string;
+  orderBtn: string;
+  askPrice: string;
+  noNewBottles: string;
+  gasPayNote: string;
+  orderGasTitle: string;
+  whichGas: string;
+  qty: string;
+  modeRefill: string;
+  modeFull: string;
+  totalLine: string;
+  unitLine: string;
+  sendOrder: string;
+  bGasOrder: string;
+  msgGasOrder: string;
+  lBottle: string;
+  lQty: string;
+  lPrice: string;
+  lPayAtCounter: string;
+  orderedOk: string;
+  gasNoToday: string;
+  tapDish: string;
+  meat_beef: string;
+  meat_goat: string;
+  meat_pork: string;
+  meat_chicken: string;
+  meat_fish: string;
+  meatsTitle: string;
+  dishesTitle: string;
+  dishFilter: string;
+  fMeats: string;
+  fDishes: string;
+  fDishesHint: string;
+  dishPh: string;
+  addDish: string;
+  gasEditTitle: string;
+  gasEditHint: string;
+  addGasLine: string;
+  saveGas: string;
+  gasSaved: string;
+  priceRefillPh: string;
+  priceNewPh: string;
+  gasSaveFirst: string;
+  stockToday: string;
+  noGasLines: string;
+  listGas: string;
+  e_offer_gone: string;
+  e_out_of_stock: string;
+  e_bad_quantity: string;
+  e_bad_mode: string;
+  e_no_gas_today: string;
+  e_bad_offers: string;
+  e_bad_brand: string;
+  e_bad_size: string;
+  e_bad_meats: string;
+  e_bad_dishes: string;
+  e_not_installed: string;
 }
 export type FoodKey = keyof FoodStrings;
 
@@ -531,6 +622,91 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_network: "No connection. Check your internet and try again.",
     e_generic: "Something went wrong. Try again.",
     e_upload: "The photo could not be uploaded. Try again.",
+    navGas: "Cooking gas",
+    navFood: "Food",
+    hubTitle: "Cooking gas and food near you",
+    hubGas: "See who has your gas brand today, and order your bottle.",
+    hubFood: "Restaurants, grill & soya, roasted fish - find achu, eru, ndol\u00e9 by name.",
+    gasTitle: "Cooking gas near you",
+    gasSubtitle: "Each seller shows the brands and bottle sizes they have. Order yours and pay the seller when you get it.",
+    foodTitle: "Food near you",
+    foodSubtitle: "Restaurants, grill & soya and roasted fish - search by dish, meat or neighbourhood.",
+    gasSearchPh: "Search: Tradex, 12.5 kg, a name...",
+    foodSearchPh: "Search: achu, eru, ndol\u00e9, soya, a name...",
+    kFood: "All food",
+    allBrands: "All brands",
+    allSizes: "All sizes",
+    brandOther: "Other brand",
+    brandOtherPh: "Brand name, e.g. Neptune",
+    sizeKg: "{n} kg",
+    sizeOther: "Other size",
+    sizeOtherPh: "kg",
+    gasHave: "Gas they have",
+    gasMore: "+{n} more",
+    gasNoneListed: "This seller has not listed their gas yet. Ask in the chat, or reserve below.",
+    colBrand: "Brand",
+    colSize: "Size",
+    colRefill: "Refill",
+    colNew: "New bottle",
+    inStock: "In stock",
+    outStock: "Out of stock",
+    orderGas: "Order gas",
+    orderBtn: "Order",
+    askPrice: "Price in chat",
+    noNewBottles: "Refills only",
+    gasPayNote: "You pay the seller when you collect or receive your gas. Bambeh takes nothing on gas.",
+    orderGasTitle: "Order gas from {name}",
+    whichGas: "Which gas?",
+    qty: "How many bottles",
+    modeRefill: "Refill - I have an empty {b} bottle",
+    modeFull: "New bottle with the gas (no empty bottle)",
+    totalLine: "Total: {n} XAF",
+    unitLine: "{q} x {n} XAF",
+    sendOrder: "Send the order",
+    bGasOrder: "Gas order",
+    msgGasOrder: "Gas order - {name}",
+    lBottle: "Bottle",
+    lQty: "Quantity",
+    lPrice: "Price",
+    lPayAtCounter: "Paid to the seller",
+    orderedOk: "Order sent. The seller answers in your chat.",
+    gasNoToday: "No gas today at this seller - choose another day, or ask in the chat.",
+    tapDish: "Tap a dish to add it",
+    meat_beef: "Beef",
+    meat_goat: "Goat",
+    meat_pork: "Pork",
+    meat_chicken: "Chicken",
+    meat_fish: "Fish",
+    meatsTitle: "Meat and fish",
+    dishesTitle: "Dishes they cook",
+    dishFilter: "Dishes",
+    fMeats: "Meat and fish you cook",
+    fDishes: "Dishes you cook - local names",
+    fDishesHint: "Tap to add, or type any dish the way you write it: achu, eru, ndol\u00e9, okok...",
+    dishPh: "Type a dish",
+    addDish: "Add",
+    gasEditTitle: "The gas you have",
+    gasEditHint: "One line per brand and bottle size. Leave \"New bottle\" empty if you only do refills. Each morning, tap In stock / Out of stock - buyers see it at once.",
+    addGasLine: "Add a gas",
+    saveGas: "Save the gas list",
+    gasSaved: "Gas list saved. Buyers see it now.",
+    priceRefillPh: "Refill price",
+    priceNewPh: "New bottle price",
+    gasSaveFirst: "Save the business first, then list your gas here.",
+    stockToday: "Your gas today - tap to switch",
+    noGasLines: "List the gas you have so buyers can order it.",
+    listGas: "List my gas",
+    e_offer_gone: "This gas is no longer on the seller\u2019s list. Look at the list again.",
+    e_out_of_stock: "This gas is out of stock now.",
+    e_bad_quantity: "Choose from 1 to 20 bottles.",
+    e_bad_mode: "This seller does not sell new bottles of this gas.",
+    e_no_gas_today: "No gas today at this seller - choose another day, or ask in the chat.",
+    e_bad_offers: "Check the gas lines: one line per brand and size, 30 at most.",
+    e_bad_brand: "Choose a brand, or type its name under \"Other brand\".",
+    e_bad_size: "Choose the bottle size (1 to 100 kg).",
+    e_bad_meats: "Choose the meats from the list.",
+    e_bad_dishes: "Check the dishes: each 2 to 30 letters, 24 at most.",
+    e_not_installed: "This part of Bambeh is being updated. Try again in a few minutes.",
   },
   fr: {
     nav: "Gaz & resto",
@@ -775,6 +951,91 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_network: "Pas de connexion. V\u00e9rifiez votre internet et r\u00e9essayez.",
     e_generic: "Un probl\u00e8me est survenu. R\u00e9essayez.",
     e_upload: "La photo n\u2019a pas pu \u00eatre envoy\u00e9e. R\u00e9essayez.",
+    navGas: "Gaz domestique",
+    navFood: "Restos & grillades",
+    hubTitle: "Gaz domestique et restauration pr\u00e8s de chez vous",
+    hubGas: "Voyez qui a votre marque de gaz aujourd\u2019hui et commandez votre bouteille.",
+    hubFood: "Restaurants, grillades & soya, poisson brais\u00e9 - trouvez achu, eru, ndol\u00e9 par leur nom.",
+    gasTitle: "Gaz domestique pr\u00e8s de chez vous",
+    gasSubtitle: "Chaque vendeur montre les marques et tailles de bouteilles qu\u2019il a. Commandez la v\u00f4tre et payez le vendeur \u00e0 la r\u00e9ception.",
+    foodTitle: "Restos et grillades pr\u00e8s de chez vous",
+    foodSubtitle: "Restaurants, grillades & soya et poisson brais\u00e9 - cherchez par plat, viande ou quartier.",
+    gasSearchPh: "Rechercher : Tradex, 12,5 kg, un nom...",
+    foodSearchPh: "Rechercher : achu, eru, ndol\u00e9, soya, un nom...",
+    kFood: "Toute la restauration",
+    allBrands: "Toutes les marques",
+    allSizes: "Toutes les tailles",
+    brandOther: "Autre marque",
+    brandOtherPh: "Nom de la marque, ex. Neptune",
+    sizeKg: "{n} kg",
+    sizeOther: "Autre taille",
+    sizeOtherPh: "kg",
+    gasHave: "Gaz disponible chez eux",
+    gasMore: "+{n} autres",
+    gasNoneListed: "Ce vendeur n\u2019a pas encore indiqu\u00e9 son gaz. Demandez dans le chat ou r\u00e9servez ci-dessous.",
+    colBrand: "Marque",
+    colSize: "Taille",
+    colRefill: "Recharge",
+    colNew: "Bouteille neuve",
+    inStock: "En stock",
+    outStock: "\u00c9puis\u00e9",
+    orderGas: "Commander du gaz",
+    orderBtn: "Commander",
+    askPrice: "Prix dans le chat",
+    noNewBottles: "Recharges uniquement",
+    gasPayNote: "Vous payez le vendeur au retrait ou \u00e0 la livraison. Bambeh ne prend rien sur le gaz.",
+    orderGasTitle: "Commander du gaz chez {name}",
+    whichGas: "Quel gaz ?",
+    qty: "Combien de bouteilles",
+    modeRefill: "Recharge - j\u2019ai une bouteille {b} vide",
+    modeFull: "Bouteille neuve avec le gaz (sans bouteille vide)",
+    totalLine: "Total : {n} XAF",
+    unitLine: "{q} x {n} XAF",
+    sendOrder: "Envoyer la commande",
+    bGasOrder: "Commande de gaz",
+    msgGasOrder: "Commande de gaz - {name}",
+    lBottle: "Bouteille",
+    lQty: "Quantit\u00e9",
+    lPrice: "Prix",
+    lPayAtCounter: "Pay\u00e9 au vendeur",
+    orderedOk: "Commande envoy\u00e9e. Le vendeur r\u00e9pond dans votre chat.",
+    gasNoToday: "Pas de gaz aujourd\u2019hui chez ce vendeur - choisissez un autre jour ou demandez dans le chat.",
+    tapDish: "Touchez un plat pour l\u2019ajouter",
+    meat_beef: "B\u0153uf",
+    meat_goat: "Ch\u00e8vre",
+    meat_pork: "Porc",
+    meat_chicken: "Poulet",
+    meat_fish: "Poisson",
+    meatsTitle: "Viandes et poisson",
+    dishesTitle: "Plats cuisin\u00e9s",
+    dishFilter: "Plats",
+    fMeats: "Viandes et poisson que vous pr\u00e9parez",
+    fDishes: "Plats que vous pr\u00e9parez - noms locaux",
+    fDishesHint: "Touchez pour ajouter, ou tapez un plat comme vous l\u2019\u00e9crivez : achu, eru, ndol\u00e9, okok...",
+    dishPh: "Tapez un plat",
+    addDish: "Ajouter",
+    gasEditTitle: "Le gaz que vous avez",
+    gasEditHint: "Une ligne par marque et taille de bouteille. Laissez \u00ab Bouteille neuve \u00bb vide si vous faites seulement des recharges. Chaque matin, touchez En stock / \u00c9puis\u00e9 - les clients le voient tout de suite.",
+    addGasLine: "Ajouter un gaz",
+    saveGas: "Enregistrer la liste de gaz",
+    gasSaved: "Liste de gaz enregistr\u00e9e. Les clients la voient maintenant.",
+    priceRefillPh: "Prix recharge",
+    priceNewPh: "Prix bouteille neuve",
+    gasSaveFirst: "Enregistrez d\u2019abord le commerce, puis indiquez votre gaz ici.",
+    stockToday: "Votre gaz aujourd\u2019hui - touchez pour changer",
+    noGasLines: "Indiquez le gaz que vous avez pour que les clients puissent le commander.",
+    listGas: "Indiquer mon gaz",
+    e_offer_gone: "Ce gaz n\u2019est plus dans la liste du vendeur. Regardez la liste \u00e0 nouveau.",
+    e_out_of_stock: "Ce gaz est \u00e9puis\u00e9 pour le moment.",
+    e_bad_quantity: "Choisissez de 1 \u00e0 20 bouteilles.",
+    e_bad_mode: "Ce vendeur ne vend pas de bouteilles neuves de ce gaz.",
+    e_no_gas_today: "Pas de gaz aujourd\u2019hui chez ce vendeur - choisissez un autre jour ou demandez dans le chat.",
+    e_bad_offers: "V\u00e9rifiez les lignes de gaz : une ligne par marque et taille, 30 au plus.",
+    e_bad_brand: "Choisissez une marque, ou tapez son nom sous \u00ab Autre marque \u00bb.",
+    e_bad_size: "Choisissez la taille de la bouteille (1 \u00e0 100 kg).",
+    e_bad_meats: "Choisissez les viandes dans la liste.",
+    e_bad_dishes: "V\u00e9rifiez les plats : 2 \u00e0 30 lettres chacun, 24 au plus.",
+    e_not_installed: "Cette partie de Bambeh est en cours de mise \u00e0 jour. R\u00e9essayez dans quelques minutes.",
   },
   pidgin: {
     nav: "Gas & chop",
@@ -1019,6 +1280,91 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_network: "No connection. Check your internet and try again.",
     e_generic: "Something no work well. Try again.",
     e_upload: "The photo no fit upload. Try again.",
+    navGas: "Cooking gas",
+    navFood: "Chop",
+    hubTitle: "Cooking gas and chop near you",
+    hubGas: "See who get your gas brand today, and order your bottle.",
+    hubFood: "Chop house, grill & soya, roast fish - find achu, eru, ndol\u00e9 by name.",
+    gasTitle: "Cooking gas near you",
+    gasSubtitle: "Every seller dey show the brand and bottle size wey e get. Order your own and pay the seller when you collect am.",
+    foodTitle: "Chop near you",
+    foodSubtitle: "Chop house, grill & soya and roast fish - find by chop, meat or quarter.",
+    gasSearchPh: "Find: Tradex, 12.5 kg, one name...",
+    foodSearchPh: "Find: achu, eru, ndol\u00e9, soya, one name...",
+    kFood: "All chop",
+    allBrands: "All brand",
+    allSizes: "All size",
+    brandOther: "Another brand",
+    brandOtherPh: "Brand name, e.g. Neptune",
+    sizeKg: "{n} kg",
+    sizeOther: "Another size",
+    sizeOtherPh: "kg",
+    gasHave: "Gas wey dem get",
+    gasMore: "+{n} more",
+    gasNoneListed: "This seller never list the gas yet. Ask for chat, or book for down.",
+    colBrand: "Brand",
+    colSize: "Size",
+    colRefill: "Refill",
+    colNew: "New bottle",
+    inStock: "E dey",
+    outStock: "E don finish",
+    orderGas: "Order gas",
+    orderBtn: "Order",
+    askPrice: "Ask price for chat",
+    noNewBottles: "Na refill only",
+    gasPayNote: "You go pay the seller when you collect or receive your gas. Bambeh no dey take anything for gas.",
+    orderGasTitle: "Order gas for {name}",
+    whichGas: "Which gas?",
+    qty: "How many bottle",
+    modeRefill: "Refill - I get empty {b} bottle",
+    modeFull: "New bottle with the gas (I no get empty bottle)",
+    totalLine: "Total: {n} XAF",
+    unitLine: "{q} x {n} XAF",
+    sendOrder: "Send the order",
+    bGasOrder: "Gas order",
+    msgGasOrder: "Gas order - {name}",
+    lBottle: "Bottle",
+    lQty: "How many",
+    lPrice: "Price",
+    lPayAtCounter: "Pay the seller direct",
+    orderedOk: "Order don go. The seller go answer for your chat.",
+    gasNoToday: "Gas no dey today for this seller - choose another day, or ask for chat.",
+    tapDish: "Touch one chop to add am",
+    meat_beef: "Cow meat",
+    meat_goat: "Goat meat",
+    meat_pork: "Pork",
+    meat_chicken: "Fowl",
+    meat_fish: "Fish",
+    meatsTitle: "Meat and fish",
+    dishesTitle: "Chop wey dem dey cook",
+    dishFilter: "Chop",
+    fMeats: "Meat and fish wey you dey cook",
+    fDishes: "Chop wey you dey cook - local name",
+    fDishesHint: "Touch am to add, or write any chop as you sabi write am: achu, eru, ndol\u00e9, okok...",
+    dishPh: "Write one chop",
+    addDish: "Add",
+    gasEditTitle: "The gas wey you get",
+    gasEditHint: "One line for each brand and bottle size. Leave \"New bottle\" empty if na only refill you dey do. Every morning, touch \"E dey\" / \"E don finish\" - buyers go see am one time.",
+    addGasLine: "Add gas",
+    saveGas: "Save the gas list",
+    gasSaved: "Gas list don save. Buyers dey see am now.",
+    priceRefillPh: "Refill price",
+    priceNewPh: "New bottle price",
+    gasSaveFirst: "Save the business first, then list your gas here.",
+    stockToday: "Your gas today - touch to change",
+    noGasLines: "List the gas wey you get make buyers fit order am.",
+    listGas: "List my gas",
+    e_offer_gone: "This gas no dey for the seller list again. Look the list again.",
+    e_out_of_stock: "This gas don finish now.",
+    e_bad_quantity: "Choose 1 reach 20 bottle.",
+    e_bad_mode: "This seller no dey sell new bottle for this gas.",
+    e_no_gas_today: "Gas no dey today for this seller - choose another day, or ask for chat.",
+    e_bad_offers: "Check the gas line dem: one line for each brand and size, 30 max.",
+    e_bad_brand: "Choose brand, or write the name for \"Another brand\".",
+    e_bad_size: "Choose the bottle size (1 reach 100 kg).",
+    e_bad_meats: "Choose the meat dem from the list.",
+    e_bad_dishes: "Check the chop dem: each one 2 reach 30 letters, 24 max.",
+    e_not_installed: "Dem dey update this part of Bambeh. Try again small time.",
   },
   ar: {
     nav: "\u0627\u0644\u063a\u0627\u0632 \u0648\u0627\u0644\u0637\u0639\u0627\u0645",
@@ -1263,6 +1609,91 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_network: "\u0644\u0627 \u064a\u0648\u062c\u062f \u0627\u062a\u0635\u0627\u0644. \u062a\u062d\u0642\u0651\u0642 \u0645\u0646 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
     e_generic: "\u062d\u062f\u062b \u062e\u0637\u0623 \u0645\u0627. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
     e_upload: "\u062a\u0639\u0630\u0651\u0631 \u0631\u0641\u0639 \u0627\u0644\u0635\u0648\u0631\u0629. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
+    navGas: "\u063a\u0627\u0632 \u0627\u0644\u0637\u0628\u062e",
+    navFood: "\u0627\u0644\u0637\u0639\u0627\u0645",
+    hubTitle: "\u063a\u0627\u0632 \u0627\u0644\u0637\u0628\u062e \u0648\u0627\u0644\u0637\u0639\u0627\u0645 \u0628\u0627\u0644\u0642\u0631\u0628 \u0645\u0646\u0643",
+    hubGas: "\u0627\u0639\u0631\u0641 \u0645\u0646 \u0644\u062f\u064a\u0647 \u0639\u0644\u0627\u0645\u0629 \u063a\u0627\u0632\u0643 \u0627\u0644\u064a\u0648\u0645 \u0648\u0627\u0637\u0644\u0628 \u0642\u0627\u0631\u0648\u0631\u062a\u0643.",
+    hubFood: "\u0645\u0637\u0627\u0639\u0645 \u0648\u0645\u0634\u0648\u064a\u0627\u062a \u0648\u0635\u0648\u064a\u0627 \u0648\u0633\u0645\u0643 \u0645\u0634\u0648\u064a - \u0627\u0628\u062d\u062b \u0639\u0646 \u0627\u0644\u0623\u0637\u0628\u0627\u0642 \u0627\u0644\u0645\u062d\u0644\u064a\u0629 \u0628\u0623\u0633\u0645\u0627\u0626\u0647\u0627.",
+    gasTitle: "\u063a\u0627\u0632 \u0627\u0644\u0637\u0628\u062e \u0628\u0627\u0644\u0642\u0631\u0628 \u0645\u0646\u0643",
+    gasSubtitle: "\u064a\u0639\u0631\u0636 \u0643\u0644 \u0628\u0627\u0626\u0639 \u0627\u0644\u0639\u0644\u0627\u0645\u0627\u062a \u0648\u0623\u062d\u062c\u0627\u0645 \u0627\u0644\u0642\u0648\u0627\u0631\u064a\u0631 \u0627\u0644\u0645\u062a\u0648\u0641\u0631\u0629 \u0644\u062f\u064a\u0647. \u0627\u0637\u0644\u0628 \u0642\u0627\u0631\u0648\u0631\u062a\u0643 \u0648\u0627\u062f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639 \u0639\u0646\u062f \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645.",
+    foodTitle: "\u0627\u0644\u0637\u0639\u0627\u0645 \u0628\u0627\u0644\u0642\u0631\u0628 \u0645\u0646\u0643",
+    foodSubtitle: "\u0645\u0637\u0627\u0639\u0645 \u0648\u0645\u0634\u0648\u064a\u0627\u062a \u0648\u0635\u0648\u064a\u0627 \u0648\u0633\u0645\u0643 \u0645\u0634\u0648\u064a - \u0627\u0628\u062d\u062b \u062d\u0633\u0628 \u0627\u0644\u0637\u0628\u0642 \u0623\u0648 \u0627\u0644\u0644\u062d\u0645 \u0623\u0648 \u0627\u0644\u062d\u064a.",
+    gasSearchPh: "\u0627\u0628\u062d\u062b: Tradex\u060c 12.5 \u0643\u063a\u060c \u0627\u0633\u0645...",
+    foodSearchPh: "\u0627\u0628\u062d\u062b: achu\u060c eru\u060c ndol\u00e9\u060c \u0635\u0648\u064a\u0627\u060c \u0627\u0633\u0645...",
+    kFood: "\u0643\u0644 \u0627\u0644\u0637\u0639\u0627\u0645",
+    allBrands: "\u0643\u0644 \u0627\u0644\u0639\u0644\u0627\u0645\u0627\u062a",
+    allSizes: "\u0643\u0644 \u0627\u0644\u0623\u062d\u062c\u0627\u0645",
+    brandOther: "\u0639\u0644\u0627\u0645\u0629 \u0623\u062e\u0631\u0649",
+    brandOtherPh: "\u0627\u0633\u0645 \u0627\u0644\u0639\u0644\u0627\u0645\u0629\u060c \u0645\u062b\u0627\u0644: Neptune",
+    sizeKg: "{n} \u0643\u063a",
+    sizeOther: "\u062d\u062c\u0645 \u0622\u062e\u0631",
+    sizeOtherPh: "\u0643\u063a",
+    gasHave: "\u0627\u0644\u063a\u0627\u0632 \u0627\u0644\u0645\u062a\u0648\u0641\u0631 \u0644\u062f\u064a\u0647\u0645",
+    gasMore: "+{n} \u0623\u062e\u0631\u0649",
+    gasNoneListed: "\u0644\u0645 \u064a\u062d\u062f\u062f \u0647\u0630\u0627 \u0627\u0644\u0628\u0627\u0626\u0639 \u0627\u0644\u063a\u0627\u0632 \u0627\u0644\u0645\u062a\u0648\u0641\u0631 \u0644\u062f\u064a\u0647 \u0628\u0639\u062f. \u0627\u0633\u0623\u0644 \u0641\u064a \u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u0623\u0648 \u0627\u062d\u062c\u0632 \u0623\u062f\u0646\u0627\u0647.",
+    colBrand: "\u0627\u0644\u0639\u0644\u0627\u0645\u0629",
+    colSize: "\u0627\u0644\u062d\u062c\u0645",
+    colRefill: "\u062a\u0639\u0628\u0626\u0629",
+    colNew: "\u0642\u0627\u0631\u0648\u0631\u0629 \u062c\u062f\u064a\u062f\u0629",
+    inStock: "\u0645\u062a\u0648\u0641\u0631",
+    outStock: "\u0646\u0641\u062f",
+    orderGas: "\u0627\u0637\u0644\u0628 \u063a\u0627\u0632\u064b\u0627",
+    orderBtn: "\u0627\u0637\u0644\u0628",
+    askPrice: "\u0627\u0644\u0633\u0639\u0631 \u0641\u064a \u0627\u0644\u062f\u0631\u062f\u0634\u0629",
+    noNewBottles: "\u062a\u0639\u0628\u0626\u0629 \u0641\u0642\u0637",
+    gasPayNote: "\u062a\u062f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639 \u0639\u0646\u062f \u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u063a\u0627\u0632 \u0623\u0648 \u062a\u0648\u0635\u064a\u0644\u0647. \u0644\u0627 \u062a\u0623\u062e\u0630 \u0628\u0627\u0645\u0628\u064a\u0647 \u0634\u064a\u0626\u064b\u0627 \u0639\u0644\u0649 \u0627\u0644\u063a\u0627\u0632.",
+    orderGasTitle: "\u0627\u0637\u0644\u0628 \u063a\u0627\u0632\u064b\u0627 \u0645\u0646 {name}",
+    whichGas: "\u0623\u064a \u063a\u0627\u0632\u061f",
+    qty: "\u0643\u0645 \u0642\u0627\u0631\u0648\u0631\u0629",
+    modeRefill: "\u062a\u0639\u0628\u0626\u0629 - \u0644\u062f\u064a \u0642\u0627\u0631\u0648\u0631\u0629 {b} \u0641\u0627\u0631\u063a\u0629",
+    modeFull: "\u0642\u0627\u0631\u0648\u0631\u0629 \u062c\u062f\u064a\u062f\u0629 \u0645\u0639 \u0627\u0644\u063a\u0627\u0632 (\u0628\u062f\u0648\u0646 \u0642\u0627\u0631\u0648\u0631\u0629 \u0641\u0627\u0631\u063a\u0629)",
+    totalLine: "\u0627\u0644\u0645\u062c\u0645\u0648\u0639: {n} \u0641\u0631\u0646\u0643",
+    unitLine: "{q} \u00d7 {n} \u0641\u0631\u0646\u0643",
+    sendOrder: "\u0623\u0631\u0633\u0644 \u0627\u0644\u0637\u0644\u0628",
+    bGasOrder: "\u0637\u0644\u0628 \u063a\u0627\u0632",
+    msgGasOrder: "\u0637\u0644\u0628 \u063a\u0627\u0632 - {name}",
+    lBottle: "\u0627\u0644\u0642\u0627\u0631\u0648\u0631\u0629",
+    lQty: "\u0627\u0644\u0643\u0645\u064a\u0629",
+    lPrice: "\u0627\u0644\u0633\u0639\u0631",
+    lPayAtCounter: "\u064a\u064f\u062f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639",
+    orderedOk: "\u062a\u0645 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0637\u0644\u0628. \u0633\u064a\u0631\u062f \u0627\u0644\u0628\u0627\u0626\u0639 \u0641\u064a \u0627\u0644\u062f\u0631\u062f\u0634\u0629.",
+    gasNoToday: "\u0644\u0627 \u064a\u0648\u062c\u062f \u063a\u0627\u0632 \u0627\u0644\u064a\u0648\u0645 \u0644\u062f\u0649 \u0647\u0630\u0627 \u0627\u0644\u0628\u0627\u0626\u0639 - \u0627\u062e\u062a\u0631 \u064a\u0648\u0645\u064b\u0627 \u0622\u062e\u0631 \u0623\u0648 \u0627\u0633\u0623\u0644 \u0641\u064a \u0627\u0644\u062f\u0631\u062f\u0634\u0629.",
+    tapDish: "\u0627\u0644\u0645\u0633 \u0637\u0628\u0642\u064b\u0627 \u0644\u0625\u0636\u0627\u0641\u062a\u0647",
+    meat_beef: "\u0644\u062d\u0645 \u0627\u0644\u0628\u0642\u0631",
+    meat_goat: "\u0644\u062d\u0645 \u0627\u0644\u0645\u0627\u0639\u0632",
+    meat_pork: "\u0644\u062d\u0645 \u0627\u0644\u062e\u0646\u0632\u064a\u0631",
+    meat_chicken: "\u0627\u0644\u062f\u062c\u0627\u062c",
+    meat_fish: "\u0627\u0644\u0633\u0645\u0643",
+    meatsTitle: "\u0627\u0644\u0644\u062d\u0648\u0645 \u0648\u0627\u0644\u0633\u0645\u0643",
+    dishesTitle: "\u0627\u0644\u0623\u0637\u0628\u0627\u0642 \u0627\u0644\u062a\u064a \u064a\u0637\u0628\u062e\u0648\u0646\u0647\u0627",
+    dishFilter: "\u0627\u0644\u0623\u0637\u0628\u0627\u0642",
+    fMeats: "\u0627\u0644\u0644\u062d\u0648\u0645 \u0648\u0627\u0644\u0633\u0645\u0643 \u0627\u0644\u062a\u064a \u062a\u0637\u0628\u062e\u0647\u0627",
+    fDishes: "\u0627\u0644\u0623\u0637\u0628\u0627\u0642 \u0627\u0644\u062a\u064a \u062a\u0637\u0628\u062e\u0647\u0627 - \u0628\u0623\u0633\u0645\u0627\u0626\u0647\u0627 \u0627\u0644\u0645\u062d\u0644\u064a\u0629",
+    fDishesHint: "\u0627\u0644\u0645\u0633 \u0644\u0644\u0625\u0636\u0627\u0641\u0629\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0623\u064a \u0637\u0628\u0642 \u0643\u0645\u0627 \u062a\u0643\u062a\u0628\u0647: achu\u060c eru\u060c ndol\u00e9\u060c okok...",
+    dishPh: "\u0627\u0643\u062a\u0628 \u0637\u0628\u0642\u064b\u0627",
+    addDish: "\u0625\u0636\u0627\u0641\u0629",
+    gasEditTitle: "\u0627\u0644\u063a\u0627\u0632 \u0627\u0644\u0645\u062a\u0648\u0641\u0631 \u0644\u062f\u064a\u0643",
+    gasEditHint: "\u0633\u0637\u0631 \u0648\u0627\u062d\u062f \u0644\u0643\u0644 \u0639\u0644\u0627\u0645\u0629 \u0648\u062d\u062c\u0645 \u0642\u0627\u0631\u0648\u0631\u0629. \u0627\u062a\u0631\u0643 \u00ab\u0642\u0627\u0631\u0648\u0631\u0629 \u062c\u062f\u064a\u062f\u0629\u00bb \u0641\u0627\u0631\u063a\u064b\u0627 \u0625\u0646 \u0643\u0646\u062a \u062a\u0642\u0648\u0645 \u0628\u0627\u0644\u062a\u0639\u0628\u0626\u0629 \u0641\u0642\u0637. \u0643\u0644 \u0635\u0628\u0627\u062d\u060c \u0627\u0644\u0645\u0633 \u00ab\u0645\u062a\u0648\u0641\u0631\u00bb \u0623\u0648 \u00ab\u0646\u0641\u062f\u00bb - \u064a\u0631\u0627\u0647 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646 \u0641\u0648\u0631\u064b\u0627.",
+    addGasLine: "\u0623\u0636\u0641 \u063a\u0627\u0632\u064b\u0627",
+    saveGas: "\u062d\u0641\u0638 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u063a\u0627\u0632",
+    gasSaved: "\u062a\u0645 \u062d\u0641\u0638 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u063a\u0627\u0632. \u064a\u0631\u0627\u0647\u0627 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646 \u0627\u0644\u0622\u0646.",
+    priceRefillPh: "\u0633\u0639\u0631 \u0627\u0644\u062a\u0639\u0628\u0626\u0629",
+    priceNewPh: "\u0633\u0639\u0631 \u0627\u0644\u0642\u0627\u0631\u0648\u0631\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629",
+    gasSaveFirst: "\u0627\u062d\u0641\u0638 \u0627\u0644\u0646\u0634\u0627\u0637 \u0623\u0648\u0644\u064b\u0627\u060c \u062b\u0645 \u0623\u0636\u0641 \u0627\u0644\u063a\u0627\u0632 \u0647\u0646\u0627.",
+    stockToday: "\u063a\u0627\u0632\u0643 \u0627\u0644\u064a\u0648\u0645 - \u0627\u0644\u0645\u0633 \u0644\u0644\u062a\u0628\u062f\u064a\u0644",
+    noGasLines: "\u0623\u0636\u0641 \u0627\u0644\u063a\u0627\u0632 \u0627\u0644\u0645\u062a\u0648\u0641\u0631 \u0644\u062f\u064a\u0643 \u0644\u064a\u062a\u0645\u0643\u0646 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646 \u0645\u0646 \u0637\u0644\u0628\u0647.",
+    listGas: "\u0623\u0636\u0641 \u063a\u0627\u0632\u064a",
+    e_offer_gone: "\u0644\u0645 \u064a\u0639\u062f \u0647\u0630\u0627 \u0627\u0644\u063a\u0627\u0632 \u0641\u064a \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0628\u0627\u0626\u0639. \u0631\u0627\u062c\u0639 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0645\u0646 \u062c\u062f\u064a\u062f.",
+    e_out_of_stock: "\u0646\u0641\u062f \u0647\u0630\u0627 \u0627\u0644\u063a\u0627\u0632 \u0627\u0644\u0622\u0646.",
+    e_bad_quantity: "\u0627\u062e\u062a\u0631 \u0645\u0646 1 \u0625\u0644\u0649 20 \u0642\u0627\u0631\u0648\u0631\u0629.",
+    e_bad_mode: "\u0644\u0627 \u064a\u0628\u064a\u0639 \u0647\u0630\u0627 \u0627\u0644\u0628\u0627\u0626\u0639 \u0642\u0648\u0627\u0631\u064a\u0631 \u062c\u062f\u064a\u062f\u0629 \u0645\u0646 \u0647\u0630\u0627 \u0627\u0644\u063a\u0627\u0632.",
+    e_no_gas_today: "\u0644\u0627 \u064a\u0648\u062c\u062f \u063a\u0627\u0632 \u0627\u0644\u064a\u0648\u0645 \u0644\u062f\u0649 \u0647\u0630\u0627 \u0627\u0644\u0628\u0627\u0626\u0639 - \u0627\u062e\u062a\u0631 \u064a\u0648\u0645\u064b\u0627 \u0622\u062e\u0631 \u0623\u0648 \u0627\u0633\u0623\u0644 \u0641\u064a \u0627\u0644\u062f\u0631\u062f\u0634\u0629.",
+    e_bad_offers: "\u062a\u062d\u0642\u0651\u0642 \u0645\u0646 \u0623\u0633\u0637\u0631 \u0627\u0644\u063a\u0627\u0632: \u0633\u0637\u0631 \u0648\u0627\u062d\u062f \u0644\u0643\u0644 \u0639\u0644\u0627\u0645\u0629 \u0648\u062d\u062c\u0645\u060c 30 \u0643\u062d\u062f \u0623\u0642\u0635\u0649.",
+    e_bad_brand: "\u0627\u062e\u062a\u0631 \u0639\u0644\u0627\u0645\u0629\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0627\u0633\u0645\u0647\u0627 \u062a\u062d\u062a \u00ab\u0639\u0644\u0627\u0645\u0629 \u0623\u062e\u0631\u0649\u00bb.",
+    e_bad_size: "\u0627\u062e\u062a\u0631 \u062d\u062c\u0645 \u0627\u0644\u0642\u0627\u0631\u0648\u0631\u0629 (\u0645\u0646 1 \u0625\u0644\u0649 100 \u0643\u063a).",
+    e_bad_meats: "\u0627\u062e\u062a\u0631 \u0627\u0644\u0644\u062d\u0648\u0645 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629.",
+    e_bad_dishes: "\u062a\u062d\u0642\u0651\u0642 \u0645\u0646 \u0627\u0644\u0623\u0637\u0628\u0627\u0642: \u0645\u0646 2 \u0625\u0644\u0649 30 \u062d\u0631\u0641\u064b\u0627 \u0644\u0643\u0644 \u0637\u0628\u0642\u060c 24 \u0643\u062d\u062f \u0623\u0642\u0635\u0649.",
+    e_not_installed: "\u0647\u0630\u0627 \u0627\u0644\u062c\u0632\u0621 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647 \u0642\u064a\u062f \u0627\u0644\u062a\u062d\u062f\u064a\u062b. \u062d\u0627\u0648\u0644 \u0628\u0639\u062f \u0628\u0636\u0639 \u062f\u0642\u0627\u0626\u0642.",
   },
   ff: {
     nav: "Gaas e \u00f1aamdu",
@@ -1507,6 +1938,91 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_network: "Connexion alaa. \u01b3eewto internet maa, eto kadi.",
     e_generic: "Huunde mo\u01b4\u01b4aani. Eto kadi.",
     e_upload: "Natal ngal waawaa nelde. Eto kadi.",
+    navGas: "Gaas defirde",
+    navFood: "\u00d1aamdu",
+    hubTitle: "Gaas defirde e \u00f1aamdu \u0253adii\u0257i ma",
+    hubGas: "\u01b3eew moy jogii innde gaas maa hannde, yamir \u0257um.",
+    hubFood: "Restoran, soya e liingu ju\u0257aa\u0257o - yiylo achu, eru, ndol\u00e9 e innde mum.",
+    gasTitle: "Gaas defirde \u0253adii\u0257i ma",
+    gasSubtitle: "Jeeyoowo kala ina hollira in\u0257e gaas e mawngu \u0257i o jogii. Yamir maa, yo\u0253 jeeyoowo so a he\u0253ii.",
+    foodTitle: "\u00d1aamdu \u0253adii\u0257i ma",
+    foodSubtitle: "Restoran, soya e liingu ju\u0257aa\u0257o - yiylo e \u00f1aamdu, teewu walla kartiye.",
+    gasSearchPh: "Yiilo: Tradex, 12.5 kg, innde...",
+    foodSearchPh: "Yiilo: achu, eru, ndol\u00e9, soya, innde...",
+    kFood: "\u00d1aamdu fof",
+    allBrands: "In\u0257e gaas fof",
+    allSizes: "Mawngu fof",
+    brandOther: "Innde gaas go\u0257\u0257o",
+    brandOtherPh: "Innde gaas, misal: Neptune",
+    sizeKg: "{n} kg",
+    sizeOther: "Mawngu go\u0257\u0257o",
+    sizeOtherPh: "kg",
+    gasHave: "Gaas \u0257i \u0253e njogii",
+    gasMore: "+{n} go\u0257\u0257i",
+    gasNoneListed: "Jeeyoowo o winndaani gaas mum tawo. Naamno e chat, walla hokku les.",
+    colBrand: "Innde",
+    colSize: "Mawngu",
+    colRefill: "He\u0253tinde",
+    colNew: "Bouteille neuve",
+    inStock: "Woodi",
+    outStock: "Timmii",
+    orderGas: "Yamir gaas",
+    orderBtn: "Yamir",
+    askPrice: "Coggu e chat",
+    noNewBottles: "He\u0253tinde tan",
+    gasPayNote: "A yo\u0253an jeeyoowo so a he\u0253ii gaas maa. Bambeh \u01b4ettataa hay huunde e gaas.",
+    orderGasTitle: "Yamir gaas e {name}",
+    whichGas: "Gaas hon\u0257um?",
+    qty: "Limoore bouteille",
+    modeRefill: "He\u0253tinde - mi jogii bouteille {b} \u0253ol\u0257o",
+    modeFull: "Bouteille neuve e gaas (mi alaa bouteille \u0253ol\u0257o)",
+    totalLine: "Fof: {n} XAF",
+    unitLine: "{q} x {n} XAF",
+    sendOrder: "Neldu yamiroore",
+    bGasOrder: "Yamiroore gaas",
+    msgGasOrder: "Yamiroore gaas - {name}",
+    lBottle: "Bouteille",
+    lQty: "Limoore",
+    lPrice: "Coggu",
+    lPayAtCounter: "Yo\u0253etee jeeyoowo",
+    orderedOk: "Yamiroore neldaama. Jeeyoowo jaabotoo e chat maa.",
+    gasNoToday: "Gaas alaa hannde e jeeyoowo o - su\u0253o \u00f1alawma go\u0257\u0257o, walla naamno e chat.",
+    tapDish: "Meemu \u00f1aamdu ngam \u0253eydude",
+    meat_beef: "Teewu na\u2019i",
+    meat_goat: "Teewu be\u2019i",
+    meat_pork: "Teewu porc",
+    meat_chicken: "Gertogal",
+    meat_fish: "Liingu",
+    meatsTitle: "Teewu e liingu",
+    dishesTitle: "\u00d1aamdu \u0257u \u0253e defata",
+    dishFilter: "\u00d1aamdu",
+    fMeats: "Teewu e liingu \u0257o defataa",
+    fDishes: "\u00d1aamdu \u0257u defataa - in\u0257e leydi",
+    fDishesHint: "Meemu ngam \u0253eydude, walla winndu \u00f1aamdu no winnditaa: achu, eru, ndol\u00e9, okok...",
+    dishPh: "Winndu \u00f1aamdu",
+    addDish: "\u0181eydu",
+    gasEditTitle: "Gaas \u0257i njogi\u0257aa",
+    gasEditHint: "Diidol gootol e innde gaas e mawngu kala. Accu \u00abBouteille neuve\u00bb mehe so he\u0253tinde tan nga\u0257ataa. Subaka kala, meemu Woodi / Timmii - soodoo\u0253e yiyan \u0257um jooni.",
+    addGasLine: "\u0181eydu gaas",
+    saveGas: "Danndu doggol gaas",
+    gasSaved: "Doggol gaas danndaama. Soodoo\u0253e ina yiya ngol jooni.",
+    priceRefillPh: "Coggu he\u0253tinde",
+    priceNewPh: "Coggu bouteille neuve",
+    gasSaveFirst: "Danndu nokkuure adii, refti winndu gaas maa \u0257oo.",
+    stockToday: "Gaas maa hannde - meemu ngam waylude",
+    noGasLines: "Winndu gaas \u0257i njogi\u0257aa ngam soodoo\u0253e mbaawa yamirde.",
+    listGas: "Winndu gaas am",
+    e_offer_gone: "Gaas ngal alaa e doggol jeeyoowo kadi. \u01b3eew doggol ngol kadi.",
+    e_out_of_stock: "Gaas ngal timmii jooni.",
+    e_bad_quantity: "Su\u0253o bouteille 1 haa 20.",
+    e_bad_mode: "Jeeyoowo o jeeyataa bouteille neuve gaas ngal.",
+    e_no_gas_today: "Gaas alaa hannde e jeeyoowo o - su\u0253o \u00f1alawma go\u0257\u0257o, walla naamno e chat.",
+    e_bad_offers: "\u01b3eewto diidi gaas: diidol gootol e innde e mawngu kala, 30 \u0253uri.",
+    e_bad_brand: "Su\u0253o innde gaas, walla winndu innde mum les \u00abInnde gaas go\u0257\u0257o\u00bb.",
+    e_bad_size: "Su\u0253o mawngu bouteille (1 haa 100 kg).",
+    e_bad_meats: "Su\u0253o teewuuji e doggol.",
+    e_bad_dishes: "\u01b3eewto \u00f1aamdu: alkule 2 haa 30 e kala, 24 \u0253uri.",
+    e_not_installed: "Ina hes\u0257itinee ngol ge\u0257al Bambeh. Eto kadi so minitiiji see\u0257a \u0253ennii.",
   },
 };
 
@@ -1712,4 +2228,63 @@ export function momoNumber(raw: string | null | undefined): string | null {
   else if (d.indexOf('237') === 0 && d.length === 12) d = d.slice(3);
   return /^6[5-9][0-9]{7}$/.test(d) ? d : null;
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_TEXT_FIX688__COMPLETE
+
+// ------------------------------------------------------------------ FIX698: cooking gas and food, two sections
+export type GasBrand = 'SCTM' | 'CAMGAS' | 'GLOCAL' | 'TOTAL' | 'TRADEX' | 'OTHER';
+export type Meat = 'beef' | 'goat' | 'pork' | 'chicken' | 'fish';
+
+/** The five brands Big named; any other brand is typed by the seller ("OTHER" + its name: Neptune, Bocom...). */
+export const GAS_BRANDS: readonly GasBrand[] = ['SCTM', 'CAMGAS', 'GLOCAL', 'TOTAL', 'TRADEX'];
+/** Bottle sizes offered with one tap (kg); a seller can type any size from 1 to 100 kg. */
+export const SIZE_PICKS: readonly number[] = [6, 12.5, 50];
+export const MEATS: readonly Meat[] = ['beef', 'goat', 'pork', 'chicken', 'fish'];
+/** The kinds the Food section shows. */
+export const FOOD_SECTION_KINDS: readonly FoodKind[] = ['restaurant', 'grill', 'fish'];
+/** Dishes offered with one tap; the seller can type any other. Local names, not translated. */
+export const DISH_PICKS: readonly string[] = ['Achu', 'Eru', 'Ndol\u00e9', 'Okok', '\u00c9minc\u00e9', 'Puff-puff', 'Koki', 'Ekwang', 'Mbongo tchobi', 'Kati kati', 'Fufu corn & njama njama', 'Sanga', 'Beignets-haricots', 'Poulet DG', 'Soya', 'Poisson brais\u00e9', 'Poulet brais\u00e9', 'Plantain', 'Miondo', 'Bobolo', 'Kwacoco bible', 'Pepper soup', 'Okra soup', 'Taro'];
+
+export function isGasBrand(v: unknown): v is GasBrand {
+  return v === 'OTHER' || (GAS_BRANDS as readonly string[]).indexOf(String(v)) >= 0;
+}
+
+export function isMeat(v: unknown): v is Meat {
+  return (MEATS as readonly string[]).indexOf(String(v)) >= 0;
+}
+
+/** True for restaurant, grill and roasted fish (the Food section). */
+export function isFoodKind(v: unknown): boolean {
+  return (FOOD_SECTION_KINDS as readonly string[]).indexOf(String(v)) >= 0;
+}
+
+export function meatLabel(lang: FoodLang, m: string): string {
+  return isMeat(m) ? ft(lang, ('meat_' + m) as FoodKey) : String(m);
+}
+
+/** "TRADEX", or the name the seller typed for another brand. */
+export function brandLabel(brand: string, other?: string | null): string {
+  return brand === 'OTHER' ? String(other || '').trim() || 'Gas' : String(brand);
+}
+
+/** 12.5 -> "12.5" (English, Pidgin, Arabic) or "12,5" (French, Fulfulde). */
+export function fmtSize(n: number | string | null | undefined, lang: FoodLang): string {
+  const v = typeof n === 'number' ? n : Number(n);
+  if (n === null || n === undefined || n === '' || !isFinite(v)) return '';
+  const s = String(Math.round(v * 100) / 100);
+  return lang === 'fr' || lang === 'ff' ? s.replace('.', ',') : s;
+}
+
+/** "12.5 kg" in the language. */
+export function sizeText(lang: FoodLang, n: number | string | null | undefined): string {
+  return ft(lang, 'sizeKg', { n: fmtSize(n, lang) });
+}
+
+/** The database's rule: "Ndole", "NDOLE" and "O'kok" / "okok" are one dish - lower case, no accents, letters and digits only. */
+export function foldDish(text: unknown): string {
+  return String(text || '')
+    .replace(/[\u0152\u0153]/g, 'oe').replace(/[\u00c6\u00e6]/g, 'ae')
+    .replace(/[\u0181\u0253]/g, 'b').replace(/[\u018a\u0257]/g, 'd').replace(/[\u014a\u014b]/g, 'n')
+    .replace(/[\u01b3\u01b4]/g, 'y').replace(/[\u00d8\u00f8]/g, 'o').replace(/\u0131/g, 'i')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, '');
+}
+// BAMBEH_END_TOKEN__FOOD_GAS_TEXT_FIX698__COMPLETE

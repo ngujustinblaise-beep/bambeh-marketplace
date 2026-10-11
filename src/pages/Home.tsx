@@ -32,6 +32,8 @@ import {
   Clock,
   Eye,
   Building2,
+  Flame,           // FIX704 - Cooking gas tile
+  UtensilsCrossed, // FIX704 - Food tile
 } from 'lucide-react';
 
 // FIX397 - "How to use Bambeh", in the five app languages. Written as plain
@@ -88,6 +90,10 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesDesc": "Cars & motorcycles",
     "home.exchangeTitle": "Exchange",
     "home.exchangeDesc": "Trade items",
+    "home.gasTitle": "Cooking gas",
+    "home.gasDesc": "Refills and bottles near you, by brand",
+    "home.foodTitle": "Food",
+    "home.foodDesc": "Restaurants, soya and roasted fish",
     "home.featuresHeading": "Special Features",
     "home.zermCoins": "Zerm Coins",
     "home.farmFresh": "Farm Fresh",
@@ -144,6 +150,10 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesDesc": "Voitures et motos",
     "home.exchangeTitle": "Échange",
     "home.exchangeDesc": "Troquer des articles",
+    "home.gasTitle": "Gaz domestique",
+    "home.gasDesc": "Recharges et bouteilles pr\u00E8s de chez vous",
+    "home.foodTitle": "Restos & grillades",
+    "home.foodDesc": "Restaurants, soya et poisson brais\u00E9",
     "home.featuresHeading": "Fonctionnalités spéciales",
     "home.zermCoins": "Pièces Zerm",
     "home.farmFresh": "Produits frais",
@@ -200,6 +210,10 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesDesc": "السيارات والدراجات النارية",
     "home.exchangeTitle": "المقايضة",
     "home.exchangeDesc": "مبادلة العناصر",
+    "home.gasTitle": "\u063A\u0627\u0632 \u0627\u0644\u0637\u0628\u062E",
+    "home.gasDesc": "\u062A\u0639\u0628\u0626\u0629 \u0648\u0642\u0648\u0627\u0631\u064A\u0631 \u063A\u0627\u0632 \u0628\u0627\u0644\u0642\u0631\u0628 \u0645\u0646\u0643",
+    "home.foodTitle": "\u0627\u0644\u0637\u0639\u0627\u0645",
+    "home.foodDesc": "\u0645\u0637\u0627\u0639\u0645 \u0648\u0635\u0648\u064A\u0627 \u0648\u0633\u0645\u0643 \u0645\u0634\u0648\u064A",
     "home.featuresHeading": "ميزات خاصة",
     "home.zermCoins": "عملات Zerm",
     "home.farmFresh": "منتجات طازة",
@@ -256,6 +270,10 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesDesc": "Cars and bikes",
     "home.exchangeTitle": "Exchange",
     "home.exchangeDesc": "Swap your things",
+    "home.gasTitle": "Cooking gas",
+    "home.gasDesc": "Gas refill and bottle near you",
+    "home.foodTitle": "Chop",
+    "home.foodDesc": "Chop house, soya and roast fish",
     "home.featuresHeading": "Special Things We Get",
     "home.zermCoins": "Zerm Coins",
     "home.farmFresh": "Farm Fresh",
@@ -312,6 +330,10 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesDesc": "Finniye e motobare",
     "home.exchangeTitle": "Jayndu",
     "home.exchangeDesc": "Jayndu geɗiɗi",
+    "home.gasTitle": "Gaas defirde",
+    "home.gasDesc": "He\u0253tinde gaas \u0253adii\u0257i ma",
+    "home.foodTitle": "\u00D1aamdu",
+    "home.foodDesc": "Restoran, soya e liingu ju\u0257aa\u0257o",
     "home.featuresHeading": "Dow\u0257e Sifa",
     "home.zermCoins": "Zerm Coins",
     "home.farmFresh": "Jeema Koli",
@@ -403,6 +425,8 @@ export default function Home() {
     { nameKey: 'home.rentalsTitle', descKey: 'home.rentalsDesc', icon: HomeIcon,    link: '/rentals',     color: 'bg-orange-500' },
     { nameKey: 'home.vehiclesTitle', descKey: 'home.vehiclesDesc', icon: Car,         link: '/vehicles',    color: 'bg-red-500'    },
     { nameKey: 'home.exchangeTitle', descKey: 'home.exchangeDesc', icon: TrendingUp,  link: '/exchange',    color: 'bg-teal-500'   },
+    { nameKey: 'home.gasTitle', descKey: 'home.gasDesc', icon: Flame, link: '/food-gas/gas', color: 'bg-red-600' }, // FIX704
+    { nameKey: 'home.foodTitle', descKey: 'home.foodDesc', icon: UtensilsCrossed, link: '/food-gas/food', color: 'bg-amber-500' }, // FIX704
   ];
 
   // ── Special Features tiles (translated labels) ─────────────────────────
