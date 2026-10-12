@@ -1,8 +1,12 @@
-// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_DETAIL_FIX721_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_DETAIL_FIX732_CLEAN
 /**
- * src/features/womenshealth/WomensHealthDetail.tsx - FIX721 (replaces FIX709, which was never deployed)
+ * src/features/womenshealth/WomensHealthDetail.tsx - FIX732 (replaces FIX721)
  *   routes: /womens-health/place/:id   one maternity, health centre, clinic or listening centre
  *           /womens-health/day/:id     one free screening day ("remind me" links land here)
+ *
+ * FIX732 (Big, 12 Oct 2026): a first-time phone reads a place or a screening day during its guest
+ * day, with the "create your free account" banner (FIX730); "Remind me" and "Report a problem" ask
+ * her to sign in. After the guest day: the account card. The SAFETY BUTTON card is on every page.
  *
  * FIX721 (Big, 11 Oct 2026 evening): a free service that needs a Bambeh account.
  *   - No account: the free account card (create one / sign in) with the emergency numbers - the
@@ -25,7 +29,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AlertTriangle, Bell, BellOff, CalendarDays, ChevronLeft, ChevronRight, Clock, Flag, Loader2, MapPin, Pencil, Phone, Plus, ShieldCheck } from 'lucide-react';
-import { FreeAccountCard, FreeAccountChecking, useFreeAccount } from '@/components/security/FreeServiceGate';
+import { FreeAccountCard, FreeAccountChecking, GuestBanner, SafetyLinkCard, useFreeAccount } from '@/components/security/FreeServiceGate';
 import {
   WH_REPORT_REASONS, dayRange, dayWhen, daysText, doualaNow, fmtLongDay, fmtPhone, fmtSavedAt, kindLabel, opensLaterToday, placeOpenState,
   regionLabel, reportLabel, serviceLabel, telHref, topicLabel, useWhText, whReason,
@@ -344,9 +348,11 @@ export default function WomensHealthDetail() {
     setLoading(false);
   }, [id, isDay, lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // FIX732: a first-time phone reads during its guest day
+  const canRead = account === 'in' || account === 'guest';
   useEffect(() => {
-    if (account === 'in') void load();
-  }, [load, account]);
+    if (canRead) void load();
+  }, [load, canRead]);
 
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -354,7 +360,7 @@ export default function WomensHealthDetail() {
   };
 
   return (
-    <div dir={dir} data-fix="FIX721" data-account-state={account} className="mx-auto max-w-2xl space-y-3 px-4 py-4 pb-28">
+    <div dir={dir} data-fix="FIX732" data-account-state={account} className="mx-auto max-w-2xl space-y-3 px-4 py-4 pb-28">
       <button type="button" onClick={goBack} className="inline-flex items-center gap-1 rounded-xl px-2 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100">
         <ChevronLeft className="h-4 w-4 rtl:rotate-180" />{t('back')}
       </button>
@@ -373,6 +379,7 @@ export default function WomensHealthDetail() {
         </div>
       ) : (
         <>
+          {account === 'guest' && <GuestBanner />}
           {savedAt && <OfflineNote text={t('offlinePlace', { date: fmtSavedAt(savedAt, lang) })} />}
           {isDay && day && me ? (
             <DayView d={day} me={me} lang={lang} t={t} offline={!!savedAt} onReminded={(on) => setMe({ ...me, reminded: on })} />
@@ -382,8 +389,9 @@ export default function WomensHealthDetail() {
         </>
       )}
       <p className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-xs font-bold text-red-800">{t('emergency')}</p>
+      <SafetyLinkCard />
       <QuickExit t={t} />
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WOMENS_HEALTH_DETAIL_FIX721__COMPLETE
+// BAMBEH_END_TOKEN__WOMENS_HEALTH_DETAIL_FIX732__COMPLETE

@@ -392,6 +392,7 @@ const WomensHealthDetail    = lazy(() => import("@/features/womenshealth/WomensH
 const WomensHealthPregnancy = lazy(() => import("@/features/womenshealth/WomensHealthPregnancy")); // FIX722
 const WomensHealthQuiz      = lazy(() => import("@/features/womenshealth/WomensHealthQuiz"));      // FIX723
 const WomensHealthManage    = lazy(() => import("@/features/womenshealth/WomensHealthManage"));    // FIX711
+const SafetyButton          = lazy(() => import("@/features/safety/SafetyButton"));                  // FIX733
 const AccountGate         = lazy(() => import("@/components/auth/AccountGate")); // FIX613
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
@@ -564,6 +565,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/referral",
     "/donate",
     "/farm-fresh",
+    "/safety-button", // FIX733 - the Safety button opens before the terms screen
   ];
 
   const isPublic = publicPrefixes.some((p) => location.pathname.startsWith(p));
@@ -837,6 +839,7 @@ export default function App() {
                         <Route path="/womens-health/edit-place/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
                         <Route path="/womens-health/new-day" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
                         <Route path="/womens-health/edit-day/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/safety-button" element={<MainLayout><SafetyButton /></MainLayout>} />{/* FIX733 - no account, no sign-in: in danger, nobody should have to log in */}
                         <Route path="/hospitals" element={<MainLayout><FreeServiceGate><HospitalsOnDuty /></FreeServiceGate></MainLayout>} />
                         <Route path="/water-lights" element={<MainLayout><FreeServiceGate><WaterLights /></FreeServiceGate></MainLayout>} />{/* FIX500 - free, a Bambeh account is enough (FIX727) */}
                         <Route path="/fuel" element={<MainLayout><FreeServiceGate><FuelAtNight /></FreeServiceGate></MainLayout>} />{/* FIX506 - free, a Bambeh account is enough (FIX727) */}

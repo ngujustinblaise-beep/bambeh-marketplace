@@ -1,8 +1,15 @@
-// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_PAGE_FIX720_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_PAGE_FIX731_CLEAN
 /**
- * src/features/womenshealth/WomensHealthPage.tsx - FIX720 (replaces FIX708, which was never deployed)
+ * src/features/womenshealth/WomensHealthPage.tsx - FIX731 (replaces FIX720)
  *   routes: /womens-health            WHERE TO GO - maternities, antenatal care, screening, family planning
  *           /womens-health/screening  FREE SCREENING DAYS - dated campaigns (Octobre Rose...), "remind me"
+ *
+ * FIX731 (Big, 12 Oct 2026): "first time users will read but will be prompted to create accounts".
+ *   - A first-time phone reads the places and the screening days for a day as a guest, with the
+ *     "create your free account" banner on top (FreeServiceGate, FIX730; the database lets a
+ *     signed-out phone read the lists again, FIX729). Reminders, reports, adding a place and the
+ *     quizzes still need the account. After the guest day: the account card.
+ *   - The red SAFETY BUTTON card under the emergency line (FIX733), for everyone, no account.
  *
  * FIX720 (Big, 11 Oct 2026 evening): Women's health is in the FREE section ("Free help, any time"),
  * and the free section needs a Bambeh account - never a subscription.
@@ -31,7 +38,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Baby, Bell, BellOff, CalendarDays, ChevronRight, Clock, GraduationCap, Heart, Loader2, MapPin, Phone, Plus, RefreshCw, Search, ShieldCheck,
 } from 'lucide-react';
-import { FreeAccountCard, FreeAccountChecking, useFreeAccount } from '@/components/security/FreeServiceGate';
+import { FreeAccountCard, FreeAccountChecking, GuestBanner, SafetyLinkCard, useFreeAccount } from '@/components/security/FreeServiceGate';
 import {
   TOWNS, WH_REGIONS, WH_SERVICES, WH_TOPICS, dayRange, dayWhen, doualaNow, fmtPhone, fmtSavedAt, isWhRegion, isWhService, kindLabel,
   opensLaterToday, placeOpenState, regionLabel, serviceLabel, telHref, topicLabel, useWhText, whReason,
@@ -306,13 +313,16 @@ export default function WomensHealthPage() {
     setLoading(false); setMore(false);
   }, [tab, where, service, csu, open24, womenDocs, query, topic, lang, listKey]);
 
+  // FIX731: a first-time phone reads the lists during its guest day
+  const canRead = account === 'in' || account === 'guest';
   useEffect(() => {
-    if (account === 'in') void load(0);
-  }, [load, account]);
+    if (canRead) void load(0);
+  }, [load, canRead]);
 
   const pickWhere = (w: Where) => { setWhere(w); saveWhere(w); };
 
   const toggleRemind = async (d: WhDay) => {
+    if (account !== 'in') { setToast({ text: t('remindSignIn'), signIn: true }); return; }
     setBusyDay(d.id);
     const r = await remind(d.id, !d.reminded);
     setBusyDay(null);
@@ -336,9 +346,10 @@ export default function WomensHealthPage() {
     ? (total === 1 ? t('countPlace1') : t('countPlaces', { n: total }))
     : (total === 1 ? t('countDay1') : t('countDays', { n: total }));
   const signedIn = account === 'in' && !needAccount;
+  const reading = canRead && !needAccount;
 
   return (
-    <div dir={dir} data-fix="FIX720" data-account-state={account} className="mx-auto max-w-3xl space-y-4 px-4 py-4 pb-28">
+    <div dir={dir} data-fix="FIX731" data-account-state={account} className="mx-auto max-w-3xl space-y-4 px-4 py-4 pb-28">
       <header className="rounded-3xl bg-gradient-to-br from-rose-600 to-pink-500 p-5 text-white shadow-lg">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white/20"><Heart className="h-6 w-6" /></span>
@@ -351,8 +362,11 @@ export default function WomensHealthPage() {
       </header>
 
       <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800" data-emergency="1">{t('emergency')}</p>
+      <SafetyLinkCard />
 
-      {signedIn && (
+      {account === 'guest' && reading && <GuestBanner />}
+
+      {reading && (
         <nav className="grid grid-cols-2 gap-2" aria-label={t('title')}>
           <button type="button" onClick={() => navigate('/womens-health')} aria-pressed={tab === 'places'}
                   className={'rounded-2xl px-3 py-3 text-sm font-extrabold transition ' + (tab === 'places' ? 'bg-gray-900 text-white' : 'border border-gray-200 bg-white text-gray-800')}>
@@ -369,7 +383,7 @@ export default function WomensHealthPage() {
 
       {account === 'checking' ? (
         <FreeAccountChecking />
-      ) : !signedIn ? (
+      ) : !reading ? (
         <FreeAccountCard body={t('acctBody')} note={t('acctOpen')} />
       ) : (
         <>
@@ -493,10 +507,12 @@ export default function WomensHealthPage() {
                     className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-rose-200 bg-white px-3 py-3 text-sm font-extrabold text-rose-700">
               <CalendarDays className="h-4 w-4" />{t('addDay')}
             </button>
-            <button type="button" onClick={() => navigate('/womens-health/mine')}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-3 py-3 text-sm font-extrabold text-gray-800">
-              {t('mine')}
-            </button>
+            {signedIn && (
+              <button type="button" onClick={() => navigate('/womens-health/mine')}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-3 py-3 text-sm font-extrabold text-gray-800">
+                {t('mine')}
+              </button>
+            )}
           </section>
         </>
       )}
@@ -505,4 +521,4 @@ export default function WomensHealthPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WOMENS_HEALTH_PAGE_FIX720__COMPLETE
+// BAMBEH_END_TOKEN__WOMENS_HEALTH_PAGE_FIX731__COMPLETE
