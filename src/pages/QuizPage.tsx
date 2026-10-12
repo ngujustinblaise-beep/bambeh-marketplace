@@ -1,7 +1,17 @@
-// BAMBEH_DEPLOY_TOKEN__QUIZPAGE_FIX165B_SUBONLY_CLEAN
+// BAMBEH_DEPLOY_TOKEN__QUIZPAGE_FIX725_CLEAN
 /**
- * QuizPage.tsx \u2014 Bambeh Quiz Gamification (FIX165)
+ * QuizPage.tsx \u2014 Bambeh Quiz Gamification (FIX165), FIX725
  * DEPLOY: src/pages/QuizPage.tsx   (route /quiz added by App FIX166)
+ *
+ * FIX725 (Big, 11 Oct 2026: "can we make the quiz linked to our in-app quiz section"):
+ *   - a "Health quizzes - free" card at the top links to the women's health quizzes
+ *     (/womens-health/quiz, FIX723): contraception, preventing infections, consent. It shows
+ *     once an admin switched them on after a health worker checked them; staff see a preview
+ *     card before that. No Zerm coins there - health knowledge is not a contest.
+ *   - "See subscription plans" now opens /subscription (it pointed at /subscription-plans,
+ *     a page that does not exist).
+ *   - Pidgin and Fulfulde readers get their own words: the app says 'pcm' and 'ful', which
+ *     this page used to turn into English.
  *
  * Users answer live trick questions and win Zerm coins. All awarding happens
  * atomically in the answer_quiz() RPC (fix164) \u2014 this page never decides who
@@ -14,10 +24,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Trophy, Clock, Loader2, AlertCircle, CheckCircle2,
-  XCircle, Coins, MapPin, HelpCircle, RefreshCw,
+  XCircle, Coins, MapPin, HelpCircle, RefreshCw, GraduationCap, ChevronRight,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import { getGuide } from '@/features/womenshealth/whApi'; // FIX725
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 
@@ -36,6 +47,7 @@ const T: Record<Lang, {
   empty: string; loadFail: string; retry: string; myResults: string;
   needSub: string; goSub: string;
   won: string; correctLabel: string; wrongLabel: string;
+  healthTitle: string; healthBody: string; healthPreview: string;
 }> = {
   en: {
     title: 'Bambeh Quiz', subtitle: 'Answer fast, answer right \u2014 win Zerm coins. Strict winner limits!',
@@ -58,6 +70,8 @@ const T: Record<Lang, {
     loadFail: 'Could not load the quiz. Check your connection.', retry: 'Retry',
     myResults: 'My results', won: 'Won', correctLabel: 'Correct', wrongLabel: 'Wrong',
     needSub: 'The quiz is for subscribed members only. Subscribe to play and win Zerm!', goSub: 'See subscription plans',
+    healthTitle: 'Health quizzes - free', healthBody: 'Contraception, preventing infections, consent: learn in 2 minutes. No coins, just what everyone should know.',
+    healthPreview: 'Staff preview: switched off for members until a health worker checks them.',
   },
   fr: {
     title: 'Quiz Bambeh', subtitle: 'R\u00e9pondez vite et juste \u2014 gagnez des Zerm. Limites strictes de gagnants !',
@@ -80,6 +94,8 @@ const T: Record<Lang, {
     loadFail: 'Impossible de charger le quiz. V\u00e9rifiez votre connexion.', retry: 'R\u00e9essayer',
     myResults: 'Mes r\u00e9sultats', won: 'Gagn\u00e9', correctLabel: 'Correct', wrongLabel: 'Faux',
     needSub: 'Le quiz est r\u00e9serv\u00e9 aux abonn\u00e9s. Abonnez-vous pour jouer et gagner des Zerm !', goSub: 'Voir les abonnements',
+    healthTitle: 'Quiz sant\u00e9 - gratuits', healthBody: 'Contraception, pr\u00e9vention des infections, consentement : apprenez en 2 minutes. Pas de pi\u00e8ces, juste ce que tout le monde devrait savoir.',
+    healthPreview: 'Aper\u00e7u \u00e9quipe : d\u00e9sactiv\u00e9s pour les membres jusqu\u2019\u00e0 la v\u00e9rification par un personnel de sant\u00e9.',
   },
   pidgin: {
     title: 'Bambeh Quiz', subtitle: 'Answer quick, answer correct \u2014 win Zerm coins. Winner limit dey strict!',
@@ -102,6 +118,8 @@ const T: Record<Lang, {
     loadFail: 'Quiz no gree load. Check your connection.', retry: 'Try again',
     myResults: 'My results', won: 'Win', correctLabel: 'Correct', wrongLabel: 'Wrong',
     needSub: 'Na subscribed members fit play the quiz. Subscribe make you play and win Zerm!', goSub: 'See subscription plans',
+    healthTitle: 'Health quiz - free', healthBody: 'Contraception, how to block infection, consent: learn inside 2 minutes. No coin, na just wetin everybody suppose know.',
+    healthPreview: 'Staff preview: e off for members until health worker check am.',
   },
   ar: {
     title: '\u0645\u0633\u0627\u0628\u0642\u0629 \u0628\u0627\u0645\u0628\u064a\u0647', subtitle: '\u0623\u062c\u0628 \u0628\u0633\u0631\u0639\u0629 \u0648\u0628\u0634\u0643\u0644 \u0635\u062d\u064a\u062d \u2014 \u0627\u0631\u0628\u062d \u0639\u0645\u0644\u0627\u062a \u0632\u064a\u0631\u0645. \u062d\u062f\u0648\u062f \u0635\u0627\u0631\u0645\u0629 \u0644\u0644\u0641\u0627\u0626\u0632\u064a\u0646!',
@@ -124,6 +142,8 @@ const T: Record<Lang, {
     loadFail: '\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0628\u0642\u0629. \u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u062a\u0635\u0627\u0644\u0643.', retry: '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629',
     myResults: '\u0646\u062a\u0627\u0626\u062c\u064a', won: '\u0641\u0632\u062a', correctLabel: '\u0635\u062d\u064a\u062d', wrongLabel: '\u062e\u0637\u0623',
     needSub: '\u0627\u0644\u0645\u0633\u0627\u0628\u0642\u0629 \u0644\u0644\u0645\u0634\u062a\u0631\u0643\u064a\u0646 \u0641\u0642\u0637. \u0627\u0634\u062a\u0631\u0643 \u0644\u062a\u0644\u0639\u0628 \u0648\u062a\u0631\u0628\u062d \u0632\u064a\u0631\u0645!', goSub: '\u0639\u0631\u0636 \u062e\u0637\u0637 \u0627\u0644\u0627\u0634\u062a\u0631\u0627\u0643',
+    healthTitle: '\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a \u0635\u062d\u064a\u0629 - \u0645\u062c\u0627\u0646\u064a\u0629', healthBody: '\u0645\u0646\u0639 \u0627\u0644\u062d\u0645\u0644\u060c \u0627\u0644\u0648\u0642\u0627\u064a\u0629 \u0645\u0646 \u0627\u0644\u0639\u062f\u0648\u0649\u060c \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629: \u062a\u0639\u0644\u0651\u0645 \u0641\u064a \u062f\u0642\u064a\u0642\u062a\u064a\u0646. \u0628\u0644\u0627 \u0639\u0645\u0644\u0627\u062a\u060c \u0641\u0642\u0637 \u0645\u0627 \u064a\u062c\u0628 \u0623\u0646 \u064a\u0639\u0631\u0641\u0647 \u0627\u0644\u062c\u0645\u064a\u0639.',
+    healthPreview: '\u0645\u0639\u0627\u064a\u0646\u0629 \u0627\u0644\u0641\u0631\u064a\u0642: \u0645\u062a\u0648\u0642\u0641\u0629 \u0644\u0644\u0623\u0639\u0636\u0627\u0621 \u062d\u062a\u0649 \u064a\u0631\u0627\u062c\u0639\u0647\u0627 \u0639\u0627\u0645\u0644 \u0635\u062d\u064a.',
   },
   ff: {
     title: 'Quiz Bambeh', subtitle: 'Jaabo law, jaabo goonga \u2014 he\u0253 Zerm. Keerol jaal\u0253e ina tii\u0257i!',
@@ -146,6 +166,8 @@ const T: Record<Lang, {
     loadFail: 'Quiz loowaaki. \u01b3eewto internet maa.', retry: 'E\u0257\u0257itto',
     myResults: 'Nje\u00f1tudi am', won: 'Jaalii', correctLabel: 'Goonga', wrongLabel: 'Juumre',
     needSub: 'Quiz oo ko wonande sii\u0253otoo\u0253e tan. Sii\u0253o ngam fijude he\u0253aa Zerm!', goSub: 'Yiy peeje sii\u0253agol',
+    healthTitle: 'Quiz cellal - meere', healthBody: 'Ha\u0257gol reedu, reentaade nyawuuji, ja\u0253\u0253ugol: ekkito nder minitiiji 2. Alaa Zerm, ko ne\u0257\u0257o kala foti anndude tan.',
+    healthPreview: '\u01b3eewgol golloo\u2019en: uddiima wonande sii\u0253otoo\u0253e haa golloowo safaara \u01b4eewa \u0257um.',
   },
 };
 
@@ -175,8 +197,11 @@ function Countdown({ endsAt, prefix, endedLabel }: { endsAt: string | null; pref
 export default function QuizPage() {
   const navigate = useNavigate();
   const langRaw = useLang() as unknown;
-  const langKey = typeof langRaw === 'string' ? langRaw : (langRaw as { lang?: string })?.lang || 'en';
-  const lang: Lang = (langKey in T ? langKey : 'en') as Lang;
+  const langKey = String(typeof langRaw === 'string' ? langRaw : (langRaw as { lang?: string })?.lang || 'en').toLowerCase();
+  // FIX725: the app says 'pcm' for Pidgin and 'ful' for Fulfulde - both used to fall back to English here
+  const lang: Lang = langKey === 'pcm' || langKey.indexOf('pid') === 0 ? 'pidgin'
+    : langKey === 'ff' || langKey === 'ful' || langKey === 'fulfulde' ? 'ff'
+    : langKey.indexOf('fr') === 0 ? 'fr' : langKey.indexOf('ar') === 0 ? 'ar' : 'en';
   const s = T[lang];
   const isRtl = lang === 'ar';
 
@@ -191,6 +216,8 @@ export default function QuizPage() {
   const [regionSet, setRegionSet] = useState(false);
 
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  // FIX725 - the free health quizzes: 'on' for everyone, 'preview' for staff before a health worker checked them
+  const [healthQuiz, setHealthQuiz] = useState<'on' | 'preview' | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, { kind: string; reward?: number }>>({});
 
@@ -235,6 +262,14 @@ export default function QuizPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    let live = true;
+    void getGuide().then((r) => {
+      if (live && r.ok) setHealthQuiz(r.quiz_on ? 'on' : r.is_staff ? 'preview' : null);
+    });
+    return () => { live = false; };
+  }, []);
 
   const submit = async (q: Quiz) => {
     const answer = (answers[q.id] || '').trim();
@@ -293,7 +328,7 @@ export default function QuizPage() {
       return (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800 space-y-2">
           <p>{s.needSub}</p>
-          <button onClick={() => navigate('/subscription-plans')}
+          <button onClick={() => navigate('/subscription')}
             className="w-full py-2 rounded-xl bg-amber-600 text-white text-xs font-semibold">
             {s.goSub}
           </button>
@@ -331,6 +366,25 @@ export default function QuizPage() {
       </div>
 
       <div className="px-4 mt-4 space-y-4 max-w-lg mx-auto">
+        {/* FIX725 - the free health quizzes (Women's health) */}
+        {healthQuiz && (
+          <button
+            type="button"
+            onClick={() => navigate('/womens-health/quiz')}
+            data-health-quiz={healthQuiz}
+            className="w-full flex items-center gap-3 rounded-2xl border border-purple-200 bg-purple-50 p-4 text-start hover:bg-purple-100"
+          >
+            <span className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center flex-shrink-0">
+              <GraduationCap className="w-5 h-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-gray-900">{s.healthTitle}</span>
+              <span className="block text-xs text-gray-600">{healthQuiz === 'on' ? s.healthBody : s.healthPreview}</span>
+            </span>
+            <ChevronRight className={`w-5 h-5 text-purple-600 ${isRtl ? 'rotate-180' : ''}`} />
+          </button>
+        )}
+
         {/* Not signed in */}
         {!loading && !userId && (
           <div className="bg-white rounded-2xl p-6 text-center border border-gray-100">
@@ -470,4 +524,4 @@ export default function QuizPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__QUIZPAGE_FIX165B__COMPLETE
+// BAMBEH_END_TOKEN__QUIZPAGE_FIX725__COMPLETE

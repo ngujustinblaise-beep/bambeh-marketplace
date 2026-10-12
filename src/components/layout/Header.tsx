@@ -362,6 +362,7 @@ export default function Header() {
     { to: '/farm-fresh',  words: ['farm', 'food', 'tomato', 'vegetable', 'ferme', 'l\u00E9gume', 'chop', '\u0645\u0632\u0631\u0639\u0629', '\u0637\u0639\u0627\u0645', 'ndema', '\u00F1amdu', 'remuru'] },
     { to: '/food-gas/gas',  words: ['gas', 'cooking gas', 'gaz', 'gas bottle', 'bouteille de gaz', 'gaz domestique', 'gaas', 'tradex', 'camgas', 'camgaz', 'glocal', 'sctm', '\u063A\u0627\u0632'] }, // FIX704
     { to: '/food-gas/food', words: ['restaurant', 'restaurants', 'resto', 'chop house', 'soya', 'suya', 'grill', 'barbecue', 'bbq', 'roast fish', 'roasted fish', 'grilled fish', 'fish', 'poisson', 'poisson braise', 'braise', 'liingu', 'achu', 'eru', 'ndole', 'okok', 'koki', 'ekwang', 'puff puff', 'poulet dg', 'poulet braise', '\u0645\u0637\u0639\u0645', '\u0634\u0648\u0627\u0621', '\u0633\u0645\u0643'] }, // FIX704
+    { to: '/womens-health', words: ["women's health", 'womens health', 'women health', 'woman health', 'maternity', 'maternite', 'pregnancy', 'pregnant', 'grossesse', 'enceinte', 'midwife', 'sage femme', 'antenatal', 'prenatal', 'cpn', 'gynaecologist', 'gynecologist', 'gynecologue', 'gyneco', 'family planning', 'planning familial', 'screening', 'depistage', 'octobre rose', 'mammogram', 'sante des femmes', 'cellal rewbe', 'contraception', 'health quiz', 'quiz sante', '\u0635\u062D\u0629 \u0627\u0644\u0645\u0631\u0623\u0629', '\u062D\u0645\u0644', '\u0648\u0644\u0627\u062F\u0629'] }, // FIX727
     { to: '/exchange',    words: ['exchanges', 'echanges', 'swaps', 'exchange', 'swap', 'trade', '\u00E9change', 'troc', '\u0645\u0642\u0627\u064A\u0636\u0629', 'waylugol', 'waylu'] },
     { to: '/community',   words: ['community', 'group', 'communaut\u00E9', 'groupe', '\u0645\u062C\u062A\u0645\u0639', 'renndo', 'goomu'] },
     { to: '/request-delivery', words: ['send', 'parcel', 'package', 'colis', 'envoyer', 'delivery'] },
@@ -610,7 +611,7 @@ export default function Header() {
 
         {/* -- LEVEL 3 - Desktop utility bar ------------------------------------------------------- */}
         <div className="hidden md:flex items-center justify-between h-10 px-4 text-sm bg-teal-700/30">
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-4 overflow-x-auto whitespace-nowrap [scrollbar-width:none]">{/* FIX727 - the bar stays on one line */}
             {/* FIX630 - inside the Play app the cut sections are not offered */}
             {[
               { to: '/community',        label: '\uD83D\uDC65 ' + t('nav.community') },
@@ -621,18 +622,18 @@ export default function Header() {
               { to: '/become-courier',   label: NAV_ICON.deliver + ' ' + navL.deliver },
               { to: '/agent',            label: NAV_ICON.agent + ' ' + navL.agent },
             ].filter((item) => storeAllows(item.to)).map((item) => (
-              <Link key={item.to} to={item.to} className="hover:text-teal-200 transition-colors">
+              <Link key={item.to} to={item.to} className="flex-shrink-0 whitespace-nowrap hover:text-teal-200 transition-colors">
                 {item.label}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-3 relative">
+          <div className="flex flex-shrink-0 items-center gap-3 relative">
             {/* Language picker - DESKTOP */}
             <div className="relative">
               <button
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                className="flex items-center gap-2 hover:bg-teal-700 px-3 py-1 rounded-lg transition-colors"
+                className="flex items-center gap-2 whitespace-nowrap hover:bg-teal-700 px-3 py-1 rounded-lg transition-colors"
                 aria-label={H('langAria')}
               >
                 <Globe className="w-4 h-4" />

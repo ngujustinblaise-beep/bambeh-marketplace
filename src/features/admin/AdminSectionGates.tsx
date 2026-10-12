@@ -68,7 +68,7 @@ const GROUPS: Array<{ title: string; note: string; keys: string[] }> = [
     keys: ["marketplace", "farm_fresh", "food_gas", "rentals", "vehicles", "services", "exchange", "jobs"] },
   { title: "Featured apps", note: "The whole tool - or, for bulk buying, opening one group deal.",
     keys: ["ai", "group_buying", "flash_deals", "community", "compare", "quiz", "coins", "corporate"] },
-  { title: "Free public services", note: "One switch for all five pages.", keys: ["free_services"] },
+  { title: "Free public services", note: "No switch any more (FIX727, Big 11 Oct 2026): pharmacies, hospitals, water & lights, fuel at night, safety alerts and women's health are free for everyone with a Bambeh account - never a subscription.", keys: [] },
 ];
 
 type ChatChoice = { key: string; label: string; buyers: boolean; sellers: boolean; note: string; recommended?: boolean };

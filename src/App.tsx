@@ -87,6 +87,7 @@ import {
 } from "react-router-dom";
 import AuthGate from "@/components/security/AuthGate";
 import SectionGate from "@/components/security/SectionGate"; // FIX673
+import FreeServiceGate from "@/components/security/FreeServiceGate"; // FIX718 - the free section needs an account, never a subscription
 import { NavigationService } from "@/utils/auth/safeRedirect";
 import { logger, logDevBanner } from "@/utils/logger";
 import { Capacitor } from "@capacitor/core";
@@ -386,6 +387,11 @@ const AgentCapture        = lazy(() => import("@/features/agents/AgentCapture"))
 const FoodGasPage   = lazy(() => import("@/features/foodgas/FoodGasPage"));   // FIX690
 const FoodGasDetail = lazy(() => import("@/features/foodgas/FoodGasDetail")); // FIX691
 const FoodGasManage = lazy(() => import("@/features/foodgas/FoodGasManage")); // FIX692
+const WomensHealthPage      = lazy(() => import("@/features/womenshealth/WomensHealthPage"));      // FIX720
+const WomensHealthDetail    = lazy(() => import("@/features/womenshealth/WomensHealthDetail"));    // FIX721
+const WomensHealthPregnancy = lazy(() => import("@/features/womenshealth/WomensHealthPregnancy")); // FIX722
+const WomensHealthQuiz      = lazy(() => import("@/features/womenshealth/WomensHealthQuiz"));      // FIX723
+const WomensHealthManage    = lazy(() => import("@/features/womenshealth/WomensHealthManage"));    // FIX711
 const AccountGate         = lazy(() => import("@/components/auth/AccountGate")); // FIX613
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
@@ -816,14 +822,25 @@ export default function App() {
                         {/* FIX480 - deliberately OUTSIDE AuthGate. Someone looking for
                             medicine at 2am must never meet a sign-in wall. The database
                             functions are granted to anon for exactly this reason. */}
-                        <Route path="/pharmacies" element={<MainLayout><SectionGate section="free_services"><PharmaciesOnCall /></SectionGate></MainLayout>} />
+                        <Route path="/pharmacies" element={<MainLayout><FreeServiceGate><PharmaciesOnCall /></FreeServiceGate></MainLayout>} />
                         <Route path="/food-gas" element={<MainLayout><FoodGasPage /></MainLayout>} />
                         <Route path="/food-gas/gas" element={<MainLayout><FoodGasPage /></MainLayout>} />
                         <Route path="/food-gas/food" element={<MainLayout><FoodGasPage /></MainLayout>} />
-                        <Route path="/hospitals" element={<MainLayout><SectionGate section="free_services"><HospitalsOnDuty /></SectionGate></MainLayout>} />
-                        <Route path="/water-lights" element={<MainLayout><SectionGate section="free_services"><WaterLights /></SectionGate></MainLayout>} />{/* FIX500 - outside AuthGate on purpose */}
-                        <Route path="/fuel" element={<MainLayout><SectionGate section="free_services"><FuelAtNight /></SectionGate></MainLayout>} />{/* FIX506 - outside AuthGate on purpose */}
-                        <Route path="/safety" element={<MainLayout><SectionGate section="free_services"><SafetyAlerts /></SectionGate></MainLayout>} />{/* FIX507 - outside AuthGate on purpose */}
+                        <Route path="/womens-health" element={<MainLayout><WomensHealthPage /></MainLayout>} />
+                        <Route path="/womens-health/screening" element={<MainLayout><WomensHealthPage /></MainLayout>} />
+                        <Route path="/womens-health/pregnancy" element={<MainLayout><WomensHealthPregnancy /></MainLayout>} />
+                        <Route path="/womens-health/quiz" element={<MainLayout><WomensHealthQuiz /></MainLayout>} />
+                        <Route path="/womens-health/place/:id" element={<MainLayout><WomensHealthDetail /></MainLayout>} />
+                        <Route path="/womens-health/day/:id" element={<MainLayout><WomensHealthDetail /></MainLayout>} />
+                        <Route path="/womens-health/mine" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/womens-health/new-place" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/womens-health/edit-place/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/womens-health/new-day" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/womens-health/edit-day/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/hospitals" element={<MainLayout><FreeServiceGate><HospitalsOnDuty /></FreeServiceGate></MainLayout>} />
+                        <Route path="/water-lights" element={<MainLayout><FreeServiceGate><WaterLights /></FreeServiceGate></MainLayout>} />{/* FIX500 - free, a Bambeh account is enough (FIX727) */}
+                        <Route path="/fuel" element={<MainLayout><FreeServiceGate><FuelAtNight /></FreeServiceGate></MainLayout>} />{/* FIX506 - free, a Bambeh account is enough (FIX727) */}
+                        <Route path="/safety" element={<MainLayout><FreeServiceGate><SafetyAlerts /></FreeServiceGate></MainLayout>} />{/* FIX507 - free, a Bambeh account is enough (FIX727) */}
                         <Route path="/list-my-service" element={<MainLayout><AuthGate require="user"><ListMyService /></AuthGate></MainLayout>} />{/* FIX484 - also outside AuthGate */}
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
                         <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
