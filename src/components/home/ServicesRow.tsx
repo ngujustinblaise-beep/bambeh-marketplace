@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX728_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX751_CLEAN
 /**
  * src/components/home/ServicesRow.tsx \u2014 Bambeh Marketplace
  *
@@ -52,13 +52,21 @@
  *   The row now finds its words whichever way the app spells the language
  *   (pidgin or pcm, ff or ful) - before, a 'pcm' phone got English here.
  *
+ * FIX751 - TAXI CHECK, UNDER THE SAFETY BUTTON (14 Oct 2026).
+ *   A yellow bar opens /taxi-check (FIX748): scan a Yaounde taxi's QR code
+ *   (Taxi-Yaounde), check the driver, and send the taxi's details to the people you
+ *   trust before you get in. No account, nothing stored on Bambeh. While a
+ *   ride is still open on this phone (FIX748 keeps it 24 hours, on the phone
+ *   only), the bar says "tap here when you arrive" so "I arrived safely" is
+ *   one tap from Home.
+ *
  * \u00a9 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';   // FIX728: no global React needed
 import { Link } from 'react-router-dom';
-import { Cross, Stethoscope, Droplets, Fuel, ShieldAlert, HeartPulse, Siren, ChevronRight } from 'lucide-react'; // FIX728: HeartPulse, Siren, ChevronRight
+import { Car, Cross, Stethoscope, Droplets, Fuel, ShieldAlert, HeartPulse, Siren, ChevronRight } from 'lucide-react'; // FIX728: HeartPulse, Siren, ChevronRight; FIX751: Car
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';   // FIX502
 
@@ -92,6 +100,9 @@ const STR: Record<string, Record<string, string>> = {
     womens: "Women's health", // FIX728
     safetyBar: 'Safety button',
     safetyBarSub: 'In danger? Alert the people you trust in one tap',
+    taxiBar: 'Taxi check', // FIX751
+    taxiBarSub: 'Scan the taxi\'s code before you get in', // FIX751
+    taxiOpen: 'On a taxi ride? Tap here when you arrive safely', // FIX751
   },
   fr: {
     heading: 'Aide gratuite, \u00e0 toute heure',
@@ -105,6 +116,9 @@ const STR: Record<string, Record<string, string>> = {
     womens: 'Sant\u00e9 des femmes', // FIX728
     safetyBar: 'Bouton de s\u00e9curit\u00e9',
     safetyBarSub: 'En danger ? Alertez vos proches de confiance en un geste',
+    taxiBar: 'V\u00e9rifier mon taxi', // FIX751
+    taxiBarSub: 'Scannez le code du taxi avant de monter', // FIX751
+    taxiOpen: 'En taxi ? Touchez ici quand vous \u00eates bien arriv\u00e9(e)', // FIX751
   },
   pidgin: {
     heading: 'Free help, any time',
@@ -118,6 +132,9 @@ const STR: Record<string, Record<string, string>> = {
     womens: 'Woman health', // FIX728
     safetyBar: 'Safety button',
     safetyBarSub: 'Danger dey? Alert people weh you trust with one touch',
+    taxiBar: 'Check your taxi', // FIX751
+    taxiBarSub: 'Scan the taxi code before you enter', // FIX751
+    taxiOpen: 'You dey for taxi? Touch here when you reach well', // FIX751
   },
   ar: {
     heading: '\u0645\u0633\u0627\u0639\u062f\u0629 \u0645\u062c\u0627\u0646\u064a\u0629\u060c \u0641\u064a \u0623\u064a \u0648\u0642\u062a',
@@ -131,6 +148,9 @@ const STR: Record<string, Record<string, string>> = {
     womens: '\u0635\u062d\u0629 \u0627\u0644\u0645\u0631\u0623\u0629', // FIX728
     safetyBar: '\u0632\u0631 \u0627\u0644\u0623\u0645\u0627\u0646',
     safetyBarSub: '\u0641\u064a \u062e\u0637\u0631\u061f \u0646\u0628\u0651\u0647 \u0645\u0646 \u062a\u062b\u0642 \u0628\u0647\u0645 \u0628\u0644\u0645\u0633\u0629 \u0648\u0627\u062d\u062f\u0629',
+    taxiBar: '\u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629', // FIX751
+    taxiBarSub: '\u0627\u0645\u0633\u062d \u0631\u0645\u0632 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629 \u0642\u0628\u0644 \u0623\u0646 \u062a\u0631\u0643\u0628', // FIX751
+    taxiOpen: '\u0641\u064a \u0633\u064a\u0627\u0631\u0629 \u0623\u062c\u0631\u0629\u061f \u0627\u0636\u063a\u0637 \u0647\u0646\u0627 \u0639\u0646\u062f\u0645\u0627 \u062a\u0635\u0644 \u0628\u0633\u0644\u0627\u0645', // FIX751
   },
   ff: {
     heading: 'Ballal meere, sahaa kala',
@@ -144,6 +164,9 @@ const STR: Record<string, Record<string, string>> = {
     womens: 'Cellal rew\u0253e', // FIX728
     safetyBar: 'Buto\u014b kisal',
     safetyBarSub: 'Ca\u0257eele? Anndin yim\u0253e \u0253e hooloto\u0257aa e mee\u0257ol gootol',
+    taxiBar: '\u01b3eew taksi maa', // FIX751
+    taxiBarSub: '\u01b3eewnu kod taksi oo adii naataa', // FIX751
+    taxiOpen: 'A woni e taksi? Mee\u0257 \u0257oo so a yottiima no mo\u01b4\u01b4i', // FIX751
   },
 };
 
@@ -241,6 +264,20 @@ function useSafetySignal() {
   return count;
 }
 
+/** FIX751 - a Taxi check ride still open on this phone (FIX748 keeps it 24 h, on the phone only). */
+const TAXI_TRIP_KEY = 'bambeh_taxi_trip';
+function openTaxiRide(): boolean {
+  try {
+    const raw = window.localStorage.getItem(TAXI_TRIP_KEY);
+    if (!raw) return false;
+    const v = JSON.parse(raw) as { at?: unknown; arrivedAt?: unknown } | null;
+    const at = v && typeof v.at === 'string' ? Date.parse(v.at) : NaN;
+    return !isNaN(at) && Date.now() - at < 24 * 3600 * 1000 && Date.now() - at > -60000 && !(v && v.arrivedAt);
+  } catch {
+    return false;
+  }
+}
+
 export default function ServicesRow() {
   const { count: utilityCount, fresh: utilityFresh } = useUtilitySignal();   // FIX502
   const fuelOpenCount = useFuelSignal();                                    // FIX506
@@ -250,6 +287,7 @@ export default function ServicesRow() {
   const lang = LANG_ALIAS[rawLang] || rawLang;                             // FIX728: pcm / ful spellings too
   const t = (k: string) => tr(lang, k);
   const isRtl = lang === 'ar';
+  const [taxiRide] = useState(openTaxiRide);                               // FIX751
 
   const card =
     'flex flex-col items-center gap-2 rounded-2xl border p-3 text-center transition-all';
@@ -321,7 +359,20 @@ export default function ServicesRow() {
         </span>
         <ChevronRight className={`w-5 h-5 flex-shrink-0 ${isRtl ? 'rotate-180' : ''}`} />
       </Link>
+
+      {/* FIX751 - Taxi check: scan the taxi's QR code, send the taxi to your people; nothing stored on Bambeh */}
+      <Link to="/taxi-check" data-taxi-bar="1" data-taxi-open={taxiRide ? '1' : '0'}
+        className="mt-2 flex items-center gap-3 rounded-2xl bg-yellow-400 px-4 py-3 text-gray-900 shadow hover:bg-yellow-300 active:scale-[0.99] transition-all">
+        <span className="w-10 h-10 flex-shrink-0 rounded-xl bg-white/50 flex items-center justify-center">
+          <Car className="w-5 h-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold leading-tight">{t('taxiBar')}</span>
+          <span className="block text-xs text-gray-800 leading-tight">{taxiRide ? t('taxiOpen') : t('taxiBarSub')}</span>
+        </span>
+        <ChevronRight className={`w-5 h-5 flex-shrink-0 ${isRtl ? 'rotate-180' : ''}`} />
+      </Link>
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX728__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX751__COMPLETE

@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__SAFETY_BUTTON_FIX733_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SAFETY_BUTTON_FIX750_CLEAN
 /**
- * src/features/safety/SafetyButton.tsx - FIX733
+ * src/features/safety/SafetyButton.tsx - FIX750 (was FIX733)
  *   route: /safety-button   (no account needed; on the Home free row, on every women's health page
  *                            and on the free account card)
  *
@@ -20,11 +20,17 @@
  * Nothing here is stored on Bambeh's servers, so no health or violence data leaves the phone
  * (Law 2024/017).
  *
+ * FIX750 (14 Oct 2026): a yellow TAXI CHECK card under the call buttons opens /taxi-check (FIX748:
+ * scan a Yaounde taxi's QR code and send the taxi's details to the same trusted people).
+ * savePeople is exported so Taxi check adds people to this same list - one list, kept on the phone.
+ * In Arabic the phone example is now digits only: in the left-to-right number field the Arabic word
+ * for "e.g." showed back to front.
+ *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Loader2, MapPin, MessageCircle, Phone, ShieldAlert, Siren, Trash2, UserPlus, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Car, ChevronLeft, ChevronRight, Loader2, MapPin, MessageCircle, Phone, ShieldAlert, Siren, Trash2, UserPlus, X } from 'lucide-react';
 import { useLang } from '@/hooks/useAppLang';
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
@@ -41,7 +47,7 @@ type Key = 'title' | 'intro' | 'send' | 'sendSub' | 'needPeople' | 'locating' | 
   | 'whatsapp' | 'callTitle' | 'police' | 'gendarmerie' | 'samu' | 'fire' | 'gbv' | 'child' | 'peopleTitle' | 'peopleHelp'
   | 'name' | 'namePh' | 'phone' | 'phonePh' | 'add' | 'remove' | 'badPhone' | 'badName' | 'full' | 'already' | 'wipe'
   | 'wipeConfirm' | 'wiped' | 'planTitle' | 'plan1' | 'plan2' | 'plan3' | 'plan4' | 'plan5' | 'privacy' | 'back'
-  | 'quickExit' | 'quickExitHelp' | 'alertLoc' | 'alertNoLoc';
+  | 'quickExit' | 'quickExitHelp' | 'alertLoc' | 'alertNoLoc' | 'taxiTitle' | 'taxiSub';
 
 const TEXT: Record<Lang, Record<Key, string>> = {
   en: {
@@ -90,6 +96,8 @@ const TEXT: Record<Lang, Record<Key, string>> = {
     quickExitHelp: 'Leave this page at once',
     alertLoc: 'HELP. I am in danger and I need you. My location: {link} (at {time}). Please call me, or call the police on 117 or the gendarmerie on 113.',
     alertNoLoc: 'HELP. I am in danger and I need you. I could not send my location. Please call me, or call the police on 117 or the gendarmerie on 113.',
+    taxiTitle: 'Taxi check',
+    taxiSub: 'Before you get into a taxi: scan its code and send its details to the people you trust.',
   },
   fr: {
     title: 'Bouton de s\u00e9curit\u00e9',
@@ -137,6 +145,8 @@ const TEXT: Record<Lang, Record<Key, string>> = {
     quickExitHelp: 'Quitter cette page tout de suite',
     alertLoc: 'AU SECOURS. Je suis en danger et j\u2019ai besoin de toi. Ma position : {link} (\u00e0 {time}). Appelle-moi, ou appelle la police au 117 ou la gendarmerie au 113.',
     alertNoLoc: 'AU SECOURS. Je suis en danger et j\u2019ai besoin de toi. Je n\u2019ai pas pu envoyer ma position. Appelle-moi, ou appelle la police au 117 ou la gendarmerie au 113.',
+    taxiTitle: 'V\u00e9rifier mon taxi',
+    taxiSub: 'Avant de monter dans un taxi : scannez son code et envoyez ses d\u00e9tails \u00e0 vos personnes de confiance.',
   },
   pidgin: {
     title: 'Safety button',
@@ -184,6 +194,8 @@ const TEXT: Record<Lang, Record<Key, string>> = {
     quickExitHelp: 'Commot for this page quick quick',
     alertLoc: 'HELP. I dey for danger and I need you. My location: {link} (for {time}). Abeg call me, or call police for 117 or gendarmerie for 113.',
     alertNoLoc: 'HELP. I dey for danger and I need you. I no fit send my location. Abeg call me, or call police for 117 or gendarmerie for 113.',
+    taxiTitle: 'Check your taxi',
+    taxiSub: 'Before you enter taxi: scan the code and send the details to the people weh you trust.',
   },
   ar: {
     title: '\u0632\u0631 \u0627\u0644\u0623\u0645\u0627\u0646',
@@ -209,7 +221,7 @@ const TEXT: Record<Lang, Record<Key, string>> = {
     name: '\u0627\u0644\u0627\u0633\u0645',
     namePh: '\u0645\u062b\u0627\u0644: \u0623\u062e\u062a\u064a \u063a\u0631\u064a\u0633',
     phone: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641',
-    phonePh: '\u0645\u062b\u0627\u0644: 677 12 34 56',
+    phonePh: '677 12 34 56', // FIX750: digits only - the field is left-to-right
     add: '\u0625\u0636\u0627\u0641\u0629',
     remove: '\u0625\u0632\u0627\u0644\u0629',
     badPhone: '\u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641: 9 \u0623\u0631\u0642\u0627\u0645 \u0644\u0644\u0643\u0627\u0645\u064a\u0631\u0648\u0646 (\u064a\u0628\u062f\u0623 \u0628\u0640 6 \u0623\u0648 2)\u060c \u0623\u0648 + \u0648\u0631\u0645\u0632 \u0627\u0644\u0628\u0644\u062f.',
@@ -231,6 +243,8 @@ const TEXT: Record<Lang, Record<Key, string>> = {
     quickExitHelp: '\u0645\u063a\u0627\u062f\u0631\u0629 \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629 \u0641\u0648\u0631\u064b\u0627',
     alertLoc: '\u0627\u0644\u0646\u062c\u062f\u0629. \u0623\u0646\u0627 \u0641\u064a \u062e\u0637\u0631 \u0648\u0623\u062d\u062a\u0627\u062c\u0643. \u0645\u0648\u0642\u0639\u064a: {link} (\u0627\u0644\u0633\u0627\u0639\u0629 {time}). \u0627\u062a\u0635\u0644 \u0628\u064a\u060c \u0623\u0648 \u0627\u062a\u0635\u0644 \u0628\u0627\u0644\u0634\u0631\u0637\u0629 \u0639\u0644\u0649 117 \u0623\u0648 \u0628\u0627\u0644\u062f\u0631\u0643 \u0639\u0644\u0649 113.',
     alertNoLoc: '\u0627\u0644\u0646\u062c\u062f\u0629. \u0623\u0646\u0627 \u0641\u064a \u062e\u0637\u0631 \u0648\u0623\u062d\u062a\u0627\u062c\u0643. \u0644\u0645 \u0623\u0633\u062a\u0637\u0639 \u0625\u0631\u0633\u0627\u0644 \u0645\u0648\u0642\u0639\u064a. \u0627\u062a\u0635\u0644 \u0628\u064a\u060c \u0623\u0648 \u0627\u062a\u0635\u0644 \u0628\u0627\u0644\u0634\u0631\u0637\u0629 \u0639\u0644\u0649 117 \u0623\u0648 \u0628\u0627\u0644\u062f\u0631\u0643 \u0639\u0644\u0649 113.',
+    taxiTitle: '\u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629',
+    taxiSub: '\u0642\u0628\u0644 \u0623\u0646 \u062a\u0631\u0643\u0628 \u0633\u064a\u0627\u0631\u0629 \u0623\u062c\u0631\u0629: \u0627\u0645\u0633\u062d \u0631\u0645\u0632\u0647\u0627 \u0648\u0623\u0631\u0633\u0644 \u0628\u064a\u0627\u0646\u0627\u062a\u0647\u0627 \u0625\u0644\u0649 \u0645\u0646 \u062a\u062b\u0642 \u0628\u0647\u0645.',
   },
   ff: {
     title: 'Buto\u014b kisal',
@@ -278,6 +292,8 @@ const TEXT: Record<Lang, Record<Key, string>> = {
     quickExitHelp: 'Yaltu e ngol hello jooni jooni',
     alertLoc: 'BALLAL. Mi ina e ca\u0257eele, mi sokli ma. Nokku am: {link} (waktu {time}). Noddu kam, walla noddu polis e 117 walla jandarmeri e 113.',
     alertNoLoc: 'BALLAL. Mi ina e ca\u0257eele, mi sokli ma. Mi waawaa neldude nokku am. Noddu kam, walla noddu polis e 117 walla jandarmeri e 113.',
+    taxiTitle: '\u01b3eew taksi maa',
+    taxiSub: 'Adii naataa taksi: \u01b4eewnu kod mum, neldu humpito mum to yim\u0253e \u0253e hooloto\u0257aa.',
   },
 };
 
@@ -311,7 +327,8 @@ export function loadPeople(): TrustedPerson[] {
   }
 }
 
-function savePeople(list: TrustedPerson[]): boolean {
+/** FIX750 - exported: Taxi check (FIX748) adds people to this same list. */
+export function savePeople(list: TrustedPerson[]): boolean {
   try {
     if (list.length === 0) window.localStorage.removeItem(PEOPLE_KEY);
     else window.localStorage.setItem(PEOPLE_KEY, JSON.stringify(list));
@@ -461,7 +478,7 @@ export default function SafetyButton() {
   };
 
   return (
-    <div dir={dir} data-fix="FIX733" className="mx-auto max-w-2xl space-y-4 px-4 py-4 pb-28">
+    <div dir={dir} data-fix="FIX750" className="mx-auto max-w-2xl space-y-4 px-4 py-4 pb-28">
       <button type="button" onClick={goBack} className="inline-flex items-center gap-1 rounded-xl px-2 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100">
         <ChevronLeft className="h-4 w-4 rtl:rotate-180" />{t.back}
       </button>
@@ -526,6 +543,16 @@ export default function SafetyButton() {
           ))}
         </div>
       </section>
+
+      <Link to="/taxi-check" data-taxi-link="1"
+            className="flex w-full items-center gap-3 rounded-2xl bg-yellow-400 px-4 py-3 text-start text-gray-900 shadow hover:bg-yellow-300">
+        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/50"><Car className="h-5 w-5" aria-hidden="true" /></span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-extrabold leading-tight">{t.taxiTitle}</span>
+          <span className="block text-xs font-semibold leading-snug text-gray-800">{t.taxiSub}</span>
+        </span>
+        <ChevronRight className="h-5 w-5 flex-shrink-0 rtl:rotate-180" aria-hidden="true" />
+      </Link>
 
       <section className="space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm" data-people="1">
         <div>
@@ -596,4 +623,4 @@ export default function SafetyButton() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__SAFETY_BUTTON_FIX733__COMPLETE
+// BAMBEH_END_TOKEN__SAFETY_BUTTON_FIX750__COMPLETE

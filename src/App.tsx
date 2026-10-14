@@ -88,6 +88,7 @@ import {
 import AuthGate from "@/components/security/AuthGate";
 import SectionGate from "@/components/security/SectionGate"; // FIX673
 import FreeServiceGate from "@/components/security/FreeServiceGate"; // FIX718 - the free section needs an account, never a subscription
+import LinkReturn, { rememberLink } from "@/components/auth/LinkReturn"; // FIX752 - a shared link opens what it points to
 import { NavigationService } from "@/utils/auth/safeRedirect";
 import { logger, logDevBanner } from "@/utils/logger";
 import { Capacitor } from "@capacitor/core";
@@ -394,6 +395,7 @@ const WomensHealthQuiz      = lazy(() => import("@/features/womenshealth/WomensH
 const WomensHealthManage    = lazy(() => import("@/features/womenshealth/WomensHealthManage"));    // FIX711
 const CalmToolsPage         = lazy(() => import("@/features/womenshealth/CalmToolsPage"));         // FIX742
 const SafetyButton          = lazy(() => import("@/features/safety/SafetyButton"));                  // FIX733
+const TaxiCheck             = lazy(() => import("@/features/safety/TaxiCheck"));                     // FIX748
 const AccountGate         = lazy(() => import("@/components/auth/AccountGate")); // FIX613
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
 const SplashScreenPage    = lazy(() => import("@/pages/SplashScreen"));
@@ -567,11 +569,14 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/donate",
     "/farm-fresh",
     "/safety-button", // FIX733 - the Safety button opens before the terms screen
+    "/taxi-check", // FIX748 - Taxi check opens straight from a shared link
+    "/calm", // FIX742 - Calm tools ("When to get help") open straight from a shared link
   ];
 
   const isPublic = publicPrefixes.some((p) => location.pathname.startsWith(p));
 
   if (!isPublic) {
+    rememberLink(location.pathname + location.search); // FIX752 - a page turned away here opens after the first screens
     const hasLang    = localStorage.getItem("Bambeh_language");
     const hasTerms   = localStorage.getItem("Bambeh_terms_accepted");
     // FIX: Read from localStorage (not sessionStorage) to match WelcomeWrapper.
@@ -774,6 +779,8 @@ export default function App() {
                       <AgentCapture />
                       {/* FIX613 - password change, paused account, security questions. Renders nothing for almost everyone. */}
                       <AccountGate />
+                      {/* FIX752 - renders nothing: after the first screens, a shared link opens the page it points to */}
+                      <LinkReturn />
                       {/* FIX620 - inside the Android app only: keeps the Play build to the six sections. */}
                       <StoreRouteGuard />
                       <ActivityPing />{/* FIX665 - counts app opens for Command Center > App usage */}
@@ -842,6 +849,7 @@ export default function App() {
                         <Route path="/womens-health/edit-day/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
                         <Route path="/calm" element={<MainLayout><CalmToolsPage /></MainLayout>} />{/* FIX742 - Calm tools: "When to get help" open to all, the tools with the guest day or a free account */}
                         <Route path="/safety-button" element={<MainLayout><SafetyButton /></MainLayout>} />{/* FIX733 - no account, no sign-in: in danger, nobody should have to log in */}
+                        <Route path="/taxi-check" element={<MainLayout><TaxiCheck /></MainLayout>} />{/* FIX748 - Taxi check: no account, no sign-in, nothing stored on Bambeh */}
                         <Route path="/hospitals" element={<MainLayout><FreeServiceGate><HospitalsOnDuty /></FreeServiceGate></MainLayout>} />
                         <Route path="/water-lights" element={<MainLayout><FreeServiceGate><WaterLights /></FreeServiceGate></MainLayout>} />{/* FIX500 - free, a Bambeh account is enough (FIX727) */}
                         <Route path="/fuel" element={<MainLayout><FreeServiceGate><FuelAtNight /></FreeServiceGate></MainLayout>} />{/* FIX506 - free, a Bambeh account is enough (FIX727) */}
