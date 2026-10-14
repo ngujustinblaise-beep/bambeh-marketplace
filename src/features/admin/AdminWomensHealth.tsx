@@ -1,6 +1,10 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_WOMENS_HEALTH_FIX724_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_WOMENS_HEALTH_FIX744_CLEAN
 /**
- * AdminWomensHealth.tsx - FIX724 (replaces FIX712, which was never deployed) - Command Center > Women's health
+ * AdminWomensHealth.tsx - FIX744 (replaces FIX724) - Command Center > Women's health
+ *
+ * FIX744 (Big, 14 Oct 2026): the CALM TOOLS panel (AdminCalmTools, FIX743) under the quiz panel - add, edit,
+ * publish (with the psychologist's name), hide, move, delete and bring back the Calm tools, and the switch for
+ * the whole Calm tools page. It loads on its own, so the places and screening days below are unchanged.
  *
  * Every place (maternity, health centre, clinic, midwife, listening centre) and every free
  * screening day is checked by Bambeh staff before women can see it (FIX715):
@@ -28,6 +32,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Baby, Check, EyeOff, GraduationCap, Loader2, Phone, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import AdminCalmTools from './AdminCalmTools';
 import { adminGuide, adminQueue, adminQuiz, adminReview } from '@/features/womenshealth/whApi';
 import type { WhQueue, WhQueueView, WhStaffDay, WhStaffPlace } from '@/features/womenshealth/whApi';
 import {
@@ -399,7 +404,7 @@ export default function AdminWomensHealth({ embedded = false }: { embedded?: boo
 
   const counts = q ? q.counts[kind] : null;
   return (
-    <div data-fix="FIX724" className={embedded ? 'space-y-4' : 'mx-auto max-w-5xl space-y-4 p-4'}>
+    <div data-fix="FIX744" className={embedded ? 'space-y-4' : 'mx-auto max-w-5xl space-y-4 p-4'}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold text-gray-900">Women&apos;s health</h1>
         <button type="button" onClick={() => void load()} className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700">
@@ -408,6 +413,7 @@ export default function AdminWomensHealth({ embedded = false }: { embedded?: boo
       </div>
       {q && <GuidePanel q={q} onDone={() => void load()} />}
       {q && <QuizPanel q={q} onDone={() => void load()} />}
+      <AdminCalmTools />
       <div className="flex flex-wrap gap-2">
         {(['place', 'day'] as Kind[]).map((k) => (
           <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
@@ -440,4 +446,4 @@ export default function AdminWomensHealth({ embedded = false }: { embedded?: boo
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADMIN_WOMENS_HEALTH_FIX724__COMPLETE
+// BAMBEH_END_TOKEN__ADMIN_WOMENS_HEALTH_FIX744__COMPLETE

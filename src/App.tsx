@@ -392,6 +392,7 @@ const WomensHealthDetail    = lazy(() => import("@/features/womenshealth/WomensH
 const WomensHealthPregnancy = lazy(() => import("@/features/womenshealth/WomensHealthPregnancy")); // FIX722
 const WomensHealthQuiz      = lazy(() => import("@/features/womenshealth/WomensHealthQuiz"));      // FIX723
 const WomensHealthManage    = lazy(() => import("@/features/womenshealth/WomensHealthManage"));    // FIX711
+const CalmToolsPage         = lazy(() => import("@/features/womenshealth/CalmToolsPage"));         // FIX742
 const SafetyButton          = lazy(() => import("@/features/safety/SafetyButton"));                  // FIX733
 const AccountGate         = lazy(() => import("@/components/auth/AccountGate")); // FIX613
 const AdminQuizManager    = lazy(() => import("@/pages/AdminQuizManager")); // FIX166
@@ -839,6 +840,7 @@ export default function App() {
                         <Route path="/womens-health/edit-place/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
                         <Route path="/womens-health/new-day" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
                         <Route path="/womens-health/edit-day/:id" element={<MainLayout><AuthGate require="user"><WomensHealthManage /></AuthGate></MainLayout>} />
+                        <Route path="/calm" element={<MainLayout><CalmToolsPage /></MainLayout>} />{/* FIX742 - Calm tools: "When to get help" open to all, the tools with the guest day or a free account */}
                         <Route path="/safety-button" element={<MainLayout><SafetyButton /></MainLayout>} />{/* FIX733 - no account, no sign-in: in danger, nobody should have to log in */}
                         <Route path="/hospitals" element={<MainLayout><FreeServiceGate><HospitalsOnDuty /></FreeServiceGate></MainLayout>} />
                         <Route path="/water-lights" element={<MainLayout><FreeServiceGate><WaterLights /></FreeServiceGate></MainLayout>} />{/* FIX500 - free, a Bambeh account is enough (FIX727) */}

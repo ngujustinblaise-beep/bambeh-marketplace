@@ -1,8 +1,13 @@
-// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_PAGE_FIX731_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_PAGE_FIX745_CLEAN
 /**
- * src/features/womenshealth/WomensHealthPage.tsx - FIX731 (replaces FIX720)
+ * src/features/womenshealth/WomensHealthPage.tsx - FIX745 (replaces FIX731)
  *   routes: /womens-health            WHERE TO GO - maternities, antenatal care, screening, family planning
  *           /womens-health/screening  FREE SCREENING DAYS - dated campaigns (Octobre Rose...), "remind me"
+ *
+ * FIX745 (Big, 14 Oct 2026): the CALM TOOLS card (/calm, FIX742) beside the pregnancy guide and the quiz
+ *   cards - shown once an admin opened the Calm tools page (FIX737: "When to get help" and at least one
+ *   tool published after the psychologist's check). Staff see a preview card before that. Without data,
+ *   the card shows if the Calm tools were saved on this phone the last time.
  *
  * FIX731 (Big, 12 Oct 2026): "first time users will read but will be prompted to create accounts".
  *   - A first-time phone reads the places and the screening days for a day as a guest, with the
@@ -36,7 +41,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Baby, Bell, BellOff, CalendarDays, ChevronRight, Clock, GraduationCap, Heart, Loader2, MapPin, Phone, Plus, RefreshCw, Search, ShieldCheck,
+  Baby, Bell, BellOff, CalendarDays, ChevronRight, Clock, GraduationCap, Heart, Leaf, Loader2, MapPin, Phone, Plus, RefreshCw, Search, ShieldCheck,
 } from 'lucide-react';
 import { FreeAccountCard, FreeAccountChecking, GuestBanner, SafetyLinkCard, useFreeAccount } from '@/components/security/FreeServiceGate';
 import {
@@ -47,6 +52,8 @@ import type { WhLang, WhRegion, WhService, WhT, WhTopic } from './whText';
 import { getGuide, listDays, listPlaces, remind } from './whApi';
 import type { WhDay, WhGuide, WhPlace, WhTownCount } from './whApi';
 import { OfflineNote, QuickExit, loadList, loadSwitches, saveList, saveSwitches } from './whUi';
+import { calmState, hasSavedCalm } from './calmApi';
+import { ct } from './calmText';
 
 const WHERE_KEY = 'bambeh_wh_where';
 const PAGE = 30;
@@ -177,15 +184,18 @@ export function DayCard({ d, lang, t, today, busy, onOpen, onRemind }: {
   );
 }
 
-/** The guide and quiz cards - open to everyone once switched on (staff see a preview). */
-function ShortcutCards({ guide, t, onGuide, onQuiz }: { guide: WhGuide | null; t: WhT; onGuide: () => void; onQuiz: () => void }) {
-  if (!guide) return null;
-  const showGuide = guide.on || guide.is_staff;
-  const showQuiz = guide.quiz_on || guide.is_staff;
-  if (!showGuide && !showQuiz) return null;
+/** The guide, quiz and Calm tools cards - open to everyone once switched on (staff see a preview). */
+function ShortcutCards({ guide, calm, lang, t, onGuide, onQuiz, onCalm }: {
+  guide: WhGuide | null; calm: { on: boolean; staff: boolean } | null; lang: WhLang; t: WhT;
+  onGuide: () => void; onQuiz: () => void; onCalm: () => void;
+}) {
+  const showGuide = !!guide && (guide.on || guide.is_staff);
+  const showQuiz = !!guide && (guide.quiz_on || guide.is_staff);
+  const showCalm = !!calm && (calm.on || calm.staff);
+  if (!showGuide && !showQuiz && !showCalm) return null;
   return (
     <div className="grid gap-2 sm:grid-cols-2">
-      {showGuide && (
+      {showGuide && guide && (
         <button type="button" onClick={onGuide} data-guide-card={guide.on ? 'on' : 'preview'}
                 className="flex w-full items-center gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-start hover:bg-rose-100">
           <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white"><Baby className="h-5 w-5" /></span>
@@ -196,7 +206,7 @@ function ShortcutCards({ guide, t, onGuide, onQuiz }: { guide: WhGuide | null; t
           <ChevronRight className="h-5 w-5 text-rose-600 rtl:rotate-180" />
         </button>
       )}
-      {showQuiz && (
+      {showQuiz && guide && (
         <button type="button" onClick={onQuiz} data-quiz-card={guide.quiz_on ? 'on' : 'preview'}
                 className="flex w-full items-center gap-3 rounded-2xl border border-purple-100 bg-purple-50 p-4 text-start hover:bg-purple-100">
           <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-purple-600 text-white"><GraduationCap className="h-5 w-5" /></span>
@@ -205,6 +215,17 @@ function ShortcutCards({ guide, t, onGuide, onQuiz }: { guide: WhGuide | null; t
             <span className="block text-xs text-gray-600">{guide.quiz_on ? t('quizCard') : t('qzPreview')}</span>
           </span>
           <ChevronRight className="h-5 w-5 text-purple-600 rtl:rotate-180" />
+        </button>
+      )}
+      {showCalm && calm && (
+        <button type="button" onClick={onCalm} data-calm-card-wh={calm.on ? 'on' : 'preview'}
+                className="flex w-full items-center gap-3 rounded-2xl border border-teal-100 bg-teal-50 p-4 text-start hover:bg-teal-100">
+          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-teal-600 text-white"><Leaf className="h-5 w-5" /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-extrabold text-gray-900">{ct(lang, 'cardTitle')}</span>
+            <span className="block text-xs text-gray-600">{calm.on ? ct(lang, 'cardSub') : ct(lang, 'cardPreview')}</span>
+          </span>
+          <ChevronRight className="h-5 w-5 text-teal-600 rtl:rotate-180" />
         </button>
       )}
     </div>
@@ -242,6 +263,7 @@ export default function WomensHealthPage() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [offlineEmpty, setOfflineEmpty] = useState(false);
   const [guide, setGuide] = useState<WhGuide | null>(null);
+  const [calm, setCalm] = useState<{ on: boolean; staff: boolean } | null>(null);
   const [busyDay, setBusyDay] = useState<string | null>(null);
   const [toast, setToast] = useState<{ text: string; signIn?: boolean } | null>(null);
   const seq = useRef(0);
@@ -264,6 +286,17 @@ export default function WomensHealthPage() {
           setGuide({ ...s.v, langs: s.v.langs as WhGuide['langs'], quiz_langs: s.v.quiz_langs as WhGuide['quiz_langs'], signed_in: false, is_staff: false });
         }
       }
+    });
+    return () => { live = false; };
+  }, [account]);
+
+  // FIX745: the Calm tools card - is the page open (or is this staff)? Without data: saved on this phone last time
+  useEffect(() => {
+    let live = true;
+    void calmState().then((r) => {
+      if (!live) return;
+      if (r.ok) setCalm({ on: r.on, staff: r.is_staff });
+      else if (r.reason === 'network' && hasSavedCalm()) setCalm({ on: true, staff: false });
     });
     return () => { live = false; };
   }, [account]);
@@ -349,7 +382,7 @@ export default function WomensHealthPage() {
   const reading = canRead && !needAccount;
 
   return (
-    <div dir={dir} data-fix="FIX731" data-account-state={account} className="mx-auto max-w-3xl space-y-4 px-4 py-4 pb-28">
+    <div dir={dir} data-fix="FIX745" data-account-state={account} className="mx-auto max-w-3xl space-y-4 px-4 py-4 pb-28">
       <header className="rounded-3xl bg-gradient-to-br from-rose-600 to-pink-500 p-5 text-white shadow-lg">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white/20"><Heart className="h-6 w-6" /></span>
@@ -379,7 +412,8 @@ export default function WomensHealthPage() {
         </nav>
       )}
 
-      <ShortcutCards guide={guide} t={t} onGuide={() => navigate('/womens-health/pregnancy')} onQuiz={() => navigate('/womens-health/quiz')} />
+      <ShortcutCards guide={guide} calm={calm} lang={lang} t={t} onGuide={() => navigate('/womens-health/pregnancy')}
+                     onQuiz={() => navigate('/womens-health/quiz')} onCalm={() => navigate('/calm')} />
 
       {account === 'checking' ? (
         <FreeAccountChecking />
@@ -521,4 +555,4 @@ export default function WomensHealthPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WOMENS_HEALTH_PAGE_FIX731__COMPLETE
+// BAMBEH_END_TOKEN__WOMENS_HEALTH_PAGE_FIX745__COMPLETE
