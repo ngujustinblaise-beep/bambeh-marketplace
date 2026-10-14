@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__TAXI_CHECK_FIX748_CLEAN
+// BAMBEH_DEPLOY_TOKEN__TAXI_CHECK_FIX760_CLEAN
 /**
- * src/features/safety/TaxiCheck.tsx - FIX748 (new) - route /taxi-check
+ * src/features/safety/TaxiCheck.tsx - FIX760 (was FIX748) - route /taxi-check
  *
  * TAXI CHECK. Big, 14 Oct 2026: "taxis in Yaounde have bar codes for the security of passengers and
  * the state ... can we build a free barcode scanner in the free section where we will advise users to
@@ -27,7 +27,7 @@
  *      safely" (an SMS to the same people), "Something is wrong" (the Safety button), police 117, and
  *      "Forget this trip now".
  * No account needed - a safety tool must work at the taxi door. Signed-out phones see one quiet line
- * offering the free account. Bambeh's servers never receive the code, the numbers, the trip or the place.
+ * offering the free account - FIX760: the 30-second one (/join, FIX756), which comes back here. Bambeh's servers never receive the code, the numbers, the trip or the place.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
@@ -878,7 +878,7 @@ export default function TaxiCheck() {
 
   return (
     <>
-    <div dir={dir} data-fix="FIX748" className="mx-auto max-w-2xl space-y-4 px-4 py-4 pb-28">
+    <div dir={dir} data-fix="FIX760" className="mx-auto max-w-2xl space-y-4 px-4 py-4 pb-28">
       <button type="button" onClick={goBack} className="inline-flex items-center gap-1 rounded-xl px-2 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100">
         <ChevronLeft className="h-4 w-4 rtl:rotate-180" />{t.back}
       </button>
@@ -1135,7 +1135,7 @@ export default function TaxiCheck() {
       <p className="rounded-2xl bg-gray-50 p-4 text-xs text-gray-600" data-privacy="1">{t.privacy}</p>
 
       {!signedIn && (
-        <Link to="/register" state={{ from: location }} data-account-line="1" className="block text-center text-sm font-bold text-teal-700 hover:underline">{t.account}</Link>
+        <Link to="/join" state={{ from: location }} data-account-line="1" className="block text-center text-sm font-bold text-teal-700 hover:underline">{t.account}</Link>
       )}
     </div>
 
@@ -1147,4 +1147,4 @@ export default function TaxiCheck() {
     </>
   );
 }
-// BAMBEH_END_TOKEN__TAXI_CHECK_FIX748__COMPLETE
+// BAMBEH_END_TOKEN__TAXI_CHECK_FIX760__COMPLETE

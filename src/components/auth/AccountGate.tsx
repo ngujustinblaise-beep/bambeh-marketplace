@@ -1,15 +1,23 @@
-// BAMBEH_DEPLOY_TOKEN__ACCOUNT_GATE_FIX613_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ACCOUNT_GATE_FIX757_CLEAN
 /**
- * FIX613 - AccountGate (password change, paused account, security questions)
+ * FIX757 (was FIX613) - AccountGate (password change, paused account, security questions)
  *
  * Mounted ONCE, app-wide, beside <AgentCapture />. Invisible for almost everyone.
  *  - If Bambeh staff marked this account "must change password" (Account recovery,
  *    FIX612), it covers the screen until the owner chooses a new password.
  *  - If the account is paused or frozen, it says so plainly and offers sign-out.
  *  - If the account has fewer than 3 security answers, it asks for them (the five
- *    questions Big chose). Brand-new accounts must answer; older accounts may tap
- *    Later once a day. Answers go straight to bambeh_set_security_answers and are
- *    stored only as hashes - nobody at Bambeh can read them.
+ *    questions Big chose), with Later (asked again the next day). Answers go straight
+ *    to bambeh_set_security_answers and are stored only as hashes - nobody at Bambeh
+ *    can read them.
+ *
+ * FIX757 (14 Oct 2026) - THE QUESTIONS WAIT UNTIL THE SECOND DAY. Big: "the micro signup that
+ *   collects the data gradually, with very least friction". FIX754 (14 Oct): 90 of 103 accounts
+ *   have no answers and only 2 of the 17 newest answered all five, while in 30 days the answers
+ *   were used once (Forgot password). They used to cover the screen, with no Later, for a new
+ *   account's first 30 minutes. Now: nothing during the account's first 24 hours (QUIET_MS); from
+ *   then on the same card, always with Later, once a day until the account has its 3 answers.
+ *   Every account is still asked - just not at the door.
  *
  * The database decides, not this file: the flag can only be cleared once the
  * password hash has really changed (bambeh_password_change_done, FIX610).
@@ -28,7 +36,8 @@ type Phase = "idle" | "must_change" | "paused" | "done" | "security" | "secdone"
 
 const QUESTION_KEYS = ["mother_middle_name", "primary_school", "best_friend", "first_car_colour", "birth_town"] as const;
 const SNOOZE_PREFIX = "bambeh:fix613:secq-later:";
-const NEW_ACCOUNT_MS = 30 * 60 * 1000;
+/** FIX757 - a new account is left in peace for its first day; the questions come from the second. */
+const QUIET_MS = 24 * 60 * 60 * 1000;
 
 const S: Record<LangKey, Record<string, string>> = {
   en: {
@@ -454,9 +463,9 @@ function GateInner() {
       else if (flags.must_change_password === true) setPhase("must_change");
       else if (typeof flags.security_answers === "number" && flags.security_answers < 3) {
         const created = flags.account_created_at ? new Date(flags.account_created_at).getTime() : 0;
-        const isNew = created > 0 && Date.now() - created < NEW_ACCOUNT_MS;
-        setCanLater(!isNew);
-        if (!isNew && snoozedRecently(uidRef.current)) setPhase((p) => (p === "done" || p === "secdone" ? p : "idle"));
+        const quiet = created > 0 && Date.now() - created < QUIET_MS; // FIX757: not on the first day
+        setCanLater(true); // FIX757: always a way past - the questions come back the next day
+        if (quiet || snoozedRecently(uidRef.current)) setPhase((p) => (p === "done" || p === "secdone" ? p : "idle"));
         else setPhase((p) => (p === "done" ? p : "security"));
       } else setPhase((p) => (p === "done" || p === "secdone" ? p : "idle"));
     } catch {
@@ -649,7 +658,7 @@ function GateInner() {
   );
 
   return (
-    <div data-fix="FIX613" translate="no" className="notranslate" role="dialog" aria-modal="true" style={overlayStyle}>
+    <div data-fix="FIX757" translate="no" className="notranslate" role="dialog" aria-modal="true" style={overlayStyle}>
       <div dir={rtl ? "rtl" : "ltr"} lang={lang === "pidgin" ? "pcm" : lang} style={cardStyle}>
         {phase === "secdone" ? (
           <div style={{ textAlign: "center", padding: "12px 0" }}>
@@ -836,4 +845,4 @@ export default function AccountGate() {
 }
 
 export { AccountGate };
-// BAMBEH_END_TOKEN__ACCOUNT_GATE__COMPLETE
+// BAMBEH_END_TOKEN__ACCOUNT_GATE_FIX757__COMPLETE

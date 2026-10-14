@@ -1,12 +1,14 @@
-// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX656_CLEAN
+// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX758_CLEAN
 import React, { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ArrowRight, AlertTriangle, KeyRound } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, ArrowRight, AlertTriangle, KeyRound, UserPlus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
 import { authIdentity } from "@/utils/phoneAuth";
 import { supabase } from "@/lib/supabase"; // FIX656
+import { forgetLink } from "@/components/auth/LinkReturn"; // FIX758
+import { returnTarget } from "@/components/auth/returnTo"; // FIX758
 
 /*
  * FIX629 - a wrong password is no longer a dead end.
@@ -17,6 +19,11 @@ import { supabase } from "@/lib/supabase"; // FIX656
  *    email) already filled in, where Bambeh staff approve a request and the owner
  *    chooses a new password WITHOUT the old one (FIX626 / FIX627).
  *  - "Forgot password?" carries the typed number along too.
+ *
+ * FIX758 (14 Oct 2026) - after signing in she goes BACK to what she was doing (the item, the advert
+ *  form, the free page - returnTo, FIX755), no longer always Home. New here? One big button opens the
+ *  30-second free account (/join, FIX756) and keeps the same way back. A number passed as ?phone=
+ *  (from "This number already has an account") is already typed in.
  */
 const HELP: Record<string, Record<string, string>> = {
   en: {
@@ -76,6 +83,7 @@ const STRINGS = {
     signingIn: "Signing in...",
     noAccount: "Don't have an account?",
     createOne: "Create account",
+    joinFast: "New to Bambeh? Create a free account in 30 seconds",
     forgotPassword: "Forgot password?",
     invalid: "Please enter a valid email and password.",
     failed: "Sign-in failed. Check your details and try again.",
@@ -92,6 +100,7 @@ const STRINGS = {
     signingIn: "Connexion...",
     noAccount: "Pas encore de compte ?",
     createOne: "Cr\u00e9er un compte",
+    joinFast: "Nouveau sur Bambeh ? Cr\u00e9ez un compte gratuit en 30 secondes",
     forgotPassword: "Mot de passe oubli\u00e9 ?",
     invalid: "Veuillez saisir une adresse e-mail et un mot de passe valides.",
     failed: "\u00c9chec de la connexion. V\u00e9rifiez vos identifiants et r\u00e9essayez.",
@@ -108,6 +117,7 @@ const STRINGS = {
     signingIn: "\u062c\u0627\u0631\u064d \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644...",
     noAccount: "\u0644\u064a\u0633 \u0644\u062f\u064a\u0643 \u062d\u0633\u0627\u0628\u061f",
     createOne: "\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628",
+    joinFast: "\u062c\u062f\u064a\u062f \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647\u061f \u0623\u0646\u0634\u0626 \u062d\u0633\u0627\u0628\u064b\u0627 \u0645\u062c\u0627\u0646\u064a\u064b\u0627 \u0641\u064a 30 \u062b\u0627\u0646\u064a\u0629",
     forgotPassword: "\u0647\u0644 \u0646\u0633\u064a\u062a \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061f",
     invalid: "\u064a\u0631\u062c\u0649 \u0625\u062f\u062e\u0627\u0644 \u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0648\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0635\u062d\u064a\u062d\u064a\u0646.",
     failed: "\u0641\u0634\u0644 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644. \u062a\u062d\u0642\u0642 \u0645\u0646 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0648\u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u064b\u0627.",
@@ -124,6 +134,7 @@ const STRINGS = {
     signingIn: "Dey sign in...",
     noAccount: "You no get account?",
     createOne: "Create account",
+    joinFast: "You new for Bambeh? Make free account for 30 seconds",
     forgotPassword: "Forget password?",
     invalid: "Please enter correct email and password.",
     failed: "Sign in no work. Check your details and try again.",
@@ -140,6 +151,7 @@ const STRINGS = {
     signingIn: "Ko se\u014boto...",
     noAccount: "A alaa konte?",
     createOne: "Sos konte",
+    joinFast: "A hes\u0257o e Bambeh? Wa\u0257 konte meere nder sekond 30",
     forgotPassword: "A yejjitii mo\u01b4\u01b4ere?",
     invalid: "Naatnu email e mo\u01b4\u01b4ere mo\u01b4\u01b4ii.",
     failed: "Se\u014baade waawaani. Ndaartu ke\u0253e ma, etto kadi.",
@@ -153,12 +165,24 @@ export default function Login() {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const { login } = useAuth();
+  // FIX758 - where she goes once she is in: back to what she was doing (returnTo, FIX755)
+  const location = useLocation();
+  const [target] = useState(() => returnTarget(location.state, location.search));
+  const joinTo = { pathname: "/join", search: location.search };
   const langKey = language === "pcm" ? "pidgin" : language === "ful" ? "ff" : String(language);
   const t = STRINGS[langKey as keyof typeof STRINGS] ?? STRINGS.en;
   const h = HELP[langKey] || HELP.en;
   const isRtl = langKey === "ar";
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    // FIX758 - "This number already has an account" (QuickJoin) sends the number along: no typing it twice
+    try {
+      const p = new URLSearchParams(location.search).get("phone") || "";
+      return /^\d{8,15}$/.test(p) ? p : "";
+    } catch {
+      return "";
+    }
+  });
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -219,7 +243,8 @@ export default function Login() {
         setHelpOpen(f.help);
         return;
       }
-      navigate("/", { replace: true });
+      forgetLink(); // FIX758
+      navigate(target, { replace: true }); // FIX758 - back to what she was doing
     } catch (err) {
       const f = friendly(err); // FIX629
       setError(f.msg);
@@ -324,20 +349,24 @@ export default function Login() {
             <Link to={helpHref()} className="text-teal-700 hover:underline">
               {t.forgotPassword}
             </Link>
-            <Link to="/register" className="text-teal-700 hover:underline">
+            <Link to={joinTo} state={location.state} data-join-link="top" className="text-teal-700 hover:underline">
               {t.createOne}
             </Link>
           </div>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
-            {t.noAccount}{" "}
-            <Link to="/register" className="font-semibold text-teal-700 hover:underline">
-              {t.createOne}
-            </Link>
-          </p>
+          {/* FIX758 - new here: the 30-second free account (/join, FIX756), with the same way back */}
+          <Link
+            to={joinTo}
+            state={location.state}
+            data-join-link="main"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-teal-600 py-3 text-sm font-bold text-teal-700 hover:bg-teal-50"
+          >
+            <UserPlus className="h-4 w-4" />
+            {t.joinFast}
+          </Link>
         </div>
       </div>
     </main>
   );
 }
-// BAMBEH_END_TOKEN__LOGIN_FIX656__COMPLETE
+// BAMBEH_END_TOKEN__LOGIN_FIX758__COMPLETE

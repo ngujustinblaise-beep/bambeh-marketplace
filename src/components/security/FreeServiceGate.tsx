@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__FREE_SERVICE_GATE_FIX730_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FREE_SERVICE_GATE_FIX759_CLEAN
 /**
- * src/components/security/FreeServiceGate.tsx - FIX730 (replaces FIX718)
+ * src/components/security/FreeServiceGate.tsx - FIX759 (was FIX730, replaces FIX718)
  *
  * THE FREE SECTION NEEDS A BAMBEH ACCOUNT - NEVER A SUBSCRIPTION.
  * Big, 11 Oct 2026: "at least the least they can do is to create an account". Pharmacies on
@@ -29,6 +29,10 @@
  *
  * "No answer yet" means WAIT, never NO (the rule AuthGate learned in FIX320): a spinner while
  * the phone looks for its session, at most 4 seconds.
+ *
+ * FIX759 (14 Oct 2026) - "Create a free account" opens the 30-second account (/join?for=free,
+ * FIX756: name, number, password, one box) instead of the long form, and comes back to the same
+ * free page afterwards (returnTo, FIX755). "Sign in" comes back to it too (FIX758).
  *
  * Numbers (MTN's list of Cameroon emergency numbers; Cameroon Tribune, 5 Jun 2026): police 117,
  * fire brigade 118, ambulance (SAMU) 119, gendarmerie 113, 1511 for gender-based violence
@@ -306,7 +310,7 @@ export function GuestBanner() {
       <p className="font-bold text-teal-900">{t.guestTitle}</p>
       <p className="mt-1 text-sm leading-6 text-teal-900">{t.guestBody}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" data-go="register" onClick={() => navigate('/register', { state: from })}
+        <button type="button" data-go="register" onClick={() => navigate('/join?for=free', { state: from })}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
           <UserPlus className="h-4 w-4" aria-hidden="true" />{t.create}
         </button>
@@ -390,7 +394,7 @@ export function FreeAccountCard({ title, body, note, showBack = false }: {
         <h2 className="text-xl font-bold text-gray-900">{title || t.title}</h2>
         {guestDayOver() ? <p className="mt-2 text-sm font-semibold text-teal-800" data-guest-over="1">{t.guestOver}</p> : null}
         <p className="mt-2 text-sm leading-6 text-gray-600">{body || t.body}</p>
-        <button type="button" data-go="register" onClick={() => navigate('/register', { state: from })}
+        <button type="button" data-go="register" onClick={() => navigate('/join?for=free', { state: from })}
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3 font-semibold text-white hover:bg-teal-700">
           <UserPlus className="h-5 w-5" aria-hidden="true" />{t.create}
         </button>
@@ -433,4 +437,4 @@ export default function FreeServiceGate({ children }: { children: ReactNode }) {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__FREE_SERVICE_GATE_FIX730__COMPLETE
+// BAMBEH_END_TOKEN__FREE_SERVICE_GATE_FIX759__COMPLETE

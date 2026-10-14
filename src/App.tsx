@@ -331,6 +331,7 @@ const AdminCommandCenter  = lazy(() => import("@/features/admin/AdminCommandCent
 // BIOMETRIC SETUP (post-signup passkey enrollment)
 const BiometricSetup  = lazy(() => import("@/pages/auth/BiometricSetup"));
 const LoginForm       = lazy(() => import("@/pages/auth/Login"));
+const QuickJoin       = lazy(() => import("@/pages/auth/QuickJoin")); // FIX756 - the 30-second free account
 const RegisterForm    = lazy(() => import("@/pages/auth/Register"));
 
 // ADMIN PAGES
@@ -571,6 +572,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/safety-button", // FIX733 - the Safety button opens before the terms screen
     "/taxi-check", // FIX748 - Taxi check opens straight from a shared link
     "/calm", // FIX742 - Calm tools ("When to get help") open straight from a shared link
+    "/join", // FIX756 - the 30-second free account opens straight from a link
   ];
 
   const isPublic = publicPrefixes.some((p) => location.pathname.startsWith(p));
@@ -797,6 +799,7 @@ export default function App() {
                         <Route path="/signin" element={<Navigate to="/login" replace />} />
                         <Route path="/sign-in" element={<Navigate to="/login" replace />} />
                         <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
+                        <Route path="/join" element={<AuthLayout><QuickJoin /></AuthLayout>} />{/* FIX756 - the 30-second free account: name, number, password, one box - then back to where she was */}
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}
