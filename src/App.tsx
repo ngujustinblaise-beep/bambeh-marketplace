@@ -2,6 +2,7 @@
 import "@/lib/safe-storage";
 import { AuthProvider } from "@/contexts/AuthContext"; // MUST be first: makes storage writes crash-proof
 import "@/lib/net-interceptor";
+import FirstVisit from "@/components/auth/FirstVisit"; // FIX764 - loaded near the top: a new phone gets its own language before anything is drawn
 /**
  * App.tsx — Bambeh Online Marketplace
  * © 2026 BAMBEH SARL. All rights reserved.
@@ -575,7 +576,12 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/join", // FIX756 - the 30-second free account opens straight from a link
   ];
 
-  const isPublic = publicPrefixes.some((p) => location.pathname.startsWith(p));
+  // FIX764 - first-time visitors browse straight away (Big, 15 Oct 2026): the language is taken from the phone
+  // (FirstVisit.tsx), the Terms and the data consent are accepted with the one box at sign-up (QuickJoin, FIX762),
+  // and the welcome screen is not forced. The three screens stay open at /language, /terms-acceptance and /welcome.
+  // To force them on everyone again: true.
+  const FORCE_FIRST_SCREENS: boolean = false;
+  const isPublic = !FORCE_FIRST_SCREENS || publicPrefixes.some((p) => location.pathname.startsWith(p));
 
   if (!isPublic) {
     rememberLink(location.pathname + location.search); // FIX752 - a page turned away here opens after the first screens
@@ -783,6 +789,8 @@ export default function App() {
                       <AccountGate />
                       {/* FIX752 - renders nothing: after the first screens, a shared link opens the page it points to */}
                       <LinkReturn />
+                      {/* FIX764 - on Home, once: "Bambeh speaks your language" with the five languages (the language was taken from the phone) */}
+                      <FirstVisit />
                       {/* FIX620 - inside the Android app only: keeps the Play build to the six sections. */}
                       <StoreRouteGuard />
                       <ActivityPing />{/* FIX665 - counts app opens for Command Center > App usage */}
