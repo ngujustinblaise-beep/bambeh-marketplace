@@ -1,48 +1,28 @@
-// BAMBEH_DEPLOY_TOKEN__ACTIVITY_PING_FIX665_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ACTIVITY_PING_FIX780_CLEAN
 /**
- * ActivityPing.tsx - FIX665
- * Tells Bambeh, quietly, that the app is open - so the Command Center can show
- * how many people use Bambeh today, this week, this month, this year, and who is
- * live right now (FIX664 / FIX666).
+ * ActivityPing.tsx - FIX780 (replaces FIX665)
+ * Tells Bambeh, quietly, that the app is open - so the Command Center can show how many people use Bambeh today,
+ * this week, this month, this year, and who is live right now (FIX664 / FIX666 / FIX781).
  *  - one call when the app opens, or comes back after 30 minutes away (an "open")
  *  - one tiny call every 2 minutes while it is on screen (keeps "live now" true)
- *  - nothing while it is hidden. Nothing personal: a random id kept on this
- *    phone, the signed-in account if any, and web / installed / android-app.
+ *  - nothing while it is hidden. Nothing personal: a random id kept on this phone, the signed-in account if any,
+ *    and website / installed website / Android app.
+ * FIX780 - THE ANDROID APP IS COUNTED AS THE ANDROID APP. FIX665 asked IS_STORE_APP, which has been false since
+ *  Bambeh left Google Play (FIX682), so every visit from the installed APK was counted as "Website" and the
+ *  Command Center showed 0 for the Android app. It now asks IS_NATIVE_APP - "am I inside the installed app?".
+ *  The random id is shared with the sign-up and sign-in steps (track.ts, FIX775), so a phone is one phone.
  * Every error is ignored on purpose: counting must never disturb anyone.
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { IS_NATIVE_APP } from '@/config/storeMode'; // FIX683
+import { IS_NATIVE_APP } from '@/config/storeMode';
+import { deviceId } from '@/components/analytics/track';
 
-const DEVICE_KEY = 'bambeh_device_id';
 const LIVE_EVERY_MS = 120000;
 const NEW_OPEN_AFTER_MS = 30 * 60 * 1000;
 
-function makeId(): string {
-  try {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-  } catch {
-    /* fall through to the simple id */
-  }
-  let s = 'd';
-  for (let i = 0; i < 31; i++) s += Math.floor(Math.random() * 16).toString(16);
-  return s;
-}
-
-function deviceId(): string {
-  try {
-    const have = localStorage.getItem(DEVICE_KEY);
-    if (have && /^[A-Za-z0-9-]{8,64}$/.test(have)) return have;
-    const id = makeId();
-    localStorage.setItem(DEVICE_KEY, id);
-    return id;
-  } catch {
-    return makeId();
-  }
-}
-
-function platform(): string {
+export function platform(): string {
   if (IS_NATIVE_APP) return 'android-app';
   try {
     const installed = window.matchMedia('(display-mode: standalone)').matches ||
@@ -86,4 +66,4 @@ export default function ActivityPing(): null {
   }, []);
   return null;
 }
-// BAMBEH_END_TOKEN__ACTIVITY_PING_FIX665__COMPLETE
+// BAMBEH_END_TOKEN__ACTIVITY_PING_FIX780__COMPLETE

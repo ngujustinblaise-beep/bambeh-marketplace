@@ -1,11 +1,15 @@
-// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX758_CLEAN
+// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX778_CLEAN
 import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, AlertTriangle, KeyRound, UserPlus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
-import { authIdentity } from "@/utils/phoneAuth";
+import {
+  HOME, countryOfDigits, digitsOfIdentity, rememberPhoneCountry, rememberedPhoneCountry, signInIdentity,
+} from "@/lib/africa/countries"; // FIX778
+import { useOpenCountries } from "@/lib/africa/useOpenCountries"; // FIX778
+import { track } from "@/components/analytics/track"; // FIX778
 import { supabase } from "@/lib/supabase"; // FIX656
 import { forgetLink } from "@/components/auth/LinkReturn"; // FIX758
 import { returnTarget } from "@/components/auth/returnTo"; // FIX758
@@ -24,6 +28,13 @@ import { returnTarget } from "@/components/auth/returnTo"; // FIX758
  *  form, the free page - returnTo, FIX755), no longer always Home. New here? One big button opens the
  *  30-second free account (/join, FIX756) and keeps the same way back. A number passed as ?phone=
  *  (from "This number already has an account") is already typed in.
+ *
+ * FIX778 (15 Oct 2026) - numbers from the other African countries Bambeh opens (Command Center > Countries,
+ *  FIX779) sign in too: "+234 802 123 4567", "00234...", or the number alone on a phone that signed up with it
+ *  (the country is remembered there). Cameroon numbers and emails work exactly as before. Once more than one
+ *  country is open, a line under the box says to start with + and the country code.
+ *  Each step is noted for Command Center > App usage > Sign-ups & sign-ins (FIX775 / FIX773): page opened,
+ *  Sign in pressed, signed in - or why not (wrong details, paused, no network). Never what was typed.
  */
 const HELP: Record<string, Record<string, string>> = {
   en: {
@@ -34,6 +45,7 @@ const HELP: Record<string, Record<string, string>> = {
     netErr: "We could not reach Bambeh. Check your connection and try again.",
     paused: "This account is paused. Contact Bambeh to have it checked.",
     invalid2: "Enter your phone number (or email) and your password (at least 8 characters).",
+    abroad: "From another country? Type + and your country code first, e.g. +234 802 123 4567.",
   },
   fr: {
     helpTitle: "Mot de passe oubli\u00e9 ?",
@@ -43,6 +55,7 @@ const HELP: Record<string, Record<string, string>> = {
     netErr: "Impossible de joindre Bambeh. V\u00e9rifiez votre connexion et r\u00e9essayez.",
     paused: "Ce compte est suspendu. Contactez Bambeh pour le faire v\u00e9rifier.",
     invalid2: "Saisissez votre num\u00e9ro (ou e-mail) et votre mot de passe (au moins 8 caract\u00e8res).",
+    abroad: "D\u2019un autre pays ? Commencez par + et l\u2019indicatif de votre pays, ex. +234 802 123 4567.",
   },
   pidgin: {
     helpTitle: "You don forget your password?",
@@ -52,6 +65,7 @@ const HELP: Record<string, Record<string, string>> = {
     netErr: "We no fit reach Bambeh. Check your connection and try again.",
     paused: "This account don pause. Contact Bambeh make dem check am.",
     invalid2: "Put your phone number (or email) and your password (8 character or more).",
+    abroad: "You from another country? Begin with + and your country code, like +234 802 123 4567.",
   },
   ar: {
     helpTitle: "\u0647\u0644 \u0646\u0633\u064a\u062a \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061f",
@@ -61,6 +75,7 @@ const HELP: Record<string, Record<string, string>> = {
     netErr: "\u062a\u0639\u0630\u0651\u0631 \u0627\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647. \u062a\u062d\u0642\u0651\u0642 \u0645\u0646 \u0627\u062a\u0635\u0627\u0644\u0643 \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
     paused: "\u0647\u0630\u0627 \u0627\u0644\u062d\u0633\u0627\u0628 \u0645\u0648\u0642\u0648\u0641 \u0645\u0624\u0642\u062a\u064b\u0627. \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0644\u0644\u062a\u062d\u0642\u0642 \u0645\u0646\u0647.",
     invalid2: "\u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 (\u0623\u0648 \u0628\u0631\u064a\u062f\u0643 \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a) \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 (8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644).",
+    abroad: "\u0645\u0646 \u0628\u0644\u062f \u0622\u062e\u0631\u061f \u0627\u0628\u062f\u0623 \u0628\u0639\u0644\u0627\u0645\u0629 + \u062b\u0645 \u0631\u0645\u0632 \u0628\u0644\u062f\u0643\u060c \u0645\u062b\u0644 +234 802 123 4567.",
   },
   ff: {
     helpTitle: "A yejjitii finnde maa?",
@@ -70,6 +85,7 @@ const HELP: Record<string, Record<string, string>> = {
     netErr: "Min mbaawaa yettaade Bambeh. \u01b3eewu ce\u014bogol maa, etto kadi.",
     paused: "Konte nde darnaama. Jokkondir e Bambeh ngam \u01b4eewtaade nde.",
     invalid2: "Naatnu limngal tilifon maa (walla email) e finnde maa (alkule 8 walla \u0253uri).",
+    abroad: "A iwii e leydi goo? Fu\u0257\u0257o e + e limoore leydi maa, wano +234 802 123 4567.",
   },
 };
 
@@ -185,6 +201,16 @@ export default function Login() {
   });
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  // FIX778 - the country this phone signed up with reads a number written without its code; Cameroon otherwise
+  const [homeCode] = useState(() => rememberedPhoneCountry());
+  const open = useOpenCountries();
+  const showAbroad = open.signup.length > 1 || homeCode !== HOME;
+  const opened = React.useRef(false);
+  React.useEffect(() => {
+    if (opened.current) return;
+    opened.current = true;
+    track("signin_open", { lang: langKey });
+  }, [langKey]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
@@ -193,29 +219,38 @@ export default function Login() {
   // email typed here travels along, so nobody types it twice.
   const typed = email.trim();
   const typedDigits = typed.includes("@") ? "" : typed.replace(/\D/g, "");
+  // FIX778 - a number from another country travels with its country code (2348021234567)
+  const typedIntl = (() => {
+    const d = digitsOfIdentity(signInIdentity(typed, homeCode));
+    return d && d.indexOf("237") !== 0 ? d : "";
+  })();
   const helpHref = (): string => {
     if (typed.includes("@")) return "/forgot-password?mode=email&email=" + encodeURIComponent(typed);
+    if (typedIntl) return "/forgot-password?phone=" + typedIntl; // FIX778
     if (typedDigits.length >= 8 && typedDigits.length <= 15) return "/forgot-password?phone=" + typedDigits;
     return "/forgot-password";
   };
-  const friendly = (raw: unknown): { msg: string; help: boolean } => {
+  const friendly = (raw: unknown): { msg: string; help: boolean; why: string } => {
     const s =
       typeof raw === "string"
         ? raw
         : String((raw as { message?: string } | null)?.message || raw || "");
-    if (/banned|suspend|paused|disabled/i.test(s)) return { msg: h.paused, help: false };
-    if (/fetch|network|timeout|timed out|connection|offline/i.test(s)) return { msg: h.netErr, help: false };
-    if (/invalid|credential|password|grant|not found|no user/i.test(s)) return { msg: h.wrongDetails, help: true };
-    return { msg: t.failed, help: true };
+    if (/banned|suspend|paused|disabled/i.test(s)) return { msg: h.paused, help: false, why: "paused" };
+    if (/fetch|network|timeout|timed out|connection|offline/i.test(s)) return { msg: h.netErr, help: false, why: "net" };
+    if (/invalid|credential|password|grant|not found|no user/i.test(s)) return { msg: h.wrongDetails, help: true, why: "wrong" };
+    return { msg: t.failed, help: true, why: "other" };
   };
 
-  const emailValid = useMemo(() => authIdentity(email) !== null, [email]); // FIX283: a phone number is just as valid as an email here
+  const emailValid = useMemo(() => signInIdentity(email, homeCode) !== null, [email, homeCode]); // FIX283 + FIX778: any open-country number
   const passwordValid = password.length >= 8;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const how: "phone" | "email" = email.indexOf("@") >= 0 ? "email" : "phone"; // FIX778
+    track("signin_submit", { lang: langKey, mode: how });
     if (!emailValid || !passwordValid) {
       setError(h.invalid2);
+      track("signin_failed", { lang: langKey, mode: how, reason: !emailValid ? "invalid" : "password" });
       // a number with no password usually means "I don't remember it"
       setHelpOpen(emailValid && !passwordValid);
       return;
@@ -225,12 +260,14 @@ export default function Login() {
     setError("");
     setHelpOpen(false);
     try {
-      let result = await login(authIdentity(email) || email, password); // FIX283
+      const identity = signInIdentity(email, homeCode); // FIX778 (FIX283: a phone number is its sign-in address)
+      let result = await login(identity || email, password);
       // FIX656 - an account created with an EMAIL can still sign in with its phone number:
       // the database answers with its sign-in email only when this password is right.
       if (result?.error && email.indexOf("@") < 0 && email.replace(/\D/g, "").length >= 8) {
         try {
-          const { data } = await supabase.rpc("bambeh_login_email_for", { p_identifier: email, p_password: password });
+          // FIX778 - the number with its country code, so the database finds it whatever the country
+          const { data } = await supabase.rpc("bambeh_login_email_for", { p_identifier: digitsOfIdentity(identity) || email, p_password: password });
           const r = (data || {}) as { ok?: boolean; login?: string };
           if (r.ok && r.login) result = await login(r.login, password);
         } catch {
@@ -241,14 +278,20 @@ export default function Login() {
         const f = friendly(result.error); // FIX629
         setError(f.msg);
         setHelpOpen(f.help);
+        track("signin_failed", { lang: langKey, mode: how, reason: f.why }); // FIX778
         return;
       }
+      const d = digitsOfIdentity(identity); // FIX778 - remember the country of the number that worked
+      const c = d ? countryOfDigits(d) : null;
+      if (c) rememberPhoneCountry(c.code);
+      track("signin_ok", { lang: langKey, mode: how, country: c ? c.code : null });
       forgetLink(); // FIX758
       navigate(target, { replace: true }); // FIX758 - back to what she was doing
     } catch (err) {
       const f = friendly(err); // FIX629
       setError(f.msg);
       setHelpOpen(f.help);
+      track("signin_failed", { lang: langKey, mode: how, reason: f.why }); // FIX778
     } finally {
       setLoading(false);
     }
@@ -285,6 +328,9 @@ export default function Login() {
                 placeholder="6XX XXX XXX / name@example.com"
                 dir="ltr"
               />
+              {showAbroad && (
+                <p className="mt-1 text-xs text-gray-500" data-abroad="1">{h.abroad}</p>
+              )}
             </div>
 
             <div>
@@ -369,4 +415,4 @@ export default function Login() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__LOGIN_FIX758__COMPLETE
+// BAMBEH_END_TOKEN__LOGIN_FIX778__COMPLETE

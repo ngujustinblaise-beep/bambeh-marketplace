@@ -1,498 +1,372 @@
-// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX492_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX776_CLEAN
 /**
- * src/components/AfricanPhoneInput.tsx ? Bambeh Marketplace
+ * src/components/AfricanPhoneInput.tsx - FIX776 (replaces FIX492)
  *
- * Reusable phone input with African country code picker.
- * Covers Central Africa + West Africa + defaults to Cameroon.
- *
- * -- SECURITY HARDENING (v2) --------------------------------------------------
- *  ? Input sanitisation  ? strips all non-digit characters before validation
- *  ? Length capping      ? enforces hard max per country, no overflow possible
- *  ? Pattern enforcement ? country-specific regex, no bypasses
- *  ? XSS prevention      ? all values sanitised before bubbling to parent
- *  ? Prototype pollution ? Object.freeze on country records at module level
- *  ? No eval / innerHTML ? zero DOM injection surface
- *  ? ARIA hardened       ? listbox role, aria-selected, aria-expanded, aria-label
- *  ? Keyboard nav        ? Escape closes dropdown, Enter/Space selects
- *  ? Focus trap          ? dropdown closes on outside mousedown AND focusout
- *  ? WhatsApp URL sanitised ? phone stripped to digits, message encoded
- *  ? Rate limit guard    ? onChange fires only when value actually changed
- *  - Immutable country list - freeze prevents runtime mutation of dial/pattern
- * ----------------------------------------------------------------------------
- *
- * Usage:
- *   import AfricanPhoneInput from "@/components/AfricanPhoneInput";
- *
- *   <AfricanPhoneInput
- *     value={phone}
- *     onChange={(fullNumber, isValid) => {
- *       setPhone(fullNumber);       // e.g. "+237671234567"
- *       setPhoneValid(isValid);
- *     }}
- *   />
- *
- * Props:
- *   value      ? controlled string (full international number or just local digits)
- *   onChange   ? (fullNumber: string, isValid: boolean) => void
- *   label      ? optional label text (default: "Phone number")
- *   required   ? show asterisk
- *   error      ? external error string to show below the input
- *   className  ? optional extra class on the wrapper div
- *   disabled   ? disable all interaction
+ * The phone box with a country picker, for every form that asks for a phone number (password help today).
+ * FIX776, Big 15 Oct 2026: "we are using the ecowas and cemac phone number system, with Cameroon and a few other
+ * countries selected or proposed but most especially cameroon".
+ *  - The countries and their number rules come from ONE list for the whole app (src/lib/africa/countries.ts,
+ *    FIX768): all 54 African countries, Google's current mobile rules. The FIX492 list was out of date (Benin
+ *    has 10 digits since 2024, Cote d'Ivoire since 2021, Cameroon's 2-numbers were refused...).
+ *  - The countries Bambeh is open in (Command Center > Countries, FIX779) come first. scope="open" shows only
+ *    those (for a NEW account); the default "any" adds the rest of Africa below, so somebody whose country was
+ *    open when they joined can always reach their account.
+ *  - Cameroon stays exactly as phone sign-in has always accepted it: 9 digits starting with 6 or 2.
+ *  - Five languages. No WhatsApp link is built any more (no phone or WhatsApp numbers in the app).
+ *  - SAME USE AS BEFORE: <AfricanPhoneInput value onChange={(full, valid) => ...} label required error className
+ *    disabled />, onChange still gets "+237677123456" and true/false; Country, CENTRAL_AFRICA, WEST_AFRICA,
+ *    validatePhone, DIGITS_ONLY, sanitiseText and ALL_COUNTRIES are still exported.
+ *  - NEW: CountryPicker - just the flag button with its list, used by the sign-up and sign-in pages.
+ * (c) 2026 BAMBEH SARL. All rights reserved.
  */
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
+import { Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { useLang } from '@/hooks/useAppLang';
+import {
+  AFRICA, HOME, countryByCode, countryLang, countryName, countryOfDigits, flagOf, formatNational, lengthsText, nationalNumber,
+  sortCountries,
+} from '@/lib/africa/countries';
+import type { AfricaCountry, CountryLang } from '@/lib/africa/countries';
+import { useOpenCountries } from '@/lib/africa/useOpenCountries';
 
-import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
-
-// -- Security constants --------------------------------------------------------
-
-/** Strip every character that is not a digit. Used on ALL input before storage. */
-const DIGITS_ONLY = (s: string): string => s.replace(/\D/g, "");
-
-/** Absolute maximum local number length we will ever allow (prevents runaway input). */
+// ------------------------------------------------------------------ the same helpers as FIX492
+/** Strip every character that is not a digit. */
+const DIGITS_ONLY = (s: string): string => String(s || '').replace(/\D/g, '');
+/** No phone number anywhere is longer than this. */
 const HARD_MAX_LEN = 15;
-
-/** Sanitise any string that will be rendered or passed to a URL. */
-const sanitiseText = (s: unknown): string =>
-  typeof s === "string" ? s.replace(/[<>"'`]/g, "") : "";
-
-// -- Country data --------------------------------------------------------------
+/** Remove characters that have no place in a name or a search. */
+const sanitiseText = (s: unknown): string => (typeof s === 'string' ? s.replace(/[<>"'`]/g, '') : '');
 
 export interface Country {
-  readonly flag:    string;
-  readonly name:    string;
-  readonly dial:    string;   // e.g. "+237"
-  readonly code:    string;   // ISO 3166-1 alpha-2
-  readonly len:     number;   // expected local number length (digits only)
+  readonly flag: string;
+  readonly name: string;
+  /** "+237" */
+  readonly dial: string;
+  readonly code: string;
+  /** the longest number there (digits only) */
+  readonly len: number;
   readonly pattern: RegExp;
 }
 
-// Object.freeze every country record so runtime code cannot mutate dial/pattern.
-const c = (flag: string, name: string, dial: string, code: string, len: number, pattern: RegExp): Country =>
-  Object.freeze({ flag, name, dial, code, len, pattern });
+function legacy(c: AfricaCountry): Country {
+  return Object.freeze({ flag: flagOf(c.code), name: c.en, dial: '+' + c.dial, code: c.code, len: Math.max(...c.lens), pattern: c.mobile });
+}
+function pick(codes: string[]): readonly Country[] {
+  return Object.freeze(codes.map((k) => countryByCode(k)).filter((c): c is AfricaCountry => !!c).map(legacy));
+}
 
-export const CENTRAL_AFRICA: readonly Country[] = Object.freeze([
-  c("\uD83C\uDDE8\uD83C\uDDF2", "Cameroon",     "+237", "CM",  9, /^6\d{8}$/),
-  c("\uD83C\uDDE8\uD83C\uDDE9", "DR Congo",     "+243", "CD",  9, /^8\d{8}$/),
-  c("\uD83C\uDDE8\uD83C\uDDEC", "Congo (Rep.)", "+242", "CG",  9, /^[056]\d{8}$/),
-  c("\uD83C\uDDEC\uD83C\uDDE6", "Gabon",        "+241", "GA",  8, /^[067]\d{7}$/),
-  c("\uD83C\uDDF9\uD83C\uDDE9", "Chad",         "+235", "TD",  8, /^6\d{7}$/),
-  c("\uD83C\uDDE8\uD83C\uDDEB", "CAR",          "+236", "CF",  8, /^7\d{7}$/),
-  c("\uD83C\uDDEC\uD83C\uDDF6", "Eq. Guinea",   "+240", "GQ",  9, /^[23]\d{8}$/),
-  c("\uD83C\uDDF8\uD83C\uDDF9", "S?o Tom?",     "+239", "ST",  7, /^\d{7}$/),
-  c("\uD83C\uDDE7\uD83C\uDDEE", "Burundi",      "+257", "BI",  8, /^[67]\d{7}$/),
-  c("\uD83C\uDDF7\uD83C\uDDFC", "Rwanda",       "+250", "RW",  9, /^7\d{8}$/),
-]);
+/** The groups FIX492 offered, kept for any page that still reads them. */
+export const CENTRAL_AFRICA: readonly Country[] = pick(['CM', 'CD', 'CG', 'GA', 'TD', 'CF', 'GQ', 'ST', 'BI', 'RW']);
+export const WEST_AFRICA: readonly Country[] = pick(['NG', 'GH', 'SN', 'CI', 'BF', 'ML', 'GN', 'BJ', 'TG', 'SL', 'LR', 'GM', 'GW', 'CV', 'NE', 'MR']);
+const ALL_COUNTRIES: readonly Country[] = Object.freeze(AFRICA.map(legacy).sort((a, b) => a.name.localeCompare(b.name)));
 
-export const WEST_AFRICA: readonly Country[] = Object.freeze([
-  c("\uD83C\uDDF3\uD83C\uDDEC", "Nigeria",       "+234", "NG", 10, /^[789]\d{9}$/),
-  c("\uD83C\uDDEC\uD83C\uDDED", "Ghana",         "+233", "GH",  9, /^[235]\d{8}$/),
-  c("\uD83C\uDDF8\uD83C\uDDF3", "Senegal",       "+221", "SN",  9, /^[37]\d{8}$/),
-  c("\uD83C\uDDE8\uD83C\uDDEE", "C?te d'Ivoire", "+225", "CI", 10, /^0[57]\d{8}$/),
-  c("\uD83C\uDDE7\uD83C\uDDEB", "Burkina Faso",  "+226", "BF",  8, /^[67]\d{7}$/),
-  c("\uD83C\uDDF2\uD83C\uDDF1", "Mali",          "+223", "ML",  8, /^[567]\d{7}$/),
-  c("\uD83C\uDDEC\uD83C\uDDF3", "Guinea",        "+224", "GN",  9, /^[67]\d{8}$/),
-  c("\uD83C\uDDE7\uD83C\uDDEF", "Benin",         "+229", "BJ",  8, /^[679]\d{7}$/),
-  c("\uD83C\uDDF9\uD83C\uDDEC", "Togo",          "+228", "TG",  8, /^[79]\d{7}$/),
-  c("\uD83C\uDDF8\uD83C\uDDF1", "Sierra Leone",  "+232", "SL",  8, /^[37]\d{7}$/),
-  c("\uD83C\uDDF1\uD83C\uDDF7", "Liberia",       "+231", "LR",  8, /^\d{8}$/),
-  c("\uD83C\uDDEC\uD83C\uDDF2", "Gambia",        "+220", "GM",  7, /^[23679]\d{6}$/),
-  c("\uD83C\uDDEC\uD83C\uDDFC", "Guinea-Bissau", "+245", "GW",  7, /^[56]\d{6}$/),
-  c("\uD83C\uDDE8\uD83C\uDDFB", "Cape Verde",    "+238", "CV",  7, /^9\d{6}$/),
-  c("\uD83C\uDDF3\uD83C\uDDEA", "Niger",         "+227", "NE",  8, /^[89]\d{7}$/),
-  c("\uD83C\uDDF2\uD83C\uDDF7", "Mauritania",    "+222", "MR",  8, /^[23]\d{7}$/),
-]);
-
-const SUGGESTED: readonly Country[] = Object.freeze([
-  CENTRAL_AFRICA[0], // Cameroon - always first
-  WEST_AFRICA[0],    // Nigeria
-  WEST_AFRICA[1],    // Ghana
-  WEST_AFRICA[2],    // Senegal
-  CENTRAL_AFRICA[1], // DR Congo
-]);
-
-const ALL_COUNTRIES: readonly Country[] = Object.freeze(
-  [
-    ...new Map(
-      [...CENTRAL_AFRICA, ...WEST_AFRICA].map((ct) => [ct.code, ct])
-    ).values(),
-  ].sort((a, b) => a.name.localeCompare(b.name))
-);
-
-type Region = "suggested" | "central" | "west" | "all";
-
-// -- Validation helper (exported so parent can re-validate if needed) ----------
-
+/** True when these digits are a mobile number of that country (a home 0 is allowed: 0802... in Nigeria). */
 export function validatePhone(digits: string, country: Country): boolean {
-  // Guard: length must match exactly and pattern must pass
-  return (
-    digits.length === country.len &&
-    country.pattern.test(digits) &&
-    digits.length <= HARD_MAX_LEN
-  );
+  const d = DIGITS_ONLY(digits);
+  return d.length <= HARD_MAX_LEN && nationalNumber(d, country.code) !== null;
 }
 
-// -- Component -----------------------------------------------------------------
-
-interface Props {
-  value?:     string;
-  onChange:   (fullNumber: string, isValid: boolean) => void;
-  label?:     string;
-  required?:  boolean;
-  error?:     string;
-  className?: string;
-  disabled?:  boolean;
+// ------------------------------------------------------------------ words
+type Words = {
+  label: string; country: string; search: string; open: string; other: string; none: string; valid: string;
+  wrong: string; short: string; hint: string; code: string; digits: string; required: string;
+};
+const T: Record<CountryLang, Words> = {
+  en: {
+    label: 'Phone number', country: 'Country', search: 'Search a country', open: 'Countries open on Bambeh', other: 'Other African countries',
+    none: 'No country found', valid: 'Valid number', wrong: 'Not a valid number for {country}', short: 'Needs {n} digits ({k} so far)',
+    hint: '{country}: {n} digits, e.g. {example}', code: 'Country: {country} +{dial}', digits: 'Phone number in {country}', required: 'required',
+  },
+  fr: {
+    label: 'Num\u00e9ro de t\u00e9l\u00e9phone', country: 'Pays', search: 'Chercher un pays', open: 'Pays ouverts sur Bambeh',
+    other: 'Autres pays africains', none: 'Aucun pays trouv\u00e9', valid: 'Num\u00e9ro valide', wrong: 'Num\u00e9ro non valable ({country})',
+    short: 'Il faut {n} chiffres ({k} pour l\u2019instant)', hint: '{country} : {n} chiffres, ex. {example}', code: 'Pays : {country} +{dial}',
+    digits: 'Num\u00e9ro de t\u00e9l\u00e9phone ({country})', required: 'obligatoire',
+  },
+  pidgin: {
+    label: 'Phone number', country: 'Country', search: 'Find country', open: 'Country dem wey Bambeh dey', other: 'Other Africa country dem',
+    none: 'No country', valid: 'Number correct', wrong: 'This number no correct for {country}', short: 'E need {n} numbers ({k} now)',
+    hint: '{country}: {n} numbers, like {example}', code: 'Country: {country} +{dial}', digits: 'Phone number for {country}', required: 'you must put am',
+  },
+  ar: {
+    label: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641', country: '\u0627\u0644\u0628\u0644\u062f',
+    search: '\u0627\u0628\u062d\u062b \u0639\u0646 \u0628\u0644\u062f', open: '\u0627\u0644\u0628\u0644\u062f\u0627\u0646 \u0627\u0644\u0645\u062a\u0627\u062d\u0629 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647',
+    other: '\u0628\u0644\u062f\u0627\u0646 \u0623\u0641\u0631\u064a\u0642\u064a\u0629 \u0623\u062e\u0631\u0649', none: '\u0644\u0627 \u064a\u0648\u062c\u062f \u0628\u0644\u062f',
+    valid: '\u0631\u0642\u0645 \u0635\u0627\u0644\u062d', wrong: '\u0631\u0642\u0645 \u063a\u064a\u0631 \u0635\u0627\u0644\u062d \u0641\u064a {country}',
+    short: '\u064a\u0644\u0632\u0645 {n} \u0623\u0631\u0642\u0627\u0645 (\u0627\u0644\u0622\u0646 {k})', hint: '{country}: {n} \u0623\u0631\u0642\u0627\u0645\u060c \u0645\u062b\u0644 {example}',
+    code: '\u0627\u0644\u0628\u0644\u062f: {country} +{dial}', digits: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0641\u064a {country}',
+    required: '\u0625\u0644\u0632\u0627\u0645\u064a',
+  },
+  ff: {
+    label: 'Limoore telefon', country: 'Leydi', search: 'Yiylo leydi', open: 'Ley\u0257e \u0257e Bambeh woni', other: 'Ley\u0257e Afrik goo',
+    none: 'Alaa leydi', valid: 'Limoore mo\u01b4\u01b4ii', wrong: 'Limoore nde mo\u01b4\u01b4aani ({country})', short: 'Limooje {n} ina njiddaa ({k} jooni)',
+    hint: '{country}: limooje {n}, wano {example}', code: 'Leydi: {country} +{dial}', digits: 'Limoore telefon ({country})', required: 'ina wa\u0257\u0257ii',
+  },
+};
+function fill(s: string, v: Record<string, string | number>): string {
+  return s.replace(/\{(\w+)\}/g, (m, k: string) => (v[k] !== undefined ? String(v[k]) : m));
 }
 
-export default function AfricanPhoneInput({
-  value,
-  onChange,
-  label    = "Phone number",
-  required,
-  error,
-  className = "",
-  disabled  = false,
-}: Props) {
-  const [country, setCountry] = useState<Country>(CENTRAL_AFRICA[0]);
-  const [local,   setLocal]   = useState("");
-  const [open,    setOpen]    = useState(false);
-  const [region,  setRegion]  = useState<Region>("suggested");
-  const [search,  setSearch]  = useState("");
+let seq = 0;
+function useStableId(prefix: string): string {
+  const r = useRef('');
+  if (!r.current) { seq += 1; r.current = prefix + '-' + seq; }
+  return r.current;
+}
 
-  // Track last emitted value to prevent spurious onChange calls
-  const lastEmitted = useRef<string>("");
-
-  const wrapRef    = useRef<HTMLDivElement>(null);
-  const inputRef   = useRef<HTMLInputElement>(null);
-  const searchRef  = useRef<HTMLInputElement>(null);
-  const listRef    = useRef<HTMLDivElement>(null);
-
-  // -- Sync incoming controlled value (mount only) --------------------------
+// ------------------------------------------------------------------ the list of countries (shared by both pickers)
+function CountryMenu({
+  codes, others, value, lang, onPick, onClose,
+}: {
+  codes: readonly string[]; others: readonly string[]; value: string; lang: CountryLang;
+  onPick: (code: string) => void; onClose: () => void;
+}) {
+  const t = T[lang];
+  const [q, setQ] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  const many = codes.length + others.length > 8;
   useEffect(() => {
-    if (!value) return;
-    const matched = ALL_COUNTRIES.find((ct) => value.startsWith(ct.dial));
-    if (matched) {
-      const dialDigits = DIGITS_ONLY(matched.dial);
-      const allDigits  = DIGITS_ONLY(value);
-      const localPart  = allDigits.slice(dialDigits.length).slice(0, HARD_MAX_LEN);
-      setCountry(matched);
-      setLocal(localPart);
-    } else {
-      setLocal(DIGITS_ONLY(value).slice(0, HARD_MAX_LEN));
-    }
-  }, []); // mount only ? value prop is seed, not live binding
-
-  // -- Close dropdown on outside click OR focus leaving wrapper ------------
-  useEffect(() => {
-    function onPointer(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    function onFocusOut(e: FocusEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.relatedTarget as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onPointer);
-    document.addEventListener("focusout", onFocusOut);
-    return () => {
-      document.removeEventListener("mousedown", onPointer);
-      document.removeEventListener("focusout", onFocusOut);
-    };
-  }, []);
-
-  // -- Focus search box when dropdown opens on "all" tab -------------------
-  useEffect(() => {
-    if (open && region === "all") {
-      setTimeout(() => searchRef.current?.focus(), 50);
-    }
-  }, [open, region]);
-
-  // -- Validate and emit (deduplicated) -------------------------------------
-  const fireChange = useCallback(
-    (localVal: string, ct: Country = country) => {
-      const digits = DIGITS_ONLY(localVal);
-      const full   = `${ct.dial}${digits}`;
-      const valid  = validatePhone(digits, ct);
-      if (full !== lastEmitted.current) {
-        lastEmitted.current = full;
-        onChange(full, valid);
-      }
-    },
-    [country, onChange]
+    if (many) { const id = window.setTimeout(() => searchRef.current?.focus(), 30); return () => window.clearTimeout(id); }
+    return undefined;
+  }, [many]);
+  const want = sanitiseText(q).toLowerCase().trim();
+  const hit = (c: AfricaCountry) => !want || countryName(c.code, lang).toLowerCase().indexOf(want) >= 0 || c.en.toLowerCase().indexOf(want) >= 0
+    || c.fr.toLowerCase().indexOf(want) >= 0 || ('+' + c.dial).indexOf(want) >= 0 || c.code.toLowerCase() === want;
+  const first = sortCountries(codes, lang).filter(hit);
+  const rest = sortCountries(others, lang).filter(hit);
+  const row = (c: AfricaCountry): ReactNode => (
+    <button key={c.code} type="button" role="option" aria-selected={c.code === value} data-country={c.code}
+            onClick={() => onPick(c.code)}
+            className={'flex w-full items-center gap-3 border-b border-gray-50 px-4 py-2.5 text-left text-sm last:border-0 '
+              + (c.code === value ? 'bg-teal-50' : 'hover:bg-gray-50')}>
+      <span className="text-lg leading-none" aria-hidden="true">{flagOf(c.code)}</span>
+      <span className="flex-1 font-medium text-gray-900">{countryName(c.code, lang)}</span>
+      <span className="font-mono text-xs text-gray-500" dir="ltr">+{c.dial}</span>
+      {c.code === value && <Check className="h-4 w-4 text-teal-600" aria-hidden="true" />}
+    </button>
   );
-
-  // -- Input handler ? sanitise on every keystroke -------------------------
-  function handleLocalChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // Only allow digits and spaces; hard-cap at country.len + 2 display chars
-    const raw     = e.target.value.replace(/[^\d\s]/g, "");
-    const digits  = DIGITS_ONLY(raw);
-    if (digits.length > HARD_MAX_LEN) return; // hard stop
-    const capped  = raw.slice(0, country.len + 2); // +2 for spaces
-    setLocal(capped);
-    fireChange(capped);
-  }
-
-  // -- Keyboard navigation on the trigger button ----------------------------
-  function handleTriggerKey(e: KeyboardEvent<HTMLButtonElement>) {
-    if (e.key === "Escape")                  { setOpen(false); inputRef.current?.focus(); }
-    if (e.key === "Enter" || e.key === " ")  { e.preventDefault(); setOpen((v) => !v); }
-    if (e.key === "ArrowDown" && !open)      { e.preventDefault(); setOpen(true); }
-  }
-
-  // -- Keyboard navigation inside the list ---------------------------------
-  function handleListKey(e: KeyboardEvent<HTMLDivElement>) {
-    if (e.key === "Escape") { setOpen(false); }
-  }
-
-  // -- Country selection (sanitise display name just in case) ---------------
-  function selectCountry(ct: Country) {
-    // Verify the country is actually in our known list (prevents spoofed objects)
-    const trusted = ALL_COUNTRIES.find((k) => k.code === ct.code);
-    if (!trusted) return;
-    setCountry(trusted);
-    setOpen(false);
-    setSearch("");
-    // Re-validate with new country but same local digits
-    const digits   = DIGITS_ONLY(local);
-    const capped   = digits.slice(0, trusted.len);
-    setLocal(capped);
-    fireChange(capped, trusted);
-  }
-
-  // -- Filtered list --------------------------------------------------------
-  const listSource: readonly Country[] =
-    region === "suggested" ? SUGGESTED :
-    region === "central"   ? CENTRAL_AFRICA :
-    region === "west"      ? WEST_AFRICA :
-    ALL_COUNTRIES;
-
-  // Sanitise the search query before using it as a comparator
-  const q        = sanitiseText(search).toLowerCase().trim();
-  const filtered = q
-    ? listSource.filter(
-        (ct) =>
-          ct.name.toLowerCase().includes(q) ||
-          ct.dial.includes(q) ||
-          ct.code.toLowerCase().includes(q)
-      )
-    : listSource;
-
-  // -- Derived validation state ---------------------------------------------
-  const digits     = DIGITS_ONLY(local);
-  const isValid    = validatePhone(digits, country);
-  const isTooShort = digits.length > 0 && digits.length < country.len;
-  const isWrong    = digits.length === country.len && !isValid;
-
-  const REGION_TABS: { id: Region; label: string }[] = [
-    { id: "suggested", label: "Default" },
-    { id: "central",   label: "Central" },
-    { id: "west",      label: "West" },
-    { id: "all",       label: "All" },
-  ];
-
-  // Safe WhatsApp URL ? digits only, message encoded
-  const waDigits = DIGITS_ONLY(country.dial + digits);
-  const waMsg    = encodeURIComponent(
-    `Hello, I am interested in a position listed on Bambeh.`
-  );
-  const waUrl    = `https://wa.me/${waDigits}?text=${waMsg}`;
-
   return (
-    <div ref={wrapRef} className={`space-y-1 ${className}`}>
-      {/* Label */}
-      {label && (
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-          {label}
-          {required && <span className="text-red-500 ml-1" aria-hidden="true">*</span>}
-          {required && <span className="sr-only"> (required)</span>}
-        </label>
-      )}
-
-      {/* Input row */}
-      <div className="flex" role="group" aria-label={label ?? "Phone number input"}>
-        {/* Country selector button */}
-        <button
-          type="button"
-          onClick={() => { if (!disabled) { setOpen((o) => !o); setSearch(""); } }}
-          onKeyDown={handleTriggerKey}
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-label={`Country code: ${country.name} ${country.dial}`}
-          disabled={disabled}
-          className="flex items-center gap-1.5 px-3 py-2.5 bg-gray-50 dark:bg-gray-800
-                     border-2 border-r-0 border-gray-200 dark:border-gray-600 rounded-l-xl
-                     text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap
-                     hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none
-                     focus-visible:ring-2 focus-visible:ring-teal-500 focus:border-teal-500
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span className="text-base leading-none" aria-hidden="true">{country.flag}</span>
-          <span className="font-mono text-xs">{country.dial}</span>
-          {open
-            ? <ChevronUp  className="w-3 h-3 text-gray-400" aria-hidden="true" />
-            : <ChevronDown className="w-3 h-3 text-gray-400" aria-hidden="true" />
-          }
-        </button>
-
-        {/* Local number input */}
-        <input
-          ref={inputRef}
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel-national"
-          value={local}
-          onChange={handleLocalChange}
-          maxLength={country.len + 2}   // +2 for visual spaces
-          placeholder={country.code === "CM" ? "6XX XXX XXX" : `${country.len} digits`}
-          aria-label={`Phone number digits for ${country.name}`}
-          aria-invalid={!!error || isWrong}
-          aria-describedby="phone-hint"
-          disabled={disabled}
-          className={`flex-1 border-2 rounded-r-xl px-4 py-2.5 text-sm font-mono outline-none
-                      transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                      focus-visible:ring-2 focus-visible:ring-offset-0
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      ${error || isWrong
-                        ? "border-red-400 focus:border-red-500 focus-visible:ring-red-300"
-                        : isValid
-                        ? "border-green-500 focus:border-green-600 focus-visible:ring-green-300"
-                        : "border-gray-200 dark:border-gray-600 focus:border-teal-500 focus-visible:ring-teal-300"}`}
-        />
-      </div>
-
-      {/* Hint / validation */}
-      <p
-        id="phone-hint"
-        role={isWrong || error ? "alert" : "status"}
-        aria-live="polite"
-        className={`text-xs mt-0.5 ${
-          isValid      ? "text-green-600"
-          : isWrong    ? "text-red-500"
-          : isTooShort ? "text-orange-500"
-          : "text-gray-400"
-        }`}
-      >
-        {error
-          ? `\u26A0 ${sanitiseText(error)}`
-          : isValid
-          ? `\u2713 Valid \u00B7 ${country.dial} ${digits}`
-          : isWrong
-          ? `\u2717 Not a valid ${country.name} number`
-          : isTooShort
-          ? `Need ${country.len} digits (${digits.length} so far)`
-          : `Enter ${country.len}-digit ${country.name} number`}
-      </p>
-
-      {/* Dropdown picker */}
-      {open && !disabled && (
-        <div
-          ref={listRef}
-          onKeyDown={handleListKey}
-          className="border-2 border-gray-200 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-900
-                     overflow-hidden shadow-lg z-50 relative"
-          role="dialog"
-          aria-label="Select country code"
-        >
-          {/* Region tabs */}
-          <div className="flex border-b border-gray-100 dark:border-gray-700" role="tablist">
-            {REGION_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={region === tab.id}
-                onClick={() => { setRegion(tab.id); setSearch(""); }}
-                className={`flex-1 py-2 text-xs font-semibold transition border-b-2
-                  ${region === tab.id
-                    ? "text-teal-600 border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                    : "text-gray-500 border-transparent hover:text-gray-700 dark:hover:text-gray-300"}`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Search (only on All tab) */}
-          {region === "all" && (
-            <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" aria-hidden="true" />
-                <input
-                  ref={searchRef}
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    // Sanitise search input ? letters, digits, spaces, + only
-                    const safe = e.target.value.replace(/[^a-zA-Z0-9\s+]/g, "").slice(0, 40);
-                    setSearch(safe);
-                  }}
-                  placeholder="Search country?"
-                  aria-label="Search countries"
-                  autoComplete="off"
-                  spellCheck={false}
-                  maxLength={40}
-                  className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600
-                             rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                             outline-none focus:border-teal-500"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Section header */}
-          <div className="px-3 py-1.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              {region === "suggested" ? "Suggested"
-               : region === "central" ? "Central Africa"
-               : region === "west"    ? "West Africa"
-               : "All countries"}
-            </p>
-          </div>
-
-          {/* Country list */}
-          <div className="max-h-52 overflow-y-auto" role="listbox" aria-label="Countries">
-            {filtered.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4" role="status">
-                No countries found
-              </p>
-            ) : (
-              filtered.map((ct) => (
-                <button
-                  key={ct.code}
-                  type="button"
-                  role="option"
-                  aria-selected={ct.code === country.code}
-                  onClick={() => selectCountry(ct)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition
-                              border-b border-gray-50 dark:border-gray-800 last:border-0
-                              focus:outline-none focus-visible:bg-teal-50 dark:focus-visible:bg-teal-900/20
-                              ${ct.code === country.code
-                                ? "bg-teal-50 dark:bg-teal-900/20"
-                                : "hover:bg-gray-50 dark:hover:bg-gray-800"}`}
-                >
-                  <span className="text-lg leading-none" aria-hidden="true">{ct.flag}</span>
-                  <span className="flex-1 text-gray-900 dark:text-white font-medium">{ct.name}</span>
-                  <span className="font-mono text-xs text-gray-400">{ct.dial}</span>
-                  {ct.code === country.code && (
-                    <span className="text-teal-600 text-xs font-bold" aria-label="selected">{"\u2713"}</span>
-                  )}
-                </button>
-              ))
-            )}
+    <div role="dialog" aria-label={t.country} data-country-menu="1"
+         onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => { if (e.key === 'Escape') onClose(); }}
+         className="absolute z-50 mt-1 w-72 max-w-[85vw] overflow-hidden rounded-2xl border-2 border-gray-200 bg-white shadow-xl">
+      {many && (
+        <div className="border-b border-gray-100 px-3 py-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+            <input ref={searchRef} type="text" value={q} maxLength={40} autoComplete="off" spellCheck={false} placeholder={t.search}
+                   aria-label={t.search} onChange={(e) => setQ(e.target.value.slice(0, 40))} data-country-search="1"
+                   className="w-full rounded-lg border border-gray-200 py-1.5 pl-8 pr-3 text-sm outline-none focus:border-teal-500" />
           </div>
         </div>
       )}
-
-      {/* -- Exported helper for parent forms that need a safe WhatsApp link -- */}
-      {/* Use `waUrl` from the component's internal scope ? exposed via data attribute
-          for test environments only. Not rendered in production UI. */}
-      <span data-wa-url={waUrl} className="sr-only" aria-hidden="true" />
+      <div className="max-h-64 overflow-y-auto" role="listbox" aria-label={t.country}>
+        {first.length > 0 && others.length > 0 && (
+          <p className="bg-gray-50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t.open}</p>
+        )}
+        {first.map(row)}
+        {rest.length > 0 && <p className="bg-gray-50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t.other}</p>}
+        {rest.map(row)}
+        {first.length + rest.length === 0 && <p className="py-4 text-center text-sm text-gray-400" role="status">{t.none}</p>}
+      </div>
     </div>
   );
 }
 
-// -- Re-export helpers for parent use -----------------------------------------
+function useOutside(ref: { current: HTMLElement | null }, on: boolean, close: () => void): void {
+  useEffect(() => {
+    if (!on) return undefined;
+    const down = (e: MouseEvent | TouchEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    document.addEventListener('mousedown', down);
+    document.addEventListener('touchstart', down);
+    return () => {
+      document.removeEventListener('mousedown', down);
+      document.removeEventListener('touchstart', down);
+    };
+  }, [ref, on, close]);
+}
+
+/**
+ * Just the country button (flag and dial code) with its list. One country only: a plain label, nothing to open.
+ * Used by the sign-up page (the open countries) and the sign-in page.
+ */
+export function CountryPicker({
+  value, codes, others = [], onChange, lang, disabled = false, className = '',
+}: {
+  value: string; codes: readonly string[]; others?: readonly string[]; onChange: (code: string) => void;
+  lang?: unknown; disabled?: boolean; className?: string;
+}) {
+  const l = countryLang(lang);
+  const t = T[l];
+  const c = countryByCode(value) || (countryByCode(HOME) as AfricaCountry);
+  const [menu, setMenu] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  const close = useCallback(() => setMenu(false), []);
+  useOutside(wrap, menu, close);
+  const single = codes.length + others.length <= 1;
+  const face = (
+    <>
+      <span className="text-lg leading-none" aria-hidden="true">{flagOf(c.code)}</span>
+      <span className="font-mono text-sm" dir="ltr">+{c.dial}</span>
+    </>
+  );
+  if (single) {
+    return (
+      <span className={'inline-flex items-center gap-1.5 rounded-xl border border-gray-300 bg-gray-50 px-3 text-gray-700 ' + className}
+            data-country-fixed={c.code} title={countryName(c.code, l)}>
+        {face}
+      </span>
+    );
+  }
+  return (
+    <div ref={wrap} className={'relative inline-flex ' + className}>
+      <button type="button" disabled={disabled} aria-haspopup="listbox" aria-expanded={menu} data-country-button={c.code}
+              aria-label={fill(t.code, { country: countryName(c.code, l), dial: c.dial })}
+              onClick={() => { if (!disabled) setMenu((v) => !v); }}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-gray-300 bg-gray-50 px-3 font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-50">
+        {face}
+        {menu ? <ChevronUp className="h-3.5 w-3.5 text-gray-400" aria-hidden="true" /> : <ChevronDown className="h-3.5 w-3.5 text-gray-400" aria-hidden="true" />}
+      </button>
+      {menu && (
+        <div className="absolute left-0 top-full rtl:left-auto rtl:right-0">
+          <CountryMenu codes={codes} others={others} value={c.code} lang={l} onClose={close}
+                       onPick={(k) => { setMenu(false); if (k !== c.code) onChange(k); }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ the phone box
+interface Props {
+  value?: string;
+  onChange: (fullNumber: string, isValid: boolean) => void;
+  label?: string;
+  required?: boolean;
+  error?: string;
+  className?: string;
+  disabled?: boolean;
+  /** 'open': only the countries Bambeh is open in (a new account). 'any' (default): those first, then all of Africa. */
+  scope?: 'any' | 'open';
+  /** the country to start with when value has none (default: Cameroon) */
+  defaultCountry?: string;
+}
+
+/** "+237677123456", "00237...", "237677123456" or "677123456" -> the country and the digits after its code. */
+function startOf(value: string | undefined, fallback: string): { code: string; local: string } {
+  const v = String(value || '').trim();
+  const home = countryByCode(fallback) ? String(fallback).toUpperCase() : HOME;
+  if (v.indexOf('+') === 0 || v.indexOf('00') === 0) {
+    const d = DIGITS_ONLY(v.indexOf('00') === 0 ? v.slice(2) : v);
+    const c = countryOfDigits(d);
+    if (c) return { code: c.code, local: d.slice(c.dial.length).slice(0, HARD_MAX_LEN) };
+  }
+  const d = DIGITS_ONLY(v).slice(0, HARD_MAX_LEN);
+  if (d && nationalNumber(d, home) === null) {
+    // written with its country code but no + (the sign-in page hands numbers over like that)
+    const c = countryOfDigits(d);
+    if (c && nationalNumber(d.slice(c.dial.length), c.code) !== null) return { code: c.code, local: d.slice(c.dial.length) };
+  }
+  return { code: home, local: d };
+}
+
+export default function AfricanPhoneInput({
+  value, onChange, label, required, error, className = '', disabled = false, scope = 'any', defaultCountry = HOME,
+}: Props) {
+  const lang = countryLang(useLang());
+  const t = T[lang];
+  const open = useOpenCountries();
+  const [start] = useState(() => startOf(value, defaultCountry));
+  const [code, setCode] = useState<string>(start.code);
+  const [local, setLocal] = useState<string>(start.local);
+  const last = useRef('');
+  const hintId = useStableId('phone-hint');
+  const inputId = useStableId('phone-input');
+
+  const openCodes = open.signup;
+  const allowed = scope === 'open' ? openCodes : null;
+  const others = useMemo(() => (scope === 'open' ? [] : AFRICA.map((c) => c.code).filter((k) => openCodes.indexOf(k) < 0)), [scope, openCodes]);
+  const c = countryByCode(code) || (countryByCode(HOME) as AfricaCountry);
+
+  const emit = useCallback((raw: string, k: string) => {
+    const cc = countryByCode(k) || (countryByCode(HOME) as AfricaCountry);
+    const digits = DIGITS_ONLY(raw).slice(0, HARD_MAX_LEN);
+    const nat = nationalNumber(digits, cc.code);
+    const ok = !!nat && (!allowed || allowed.indexOf(cc.code) >= 0);
+    const full = '+' + cc.dial + (nat || digits);
+    const key = full + '|' + (ok ? '1' : '0');
+    if (key !== last.current) {
+      last.current = key;
+      onChange(full, ok);
+    }
+  }, [allowed, onChange]);
+
+  // a country switched off for new accounts while this page is open: back to Cameroon
+  useEffect(() => {
+    if (allowed && open.checked && allowed.indexOf(code) < 0) {
+      setCode(HOME);
+      emit(local, HOME);
+    }
+  }, [allowed, open.checked, code, local, emit]);
+
+  const onType = (v: string) => {
+    const raw = v.replace(/[^\d\s]/g, '');
+    if (DIGITS_ONLY(raw).length > HARD_MAX_LEN) return;
+    setLocal(raw);
+    emit(raw, code);
+  };
+  const onCountry = (k: string) => {
+    setCode(k);
+    emit(local, k);
+  };
+
+  const digits = DIGITS_ONLY(local);
+  const nat = nationalNumber(digits, c.code);
+  const isValid = !!nat && (!allowed || allowed.indexOf(c.code) >= 0);
+  const minLen = Math.min(...c.lens);
+  const isShort = digits.length > 0 && !isValid && digits.length < minLen;
+  const isWrong = digits.length > 0 && !isValid && !isShort;
+  const name = countryName(c.code, lang);
+  const shown = label === undefined ? t.label : label;
+
+  return (
+    <div className={'space-y-1 ' + className} dir={lang === 'ar' ? 'rtl' : 'ltr'} data-fix="FIX776">
+      {shown && (
+        <label htmlFor={inputId} className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+          {shown}
+          {required && <span className="ml-1 text-red-500" aria-hidden="true">*</span>}
+          {required && <span className="sr-only"> ({t.required})</span>}
+        </label>
+      )}
+      <div className="flex gap-2" role="group" aria-label={shown || t.label} dir="ltr">
+        <CountryPicker value={c.code} codes={allowed ? allowed : openCodes} others={others} onChange={onCountry} lang={lang}
+                       disabled={disabled} className="py-2.5" />
+        <input id={inputId} type="tel" inputMode="numeric" autoComplete="tel-national" value={local} disabled={disabled}
+               onChange={(e) => onType(e.target.value)} maxLength={HARD_MAX_LEN + 4} dir="ltr"
+               placeholder={c.code === HOME ? '6XX XXX XXX' : formatNational(c.example, c.code)}
+               aria-label={fill(t.digits, { country: name })} aria-invalid={!!error || isWrong} aria-describedby={hintId}
+               className={'min-w-0 flex-1 rounded-xl border-2 bg-white px-4 py-2.5 font-mono text-sm text-gray-900 outline-none transition-colors '
+                 + 'disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900 dark:text-white '
+                 + (error || isWrong ? 'border-red-400 focus:border-red-500' : isValid ? 'border-green-500 focus:border-green-600'
+                   : 'border-gray-200 focus:border-teal-500 dark:border-gray-600')} />
+      </div>
+      <p id={hintId} role={isWrong || error ? 'alert' : 'status'} aria-live="polite"
+         className={'mt-0.5 text-xs ' + (error ? 'text-red-500' : isValid ? 'text-green-600' : isWrong ? 'text-red-500' : isShort ? 'text-orange-500' : 'text-gray-500')}>
+        {error
+          ? '\u26a0 ' + sanitiseText(error)
+          : isValid
+            ? '\u2713 ' + t.valid + ' \u00b7 +' + c.dial + ' ' + formatNational(nat as string, c.code)
+            : isWrong
+              ? '\u2717 ' + fill(t.wrong, { country: name })
+              : isShort
+                ? fill(t.short, { n: lengthsText(c.code), k: digits.length })
+                : fill(t.hint, { country: name, n: lengthsText(c.code), example: c.code === HOME ? '6 77 12 34 56' : formatNational(c.example, c.code) })}
+      </p>
+    </div>
+  );
+}
+
 export { DIGITS_ONLY, sanitiseText, ALL_COUNTRIES };
-// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX492__COMPLETE
+// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX776__COMPLETE

@@ -1,7 +1,19 @@
-// BAMBEH_DEPLOY_TOKEN__QUICK_JOIN_FIX762_CLEAN
+// BAMBEH_DEPLOY_TOKEN__QUICK_JOIN_FIX777_CLEAN
 /**
- * src/pages/auth/QuickJoin.tsx - FIX762 (replaces FIX756) - route /join (and /register, FIX763)
+ * src/pages/auth/QuickJoin.tsx - FIX777 (replaces FIX762) - route /join (and /register, FIX763)
  *
+ * FIX777, Big 15 Oct 2026: "let the name showing as a sample name ... (e.g. Grace Mbah) be changed to e.g. Zerm
+ * Ngu" and "we are using the ecowas and cemac phone number system, with Cameroon ... most especially cameroon".
+ *   - The sample name is "e.g. Zerm Ngu", in the five languages.
+ *   - A COUNTRY BUTTON before the number: the countries switched on in Command Center > Countries (FIX779,
+ *     FIX774). With Cameroon alone - the start - it is a plain "+237" label and Cameroon numbers work exactly as
+ *     before (9 digits, 6 or 2 first). Another country's number signs in as <country code><number>@phone.bambeh.com.
+ *     A number from a country that is not open yet is told so, with the email sign-up as the way in.
+ *   - EACH STEP IS NOTED for Command Center > App usage > Sign-ups & sign-ins (FIX775, database FIX773): page
+ *     opened, Create pressed, account created - or why not (no name, wrong number, already an account, no
+ *     network...). Never the name, the number or the password.
+ *
+ * FIX762 (replaces FIX756):
  * THE 30-SECOND FREE ACCOUNT - now the only sign-up. Big, 15 Oct 2026: "One box covers both the Terms and
  * the data consent ... make it clear and written that the one box covers both". He also sent Register.tsx,
  * so every "Sign up" in the app opens this screen now (FIX763).
@@ -35,7 +47,13 @@ import { AlertTriangle, ArrowRight, Eye, EyeOff, Loader2, ShieldCheck, UserPlus 
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLang } from '@/hooks/useAppLang';
-import { authIdentity } from '@/utils/phoneAuth';
+import { CountryPicker } from '@/components/AfricanPhoneInput';
+import {
+  HOME, countryName, digitsOfIdentity, lengthsText, parsePhone, phoneIdentity, phonePlaceholder, rememberPhoneCountry,
+  rememberedPhoneCountry,
+} from '@/lib/africa/countries';
+import { useOpenCountries } from '@/lib/africa/useOpenCountries';
+import { track } from '@/components/analytics/track';
 import { forgetLink } from '@/components/auth/LinkReturn';
 import { returnTarget } from '@/components/auth/returnTo';
 
@@ -61,7 +79,7 @@ const EN = {
   subFree: 'Pharmacies on call, hospitals, women\'s health and more. 30 seconds: your name, your number and a password.',
   back: 'You come straight back to where you were.',
   name: 'Your name',
-  namePh: 'e.g. Grace Mbah',
+  namePh: 'e.g. Zerm Ngu',
   phone: 'Phone number',
   phonePh: '6XX XXX XXX',
   phoneHelp: 'Your number is your login. Other users never see it.',
@@ -94,6 +112,12 @@ const EN = {
   errEmailHere: 'This form takes a phone number. To use an email address, tap the link at the bottom.',
   errEmail: 'Write your email address, like name@example.com.',
   errPhoneHere: 'That is a phone number. Tap "Use my Cameroon phone number instead" at the bottom.',
+  errPhoneIn: 'Not a valid number for {country}: {n} digits, e.g. {example}.',
+  errClosed: 'Bambeh is not open in {country} yet. Sign up with an email address instead (link at the bottom).',
+  useEmailAny: 'Prefer email? Sign up with an email address',
+  usePhoneAny: 'Use my phone number instead',
+  errPhoneHereAny: 'That is a phone number. Tap "Use my phone number instead" at the bottom.',
+  country: 'Country',
   errPass: 'Your password needs at least 8 characters.',
   errConsent: 'Tick the box: it accepts both the Terms of Service and the use of your data.',
   errExists: 'This number already has a Bambeh account.',
@@ -123,7 +147,7 @@ const FR: Record<Key, string> = {
   subFree: 'Pharmacies de garde, h\u00f4pitaux, sant\u00e9 des femmes et plus. 30 secondes : votre nom, votre num\u00e9ro et un mot de passe.',
   back: 'Vous revenez directement l\u00e0 o\u00f9 vous \u00e9tiez.',
   name: 'Votre nom',
-  namePh: 'ex. Grace Mbah',
+  namePh: 'ex. Zerm Ngu',
   phone: 'Num\u00e9ro de t\u00e9l\u00e9phone',
   phonePh: '6XX XXX XXX',
   phoneHelp: 'Votre num\u00e9ro sert \u00e0 vous connecter. Les autres utilisateurs ne le voient jamais.',
@@ -156,6 +180,12 @@ const FR: Record<Key, string> = {
   errEmailHere: 'Ce formulaire demande un num\u00e9ro de t\u00e9l\u00e9phone. Pour une adresse e-mail, touchez le lien en bas.',
   errEmail: '\u00c9crivez votre adresse e-mail, par exemple nom@exemple.com.',
   errPhoneHere: 'C\u2019est un num\u00e9ro de t\u00e9l\u00e9phone. Touchez \u00ab Utiliser plut\u00f4t mon num\u00e9ro camerounais \u00bb en bas.',
+  errPhoneIn: 'Num\u00e9ro non valable pour ce pays ({country}) : {n} chiffres, par exemple {example}.',
+  errClosed: 'Bambeh n\u2019est pas encore ouvert dans ce pays ({country}). Inscrivez-vous plut\u00f4t avec une adresse e-mail (lien en bas).',
+  useEmailAny: 'Vous pr\u00e9f\u00e9rez l\u2019e-mail ? Inscrivez-vous avec une adresse e-mail',
+  usePhoneAny: 'Utiliser plut\u00f4t mon num\u00e9ro de t\u00e9l\u00e9phone',
+  errPhoneHereAny: 'C\u2019est un num\u00e9ro de t\u00e9l\u00e9phone. Touchez \u00ab Utiliser plut\u00f4t mon num\u00e9ro de t\u00e9l\u00e9phone \u00bb en bas.',
+  country: 'Pays',
   errPass: 'Votre mot de passe doit avoir au moins 8 caract\u00e8res.',
   errConsent: 'Cochez la case : elle accepte \u00e0 la fois les Conditions d\u2019utilisation et l\u2019utilisation de vos donn\u00e9es.',
   errExists: 'Ce num\u00e9ro a d\u00e9j\u00e0 un compte Bambeh.',
@@ -184,7 +214,7 @@ const PIDGIN: Record<Key, string> = {
   subFree: 'Pharmacy weh e open, hospital, woman health and more. 30 seconds: your name, your number and password.',
   back: 'You go come back straight for where you been dey.',
   name: 'Your name',
-  namePh: 'e.g. Grace Mbah',
+  namePh: 'e.g. Zerm Ngu',
   phone: 'Phone number',
   phonePh: '6XX XXX XXX',
   phoneHelp: 'Your number na your login. Other people no di ever see am.',
@@ -217,6 +247,12 @@ const PIDGIN: Record<Key, string> = {
   errEmailHere: 'This form want phone number. For email, touch the link for down.',
   errEmail: 'Write your email, like name@example.com.',
   errPhoneHere: 'That one na phone number. Touch "Use my Cameroon number instead" for down.',
+  errPhoneIn: 'This number no correct for {country}: {n} numbers, like {example}.',
+  errClosed: 'Bambeh never open for {country} yet. Use email address instead (the link for down).',
+  useEmailAny: 'You want use email? Sign up with email address',
+  usePhoneAny: 'Use my phone number instead',
+  errPhoneHereAny: 'That one na phone number. Touch "Use my phone number instead" for down.',
+  country: 'Country',
   errPass: 'Your password need 8 character or more.',
   errConsent: 'Tick the box: e accept the two - the Terms of Service and how Bambeh go use your data.',
   errExists: 'This number don already get Bambeh account.',
@@ -245,7 +281,7 @@ const AR: Record<Key, string> = {
   subFree: '\u0627\u0644\u0635\u064a\u062f\u0644\u064a\u0627\u062a \u0627\u0644\u0645\u0646\u0627\u0648\u0628\u0629 \u0648\u0627\u0644\u0645\u0633\u062a\u0634\u0641\u064a\u0627\u062a \u0648\u0635\u062d\u0629 \u0627\u0644\u0645\u0631\u0623\u0629 \u0648\u063a\u064a\u0631\u0647\u0627. 30 \u062b\u0627\u0646\u064a\u0629: \u0627\u0633\u0645\u0643 \u0648\u0631\u0642\u0645\u0643 \u0648\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631.',
   back: '\u062a\u0639\u0648\u062f \u0645\u0628\u0627\u0634\u0631\u0629 \u0625\u0644\u0649 \u062d\u064a\u062b \u0643\u0646\u062a.',
   name: '\u0627\u0633\u0645\u0643',
-  namePh: '\u0645\u062b\u0627\u0644: \u063a\u0631\u064a\u0633 \u0645\u0628\u0627',
+  namePh: '\u0645\u062b\u0627\u0644: \u0632\u064a\u0631\u0645 \u0646\u063a\u0648',
   phone: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641',
   phonePh: '6XX XXX XXX',
   phoneHelp: '\u0631\u0642\u0645\u0643 \u0647\u0648 \u0627\u0633\u0645 \u0627\u0644\u062f\u062e\u0648\u0644. \u0644\u0627 \u064a\u0631\u0627\u0647 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u0648\u0646 \u0627\u0644\u0622\u062e\u0631\u0648\u0646 \u0623\u0628\u062f\u064b\u0627.',
@@ -278,6 +314,12 @@ const AR: Record<Key, string> = {
   errEmailHere: '\u0647\u0630\u0627 \u0627\u0644\u0646\u0645\u0648\u0630\u062c \u064a\u0637\u0644\u0628 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641. \u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a\u060c \u0627\u0636\u063a\u0637 \u0627\u0644\u0631\u0627\u0628\u0637 \u0641\u064a \u0627\u0644\u0623\u0633\u0641\u0644.',
   errEmail: '\u0627\u0643\u062a\u0628 \u0628\u0631\u064a\u062f\u0643 \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a\u060c \u0645\u062b\u0644 name@example.com.',
   errPhoneHere: '\u0647\u0630\u0627 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641. \u0627\u0636\u063a\u0637 \u00ab\u0627\u0633\u062a\u062e\u062f\u0645 \u0631\u0642\u0645\u064a \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0648\u0646\u064a \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643\u00bb \u0641\u064a \u0627\u0644\u0623\u0633\u0641\u0644.',
+  errPhoneIn: '\u0631\u0642\u0645 \u063a\u064a\u0631 \u0635\u0627\u0644\u062d \u0641\u064a {country}: {n} \u0623\u0631\u0642\u0627\u0645\u060c \u0645\u062b\u0644 {example}.',
+  errClosed: '\u0628\u0627\u0645\u0628\u064a\u0647 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u0628\u0639\u062f \u0641\u064a {country}. \u0633\u062c\u0651\u0644 \u0628\u0639\u0646\u0648\u0627\u0646 \u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643 (\u0627\u0644\u0631\u0627\u0628\u0637 \u0641\u064a \u0627\u0644\u0623\u0633\u0641\u0644).',
+  useEmailAny: '\u062a\u0641\u0636\u0651\u0644 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a\u061f \u0633\u062c\u0651\u0644 \u0628\u0639\u0646\u0648\u0627\u0646 \u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a',
+  usePhoneAny: '\u0627\u0633\u062a\u062e\u062f\u0645 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u064a \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643',
+  errPhoneHereAny: '\u0647\u0630\u0627 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641. \u0627\u0636\u063a\u0637 \u00ab\u0627\u0633\u062a\u062e\u062f\u0645 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u064a \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643\u00bb \u0641\u064a \u0627\u0644\u0623\u0633\u0641\u0644.',
+  country: '\u0627\u0644\u0628\u0644\u062f',
   errPass: '\u064a\u062c\u0628 \u0623\u0646 \u062a\u062a\u0643\u0648\u0646 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0645\u0646 8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.',
   errConsent: '\u0636\u0639 \u0639\u0644\u0627\u0645\u0629 \u0641\u064a \u0627\u0644\u0645\u0631\u0628\u0639: \u0641\u0647\u0648 \u064a\u0642\u0628\u0644 \u0634\u0631\u0648\u0637 \u0627\u0644\u062e\u062f\u0645\u0629 \u0648\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0645\u0639\u064b\u0627.',
   errExists: '\u0644\u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u062d\u0633\u0627\u0628 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647 \u0628\u0627\u0644\u0641\u0639\u0644.',
@@ -306,7 +348,7 @@ const FF: Record<Key, string> = {
   subFree: 'Farmasiije, opitaluuji, cellal rew\u0253e e go\u0257\u0257e. Sekond 30: innde maa, limoore maa e finnde.',
   back: 'A rutto tigi ka ngonno\u0257aa.',
   name: 'Innde maa',
-  namePh: 'mbaydi: Grace Mbah',
+  namePh: 'mbaydi: Zerm Ngu',
   phone: 'Limoore telefon',
   phonePh: '6XX XXX XXX',
   phoneHelp: 'Limoore maa woni ko naatirtaa. Yim\u0253e goo njiyataa nde fey.',
@@ -339,6 +381,12 @@ const FF: Record<Key, string> = {
   errEmailHere: 'Ndee fiche ina naamnita limoore telefon. Ngam iimeel, \u00f1o\u01b4\u01b4u jokkol les ngol.',
   errEmail: 'Winndu iimeel maa, wano name@example.com.',
   errPhoneHere: '\u018aum ko limoore telefon. \u00d1o\u01b4\u01b4u "Huutoro limoore Kameruun am" les.',
+  errPhoneIn: 'Limoore nde mo\u01b4\u01b4aani e {country}: limooje {n}, wano {example}.',
+  errClosed: 'Bambeh udditaaki tawo e {country}. Winndito e iimeel (jokkol les).',
+  useEmailAny: 'A yi\u0257i iimeel? Winndito e iimeel',
+  usePhoneAny: 'Huutoro limoore telefon am',
+  errPhoneHereAny: '\u018aum ko limoore telefon. \u00d1o\u01b4\u01b4u "Huutoro limoore telefon am" les.',
+  country: 'Leydi',
   errPass: 'Finnde maa ina sokli alkule 8 walla \u0253uri.',
   errConsent: 'Maantin kesu oo: ina ja\u0253a Sar\u0257iiji huutoragol e huutoragol ke\u0253e maa fof.',
   errExists: 'Ndee limoore ina jogii konte Bambeh tawo.',
@@ -402,10 +450,14 @@ export function makeUsername(name: string): string {
   return base + String(1000 + Math.floor(Math.random() * 9000));
 }
 
-/** "237677123456@phone.bambeh.com" -> "237677123456"; anything else -> null (an email, a wrong number). */
+/** "237677123456@phone.bambeh.com" -> "237677123456" (any African number since FIX777); an email -> null. */
 export function phoneDigits(identity: string | null): string | null {
-  const m = /^\+?(237[26]\d{8})@phone\.bambeh\.com$/i.exec(String(identity || ''));
-  return m ? m[1] : null;
+  return digitsOfIdentity(identity);
+}
+
+/** "Not a valid number for {country}" with the words put in. */
+function withVars(s: string, v: Record<string, string | number>): string {
+  return s.replace(/\{(\w+)\}/g, (m, k: string) => (v[k] !== undefined ? String(v[k]) : m));
 }
 
 /** A real email address to sign in with, in small letters - never the phone's own sign-in address. */
@@ -526,6 +578,12 @@ export default function QuickJoin() {
   const [consent, setConsent] = useState(false);
   const [agent, setAgent] = useState(() => cleanAgentCode(param(location.search, 'agent')));
   const [agentOpen, setAgentOpen] = useState(() => cleanAgentCode(param(location.search, 'agent')) !== '');
+  // FIX777 - the countries open for sign-up (asked fresh: a country switched on a minute ago is offered at once)
+  const open = useOpenCountries(true);
+  const [country, setCountry] = useState<string>(() => rememberedPhoneCountry());
+  const cc = open.signup.indexOf(country) >= 0 ? country : HOME;
+  const manyCountries = open.signup.length > 1;
+  const [existsDigits, setExistsDigits] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [exists, setExists] = useState(false);
@@ -534,6 +592,14 @@ export default function QuickJoin() {
   const submitting = useRef(false);
 
   useEffect(() => { writeDraft({ name, phone, email }); }, [name, phone, email]);
+
+  // FIX777 - "opened the sign-up page", once per visit, for Command Center > App usage (nothing personal)
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current || (user && user.id)) return;
+    opened.current = true;
+    track('join_open', { door: why, lang, mode });
+  }, [user, why, lang, mode]);
 
   // already signed in when she opens this page: straight on
   useEffect(() => {
@@ -579,23 +645,43 @@ export default function QuickJoin() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (submitting.current) return;
+    const how: 'phone' | 'email' = byEmail ? 'email' : 'phone';
+    // FIX777 - every stop is noted with its reason (a word, never what she typed)
+    const stop = (msg: string, reason: string, where: string | null = byEmail ? null : cc) => {
+      setErr(msg);
+      track('join_failed', { door: why, lang, mode: how, country: where, reason });
+    };
+    track('join_submit', { door: why, lang, mode: how, country: byEmail ? null : cc });
     const cleanName = name.trim().replace(/\s+/g, ' ');
     setExists(false);
-    if (cleanName.length < 2) { setErr(t.errName); return; }
+    if (cleanName.length < 2) { stop(t.errName, 'name'); return; }
     let identity = '';
     let digits: string | null = null;
+    let numberCountry: string | null = null;
     if (byEmail) {
       const address = cleanEmail(email);
-      if (!address) { setErr(phoneDigits(authIdentity(email.trim())) ? t.errPhoneHere : t.errEmail); return; }
+      const isPhone = !!parsePhone(email.trim(), cc) || !!digitsOfIdentity(email.trim());
+      if (!address) { stop(isPhone ? (manyCountries ? t.errPhoneHereAny : t.errPhoneHere) : t.errEmail, 'email'); return; }
       identity = address;
     } else {
-      const id = authIdentity(phone.trim());
-      digits = phoneDigits(id);
-      if (!id || !digits) { setErr(phone.indexOf('@') >= 0 ? t.errEmailHere : t.errPhone); return; }
-      identity = id;
+      const pp = parsePhone(phone.trim(), cc, open.signup);
+      if (!pp) {
+        if (phone.indexOf('@') >= 0) { stop(t.errEmailHere, 'phone'); return; }
+        const elsewhere = parsePhone(phone.trim(), cc);
+        if (elsewhere && open.signup.indexOf(elsewhere.code) < 0) {
+          stop(withVars(t.errClosed, { country: countryName(elsewhere.code, lang) }), 'closed', elsewhere.code);
+          return;
+        }
+        stop(cc === HOME ? t.errPhone : withVars(t.errPhoneIn, { country: countryName(cc, lang), n: lengthsText(cc), example: phonePlaceholder(cc) }), 'phone');
+        return;
+      }
+      identity = phoneIdentity(pp);
+      digits = pp.digits;
+      numberCountry = pp.code;
+      if (pp.code !== cc) setCountry(pp.code);
     }
-    if (password.length < 8) { setErr(t.errPass); return; }
-    if (!consent) { setErr(t.errConsent); return; }
+    if (password.length < 8) { stop(t.errPass, 'password'); return; }
+    if (!consent) { stop(t.errConsent, 'consent'); return; }
     setErr(null);
     setBusy(true);
     submitting.current = true;
@@ -620,6 +706,7 @@ export default function QuickJoin() {
       consent_version: CONSENT_VERSION,
     };
     if (digits) meta.phone = digits;
+    if (numberCountry) meta.phone_country = numberCountry; // FIX777
     let res = await signUpOnce(identity, password, meta);
     // a username already taken (or a busy database): one more try with new digits
     if (res.error && problemOf(res.error) === 'db') res = await signUpOnce(identity, password, { ...meta, username: makeUsername(cleanName) });
@@ -628,12 +715,17 @@ export default function QuickJoin() {
       const p = res.error ? problemOf(res.error) : 'exists';
       setErr(p === 'exists' ? (byEmail ? t.errExistsEmail : t.errExists) : p === 'weak' ? t.errWeak : p === 'rate' ? t.errRate : p === 'net' ? t.errNet : t.errGeneric);
       setExists(p === 'exists');
+      // the sign-in page gets the number as it reads it: 9 digits for Cameroon, with the country code elsewhere
+      if (p === 'exists' && digits) setExistsDigits(numberCountry === HOME ? digits.slice(3) : digits);
+      track('join_failed', { door: why, lang, mode: how, country: numberCountry, reason: p });
       setBusy(false);
       submitting.current = false;
       return;
     }
     clearDraft();
     forgetLink();
+    if (numberCountry) rememberPhoneCountry(numberCountry); // FIX777 - the sign-in page reads her number the same way
+    track('join_created', { door: why, lang, mode: how, country: numberCountry });
     if (!res.data || !res.data.session) {
       // a project that asks to confirm the address first: she signs in herself
       setBusy(false);
@@ -645,12 +737,13 @@ export default function QuickJoin() {
   };
 
   const field = 'mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200';
+  const fieldRow = 'min-w-0 flex-1 rounded-xl border border-gray-300 px-4 py-3 text-base outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200';
   const existsTo = byEmail
     ? pass
-    : { pathname: '/login', search: '?phone=' + encodeURIComponent(phone.replace(/\D/g, '').slice(-9)) + (location.search ? '&' + location.search.slice(1) : '') };
+    : { pathname: '/login', search: '?phone=' + encodeURIComponent(existsDigits || phone.replace(/\D/g, '').slice(-9)) + (location.search ? '&' + location.search.slice(1) : '') };
 
   return (
-    <section dir={dir} data-fix="FIX762" className="w-full">
+    <section dir={dir} data-fix="FIX777" className="w-full">
       <div className="mb-3 flex flex-wrap justify-center gap-1" role="group" aria-label={t.language}>
         {JOIN_LANGS.map((l) => (
           <button key={l.code} type="button" onClick={() => chooseLang(l.code)} aria-pressed={lang === l.code} data-lang-btn={l.code}
@@ -691,12 +784,16 @@ export default function QuickJoin() {
                 <span className="mt-1 block text-xs font-normal text-gray-500">{t.emailHelp}</span>
               </label>
             ) : (
-              <label className="block text-sm font-medium text-gray-700">
-                {t.phone}
-                <input value={phone} onChange={(e) => { setPhone(e.target.value.slice(0, 20)); fresh(); }} placeholder={t.phonePh} inputMode="tel"
-                       autoComplete="tel-national" dir="ltr" data-f="phone" className={field} />
+              <div className="block text-sm font-medium text-gray-700" data-phone-row="1">
+                <label htmlFor="join-phone">{t.phone}</label>
+                <div className="mt-1 flex items-stretch gap-2" dir="ltr">
+                  <CountryPicker value={cc} codes={open.signup} onChange={(k) => { setCountry(k); fresh(); }} lang={lang} className="text-base" />
+                  <input id="join-phone" value={phone} onChange={(e) => { setPhone(e.target.value.slice(0, 20)); fresh(); }}
+                         placeholder={cc === HOME ? t.phonePh : phonePlaceholder(cc)} inputMode="tel" aria-label={t.phone + ' (' + countryName(cc, lang) + ')'}
+                         autoComplete="tel-national" dir="ltr" data-f="phone" className={fieldRow} />
+                </div>
                 <span className="mt-1 block text-xs font-normal text-gray-500">{t.phoneHelp}</span>
-              </label>
+              </div>
             )}
             <label className="block text-sm font-medium text-gray-700">
               {t.password}
@@ -772,7 +869,7 @@ export default function QuickJoin() {
               <Link to={pass} state={location.state} data-signin-link="1" className="font-semibold text-teal-700 hover:underline">{t.signIn}</Link>
             </p>
             <button type="button" onClick={switchMode} data-email-link="1" className="mx-auto block text-xs text-gray-500 underline">
-              {byEmail ? t.usePhone : t.useEmail}
+              {byEmail ? (manyCountries ? t.usePhoneAny : t.usePhone) : (manyCountries ? t.useEmailAny : t.useEmail)}
             </button>
           </div>
         )}
@@ -780,4 +877,4 @@ export default function QuickJoin() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__QUICK_JOIN_FIX762__COMPLETE
+// BAMBEH_END_TOKEN__QUICK_JOIN_FIX777__COMPLETE
