@@ -66,6 +66,8 @@ import AdminUsage from './AdminUsage';                         // FIX666
 import { Activity as UsageIcon } from 'lucide-react';           // FIX666
 import AdminCountries from './AdminCountries';                 // FIX779
 import { Globe as CountriesIcon } from 'lucide-react';         // FIX779
+import AdminViews from './AdminViews';                         // FIX808
+import { Eye as ViewsIcon } from 'lucide-react';               // FIX808
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 
 type Section =
@@ -73,7 +75,7 @@ type Section =
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
   | 'agents' | 'requests' | 'paywall' | 'gates' | 'foodgas' | 'womenshealth' | 'obligations' | 'couriers'
-  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries';
+  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views';
 
 const NAV: Array<{
   key: Section;
@@ -92,6 +94,7 @@ const NAV: Array<{
   { key: 'refunds',   label: 'Refund claims', icon: RefreshCw },   // FIX636
   { key: 'usage',     label: 'App usage',     icon: UsageIcon },   // FIX666
   { key: 'countries', label: 'Countries',     icon: CountriesIcon }, // FIX779
+  { key: 'views',     label: 'Views & visits', icon: ViewsIcon }, // FIX808
   { key: 'ads',       label: 'Adverts',        icon: Megaphone },
   { key: 'promos',    label: 'Promotions',     icon: Star },
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
@@ -282,6 +285,7 @@ export default function AdminCommandCenter() {
         {section === 'refunds'   && <AdminRefunds embedded />}{/* FIX636 */}
         {section === 'usage'     && <AdminUsage embedded />}{/* FIX666 */}
         {section === 'countries' && <AdminCountries embedded />}{/* FIX779 */}
+        {section === 'views'     && <AdminViews embedded />}{/* FIX808 */}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
         {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}
         {section === 'comms'     && <CommsSection userId={userId!} role={role} flash={flash} />}
