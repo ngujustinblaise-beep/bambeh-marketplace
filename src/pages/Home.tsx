@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX129_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX802_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -13,6 +13,16 @@
  * ✅ Special Features Hub — links to all Bambeh-exclusive pages
  * ✅ Recent Listings section (from localStorage)
  * ✅ FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
+ *
+ * FIX802 (Big, 18 Oct 2026 - "limit users to see marketplace, cooking gas and rentals while the others do
+ * not overwhelm users"): a calmer Home.
+ *   - right under the welcome: the three main categories - Marketplace, Cooking gas, Rentals. The other
+ *     five (Jobs, Services, Vehicles, Exchange, Food) wait behind "More categories".
+ *   - Special Features shows four - Farm Fresh, Compare Items, Group Buying, Buyer Protection; "See all"
+ *     opens the other five (Zerm Coins, Community, Bambeh AI, Flash Deals, Meet Safely).
+ *   - Free help (ServicesRow, FIX803) shows four, with the Safety button and Taxi check bars under them.
+ *   - a list someone opens stays open until the tab or app is closed (sessionStorage), so coming back to
+ *     Home from Jobs finds it as it was; the next visit starts calm again.
  *
  * © 2025–2026 Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,6 +44,7 @@ import {
   Building2,
   Flame,           // FIX704 - Cooking gas tile
   UtensilsCrossed, // FIX704 - Food tile
+  ChevronDown,     // FIX802 - More categories / See all
 } from 'lucide-react';
 
 // FIX397 - "How to use Bambeh", in the five app languages. Written as plain
@@ -107,6 +118,9 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.recentPosted": "Recently Posted",
     "home.corporateAds": "Corporate Adverts",
     "home.seeAll": "See all →",
+    "home.moreCats": "More categories", // FIX802
+    "home.seeAllN": "See all ({{n}})", // FIX802
+    "home.showLess": "Show less", // FIX802
     "home.badgeFeatured": "Featured",
     "home.badgeUrgent": "Urgent",
     "home.typeExchange": "Exchange / Trade",
@@ -167,6 +181,9 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.recentPosted": "Récemment publié",
     "home.corporateAds": "Annonces Entreprises",
     "home.seeAll": "Voir tout →",
+    "home.moreCats": "Plus de cat\u00e9gories", // FIX802
+    "home.seeAllN": "Voir tout ({{n}})", // FIX802
+    "home.showLess": "Voir moins", // FIX802
     "home.badgeFeatured": "À la une",
     "home.badgeUrgent": "Urgent",
     "home.typeExchange": "Échange / Troc",
@@ -227,6 +244,9 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.recentPosted": "تم نشره مؤخرا",
     "home.corporateAds": "إعلانات الشركات",
     "home.seeAll": "عرض الكل ←",
+    "home.moreCats": "\u0641\u0626\u0627\u062a \u0623\u062e\u0631\u0649", // FIX802
+    "home.seeAllN": "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644 ({{n}})", // FIX802
+    "home.showLess": "\u0639\u0631\u0636 \u0623\u0642\u0644", // FIX802
     "home.badgeFeatured": "مميز",
     "home.badgeUrgent": "عاجل",
     "home.typeExchange": "مقايضة / تبديل",
@@ -287,6 +307,9 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.recentPosted": "Recently Posted",
     "home.corporateAds": "Corporate Adverts",
     "home.seeAll": "See all →",
+    "home.moreCats": "More category", // FIX802
+    "home.seeAllN": "See all ({{n}})", // FIX802
+    "home.showLess": "Show less", // FIX802
     "home.badgeFeatured": "Featured",
     "home.badgeUrgent": "Urgent",
     "home.typeExchange": "Exchange / Swap",
@@ -347,6 +370,9 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.recentPosted": "Winduɗi Gooto",
     "home.corporateAds": "Jeeyanɗe Corporate",
     "home.seeAll": "Yiylo fof →",
+    "home.moreCats": "Hollu \u0253ur\u0257o", // FIX802
+    "home.seeAllN": "Yiylo fof ({{n}})", // FIX802
+    "home.showLess": "Hollu see\u0257a", // FIX802
     "home.badgeFeatured": "Sifaa",
     "home.badgeUrgent": "Aray",
     "home.typeExchange": "Jayndu / Roɓaa",
@@ -381,6 +407,22 @@ const homeNormLang = (l: string): string => {
   if (l === 'pcm' || l === 'pidgin') return 'pidgin';
   return 'en';
 };
+
+// FIX802 - the three main categories and the four special features on show (Big, 18 Oct 2026).
+const MAIN_CATEGORY_LINKS = ['/marketplace', '/food-gas/gas', '/rentals'];
+const MAIN_FEATURE_LINKS = ['/farm-fresh', '/compare', '/group-buying', '/escrow'];
+const MORE_CATS_KEY = 'bambeh_home_more_cats';
+const MORE_FEATURES_KEY = 'bambeh_home_more_features';
+
+/** FIX802 - an opened list stays open for this browser session only; private windows simply start closed. */
+function sessionFlag(key: string): boolean {
+  try { return window.sessionStorage.getItem(key) === '1'; } catch { return false; }
+}
+function setSessionFlag(key: string, on: boolean): void {
+  try {
+    if (on) window.sessionStorage.setItem(key, '1'); else window.sessionStorage.removeItem(key);
+  } catch { /* not kept - fine */ }
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────
 interface RecentListing {
@@ -441,6 +483,23 @@ export default function Home() {
     { labelKey: 'home.meetSafely',   link: '/meet-safely',  emoji: '🛡️', bg: 'bg-sky-50',     text: 'text-sky-800'     },
     { labelKey: 'home.escrow',        link: '/escrow',       emoji: '🔒', bg: 'bg-emerald-50', text: 'text-emerald-800' },
   ];
+
+  // FIX802 - what is on show and what waits behind "More categories" / "See all" (Big, 18 Oct 2026)
+  const mainCategories = MAIN_CATEGORY_LINKS
+    .map((l) => categories.find((c) => c.link === l))
+    .filter(Boolean) as typeof categories;
+  const moreCategories = categories.filter((c) => MAIN_CATEGORY_LINKS.indexOf(c.link) < 0);
+  const shownFeatures = specialFeatures.filter((feature) => storeAllows(feature.link));
+  const orderedFeatures = [
+    ...MAIN_FEATURE_LINKS.map((l) => shownFeatures.find((f) => f.link === l)).filter(Boolean),
+    ...shownFeatures.filter((f) => MAIN_FEATURE_LINKS.indexOf(f.link) < 0),
+  ] as typeof specialFeatures;
+  const mainFeatures = orderedFeatures.slice(0, 4);
+  const moreFeatures = orderedFeatures.slice(4);
+  const [showAllCats, setShowAllCats] = useState<boolean>(() => sessionFlag(MORE_CATS_KEY));
+  const [showAllFeatures, setShowAllFeatures] = useState<boolean>(() => sessionFlag(MORE_FEATURES_KEY));
+  const toggleCats = () => { const v = !showAllCats; setShowAllCats(v); setSessionFlag(MORE_CATS_KEY, v); };
+  const toggleFeatures = () => { const v = !showAllFeatures; setShowAllFeatures(v); setSessionFlag(MORE_FEATURES_KEY, v); };
 
   useEffect(() => {
     // FIX114: recently posted listings now load from REAL Supabase.
@@ -543,13 +602,84 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Special Features ──────────────────────────────────────────── */}
-        <div className="mb-16" style={specialFeatures.some((feature) => storeAllows(feature.link)) ? undefined : { display: 'none' }}>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">✨ {t('home.featuresHeading')}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {specialFeatures.filter((feature) => storeAllows(feature.link)).map((feature) => (
+        {/* FIX802 - the three main categories first (Marketplace, Cooking gas, Rentals); the other five behind "More categories" */}
+        <div className="mb-16" data-home-cats="1">
+          <div className="grid grid-cols-3 gap-3 sm:gap-6">
+            {mainCategories.map((category) => (
+              <Link
+                key={category.nameKey}
+                to={category.link}
+                data-cat={category.link}
+                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+              >
+                <div className="p-3 sm:p-8 flex flex-col items-center text-center sm:items-start sm:text-start">
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 ${category.color} rounded-xl flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform`}>
+                    <category.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                  <h3 className="text-sm sm:text-2xl font-bold text-gray-900 sm:mb-2 leading-tight">{t(category.nameKey)}</h3>
+                  <p className="hidden sm:block text-gray-600">{t(category.descKey)}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+          {moreCategories.length > 0 && (
+            <button
+              type="button"
+              onClick={toggleCats}
+              aria-expanded={showAllCats}
+              aria-controls={showAllCats ? 'homeMoreCats' : undefined}
+              data-more="cats"
+              className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-white hover:border-teal-300 transition-colors"
+            >
+              {showAllCats ? t('home.showLess') : t('home.moreCats') + ' (' + moreCategories.length + ')'}
+              <ChevronDown className={`w-4 h-4 transition-transform ${showAllCats ? 'rotate-180' : ''}`} />
+            </button>
+          )}
+          {showAllCats && (
+            <div id="homeMoreCats" className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-3">
+              {moreCategories.map((category) => (
+                <Link
+                  key={category.nameKey}
+                  to={category.link}
+                  data-cat={category.link}
+                  title={t(category.descKey)}
+                  className="group bg-white rounded-xl shadow hover:shadow-lg transition-all duration-200 overflow-hidden"
+                >
+                  <div className="p-3 flex flex-col items-center text-center">
+                    <div className={`w-10 h-10 ${category.color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform`}>
+                      <category.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">{t(category.nameKey)}</h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── Special Features (FIX802: four on show, the rest behind "See all") ──────────────────────────────────────────── */}
+        <div className="mb-16" data-home-features="1" style={shownFeatures.length ? undefined : { display: 'none' }}>
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">✨ {t('home.featuresHeading')}</h2>
+            {moreFeatures.length > 0 && (
+              <button
+                type="button"
+                onClick={toggleFeatures}
+                aria-expanded={showAllFeatures}
+                aria-controls="homeFeatures"
+                data-more="features"
+                className="flex-shrink-0 inline-flex items-center gap-1 text-teal-600 hover:text-teal-700 font-semibold text-sm"
+              >
+                {showAllFeatures ? t('home.showLess') : t('home.seeAllN', { n: shownFeatures.length })}
+                <ChevronDown className={`w-4 h-4 transition-transform ${showAllFeatures ? 'rotate-180' : ''}`} />
+              </button>
+            )}
+          </div>
+          <div id="homeFeatures" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {(showAllFeatures ? orderedFeatures : mainFeatures).map((feature) => (
               <Link
                 key={feature.labelKey}
+                data-feature={feature.link}
                 to={feature.link}
                 className={`${feature.bg} ${feature.text} rounded-xl p-4 text-center hover:shadow-md transition-all duration-200`}
               >
@@ -581,25 +711,6 @@ export default function Home() {
           </div>
           <CorporateAdsStrip maxVisible={8} />
         </div>)}
-
-        {/* ── Categories Grid ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {categories.map((category) => (
-            <Link
-              key={category.nameKey}
-              to={category.link}
-              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2"
-            >
-              <div className="p-8">
-                <div className={`w-16 h-16 ${category.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <category.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t(category.nameKey)}</h3>
-                <p className="text-gray-600">{t(category.descKey)}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
 
         {/* ── Why Bambeh ────────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
@@ -659,4 +770,4 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
-// BAMBEH_END_TOKEN__HOME__COMPLETE
+// BAMBEH_END_TOKEN__HOME_FIX802__COMPLETE

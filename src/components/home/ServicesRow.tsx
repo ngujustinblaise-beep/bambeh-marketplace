@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX751_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX803_CLEAN
 /**
  * src/components/home/ServicesRow.tsx \u2014 Bambeh Marketplace
  *
@@ -60,13 +60,22 @@
  *   only), the bar says "tap here when you arrive" so "I arrived safely" is
  *   one tap from Home.
  *
+ * FIX803 - FOUR ON SHOW, THE REST ONE TAP AWAY (Big, 18 Oct 2026: "make free
+ *   help show pharmacies on call, womens health, fuel at night and hospitals").
+ *   The row shows those four, in that order; "See all" opens Water / Lights and
+ *   Safety alerts. Their counts are never hidden: while they are closed, the
+ *   "See all" button carries them (a number, or a dot for something new), so a
+ *   danger in her town still shows on Home. The Safety button and Taxi check
+ *   bars stay under the tiles, always on show. An opened row stays open until
+ *   the tab or app is closed; the next visit starts calm again.
+ *
  * \u00a9 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';   // FIX728: no global React needed
 import { Link } from 'react-router-dom';
-import { Car, Cross, Stethoscope, Droplets, Fuel, ShieldAlert, HeartPulse, Siren, ChevronRight } from 'lucide-react'; // FIX728: HeartPulse, Siren, ChevronRight; FIX751: Car
+import { Car, Cross, Stethoscope, Droplets, Fuel, ShieldAlert, HeartPulse, Siren, ChevronRight, ChevronDown } from 'lucide-react'; // FIX728: HeartPulse, Siren, ChevronRight; FIX751: Car; FIX803: ChevronDown
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';   // FIX502
 
@@ -87,6 +96,18 @@ const TILES: Tile[] = [
   { key: 'womens',   to: '/womens-health', icon: HeartPulse, tint: 'text-pink-600',   bg: 'bg-pink-50' }, // FIX728
 ];
 
+/** FIX803 - the four on show, in Big's order (18 Oct 2026); the others wait behind "See all". */
+const MAIN_KEYS = ['pharmacy', 'womens', 'fuel', 'hospital'];
+const MORE_HELP_KEY = 'bambeh_home_more_help';
+function helpOpen(): boolean {
+  try { return window.sessionStorage.getItem(MORE_HELP_KEY) === '1'; } catch { return false; }
+}
+function rememberHelpOpen(on: boolean): void {
+  try {
+    if (on) window.sessionStorage.setItem(MORE_HELP_KEY, '1'); else window.sessionStorage.removeItem(MORE_HELP_KEY);
+  } catch { /* not kept - fine */ }
+}
+
 const STR: Record<string, Record<string, string>> = {
   en: {
     heading: 'Free help, any time',
@@ -103,6 +124,8 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: 'Taxi check', // FIX751
     taxiBarSub: 'Scan the taxi\'s code before you get in', // FIX751
     taxiOpen: 'On a taxi ride? Tap here when you arrive safely', // FIX751
+    seeAll: 'See all ({n})', // FIX803
+    showLess: 'Show less', // FIX803
   },
   fr: {
     heading: 'Aide gratuite, \u00e0 toute heure',
@@ -119,6 +142,8 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: 'V\u00e9rifier mon taxi', // FIX751
     taxiBarSub: 'Scannez le code du taxi avant de monter', // FIX751
     taxiOpen: 'En taxi ? Touchez ici quand vous \u00eates bien arriv\u00e9(e)', // FIX751
+    seeAll: 'Voir tout ({n})', // FIX803
+    showLess: 'Voir moins', // FIX803
   },
   pidgin: {
     heading: 'Free help, any time',
@@ -135,6 +160,8 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: 'Check your taxi', // FIX751
     taxiBarSub: 'Scan the taxi code before you enter', // FIX751
     taxiOpen: 'You dey for taxi? Touch here when you reach well', // FIX751
+    seeAll: 'See all ({n})', // FIX803
+    showLess: 'Show less', // FIX803
   },
   ar: {
     heading: '\u0645\u0633\u0627\u0639\u062f\u0629 \u0645\u062c\u0627\u0646\u064a\u0629\u060c \u0641\u064a \u0623\u064a \u0648\u0642\u062a',
@@ -151,6 +178,8 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: '\u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629', // FIX751
     taxiBarSub: '\u0627\u0645\u0633\u062d \u0631\u0645\u0632 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629 \u0642\u0628\u0644 \u0623\u0646 \u062a\u0631\u0643\u0628', // FIX751
     taxiOpen: '\u0641\u064a \u0633\u064a\u0627\u0631\u0629 \u0623\u062c\u0631\u0629\u061f \u0627\u0636\u063a\u0637 \u0647\u0646\u0627 \u0639\u0646\u062f\u0645\u0627 \u062a\u0635\u0644 \u0628\u0633\u0644\u0627\u0645', // FIX751
+    seeAll: '\u0639\u0631\u0636 \u0627\u0644\u0643\u0644 ({n})', // FIX803
+    showLess: '\u0639\u0631\u0636 \u0623\u0642\u0644', // FIX803
   },
   ff: {
     heading: 'Ballal meere, sahaa kala',
@@ -167,6 +196,8 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: '\u01b3eew taksi maa', // FIX751
     taxiBarSub: '\u01b3eewnu kod taksi oo adii naataa', // FIX751
     taxiOpen: 'A woni e taksi? Mee\u0257 \u0257oo so a yottiima no mo\u01b4\u01b4i', // FIX751
+    seeAll: 'Yiylo fof ({n})', // FIX803
+    showLess: 'Hollu see\u0257a', // FIX803
   },
 };
 
@@ -288,17 +319,52 @@ export default function ServicesRow() {
   const t = (k: string) => tr(lang, k);
   const isRtl = lang === 'ar';
   const [taxiRide] = useState(openTaxiRide);                               // FIX751
+  const [showAll, setShowAll] = useState<boolean>(helpOpen);                // FIX803
+  const toggleAll = () => { const v = !showAll; setShowAll(v); rememberHelpOpen(v); };
+  const mainTiles = MAIN_KEYS.map((k) => TILES.find((x) => x.key === k)).filter((x): x is Tile => !!x);
+  const moreTiles = TILES.filter((x) => MAIN_KEYS.indexOf(x.key) < 0);
+  // FIX803 - while Water / Lights and Safety alerts are closed, "See all" carries their counts
+  const hiddenCount = showAll ? 0 : moreTiles.reduce((n, x) =>
+    n + (x.key === 'utility' ? utilityCount : x.key === 'safety' ? safetyCount : x.key === 'fuel' ? fuelOpenCount : 0), 0);
+  const hiddenFresh = !showAll && hiddenCount === 0 && moreTiles.some((x) => x.key === 'utility') && utilityFresh;
 
   const card =
     'flex flex-col items-center gap-2 rounded-2xl border p-3 text-center transition-all';
 
   return (
     <section className="mb-10" dir={isRtl ? 'rtl' : 'ltr'} aria-labelledby="svcHead">
-      <h2 id="svcHead" className="text-2xl font-bold text-gray-900 mb-1">{t('heading')}</h2>
-      <p className="text-sm text-gray-500 mb-4">{t('sub')}</p>
+      <div className="flex items-start justify-between gap-3 mb-4">{/* FIX803: the heading and "See all" */}
+        <div className="min-w-0">
+          <h2 id="svcHead" className="text-2xl font-bold text-gray-900 mb-1">{t('heading')}</h2>
+          <p className="text-sm text-gray-500">{t('sub')}</p>
+        </div>
+        {moreTiles.length > 0 && (
+          <button
+            type="button"
+            onClick={toggleAll}
+            aria-expanded={showAll}
+            aria-controls="svcTiles"
+            data-more="help"
+            className="relative mt-1 flex-shrink-0 inline-flex items-center gap-1 text-teal-600 hover:text-teal-700 font-semibold text-sm"
+          >
+            {showAll ? t('showLess') : t('seeAll').replace('{n}', String(TILES.length))}
+            <ChevronDown className={`w-4 h-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
+            {hiddenCount > 0 ? (
+              <span
+                data-hidden-count={hiddenCount}
+                aria-label={`${hiddenCount} active`}
+                className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center shadow">
+                {hiddenCount > 99 ? '99+' : hiddenCount}
+              </span>
+            ) : hiddenFresh ? (
+              <span data-hidden-fresh="1" className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+            ) : null}
+          </button>
+        )}
+      </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3">{/* FIX728: six tiles */}
-        {TILES.map((tile) => {
+      <div id="svcTiles" className={`grid grid-cols-4 ${showAll ? 'md:grid-cols-6' : ''} gap-2 sm:gap-3`}>{/* FIX803: four on show, six when opened */}
+        {(showAll ? [...mainTiles, ...moreTiles] : mainTiles).map((tile) => {
           const Icon = tile.icon;
           const badge = tile.key === 'utility' ? utilityCount
             : tile.key === 'fuel' ? fuelOpenCount
@@ -375,4 +441,4 @@ export default function ServicesRow() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX751__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX803__COMPLETE
