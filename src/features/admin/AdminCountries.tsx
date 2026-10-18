@@ -1,6 +1,12 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_COUNTRIES_FIX779_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_COUNTRIES_FIX817_CLEAN
 /**
- * AdminCountries.tsx - FIX779 (new, 15 Oct 2026) - Command Center > Countries
+ * AdminCountries.tsx - FIX817 (replaces FIX779) - Command Center > Countries
+ *
+ * FIX817, Big 18 Oct 2026: "can we make people in the rest of the world create accounts with their phone number".
+ *  - A FIFTH GROUP, "Rest of the world" (176 countries and territories, world.ts FIX811): Open all / Close all for
+ *    phone sign-up, or one country at a time. Phone sign-up only - places (regions, towns) stay African, and the
+ *    database refuses places for them (FIX818).
+ *  - "Rest of the world" in the filter row; the search box finds a country anywhere (name or +code).
  *
  * Big: "add a toggle in the admin section to include all ecowas, cemac and africa or we can select a particular
  * country at a time to include".
@@ -18,15 +24,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Globe, Loader2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { AFRICA, BLOCS, HOME, blocMembers, blocName, countryName, flagOf } from '@/lib/africa/countries';
+import { AFRICA, BLOCS, HOME, blocMembers, blocName, countryName, flagOf, isWorld, phoneCountries } from '@/lib/africa/countries';
 import type { Bloc } from '@/lib/africa/countries';
+import '@/lib/africa/world'; // FIX817 - the rest of the world (FIX811)
 import { forgetOpenCountries } from '@/lib/africa/useOpenCountries';
 
 type Row = { code: string; blocs: string[]; signup_on: boolean; places_on: boolean; accounts: number; changed_at: string | null };
 type Change = { at: string; by: string; what: 'signup' | 'places' | 'both'; on: boolean; codes: string[] };
 type Data = { ok: boolean; reason?: string; can_change?: boolean; rows?: Row[]; email_accounts?: number; changes?: Change[] };
 type Which = 'signup' | 'places' | 'both';
-type Filter = 'all' | 'CEMAC' | 'ECOWAS' | 'AES' | 'REST' | 'OPEN';
+type Filter = 'all' | 'CEMAC' | 'ECOWAS' | 'AES' | 'REST' | 'WORLD' | 'OPEN';
 
 const REASONS: Record<string, string> = {
   staff_only: 'Only Bambeh staff can see this screen.',
@@ -37,9 +44,11 @@ const REASONS: Record<string, string> = {
   bad_switch: 'Unknown switch.',
   bad_value: 'Unknown value.',
   not_installed: 'The country switches are not installed yet: run FIX772 in Supabase (SQL Editor), then press Refresh.',
+  places_africa_only: 'Places are for African countries only (the location lists know their regions and towns). The rest of the world is for phone sign-up.',
+  world_not_installed: 'The rest of the world is not in the database yet: run FIX818 in Supabase (SQL Editor), then press Refresh.',
 };
 const WHAT: Record<Which, string> = { signup: 'Phone sign-up', places: 'Places', both: 'Phone sign-up and places' };
-const BLOC_SHORT: Record<string, string> = { CEMAC: 'CEMAC', ECOWAS: 'ECOWAS', AES: 'Sahel states' };
+const BLOC_SHORT: Record<string, string> = { CEMAC: 'CEMAC', ECOWAS: 'ECOWAS', AES: 'Sahel states', WORLD: 'Rest of the world' };
 
 const card: CSSProperties = { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 16 };
 const th: CSSProperties = { textAlign: 'left', padding: '8px 10px', fontSize: 12, color: '#475569', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' };
@@ -129,14 +138,21 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
   };
 
   const isOn = (r: Row | undefined, w: Which): boolean => !!r && (w === 'signup' ? r.signup_on : w === 'places' ? r.places_on : r.signup_on && r.places_on);
-  const list = AFRICA.filter((c) => {
+  // FIX817 - Africa by default; the rest of the world with its own filter; a search looks everywhere
+  const want = q.trim().toLowerCase();
+  const base = want || filter === 'WORLD' || filter === 'OPEN' ? phoneCountries() : AFRICA;
+  const list = base.filter((c) => {
     const r = byCode[c.code];
-    if (filter === 'OPEN' && !(r && (r.signup_on || r.places_on))) return false;
-    if (filter === 'REST' && c.blocs.length > 0) return false;
-    if ((filter === 'CEMAC' || filter === 'ECOWAS' || filter === 'AES') && c.blocs.indexOf(filter) < 0) return false;
-    const want = q.trim().toLowerCase();
-    return !want || c.en.toLowerCase().indexOf(want) >= 0 || c.fr.toLowerCase().indexOf(want) >= 0 || c.code.toLowerCase() === want || ('+' + c.dial).indexOf(want) >= 0;
+    if (!want) {
+      if (filter === 'WORLD' && !isWorld(c.code)) return false;
+      if (filter === 'OPEN' && !(r && (r.signup_on || r.places_on))) return false;
+      if (filter === 'REST' && c.blocs.length > 0) return false;
+      if ((filter === 'CEMAC' || filter === 'ECOWAS' || filter === 'AES') && c.blocs.indexOf(filter) < 0) return false;
+      return true;
+    }
+    return c.en.toLowerCase().indexOf(want) >= 0 || c.fr.toLowerCase().indexOf(want) >= 0 || c.code.toLowerCase() === want || ('+' + c.dial).indexOf(want) >= 0;
   });
+  const worldMissing = rows.length > 0 && !rows.some((r) => isWorld(r.code));
   const openSignup = rows.filter((r) => r.signup_on).length;
   const openPlaces = rows.filter((r) => r.places_on).length;
 
@@ -161,9 +177,12 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
         email sign-up is open to everyone). <b>Places</b>: the country appears in the location filters and when posting.
         Opening a country does <b>not</b> open payments - mobile money stays Cameroon-only - and prices stay in FCFA.
         Before opening a country, make sure someone can answer people there and that its data-protection rules are respected.
+        <b> Rest of the world</b>: phone sign-up only (places stay African). Opening Europe or the United Kingdom means their
+        data-protection laws (GDPR) apply to those members - check with the lawyer first.
       </div>
 
       {err ? <div style={{ ...card, borderColor: '#fecaca', background: '#fef2f2', color: '#991b1b' }}>{err}</div> : null}
+      {!err && worldMissing ? <div style={{ ...card, borderColor: '#fde68a', background: '#fffbeb', color: '#92400e' }} data-world-missing="1">{REASONS.world_not_installed}</div> : null}
       {note ? <div style={{ ...card, borderColor: '#fde68a', background: '#fffbeb', color: '#92400e' }} role="status">{note}</div> : null}
 
       {data ? (
@@ -181,16 +200,18 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 12 }}>
             {BLOCS.map((b: Bloc) => {
               const members = blocMembers(b);
-              const on = members.filter((k) => isOn(byCode[k], which)).length;
+              // FIX817 - the rest of the world: phone sign-up only, whatever the switch above says
+              const w: Which = b === 'WORLD' ? 'signup' : which;
+              const on = members.filter((k) => isOn(byCode[k], w)).length;
               return (
                 <div key={b} style={card} data-bloc={b}>
                   <div style={{ fontWeight: 800, fontSize: 15 }}>{blocName(b, 'en')}</div>
-                  <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{on} of {members.length} on ({WHAT[which].toLowerCase()})</div>
+                  <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{on} of {members.length} on ({WHAT[w].toLowerCase()}){b === 'WORLD' ? ' - places stay African' : ''}</div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                    <button type="button" disabled={!can || busy} style={btn(false)} data-bloc-on={b}
-                            onClick={() => void change(members, which, true, 'Switch ON ' + WHAT[which].toLowerCase() + ' for ' + blocName(b, 'en') + '?')}>Open all</button>
-                    <button type="button" disabled={!can || busy} style={btn(false, '#b91c1c')} data-bloc-off={b}
-                            onClick={() => void change(members, which, false, 'Switch OFF ' + WHAT[which].toLowerCase() + ' for ' + blocName(b, 'en') + '? Cameroon stays on.')}>Close all</button>
+                    <button type="button" disabled={!can || busy || !members.length} style={btn(false)} data-bloc-on={b}
+                            onClick={() => void change(members, w, true, 'Switch ON ' + WHAT[w].toLowerCase() + ' for ' + blocName(b, 'en') + '?')}>Open all</button>
+                    <button type="button" disabled={!can || busy || !members.length} style={btn(false, '#b91c1c')} data-bloc-off={b}
+                            onClick={() => void change(members, w, false, 'Switch OFF ' + WHAT[w].toLowerCase() + ' for ' + blocName(b, 'en') + '? Cameroon stays on.')}>Close all</button>
                   </div>
                 </div>
               );
@@ -198,8 +219,9 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
           </div>
 
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            {chip('all', 'All 54')}{chip('CEMAC', 'CEMAC')}{chip('ECOWAS', 'ECOWAS')}{chip('AES', 'Sahel states')}{chip('REST', 'Rest of Africa')}{chip('OPEN', 'Open only')}
-            <input value={q} onChange={(e) => setQ(e.target.value.slice(0, 40))} placeholder="Search a country or +code" aria-label="Search a country"
+            {chip('all', 'All 54')}{chip('CEMAC', 'CEMAC')}{chip('ECOWAS', 'ECOWAS')}{chip('AES', 'Sahel states')}{chip('REST', 'Rest of Africa')}
+            {chip('WORLD', 'Rest of the world (' + blocMembers('WORLD').length + ')')}{chip('OPEN', 'Open only')}
+            <input value={q} onChange={(e) => setQ(e.target.value.slice(0, 40))} placeholder="Search any country or +code" aria-label="Search a country"
                    style={{ flex: '1 1 180px', padding: '8px 12px', borderRadius: 10, border: '1px solid #cbd5e1', fontSize: 14 }} />
           </div>
 
@@ -230,8 +252,12 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
                                 onClick={() => void change([c.code], 'signup', !(r && r.signup_on), null)} />
                       </td>
                       <td style={td}>
-                        <Toggle on={!!r && r.places_on} locked={locked} disabled={!can || busy} label={'Places ' + c.en}
-                                onClick={() => void change([c.code], 'places', !(r && r.places_on), null)} />
+                        {isWorld(c.code) ? (
+                          <span style={{ fontSize: 12, color: '#94a3b8' }} data-no-places={c.code}>Africa only</span>
+                        ) : (
+                          <Toggle on={!!r && r.places_on} locked={locked} disabled={!can || busy} label={'Places ' + c.en}
+                                  onClick={() => void change([c.code], 'places', !(r && r.places_on), null)} />
+                        )}
                       </td>
                     </tr>
                   );
@@ -262,4 +288,4 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADMIN_COUNTRIES_FIX779__COMPLETE
+// BAMBEH_END_TOKEN__ADMIN_COUNTRIES_FIX817__COMPLETE

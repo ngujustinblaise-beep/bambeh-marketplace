@@ -1,6 +1,10 @@
-// BAMBEH_DEPLOY_TOKEN__OPEN_COUNTRIES_FIX774_CLEAN
+// BAMBEH_DEPLOY_TOKEN__OPEN_COUNTRIES_FIX812_CLEAN
 /**
- * src/lib/africa/useOpenCountries.ts - FIX774 (new, 15 Oct 2026)
+ * src/lib/africa/useOpenCountries.ts - FIX812 (replaces FIX774)
+ *
+ * FIX812 (18 Oct 2026, the rest of the world can sign up with a phone number - FIX810/FIX811): a country code
+ * the database sends is kept even when this page has not loaded the world list (world.ts), so a country of the
+ * rest of the world switched on in Command Center > Countries is never dropped on the way.
  *
  * Which countries Bambeh is open in, as switched in Command Center > Countries (FIX779, database FIX772):
  *   signup - people with a phone number of these countries can create an account
@@ -12,7 +16,7 @@
  */
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { HOME, isCountryCode } from './countries';
+import { HOME } from './countries';
 
 export interface OpenCountries {
   signup: string[];
@@ -25,13 +29,13 @@ const KEY = 'bambeh_open_countries';
 const MAX_AGE_MS = 6 * 3600 * 1000;
 const EVENT = 'bambeh:countries';
 
-/** Cameroon first, then known codes only, no doubles. */
+/** Cameroon first, then two-letter codes only (FIX812: any country, not only the African ones), no doubles. */
 export function cleanCodes(list: unknown): string[] {
   const out = [HOME];
   if (Array.isArray(list)) {
     for (const x of list) {
       const k = String(x == null ? '' : x).toUpperCase();
-      if (isCountryCode(k) && out.indexOf(k) < 0) out.push(k);
+      if (/^[A-Z]{2}$/.test(k) && out.indexOf(k) < 0) out.push(k);
     }
   }
   return out;
@@ -130,4 +134,4 @@ export function useOpenCountries(fresh = false): OpenCountries {
   }, [fresh]);
   return open;
 }
-// BAMBEH_END_TOKEN__OPEN_COUNTRIES_FIX774__COMPLETE
+// BAMBEH_END_TOKEN__OPEN_COUNTRIES_FIX812__COMPLETE

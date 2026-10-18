@@ -1,6 +1,18 @@
-// BAMBEH_DEPLOY_TOKEN__QUICK_JOIN_FIX777_CLEAN
+// BAMBEH_DEPLOY_TOKEN__QUICK_JOIN_FIX814_CLEAN
 /**
- * src/pages/auth/QuickJoin.tsx - FIX777 (replaces FIX762) - route /join (and /register, FIX763)
+ * src/pages/auth/QuickJoin.tsx - FIX814 (replaces FIX777) - route /join (and /register, FIX763)
+ *
+ * FIX814, Big 18 Oct 2026: "can we make people in the rest of the world create accounts with their phone number.
+ * let us make this work."
+ *   - Any country switched on in Command Center > Countries - now including the rest of the world (FIX811) - is in
+ *     the country button; its number signs in as <country code><number>@phone.bambeh.com, like the African ones.
+ *   - THE PAGE STARTS ON THE PHONE'S COUNTRY: the country this phone used before, else the country of its time zone
+ *     (Europe/Paris -> France) when that country is open, else Cameroon.
+ *   - A Cameroon number always works: typed while another country is shown, it is read as Cameroon's. A number
+ *     that is valid in BOTH (677 12 34 56 in France and in Cameroon) is never guessed: she is asked which one.
+ *   - Once more than one country is open, a line under the number says: not in Cameroon? choose your country, or
+ *     start with + and the country code.
+ *   - "This number already has an account" hands a number from outside Cameroon to the sign-in page with its +.
  *
  * FIX777, Big 15 Oct 2026: "let the name showing as a sample name ... (e.g. Grace Mbah) be changed to e.g. Zerm
  * Ngu" and "we are using the ecowas and cemac phone number system, with Cameroon ... most especially cameroon".
@@ -49,9 +61,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLang } from '@/hooks/useAppLang';
 import { CountryPicker } from '@/components/AfricanPhoneInput';
 import {
-  HOME, countryName, digitsOfIdentity, lengthsText, parsePhone, phoneIdentity, phonePlaceholder, rememberPhoneCountry,
-  rememberedPhoneCountry,
+  HOME, countryName, digitsOfIdentity, flagOf, lengthsText, parsePhone, phoneIdentity, phonePlaceholder, prettyPhone, rememberPhoneCountry,
+  rememberedPhoneCountryOrNull,
 } from '@/lib/africa/countries';
+import type { ParsedPhone } from '@/lib/africa/countries';
+import { countryOfZone } from '@/lib/africa/world'; // FIX814 - the rest of the world (FIX811) and the phone's time zone
 import { useOpenCountries } from '@/lib/africa/useOpenCountries';
 import { track } from '@/components/analytics/track';
 import { forgetLink } from '@/components/auth/LinkReturn';
@@ -118,6 +132,9 @@ const EN = {
   usePhoneAny: 'Use my phone number instead',
   errPhoneHereAny: 'That is a phone number. Tap "Use my phone number instead" at the bottom.',
   country: 'Country',
+  abroadHint: 'Not in Cameroon? Choose your country, or start your number with + and your country code.',
+  whichTitle: 'Which one is your number?',
+  whichSub: 'This number exists in both countries. Tap yours.',
   errPass: 'Your password needs at least 8 characters.',
   errConsent: 'Tick the box: it accepts both the Terms of Service and the use of your data.',
   errExists: 'This number already has a Bambeh account.',
@@ -186,6 +203,9 @@ const FR: Record<Key, string> = {
   usePhoneAny: 'Utiliser plut\u00f4t mon num\u00e9ro de t\u00e9l\u00e9phone',
   errPhoneHereAny: 'C\u2019est un num\u00e9ro de t\u00e9l\u00e9phone. Touchez \u00ab Utiliser plut\u00f4t mon num\u00e9ro de t\u00e9l\u00e9phone \u00bb en bas.',
   country: 'Pays',
+  abroadHint: 'Pas au Cameroun\u00a0? Choisissez votre pays, ou commencez votre num\u00e9ro par + et l\u2019indicatif de votre pays.',
+  whichTitle: 'Quel est votre num\u00e9ro\u00a0?',
+  whichSub: 'Ce num\u00e9ro existe dans les deux pays. Touchez le v\u00f4tre.',
   errPass: 'Votre mot de passe doit avoir au moins 8 caract\u00e8res.',
   errConsent: 'Cochez la case : elle accepte \u00e0 la fois les Conditions d\u2019utilisation et l\u2019utilisation de vos donn\u00e9es.',
   errExists: 'Ce num\u00e9ro a d\u00e9j\u00e0 un compte Bambeh.',
@@ -253,6 +273,9 @@ const PIDGIN: Record<Key, string> = {
   usePhoneAny: 'Use my phone number instead',
   errPhoneHereAny: 'That one na phone number. Touch "Use my phone number instead" for down.',
   country: 'Country',
+  abroadHint: 'You no dey Cameroon? Choose your country, or begin your number with + and your country code.',
+  whichTitle: 'Which one na your number?',
+  whichSub: 'This number dey for the two country. Touch your own.',
   errPass: 'Your password need 8 character or more.',
   errConsent: 'Tick the box: e accept the two - the Terms of Service and how Bambeh go use your data.',
   errExists: 'This number don already get Bambeh account.',
@@ -320,6 +343,9 @@ const AR: Record<Key, string> = {
   usePhoneAny: '\u0627\u0633\u062a\u062e\u062f\u0645 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u064a \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643',
   errPhoneHereAny: '\u0647\u0630\u0627 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641. \u0627\u0636\u063a\u0637 \u00ab\u0627\u0633\u062a\u062e\u062f\u0645 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u064a \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643\u00bb \u0641\u064a \u0627\u0644\u0623\u0633\u0641\u0644.',
   country: '\u0627\u0644\u0628\u0644\u062f',
+  whichTitle: '\u0623\u064a\u0651 \u0631\u0642\u0645 \u0647\u0648 \u0631\u0642\u0645\u0643\u061f',
+  whichSub: '\u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u0645\u0648\u062c\u0648\u062f \u0641\u064a \u0627\u0644\u0628\u0644\u062f\u064a\u0646. \u0627\u0636\u063a\u0637 \u0639\u0644\u0649 \u0631\u0642\u0645\u0643.',
+  abroadHint: '\u0644\u0633\u062a \u0641\u064a \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0648\u0646\u061f \u0627\u062e\u062a\u0631 \u0628\u0644\u062f\u0643\u060c \u0623\u0648 \u0627\u0628\u062f\u0623 \u0631\u0642\u0645\u0643 \u0628\u0639\u0644\u0627\u0645\u0629 + \u062b\u0645 \u0631\u0645\u0632 \u0628\u0644\u062f\u0643.',
   errPass: '\u064a\u062c\u0628 \u0623\u0646 \u062a\u062a\u0643\u0648\u0646 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0645\u0646 8 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.',
   errConsent: '\u0636\u0639 \u0639\u0644\u0627\u0645\u0629 \u0641\u064a \u0627\u0644\u0645\u0631\u0628\u0639: \u0641\u0647\u0648 \u064a\u0642\u0628\u0644 \u0634\u0631\u0648\u0637 \u0627\u0644\u062e\u062f\u0645\u0629 \u0648\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0645\u0639\u064b\u0627.',
   errExists: '\u0644\u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u062d\u0633\u0627\u0628 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647 \u0628\u0627\u0644\u0641\u0639\u0644.',
@@ -387,6 +413,9 @@ const FF: Record<Key, string> = {
   usePhoneAny: 'Huutoro limoore telefon am',
   errPhoneHereAny: '\u018aum ko limoore telefon. \u00d1o\u01b4\u01b4u "Huutoro limoore telefon am" les.',
   country: 'Leydi',
+  abroadHint: 'A woodaa Kameruun? Su\u0253o leydi maa, walla fu\u0257\u0257o limoore maa e + e limoore leydi maa.',
+  whichTitle: 'Holi limoore maa?',
+  whichSub: 'Ndee limoore ina woodi e leyde \u0257i\u0257i \u0257ii fof. \u00d1o\u01b4\u01b4u nde maa.',
   errPass: 'Finnde maa ina sokli alkule 8 walla \u0253uri.',
   errConsent: 'Maantin kesu oo: ina ja\u0253a Sar\u0257iiji huutoragol e huutoragol ke\u0253e maa fof.',
   errExists: 'Ndee limoore ina jogii konte Bambeh tawo.',
@@ -580,10 +609,13 @@ export default function QuickJoin() {
   const [agentOpen, setAgentOpen] = useState(() => cleanAgentCode(param(location.search, 'agent')) !== '');
   // FIX777 - the countries open for sign-up (asked fresh: a country switched on a minute ago is offered at once)
   const open = useOpenCountries(true);
-  const [country, setCountry] = useState<string>(() => rememberedPhoneCountry());
+  // FIX814 - the country this phone used before; else its time zone's (Europe/Paris -> FR); else Cameroon
+  const [country, setCountry] = useState<string>(() => rememberedPhoneCountryOrNull() || countryOfZone() || HOME);
   const cc = open.signup.indexOf(country) >= 0 ? country : HOME;
   const manyCountries = open.signup.length > 1;
   const [existsDigits, setExistsDigits] = useState('');
+  // FIX814 - a number valid in two countries: she says which (never guessed)
+  const [choose, setChoose] = useState<ParsedPhone[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [exists, setExists] = useState(false);
@@ -640,11 +672,13 @@ export default function QuickJoin() {
   const fresh = () => {
     if (err) setErr(null);
     if (exists) setExists(false);
+    if (choose) setChoose(null); // FIX814
   };
 
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
+  const submit = async (e?: FormEvent, forced?: ParsedPhone) => {
+    if (e) e.preventDefault();
     if (submitting.current) return;
+    setChoose(null);
     const how: 'phone' | 'email' = byEmail ? 'email' : 'phone';
     // FIX777 - every stop is noted with its reason (a word, never what she typed)
     const stop = (msg: string, reason: string, where: string | null = byEmail ? null : cc) => {
@@ -664,7 +698,15 @@ export default function QuickJoin() {
       if (!address) { stop(isPhone ? (manyCountries ? t.errPhoneHereAny : t.errPhoneHere) : t.errEmail, 'email'); return; }
       identity = address;
     } else {
-      const pp = parsePhone(phone.trim(), cc, open.signup);
+      // FIX814 - a Cameroon number always works, even typed while another country is shown; a number valid in both
+      // (written without +) is never guessed - she is asked which one is hers
+      const shown = forced ? null : parsePhone(phone.trim(), cc, open.signup);
+      const home = forced || cc === HOME || /^\s*(\+|00)/.test(phone) ? null : parsePhone(phone.trim(), HOME, open.signup);
+      if (shown && home && shown.digits !== home.digits) {
+        setChoose([home, shown]);
+        return;
+      }
+      const pp = forced || shown || home;
       if (!pp) {
         if (phone.indexOf('@') >= 0) { stop(t.errEmailHere, 'phone'); return; }
         const elsewhere = parsePhone(phone.trim(), cc);
@@ -716,7 +758,7 @@ export default function QuickJoin() {
       setErr(p === 'exists' ? (byEmail ? t.errExistsEmail : t.errExists) : p === 'weak' ? t.errWeak : p === 'rate' ? t.errRate : p === 'net' ? t.errNet : t.errGeneric);
       setExists(p === 'exists');
       // the sign-in page gets the number as it reads it: 9 digits for Cameroon, with the country code elsewhere
-      if (p === 'exists' && digits) setExistsDigits(numberCountry === HOME ? digits.slice(3) : digits);
+      if (p === 'exists' && digits) setExistsDigits(numberCountry === HOME ? digits.slice(3) : '+' + digits); // FIX814: + for the rest
       track('join_failed', { door: why, lang, mode: how, country: numberCountry, reason: p });
       setBusy(false);
       submitting.current = false;
@@ -793,6 +835,7 @@ export default function QuickJoin() {
                          autoComplete="tel-national" dir="ltr" data-f="phone" className={fieldRow} />
                 </div>
                 <span className="mt-1 block text-xs font-normal text-gray-500">{t.phoneHelp}</span>
+                {manyCountries && <span className="mt-0.5 block text-xs font-normal text-gray-500" data-abroad-hint="1">{t.abroadHint}</span>}
               </div>
             )}
             <label className="block text-sm font-medium text-gray-700">
@@ -840,6 +883,23 @@ export default function QuickJoin() {
               <p className="mt-2 text-xs text-gray-500" data-consent-note="1">{t.consentNote}</p>
             </div>
 
+            {choose && (
+              <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-3" role="group" aria-label={t.whichTitle} data-which-number="1">
+                <p className="text-sm font-bold text-gray-900">{t.whichTitle}</p>
+                <p className="mt-0.5 text-xs text-gray-600">{t.whichSub}</p>
+                <div className="mt-2 grid gap-2">
+                  {choose.map((c) => (
+                    <button key={c.code} type="button" data-which={c.code} disabled={busy}
+                            onClick={() => { setCountry(c.code); setPhone('+' + c.digits); void submit(undefined, c); }}
+                            className="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left text-sm hover:border-teal-500">
+                      <span className="text-lg leading-none" aria-hidden="true">{flagOf(c.code)}</span>
+                      <span className="min-w-0 flex-1 font-semibold text-gray-900">{countryName(c.code, lang)}</span>
+                      <span className="font-mono text-xs text-gray-600" dir="ltr">{prettyPhone(c.digits)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {err && (
               <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert" data-err="1">
                 <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
@@ -877,4 +937,4 @@ export default function QuickJoin() {
     </section>
   );
 }
-// BAMBEH_END_TOKEN__QUICK_JOIN_FIX777__COMPLETE
+// BAMBEH_END_TOKEN__QUICK_JOIN_FIX814__COMPLETE

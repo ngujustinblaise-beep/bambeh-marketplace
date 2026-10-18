@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX778_CLEAN
+// BAMBEH_DEPLOY_TOKEN__LOGIN_FIX815_CLEAN
 import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, AlertTriangle, KeyRound, UserPlus } from "lucide-react";
@@ -6,8 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/App";
 
 import {
-  HOME, countryOfDigits, digitsOfIdentity, rememberPhoneCountry, rememberedPhoneCountry, signInIdentity,
-} from "@/lib/africa/countries"; // FIX778
+  HOME, countryOfDigits, digitsOfIdentity, phoneReadings, rememberPhoneCountry, rememberedPhoneCountry, signInIdentity,
+} from "@/lib/africa/countries"; // FIX778 / FIX815
+import "@/lib/africa/world"; // FIX815 - numbers from the rest of the world (FIX811) sign in too
 import { useOpenCountries } from "@/lib/africa/useOpenCountries"; // FIX778
 import { track } from "@/components/analytics/track"; // FIX778
 import { supabase } from "@/lib/supabase"; // FIX656
@@ -35,6 +36,12 @@ import { returnTarget } from "@/components/auth/returnTo"; // FIX758
  *  country is open, a line under the box says to start with + and the country code.
  *  Each step is noted for Command Center > App usage > Sign-ups & sign-ins (FIX775 / FIX773): page opened,
  *  Sign in pressed, signed in - or why not (wrong details, paused, no network). Never what was typed.
+ *
+ * FIX815 (18 Oct 2026) - numbers from the rest of the world sign in too (world.ts, FIX811): "+33 6 12 34 56 78",
+ *  "0033...", or the number alone on the phone that signed up with it. A number handed over from the sign-up page
+ *  ("This number already has an account") keeps its + (?phone=+33612345678).
+ *  A number written without + on a phone that remembers another country is tried in that country first, then as a
+ *  Cameroon number (677 12 34 56 is valid in both France and Cameroon), so nobody is locked out by the guess.
  */
 const HELP: Record<string, Record<string, string>> = {
   en: {
@@ -185,7 +192,8 @@ export default function Login() {
   const location = useLocation();
   const [target] = useState(() => returnTarget(location.state, location.search));
   const joinTo = { pathname: "/join", search: location.search };
-  const langKey = language === "pcm" ? "pidgin" : language === "ful" ? "ff" : String(language);
+  const lk = String(language); // FIX815 - read as text: older phones may still keep "pcm" or "ful"
+  const langKey = lk === "pcm" ? "pidgin" : lk === "ful" ? "ff" : lk;
   const t = STRINGS[langKey as keyof typeof STRINGS] ?? STRINGS.en;
   const h = HELP[langKey] || HELP.en;
   const isRtl = langKey === "ar";
@@ -194,7 +202,7 @@ export default function Login() {
     // FIX758 - "This number already has an account" (QuickJoin) sends the number along: no typing it twice
     try {
       const p = new URLSearchParams(location.search).get("phone") || "";
-      return /^\d{8,15}$/.test(p) ? p : "";
+      return /^\+?\d{8,15}$/.test(p) ? p : ""; // FIX815: a + for numbers from outside Cameroon
     } catch {
       return "";
     }
@@ -260,8 +268,13 @@ export default function Login() {
     setError("");
     setHelpOpen(false);
     try {
-      const identity = signInIdentity(email, homeCode); // FIX778 (FIX283: a phone number is its sign-in address)
+      const readings = phoneReadings(email, homeCode); // FIX815 - the remembered country first, then Cameroon
+      let identity = readings[0] || null; // FIX778 (FIX283: a phone number is its sign-in address)
       let result = await login(identity || email, password);
+      for (let i = 1; i < readings.length && result?.error && friendly(result.error).why === "wrong"; i++) {
+        const again = await login(readings[i], password);
+        if (!again?.error) { result = again; identity = readings[i]; }
+      }
       // FIX656 - an account created with an EMAIL can still sign in with its phone number:
       // the database answers with its sign-in email only when this password is right.
       if (result?.error && email.indexOf("@") < 0 && email.replace(/\D/g, "").length >= 8) {
@@ -415,4 +428,4 @@ export default function Login() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__LOGIN_FIX778__COMPLETE
+// BAMBEH_END_TOKEN__LOGIN_FIX815__COMPLETE

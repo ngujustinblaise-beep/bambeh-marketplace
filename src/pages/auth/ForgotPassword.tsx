@@ -1,7 +1,13 @@
-// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX654_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FORGOTPASSWORD_FIX816_CLEAN
 /**
  * src/pages/auth/ForgotPassword.tsx - Bambeh Marketplace
  *
+ * FIX816 (18 Oct 2026) - PASSWORD HELP FOR NUMBERS FROM THE REST OF THE WORLD (FIX810-FIX815): the phone box
+ *          offers every country (FIX813), and in the Temporary password tab a number is read the way the sign-in
+ *          page reads it - "+33 6 12 34 56 78", or the number alone on the phone that signed up with it - and
+ *          handed to the database WITH its country code, so it can never be mistaken for a Cameroon number.
+ *          A Cameroon number typed as 9 digits works exactly as before. A number that reads two ways (France
+ *          remembered on this phone, 677 12 34 56 typed) is tried both ways, the phone's country first.
  * FIX654 - PHONE NUMBER OR EMAIL (Big: "users should be allowed to use email or
  *          number"). The Temporary password tab takes whichever the person
  *          remembers. The database (bambeh_finish_temp_password, FIX653) finds the
@@ -70,6 +76,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 import AfricanPhoneInput from '@/components/AfricanPhoneInput';
+import { digitsOfIdentity, phoneReadings, rememberedPhoneCountry } from '@/lib/africa/countries'; // FIX816
 
 /** Bambeh support. Reset requests arrive here. */
 const SUPPORT_WHATSAPP = '237652953607';
@@ -641,14 +648,23 @@ export default function ForgotPassword() {
     setError(null);
     try {
       let res: { data: unknown; error: { message?: string } | null } | null = null;
-      for (let attempt = 0; attempt < 2; attempt++) {
-        res = (await supabase.rpc('bambeh_finish_temp_password', {
-          p_identifier: cIdIsEmail ? cIdRaw.toLowerCase() : cIdDigits,
-          p_temp_password: cTempPw,
-          p_new_password: cPw1,
-        })) as unknown as { data: unknown; error: { message?: string } | null };
-        if (!res.error || !/fetch|network|timeout|load failed/i.test(String(res.error.message || ''))) break;
-        await new Promise((r) => setTimeout(r, 1500));
+      // FIX816 - the number with its country code (the sign-in page's readings, the phone's country first); what was
+      // typed if it cannot be read; an email as typed, in small letters
+      const ids: string[] = cIdIsEmail ? [cIdRaw.toLowerCase()]
+        : phoneReadings(cIdRaw, rememberedPhoneCountry()).map((x) => digitsOfIdentity(x) || '').filter((x) => !!x);
+      if (!ids.length) ids.push(cIdDigits);
+      for (let k = 0; k < ids.length; k++) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          res = (await supabase.rpc('bambeh_finish_temp_password', {
+            p_identifier: ids[k],
+            p_temp_password: cTempPw,
+            p_new_password: cPw1,
+          })) as unknown as { data: unknown; error: { message?: string } | null };
+          if (!res.error || !/fetch|network|timeout|load failed/i.test(String(res.error.message || ''))) break;
+          await new Promise((r) => setTimeout(r, 1500));
+        }
+        const why = res && !res.error ? String(((res.data || {}) as { reason?: string }).reason || '') : '';
+        if (!(res && !res.error && why === 'invalid' && k + 1 < ids.length)) break; // the other reading only if this one found nothing
       }
       if (!res || res.error) {
         setError(/fetch|network|timeout|load failed/i.test(String(res?.error?.message || '')) ? t('errCodeNetwork') : t('errTempInvalid'));
@@ -1010,4 +1026,4 @@ export default function ForgotPassword() {
     </main>
   );
 }
-// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX654__COMPLETE
+// BAMBEH_END_TOKEN__FORGOTPASSWORD_FIX816__COMPLETE

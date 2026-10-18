@@ -1,6 +1,23 @@
-// BAMBEH_DEPLOY_TOKEN__AFRICA_COUNTRIES_FIX768_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AFRICA_COUNTRIES_FIX810_CLEAN
 /**
- * src/lib/africa/countries.ts - FIX768 (new, 15 Oct 2026)
+ * src/lib/africa/countries.ts - FIX810 (replaces FIX768)
+ *
+ * FIX810, Big 18 Oct 2026: "can we make people in the rest of the world create accounts with their phone number.
+ * let us make this work."
+ *  - THE REST OF THE WORLD CAN BE ADDED: world.ts (FIX811) brings 176 more countries and territories with the same
+ *    kind of mobile rule (Google's phone-number data) and calls addPhoneCountries(). Only the pages that take a
+ *    phone number load it (sign-up, sign-in, password help, Command Center > Countries), so the pages that only
+ *    need African places stay as light as before.
+ *  - A NEW GROUP, 'WORLD' ("Rest of the world"), switched in Command Center > Countries like CEMAC or ECOWAS - for
+ *    phone sign-up only: places (regions, towns) stay African.
+ *  - Calling codes shared by several countries (+1 the USA, Canada, Jamaica...; +7 Russia and Kazakhstan; +44 the UK,
+ *    Guernsey, Jersey, the Isle of Man...) are told apart the way Google's data does: by the first digits of the
+ *    number. 1-digit calling codes (+1, +7) are read too.
+ *  - A number typed WITHOUT + is read in the chosen country first, then as an African number with its code (as
+ *    before). A number from outside Africa needs its + (or 00) - or its country chosen in the picker - so a mistyped
+ *    Cameroon number is never taken for a number in another part of the world.
+ *  - AFRICA AND CAMEROON ARE UNCHANGED: the same 54 countries, the same rules, the same sign-in addresses.
+ *  - A country name this phone does not have in the lists is asked from the browser (Intl), never shown as a code.
  *
  * ONE LIST OF AFRICAN COUNTRIES FOR THE WHOLE APP: names (English, French, Arabic), dial codes, flags, the
  * blocs Bambeh opens by (CEMAC, ECOWAS, the Sahel states, all of Africa) and the rule a mobile number must
@@ -25,7 +42,7 @@
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 
-export type Bloc = 'CEMAC' | 'ECOWAS' | 'AES' | 'AFRICA';
+export type Bloc = 'CEMAC' | 'ECOWAS' | 'AES' | 'AFRICA' | 'WORLD';
 export type CountryLang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 
 export interface AfricaCountry {
@@ -45,6 +62,13 @@ export interface AfricaCountry {
   /** how the number is grouped when shown: Cameroon 6 71 23 45 67 */
   readonly groups: readonly number[];
   readonly example: string;
+  /**
+   * FIX810 - only for a calling code several countries share: the first digits that make a number this country's
+   * (Jamaica: 658 or 876 after +1). Without it, the number must follow this country's mobile rule.
+   */
+  readonly lead?: RegExp;
+  /** FIX810 - false for every country but the main one of a shared calling code (+1: the USA). */
+  readonly main?: boolean;
 }
 
 /** Where Bambeh is at home. Always open, can never be switched off. */
@@ -116,16 +140,40 @@ export const AFRICA: readonly AfricaCountry[] = Object.freeze([
   C("ZW", "263", "Zimbabwe", "Zimbabwe", "\u0632\u064a\u0645\u0628\u0627\u0628\u0648\u064a", [], "0", /^(?:7(?:[1278]\d|3[1-9]|9[01])\d{6})$/, [9], [2, 3, 4], "712345678"),
 ]);
 
+// ------------------------------------------------------------------ every country a phone number can come from
+// Africa always; the rest of the world once world.ts (FIX811) is loaded.
+const ALL: AfricaCountry[] = [];
 const BY_CODE: Record<string, AfricaCountry> = {};
-const BY_DIAL: Record<string, AfricaCountry> = {};
-for (const c of AFRICA) {
-  BY_CODE[c.code] = c;
-  BY_DIAL[c.dial] = c;
+/** calling code -> its countries, the main one first ("1": the USA, then Antigua, Anguilla...) */
+const BY_DIAL: Record<string, AfricaCountry[]> = {};
+const has = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
+
+/** Adds countries to the phone lists (the same country twice is ignored). Called by world.ts (FIX811). */
+export function addPhoneCountries(list: readonly AfricaCountry[]): void {
+  for (const c of list) {
+    if (!c || !/^[A-Z]{2}$/.test(c.code) || !/^\d{1,3}$/.test(c.dial) || has(BY_CODE, c.code)) continue;
+    ALL.push(c);
+    BY_CODE[c.code] = c;
+    const same = has(BY_DIAL, c.dial) ? BY_DIAL[c.dial] : (BY_DIAL[c.dial] = []);
+    if (c.main === false) same.push(c);
+    else same.unshift(c);
+  }
+}
+addPhoneCountries(AFRICA);
+
+/** Every country a phone number is read for here: Africa, then the rest of the world when it is loaded. */
+export function phoneCountries(): readonly AfricaCountry[] {
+  return ALL;
+}
+/** True for the countries of world.ts (FIX811): phone sign-up only, no places. */
+export function isWorld(code: unknown): boolean {
+  const c = countryByCode(code);
+  return !!c && c.blocs.indexOf('WORLD') >= 0;
 }
 
 export function countryByCode(code: unknown): AfricaCountry | null {
   const k = String(code || '').toUpperCase();
-  return Object.prototype.hasOwnProperty.call(BY_CODE, k) ? BY_CODE[k] : null;
+  return has(BY_CODE, k) ? BY_CODE[k] : null;
 }
 export function isCountryCode(code: unknown): boolean {
   return countryByCode(code) !== null;
@@ -143,11 +191,25 @@ export function countryLang(v: unknown): CountryLang {
   return 'en';
 }
 
+/** FIX810 - a country this phone has no list for yet: the browser knows its name (Intl); else the code itself. */
+function intlName(code: string, l: CountryLang): string {
+  try {
+    const I = (Intl as unknown as { DisplayNames?: new (l: string[], o: { type: string }) => { of: (c: string) => string | undefined } }).DisplayNames;
+    if (I && /^[A-Z]{2}$/.test(code)) {
+      const n = new I([l === 'fr' || l === 'ff' ? 'fr' : l === 'ar' ? 'ar' : 'en'], { type: 'region' }).of(code);
+      if (n && n !== code) return n;
+    }
+  } catch {
+    /* an older browser: the code */
+  }
+  return code;
+}
+
 /** The country's name in the reader's language (Pidgin: English, Fulfulde: French). */
 export function countryName(code: unknown, lang: unknown = 'en'): string {
   const c = countryByCode(code);
-  if (!c) return String(code || '');
   const l = countryLang(lang);
+  if (!c) return intlName(String(code || '').toUpperCase(), l);
   return l === 'fr' || l === 'ff' ? c.fr : l === 'ar' ? c.ar : c.en;
 }
 
@@ -162,21 +224,27 @@ export function flagOf(code: unknown): string {
   }
 }
 
-export const BLOCS: readonly Bloc[] = Object.freeze(['CEMAC', 'ECOWAS', 'AES', 'AFRICA'] as Bloc[]);
-const BLOC_NAMES: Record<Bloc, { en: string; fr: string; ar: string }> = {
+export const BLOCS: readonly Bloc[] = Object.freeze(['CEMAC', 'ECOWAS', 'AES', 'AFRICA', 'WORLD'] as Bloc[]);
+const BLOC_NAMES: Record<Exclude<Bloc, 'WORLD'>, { en: string; fr: string; ar: string }> = {
   CEMAC: { en: "CEMAC - Central Africa (6)", fr: "CEMAC - Afrique centrale (6)", ar: "\u0633\u064a\u0645\u0627\u0643 - \u0648\u0633\u0637 \u0623\u0641\u0631\u064a\u0642\u064a\u0627 (6)" },
   ECOWAS: { en: "ECOWAS - West Africa (12)", fr: "CEDEAO - Afrique de l\u2019Ouest (12)", ar: "\u0625\u064a\u0643\u0648\u0627\u0633 - \u063a\u0631\u0628 \u0623\u0641\u0631\u064a\u0642\u064a\u0627 (12)" },
   AES: { en: "Sahel states - Burkina Faso, Mali, Niger (3)", fr: "\u00c9tats du Sahel - Burkina Faso, Mali, Niger (3)", ar: "\u062f\u0648\u0644 \u0627\u0644\u0633\u0627\u062d\u0644 - \u0628\u0648\u0631\u0643\u064a\u0646\u0627 \u0641\u0627\u0633\u0648\u060c \u0645\u0627\u0644\u064a\u060c \u0627\u0644\u0646\u064a\u062c\u0631 (3)" },
   AFRICA: { en: "All of Africa (54)", fr: "Toute l\u2019Afrique (54)", ar: "\u0643\u0644 \u0623\u0641\u0631\u064a\u0642\u064a\u0627 (54)" },
 };
 export function blocName(b: Bloc, lang: unknown = 'en'): string {
-  const n = BLOC_NAMES[b];
-  if (!n) return String(b);
   const l = countryLang(lang);
+  if (b === 'WORLD') {
+    // FIX810 - the count is what world.ts brought (0 on a page that did not load it)
+    const k = blocMembers('WORLD').length;
+    return l === 'fr' || l === 'ff' ? 'Reste du monde (' + k + ')' : l === 'ar' ? '\u0628\u0627\u0642\u064a \u0627\u0644\u0639\u0627\u0644\u0645 (' + k + ')' : 'Rest of the world (' + k + ')';
+  }
+  const n = has(BLOC_NAMES, b) ? BLOC_NAMES[b as Exclude<Bloc, 'WORLD'>] : null;
+  if (!n) return String(b);
   return l === 'fr' || l === 'ff' ? n.fr : l === 'ar' ? n.ar : n.en;
 }
-/** The codes of a bloc; 'AFRICA' is all 54. */
+/** The codes of a bloc; 'AFRICA' is all 54; 'WORLD' every country world.ts (FIX811) added. */
 export function blocMembers(b: Bloc): string[] {
+  if (b === 'WORLD') return ALL.filter((c) => c.blocs.indexOf('WORLD') >= 0).map((c) => c.code);
   return AFRICA.filter((c) => b === 'AFRICA' || c.blocs.indexOf(b) >= 0).map((c) => c.code);
 }
 
@@ -219,12 +287,29 @@ export function nationalNumber(raw: string, code: unknown): string | null {
   return null;
 }
 
-/** 237677123456 -> Cameroon; the longest known dial code wins (Africa has 2- and 3-digit codes). */
+/** FIX810 - a calling code several countries share: the one this number belongs to (the main one if unsure). */
+function pickShared(list: readonly AfricaCountry[], national: string): AfricaCountry {
+  if (list.length > 1) {
+    for (const c of list) {
+      if (c.lead) {
+        if (c.lead.test(national)) return c;
+      } else if (c.lens.indexOf(national.length) >= 0 && c.mobile.test(national)) {
+        return c;
+      }
+    }
+  }
+  return list[0];
+}
+
+/**
+ * 237677123456 -> Cameroon; the longest known calling code wins (calling codes never start one another, so this is
+ * exact). FIX810: 1-digit codes too (+1, +7), and a code several countries share is told apart by the number.
+ */
 export function countryOfDigits(digits: string): AfricaCountry | null {
   const d = String(digits || '').replace(/\D/g, '');
-  for (const n of [3, 2]) {
+  for (const n of [3, 2, 1]) {
     const k = d.slice(0, n);
-    if (k.length === n && Object.prototype.hasOwnProperty.call(BY_DIAL, k)) return BY_DIAL[k];
+    if (k.length === n && has(BY_DIAL, k) && BY_DIAL[k].length) return pickShared(BY_DIAL[k], d.slice(n));
   }
   return null;
 }
@@ -233,7 +318,8 @@ export function countryOfDigits(digits: string): AfricaCountry | null {
  * A phone number as people write it, in any of these forms:
  *   677123456 / 6 77 12 34 56 (in the chosen country)  +237 677 12 34 56  00237677123456  237677123456
  * Spaces, dots, dashes and brackets are ignored; any other letter means it is not a phone number.
- * allowed: the countries accepted here (sign-up: the open ones). Leave it out to accept all of Africa.
+ * allowed: the countries accepted here (sign-up: the open ones). Leave it out to accept every country loaded (Africa,
+ * and the rest of the world once world.ts is loaded - FIX810).
  */
 export function parsePhone(raw: unknown, defaultCode: unknown = HOME, allowed?: readonly string[] | null): ParsedPhone | null {
   let d = String(raw == null ? '' : raw).trim().replace(/[\s.()\u00a0-]/g, '');
@@ -253,9 +339,10 @@ export function parsePhone(raw: unknown, defaultCode: unknown = HOME, allowed?: 
     const n = nationalNumber(d, home.code);
     if (n) return make(home, n);
   }
-  // written with the country code but without + (237677123456, 2348021234567)
+  // written with the country code but without + (237677123456, 2348021234567) - African numbers only (FIX810):
+  // outside Africa the + (or the country chosen) is needed, so a mistyped Cameroon number never lands elsewhere
   const c = countryOfDigits(d);
-  if (ok(c) && d.length > c.dial.length + 4) {
+  if (ok(c) && c.blocs.indexOf('WORLD') < 0 && d.length > c.dial.length + 4) {
     const n = nationalNumber(d.slice(c.dial.length), c.code);
     if (n) return make(c, n);
   }
@@ -274,8 +361,8 @@ export function looksLikeEmail(s: unknown): boolean {
 }
 
 /**
- * What the sign-in page sends: an email as typed, or the phone's sign-in address. Any African number is
- * accepted here (an account made while a country was open must always be able to sign in); a number written
+ * What the sign-in page sends: an email as typed, or the phone's sign-in address. Any number of a country loaded
+ * here is accepted (an account made while a country was open must always be able to sign in); a number written
  * without its country code is read as a number of defaultCode first, then of Cameroon.
  */
 export function signInIdentity(input: unknown, defaultCode: unknown = HOME): string | null {
@@ -283,6 +370,23 @@ export function signInIdentity(input: unknown, defaultCode: unknown = HOME): str
   if (looksLikeEmail(s)) return s;
   const p = parsePhone(s, defaultCode) || (String(defaultCode || '').toUpperCase() !== HOME ? parsePhone(s, HOME) : null);
   return p ? phoneIdentity(p) : null;
+}
+
+/**
+ * FIX810 - every way a sign-in box entry can be read, most likely first: an email as typed; a number in the phone's
+ * remembered country, then - when that is not Cameroon and the number was written without + - as a Cameroon number
+ * too (677 12 34 56 is a valid number in France AND in Cameroon). The sign-in and password-help pages try them in turn.
+ */
+export function phoneReadings(input: unknown, defaultCode: unknown = HOME): string[] {
+  const s = String(input == null ? '' : input).trim();
+  const out: string[] = [];
+  const first = signInIdentity(s, defaultCode);
+  if (first) out.push(first);
+  if (!looksLikeEmail(s) && !/^(\+|00)/.test(s) && String(defaultCode || '').toUpperCase() !== HOME) {
+    const p = parsePhone(s, HOME);
+    if (p && p.code === HOME && out.indexOf(phoneIdentity(p)) < 0) out.push(phoneIdentity(p));
+  }
+  return out;
 }
 
 /** "2348021234567@phone.bambeh.com" -> "2348021234567"; an email -> null. */
@@ -336,12 +440,19 @@ export function rememberPhoneCountry(code: unknown): void {
   if (!c) return;
   try { window.localStorage.setItem(PHONE_COUNTRY_KEY, c.code); } catch { /* not kept: Cameroon next time */ }
 }
-export function rememberedPhoneCountry(): string {
+/**
+ * FIX810 - the country this phone wrote a number with, or null if it never did. Any two-letter code is kept, so a
+ * country of the rest of the world is remembered even on a page that has not loaded world.ts (FIX811).
+ */
+export function rememberedPhoneCountryOrNull(): string | null {
   try {
-    const v = window.localStorage.getItem(PHONE_COUNTRY_KEY);
-    return countryByCode(v) ? String(v).toUpperCase() : HOME;
+    const v = String(window.localStorage.getItem(PHONE_COUNTRY_KEY) || '').toUpperCase();
+    return /^[A-Z]{2}$/.test(v) ? v : null;
   } catch {
-    return HOME;
+    return null;
   }
 }
-// BAMBEH_END_TOKEN__AFRICA_COUNTRIES_FIX768__COMPLETE
+export function rememberedPhoneCountry(): string {
+  return rememberedPhoneCountryOrNull() || HOME;
+}
+// BAMBEH_END_TOKEN__AFRICA_COUNTRIES_FIX810__COMPLETE

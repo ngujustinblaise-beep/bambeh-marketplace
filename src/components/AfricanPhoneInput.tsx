@@ -1,6 +1,15 @@
-// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX776_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AFRICANPHONEINPUT_FIX813_CLEAN
 /**
- * src/components/AfricanPhoneInput.tsx - FIX776 (replaces FIX492)
+ * src/components/AfricanPhoneInput.tsx - FIX813 (replaces FIX776)
+ *
+ * FIX813, Big 18 Oct 2026: "can we make people in the rest of the world create accounts with their phone number".
+ *  - THE WHOLE WORLD IN THE PICKER: loading this box loads the rest of the world (world.ts, FIX811). The list shows
+ *    the countries open on Bambeh first, then the other African countries, then the rest of the world - with the
+ *    search box on top (type a name in English, French or Arabic, or +33).
+ *  - scope="open" (a new account) still offers only the countries switched on in Command Center > Countries.
+ *  - A number typed with + or 00 picks its country by itself, wherever it is. Without +, an African number with its
+ *    code is still read (237677123456); outside Africa the + is needed (or the country chosen in the picker).
+ * FIX776 (replaces FIX492):
  *
  * The phone box with a country picker, for every form that asks for a phone number (password help today).
  * FIX776, Big 15 Oct 2026: "we are using the ecowas and cemac phone number system, with Cameroon and a few other
@@ -24,9 +33,10 @@ import type { KeyboardEvent, ReactNode } from 'react';
 import { Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useLang } from '@/hooks/useAppLang';
 import {
-  AFRICA, HOME, countryByCode, countryLang, countryName, countryOfDigits, flagOf, formatNational, lengthsText, nationalNumber,
-  sortCountries,
+  AFRICA, HOME, countryByCode, countryLang, countryName, countryOfDigits, flagOf, formatNational, isWorld, lengthsText, nationalNumber,
+  phoneCountries, sortCountries,
 } from '@/lib/africa/countries';
+import '@/lib/africa/world'; // FIX813 - the rest of the world (FIX811) for this box
 import type { AfricaCountry, CountryLang } from '@/lib/africa/countries';
 import { useOpenCountries } from '@/lib/africa/useOpenCountries';
 
@@ -69,37 +79,37 @@ export function validatePhone(digits: string, country: Country): boolean {
 
 // ------------------------------------------------------------------ words
 type Words = {
-  label: string; country: string; search: string; open: string; other: string; none: string; valid: string;
+  label: string; country: string; search: string; open: string; other: string; world: string; none: string; valid: string;
   wrong: string; short: string; hint: string; code: string; digits: string; required: string;
 };
 const T: Record<CountryLang, Words> = {
   en: {
-    label: 'Phone number', country: 'Country', search: 'Search a country', open: 'Countries open on Bambeh', other: 'Other African countries',
+    label: 'Phone number', country: 'Country', search: 'Search a country', open: 'Countries open on Bambeh', other: 'Other African countries', world: 'Rest of the world',
     none: 'No country found', valid: 'Valid number', wrong: 'Not a valid number for {country}', short: 'Needs {n} digits ({k} so far)',
     hint: '{country}: {n} digits, e.g. {example}', code: 'Country: {country} +{dial}', digits: 'Phone number in {country}', required: 'required',
   },
   fr: {
     label: 'Num\u00e9ro de t\u00e9l\u00e9phone', country: 'Pays', search: 'Chercher un pays', open: 'Pays ouverts sur Bambeh',
-    other: 'Autres pays africains', none: 'Aucun pays trouv\u00e9', valid: 'Num\u00e9ro valide', wrong: 'Num\u00e9ro non valable ({country})',
+    other: 'Autres pays africains', world: 'Reste du monde', none: 'Aucun pays trouv\u00e9', valid: 'Num\u00e9ro valide', wrong: 'Num\u00e9ro non valable ({country})',
     short: 'Il faut {n} chiffres ({k} pour l\u2019instant)', hint: '{country} : {n} chiffres, ex. {example}', code: 'Pays : {country} +{dial}',
     digits: 'Num\u00e9ro de t\u00e9l\u00e9phone ({country})', required: 'obligatoire',
   },
   pidgin: {
-    label: 'Phone number', country: 'Country', search: 'Find country', open: 'Country dem wey Bambeh dey', other: 'Other Africa country dem',
+    label: 'Phone number', country: 'Country', search: 'Find country', open: 'Country dem wey Bambeh dey', other: 'Other Africa country dem', world: 'The rest of the world',
     none: 'No country', valid: 'Number correct', wrong: 'This number no correct for {country}', short: 'E need {n} numbers ({k} now)',
     hint: '{country}: {n} numbers, like {example}', code: 'Country: {country} +{dial}', digits: 'Phone number for {country}', required: 'you must put am',
   },
   ar: {
     label: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641', country: '\u0627\u0644\u0628\u0644\u062f',
     search: '\u0627\u0628\u062d\u062b \u0639\u0646 \u0628\u0644\u062f', open: '\u0627\u0644\u0628\u0644\u062f\u0627\u0646 \u0627\u0644\u0645\u062a\u0627\u062d\u0629 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647',
-    other: '\u0628\u0644\u062f\u0627\u0646 \u0623\u0641\u0631\u064a\u0642\u064a\u0629 \u0623\u062e\u0631\u0649', none: '\u0644\u0627 \u064a\u0648\u062c\u062f \u0628\u0644\u062f',
+    other: '\u0628\u0644\u062f\u0627\u0646 \u0623\u0641\u0631\u064a\u0642\u064a\u0629 \u0623\u062e\u0631\u0649', world: '\u0628\u0627\u0642\u064a \u0627\u0644\u0639\u0627\u0644\u0645', none: '\u0644\u0627 \u064a\u0648\u062c\u062f \u0628\u0644\u062f',
     valid: '\u0631\u0642\u0645 \u0635\u0627\u0644\u062d', wrong: '\u0631\u0642\u0645 \u063a\u064a\u0631 \u0635\u0627\u0644\u062d \u0641\u064a {country}',
     short: '\u064a\u0644\u0632\u0645 {n} \u0623\u0631\u0642\u0627\u0645 (\u0627\u0644\u0622\u0646 {k})', hint: '{country}: {n} \u0623\u0631\u0642\u0627\u0645\u060c \u0645\u062b\u0644 {example}',
     code: '\u0627\u0644\u0628\u0644\u062f: {country} +{dial}', digits: '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0641\u064a {country}',
     required: '\u0625\u0644\u0632\u0627\u0645\u064a',
   },
   ff: {
-    label: 'Limoore telefon', country: 'Leydi', search: 'Yiylo leydi', open: 'Ley\u0257e \u0257e Bambeh woni', other: 'Ley\u0257e Afrik goo',
+    label: 'Limoore telefon', country: 'Leydi', search: 'Yiylo leydi', open: 'Ley\u0257e \u0257e Bambeh woni', other: 'Ley\u0257e Afrik goo', world: 'Ley\u0257e aduna goo',
     none: 'Alaa leydi', valid: 'Limoore mo\u01b4\u01b4ii', wrong: 'Limoore nde mo\u01b4\u01b4aani ({country})', short: 'Limooje {n} ina njiddaa ({k} jooni)',
     hint: '{country}: limooje {n}, wano {example}', code: 'Leydi: {country} +{dial}', digits: 'Limoore telefon ({country})', required: 'ina wa\u0257\u0257ii',
   },
@@ -134,7 +144,9 @@ function CountryMenu({
   const hit = (c: AfricaCountry) => !want || countryName(c.code, lang).toLowerCase().indexOf(want) >= 0 || c.en.toLowerCase().indexOf(want) >= 0
     || c.fr.toLowerCase().indexOf(want) >= 0 || ('+' + c.dial).indexOf(want) >= 0 || c.code.toLowerCase() === want;
   const first = sortCountries(codes, lang).filter(hit);
-  const rest = sortCountries(others, lang).filter(hit);
+  // FIX813 - the other African countries, then the rest of the world
+  const rest = sortCountries(others.filter((k) => !isWorld(k)), lang).filter(hit);
+  const world = sortCountries(others.filter((k) => isWorld(k)), lang).filter(hit);
   const row = (c: AfricaCountry): ReactNode => (
     <button key={c.code} type="button" role="option" aria-selected={c.code === value} data-country={c.code}
             onClick={() => onPick(c.code)}
@@ -167,7 +179,9 @@ function CountryMenu({
         {first.map(row)}
         {rest.length > 0 && <p className="bg-gray-50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t.other}</p>}
         {rest.map(row)}
-        {first.length + rest.length === 0 && <p className="py-4 text-center text-sm text-gray-400" role="status">{t.none}</p>}
+        {world.length > 0 && <p className="bg-gray-50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-500" data-world-head="1">{t.world}</p>}
+        {world.map(row)}
+        {first.length + rest.length + world.length === 0 && <p className="py-4 text-center text-sm text-gray-400" role="status">{t.none}</p>}
       </div>
     </div>
   );
@@ -265,9 +279,9 @@ function startOf(value: string | undefined, fallback: string): { code: string; l
   }
   const d = DIGITS_ONLY(v).slice(0, HARD_MAX_LEN);
   if (d && nationalNumber(d, home) === null) {
-    // written with its country code but no + (the sign-in page hands numbers over like that)
+    // written with its country code but no + (the sign-in page hands numbers over like that) - African numbers only
     const c = countryOfDigits(d);
-    if (c && nationalNumber(d.slice(c.dial.length), c.code) !== null) return { code: c.code, local: d.slice(c.dial.length) };
+    if (c && !isWorld(c.code) && nationalNumber(d.slice(c.dial.length), c.code) !== null) return { code: c.code, local: d.slice(c.dial.length) };
   }
   return { code: home, local: d };
 }
@@ -287,7 +301,8 @@ export default function AfricanPhoneInput({
 
   const openCodes = open.signup;
   const allowed = scope === 'open' ? openCodes : null;
-  const others = useMemo(() => (scope === 'open' ? [] : AFRICA.map((c) => c.code).filter((k) => openCodes.indexOf(k) < 0)), [scope, openCodes]);
+  // FIX813 - every country loaded here (Africa and the rest of the world) that is not open yet
+  const others = useMemo(() => (scope === 'open' ? [] : phoneCountries().map((c) => c.code).filter((k) => openCodes.indexOf(k) < 0)), [scope, openCodes]);
   const c = countryByCode(code) || (countryByCode(HOME) as AfricaCountry);
 
   const emit = useCallback((raw: string, k: string) => {
@@ -369,4 +384,4 @@ export default function AfricanPhoneInput({
 }
 
 export { DIGITS_ONLY, sanitiseText, ALL_COUNTRIES };
-// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX776__COMPLETE
+// BAMBEH_END_TOKEN__AFRICANPHONEINPUT_FIX813__COMPLETE

@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX802_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX821_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,6 +23,12 @@
  *   - Free help (ServicesRow, FIX803) shows four, with the Safety button and Taxi check bars under them.
  *   - a list someone opens stays open until the tab or app is closed (sessionStorage), so coming back to
  *     Home from Jobs finds it as it was; the next visit starts calm again.
+ *
+ * FIX821 (Big, 18 Oct 2026 - "how can we include the instant search pane on the home screen"):
+ *   - THE SEARCH BOX IS THE FIRST THING ON HOME, right under the welcome (HomeSearch, FIX820): results while
+ *     typing - the sections and free help, the adverts, rentals, jobs... - and "See all results".
+ *   - a smaller welcome on phones (less empty space above it), so the search and the three main categories
+ *     show without scrolling. Computers keep the big welcome.
  *
  * © 2025–2026 Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -75,6 +81,7 @@ import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from '@/lib/supabase';
 import ServicesRow from '@/components/home/ServicesRow';   // FIX481
+import HomeSearch from '@/components/home/HomeSearch';     // FIX820 - the instant search
 import { IS_STORE_APP, storeAllows } from '@/config/storeMode'; // FIX620
 import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
 import CorporateAdsStrip from '@/features/corporate/CorporateAdsStrip';
@@ -550,17 +557,20 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-6 md:py-16">
 
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-10 md:mb-16">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-3 md:mb-4">
             {t('home.welcomePrefix')}<span className="text-teal-600">{t('home.welcomeSuffix')}</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-2">{t('home.tagline')}</p>
-          <p className="text-lg text-gray-500">
+          <p className="text-lg md:text-xl text-gray-600 mb-2">{t('home.tagline')}</p>
+          <p className="text-base md:text-lg text-gray-500">
             🎉 <span className="font-bold text-green-600">{t('home.feeMsg')}</span> 💚
           </p>
+
+          {/* FIX821 - the instant search (FIX820): the first thing to use on Home */}
+          <HomeSearch className="mt-5" />
 
           {/* FIX122: Corporate login (left) + labelled Share (right) */}
           <div className="mt-6 flex flex-col items-center justify-center gap-3">
@@ -770,4 +780,4 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
-// BAMBEH_END_TOKEN__HOME_FIX802__COMPLETE
+// BAMBEH_END_TOKEN__HOME_FIX821__COMPLETE

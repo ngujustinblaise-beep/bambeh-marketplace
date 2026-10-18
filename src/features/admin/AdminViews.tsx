@@ -1,6 +1,13 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_VIEWS_FIX808_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_VIEWS_FIX819_CLEAN
 /**
- * AdminViews.tsx - FIX808 (new) - Command Center > Views & visits
+ * AdminViews.tsx - FIX819 (replaces FIX808) - Command Center > Views & visits
+ *
+ * FIX819, Big 18 Oct 2026: "how can we optimize use and make users stay longer in the app" - first, know what people
+ * come for and do not find. WHAT PEOPLE SEARCH FOR (the instant search on Home, FIX820; database FIX818):
+ *  - the most searched words, how many times, and how often they found nothing
+ *  - SEARCHED BUT FOUND NOTHING: the words people typed when Bambeh had nothing for them - the sellers, agents and
+ *    adverts to go and find next
+ * Only the words are kept: never who searched, never anything that looks like a phone number or an email.
  *
  * Big, 18 Oct 2026: "is it possible that when items are viewed, it shows on the detailed page as well as the admin
  * page that someone has viewed. we can trace how many views and see how many people visited a particular item. we
@@ -26,6 +33,12 @@ import { Eye, Loader2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export type PathRow = { path: string; opens: number; people: number; last: string | null };
+/** FIX819 - bambeh_admin_searches (FIX818) */
+export type SearchReport = {
+  ok: boolean; reason?: string; days?: number; counting_since?: string | null; searches?: number; found_nothing?: number; words?: number;
+  top?: Array<{ term: string; n: number; zero: number; last: string | null }>;
+  missing?: Array<{ term: string; zero: number; n: number; last: string | null }>;
+};
 export type ItemRow = {
   tbl: string; id: string; path: string | null; views: number; people: number; last: string | null; title: string; total: number | null;
 };
@@ -159,10 +172,31 @@ export default function AdminViews({ embedded = false }: { embedded?: boolean })
   const [rep, setRep] = useState<Report | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  const [srch, setSrch] = useState<SearchReport | null>(null);
+  const [srchErr, setSrchErr] = useState('');
+
+  // FIX819 - what people search for, for the same period (its own answer: the views never wait for it)
+  const loadSearches = useCallback(async (d: number) => {
+    try {
+      const { data, error } = await supabase.rpc('bambeh_admin_searches', { p_days: d });
+      if (error) {
+        const m = String((error as { message?: string }).message || error);
+        setSrchErr(/bambeh_admin_searches|could not find|does not exist|PGRST202/i.test(m) ? 'missing' : m);
+        setSrch(null);
+      } else {
+        setSrchErr('');
+        setSrch((data || null) as SearchReport | null);
+      }
+    } catch (e) {
+      setSrchErr(String((e as Error)?.message || e));
+      setSrch(null);
+    }
+  }, []);
 
   const load = useCallback(async (d: number) => {
     setBusy(true);
     setErr('');
+    void loadSearches(d);
     try {
       const { data, error } = await supabase.rpc('bambeh_admin_views', { p_days: d });
       if (error) {
@@ -177,7 +211,7 @@ export default function AdminViews({ embedded = false }: { embedded?: boolean })
       setRep(null);
     }
     setBusy(false);
-  }, []);
+  }, [loadSearches]);
 
   useEffect(() => { void load(days); }, [days, load]);
 
@@ -305,6 +339,49 @@ export default function AdminViews({ embedded = false }: { embedded?: boolean })
             </div>
           </div>
 
+          {/* FIX819 - what people search for (the instant search on Home, FIX820) */}
+          <div data-searches="1" style={card}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a' }}>What people search for</div>
+            <div style={{ ...small, marginBottom: 8 }}>The words typed in the search on Home - and the ones Bambeh had nothing for. Those are the sellers and adverts to go and find next.</div>
+            {srchErr === 'missing' ? (
+              <div data-msg="searches-missing" style={{ fontSize: 13, color: '#92400e' }}>The search counter is not in the database yet: run FIX818-world-signup-and-search.sql in the Supabase SQL Editor, then press refresh.</div>
+            ) : srchErr ? (
+              <div data-msg="searches-error" style={{ fontSize: 13, color: '#991b1b' }}>Could not load the searches: {srchErr}</div>
+            ) : !srch ? (
+              <div style={{ fontSize: 13, color: '#64748b' }}>Loading...</div>
+            ) : !srch.ok ? (
+              <div style={{ fontSize: 13, color: '#64748b' }}>Only Bambeh staff can see this.</div>
+            ) : !(srch.top || []).length ? (
+              <div style={{ fontSize: 13, color: '#64748b' }} data-searches-none="1">No search in this period yet - counting starts once the new Home is out.</div>
+            ) : (
+              <>
+                <div style={{ fontSize: 13, color: '#334155', marginBottom: 8 }} data-searches-total="1">
+                  <b>{num(srch.searches)}</b> searches, <b>{num(srch.words)}</b> different words; <b>{num(srch.found_nothing)}</b> found nothing.
+                </div>
+                <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))' }}>
+                  <div data-searches-top="1">
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#0f766e', marginBottom: 4 }}>Most searched</div>
+                    {(srch.top || []).slice(0, 15).map((x) => (
+                      <div key={x.term} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 14, padding: '4px 0', borderBottom: '1px solid #f8fafc' }}>
+                        <span style={{ wordBreak: 'break-word' }}>{x.term}</span>
+                        <span style={{ whiteSpace: 'nowrap' }}><b>{num(x.n)}</b>{x.zero ? <span style={{ color: '#b45309' }}> - {num(x.zero)} found nothing</span> : null}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div data-searches-missing="1">
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#b45309', marginBottom: 4 }}>Searched, found nothing - people want these</div>
+                    {(srch.missing || []).length ? (srch.missing || []).slice(0, 15).map((x) => (
+                      <div key={x.term} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 14, padding: '4px 0', borderBottom: '1px solid #f8fafc' }}>
+                        <span style={{ wordBreak: 'break-word' }}>{x.term}</span>
+                        <span style={{ whiteSpace: 'nowrap' }}><b>{num(x.zero)}</b> {x.zero === 1 ? 'time' : 'times'}</span>
+                      </div>
+                    )) : <div style={{ fontSize: 13, color: '#64748b' }}>Every search found something.</div>}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
           {daily.length > 1 ? (
             <div data-daily="1" style={card}>
               <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', marginBottom: 10 }}>Page opens per day</div>
@@ -322,11 +399,12 @@ export default function AdminViews({ embedded = false }: { embedded?: boolean })
           <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.5 }}>
             How it is counted: a page open counts every time it is opened. People are different phones; a phone is kept only as a
             fingerprint, never with a name. An item view counts once per person per hour, and owners looking at their own items never
-            count. Staff screens are not counted. Counts older than 400 days are removed.
+            count. Staff screens are not counted. Searches: only the words are kept - never who searched, never anything that looks like a
+            phone number or an email address. Counts older than 400 days are removed.
           </div>
         </>
       )}
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADMIN_VIEWS_FIX808__COMPLETE
+// BAMBEH_END_TOKEN__ADMIN_VIEWS_FIX819__COMPLETE
