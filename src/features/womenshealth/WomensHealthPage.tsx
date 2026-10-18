@@ -1,8 +1,19 @@
-// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_PAGE_FIX745_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_PAGE_FIX786_CLEAN
 /**
- * src/features/womenshealth/WomensHealthPage.tsx - FIX745 (replaces FIX731)
+ * src/features/womenshealth/WomensHealthPage.tsx - FIX786 (replaces FIX745)
  *   routes: /womens-health            WHERE TO GO - maternities, antenatal care, screening, family planning
  *           /womens-health/screening  FREE SCREENING DAYS - dated campaigns (Octobre Rose...), "remind me"
+ *
+ * FIX786 (Big, 15 Oct 2026):
+ *   - "Find a maternity" leads to REGISTERED health units only: the list says so (state, or private with an
+ *     authorisation, each one checked by Bambeh staff before women see it - FIX789 keeps the forms for legal
+ *     health facilities only).
+ *   - When the chosen town has nothing listed yet, the page looks in the whole region, then in all of
+ *     Cameroon, and says so in one line ("Nothing listed in Bafia yet. Showing the whole Centre region.") -
+ *     a woman in labour never meets an empty page that could have shown the next town's maternity.
+ *   - Nothing anywhere: the hospitals on duty are one tap away.
+ *   - "Add a place" and "Announce a screening day" carry, on the button itself, "(state or legal private
+ *     health facilities only)".
  *
  * FIX745 (Big, 14 Oct 2026): the CALM TOOLS card (/calm, FIX742) beside the pregnancy guide and the quiz
  *   cards - shown once an admin opened the Calm tools page (FIX737: "When to get help" and at least one
@@ -41,7 +52,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Baby, Bell, BellOff, CalendarDays, ChevronRight, Clock, GraduationCap, Heart, Leaf, Loader2, MapPin, Phone, Plus, RefreshCw, Search, ShieldCheck,
+  Ambulance, Baby, Bell, BellOff, CalendarDays, ChevronRight, Clock, GraduationCap, Heart, Leaf, Loader2, MapPin, Phone, Plus, RefreshCw, Search,
+  ShieldCheck,
 } from 'lucide-react';
 import { FreeAccountCard, FreeAccountChecking, GuestBanner, SafetyLinkCard, useFreeAccount } from '@/components/security/FreeServiceGate';
 import {
@@ -56,6 +68,7 @@ import { calmState, hasSavedCalm } from './calmApi';
 import { ct } from './calmText';
 
 const WHERE_KEY = 'bambeh_wh_where';
+const WIDE_KEY = 'bambeh_wh_widened';   // FIX786: which saved lists were shown wider (for the line when offline)
 const PAGE = 30;
 
 interface Where { region: WhRegion | ''; town: string }
@@ -74,6 +87,28 @@ function loadWhere(): Where {
 
 function saveWhere(w: Where): void {
   try { window.localStorage.setItem(WHERE_KEY, JSON.stringify(w)); } catch { /* not kept - fine */ }
+}
+
+/** FIX786: how far the list had to look: '' = where she asked, 'region' = her whole region, 'all' = all of Cameroon */
+type Wide = '' | 'region' | 'all';
+
+function loadWide(k: string): Wide {
+  try {
+    const v = (JSON.parse(window.localStorage.getItem(WIDE_KEY) || '{}') as Record<string, unknown>)[k];
+    return v === 'region' || v === 'all' ? v : '';
+  } catch {
+    return '';
+  }
+}
+
+function saveWide(k: string, w: Wide): void {
+  try {
+    const all = JSON.parse(window.localStorage.getItem(WIDE_KEY) || '{}') as Record<string, Wide>;
+    if (w) all[k] = w; else delete all[k];
+    const keys = Object.keys(all);
+    if (keys.length > 12) delete all[keys[0]];
+    window.localStorage.setItem(WIDE_KEY, JSON.stringify(all));
+  } catch { /* not kept - fine */ }
 }
 
 function chipCls(on: boolean): string {
@@ -266,6 +301,8 @@ export default function WomensHealthPage() {
   const [calm, setCalm] = useState<{ on: boolean; staff: boolean } | null>(null);
   const [busyDay, setBusyDay] = useState<string | null>(null);
   const [toast, setToast] = useState<{ text: string; signIn?: boolean } | null>(null);
+  const [wide, setWide] = useState<Wide>('');
+  const [scope, setScope] = useState<Where | null>(null);
   const seq = useRef(0);
 
   useEffect(() => {
@@ -316,41 +353,79 @@ export default function WomensHealthPage() {
         setTotal(saved.v.total);
         setTowns((saved.v.towns || []) as WhTownCount[]);
         setSavedAt(saved.at);
+        setWide(loadWide(listKey));
       } else {
-        setPlaces([]); setDays([]); setTotal(0);
+        setPlaces([]); setDays([]); setTotal(0); setWide('');
         setOfflineEmpty(true);
       }
       return true;
     };
+    // FIX786: nothing where she asked? the whole region, then all of Cameroon (never for a typed search).
+    // "Show more" keeps looking where the first page was found.
+    const steps: Array<{ w: Where; wide: Wide }> = offset > 0 && scope ? [{ w: scope, wide }] : [{ w: where, wide: '' }];
+    if (offset === 0 && !query) {
+      if (where.town) steps.push({ w: { region: where.region, town: '' }, wide: where.region ? 'region' : 'all' });
+      if (where.region) steps.push({ w: { region: '', town: '' }, wide: 'all' });
+    }
     if (tab === 'places') {
-      const r = await listPlaces({ region: where.region || null, town: where.town || null, service: service || null, csu, open24,
-                                   womenDoctors: womenDocs, query, limit: PAGE, offset });
+      const ask = (w: Where) => listPlaces({ region: w.region || null, town: w.town || null, service: service || null, csu, open24,
+                                             womenDoctors: womenDocs, query, limit: PAGE, offset });
+      let r = await ask(steps[0].w);
+      let used = steps[0];
+      const firstTowns = r.ok ? r.towns || [] : [];
+      for (let i = 1; i < steps.length && r.ok && r.total === 0; i++) {
+        const next = await ask(steps[i].w);
+        if (!next.ok) break;
+        if (next.total > 0) { r = next; used = steps[i]; }
+        if (my !== seq.current) return;
+      }
       if (my !== seq.current) return;
       if (r.ok) {
+        const shownTowns = used.wide === 'all' ? firstTowns : r.towns || [];
         setPlaces((old) => (offset === 0 ? r.rows : old.concat(r.rows)));
-        setTotal(r.total); setTowns(r.towns || []); setSvcCounts(r.services || {});
-        if (offset === 0) saveList(listKey, { total: r.total, places: r.rows, towns: r.towns || [] });
+        setTotal(r.total); setTowns(shownTowns); setSvcCounts(r.services || {});
+        if (offset === 0) {
+          setScope(used.w); setWide(used.wide);
+          saveList(listKey, { total: r.total, places: r.rows, towns: shownTowns });
+          saveWide(listKey, used.wide);
+        }
       } else if (r.reason === 'not_signed_in') setNeedAccount(true);
       else if (!offline(r.reason)) setError(whReason(lang, r.reason));
     } else {
-      const r = await listDays({ region: where.region || null, town: where.town || null, topic: topic || null, limit: PAGE, offset });
+      const ask = (w: Where) => listDays({ region: w.region || null, town: w.town || null, topic: topic || null, limit: PAGE, offset });
+      let r = await ask(steps[0].w);
+      let used = steps[0];
+      const firstTowns = r.ok ? r.towns || [] : [];
+      for (let i = 1; i < steps.length && r.ok && r.total === 0; i++) {
+        const next = await ask(steps[i].w);
+        if (!next.ok) break;
+        if (next.total > 0) { r = next; used = steps[i]; }
+        if (my !== seq.current) return;
+      }
       if (my !== seq.current) return;
       if (r.ok) {
+        const shownTowns = used.wide === 'all' ? firstTowns : r.towns || [];
         setDays((old) => (offset === 0 ? r.rows : old.concat(r.rows)));
-        setTotal(r.total); setTowns(r.towns || []);
+        setTotal(r.total); setTowns(shownTowns);
         if (r.today) setToday(r.today);
-        if (offset === 0) saveList(listKey, { total: r.total, days: r.rows, towns: r.towns || [] });
+        if (offset === 0) {
+          setScope(used.w); setWide(used.wide);
+          saveList(listKey, { total: r.total, days: r.rows, towns: shownTowns });
+          saveWide(listKey, used.wide);
+        }
       } else if (r.reason === 'not_signed_in') setNeedAccount(true);
       else if (!offline(r.reason)) setError(whReason(lang, r.reason));
     }
     setLoading(false); setMore(false);
-  }, [tab, where, service, csu, open24, womenDocs, query, topic, lang, listKey]);
+  }, [tab, where, service, csu, open24, womenDocs, query, topic, lang, listKey, scope, wide]);
 
   // FIX731: a first-time phone reads the lists during its guest day
   const canRead = account === 'in' || account === 'guest';
+  const loadRef = useRef(load);
+  loadRef.current = load;
   useEffect(() => {
-    if (canRead) void load(0);
-  }, [load, canRead]);
+    if (canRead) void loadRef.current(0);
+  }, [listKey, tab, canRead, lang]);
 
   const pickWhere = (w: Where) => { setWhere(w); saveWhere(w); };
 
@@ -380,9 +455,12 @@ export default function WomensHealthPage() {
     : (total === 1 ? t('countDay1') : t('countDays', { n: total }));
   const signedIn = account === 'in' && !needAccount;
   const reading = canRead && !needAccount;
+  const wideText = wide === 'region'
+    ? t('widenRegion', { town: where.town, region: regionLabel(lang, where.region) })
+    : wide === 'all' ? t('widenAll', { region: where.town && !where.region ? where.town : regionLabel(lang, where.region) }) : '';
 
   return (
-    <div dir={dir} data-fix="FIX745" data-account-state={account} className="mx-auto max-w-3xl space-y-4 px-4 py-4 pb-28">
+    <div dir={dir} data-fix="FIX786" data-account-state={account} className="mx-auto max-w-3xl space-y-4 px-4 py-4 pb-28">
       <header className="rounded-3xl bg-gradient-to-br from-rose-600 to-pink-500 p-5 text-white shadow-lg">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white/20"><Heart className="h-6 w-6" /></span>
@@ -505,11 +583,23 @@ export default function WomensHealthPage() {
             </button>
           ) : (
             <section className="space-y-3">
+              {tab === 'places' && (
+                <p className="flex items-start gap-2 rounded-2xl border border-teal-100 bg-teal-50 px-3 py-2 text-xs font-semibold text-teal-900" data-registered="1">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-teal-700" />{t('registeredNote')}
+                </p>
+              )}
+              {wideText && <p className="rounded-2xl bg-amber-50 px-3 py-2 text-sm font-bold text-amber-900" data-widened={wide}>{wideText}</p>}
               <p className="text-sm font-bold text-gray-600" data-count={total}>{countText}</p>
               {shown === 0 && (
                 <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center">
                   <p className="font-bold text-gray-800">{tab === 'places' ? t('noPlaces') : t('noDays')}</p>
                   <p className="mt-1 text-sm text-gray-500">{tab === 'places' ? t('noPlacesHint') : t('noDaysHint')}</p>
+                  {tab === 'places' && (
+                    <button type="button" onClick={() => navigate('/hospitals')} data-hospitals="1"
+                            className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-extrabold text-white shadow hover:bg-red-700">
+                      <Ambulance className="h-4 w-4" />{t('seeHospitals')}
+                    </button>
+                  )}
                 </div>
               )}
               {tab === 'places'
@@ -532,14 +622,16 @@ export default function WomensHealthPage() {
             </section>
           )}
 
-          <section className="grid gap-2 sm:grid-cols-3">
+          <section className="grid gap-2 sm:grid-cols-3" data-legal-buttons="1">
             <button type="button" onClick={() => navigate('/womens-health/new-place')}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-rose-600 px-3 py-3 text-sm font-extrabold text-white shadow hover:bg-rose-700">
-              <Plus className="h-4 w-4" />{t('addPlace')}
+                    className="flex flex-col items-center justify-center gap-0.5 rounded-2xl bg-rose-600 px-3 py-3 text-white shadow hover:bg-rose-700">
+              <span className="inline-flex items-center gap-1.5 text-base font-extrabold"><Plus className="h-5 w-5" />{t('addPlace')}</span>
+              <span className="text-xs font-bold text-rose-50" data-legal-line="place">{t('legalOnlyLine')}</span>
             </button>
             <button type="button" onClick={() => navigate('/womens-health/new-day')}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-rose-200 bg-white px-3 py-3 text-sm font-extrabold text-rose-700">
-              <CalendarDays className="h-4 w-4" />{t('addDay')}
+                    className="flex flex-col items-center justify-center gap-0.5 rounded-2xl border-2 border-rose-200 bg-white px-3 py-3 text-rose-700">
+              <span className="inline-flex items-center gap-1.5 text-base font-extrabold"><CalendarDays className="h-5 w-5" />{t('addDay')}</span>
+              <span className="text-xs font-bold text-rose-800" data-legal-line="day">{t('legalOnlyLine')}</span>
             </button>
             {signedIn && (
               <button type="button" onClick={() => navigate('/womens-health/mine')}
@@ -555,4 +647,4 @@ export default function WomensHealthPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WOMENS_HEALTH_PAGE_FIX745__COMPLETE
+// BAMBEH_END_TOKEN__WOMENS_HEALTH_PAGE_FIX786__COMPLETE

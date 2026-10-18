@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_MANAGE_FIX702_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_MANAGE_FIX793_CLEAN
 /**
- * src/features/foodgas/FoodGasManage.tsx - FIX702 (replaces FIX692)
+ * src/features/foodgas/FoodGasManage.tsx - FIX793 (replaces FIX702)
  *   routes: /food-gas/mine  /food-gas/new  /food-gas/edit/:id   (signed-in people)
  *
  * GAS & FOOD - for the people who run the businesses:
@@ -25,6 +25,9 @@
  *     fish) and add their dishes by local name: one tap for achu, eru, ndole, okok...
  *     or typed the way they write them (24 at most).
  *   - Gas orders show in the bookings as "2 x TRADEX 12.5 kg - refill - 13,000 XAF".
+ * FIX793 (Big, 15 Oct 2026): a business can be in ANY TOWN of Cameroon, not only the five launch cities: the
+ *   form asks the region, the town (suggestions for the region, any other can be typed) and the neighbourhood
+ *   (Up Station, Mimboman... suggested; any other typed). FIX788 keeps the five cities working for older apps.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
@@ -36,11 +39,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  AREAS, CITY_KEYS, DISH_PICKS, FOOD_KINDS, GAS_BRANDS, KIND_ICON, MEATS, SIZE_PICKS, brandLabel, cityLabel, dayShort,
-  doualaNow, fmtDate, fmtSize, fmtWhen, fmtXaf, foldDish, hasPhoneNumber, isCityKey, isFoodKind, isGasBrand, kindLabel,
-  knownArea, meatLabel, momoNumber, reasonText, sizeText, slugArea, useFoodText,
+  DISH_PICKS, FOOD_KINDS, GAS_BRANDS, KIND_ICON, MEATS, SIZE_PICKS, brandLabel, cityLabel, dayShort,
+  doualaNow, fmtDate, fmtSize, fmtWhen, fmtXaf, foldDish, hasPhoneNumber, isFoodKind, isGasBrand, kindLabel,
+  launchAreasOf, launchCityOf, meatLabel, momoNumber, reasonText, regionOfCity, sizeText, slugArea, townOfCity, useFoodText,
 } from './foodGasText';
-import type { CityKey, FoodKey, FoodKind, FoodLang, GasBrand, Meat } from './foodGasText';
+import type { FoodKey, FoodKind, FoodLang, GasBrand, Meat } from './foodGasText';
+import { neighbourhoodsOf, regionLabel as placeRegionLabel, regionsOf, townsOf } from '@/lib/africa/places';
 import {
   answerBooking, cancelBooking, featureStart, featureStatus, getPlace, listBookings, myPlaces, payWithMomo, saveGas, saveItems,
   savePlace, setGas, setOfferStock, setVisible, uploadPhoto,
@@ -49,7 +53,6 @@ import type { FeaturePlan, FoodBooking, FoodItem, GasOffer, GasOfferInput, MyPla
 
 type T = (key: FoodKey, vars?: Record<string, string | number>) => string;
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
-const OTHER = '__other__';
 
 function Banner({ kind, text }: { kind: 'ok' | 'err' | 'info'; text: string }) {
   const cls = kind === 'ok' ? 'bg-green-50 text-green-800 border-green-200'
@@ -81,9 +84,10 @@ interface FormState {
   name: string;
   kinds: FoodKind[];
   description: string;
-  city: CityKey | '';
-  areaPick: string;
-  areaOther: string;
+  /** FIX793: region key, any town of Cameroon, the neighbourhood as written */
+  region: string;
+  town: string;
+  areaName: string;
   landmark: string;
   photos: string[];
   days: number[];
@@ -99,7 +103,7 @@ interface FormState {
 }
 
 const EMPTY: FormState = {
-  ownership: 'me', ownerId: '', agentId: '', name: '', kinds: [], description: '', city: '', areaPick: '', areaOther: '',
+  ownership: 'me', ownerId: '', agentId: '', name: '', kinds: [], description: '', region: '', town: '', areaName: '',
   landmark: '', photos: [], days: [0, 1, 2, 3, 4, 5, 6], opens: '', closes: '', keyPrice: '', keyLabel: '',
   bookings: true, delivers: false, meats: [], dishes: [], dishInput: '',
 };
@@ -315,11 +319,11 @@ function PlaceEditor({ editId, lang, dir, t }: { editId: string | null; lang: Fo
       if (gone) return;
       if (!r.ok || !r.me.can_edit) { setLoadErr(r.ok ? reasonText(lang, 'not_allowed') : reasonText(lang, r.reason)); setLoading(false); return; }
       const p = r.place;
-      const known = knownArea(p.city, p.area);
       setF({
         ...EMPTY,
-        name: p.name, kinds: p.kinds, description: p.description || '', city: isCityKey(p.city) ? p.city : '',
-        areaPick: known ? known.key : OTHER, areaOther: known ? '' : p.area_label, landmark: p.landmark || '',
+        name: p.name, kinds: p.kinds, description: p.description || '',
+        region: p.region || regionOfCity(p.city), town: p.town || townOfCity(p.city, p.area), areaName: p.area_label || '',
+        landmark: p.landmark || '',
         photos: p.photos || [], days: p.open_days && p.open_days.length ? p.open_days : [0, 1, 2, 3, 4, 5, 6],
         opens: p.opens_at || '', closes: p.closes_at || '', keyPrice: p.key_price_xaf !== null ? String(p.key_price_xaf) : '',
         keyLabel: p.key_price_label || '', bookings: p.takes_bookings, delivers: p.delivers,
@@ -362,27 +366,25 @@ function PlaceEditor({ editId, lang, dir, t }: { editId: string | null; lang: Fo
     const name = f.name.trim().replace(/\s+/g, ' ');
     if (name.length < 2) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_name') }); return; }
     if (f.kinds.length === 0) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_kinds') }); return; }
-    if (!f.city) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_city') }); return; }
+    // FIX793: region, any town, and the neighbourhood (a launch one keeps its key: Up Station, Mimboman...)
+    if (!regionsOf('CM').some((r) => r.key === f.region)) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_region') }); return; }
+    const town = f.town.trim().replace(/\s+/g, ' ');
+    if (town.length < 2 || town.length > 60 || foldDish(town).length < 2) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_town') }); return; }
+    let areaLabel = f.areaName.trim().replace(/\s+/g, ' ');
+    const launch = launchAreasOf(f.region, town).filter((a) => foldDish(a.label) === foldDish(areaLabel));
     let area = '';
-    let areaLabel = '';
-    if (f.areaPick && f.areaPick !== OTHER) {
-      const k = knownArea(f.city, f.areaPick);
-      if (k) { area = k.key; areaLabel = k.label; }
-    } else {
-      areaLabel = f.areaOther.trim().replace(/\s+/g, ' ');
-      area = slugArea(areaLabel);
-    }
-    if (!area || areaLabel.length < 2) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_area') }); return; }
+    if (launch.length) { area = launch[0].key; areaLabel = launch[0].label; } else area = slugArea(areaLabel);
+    if (!area || areaLabel.length < 2 || areaLabel.length > 60) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_area') }); return; }
     if ((f.opens && !f.closes) || (!f.opens && f.closes) || (f.opens && f.opens === f.closes)) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_hours') }); return; }
     const kp = f.keyPrice.trim().replace(/[\s.,]/g, '');
     if (kp && !/^[0-9]{2,7}$/.test(kp)) { setMsg({ kind: 'err', text: reasonText(lang, 'bad_price') }); return; }
-    if ([name, f.description, f.landmark, f.keyLabel, areaLabel].concat(f.dishes).some((s) => hasPhoneNumber(s))) {
+    if ([name, f.description, f.landmark, f.keyLabel, areaLabel, town].concat(f.dishes).some((s) => hasPhoneNumber(s))) {
       setMsg({ kind: 'err', text: reasonText(lang, 'phone_in_text') });
       return;
     }
     if (!editId && f.ownership === 'other' && f.ownerId.trim().length < 5) { setMsg({ kind: 'err', text: reasonText(lang, 'owner_not_found') }); return; }
     const data: PlaceInput = {
-      name, kinds: f.kinds, description: f.description.trim(), city: f.city, area, area_label: areaLabel,
+      name, kinds: f.kinds, description: f.description.trim(), city: launchCityOf(f.region, town), region: f.region, town, area, area_label: areaLabel,
       landmark: f.landmark.trim(), photos: f.photos, open_days: f.days, opens_at: f.opens, closes_at: f.closes,
       key_price_xaf: kp ? Number(kp) : null, key_price_label: f.keyLabel.trim(), takes_bookings: f.bookings, delivers: f.delivers,
     };
@@ -544,27 +546,30 @@ function PlaceEditor({ editId, lang, dir, t }: { editId: string | null; lang: Fo
       <section className="space-y-3 rounded-2xl bg-white p-4 shadow-sm">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold text-gray-700">
-            {t('fCity')}
-            <select value={f.city} onChange={(e) => setF({ ...f, city: isCityKey(e.target.value) ? e.target.value : '', areaPick: '', areaOther: '' })} className={input}>
+            {t('region')}
+            <select value={f.region} onChange={(e) => setF({ ...f, region: e.target.value, town: '', areaName: '' })} className={input} data-f="region">
               <option value="">-</option>
-              {CITY_KEYS.map((c) => <option key={c} value={c}>{cityLabel(c, lang)}</option>)}
+              {regionsOf('CM').map((r) => <option key={r.key} value={r.key}>{placeRegionLabel(r, lang)}</option>)}
             </select>
           </label>
           <label className="block text-sm font-semibold text-gray-700">
-            {t('fArea')}
-            <select value={f.areaPick} disabled={!f.city} onChange={(e) => setF({ ...f, areaPick: e.target.value })} className={input}>
-              <option value="">-</option>
-              {f.city ? AREAS[f.city].map((a) => <option key={a.key} value={a.key}>{a.label}</option>) : null}
-              <option value={OTHER}>{t('otherArea')}</option>
-            </select>
+            {t('fTown')}
+            <input value={f.town} maxLength={60} list="food-towns" placeholder={t('fTownPh')} disabled={!f.region}
+              onChange={(e) => setF({ ...f, town: e.target.value })} className={input} data-f="town" />
+            <datalist id="food-towns">{(f.region ? townsOf('CM', f.region) : []).map((x) => <option key={x} value={x} />)}</datalist>
           </label>
         </div>
-        {f.areaPick === OTHER && (
-          <label className="block text-sm font-semibold text-gray-700">
-            {t('fAreaOther')}
-            <input value={f.areaOther} maxLength={60} onChange={(e) => setF({ ...f, areaOther: e.target.value })} className={input} />
-          </label>
-        )}
+        <label className="block text-sm font-semibold text-gray-700">
+          {t('fArea')}
+          <input value={f.areaName} maxLength={60} list="food-areas" placeholder={t('fAreaPh')} disabled={!f.town.trim()}
+            onChange={(e) => setF({ ...f, areaName: e.target.value })} className={input} data-f="area" />
+          <datalist id="food-areas">
+            {launchAreasOf(f.region, f.town).map((a) => a.label).concat(neighbourhoodsOf(f.town).slice())
+              .filter((x, i, all) => all.findIndex((y) => foldDish(y) === foldDish(x)) === i)
+              .map((x) => <option key={x} value={x} />)}
+          </datalist>
+          <span className="mt-0.5 block text-[11px] font-normal text-gray-500">{t('fAreaHelp')}</span>
+        </label>
         <label className="block text-sm font-semibold text-gray-700">
           {t('fLandmark')}
           <input value={f.landmark} maxLength={160} placeholder={t('fLandmarkPh')} onChange={(e) => setF({ ...f, landmark: e.target.value })} className={input} />
@@ -928,7 +933,7 @@ function MineView({ lang, dir, t }: { lang: FoodLang; dir: 'rtl' | 'ltr'; t: T }
                   <div className="min-w-0 flex-1 space-y-1">
                     <p className="font-extrabold text-gray-900">{p.name}</p>
                     <StatusBadge p={p} t={t} />
-                    <p className="text-xs text-gray-600">{p.area_label}, {cityLabel(p.city, lang)}</p>
+                    <p className="text-xs text-gray-600">{p.area_label}, {p.town || cityLabel(p.city, lang)}</p>
                     {p.my_role === 'agent' && p.owner_name && <p className="text-xs text-gray-500">{t('asAgent', { name: p.owner_name })}</p>}
                     {(p.status === 'rejected' || (p.status === 'hidden' && p.hidden_by === 'staff')) && p.review_note && (
                       <p className="text-xs font-semibold text-red-700">{p.status === 'rejected' ? t('statusRejected', { r: p.review_note }) : t('statusHiddenStaff', { r: p.review_note })}</p>
@@ -1013,7 +1018,7 @@ export default function FoodGasManage() {
   const location = useLocation();
   const isNew = /\/food-gas\/new\/?$/.test(location.pathname);
   return (
-    <div data-fix="FIX702" className="min-h-screen bg-gray-50 px-4 pb-24 pt-4">
+    <div data-fix="FIX793" className="min-h-screen bg-gray-50 px-4 pb-24 pt-4">
       <div className="mx-auto max-w-2xl">
         {isNew ? <PlaceEditor key="new" editId={null} lang={lang} dir={dir} t={t} />
           : id ? <PlaceEditor key={id} editId={id} lang={lang} dir={dir} t={t} />
@@ -1022,4 +1027,4 @@ export default function FoodGasManage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_MANAGE_FIX702__COMPLETE
+// BAMBEH_END_TOKEN__FOOD_GAS_MANAGE_FIX793__COMPLETE

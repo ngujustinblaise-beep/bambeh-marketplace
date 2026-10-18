@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
+import { LocationFilter, LocationFilters, EMPTY_LOCATION, locationMatches } from "@/components/filters/LocationFilter";
 import { DemoBadge } from "@/components/listings/DemoBadge";
 import { useLang } from "@/hooks/useAppLang";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
@@ -264,10 +264,7 @@ export default function VehicleRentals() {
         if (!v.location.toLowerCase().includes(cityFilter.toLowerCase())) return false;
       }
       const loc = [v.location, v.extra?.region||"", v.extra?.city||"", v.extra?.quarter||"", v.extra?.landmark||""].join(" ").toLowerCase();
-      if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
-      if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
-      if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
-      if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+      if (!locationMatches(loc, locationFilters)) return false; // FIX794: accents ignored, a region also finds its towns
       return true;
     })
     .sort((a, b) => {

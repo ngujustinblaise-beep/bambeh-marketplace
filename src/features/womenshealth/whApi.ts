@@ -1,6 +1,15 @@
-// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_API_FIX717_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_API_FIX784_CLEAN
 /**
- * src/features/womenshealth/whApi.ts - FIX717 (replaces FIX707, which was never deployed)
+ * src/features/womenshealth/whApi.ts - FIX784 (replaces FIX717)
+ *
+ * FIX784 (Big, 15 Oct 2026 - legal health facilities only, FIX789 in the database):
+ *   - every place and screening day is sent with the declaration (legal_declared), the person's role at
+ *     the facility and, for a private, faith-based or association facility, its authorisation number;
+ *     Bambeh staff entering a field visit send added_as "agent" and need none of it
+ *   - getLegal: the declaration behind places or days - for the person who made it (to correct it)
+ *     and for staff (with whether the account is paused, is staff, and what else it sent)
+ *   - adminRejectIllegal: "Not a legal health facility - reject and pause the account" (staff)
+ *   - new reasons the pages turn into words: not_declared, bad_role, bad_ref, account_paused
  *
  * WOMEN'S HEALTH - the only door between the pages and the database (FIX715).
  * Every call answers { ok: true, ... } or { ok: false, reason }, and the pages turn
@@ -146,6 +155,12 @@ export interface WhPlaceInput {
   price_note: string;
   description: string;
   added_as: WhAddedAs;
+  /** FIX784: "I work at this legal health facility..." ticked (not needed from Bambeh staff on a field visit) */
+  legal_declared: boolean;
+  /** FIX784: the person's role at the facility (2 to 60 letters) */
+  legal_role: string;
+  /** FIX784: the authorisation number - required for a private, faith-based or association facility */
+  legal_ref: string;
 }
 
 export interface WhDayInput {
@@ -164,6 +179,11 @@ export interface WhDayInput {
   paid_after: string;
   phone: string;
   place_id: string | null;
+  /** FIX784: as for a place; staff send "agent" for a field visit */
+  added_as?: WhAddedAs;
+  legal_declared: boolean;
+  legal_role: string;
+  legal_ref: string;
 }
 
 export interface Fail { ok: false; reason: string; detail?: string }
@@ -254,6 +274,29 @@ export function savePlace(id: string | null, data: WhPlaceInput): Promise<Res<{ 
 
 export function saveDay(id: string | null, data: WhDayInput): Promise<Res<{ id: string; status: WhStatus; needs_review: boolean; phone_checking?: boolean }>> {
   return whRpc('bambeh_wh_save_day', { p_id: id, p_data: data });
+}
+
+/** FIX784: the declaration behind places or screening days. The person who made it sees their own; staff see
+ *  every one, with whether the account is paused or is staff, and how many items it sent. */
+export interface WhLegal {
+  id: string;
+  added_as: WhAddedAs;
+  legal_role: string;
+  legal_ref: string;
+  /** when the declaration was ticked; null for a staff field visit or an item sent before 15 Oct 2026 */
+  legal_at: string | null;
+  is_mine: boolean;
+  owner_paused?: boolean;
+  owner_is_staff?: boolean;
+  owner_items?: { pending: number; live: number; rejected: number };
+}
+
+export async function getLegal(kind: 'place' | 'day', ids: string[]): Promise<Res<{ rows: WhLegal[] }>> {
+  const clean = ids.filter((x) => typeof x === 'string' && /^[0-9a-f-]{36}$/i.test(x)).slice(0, 200);
+  if (clean.length === 0) return { ok: true, rows: [] };
+  const r = await whRpc<{ rows: WhLegal[] }>('bambeh_wh_legal', { p_kind: kind, p_ids: clean });
+  if (!r.ok) return r;
+  return { ...r, rows: Array.isArray(r.rows) ? r.rows : [] };
 }
 
 export function setVisible(kind: 'place' | 'day', id: string, visible: boolean): Promise<Res<{ status: WhStatus }>> {
@@ -354,6 +397,24 @@ export function adminReview(kind: 'place' | 'day', id: string, action: 'approve'
   return whRpc('bambeh_admin_wh_review', { p_kind: kind, p_id: id, p_action: action, p_note: note });
 }
 
+/** FIX784: "Not a legal health facility - reject and pause the account". Rejects this item and the account's
+ *  other waiting items, sends its approved items back for a new check, pauses the account at once and signs it
+ *  out everywhere. Only an admin can give the account back (Account recovery). Never a staff account or your own. */
+export interface WhRejectIllegal {
+  status: WhStatus;
+  paused: boolean;
+  already_paused: boolean;
+  signed_out: boolean;
+  other_rejected: number;
+  to_recheck: number;
+  reviewed_by_name: string;
+  reviewed_at: string;
+}
+
+export function adminRejectIllegal(kind: 'place' | 'day', id: string, note: string): Promise<Res<WhRejectIllegal>> {
+  return whRpc('bambeh_admin_wh_reject_illegal', { p_kind: kind, p_id: id, p_note: note.trim().slice(0, 300) });
+}
+
 export function adminGuide(on: boolean, reviewer?: { name: string; role: string; date: string; langs: WhLang[] }):
     Promise<Res<WhGuide & { switched_by_name: string }>> {
   return whRpc('bambeh_admin_wh_guide', on && reviewer
@@ -369,4 +430,4 @@ export function adminQuiz(on: boolean, reviewer?: { name: string; role: string; 
     ? { p_on: true, p_reviewer_name: reviewer.name, p_reviewer_role: reviewer.role, p_reviewed_on: reviewer.date, p_langs: reviewer.langs }
     : { p_on: false });
 }
-// BAMBEH_END_TOKEN__WOMENS_HEALTH_API_FIX717__COMPLETE
+// BAMBEH_END_TOKEN__WOMENS_HEALTH_API_FIX784__COMPLETE

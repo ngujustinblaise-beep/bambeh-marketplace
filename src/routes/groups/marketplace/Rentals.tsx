@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Search, MapPin, Bed, Bath, DollarSign, Plus, Loader2, RefreshCw, Eye, AlertCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
+import { LocationFilter, LocationFilters, EMPTY_LOCATION, locationMatches } from "@/components/filters/LocationFilter";
 import { FeaturedAdsStrip } from "@/components/ads/FeaturedAdsStrip";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -235,10 +235,7 @@ export default function Rentals() {
       if (city !== "allCities" && !p.location.toLowerCase().includes(city.toLowerCase())) return false;
       if (type !== "allTypes" && p.type !== type) return false;
       const loc = `${p.location} ${p.quartier || ""}`.toLowerCase();
-      if (locationFilters.region && !loc.includes(locationFilters.region.toLowerCase())) return false;
-      if (locationFilters.city && !loc.includes(locationFilters.city.toLowerCase())) return false;
-      if (locationFilters.quarter && !loc.includes(locationFilters.quarter.toLowerCase())) return false;
-      if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+      if (!locationMatches(loc, locationFilters)) return false; // FIX794: accents ignored, a region also finds its towns
       return true;
     })
     .sort((a, b) => {

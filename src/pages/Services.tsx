@@ -40,7 +40,7 @@ import {
   Flag, Share2, Shield,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
+import { LocationFilter, LocationFilters, EMPTY_LOCATION, locationMatches } from '@/components/filters/LocationFilter';
 import ServiceLikeButton from '@/components/services/ServiceLikeButton';
 import BookServiceModal from '@/components/services/BookServiceModal';
 import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
@@ -727,10 +727,7 @@ export default function Services() {
         if (q && !s.title?.toLowerCase().includes(q) && !s.description?.toLowerCase().includes(q)) return false;
         if (category !== 'All' && s.category !== category) return false;
         const loc = (s.location || '').toLowerCase();
-        if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
-        if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
-        if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
-        if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+        if (!locationMatches(loc, locationFilters)) return false; // FIX794: accents ignored, a region also finds its towns
         return true;
       })]
       .sort((a, b) => {

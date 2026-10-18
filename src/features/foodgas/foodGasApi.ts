@@ -1,6 +1,10 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_API_FIX699_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_API_FIX791_CLEAN
 /**
- * src/features/foodgas/foodGasApi.ts - FIX699 (replaces FIX689)
+ * src/features/foodgas/foodGasApi.ts - FIX791 (replaces FIX699)
+ *
+ * FIX791 (Big, 15 Oct 2026): search by REGION and TOWN (any town of Cameroon, FIX788), the towns that have
+ * businesses, and the region and town sent with a business. Before FIX788 is run in Supabase the search
+ * falls back to the five launch cities, so the page never breaks while the database catches up.
  *
  * GAS & FOOD - the only door between the pages and the database (FIX687).
  * Every call answers { ok: true, ... } or { ok: false, reason }, and the pages turn
@@ -19,6 +23,7 @@
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { supabase } from '@/lib/supabase';
+import { launchCityOf } from './foodGasText';
 import type { CityKey, FoodKind, GasBrand, Meat } from './foodGasText';
 
 export type PlaceStatus = 'pending' | 'live' | 'rejected' | 'hidden';
@@ -67,7 +72,11 @@ export interface FoodCard {
   id: string;
   name: string;
   kinds: FoodKind[];
+  /** a launch city key; outside the five cities the database sends the town's name here (FIX788) */
   city: CityKey;
+  /** FIX788: the region key (centre, nord_ouest...) and the town */
+  region?: string | null;
+  town?: string | null;
   area: string;
   area_label: string;
   photo: string | null;
@@ -163,7 +172,9 @@ export interface FoodBooking {
   details?: GasOrderDetails | null;
 }
 
-export interface AreaCount { area: string; area_label: string; city: CityKey; n: number }
+export interface AreaCount { area: string; area_label: string; city: CityKey; town?: string; n: number }
+/** FIX791: a town that has businesses (in the chosen region), with how many */
+export interface TownCount { town: string; region: string; n: number }
 export interface BrandCount { brand: GasBrand; label: string; n: number }
 export interface SizeCount { size_kg: number; n: number }
 export interface MeatCount { meat: Meat; n: number }
@@ -173,7 +184,11 @@ export interface PlaceInput {
   name: string;
   kinds: FoodKind[];
   description: string;
-  city: CityKey;
+  /** a launch city, or 'other' (FIX788) - an older database only knows the five cities */
+  city: CityKey | 'other';
+  /** FIX791: the region key and any town of Cameroon */
+  region?: string;
+  town?: string;
   area: string;
   area_label: string;
   landmark: string;
@@ -220,6 +235,8 @@ export interface ListResult {
   total: number;
   rows: FoodCard[];
   areas: AreaCount[];
+  /** FIX791: the towns that have such businesses */
+  towns?: TownCount[];
   today: string;
   brands?: BrandCount[];
   sizes?: SizeCount[];
@@ -227,12 +244,29 @@ export interface ListResult {
   dishes?: DishCount[];
 }
 
-/** kind: 'gas' (Cooking gas page), 'food' (Food page: restaurants, grills, roasted fish) or one kind. */
-export function listPlaces(p: {
+/** kind: 'gas' (Cooking gas page), 'food' (Food page: restaurants, grills, roasted fish) or one kind.
+ *  FIX791: region (key) and town (any town, accents ignored) - sent only when chosen. */
+export async function listPlaces(p: {
   city?: string | null; area?: string | null; kind?: string | null; query?: string | null;
   gasToday?: boolean; limit?: number; offset?: number;
   brand?: string | null; size?: number | null; meat?: string | null; dish?: string | null;
+  region?: string | null; town?: string | null;
 }): Promise<Res<ListResult>> {
+  const region = p.region ? String(p.region) : '';
+  const town = p.town && p.town.trim() ? p.town.trim().slice(0, 60) : '';
+  const r = await listPlacesRaw(p, region, town);
+  if (r.ok || r.reason !== 'not_installed' || (!region && !town)) return r;
+  // FIX788 not run yet: the five launch cities still work; anywhere else there is nothing to show yet
+  const city = launchCityOf(region, town);
+  if (!town || city === 'other') return { ok: true, total: 0, rows: [], areas: [], towns: [], today: '' };
+  return listPlacesRaw({ ...p, city }, '', '');
+}
+
+function listPlacesRaw(p: {
+  city?: string | null; area?: string | null; kind?: string | null; query?: string | null;
+  gasToday?: boolean; limit?: number; offset?: number;
+  brand?: string | null; size?: number | null; meat?: string | null; dish?: string | null;
+}, region: string, town: string): Promise<Res<ListResult>> {
   const args: Record<string, unknown> = {
     p_city: p.city || null,
     p_area: p.area || null,
@@ -247,6 +281,9 @@ export function listPlaces(p: {
   if (typeof p.size === 'number' && isFinite(p.size) && p.size > 0) args.p_size = p.size;
   if (p.meat) args.p_meat = p.meat;
   if (p.dish) args.p_dish = p.dish.slice(0, 40);
+  // FIX791: only when chosen, so the search works the same before FIX788 is run
+  if (region) args.p_region = region;
+  if (town) args.p_town = town;
   return foodRpc('bambeh_food_list', args);
 }
 
@@ -432,4 +469,4 @@ export async function uploadPhoto(uid: string, file: File): Promise<{ ok: true; 
     return { ok: false, reason: 'upload', detail: e instanceof Error ? e.message : String(e) };
   }
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_API_FIX699__COMPLETE
+// BAMBEH_END_TOKEN__FOOD_GAS_API_FIX791__COMPLETE

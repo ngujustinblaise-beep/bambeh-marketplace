@@ -15,7 +15,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2, BriefcaseIcon, Eye } from "lucide-react";
-import { LocationFilter, LocationFilters, EMPTY_LOCATION } from "@/components/filters/LocationFilter";
+import { LocationFilter, LocationFilters, EMPTY_LOCATION, locationMatches } from "@/components/filters/LocationFilter";
 import { getJobs } from "@/services/jobs.service";
 import type { JobListing } from "@/types/src_types_items";
 import { supabase } from "@/lib/supabase";
@@ -327,10 +327,7 @@ export default function Jobs() {
       if (category !== "All" && j.category !== CATEGORY_DB[category]) return false;
       if (jobType  !== "All Types" && displayType !== jobType) return false;
       if (region   !== "All Regions" && !loc.includes(region.toLowerCase())) return false;
-      if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
-      if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
-      if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
-      if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+      if (!locationMatches(loc, locationFilters)) return false; // FIX794: accents ignored, a region also finds its towns
       return true;
     });
     if (mostRecent) list = [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

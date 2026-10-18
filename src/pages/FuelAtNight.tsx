@@ -1,4 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__FUELATNIGHT_FIX506_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FUELATNIGHT_FIX799_CLEAN
+// FIX799 (Big, 15 Oct 2026): the town list is grouped by region (TownOptions, FIX795), and the town picked here
+// opens the other free pages in that town too (places.ts, FIX769). Replaces FIX506; nothing else changed.
 /**
  * src/pages/FuelAtNight.tsx - Bambeh free services
  * FILE LOCATION: src/pages/FuelAtNight.tsx
@@ -36,6 +38,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import TownOptions from '@/components/location/TownOptions';   // FIX799: towns grouped by region
+import { myTown, rememberMyTown } from '@/lib/africa/places';   // FIX799: one town for every free page
 
 type FuelKind = 'petrol' | 'diesel' | 'gas';
 
@@ -181,7 +185,7 @@ export default function FuelAtNight() {
 
   const [towns, setTowns] = useState<TownRow[]>([]);
   const [town, setTown] = useState<string>(() => {
-    try { return window.localStorage.getItem(TOWN_KEY) ?? ''; } catch { return ''; }
+    try { return window.localStorage.getItem(TOWN_KEY) ?? myTown(); } catch { return ''; }
   });
   const [fuel, setFuel] = useState<'' | FuelKind>('');
   const [rows, setRows] = useState<Station[]>([]);
@@ -231,6 +235,7 @@ export default function FuelAtNight() {
 
   const chooseTown = (v: string) => {
     setTown(v);
+    if (v) rememberMyTown(v);   // FIX799
     try { v ? window.localStorage.setItem(TOWN_KEY, v) : window.localStorage.removeItem(TOWN_KEY); }
     catch { /* private mode */ }
   };
@@ -291,7 +296,7 @@ export default function FuelAtNight() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 space-y-3">
           <select value={town} onChange={(e) => chooseTown(e.target.value)} className={INPUT}>
             <option value="">{t('allTowns')}</option>
-            {towns.map((x) => <option key={x.town} value={x.town}>{x.town}</option>)}
+            <TownOptions towns={towns} current={town} />
           </select>
           <div className="flex gap-2">
             <button onClick={() => setFuel('')}
@@ -470,4 +475,4 @@ export default function FuelAtNight() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__FUELATNIGHT_FIX506__COMPLETE
+// BAMBEH_END_TOKEN__FUELATNIGHT_FIX799__COMPLETE

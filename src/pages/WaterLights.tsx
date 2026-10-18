@@ -1,4 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__WATERLIGHTS_FIX503_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WATERLIGHTS_FIX798_CLEAN
+// FIX798 (Big, 15 Oct 2026): the town list is grouped by region (TownOptions, FIX795), and the town picked here
+// opens the other free pages in that town too (places.ts, FIX769). Replaces FIX503; nothing else changed.
 /**
  * src/pages/WaterLights.tsx - Bambeh free services
  * FILE LOCATION: src/pages/WaterLights.tsx
@@ -59,6 +61,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import TownOptions from '@/components/location/TownOptions';   // FIX798: towns grouped by region
+import { myTown, rememberMyTown } from '@/lib/africa/places';   // FIX798: one town for every free page
 
 interface Outage {
   id: string; utility: 'water' | 'electricity'; kind: 'reported' | 'scheduled';
@@ -288,7 +292,7 @@ export default function WaterLights() {
 
   const [towns, setTowns] = useState<TownRow[]>([]);
   const [town, setTown] = useState<string>(() => {
-    try { return window.localStorage.getItem(TOWN_KEY) ?? ''; } catch { return ''; }
+    try { return window.localStorage.getItem(TOWN_KEY) ?? myTown(); } catch { return ''; }
   });
   const [filter, setFilter] = useState<'' | 'water' | 'electricity'>('');
   const [rows, setRows] = useState<Outage[]>([]);
@@ -371,6 +375,7 @@ export default function WaterLights() {
 
   const chooseTown = (v: string) => {
     setTown(v);
+    if (v) rememberMyTown(v);   // FIX798
     try { v ? window.localStorage.setItem(TOWN_KEY, v) : window.localStorage.removeItem(TOWN_KEY); } catch { /* private mode */ }
   };
 
@@ -473,7 +478,7 @@ export default function WaterLights() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 space-y-3">
           <select value={town} onChange={(e) => chooseTown(e.target.value)} className={INPUT}>
             <option value="">{t('allTowns')}</option>
-            {towns.map((x) => <option key={x.town} value={x.town}>{x.town}</option>)}
+            <TownOptions towns={towns} current={town} />
           </select>
           <div className="flex gap-2">
             <button onClick={() => setFilter('')}
@@ -771,4 +776,4 @@ export default function WaterLights() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WATERLIGHTS_FIX503__COMPLETE
+// BAMBEH_END_TOKEN__WATERLIGHTS_FIX798__COMPLETE

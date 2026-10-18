@@ -22,7 +22,7 @@ import {
   TrendingUp, Star,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { LocationFilter, LocationFilters, EMPTY_LOCATION } from '@/components/filters/LocationFilter';
+import { LocationFilter, LocationFilters, EMPTY_LOCATION, locationMatches } from '@/components/filters/LocationFilter';
 import { useLang, t } from '@/hooks/useAppLang';
 import { FeaturedAdsStrip } from '@/components/ads/FeaturedAdsStrip';
 
@@ -245,10 +245,7 @@ export default function Exchange() {
   // ─── Client-side filtering + search + sort ────────────────────────────────
   let filtered = items.filter(item => {
     const loc = item.location.toLowerCase();
-    if (locationFilters.region   && !loc.includes(locationFilters.region.toLowerCase()))   return false;
-    if (locationFilters.city     && !loc.includes(locationFilters.city.toLowerCase()))     return false;
-    if (locationFilters.quarter  && !loc.includes(locationFilters.quarter.toLowerCase()))  return false;
-    if (locationFilters.landmark && !loc.includes(locationFilters.landmark.toLowerCase())) return false;
+    if (!locationMatches(loc, locationFilters)) return false; // FIX794: accents ignored, a region also finds its towns
     return true;
   });
 

@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_PAGE_FIX700_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_PAGE_FIX792_CLEAN
 /**
- * src/features/foodgas/FoodGasPage.tsx - FIX700 (replaces FIX690)
+ * src/features/foodgas/FoodGasPage.tsx - FIX792 (replaces FIX700)
  *   routes: /food-gas       the two buttons: Cooking gas and Food (old links land here)
  *           /food-gas/gas   COOKING GAS - who has which brand and bottle size, gas today
  *           /food-gas/food  FOOD - restaurants, grill & soya, roasted fish; meats and local dishes
@@ -17,6 +17,12 @@
  *   - Featured businesses come first, taking turns each day. Up Station and Mimboman
  *     are offered first. The city, neighbourhood and filters are remembered on the phone.
  *
+ * FIX792 (Big, 15 Oct 2026 - "region search for gas depots, food, restaurants, grills"): the five launch cities
+ * become REGION > TOWN > NEIGHBOURHOOD for all of Cameroon (FIX788 in the database). The region list holds the
+ * ten regions; the town list shows the towns that already have businesses (with how many), then the region's
+ * other towns; the neighbourhood chips follow the chosen town. Up Station and Mimboman stay one tap away. The
+ * place chosen is remembered on the phone (the old city choice carries over).
+ *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,24 +30,35 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Clock, Flame, Loader2, MapPin, Plus, RefreshCw, Search, Star, Store, Truck, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  AREAS, CITY_KEYS, DISH_PICKS, FOOD_SECTION_KINDS, GAS_BRANDS, KIND_ICON, LAUNCH_AREAS, MEATS, SIZE_PICKS, brandLabel,
-  cityLabel, doualaNow, fmtXaf, foldDish, isCityKey, isMeat, kindLabel, meatLabel, openState, opensLaterToday,
-  reasonText, sizeText, useFoodText,
+  DISH_PICKS, FOOD_SECTION_KINDS, GAS_BRANDS, KIND_ICON, LAUNCH_AREAS, MEATS, SIZE_PICKS, brandLabel,
+  cityLabel, doualaNow, fmtXaf, foldDish, isCityKey, isMeat, kindLabel, launchAreasOf, meatLabel, openState, opensLaterToday,
+  reasonText, regionOfCity, sizeText, townOfCity, useFoodText,
 } from './foodGasText';
-import type { CityKey, FoodKey, FoodKind, FoodLang, Meat } from './foodGasText';
+import type { FoodKey, FoodKind, FoodLang, Meat } from './foodGasText';
 import { listPlaces } from './foodGasApi';
-import type { AreaCount, BrandCount, DishCount, FoodCard, MeatCount, SizeCount } from './foodGasApi';
+import type { AreaCount, BrandCount, DishCount, FoodCard, MeatCount, SizeCount, TownCount } from './foodGasApi';
+import { findRegion, regionLabel as placeRegionLabel, regionsOf, townsOf } from '@/lib/africa/places';
 
 type Section = 'gas' | 'food';
 type T = (key: FoodKey, vars?: Record<string, string | number>) => string;
 
-const WHERE_KEY = 'bambeh_food_where';   // city and neighbourhood, shared by both sections
+const WHERE_KEY = 'bambeh_food_where';   // region, town and neighbourhood, shared by both sections
 const GAS_KEY = 'bambeh_food_gas';       // brand and bottle size
 const FOOD_KEY = 'bambeh_food_food';     // kind, meat and dish
 const OLD_KEY = 'bambeh_food_filters';   // FIX690 (one page): its city and neighbourhood carry over
 const PAGE = 30;
 
-interface Where { city: CityKey | ''; area: string }
+/** FIX792: region key ('' = all), town ('' = all), neighbourhood key ('' = all) */
+interface Where { region: string; town: string; area: string }
+const NOWHERE: Where = { region: '', town: '', area: '' };
+
+function isRegionKey(v: unknown): v is string {
+  return typeof v === 'string' && regionsOf('CM').some((r) => r.key === v);
+}
+
+function foldTown(v: string): string {
+  return foldDish(v);
+}
 interface GasFilters { brand: string; size: number | null }
 interface FoodFilters { kind: FoodKind | ''; meat: Meat | ''; dish: string }
 
@@ -62,9 +79,15 @@ function writeJson(key: string, v: object): void {
 
 function loadWhere(): Where {
   const v = readJson(WHERE_KEY) || readJson(OLD_KEY) || {};
-  const city = isCityKey(v.city) ? v.city : '';
-  const area = city && typeof v.area === 'string' && /^[a-z0-9_]{2,40}$/.test(v.area) ? v.area : '';
-  return { city, area };
+  const area = typeof v.area === 'string' && /^[a-z0-9_]{2,40}$/.test(v.area) ? v.area : '';
+  // FIX792: kept as region + town; a city kept by FIX700/FIX690 carries over
+  if (isRegionKey(v.region) || typeof v.town === 'string') {
+    const region = isRegionKey(v.region) ? v.region : '';
+    const town = typeof v.town === 'string' && v.town.trim().length >= 2 && v.town.length <= 60 ? v.town.trim() : '';
+    return { region, town, area: town ? area : '' };
+  }
+  if (isCityKey(v.city)) return { region: regionOfCity(v.city), town: townOfCity(v.city, area), area };
+  return NOWHERE;
 }
 
 function loadGas(): GasFilters {
@@ -190,7 +213,7 @@ export function PlaceCard({ p, lang, t, onOpen, section = 'food' }: { p: FoodCar
           })}
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600">
-          <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{p.area_label}, {cityLabel(p.city, lang)}</span>
+          <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{p.area_label}, {p.town || cityLabel(p.city, lang)}</span>
           <OpenLine p={p} t={t} />
         </div>
         {section === 'gas' && <div className="flex flex-wrap items-center gap-2"><GasBadge p={p} t={t} /></div>}
@@ -217,7 +240,7 @@ function Hub() {
   const navigate = useNavigate();
   const { user } = useAuth();
   return (
-    <div dir={dir} data-fix="FIX700" data-section="hub" className="min-h-screen bg-gray-50 pb-24">
+    <div dir={dir} data-fix="FIX792" data-section="hub" className="min-h-screen bg-gray-50 pb-24">
       <header className="bg-gradient-to-br from-orange-500 via-red-500 to-rose-600 px-4 pb-10 pt-6 text-white">
         <div className="mx-auto max-w-5xl">
           <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t('hubTitle')}</h1>
@@ -276,6 +299,7 @@ function ListView({ section }: { section: Section }) {
   const [rows, setRows] = useState<FoodCard[]>([]);
   const [total, setTotal] = useState(0);
   const [areas, setAreas] = useState<AreaCount[]>([]);
+  const [towns, setTowns] = useState<TownCount[]>([]);
   const [brands, setBrands] = useState<BrandCount[]>([]);
   const [sizes, setSizes] = useState<SizeCount[]>([]);
   const [meats, setMeats] = useState<MeatCount[]>([]);
@@ -298,7 +322,7 @@ function ListView({ section }: { section: Section }) {
     const id = ++reqId.current;
     if (offset === 0) { setLoading(true); setErr(''); } else { setLoadingMore(true); }
     const r = await listPlaces({
-      city: where.city || null, area: where.area || null,
+      region: where.region || null, town: where.town || null, area: where.area || null,
       kind: isGas ? 'gas' : (ff.kind || 'food'),
       query, gasToday: isGas && gasToday, limit: PAGE, offset,
       brand: isGas ? gf.brand || null : null, size: isGas ? gf.size : null,
@@ -310,6 +334,7 @@ function ListView({ section }: { section: Section }) {
       setTotal(r.total);
       if (offset === 0) {
         setAreas(r.areas || []);
+        setTowns(r.towns || []);
         setBrands(r.brands || []);
         setSizes(r.sizes || []);
         setMeats(r.meats || []);
@@ -324,23 +349,40 @@ function ListView({ section }: { section: Section }) {
     setLoadingMore(false);
     // t and lang only change the error wording; the list itself does not depend on them
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGas, where.city, where.area, gf.brand, gf.size, ff.kind, ff.meat, ff.dish, query, gasToday]);
+  }, [isGas, where.region, where.town, where.area, gf.brand, gf.size, ff.kind, ff.meat, ff.dish, query, gasToday]);
 
   useEffect(() => { void load(0); }, [load]);
 
   const shown = openNow ? rows.filter((r) => openState(r.open_days, r.opens_at, r.closes_at) === 'open') : rows;
 
-  // neighbourhoods of the chosen city: the known list, then any others owners typed
+  // FIX792: the neighbourhoods of the chosen town: the launch list (Up Station, Mimboman...), then any others owners typed
   const areaChips: Array<{ key: string; label: string; n: number | null }> = [];
-  if (where.city) {
-    for (const a of AREAS[where.city]) {
-      const hit = areas.filter((x) => x.city === where.city && x.area === a.key);
+  if (where.town) {
+    const inTown = areas.filter((x) => !x.town || foldTown(x.town) === foldTown(where.town));
+    for (const a of launchAreasOf(where.region, where.town)) {
+      const hit = inTown.filter((x) => x.area === a.key);
       areaChips.push({ key: a.key, label: a.label, n: hit.length ? hit[0].n : null });
     }
-    for (const x of areas) {
-      if (x.city === where.city && !areaChips.some((c) => c.key === x.area)) areaChips.push({ key: x.area, label: x.area_label, n: x.n });
+    for (const x of inTown) {
+      if (!areaChips.some((c) => c.key === x.area)) areaChips.push({ key: x.area, label: x.area_label, n: x.n });
     }
+    if (where.area && !areaChips.some((c) => c.key === where.area)) areaChips.push({ key: where.area, label: where.area.replace(/_/g, ' '), n: 0 });
   }
+
+  // FIX792: the towns - those with businesses first (with how many), then the region's other towns
+  const townOpts: Array<{ town: string; n: number | null }> = [];
+  const addTown = (town: string, n: number | null) => {
+    if (town && !townOpts.some((x) => foldTown(x.town) === foldTown(town))) townOpts.push({ town, n });
+  };
+  towns.filter((x) => !where.region || x.region === where.region).forEach((x) => addTown(x.town, x.n));
+  if (where.region) townsOf('CM', where.region).forEach((x) => addTown(x, null));
+  else LAUNCH_AREAS.forEach((x) => addTown(townOfCity(x.city, x.area.key), null));
+  if (where.town) addTown(where.town, null);
+  const pickTown = (town: string) => {
+    if (!town) { setWhere({ region: where.region, town: '', area: '' }); return; }
+    const r = where.region ? null : findRegion('CM', (towns.filter((x) => foldTown(x.town) === foldTown(town))[0] || { region: '' }).region);
+    setWhere({ region: where.region || (r ? r.key : ''), town, area: '' });
+  };
 
   // gas: the five brands, then any brand sellers typed; the sizes in stock and the usual ones
   const brandChips: Array<{ value: string; label: string; n: number | null }> = GAS_BRANDS.map((b) => {
@@ -370,17 +412,17 @@ function ListView({ section }: { section: Section }) {
   };
 
   const sectionOn = isGas ? !!(gf.brand || gf.size !== null || gasToday) : !!(ff.kind || ff.meat || ff.dish);
-  const filtersOn = !!(where.city || where.area || query || openNow || sectionOn);
-  const setCity = (c: string) => setWhere({ city: isCityKey(c) ? c : '', area: '' });
+  const filtersOn = !!(where.region || where.town || where.area || query || openNow || sectionOn);
+  const setRegion = (r: string) => setWhere({ region: isRegionKey(r) ? r : '', town: '', area: '' });
   const clearAll = () => {
-    setWhere({ city: '', area: '' });
+    setWhere(NOWHERE);
     if (isGas) setGf({ brand: '', size: null }); else setFf({ kind: '', meat: '', dish: '' });
     setTyped(''); setQuery(''); setGasToday(false); setOpenNow(false);
   };
   const countLine = (n: number): string => (n === 1 ? t('countOne') : t('countPlaces', { n }));
 
   return (
-    <div dir={dir} data-fix="FIX700" data-section={section} className="min-h-screen bg-gray-50 pb-24">
+    <div dir={dir} data-fix="FIX792" data-section={section} className="min-h-screen bg-gray-50 pb-24">
       <header className={'bg-gradient-to-br px-4 pb-5 pt-6 text-white ' + (isGas ? 'from-red-600 via-orange-600 to-amber-500' : 'from-amber-500 via-orange-500 to-rose-500')}>
         <div className="mx-auto max-w-5xl">
           <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t(isGas ? 'gasTitle' : 'foodTitle')}</h1>
@@ -493,17 +535,25 @@ function ListView({ section }: { section: Section }) {
           </>
         )}
 
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="sr-only" htmlFor="food-city">{t('city')}</label>
-          <select
-            id="food-city"
-            value={where.city}
-            onChange={(e) => setCity(e.target.value)}
-            className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800"
-          >
-            <option value="">{t('allCities')}</option>
-            {CITY_KEYS.map((c) => <option key={c} value={c}>{cityLabel(c, lang)}</option>)}
-          </select>
+        <div className="grid grid-cols-2 gap-2 sm:max-w-md" data-row="where">
+          <label className="text-xs font-bold text-gray-600">
+            {t('region')}
+            <select value={where.region} onChange={(e) => setRegion(e.target.value)} data-filter="region"
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-2 py-2 text-sm font-semibold text-gray-800">
+              <option value="">{t('allRegions')}</option>
+              {regionsOf('CM').map((r) => <option key={r.key} value={r.key}>{placeRegionLabel(r, lang)}</option>)}
+            </select>
+          </label>
+          <label className="text-xs font-bold text-gray-600">
+            {t('town')}
+            <select value={where.town} onChange={(e) => pickTown(e.target.value)} data-filter="town"
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-2 py-2 text-sm font-semibold text-gray-800">
+              <option value="">{t('allTowns')}</option>
+              {townOpts.map((x) => <option key={x.town} value={x.town}>{x.town}{x.n ? ' (' + x.n + ')' : ''}</option>)}
+            </select>
+          </label>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           {isGas && (
             <button type="button" aria-pressed={gasToday} onClick={() => setGasToday(!gasToday)}
               className={'rounded-xl px-3 py-2 text-sm font-bold ' + (gasToday ? 'bg-green-600 text-white' : 'border border-gray-200 bg-white text-gray-700')}>
@@ -521,12 +571,12 @@ function ListView({ section }: { section: Section }) {
           )}
         </div>
 
-        {!where.city && (
+        {!where.town && (
           <div className="mt-3">
             <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-gray-500">{t('startHere')}</p>
             <div className="flex flex-wrap gap-2">
               {LAUNCH_AREAS.map(({ city, area }) => (
-                <button key={city + area.key} type="button" onClick={() => setWhere({ city, area: area.key })}
+                <button key={city + area.key} type="button" onClick={() => setWhere({ region: regionOfCity(city), town: townOfCity(city, area.key), area: area.key })}
                   className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-800 hover:bg-orange-100">
                   <MapPin className="h-4 w-4" />{area.label} {'\u00b7'} {cityLabel(city, lang)}
                 </button>
@@ -535,7 +585,7 @@ function ListView({ section }: { section: Section }) {
           </div>
         )}
 
-        {where.city && (
+        {where.town && (
           <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1" data-row="areas">
             <button type="button" onClick={() => setWhere({ ...where, area: '' })} className={chipCls(where.area === '', 'dark')}>
               {t('allAreas')}
@@ -602,4 +652,4 @@ export default function FoodGasPage() {
   if (section === 'hub') return <Hub />;
   return <ListView key={section} section={section} />;
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_PAGE_FIX700__COMPLETE
+// BAMBEH_END_TOKEN__FOOD_GAS_PAGE_FIX792__COMPLETE

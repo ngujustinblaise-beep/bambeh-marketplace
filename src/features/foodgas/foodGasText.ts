@@ -1,6 +1,11 @@
-// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_TEXT_FIX698_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FOOD_GAS_TEXT_FIX790_CLEAN
 /**
- * src/features/foodgas/foodGasText.ts - FIX698 (replaces FIX688)
+ * src/features/foodgas/foodGasText.ts - FIX790 (replaces FIX698)
+ *
+ * FIX790 (Big, 15 Oct 2026 - "region search for gas depots, food, restaurants, grills"): the words for
+ * REGION > TOWN > NEIGHBOURHOOD in any town of Cameroon (FIX788 in the database), and three helpers shared by
+ * the page, the form and the API: the region and town of a launch city, and the launch city of a region and
+ * town (the five launch cities keep their key so phones with the older app still find them).
  *
  * GAS & FOOD - every word in the five app languages (English, French, Pidgin,
  * Arabic right-to-left, Fulfulde), the cities and neighbourhoods, and the small
@@ -68,6 +73,14 @@ export interface FoodStrings {
   allCities: string;
   area: string;
   allAreas: string;
+  region: string;
+  allRegions: string;
+  town: string;
+  allTowns: string;
+  fTown: string;
+  fTownPh: string;
+  fAreaPh: string;
+  fAreaHelp: string;
   otherArea: string;
   startHere: string;
   gasTodayFilter: string;
@@ -257,6 +270,9 @@ export interface FoodStrings {
   e_bad_description: string;
   e_bad_city: string;
   e_bad_area: string;
+  e_bad_region: string;
+  e_bad_town: string;
+  e_update_app: string;
   e_bad_landmark: string;
   e_bad_photos: string;
   e_bad_open_days: string;
@@ -400,6 +416,14 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     allCities: "All cities",
     area: "Neighbourhood",
     allAreas: "All neighbourhoods",
+    region: "Region",
+    allRegions: "All regions",
+    town: "Town",
+    allTowns: "All towns",
+    fTown: "Town (any town in Cameroon)",
+    fTownPh: "e.g. Bafoussam",
+    fAreaPh: "e.g. Up Station, Mimboman, Tamdja",
+    fAreaHelp: "Choose one, or type the name of your neighbourhood.",
     otherArea: "Other neighbourhood",
     startHere: "Start here",
     gasTodayFilter: "Gas available today",
@@ -589,6 +613,9 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_bad_description: "The description is too long (800 letters at most).",
     e_bad_city: "Choose the city.",
     e_bad_area: "Choose or type the neighbourhood.",
+    e_bad_region: "Choose the region.",
+    e_bad_town: "Write the town (2 to 60 letters).",
+    e_update_app: "Update Bambeh to change this business.",
     e_bad_landmark: "The landmark is too long (160 letters at most).",
     e_bad_photos: "One of the photos could not be used. Remove it and add it again.",
     e_bad_open_days: "Choose the open days.",
@@ -729,6 +756,14 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     allCities: "Toutes les villes",
     area: "Quartier",
     allAreas: "Tous les quartiers",
+    region: "R\u00e9gion",
+    allRegions: "Toutes les r\u00e9gions",
+    town: "Ville",
+    allTowns: "Toutes les villes",
+    fTown: "Ville (toute ville du Cameroun)",
+    fTownPh: "ex. Bafoussam",
+    fAreaPh: "ex. Up Station, Mimboman, Tamdja",
+    fAreaHelp: "Choisissez-en un, ou saisissez le nom de votre quartier.",
     otherArea: "Autre quartier",
     startHere: "Commencez ici",
     gasTodayFilter: "Gaz disponible aujourd\u2019hui",
@@ -918,6 +953,9 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_bad_description: "La description est trop longue (800 lettres au plus).",
     e_bad_city: "Choisissez la ville.",
     e_bad_area: "Choisissez ou saisissez le quartier.",
+    e_bad_region: "Choisissez la r\u00e9gion.",
+    e_bad_town: "\u00c9crivez la ville (2 \u00e0 60 lettres).",
+    e_update_app: "Mettez Bambeh \u00e0 jour pour modifier ce commerce.",
     e_bad_landmark: "Le rep\u00e8re est trop long (160 lettres au plus).",
     e_bad_photos: "Une des photos est inutilisable. Retirez-la et ajoutez-la \u00e0 nouveau.",
     e_bad_open_days: "Choisissez les jours d\u2019ouverture.",
@@ -1058,6 +1096,14 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     allCities: "All the towns",
     area: "Quarter",
     allAreas: "All the quarters",
+    region: "Region",
+    allRegions: "All the regions",
+    town: "Town",
+    allTowns: "All the towns",
+    fTown: "Town (any town for Cameroon)",
+    fTownPh: "Like Bafoussam",
+    fAreaPh: "Like Up Station, Mimboman, Tamdja",
+    fAreaHelp: "Choose one, or write the name of your quarter.",
     otherArea: "Another quarter",
     startHere: "Start here",
     gasTodayFilter: "Gas dey today",
@@ -1247,6 +1293,9 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_bad_description: "The description too long (800 letters max).",
     e_bad_city: "Choose the town.",
     e_bad_area: "Choose or write the quarter.",
+    e_bad_region: "Choose the region.",
+    e_bad_town: "Write the town (2 to 60 letters).",
+    e_update_app: "Update Bambeh make you fit change this business.",
     e_bad_landmark: "The landmark too long (160 letters max).",
     e_bad_photos: "One photo no fit work. Remove am and add am again.",
     e_bad_open_days: "Choose the open days.",
@@ -1387,6 +1436,14 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     allCities: "\u0643\u0644 \u0627\u0644\u0645\u062f\u0646",
     area: "\u0627\u0644\u062d\u064a",
     allAreas: "\u0643\u0644 \u0627\u0644\u0623\u062d\u064a\u0627\u0621",
+    region: "\u0627\u0644\u0625\u0642\u0644\u064a\u0645",
+    allRegions: "\u0643\u0644 \u0627\u0644\u0623\u0642\u0627\u0644\u064a\u0645",
+    town: "\u0627\u0644\u0645\u062f\u064a\u0646\u0629",
+    allTowns: "\u0643\u0644 \u0627\u0644\u0645\u062f\u0646",
+    fTown: "\u0627\u0644\u0645\u062f\u064a\u0646\u0629 (\u0623\u064a \u0645\u062f\u064a\u0646\u0629 \u0641\u064a \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0648\u0646)",
+    fTownPh: "\u0645\u062b\u0627\u0644: \u0628\u0627\u0641\u0648\u0633\u0627\u0645",
+    fAreaPh: "\u0645\u062b\u0627\u0644: Up Station\u060c Mimboman\u060c Tamdja",
+    fAreaHelp: "\u0627\u062e\u062a\u0631 \u062d\u064a\u064b\u0627\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0627\u0633\u0645 \u062d\u064a\u0651\u0643.",
     otherArea: "\u062d\u064a \u0622\u062e\u0631",
     startHere: "\u0627\u0628\u062f\u0623 \u0645\u0646 \u0647\u0646\u0627",
     gasTodayFilter: "\u0627\u0644\u063a\u0627\u0632 \u0645\u062a\u0648\u0641\u0631 \u0627\u0644\u064a\u0648\u0645",
@@ -1576,6 +1633,9 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_bad_description: "\u0627\u0644\u0648\u0635\u0641 \u0637\u0648\u064a\u0644 \u062c\u062f\u064b\u0627 (800 \u062d\u0631\u0641 \u0643\u062d\u062f \u0623\u0642\u0635\u0649).",
     e_bad_city: "\u0627\u062e\u062a\u0631 \u0627\u0644\u0645\u062f\u064a\u0646\u0629.",
     e_bad_area: "\u0627\u062e\u062a\u0631 \u0627\u0644\u062d\u064a \u0623\u0648 \u0627\u0643\u062a\u0628 \u0627\u0633\u0645\u0647.",
+    e_bad_region: "\u0627\u062e\u062a\u0631 \u0627\u0644\u0625\u0642\u0644\u064a\u0645.",
+    e_bad_town: "\u0627\u0643\u062a\u0628 \u0627\u0633\u0645 \u0627\u0644\u0645\u062f\u064a\u0646\u0629 (\u0645\u0646 2 \u0625\u0644\u0649 60 \u062d\u0631\u0641\u064b\u0627).",
+    e_update_app: "\u062d\u062f\u0651\u062b \u062a\u0637\u0628\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0644\u062a\u0639\u062f\u064a\u0644 \u0647\u0630\u0627 \u0627\u0644\u0646\u0634\u0627\u0637.",
     e_bad_landmark: "\u0627\u0644\u0639\u0644\u0627\u0645\u0629 \u0627\u0644\u0645\u0645\u064a\u0632\u0629 \u0637\u0648\u064a\u0644\u0629 \u062c\u062f\u064b\u0627 (160 \u062d\u0631\u0641\u064b\u0627 \u0643\u062d\u062f \u0623\u0642\u0635\u0649).",
     e_bad_photos: "\u062a\u0639\u0630\u0651\u0631 \u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0625\u062d\u062f\u0649 \u0627\u0644\u0635\u0648\u0631. \u0623\u0632\u0644\u0647\u0627 \u0648\u0623\u0636\u0641\u0647\u0627 \u0645\u0646 \u062c\u062f\u064a\u062f.",
     e_bad_open_days: "\u0627\u062e\u062a\u0631 \u0623\u064a\u0627\u0645 \u0627\u0644\u0639\u0645\u0644.",
@@ -1716,6 +1776,14 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     allCities: "Saareeji fof",
     area: "Kartiye",
     allAreas: "Kartiyeeji fof",
+    region: "Diiwal",
+    allRegions: "Diiwe fof",
+    town: "Saare",
+    allTowns: "Saareeji fof",
+    fTown: "Saare (saare kala nder Kameruun)",
+    fTownPh: "misal: Bafoussam",
+    fAreaPh: "misal: Up Station, Mimboman, Tamdja",
+    fAreaHelp: "Su\u0253o gooto, walla winndu innde kartiye maa.",
     otherArea: "Kartiye go\u0257\u0257o",
     startHere: "Fu\u0257\u0257o \u0257oo",
     gasTodayFilter: "Gaas woodi hannde",
@@ -1905,6 +1973,9 @@ export const FOOD_TEXT: Record<FoodLang, FoodStrings> = {
     e_bad_description: "Sifaa ndee juuti no feewi (alkule 800 \u0253uri).",
     e_bad_city: "Su\u0253o saare.",
     e_bad_area: "Su\u0253o walla winndu kartiye.",
+    e_bad_region: "Su\u0253o diiwal.",
+    e_bad_town: "Winndu saare (alkule 2 haa 60).",
+    e_update_app: "Hes\u0257itin Bambeh ngam waylude nokkuure nde.",
     e_bad_landmark: "Maande nde juuti no feewi (alkule 160 \u0253uri).",
     e_bad_photos: "Natal gootal waawaa huutoreede. Itt ngal, \u0253eydu ngal kadi.",
     e_bad_open_days: "Su\u0253o \u00f1al\u0257i uddital.",
@@ -2108,6 +2179,51 @@ export function knownArea(city: unknown, key: unknown): AreaDef | null {
   return hit.length ? hit[0] : null;
 }
 
+// ------------------------------------------------------------------ FIX790: region > town > neighbourhood
+/** The region key (as the database stores it) of a launch city. */
+export function regionOfCity(city: unknown): string {
+  switch (city) {
+    case 'yaounde': return 'centre';
+    case 'bamenda': return 'nord_ouest';
+    case 'douala': return 'littoral';
+    case 'limbe':
+    case 'southwest': return 'sud_ouest';
+    default: return '';
+  }
+}
+
+/** The town of a launch city ("South West" is Buea, Kumba for Fiango and CCASS Junction, Ekona for Ekona). */
+export function townOfCity(city: unknown, area?: unknown): string {
+  switch (city) {
+    case 'yaounde': return 'Yaound\u00e9';
+    case 'bamenda': return 'Bamenda';
+    case 'douala': return 'Douala';
+    case 'limbe': return 'Limbe';
+    case 'southwest': return area === 'fiango' || area === 'ccass_junction' ? 'Kumba' : area === 'ekona' ? 'Ekona' : 'Buea';
+    default: return '';
+  }
+}
+
+/** The launch city of a region and town - the key the older app knows - or 'other' anywhere else. */
+export function launchCityOf(region: unknown, town: unknown): CityKey | 'other' {
+  const t = foldDish(String(town || ''));
+  if (region === 'centre' && t === 'yaounde') return 'yaounde';
+  if (region === 'nord_ouest' && t === 'bamenda') return 'bamenda';
+  if (region === 'littoral' && t === 'douala') return 'douala';
+  if (region === 'sud_ouest' && t === 'limbe') return 'limbe';
+  if (region === 'sud_ouest') return 'southwest';
+  return 'other';
+}
+
+/** The launch neighbourhoods of a town (Up Station in Bamenda, Mimboman in Yaounde...), for suggestions. */
+export function launchAreasOf(region: unknown, town: unknown): readonly AreaDef[] {
+  const c = launchCityOf(region, town);
+  if (c === 'other') return [];
+  if (c !== 'southwest') return AREAS[c];
+  const t = foldDish(String(town || ''));
+  return AREAS.southwest.filter((a) => foldDish(townOfCity('southwest', a.key)) === t);
+}
+
 // ------------------------------------------------------------------ Cameroon time (UTC+1, no summer time)
 export function doualaNow(d: Date = new Date()): { day: number; minutes: number; ymd: string } {
   const x = new Date(d.getTime() + 3600 * 1000);
@@ -2287,4 +2403,4 @@ export function foldDish(text: unknown): string {
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, '');
 }
-// BAMBEH_END_TOKEN__FOOD_GAS_TEXT_FIX698__COMPLETE
+// BAMBEH_END_TOKEN__FOOD_GAS_TEXT_FIX790__COMPLETE

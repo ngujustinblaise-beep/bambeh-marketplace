@@ -1,6 +1,15 @@
-// BAMBEH_DEPLOY_TOKEN__ADMIN_WOMENS_HEALTH_FIX744_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADMIN_WOMENS_HEALTH_FIX787_CLEAN
 /**
- * AdminWomensHealth.tsx - FIX744 (replaces FIX724) - Command Center > Women's health
+ * AdminWomensHealth.tsx - FIX787 (replaces FIX744) - Command Center > Women's health
+ *
+ * FIX787 (Big, 15 Oct 2026): the forms are for LEGAL HEALTH FACILITIES ONLY (FIX789). Beside every place and
+ * screening day: the declaration - the role the person gave at the facility, the authorisation number, when it
+ * was ticked (or "Bambeh field visit", or "no declaration - sent before 15 Oct 2026") - whether the account is
+ * paused, and what else that account sent. One red button: "Not a legal health facility - reject and pause the
+ * account". It asks what you found, then rejects the item and that account's other waiting items, sends its
+ * approved items back to "Changed" for a new check, pauses the account at once and signs it out everywhere.
+ * Only an admin or the super admin gives the account back (Account recovery). Staff accounts and your own are
+ * never paused this way. Your name and the time are kept, like every decision here.
  *
  * FIX744 (Big, 14 Oct 2026): the CALM TOOLS panel (AdminCalmTools, FIX743) under the quiz panel - add, edit,
  * publish (with the psychologist's name), hide, move, delete and bring back the Calm tools, and the switch for
@@ -31,10 +40,10 @@
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Baby, Check, EyeOff, GraduationCap, Loader2, Phone, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { Baby, Ban, Check, EyeOff, GraduationCap, Loader2, Phone, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import AdminCalmTools from './AdminCalmTools';
-import { adminGuide, adminQueue, adminQuiz, adminReview } from '@/features/womenshealth/whApi';
-import type { WhQueue, WhQueueView, WhStaffDay, WhStaffPlace } from '@/features/womenshealth/whApi';
+import { adminGuide, adminQueue, adminQuiz, adminRejectIllegal, adminReview, getLegal } from '@/features/womenshealth/whApi';
+import type { WhLegal, WhQueue, WhQueueView, WhStaffDay, WhStaffPlace } from '@/features/womenshealth/whApi';
 import {
   LANG_NAMES, QUIZ_TOPICS, WH_LANGS, dayRange, daysText, doualaNow, fmtPhone, kindLabel, regionLabel, reportLabel, serviceLabel, telHref,
   topicLabel, wt,
@@ -64,6 +73,9 @@ const REASONS: Record<string, string> = {
   network: 'No connection. Try again.',
   not_installed: 'The FIX715 SQL has not been run in Supabase yet.',
   not_signed_in: 'Your session has ended - sign in again.',
+  own_item: 'You added this yourself - another staff member must decide.',
+  owner_is_staff: 'This was added by a Bambeh staff account: it is never paused this way. Reject it, and tell an admin.',
+  invalid: 'Something in the request is not right.',
 };
 
 function reasonOf(r: string): string {
@@ -94,14 +106,43 @@ function Phone2Call({ row }: { row: WhStaffPlace | WhStaffDay }) {
   );
 }
 
-function Row({ kind, row, view, busy, onAct }: {
-  kind: Kind; row: WhStaffPlace | WhStaffDay; view: WhQueueView; busy: boolean;
+/** FIX787: what the person declared when sending it, and the state of that account. */
+function Declaration({ kind, row, legal, missing }: { kind: Kind; row: WhStaffPlace | WhStaffDay; legal: WhLegal | null; missing: boolean }) {
+  if (missing) {
+    return <p className="rounded-lg bg-amber-50 p-2 text-xs font-semibold text-amber-900" data-legal-missing="1">Declarations: run FIX789 in Supabase to see them here.</p>;
+  }
+  if (!legal) return null;
+  const isPlace = kind === 'place';
+  const privateKind = isPlace && ['private', 'faith', 'ngo'].indexOf((row as WhStaffPlace).kind) >= 0;
+  const items = legal.owner_items;
+  return (
+    <div className="space-y-1 rounded-lg border border-gray-200 bg-gray-50 p-2 text-xs text-gray-800" data-legal-row={row.id}>
+      {legal.legal_at ? (
+        <p data-declared="1"><span className="font-bold">Declared</span> {when(legal.legal_at)}: works there as &quot;{legal.legal_role || '-'}&quot;
+          {legal.legal_ref ? <> {'\u00b7'} authorisation: <span className="font-mono font-bold">{legal.legal_ref}</span></> : null}
+          {!legal.legal_ref && privateKind ? <span className="font-bold text-red-700"> {'\u00b7'} NO authorisation number</span> : null}</p>
+      ) : legal.added_as === 'agent' ? (
+        <p data-declared="agent"><span className="font-bold">Bambeh field visit</span> (staff - no declaration needed)
+          {legal.legal_role ? ' \u00b7 role given: ' + legal.legal_role : ''}{legal.legal_ref ? ' \u00b7 authorisation: ' + legal.legal_ref : ''}</p>
+      ) : (
+        <p className="font-bold text-amber-800" data-declared="none">No declaration - sent before 15 Oct 2026. Call and check it is a legal health facility.</p>
+      )}
+      {legal.owner_paused ? <p className="font-bold text-red-700" data-owner-paused="1">This account is PAUSED.</p> : null}
+      {items ? <p className="text-gray-600">This account sent: {items.pending} waiting, {items.live} live, {items.rejected} not approved.</p> : null}
+    </div>
+  );
+}
+
+function Row({ kind, row, view, busy, legal, legalMissing, onAct, onIllegal }: {
+  kind: Kind; row: WhStaffPlace | WhStaffDay; view: WhQueueView; busy: boolean; legal: WhLegal | null; legalMissing: boolean;
   onAct: (action: 'approve' | 'reject' | 'hide' | 'checked') => void;
+  onIllegal: () => void;
 }) {
   const isPlace = kind === 'place';
   const p = row as WhStaffPlace;
   const d = row as WhStaffDay;
   const ownerHidden = row.status === 'hidden' && row.hidden_by === 'owner';
+  const canPause = !legalMissing && !!legal && !legal.owner_is_staff && !legal.is_mine && !legal.owner_paused;
   return (
     <article className="space-y-2 rounded-xl border border-gray-200 bg-white p-4" data-admin-row={row.id}>
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -145,6 +186,7 @@ function Row({ kind, row, view, busy, onAct }: {
         {row.reviewed_by_name ? ' \u00b7 last decision: ' + row.reviewed_by_name + ' ' + when(row.reviewed_at) : ''}
       </p>
       {row.review_note && <p className="text-xs text-gray-600">Note: {row.review_note}</p>}
+      <Declaration kind={kind} row={row} legal={legal} missing={legalMissing} />
       {row.open_reports.length > 0 && (
         <div className="space-y-1 rounded-lg bg-red-50 p-2 text-xs text-red-900" data-reports={row.open_reports.length}>
           <p className="font-bold">{row.open_reports.length} open report(s)</p>
@@ -179,6 +221,12 @@ function Row({ kind, row, view, busy, onAct }: {
           </button>
         )}
         {view === 'closed' && ownerHidden && <span className="text-xs text-gray-500">Taken down by the person who added it.</span>}
+        {canPause && (
+          <button type="button" disabled={busy} onClick={onIllegal} data-illegal={row.id}
+                  className="inline-flex items-center gap-1 rounded-lg border-2 border-red-600 bg-white px-3 py-1.5 text-xs font-extrabold text-red-700 disabled:opacity-50">
+            <Ban className="h-3.5 w-3.5" />Not a legal health facility - reject and pause the account
+          </button>
+        )}
         {busy && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
       </div>
     </article>
@@ -368,11 +416,24 @@ export default function AdminWomensHealth({ embedded = false }: { embedded?: boo
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  const [legal, setLegal] = useState<Record<string, WhLegal>>({});
+  const [legalMissing, setLegalMissing] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     const r = await adminQueue(kind, view);
-    if (r.ok) { setQ(r); setError(null); } else setError(reasonOf(r.reason));
+    if (r.ok) {
+      setQ(r); setError(null);
+      // FIX787: the declarations behind these rows (FIX789)
+      const l = await getLegal(kind, r.rows.map((x) => x.id));
+      if (l.ok) {
+        const map: Record<string, WhLegal> = {};
+        l.rows.forEach((x) => { map[x.id] = x; });
+        setLegal(map); setLegalMissing(false);
+      } else {
+        setLegal({}); setLegalMissing(l.reason === 'not_installed');
+      }
+    } else setError(reasonOf(r.reason));
     setLoading(false);
   }, [kind, view]);
 
@@ -402,9 +463,28 @@ export default function AdminWomensHealth({ embedded = false }: { embedded?: boo
     await load();
   };
 
+  // FIX787: not a legal health facility - reject and pause the account
+  const illegal = async (row: WhStaffPlace | WhStaffDay) => {
+    const label = kind === 'place' ? (row as WhStaffPlace).name : (row as WhStaffDay).title;
+    const reason = window.prompt('"' + label + '" - NOT a legal health facility.\nWhat did you find? (e.g. "Called the number: not a health facility", ' +
+      '"No authorisation from the Ministry")\nThe person reads this.');
+    if (reason === null) return;
+    if (!window.confirm('Pause this account?\n\nThis will, at once:\n- reject "' + label + '"\n- reject everything else this account is still waiting for\n' +
+      '- send its approved places and days back to "Changed" for a new check\n- pause the account and sign it out on every phone\n\n' +
+      'Only an admin or the super admin can give the account back (Account recovery). Your name and the time are recorded.')) return;
+    setBusy(row.id); setNote(null);
+    const r = await adminRejectIllegal(kind, row.id, reason);
+    setBusy(null);
+    if (!r.ok) { setNote(reasonOf(r.reason)); return; }
+    setNote('"' + label + '": rejected - not a legal health facility. Account ' + (r.already_paused ? 'was already paused' : 'paused') +
+      ' by ' + r.reviewed_by_name + ' at ' + when(r.reviewed_at) + '. ' + r.other_rejected + ' other waiting item(s) rejected, ' +
+      r.to_recheck + ' approved item(s) back in "Changed".' + (r.signed_out ? '' : ' (Signing out could not be confirmed - check Account recovery.)'));
+    await load();
+  };
+
   const counts = q ? q.counts[kind] : null;
   return (
-    <div data-fix="FIX744" className={embedded ? 'space-y-4' : 'mx-auto max-w-5xl space-y-4 p-4'}>
+    <div data-fix="FIX787" className={embedded ? 'space-y-4' : 'mx-auto max-w-5xl space-y-4 p-4'}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold text-gray-900">Women&apos;s health</h1>
         <button type="button" onClick={() => void load()} className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700">
@@ -440,10 +520,13 @@ export default function AdminWomensHealth({ embedded = false }: { embedded?: boo
         <p className="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">Nothing here.</p>
       ) : q ? (
         <div className="space-y-3">
-          {q.rows.map((row) => <Row key={row.id} kind={kind} row={row} view={view} busy={busy === row.id} onAct={(a) => void act(row, a)} />)}
+          {q.rows.map((row) => (
+            <Row key={row.id} kind={kind} row={row} view={view} busy={busy === row.id} legal={legal[row.id] || null} legalMissing={legalMissing}
+                 onAct={(a) => void act(row, a)} onIllegal={() => void illegal(row)} />
+          ))}
         </div>
       ) : null}
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADMIN_WOMENS_HEALTH_FIX744__COMPLETE
+// BAMBEH_END_TOKEN__ADMIN_WOMENS_HEALTH_FIX787__COMPLETE

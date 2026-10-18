@@ -1,6 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_MANAGE_FIX711_CLEAN
+// BAMBEH_DEPLOY_TOKEN__WOMENS_HEALTH_MANAGE_FIX785_CLEAN
 /**
- * src/features/womenshealth/WomensHealthManage.tsx - FIX711
+ * src/features/womenshealth/WomensHealthManage.tsx - FIX785 (replaces FIX711)
  *   routes (signed in - AuthGate in App.tsx):
  *     /womens-health/mine             my places and screening days, where each one stands
  *     /womens-health/new-place        add a maternity, health centre, clinic, midwife, listening centre
@@ -8,24 +8,32 @@
  *     /womens-health/new-day          announce a free screening day (?place=<id> links it to a place)
  *     /womens-health/edit-day/:id     correct it
  *
- * Anyone signed in can add a place they know - a facility's own staff, a Bambeh field agent, a
- * user. NOTHING shows until Bambeh staff have checked it and called its number (FIX705). The
- * official phone number goes in its own box; every other box refuses phone numbers and chat
- * links (contact stays inside Bambeh). A changed number is hidden again until staff call it.
- * The person who added something can take it down and put it back; a staff hide stays.
+ * FIX785 (Big, 15 Oct 2026): the two forms are for LEGAL HEALTH FACILITIES ONLY - a state (public)
+ * facility, or a private one authorised by the Ministry of Public Health - and they say so large and
+ * clear, at the top of the form and on the buttons. Before sending, the person gives their role at the
+ * facility, the authorisation number (required for private, faith-based and association facilities) and
+ * ticks the declaration; anyone who fills them in without being a legal health facility has the account
+ * paused (FIX789 does it in the database, from Command Center > Women's health). "I know this place" is
+ * gone. Bambeh staff entering a field visit need no declaration; staff correcting someone else's place
+ * never sign that person's declaration.
+ *
+ * NOTHING shows until Bambeh staff have checked it and called its number (FIX705). The official phone
+ * number goes in its own box; every other box refuses phone numbers and chat links (contact stays inside
+ * Bambeh). A changed number is hidden again until staff call it. The person who added something can take
+ * it down and put it back; a staff hide stays.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { CalendarDays, CheckCircle, ChevronLeft, Eye, EyeOff, Loader2, Pencil, Plus } from 'lucide-react';
+import { CalendarDays, CheckCircle, ChevronLeft, Eye, EyeOff, Loader2, Pencil, Plus, ShieldAlert } from 'lucide-react';
 import {
-  TOWNS, WH_ADDED_AS, WH_KINDS, WH_REGIONS, WH_SERVICES, WH_TOPICS, dayRange, doualaNow, hasPhoneNumber, isWhRegion, kindLabel,
+  TOWNS, WH_KINDS, WH_REGIONS, WH_SERVICES, WH_TOPICS, dayRange, doualaNow, hasPhoneNumber, isWhRegion, kindLabel,
   phoneDigits, regionLabel, serviceLabel, topicLabel, useWhText, whReason, wt,
 } from './whText';
-import type { WhAddedAs, WhKind, WhKey, WhLang, WhRegion, WhService, WhT, WhTopic } from './whText';
-import { getDay, getPlace, myItems, saveDay, savePlace, setVisible } from './whApi';
+import type { WhKind, WhKey, WhLang, WhRegion, WhService, WhT, WhTopic } from './whText';
+import { getDay, getGuide, getLegal, getPlace, myItems, saveDay, savePlace, setVisible } from './whApi';
 import type { WhDay, WhPlace, WhStatus } from './whApi';
 
 type Mode = 'mine' | 'new-place' | 'edit-place' | 'new-day' | 'edit-day';
@@ -57,6 +65,109 @@ function statusChip(t: WhT, status: WhStatus | undefined, needsReview: boolean |
     : s === 'pending' ? 'bg-amber-100 text-amber-900' : 'bg-gray-200 text-gray-700';
   const key: WhKey = s === 'live' ? (needsReview ? 'sh_review' : 'sh_live') : s === 'pending' ? 'sh_pending' : s === 'rejected' ? 'sh_rejected' : 'sh_hidden';
   return <span className={'rounded-full px-2 py-0.5 text-[11px] font-extrabold ' + cls} data-chip={s}>{t(key)}</span>;
+}
+
+// ------------------------------------------------------------------ FIX785: legal health facilities only
+/** The large, clear line at the top of both forms. */
+function LegalBanner({ t }: { t: WhT }) {
+  return (
+    <div role="note" data-legal-banner="1" className="rounded-2xl border-2 border-red-300 bg-red-50 p-4">
+      <p className="flex items-center gap-2 text-lg font-extrabold uppercase leading-tight tracking-wide text-red-800">
+        <ShieldAlert className="h-6 w-6 flex-shrink-0" />{t('legalOnly')}
+      </p>
+      <p className="mt-2 text-sm font-semibold leading-relaxed text-red-900">{t('legalBanner')}</p>
+    </div>
+  );
+}
+
+/** The two big buttons, each saying who they are for. */
+function AddButtons({ t, onPlace, onDay }: { t: WhT; onPlace: () => void; onDay: () => void }) {
+  return (
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" data-legal-buttons="1">
+      <button type="button" onClick={onPlace} className="flex flex-col items-center justify-center gap-0.5 rounded-2xl bg-rose-600 px-3 py-3 text-white shadow">
+        <span className="inline-flex items-center gap-1.5 text-base font-extrabold"><Plus className="h-5 w-5" />{t('addPlace')}</span>
+        <span className="text-xs font-bold text-rose-50" data-legal-line="place">{t('legalOnlyLine')}</span>
+      </button>
+      <button type="button" onClick={onDay} className="flex flex-col items-center justify-center gap-0.5 rounded-2xl border-2 border-rose-200 bg-white px-3 py-3 text-rose-700">
+        <span className="inline-flex items-center gap-1.5 text-base font-extrabold"><CalendarDays className="h-5 w-5" />{t('addDay')}</span>
+        <span className="text-xs font-bold text-rose-800" data-legal-line="day">{t('legalOnlyLine')}</span>
+      </button>
+    </div>
+  );
+}
+
+/** who fills the form: 'self' = the facility itself (declaration needed), 'staff' = Bambeh staff (a field visit
+ *  needs no declaration), 'none' = staff correcting someone else's item (their declaration is never signed for them) */
+type LegalMode = 'self' | 'staff' | 'none';
+
+interface Legal { declared: boolean; role: string; ref: string; fieldVisit: boolean }
+const EMPTY_LEGAL: Legal = { declared: false, role: '', ref: '', fieldVisit: false };
+
+function tidy(v: string): string {
+  return v.trim().replace(/\s+/g, ' ');
+}
+
+/** The first legal problem, named as the database names it (FIX789). */
+function checkLegal(v: Legal, mode: LegalMode, refRequired: boolean): string | null {
+  if (mode === 'none') return null;
+  const visit = mode === 'staff' && v.fieldVisit;
+  const role = tidy(v.role);
+  const ref = tidy(v.ref);
+  if (role.length > 60 || (role.length > 0 && role.length < 2) || (!visit && role.length < 2)) return 'bad_role';
+  if (ref.length > 80 || (ref.length > 0 && ref.length < 3) || (mode === 'self' && refRequired && ref.length < 3)) return 'bad_ref';
+  if (!visit && !v.declared) return 'not_declared';
+  return null;
+}
+
+function legalPayload(v: Legal, mode: LegalMode) {
+  const visit = mode === 'staff' && v.fieldVisit;
+  return {
+    added_as: (visit ? 'agent' : 'facility') as 'agent' | 'facility',
+    legal_declared: mode !== 'none' && !visit && v.declared,
+    legal_role: mode === 'none' ? '' : tidy(v.role),
+    legal_ref: mode === 'none' ? '' : tidy(v.ref),
+  };
+}
+
+function LegalFields({ v, set, mode, refLabel, t }: {
+  v: Legal; set: (v: Legal) => void; mode: LegalMode; refLabel: string; t: WhT;
+}) {
+  if (mode === 'none') return null;
+  const visit = mode === 'staff' && v.fieldVisit;
+  return (
+    <fieldset className="space-y-3 rounded-2xl border-2 border-red-200 bg-red-50/60 p-3" data-legal="1">
+      <legend className="px-1 text-sm font-extrabold uppercase text-red-800">{t('legalOnly')}</legend>
+      {mode === 'staff' && (
+        <label className="flex items-start gap-2 text-sm font-bold text-gray-800">
+          <input type="checkbox" checked={v.fieldVisit} onChange={(e) => set({ ...v, fieldVisit: e.target.checked })} className="mt-1" data-f="field_visit" />
+          <span>{t('as_agent')}<span className="block text-xs font-normal text-gray-600">{t('legalStaffNote')}</span></span>
+        </label>
+      )}
+      <Field label={t('fRole')}>
+        <input value={v.role} onChange={(e) => set({ ...v, role: e.target.value })} maxLength={60} placeholder={t('fRolePh')} className={inputCls} data-f="legal_role" />
+      </Field>
+      <Field label={refLabel} help={t('fRefHelp')}>
+        <input value={v.ref} onChange={(e) => set({ ...v, ref: e.target.value })} maxLength={80} placeholder={t('fRefPh')} className={inputCls} data-f="legal_ref" />
+      </Field>
+      {!visit && (
+        <label className="flex items-start gap-3 rounded-xl border-2 border-red-300 bg-white p-3 text-sm font-bold leading-snug text-gray-900">
+          <input type="checkbox" checked={v.declared} onChange={(e) => set({ ...v, declared: e.target.checked })} className="mt-0.5 h-5 w-5 flex-shrink-0 accent-rose-600" data-f="legal_declared" />
+          <span>{t('legalDeclare')}</span>
+        </label>
+      )}
+    </fieldset>
+  );
+}
+
+/** Is this Bambeh staff? (the guide switch answers it; nothing else is asked) */
+function useIsStaff(): boolean | null {
+  const [staff, setStaff] = useState<boolean | null>(null);
+  useEffect(() => {
+    let live = true;
+    void getGuide().then((r) => { if (live) setStaff(r.ok ? r.is_staff === true : false); });
+    return () => { live = false; };
+  }, []);
+  return staff;
 }
 
 // ------------------------------------------------------------------ my places and days
@@ -126,14 +237,7 @@ function Mine({ lang, t }: { lang: WhLang; t: WhT }) {
     <div className="space-y-4">
       <h1 className="text-2xl font-extrabold text-gray-900">{t('mineTitle')}</h1>
       {savedText && <p className="flex items-start gap-2 rounded-2xl bg-green-50 p-3 text-sm font-semibold text-green-800" data-saved={saved}><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />{savedText}</p>}
-      <div className="grid grid-cols-2 gap-2">
-        <button type="button" onClick={() => navigate('/womens-health/new-place')} className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-rose-600 px-3 py-3 text-sm font-extrabold text-white">
-          <Plus className="h-4 w-4" />{t('addPlace')}
-        </button>
-        <button type="button" onClick={() => navigate('/womens-health/new-day')} className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-rose-200 bg-white px-3 py-3 text-sm font-extrabold text-rose-700">
-          <CalendarDays className="h-4 w-4" />{t('addDay')}
-        </button>
-      </div>
+      <AddButtons t={t} onPlace={() => navigate('/womens-health/new-place')} onDay={() => navigate('/womens-health/new-day')} />
       {error && <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}
       {loading ? (
         <div className="flex justify-center py-10 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>
@@ -180,14 +284,19 @@ function Mine({ lang, t }: { lang: WhLang; t: WhT }) {
 interface PlaceForm {
   name: string; kind: WhKind | ''; services: WhService[]; region: WhRegion | ''; town: string; area: string; landmark: string;
   phone: string; open_24h: boolean; open_days: number[]; opens_at: string; closes_at: string; accepts_csu: boolean;
-  women_doctors: boolean; price_note: string; description: string; added_as: WhAddedAs;
+  women_doctors: boolean; price_note: string; description: string;
 }
 
 const EMPTY_PLACE: PlaceForm = {
   name: '', kind: '', services: [], region: '', town: '', area: '', landmark: '', phone: '', open_24h: false,
   open_days: [1, 2, 3, 4, 5, 6], opens_at: '', closes_at: '', accepts_csu: false, women_doctors: false, price_note: '',
-  description: '', added_as: 'user',
+  description: '',
 };
+
+/** A private, faith-based or association facility must give its authorisation number. */
+function refRequiredFor(kind: WhKind | ''): boolean {
+  return kind === 'private' || kind === 'faith' || kind === 'ngo';
+}
 
 /** The first problem, as the database would name it - so the person sees it before sending. */
 function checkPlace(f: PlaceForm): string | null {
@@ -212,7 +321,10 @@ function checkPlace(f: PlaceForm): string | null {
 
 function PlaceEditor({ id, lang, t }: { id: string | null; lang: WhLang; t: WhT }) {
   const navigate = useNavigate();
+  const staff = useIsStaff();
   const [f, setF] = useState<PlaceForm>(EMPTY_PLACE);
+  const [legal, setLegal] = useState<Legal>(EMPTY_LEGAL);
+  const [mine, setMine] = useState(true);
   const [loading, setLoading] = useState(!!id);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -221,7 +333,7 @@ function PlaceEditor({ id, lang, t }: { id: string | null; lang: WhLang; t: WhT 
   useEffect(() => {
     if (!id) return;
     let live = true;
-    void getPlace(id).then((r) => {
+    void getPlace(id).then(async (r) => {
       if (!live) return;
       if (!r.ok) { setBlocked(whReason(lang, r.reason)); setLoading(false); return; }
       if (!r.me.can_edit) { setBlocked(whReason(lang, 'not_allowed')); setLoading(false); return; }
@@ -230,38 +342,53 @@ function PlaceEditor({ id, lang, t }: { id: string | null; lang: WhLang; t: WhT 
         name: p.name, kind: p.kind, services: p.services.slice(), region: p.region, town: p.town, area: p.area, landmark: p.landmark,
         phone: p.phone_saved || '', open_24h: p.open_24h, open_days: (p.open_days || []).slice(), opens_at: p.opens_at || '',
         closes_at: p.closes_at || '', accepts_csu: p.accepts_csu, women_doctors: p.women_doctors, price_note: p.price_note,
-        description: p.description, added_as: p.added_as || 'user',
+        description: p.description,
       });
+      setMine(r.me.is_mine);
+      if (r.me.is_mine) {
+        const l = await getLegal('place', [id]);
+        if (!live) return;
+        const row = l.ok && l.rows.length ? l.rows[0] : null;
+        setLegal({ declared: false, role: row ? row.legal_role : '', ref: row ? row.legal_ref : '', fieldVisit: p.added_as === 'agent' });
+      }
       setLoading(false);
     });
     return () => { live = false; };
   }, [id, lang]);
 
+  // staff adding a new place: a field visit by default
+  useEffect(() => {
+    if (staff && !id) setLegal((o) => ({ ...o, fieldVisit: true }));
+  }, [staff, id]);
+
+  const mode: LegalMode = staff ? (mine ? 'staff' : 'none') : 'self';
   const set = <K extends keyof PlaceForm>(k: K, v: PlaceForm[K]) => setF((old) => ({ ...old, [k]: v }));
   const toggleService = (s: WhService) => set('services', f.services.indexOf(s) >= 0 ? f.services.filter((x) => x !== s) : f.services.concat([s]));
   const toggleDay = (d: number) => set('open_days', f.open_days.indexOf(d) >= 0 ? f.open_days.filter((x) => x !== d) : f.open_days.concat([d]).sort());
 
   const submit = async () => {
-    const bad = checkPlace(f);
+    const bad = checkPlace(f) || checkLegal(legal, mode, refRequiredFor(f.kind));
     if (bad) { setError(whReason(lang, bad)); return; }
     setBusy(true); setError(null);
     const r = await savePlace(id, {
       name: f.name.trim(), kind: f.kind as WhKind, services: f.services, region: f.region as WhRegion, town: f.town.trim(),
       area: f.area.trim(), landmark: f.landmark.trim(), phone: f.phone.trim(), open_24h: f.open_24h, open_days: f.open_days,
       opens_at: f.open_24h ? '' : f.opens_at, closes_at: f.open_24h ? '' : f.closes_at, accepts_csu: f.accepts_csu,
-      women_doctors: f.women_doctors, price_note: f.price_note.trim(), description: f.description.trim(), added_as: f.added_as,
+      women_doctors: f.women_doctors, price_note: f.price_note.trim(), description: f.description.trim(),
+      ...legalPayload(legal, mode),
     });
     setBusy(false);
     if (!r.ok) { setError(whReason(lang, r.reason)); return; }
     navigate('/womens-health/mine?saved=' + (!id ? 'new' : r.needs_review ? 'review' : 'edit'));
   };
 
-  if (loading) return <div className="flex justify-center py-12 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  if (loading || staff === null) return <div className="flex justify-center py-12 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   if (blocked) return <p className="rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-800" data-blocked="1">{blocked}</p>;
 
   return (
-    <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); void submit(); }} data-form="place">
+    <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); void submit(); }} data-form="place" data-legal-mode={mode}>
       <h1 className="text-2xl font-extrabold text-gray-900">{id ? t('editPlace') : t('newPlace')}</h1>
+      <LegalBanner t={t} />
       {!id && <p className="rounded-2xl bg-rose-50 p-3 text-xs text-rose-900">{t('formIntro')}</p>}
       <Field label={t('fName')}>
         <input value={f.name} onChange={(e) => set('name', e.target.value)} maxLength={100} placeholder={t('fNamePh')} className={inputCls} data-f="name" />
@@ -337,15 +464,7 @@ function PlaceEditor({ id, lang, t }: { id: string | null; lang: WhLang; t: WhT 
       <Field label={t('fDesc')}>
         <textarea value={f.description} onChange={(e) => set('description', e.target.value)} maxLength={600} rows={3} className={inputCls} data-f="description" />
       </Field>
-      <fieldset className="space-y-1.5">
-        <legend className={labelCls}>{t('fAs')}</legend>
-        {WH_ADDED_AS.map((a) => (
-          <label key={a} className="flex items-center gap-2 text-sm text-gray-800">
-            <input type="radio" name="wh-added-as" checked={f.added_as === a} onChange={() => set('added_as', a)} data-as={a} />
-            {t(('as_' + a) as WhKey)}
-          </label>
-        ))}
-      </fieldset>
+      <LegalFields v={legal} set={setLegal} mode={mode} refLabel={t('fRef')} t={t} />
       {error && <p className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-800" data-error="1">{error}</p>}
       <button type="submit" onClick={(e) => { e.preventDefault(); void submit(); }} disabled={busy}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-600 px-4 py-3 text-base font-extrabold text-white shadow disabled:opacity-60">
@@ -397,7 +516,10 @@ function checkDay(f: DayForm, today: string): string | null {
 
 function DayEditor({ id, placeParam, lang, t }: { id: string | null; placeParam: string | null; lang: WhLang; t: WhT }) {
   const navigate = useNavigate();
+  const staff = useIsStaff();
   const [f, setF] = useState<DayForm>(EMPTY_DAY);
+  const [legal, setLegal] = useState<Legal>(EMPTY_LEGAL);
+  const [mine, setMine] = useState(true);
   const [loading, setLoading] = useState(!!id || !!placeParam);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -407,7 +529,7 @@ function DayEditor({ id, placeParam, lang, t }: { id: string | null; placeParam:
   useEffect(() => {
     let live = true;
     if (id) {
-      void getDay(id).then((r) => {
+      void getDay(id).then(async (r) => {
         if (!live) return;
         if (!r.ok) { setBlocked(whReason(lang, r.reason)); setLoading(false); return; }
         if (!r.me.can_edit) { setBlocked(whReason(lang, 'not_allowed')); setLoading(false); return; }
@@ -417,6 +539,13 @@ function DayEditor({ id, placeParam, lang, t }: { id: string | null; placeParam:
           starts_on: d.starts_on, ends_on: d.ends_on === d.starts_on ? '' : d.ends_on, opens_at: d.opens_at || '', closes_at: d.closes_at || '',
           free_what: d.free_what, paid_after: d.paid_after, phone: d.phone_saved || '', place_id: d.place_id, place_name: d.place_name,
         });
+        setMine(r.me.is_mine);
+        if (r.me.is_mine) {
+          const l = await getLegal('day', [id]);
+          if (!live) return;
+          const row = l.ok && l.rows.length ? l.rows[0] : null;
+          setLegal({ declared: false, role: row ? row.legal_role : '', ref: row ? row.legal_ref : '', fieldVisit: !!row && row.added_as === 'agent' });
+        }
         setLoading(false);
       });
     } else if (placeParam) {
@@ -432,29 +561,36 @@ function DayEditor({ id, placeParam, lang, t }: { id: string | null; placeParam:
     return () => { live = false; };
   }, [id, placeParam, lang]);
 
+  useEffect(() => {
+    if (staff && !id) setLegal((o) => ({ ...o, fieldVisit: true }));
+  }, [staff, id]);
+
+  const mode: LegalMode = staff ? (mine ? 'staff' : 'none') : 'self';
   const set = <K extends keyof DayForm>(k: K, v: DayForm[K]) => setF((old) => ({ ...old, [k]: v }));
   const toggleTopic = (x: WhTopic) => set('topics', f.topics.indexOf(x) >= 0 ? f.topics.filter((y) => y !== x) : f.topics.concat([x]));
 
   const submit = async () => {
-    const bad = checkDay(f, today);
+    const bad = checkDay(f, today) || checkLegal(legal, mode, false);
     if (bad) { setError(whReason(lang, bad)); return; }
     setBusy(true); setError(null);
     const r = await saveDay(id, {
       title: f.title.trim(), topics: f.topics, organiser: f.organiser.trim(), region: f.region as WhRegion, town: f.town.trim(),
       venue: f.venue.trim(), landmark: f.landmark.trim(), starts_on: f.starts_on, ends_on: f.ends_on || f.starts_on, opens_at: f.opens_at,
       closes_at: f.closes_at, free_what: f.free_what.trim(), paid_after: f.paid_after.trim(), phone: f.phone.trim(), place_id: f.place_id,
+      ...legalPayload(legal, mode),
     });
     setBusy(false);
     if (!r.ok) { setError(whReason(lang, r.reason)); return; }
     navigate('/womens-health/mine?saved=' + (!id ? 'new' : r.needs_review ? 'review' : 'edit'));
   };
 
-  if (loading) return <div className="flex justify-center py-12 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  if (loading || staff === null) return <div className="flex justify-center py-12 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   if (blocked) return <p className="rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-800" data-blocked="1">{blocked}</p>;
 
   return (
-    <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); void submit(); }} data-form="day">
+    <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); void submit(); }} data-form="day" data-legal-mode={mode}>
       <h1 className="text-2xl font-extrabold text-gray-900">{id ? t('editDay') : t('newDay')}</h1>
+      <LegalBanner t={t} />
       {f.place_name && <p className="rounded-2xl bg-rose-50 p-3 text-sm font-bold text-rose-900" data-at-place={f.place_id || ''}>{t('fAtPlace', { p: f.place_name })}</p>}
       <Field label={t('fTitle')}>
         <input value={f.title} onChange={(e) => set('title', e.target.value)} maxLength={100} placeholder={t('fTitlePh')} className={inputCls} data-f="title" />
@@ -508,6 +644,7 @@ function DayEditor({ id, placeParam, lang, t }: { id: string | null; placeParam:
       <Field label={t('fDayPhone')} help={t('fPhoneHelp')}>
         <input value={f.phone} onChange={(e) => set('phone', e.target.value)} maxLength={20} inputMode="tel" className={inputCls} data-f="phone" />
       </Field>
+      <LegalFields v={legal} set={setLegal} mode={mode} refLabel={t('fRefDay')} t={t} />
       {error && <p className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-800" data-error="1">{error}</p>}
       <button type="submit" onClick={(e) => { e.preventDefault(); void submit(); }} disabled={busy}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-600 px-4 py-3 text-base font-extrabold text-white shadow disabled:opacity-60">
@@ -525,7 +662,7 @@ export default function WomensHealthManage() {
   const mode = modeOf(location.pathname);
   const placeParam = new URLSearchParams(location.search).get('place');
   return (
-    <div dir={dir} data-fix="FIX711" className="mx-auto max-w-2xl space-y-4 px-4 py-4">
+    <div dir={dir} data-fix="FIX785" className="mx-auto max-w-2xl space-y-4 px-4 py-4">
       <button type="button" onClick={() => navigate(mode === 'mine' ? '/womens-health' : '/womens-health/mine')}
               className="inline-flex items-center gap-1 rounded-xl px-2 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100">
         <ChevronLeft className="h-4 w-4 rtl:rotate-180" />{mode === 'mine' ? t('title') : t('mine')}
@@ -538,4 +675,4 @@ export default function WomensHealthManage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__WOMENS_HEALTH_MANAGE_FIX711__COMPLETE
+// BAMBEH_END_TOKEN__WOMENS_HEALTH_MANAGE_FIX785__COMPLETE

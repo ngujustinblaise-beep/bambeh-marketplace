@@ -1,4 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__SAFETYALERTS_FIX507_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SAFETYALERTS_FIX800_CLEAN
+// FIX800 (Big, 15 Oct 2026): the town list is grouped by region (TownOptions, FIX795), and the town picked here
+// opens the other free pages in that town too (places.ts, FIX769). Replaces FIX507; nothing else changed.
 /**
  * src/pages/SafetyAlerts.tsx - Bambeh free services
  * FILE LOCATION: src/pages/SafetyAlerts.tsx
@@ -44,6 +46,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import TownOptions from '@/components/location/TownOptions';   // FIX800: towns grouped by region
+import { myTown, rememberMyTown } from '@/lib/africa/places';   // FIX800: one town for every free page
 
 type Kind = 'fire' | 'flood' | 'gunshots' | 'thieves' | 'robbery' | 'accident' | 'other';
 const KINDS: Kind[] = ['fire', 'flood', 'gunshots', 'thieves', 'robbery', 'accident', 'other'];
@@ -281,7 +285,7 @@ export default function SafetyAlerts() {
 
   const [towns, setTowns] = useState<TownRow[]>([]);
   const [town, setTown] = useState<string>(() => {
-    try { return window.localStorage.getItem(TOWN_KEY) ?? ''; } catch { return ''; }
+    try { return window.localStorage.getItem(TOWN_KEY) ?? myTown(); } catch { return ''; }
   });
   const [rows, setRows] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
@@ -347,6 +351,7 @@ export default function SafetyAlerts() {
 
   const chooseTown = (v: string) => {
     setTown(v);
+    if (v) rememberMyTown(v);   // FIX800
     try { v ? window.localStorage.setItem(TOWN_KEY, v) : window.localStorage.removeItem(TOWN_KEY); }
     catch { /* private mode */ }
   };
@@ -445,7 +450,7 @@ export default function SafetyAlerts() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 space-y-3">
           <select value={town} onChange={(e) => chooseTown(e.target.value)} className={INPUT}>
             <option value="">{t('allTowns')}</option>
-            {towns.map((x) => <option key={x.town} value={x.town}>{x.town}</option>)}
+            <TownOptions towns={towns} current={town} />
           </select>
           <button
             onClick={() => {
@@ -623,4 +628,4 @@ export default function SafetyAlerts() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__SAFETYALERTS_FIX507__COMPLETE
+// BAMBEH_END_TOKEN__SAFETYALERTS_FIX800__COMPLETE

@@ -1,4 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__HOSPITALSONDUTY_FIX491_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOSPITALSONDUTY_FIX797_CLEAN
+// FIX797 (Big, 15 Oct 2026): the town list is grouped by region (TownOptions, FIX795), and the town picked here
+// opens the other free pages in that town too (places.ts, FIX769). Replaces FIX491; nothing else changed.
 /**
  * src/pages/HospitalsOnDuty.tsx — Bambeh Marketplace
  *
@@ -34,6 +36,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
+import TownOptions from '@/components/location/TownOptions';   // FIX797: towns grouped by region
+import { myTown, rememberMyTown } from '@/lib/africa/places';   // FIX797: one town for every free page
 
 interface Hospital {
   id: string; name: string; town: string; quarter: string | null;
@@ -148,7 +152,7 @@ export default function HospitalsOnDuty() {
 
   const [towns, setTowns] = useState<TownRow[]>([]);
   const [town, setTown] = useState<string>(() => {
-    try { return window.localStorage.getItem(TOWN_KEY) ?? ''; } catch { return ''; }
+    try { return window.localStorage.getItem(TOWN_KEY) ?? myTown(); } catch { return ''; }
   });
   const [needOxygen, setNeedOxygen] = useState(false);
   const [needAmbulance, setNeedAmbulance] = useState(false);
@@ -183,6 +187,7 @@ export default function HospitalsOnDuty() {
 
   const chooseTown = (v: string) => {
     setTown(v);
+    if (v) rememberMyTown(v);   // FIX797
     try { v ? window.localStorage.setItem(TOWN_KEY, v) : window.localStorage.removeItem(TOWN_KEY); }
     catch { /* storage blocked - the choice just will not be remembered */ }
   };
@@ -211,7 +216,7 @@ export default function HospitalsOnDuty() {
           <select id="htown" value={town} onChange={(e) => chooseTown(e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white outline-none focus:ring-2 focus:ring-rose-400">
             <option value="">—</option>
-            {towns.map((x) => <option key={x.town} value={x.town}>{x.town}</option>)}
+            <TownOptions towns={towns} current={town} />
           </select>
         </div>
 
@@ -334,4 +339,4 @@ function Notice({ tone, icon, title, body, action }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__HOSPITALSONDUTY_FIX491__COMPLETE
+// BAMBEH_END_TOKEN__HOSPITALSONDUTY_FIX797__COMPLETE
