@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__JOBAPPLICANTS_FIX219_START
+// BAMBEH_DEPLOY_TOKEN__JOBAPPLICANTS_FIX856_CLEAN
 /**
  * JobApplicants.tsx - Bambeh Marketplace
  * FILE LOCATION: src/pages/JobApplicants.tsx
@@ -29,19 +29,24 @@
  * interviewing -> hired, or reject. If the database refuses a value the exact
  * server message is shown rather than a shrug - this project has lost too many
  * evenings to silent failures.
+ *
+ * FIX856 - CONTACT STAYS IN BAMBEH. The applicant's phone number and e-mail address are no longer shown, and the
+ * Call, WhatsApp and E-mail buttons are gone (Big's rule: no phone or WhatsApp numbers anywhere in the app;
+ * contact is in-app chat only). One button now opens a Bambeh chat with the applicant about this job. Search
+ * looks at names only.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, Users, Mail, Phone, MessageCircle, FileText, Download,
+  ArrowLeft, Users, MessageCircle, FileText, Download,
   GraduationCap, Briefcase, Globe, ShieldCheck, Car, CalendarClock,
   ChevronDown, ChevronUp, Loader2, AlertTriangle, Search, RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 
-/* ── languages ─────────────────────────────────────────────────────────── */
+/* -- languages ----------------------------------------------------------- */
 type LangKey = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 
 const COPY: Record<LangKey, Record<string, string>> = {
@@ -49,11 +54,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     back: 'Back', title: 'Applicants', loading: 'Loading applications...',
     none: 'No applications yet', noneBody: 'When someone applies for this job they will appear here.',
     notOwner: 'This is not your job posting', notOwnerBody: 'Only the employer who posted this job can see its applicants.',
-    search: 'Search by name, email or phone',
+    search: 'Search by name',
     all: 'All', pending: 'Pending', shortlisted: 'Shortlisted', interviewing: 'Interviewing',
     hired: 'Hired', rejected: 'Rejected',
     applied: 'Applied', details: 'Full application', hide: 'Hide details',
-    contact: 'Contact', callBtn: 'Call', emailBtn: 'Email', whatsapp: 'WhatsApp',
+    contact: 'Contact', chatBtn: 'Message in Bambeh', chatNote: 'Contact stays in Bambeh chat.',
     personal: 'Personal details', rightToWork: 'Right to work', languages: 'Languages',
     education: 'Education', experience: 'Work experience', documents: 'Documents',
     availability: 'Availability', coverLetter: 'Cover letter', employerQuestion: 'Answer to your question',
@@ -73,11 +78,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     back: 'Retour', title: 'Candidats', loading: 'Chargement des candidatures...',
     none: 'Aucune candidature', noneBody: "Les candidatures apparaitront ici des qu'une personne postule.",
     notOwner: "Cette offre n'est pas la votre", notOwnerBody: "Seul l'employeur qui a publie cette offre peut voir ses candidats.",
-    search: 'Rechercher par nom, email ou telephone',
+    search: 'Rechercher par nom',
     all: 'Toutes', pending: 'En attente', shortlisted: 'Presel.', interviewing: 'Entretien',
     hired: 'Recrute', rejected: 'Refuse',
     applied: 'Postule le', details: 'Candidature complete', hide: 'Masquer',
-    contact: 'Contact', callBtn: 'Appeler', emailBtn: 'Email', whatsapp: 'WhatsApp',
+    contact: 'Contact', chatBtn: '\u00c9crire dans Bambeh', chatNote: 'Le contact se fait dans le chat Bambeh.',
     personal: 'Informations personnelles', rightToWork: 'Droit de travailler', languages: 'Langues',
     education: 'Formation', experience: 'Experience professionnelle', documents: 'Documents',
     availability: 'Disponibilite', coverLetter: 'Lettre de motivation', employerQuestion: 'Reponse a votre question',
@@ -97,11 +102,11 @@ const COPY: Record<LangKey, Record<string, string>> = {
     back: 'Go back', title: 'People wey apply', loading: 'We dey load the applications...',
     none: 'Nobody don apply yet', noneBody: 'When person apply for this work, e go show here.',
     notOwner: 'This work no be your own', notOwnerBody: 'Na only the person wey post this work fit see who apply.',
-    search: 'Find by name, email or number',
+    search: 'Find by name',
     all: 'All', pending: 'Dey wait', shortlisted: 'You like am', interviewing: 'Interview',
     hired: 'You don take am', rejected: 'You no take am',
     applied: 'Apply for', details: 'See everything', hide: 'Close am',
-    contact: 'Reach am', callBtn: 'Call', emailBtn: 'Email', whatsapp: 'WhatsApp',
+    contact: 'Reach am', chatBtn: 'Message for Bambeh', chatNote: 'Una go talk for Bambeh chat.',
     personal: 'Him personal info', rightToWork: 'Right to work here', languages: 'Language wey e sabi',
     education: 'School wey e go', experience: 'Work wey e don do', documents: 'Him papers',
     availability: 'When e free', coverLetter: 'Wetin e write', employerQuestion: 'Answer to your question',
@@ -118,52 +123,52 @@ const COPY: Record<LangKey, Record<string, string>> = {
     signIn: 'Abeg log in', signInBody: 'You must log in before you fit see who apply.',
   },
   ar: {
-    back: 'رجوع', title: 'المتقدمون', loading: 'جارٍ تحميل الطلبات...',
-    none: 'لا توجد طلبات بعد', noneBody: 'ستظهر الطلبات هنا عندما يتقدم شخص ما لهذه الوظيفة.',
-    notOwner: 'هذه ليست وظيفتك', notOwnerBody: 'يمكن لصاحب العمل الذي نشر الوظيفة فقط رؤية المتقدمين.',
-    search: 'ابحث بالاسم أو البريد أو الهاتف',
-    all: 'الكل', pending: 'قيد الانتظار', shortlisted: 'مرشح', interviewing: 'مقابلة',
-    hired: 'تم التوظيف', rejected: 'مرفوض',
-    applied: 'تقدم في', details: 'الطلب الكامل', hide: 'إخفاء',
-    contact: 'التواصل', callBtn: 'اتصال', emailBtn: 'بريد', whatsapp: 'واتساب',
-    personal: 'البيانات الشخصية', rightToWork: 'حق العمل', languages: 'اللغات',
-    education: 'التعليم', experience: 'الخبرة العملية', documents: 'المستندات',
-    availability: 'التوفر', coverLetter: 'خطاب التقديم', employerQuestion: 'الإجابة على سؤالك',
-    nationality: 'الجنسية', residence: 'بلد الإقامة', citizen: 'مواطن في هذا البلد',
-    workAuth: 'تصريح العمل', idDoc: 'المستند القانوني', idNumber: 'رقم المستند',
-    canDrive: 'يستطيع القيادة', licence: 'فئة الرخصة',
-    forInterview: 'متاح للمقابلة', fromDate: 'متاح من', forLangTest: 'يمكنه إجراء اختبار لغة',
-    notes: 'ملاحظات', accommodations: 'التسهيلات المطلوبة',
-    speaking: 'التحدث', writing: 'الكتابة', listening: 'الاستماع', reading: 'القراءة',
-    motherTongue: 'اللغة الأم', present: 'حتى الآن', open: 'فتح', noFiles: 'لا توجد مستندات',
-    yes: 'نعم', no: 'لا', notGiven: 'غير محدد',
-    setStatus: 'تغيير الحالة', saving: 'جارٍ الحفظ...', refresh: 'تحديث',
-    countLabel: 'طلب', countLabelPlural: 'طلبات',
-    signIn: 'يرجى تسجيل الدخول', signInBody: 'يجب تسجيل الدخول لعرض المتقدمين.',
+    back: '\u0631\u062c\u0648\u0639', title: '\u0627\u0644\u0645\u062a\u0642\u062f\u0645\u0648\u0646', loading: '\u062c\u0627\u0631\u064d \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0637\u0644\u0628\u0627\u062a...',
+    none: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0628\u0639\u062f', noneBody: '\u0633\u062a\u0638\u0647\u0631 \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0647\u0646\u0627 \u0639\u0646\u062f\u0645\u0627 \u064a\u062a\u0642\u062f\u0645 \u0634\u062e\u0635 \u0645\u0627 \u0644\u0647\u0630\u0647 \u0627\u0644\u0648\u0638\u064a\u0641\u0629.',
+    notOwner: '\u0647\u0630\u0647 \u0644\u064a\u0633\u062a \u0648\u0638\u064a\u0641\u062a\u0643', notOwnerBody: '\u064a\u0645\u0643\u0646 \u0644\u0635\u0627\u062d\u0628 \u0627\u0644\u0639\u0645\u0644 \u0627\u0644\u0630\u064a \u0646\u0634\u0631 \u0627\u0644\u0648\u0638\u064a\u0641\u0629 \u0641\u0642\u0637 \u0631\u0624\u064a\u0629 \u0627\u0644\u0645\u062a\u0642\u062f\u0645\u064a\u0646.',
+    search: '\u0627\u0628\u062d\u062b \u0628\u0627\u0644\u0627\u0633\u0645',
+    all: '\u0627\u0644\u0643\u0644', pending: '\u0642\u064a\u062f \u0627\u0644\u0627\u0646\u062a\u0638\u0627\u0631', shortlisted: '\u0645\u0631\u0634\u062d', interviewing: '\u0645\u0642\u0627\u0628\u0644\u0629',
+    hired: '\u062a\u0645 \u0627\u0644\u062a\u0648\u0638\u064a\u0641', rejected: '\u0645\u0631\u0641\u0648\u0636',
+    applied: '\u062a\u0642\u062f\u0645 \u0641\u064a', details: '\u0627\u0644\u0637\u0644\u0628 \u0627\u0644\u0643\u0627\u0645\u0644', hide: '\u0625\u062e\u0641\u0627\u0621',
+    contact: '\u0627\u0644\u062a\u0648\u0627\u0635\u0644', chatBtn: '\u0631\u0627\u0633\u0644\u0647 \u0639\u0644\u0649 Bambeh', chatNote: '\u064a\u0628\u0642\u0649 \u0627\u0644\u062a\u0648\u0627\u0635\u0644 \u0641\u064a \u062f\u0631\u062f\u0634\u0629 Bambeh.',
+    personal: '\u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0634\u062e\u0635\u064a\u0629', rightToWork: '\u062d\u0642 \u0627\u0644\u0639\u0645\u0644', languages: '\u0627\u0644\u0644\u063a\u0627\u062a',
+    education: '\u0627\u0644\u062a\u0639\u0644\u064a\u0645', experience: '\u0627\u0644\u062e\u0628\u0631\u0629 \u0627\u0644\u0639\u0645\u0644\u064a\u0629', documents: '\u0627\u0644\u0645\u0633\u062a\u0646\u062f\u0627\u062a',
+    availability: '\u0627\u0644\u062a\u0648\u0641\u0631', coverLetter: '\u062e\u0637\u0627\u0628 \u0627\u0644\u062a\u0642\u062f\u064a\u0645', employerQuestion: '\u0627\u0644\u0625\u062c\u0627\u0628\u0629 \u0639\u0644\u0649 \u0633\u0624\u0627\u0644\u0643',
+    nationality: '\u0627\u0644\u062c\u0646\u0633\u064a\u0629', residence: '\u0628\u0644\u062f \u0627\u0644\u0625\u0642\u0627\u0645\u0629', citizen: '\u0645\u0648\u0627\u0637\u0646 \u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0628\u0644\u062f',
+    workAuth: '\u062a\u0635\u0631\u064a\u062d \u0627\u0644\u0639\u0645\u0644', idDoc: '\u0627\u0644\u0645\u0633\u062a\u0646\u062f \u0627\u0644\u0642\u0627\u0646\u0648\u0646\u064a', idNumber: '\u0631\u0642\u0645 \u0627\u0644\u0645\u0633\u062a\u0646\u062f',
+    canDrive: '\u064a\u0633\u062a\u0637\u064a\u0639 \u0627\u0644\u0642\u064a\u0627\u062f\u0629', licence: '\u0641\u0626\u0629 \u0627\u0644\u0631\u062e\u0635\u0629',
+    forInterview: '\u0645\u062a\u0627\u062d \u0644\u0644\u0645\u0642\u0627\u0628\u0644\u0629', fromDate: '\u0645\u062a\u0627\u062d \u0645\u0646', forLangTest: '\u064a\u0645\u0643\u0646\u0647 \u0625\u062c\u0631\u0627\u0621 \u0627\u062e\u062a\u0628\u0627\u0631 \u0644\u063a\u0629',
+    notes: '\u0645\u0644\u0627\u062d\u0638\u0627\u062a', accommodations: '\u0627\u0644\u062a\u0633\u0647\u064a\u0644\u0627\u062a \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629',
+    speaking: '\u0627\u0644\u062a\u062d\u062f\u062b', writing: '\u0627\u0644\u0643\u062a\u0627\u0628\u0629', listening: '\u0627\u0644\u0627\u0633\u062a\u0645\u0627\u0639', reading: '\u0627\u0644\u0642\u0631\u0627\u0621\u0629',
+    motherTongue: '\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0623\u0645', present: '\u062d\u062a\u0649 \u0627\u0644\u0622\u0646', open: '\u0641\u062a\u062d', noFiles: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0633\u062a\u0646\u062f\u0627\u062a',
+    yes: '\u0646\u0639\u0645', no: '\u0644\u0627', notGiven: '\u063a\u064a\u0631 \u0645\u062d\u062f\u062f',
+    setStatus: '\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u062d\u0627\u0644\u0629', saving: '\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638...', refresh: '\u062a\u062d\u062f\u064a\u062b',
+    countLabel: '\u0637\u0644\u0628', countLabelPlural: '\u0637\u0644\u0628\u0627\u062a',
+    signIn: '\u064a\u0631\u062c\u0649 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644', signInBody: '\u064a\u062c\u0628 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0639\u0631\u0636 \u0627\u0644\u0645\u062a\u0642\u062f\u0645\u064a\u0646.',
   },
   ff: {
-    back: 'Rutto', title: 'Jokkooɓe', loading: 'Eɗen loowa jokkonɗe...',
-    none: 'Jokkoowo alaa tawo', noneBody: 'So neɗɗo jokkii ndee golle, o feeñan ɗoo.',
-    notOwner: 'Ndee golle wonaa maa', notOwnerBody: 'Ko jeyɗo golle ndee tan foti yiide jokkooɓe.',
-    search: 'Yiylo e innde, imeel walla noomro',
-    all: 'Fof', pending: 'Ina sabbii', shortlisted: 'Suɓaama', interviewing: 'Jeewte',
+    back: 'Rutto', title: 'Jokkoo\u0253e', loading: 'E\u0257en loowa jokkon\u0257e...',
+    none: 'Jokkoowo alaa tawo', noneBody: 'So ne\u0257\u0257o jokkii ndee golle, o fee\u00f1an \u0257oo.',
+    notOwner: 'Ndee golle wonaa maa', notOwnerBody: 'Ko jey\u0257o golle ndee tan foti yiide jokkoo\u0253e.',
+    search: 'Yiylo e innde',
+    all: 'Fof', pending: 'Ina sabbii', shortlisted: 'Su\u0253aama', interviewing: 'Jeewte',
     hired: 'Golliima', rejected: 'Salaama',
-    applied: 'Jokkii', details: 'Jokkondiral timmungal', hide: 'Suuɗ',
-    contact: 'Jokkondiral', callBtn: 'Noddu', emailBtn: 'Imeel', whatsapp: 'WhatsApp',
-    personal: 'Humpito makko', rightToWork: 'Jojjanɗe gollugol', languages: 'Ɗemɗe',
-    education: 'Jaŋde', experience: 'Golle ɗe o waɗi', documents: 'Kaayitaaji',
-    availability: 'Nde o woodi', coverLetter: 'Ɓataake', employerQuestion: 'Jaabawol naamnal maa',
-    nationality: 'Leydi makko', residence: 'Leydi ko o hoɗi', citizen: 'Jeyaaɗo e ndee leydi',
-    workAuth: 'Yamiroore gollugol', idDoc: 'Kaayit laawɗo', idNumber: 'Noomro kaayit',
+    applied: 'Jokkii', details: 'Jokkondiral timmungal', hide: 'Suu\u0257',
+    contact: 'Jokkondiral', chatBtn: 'Winndan mo e Bambeh', chatNote: 'Jokkondiral ina wa\u0257ee e chat Bambeh.',
+    personal: 'Humpito makko', rightToWork: 'Jojjan\u0257e gollugol', languages: '\u018aem\u0257e',
+    education: 'Ja\u014bde', experience: 'Golle \u0257e o wa\u0257i', documents: 'Kaayitaaji',
+    availability: 'Nde o woodi', coverLetter: '\u0181ataake', employerQuestion: 'Jaabawol naamnal maa',
+    nationality: 'Leydi makko', residence: 'Leydi ko o ho\u0257i', citizen: 'Jeyaa\u0257o e ndee leydi',
+    workAuth: 'Yamiroore gollugol', idDoc: 'Kaayit laaw\u0257o', idNumber: 'Noomro kaayit',
     canDrive: 'Ina waawi dognude', licence: 'Sifaa permi',
-    forInterview: 'Ina woodi ngam jeewte', fromDate: 'Ina woodi gila', forLangTest: 'Ina waawi waɗde ekkitaango ɗemngal',
+    forInterview: 'Ina woodi ngam jeewte', fromDate: 'Ina woodi gila', forLangTest: 'Ina waawi wa\u0257de ekkitaango \u0257emngal',
     notes: 'Ciimtol', accommodations: 'Ko o soklata',
     speaking: 'Haala', writing: 'Winndugol', listening: 'Nanugol', reading: 'Tarugol',
-    motherTongue: 'Ɗemngal neeniwal', present: 'Haa jooni', open: 'Uddit', noFiles: 'Kaayit alaa',
-    yes: 'Eey', no: 'Alaa', notGiven: 'Waɗaani',
+    motherTongue: '\u018aemngal neeniwal', present: 'Haa jooni', open: 'Uddit', noFiles: 'Kaayit alaa',
+    yes: 'Eey', no: 'Alaa', notGiven: 'Wa\u0257aani',
     setStatus: 'Waylu ngonka', saving: 'Ina danndee...', refresh: 'Loow kadi',
-    countLabel: 'jokkondiral', countLabelPlural: 'jokkonɗe',
-    signIn: 'Tiiɗno naatnu', signInBody: 'Ada foti naatde ngam yiide jokkooɓe.',
+    countLabel: 'jokkondiral', countLabelPlural: 'jokkon\u0257e',
+    signIn: 'Tii\u0257no naatnu', signInBody: 'Ada foti naatde ngam yiide jokkoo\u0253e.',
   },
 };
 
@@ -176,7 +181,7 @@ function resolveLang(raw: unknown): LangKey {
   return 'en';
 }
 
-/* ── types ─────────────────────────────────────────────────────────────── */
+/* -- types --------------------------------------------------------------- */
 type App = Record<string, any>;
 type Kid = Record<string, any>;
 
@@ -213,7 +218,7 @@ const fmtSize = (n: unknown) => {
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-/* ── small presentational helpers ──────────────────────────────────────── */
+/* -- small presentational helpers ---------------------------------------- */
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   if (value === null || value === undefined || value === '') return null;
   return (
@@ -262,7 +267,7 @@ export default function JobApplicants() {
   const [filter,  setFilter]  = useState<string>('all');
   const [query,   setQuery]   = useState('');
 
-  /* ── load the job + its applications ─────────────────────────────────── */
+  /* -- load the job + its applications ----------------------------------- */
   const load = useCallback(async () => {
     setError('');
     const { data: auth } = await supabase.auth.getSession();
@@ -299,7 +304,7 @@ export default function JobApplicants() {
 
   useEffect(() => { void load(); }, [load]);
 
-  /* ── expand one application: fetch its child rows once ───────────────── */
+  /* -- expand one application: fetch its child rows once ----------------- */
   const toggle = useCallback(async (id: string) => {
     if (openId === id) { setOpenId(null); return; }
     setOpenId(id);
@@ -327,7 +332,7 @@ export default function JobApplicants() {
     }
   }, [openId, kids]);
 
-  /* ── private bucket: mint a short-lived signed URL on demand ─────────── */
+  /* -- private bucket: mint a short-lived signed URL on demand ----------- */
   const openDoc = useCallback(async (doc: Kid) => {
     const bucket = String(doc.storage_bucket || BUCKET);
     const path   = String(doc.storage_path || '');
@@ -338,7 +343,7 @@ export default function JobApplicants() {
     window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
   }, []);
 
-  /* ── status change ───────────────────────────────────────────────────── */
+  /* -- status change ----------------------------------------------------- */
   const setStatus = useCallback(async (id: string, status: string) => {
     setSaving(id); setError('');
     const { error: uErr } = await supabase
@@ -354,13 +359,13 @@ export default function JobApplicants() {
     setSaving(null);
   }, []);
 
-  /* ── filtering ───────────────────────────────────────────────────────── */
+  /* -- filtering --------------------------------------------------------- */
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     return apps.filter(a => {
       if (filter !== 'all' && String(a.status ?? 'pending') !== filter) return false;
       if (!q) return true;
-      return [a.full_name, a.email, a.phone].some(v => String(v ?? '').toLowerCase().includes(q));
+      return String(a.full_name ?? '').toLowerCase().includes(q);
     });
   }, [apps, filter, query]);
 
@@ -370,7 +375,7 @@ export default function JobApplicants() {
     return m;
   }, [apps]);
 
-  /* ── guards ──────────────────────────────────────────────────────────── */
+  /* -- guards ------------------------------------------------------------ */
   if (checking) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -411,7 +416,7 @@ export default function JobApplicants() {
     );
   }
 
-  /* ── page ────────────────────────────────────────────────────────────── */
+  /* -- page -------------------------------------------------------------- */
   return (
     <div className="min-h-screen bg-gray-50 pb-16" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="mx-auto max-w-3xl px-4 py-6">
@@ -498,8 +503,6 @@ export default function JobApplicants() {
             const open   = openId === id;
             const status = String(a.status ?? 'pending');
             const set    = kids[id];
-            const digits = String(a.phone ?? '').replace(/\D/g, '');
-            const wa     = digits ? (digits.startsWith('237') ? digits : `237${digits}`) : '';
 
             return (
               <div key={id} className="overflow-hidden rounded-2xl bg-white shadow-sm">
@@ -510,8 +513,6 @@ export default function JobApplicants() {
                       <p className="truncate text-base font-bold text-gray-900">
                         {a.full_name || c.notGiven}
                       </p>
-                      <p className="truncate text-xs text-gray-500">{a.email}</p>
-                      {a.phone && <p className="truncate text-xs text-gray-500">{a.phone}</p>}
                       <p className="mt-1 text-[11px] text-gray-400">
                         {c.applied} {fmtDate(a.submitted_at || a.applied_at)}
                       </p>
@@ -521,26 +522,19 @@ export default function JobApplicants() {
                     </span>
                   </div>
 
-                  {/* contact */}
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {a.phone && (
-                      <a href={`tel:${a.phone}`}
-                         className="flex items-center gap-1 rounded-xl bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200">
-                        <Phone className="h-3.5 w-3.5" /> {c.callBtn}
-                      </a>
+                  {/* contact - FIX856: in Bambeh chat only */}
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {a.applicant_id && (
+                      <button
+                        type="button"
+                        data-chat-applicant={String(a.applicant_id)}
+                        onClick={() => navigate(`/chat?userId=${encodeURIComponent(String(a.applicant_id))}&listingTitle=${encodeURIComponent(jobTitle)}`)}
+                        className="flex items-center gap-1 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" /> {c.chatBtn}
+                      </button>
                     )}
-                    {wa && (
-                      <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer"
-                         className="flex items-center gap-1 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
-                        <MessageCircle className="h-3.5 w-3.5" /> {c.whatsapp}
-                      </a>
-                    )}
-                    {a.email && (
-                      <a href={`mailto:${a.email}`}
-                         className="flex items-center gap-1 rounded-xl bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200">
-                        <Mail className="h-3.5 w-3.5" /> {c.emailBtn}
-                      </a>
-                    )}
+                    <span className="text-[11px] text-gray-400">{c.chatNote}</span>
                     <button
                       onClick={() => void toggle(id)}
                       className="ms-auto flex items-center gap-1 rounded-xl bg-teal-600 px-3 py-2 text-xs font-bold text-white hover:bg-teal-700"
@@ -756,4 +750,4 @@ export default function JobApplicants() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__JOBAPPLICANTS_FIX219__COMPLETE
+// BAMBEH_END_TOKEN__JOBAPPLICANTS_FIX856__COMPLETE

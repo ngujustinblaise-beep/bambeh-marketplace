@@ -122,8 +122,8 @@ const DESTINATIONS: Dest[] = [
   // Voice may OPEN the checkout. It may never complete it. See rule 1 above.
   { path: '/payment/checkout', label: 'Checkout', phrases: [
     'checkout', 'pay', 'payment', 'payer', 'paiement', 'i want to pay', 'pay now'] },
-  { path: '/escrow', label: 'Buyer protection', phrases: [
-    'escrow', 'buyer protection', 'protection'] },
+  { path: '/escrow', label: 'User protection', phrases: [
+    'escrow', 'user protection', 'buyer protection', 'secured pay', 'protection'] },
 ];
 
 /** phrases that mean "take me back" */

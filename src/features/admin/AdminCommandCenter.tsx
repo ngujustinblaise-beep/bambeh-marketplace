@@ -46,6 +46,8 @@ import AdminFeaturedAds from './AdminFeaturedAds';         // FIX827 - Adverts a
 import AdminBusinesses from './AdminBusinesses';           // FIX836 - registered businesses, checked by Bambeh
 import AdminSupport from './AdminSupport';                 // FIX838 - Chat with Bambeh, answered here
 import { Building2 as BusinessesIcon, LifeBuoy as SupportIcon } from 'lucide-react'; // FIX836/FIX838
+import AdminZerm from './AdminZerm';                         // FIX852 - Zerm coins: earned; buying and sending switched by admins
+import { Zap as ZermIcon } from 'lucide-react';               // FIX852
 import PharmaciesSection from './PharmaciesSection'; // FIX482
 import RequestsSection from './RequestsSection';     // FIX489
 import UtilitiesSection from './UtilitiesSection';   // FIX501
@@ -77,7 +79,7 @@ type Section =
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
   | 'agents' | 'requests' | 'paywall' | 'gates' | 'foodgas' | 'womenshealth' | 'obligations' | 'couriers'
-  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured' | 'businesses' | 'support';
+  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured' | 'businesses' | 'support' | 'zerm';
 
 const NAV: Array<{
   key: Section;
@@ -100,6 +102,7 @@ const NAV: Array<{
   { key: 'featured',  label: 'Featured ads',   icon: Star },   // FIX827 - Adverts and Promotions in one place
   { key: 'businesses', label: 'Businesses',    icon: BusinessesIcon, badge: ['corp_waiting'] },   // FIX836
   { key: 'support',   label: 'Support inbox', icon: SupportIcon, badge: ['support_waiting'] }, // FIX838
+  { key: 'zerm',      label: 'Zerm coins',    icon: ZermIcon },   // FIX852 - buying and sending switched by admins
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
   { key: 'utilities', label: 'Water & Lights', icon: Droplet,
     badge: ['utility_live'] },
@@ -272,6 +275,7 @@ export default function AdminCommandCenter() {
         {section === 'featured'  && <AdminFeaturedAds embedded />}{/* FIX827 - Adverts and Promotions in one place */}
         {section === 'businesses' && <AdminBusinesses embedded />}{/* FIX836 - registered businesses, checked by Bambeh */}
         {section === 'support'   && <AdminSupport embedded />}{/* FIX838 - Chat with Bambeh, answered here */}
+        {section === 'zerm'      && <AdminZerm embedded />}{/* FIX852 - Zerm coins switches */}
         {section === 'pharmacies' && <PharmaciesSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'utilities'  && <UtilitiesSection  userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'fuel'       && <FuelSection       userId={userId!} role={role} cap={cap} flash={flash} />}
@@ -950,7 +954,7 @@ const WAIT = ['PENDING', 'PROCESSING', 'HELD', 'REQUESTED', 'FROZEN'];
 
 const SOURCE_LABEL: Record<string, string> = {
   payments: 'Payments',
-  escrows: 'Buyer Protection',
+  escrows: 'User Protection',
   seller_payouts: 'Seller payouts',
   event_payouts: 'Event payouts',
 };

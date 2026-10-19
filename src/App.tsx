@@ -101,8 +101,8 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import { initializeAnalytics } from "@/utils/analytics/AnalyticsInit";
 
 // ─── 3b. BAMBEH SARL — CamPay & Cart Integration ─────────────────────────────
-import { CartProvider } from "@/components/CartDrawer";
-import { CartDrawer }   from "@/components/CartDrawer";
+// FIX857 - one cart for the whole app: src/contexts/CartContext (given by AppProviders) and the /cart page.
+// FIX857 - the second cart (components/CartDrawer: never opened, English only) is deleted.
 import { DonateButton } from "@/components/DonateButton";
 
 // ─── 4. Internal Components ───────────────────────────────────────────────────
@@ -263,7 +263,7 @@ const Profile       = lazy(() => import("@/pages/Profile"));
 const Cart          = lazy(() => import("@/pages/Cart"));
 const Favorites     = lazy(() => import("@/pages/Favorites"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
-const AlertsPage    = lazy(() => import("@/pages/AlertsPage"));
+// FIX857 - AlertsPage (six made-up alerts) is deleted; /alerts opens the real notifications page.
 const Orders        = lazy(() => import("@/pages/Orders"));
 // FIX361 - the seller side of Orders. Orders.tsx filters on buyer_id, so a
 // seller had no way to see their own sales at all until this route existed.
@@ -477,8 +477,8 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
       <MovableChatWidget defaultPosition="bottom-right" />
       <MonthlyFeedbackBanner />
       <BackToTopButton />
-      {/* CartDrawer is always available throughout the app */}
-      <CartDrawer />
+      {/* FIX857 - the old cart drawer (never opened) is gone: the cart is the /cart page */}
+      {/* FIX857 - the cart drawer was here */}
     </>
   );
 });
@@ -766,8 +766,8 @@ export default function App() {
       <AppErrorBoundary>
         <PerformanceMonitor>
           <QueryClientProvider client={queryClient}>
-            {/* CartProvider wraps entire app so cart is accessible from any page */}
-            <CartProvider>
+            {/* FIX857 - the cart comes from AppProviders (src/contexts/CartContext) */}
+            <>{/* FIX857 - was the second CartProvider (opens) */}
             {/* LanguageProvider: instant translation across ALL pages */}
             <LanguageProvider>
             <AppProviders>
@@ -1091,7 +1091,7 @@ export default function App() {
                           path="/alerts"
                           element={
                             <MainLayout>
-                              <AuthGate require="user"><AlertsPage /></AuthGate>
+                              <Navigate to="/notifications" replace />
                             </MainLayout>
                           }
                         />
@@ -1527,7 +1527,7 @@ export default function App() {
             </NetworkProvider>
             </AppProviders>
             </LanguageProvider>
-            </CartProvider>
+            </>{/* FIX857 - was the second CartProvider (closes) */}
             {import.meta.env.DEV && (
               <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
             )}

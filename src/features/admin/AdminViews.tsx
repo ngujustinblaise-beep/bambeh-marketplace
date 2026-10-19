@@ -58,7 +58,7 @@ export const GROUPS: ReadonlyArray<{ key: string; title: string; note: string; p
   },
   {
     key: 'features', title: 'Special features', note: 'The first four are on show on Home; the rest open with "See all".',
-    pages: [['/farm-fresh', 'Farm Fresh'], ['/compare', 'Compare Items'], ['/group-buying', 'Group Buying'], ['/escrow', 'Buyer Protection'],
+    pages: [['/farm-fresh', 'Farm Fresh'], ['/compare', 'Compare Items'], ['/group-buying', 'Group Buying'], ['/escrow', 'User Protection'],
       ['/coins', 'Zerm Coins'], ['/community', 'Community'], ['/ai-chat', 'Bambeh AI'], ['/deals', 'Flash Deals'], ['/meet-safely', 'Meet Safely']],
   },
   {

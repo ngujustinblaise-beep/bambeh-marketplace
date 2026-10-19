@@ -29,7 +29,7 @@ import {
   ShoppingBag, ShoppingCart, Users, Eye, AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useCart } from "@/components/CartDrawer";
+import { useCart } from "@/contexts/CartContext"; // FIX857 - the one cart of the app (the /cart page), as on the product page
 import { useLanguage } from '@/App';
 
 // --- Types --------------------------------------------------------------------
@@ -383,6 +383,7 @@ export default function FarmFreshPage() {
         listingType: "farm-fresh",
         type:        "farm-fresh",
         sellerName:  p.sellerName || "Farmer",
+        sellerId:    p.seller_id || "",   // FIX857 - the farmer, so Bambeh Secured Pay knows whom to pay
         name:        p.title,
       });
     } catch (err) {

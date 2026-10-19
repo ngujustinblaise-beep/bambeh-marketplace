@@ -1,388 +1,152 @@
-// BAMBEH_DEPLOY_TOKEN__COINSTRANSFER_FIX110_CLEAN
+// BAMBEH_DEPLOY_TOKEN__COINSTRANSFER_FIX850_CLEAN
 /**
- * CoinsTransfer.tsx — Bambeh Marketplace (FIX110, mojibake purge + full i18n)
- * FILE LOCATION: src/routes/groups/payments/CoinsTransfer.tsx  (the ROUTED copy)
+ * CoinsTransfer.tsx - Bambeh Marketplace
+ * FILE LOCATION: src/routes/groups/payments/CoinsTransfer.tsx  (routed at /coins/transfer)
  *
- * FIX110: corrupted strings rewritten cleanly in EN / FR / Pidgin / Arabic /
- * Fulfulde. Transfer logic unchanged: tries transfer_zerm_coins RPC first,
- * manual fallback debits sender + credits recipient + logs both transactions.
+ * FIX850 (replaces FIX110) - SENDING ZERM COINS ONLY WHEN AN ADMIN HAS SWITCHED IT ON.
+ *   The FIX110 page moved coins to anybody by e-mail and, when its database function was missing, wrote BOTH
+ *   wallets from the phone. Now:
+ *   - sending switched OFF (the default, Command Center > Zerm coins): the explanation page (FIX848);
+ *   - sending switched ON: who (username, e-mail, or the number the account was opened with) -> Check (the
+ *     member's name comes back) -> Send. bambeh_zerm_send() (FIX845) takes the sender from the session - never
+ *     from the phone - and keeps the minimum per send and the maximum per day the admins set.
+ * Five languages (FIX846), right-to-left for Arabic.
  *
- * © 2026 BAMBEH SARL. All rights reserved.
+ * (c) 2026 BAMBEH SARL. All rights reserved.
  */
-
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ArrowLeft, Zap, CheckCircle, Loader2, AlertCircle,
-} from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { ArrowLeft, CheckCircle2, Loader2, Send, AlertTriangle, Zap } from 'lucide-react';
 import { useLang } from '@/hooks/useAppLang';
-
-// -- i18n ----------------------------------------------------------------------
-const strings = {
-  en: {
-    pageTitle: 'Transfer Zerm Coins', yourBalance: 'Your Balance',
-    recipientLabel: 'Recipient Email *', recipientPH: 'friend@email.com',
-    recipientHint: 'They must have a Bambeh account',
-    amountLabel: 'Amount *', customPH: 'Or enter custom amount',
-    noteLabel: 'Note (optional)', notePH: "What's this for?",
-    sendBtn: (n: string) => `Send ${n || '0'} Coins`,
-    sending: 'Sending…', disclaimer: 'Transfers are instant and cannot be reversed.',
-    errRecipient: 'Please enter recipient email.',
-    errMinAmount: 'Minimum transfer is 10 coins.',
-    errBalance: (b: number) => `You only have ${b} coins.`,
-    errNotFound: 'No user found with that email. Ask them to register on Bambeh first.',
-    errFailed: 'Transfer failed. Please try again.',
-    errInsufficient: 'Insufficient coins balance.',
-    successTitle: 'Transfer Sent! 🎉',
-    successCoins: (n: string, email: string) => `${n} Zerm Coins sent to ${email}`,
-    notePrefix: 'Note: ', backWallet: 'Back to Wallet',
-  },
-  fr: {
-    pageTitle: 'Transférer des Pièces Zerm', yourBalance: 'Votre Solde',
-    recipientLabel: 'Email du destinataire *', recipientPH: 'ami@email.com',
-    recipientHint: 'Il doit avoir un compte Bambeh',
-    amountLabel: 'Montant *', customPH: 'Ou entrez un montant personnalisé',
-    noteLabel: 'Note (facultatif)', notePH: 'Pour quoi ?',
-    sendBtn: (n: string) => `Envoyer ${n || '0'} pièces`,
-    sending: 'Envoi…', disclaimer: 'Les transferts sont instantanés et irréversibles.',
-    errRecipient: "Veuillez entrer l'email du destinataire.",
-    errMinAmount: 'Le minimum est 10 pièces.',
-    errBalance: (b: number) => `Vous n'avez que ${b} pièces.`,
-    errNotFound: "Aucun utilisateur avec cet email. Demandez-lui de s'inscrire sur Bambeh.",
-    errFailed: 'Échec du transfert. Veuillez réessayer.',
-    errInsufficient: 'Solde insuffisant.',
-    successTitle: 'Transfert envoyé ! 🎉',
-    successCoins: (n: string, email: string) => `${n} pièces envoyées à ${email}`,
-    notePrefix: 'Note : ', backWallet: 'Retour au portefeuille',
-  },
-  pidgin: {
-    pageTitle: 'Send Zerm Coins', yourBalance: 'Your Balance',
-    recipientLabel: 'Padi Email *', recipientPH: 'padi@email.com',
-    recipientHint: 'Dem must get Bambeh account',
-    amountLabel: 'How much *', customPH: 'Type your own amount',
-    noteLabel: 'Note (if you want)', notePH: 'Why you dey send?',
-    sendBtn: (n: string) => `Send ${n || '0'} Coins`,
-    sending: 'Dey send…', disclaimer: 'Transfer no fit reverse.',
-    errRecipient: 'Enter padi email.',
-    errMinAmount: 'Minimum na 10 coins.',
-    errBalance: (b: number) => `You only get ${b} coins.`,
-    errNotFound: 'No Bambeh user with that email. Make dem register first.',
-    errFailed: 'Transfer fail. Try again.',
-    errInsufficient: 'Coins no reach.',
-    successTitle: 'Transfer Done! 🎉',
-    successCoins: (n: string, email: string) => `${n} Zerm Coins reach ${email}`,
-    notePrefix: 'Note: ', backWallet: 'Go back Wallet',
-  },
-  ar: {
-    pageTitle: 'تحويل عملات زيرم', yourBalance: 'رصيدك',
-    recipientLabel: 'بريد المستلم *', recipientPH: 'friend@email.com',
-    recipientHint: 'يجب أن يكون لديه حساب على Bambeh',
-    amountLabel: 'المبلغ *', customPH: 'أو أدخل مبلغًا مخصصًا',
-    noteLabel: 'ملاحظة (اختياري)', notePH: 'لماذا التحويل؟',
-    sendBtn: (n: string) => `إرسال ${n || '0'} عملة`,
-    sending: 'جارٍ الإرسال…', disclaimer: 'التحويلات فورية ولا يمكن التراجع عنها.',
-    errRecipient: 'أدخل بريد المستلم.',
-    errMinAmount: 'الحد الأدنى للتحويل 10 عملات.',
-    errBalance: (b: number) => `لديك فقط ${b} عملة.`,
-    errNotFound: 'لا يوجد مستخدم بهذا البريد. اطلب منه التسجيل في Bambeh أولًا.',
-    errFailed: 'فشل التحويل. حاول مرة أخرى.',
-    errInsufficient: 'الرصيد غير كافٍ.',
-    successTitle: 'تم الإرسال! 🎉',
-    successCoins: (n: string, email: string) => `تم إرسال ${n} عملة إلى ${email}`,
-    notePrefix: 'ملاحظة: ', backWallet: 'العودة للمحفظة',
-  },
-  ff: {
-    pageTitle: 'Neldu Zerm Coinɗe', yourBalance: 'Soodaande maa',
-    recipientLabel: 'Iimeel Heɓante *', recipientPH: 'tawto@iimeel.com',
-    recipientHint: 'O foti waɗde akonto Bambeh',
-    amountLabel: 'Yonta *', customPH: 'Sifa yonta maa',
-    noteLabel: 'Takko (so waɗii)', notePH: 'Ndeen woni ko?',
-    sendBtn: (n: string) => `Neldu ${n || '0'} Coinɗe`,
-    sending: 'Dawnugol…', disclaimer: 'Neldugol ɗeto laawol, waawaa wurtude.',
-    errRecipient: 'Sifa iimeel heɓante.',
-    errMinAmount: 'Keewu ɓurtii 10 coinɗe.',
-    errBalance: (b: number) => `A heɓii kan ${b} coinɗe.`,
-    errNotFound: 'Alaa jannginoowo Bambeh e iimeel oo. Woy nde ari jannginoo.',
-    errFailed: 'Neldugol tinaaki. Taƴ kadi.',
-    errInsufficient: 'Coinɗe alaa.',
-    successTitle: 'Neldugol woni! 🎉',
-    successCoins: (n: string, email: string) => `${n} coinɗe neldaa e ${email}`,
-    notePrefix: 'Takko: ', backWallet: 'Rutto Jaaborgal',
-  },
-} as const;
-
-type LangStrings = (typeof strings)['en'];
-
-function useStrings(): { s: LangStrings; isRtl: boolean } {
-  const raw = useLang() as string;
-  const key = raw === 'fulfulde' ? 'ff' : raw;
-  const s = ((strings as Record<string, LangStrings>)[key] ?? strings.en);
-  return { s, isRtl: key === 'ar' };
-}
-
-const QUICK_AMOUNTS = [50, 100, 200, 500];
+import ZermEarnOnly from '@/features/coins/ZermEarnOnly';
+import { ZERM_STR, zermLang, zermFill, fmtCoins, coinsLabel } from '@/features/coins/zermText';
+import type { ZermKey } from '@/features/coins/zermText';
+import { findMember, myBalance, sendCoins, useZermState } from '@/features/coins/zermApi';
+import type { ZermFail } from '@/features/coins/zermApi';
 
 export default function CoinsTransfer() {
-  const { s, isRtl } = useStrings();
   const navigate = useNavigate();
+  const lang = zermLang(useLang());
+  const t = ZERM_STR[lang];
+  const rtl = lang === 'ar';
+  const { state, loading, refresh } = useZermState();
 
-  const [recipientEmail, setRecipientEmail] = useState('');
-  const [amount,         setAmount]         = useState('');
-  const [note,           setNote]           = useState('');
-  const [loading,        setLoading]        = useState(false);
-  const [done,           setDone]           = useState(false);
-  const [error,          setError]          = useState<string | null>(null);
-  const [myBalance,      setMyBalance]      = useState<number | null>(null);
+  const [to, setTo] = useState('');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+  const [name, setName] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [done, setDone] = useState<{ name: string; amount: number; balance: number } | null>(null);
+  const [balance, setBalance] = useState<number | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return;
-      const { data } = await supabase
-        .from('zerm_coins')
-        .select('balance')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-      if (data) setMyBalance(data.balance ?? 0);
-      else setMyBalance(0);
-    })();
-  }, []);
+  useEffect(() => { void myBalance().then(setBalance); }, []);
 
-  async function handleTransfer() {
-    setError(null);
-    if (!recipientEmail.trim())                            { setError(s.errRecipient); return; }
-    if (!amount || Number(amount) < 10)                    { setError(s.errMinAmount); return; }
-    if (myBalance !== null && Number(amount) > myBalance)  { setError(s.errBalance(myBalance)); return; }
+  const failText = (r: ZermFail) => {
+    const k = ('r_' + r.reason) as ZermKey;
+    return zermFill(t[k] || t.r_network, {
+      min: fmtCoins(r.min ?? state.send_min), left: fmtCoins(r.left ?? 0), balance: fmtCoins(r.balance ?? balance ?? 0),
+    });
+  };
 
-    setLoading(true);
+  const amt = Number(String(amount).replace(',', '.'));
+  const amountOk = Number.isFinite(amt) && amt > 0;
 
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { navigate('/login'); return; }
+  const check = async () => {
+    setErr(''); setName(null);
+    if (!to.trim()) return;
+    setBusy(true);
+    const r = await findMember(to.trim());
+    setBusy(false);
+    if (!r.ok) { setErr(failText(r)); return; }
+    setName(r.name);
+  };
 
-      const senderId = session.user.id;
-      const coins    = Number(amount);
-      const noteText = note.trim() || `Transfer to ${recipientEmail}`;
+  const send = async () => {
+    setErr('');
+    setBusy(true);
+    const r = await sendCoins(to.trim(), amt, note.trim());
+    setBusy(false);
+    if (!r.ok) { setErr(failText(r)); setName(null); return; }
+    setDone({ name: r.name, amount: Number(r.amount), balance: Number(r.balance) });
+    setBalance(Number(r.balance));
+    void refresh();
+  };
 
-      // 1. Look up recipient by email in profiles
-      const { data: recipientProfile } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .eq('email', recipientEmail.trim().toLowerCase())
-        .maybeSingle();
-
-      if (!recipientProfile) {
-        setError(s.errNotFound);
-        setLoading(false);
-        return;
-      }
-
-      const recipientId = recipientProfile.id;
-
-      // 2. Try atomic RPC first
-      let rpcSuccess = false;
-      try {
-        const { error: rpcErr } = await supabase.rpc('transfer_zerm_coins', {
-          p_sender_id:    senderId,
-          p_recipient_id: recipientId,
-          p_amount:       coins,
-          p_note:         noteText,
-        });
-        if (!rpcErr) rpcSuccess = true;
-      } catch { /* RPC not deployed yet — fall through */ }
-
-      if (!rpcSuccess) {
-        // Manual fallback — debit sender, credit recipient, log both
-        const { data: senderWallet } = await supabase
-          .from('zerm_coins')
-          .select('balance')
-          .eq('user_id', senderId)
-          .maybeSingle();
-
-        if (!senderWallet || senderWallet.balance < coins) {
-          setError(s.errInsufficient);
-          setLoading(false);
-          return;
-        }
-
-        const { data: recipWallet } = await supabase
-          .from('zerm_coins')
-          .select('balance')
-          .eq('user_id', recipientId)
-          .maybeSingle();
-
-        const recipCurrentBalance = recipWallet?.balance ?? 0;
-
-        // Debit sender
-        await supabase.from('zerm_coins').upsert(
-          { user_id: senderId,    balance: senderWallet.balance - coins, updated_at: new Date().toISOString() },
-          { onConflict: 'user_id' },
-        );
-
-        // Credit recipient
-        await supabase.from('zerm_coins').upsert(
-          { user_id: recipientId, balance: recipCurrentBalance + coins, updated_at: new Date().toISOString() },
-          { onConflict: 'user_id' },
-        );
-
-        // Log debit for sender
-        await supabase.from('zerm_transactions').insert({
-          user_id:     senderId,
-          type:        'debit',
-          amount:      coins,
-          description: `Transfer to ${recipientEmail}${note.trim() ? ` — ${note.trim()}` : ''}`,
-        });
-
-        // Log credit for recipient
-        await supabase.from('zerm_transactions').insert({
-          user_id:     recipientId,
-          type:        'credit',
-          amount:      coins,
-          description: `Received from ${session.user.email}${note.trim() ? ` — ${note.trim()}` : ''}`,
-        });
-      }
-
-      setDone(true);
-    } catch (e) {
-      console.error('CoinsTransfer error:', e);
-      setError(s.errFailed);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // -- Success screen ---------------------------------------------------------
-  if (done) {
+  if (loading) {
     return (
-      <div
-        dir={isRtl ? 'rtl' : 'ltr'}
-        className="min-h-screen flex items-center justify-center bg-gray-50 p-6"
-      >
-        <div className="bg-white rounded-2xl shadow-md p-8 text-center max-w-sm w-full">
-          <CheckCircle className="w-14 h-14 text-teal-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-3">{s.successTitle}</h2>
-          <p className="text-gray-500 text-sm mb-2">
-            {s.successCoins(amount, recipientEmail)}
-          </p>
-          {note && <p className="text-gray-400 text-xs mb-6">{s.notePrefix}{note}</p>}
-          <button
-            onClick={() => navigate('/coins')}
-            className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold active:scale-95 transition-transform"
-          >
-            {s.backWallet}
-          </button>
-        </div>
+      <div className="flex min-h-[60vh] items-center justify-center gap-2 text-sm text-gray-500" dir={rtl ? 'rtl' : 'ltr'}>
+        <Loader2 className="h-5 w-5 animate-spin text-teal-600" /> {t.loading}
       </div>
     );
   }
+  if (!state.sending) return <ZermEarnOnly mode="send" />;
 
-  // -- Main screen ------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-gray-50 pb-12" dir={isRtl ? 'rtl' : 'ltr'}>
-
-      <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-xl">
-          <ArrowLeft className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
+    <div className="min-h-screen bg-gray-50 pb-24" dir={rtl ? 'rtl' : 'ltr'} data-fix="FIX850">
+      <div className="bg-gradient-to-br from-teal-600 to-teal-700 px-4 pb-8 pt-6 text-white">
+        <button onClick={() => navigate('/coins')} className="mb-4 flex items-center gap-1 text-sm text-white/85 hover:text-white">
+          <ArrowLeft className={`h-4 w-4 ${rtl ? 'rotate-180' : ''}`} /> {t.back}
         </button>
-        <h1 className="font-bold text-gray-900 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-teal-600" /> {s.pageTitle}
-        </h1>
+        <h1 className="flex items-center gap-2 text-xl font-bold"><Send className="h-6 w-6 text-yellow-300" /> {t.sendHead}</h1>
+        <p className="mt-2 text-sm text-teal-50">{t.sendLead}</p>
+        <p className="mt-2 flex items-center gap-1 text-sm font-semibold"><Zap className="h-4 w-4 text-yellow-300" /> {zermFill(t.yourCoins, { balance: fmtCoins(balance ?? 0) })}</p>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
+      <div className="mx-auto -mt-4 max-w-lg space-y-4 px-4">
+        {done ? (
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center" data-sent="1">
+            <CheckCircle2 className="mx-auto mb-2 h-10 w-10 text-emerald-600" />
+            <p className="font-semibold text-emerald-900">
+              {zermFill(t.sent, { coins: coinsLabel(t, done.amount), name: done.name, balance: fmtCoins(done.balance) })}
+            </p>
+            <button type="button" onClick={() => navigate('/coins')} className="mt-4 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-bold text-white">{t.wallet}</button>
+          </div>
+        ) : (
+          <div className="space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <label className="block text-xs font-semibold text-gray-700">{t.toLabel}
+              <input value={to} onChange={(e) => { setTo(e.target.value); setName(null); }} placeholder={t.toPh} data-to="1"
+                     className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-teal-500 focus:outline-none" />
+            </label>
+            <label className="block text-xs font-semibold text-gray-700">{t.amountLabel}
+              <input value={amount} onChange={(e) => { setAmount(e.target.value.replace(/[^0-9.,]/g, '')); setName(null); }} inputMode="decimal" data-amount="1"
+                     className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-teal-500 focus:outline-none" dir="ltr" />
+            </label>
+            <label className="block text-xs font-semibold text-gray-700">{t.noteLabel}
+              <input value={note} onChange={(e) => setNote(e.target.value.slice(0, 120))} data-note="1"
+                     className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-teal-500 focus:outline-none" />
+            </label>
+            <p className="text-[11px] text-gray-500">
+              {zermFill(t.limits, { min: fmtCoins(state.send_min), max: fmtCoins(state.send_daily_max), today: fmtCoins(state.sent_today) })}
+            </p>
 
-        {/* Balance */}
-        <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-5 text-white text-center">
-          <p className="text-teal-100 text-sm mb-1">{s.yourBalance}</p>
-          <p className="text-4xl font-bold">
-            {myBalance !== null ? myBalance.toLocaleString() : '…'}
-          </p>
-          <p className="text-teal-100 text-sm">Zerm Coins</p>
-        </div>
+            {err && (
+              <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900" data-error="1">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {err}
+              </div>
+            )}
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span>{error}</span>
+            {name ? (
+              <div className="rounded-xl bg-teal-50 p-3" data-confirm="1">
+                <p className="text-sm font-semibold text-teal-900">{zermFill(t.confirmTo, { coins: coinsLabel(t, amt), name })}</p>
+                <div className="mt-3 flex gap-2">
+                  <button type="button" disabled={busy || !amountOk} onClick={() => void send()} data-send="1"
+                          className="flex items-center gap-1 rounded-xl bg-teal-600 px-4 py-2 text-sm font-bold text-white disabled:bg-teal-300">
+                    {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {t.sendBtn}
+                  </button>
+                  <button type="button" onClick={() => setName(null)} className="rounded-xl bg-white px-3 py-2 text-sm text-gray-600 ring-1 ring-gray-200">{t.cancel}</button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" disabled={busy || !to.trim() || !amountOk} onClick={() => void check()} data-check="1"
+                      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 py-3 text-sm font-bold text-white disabled:bg-teal-300">
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} {t.check}
+              </button>
+            )}
           </div>
         )}
-
-        <div className="bg-white rounded-2xl p-5 shadow-sm border space-y-4">
-
-          {/* Recipient */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {s.recipientLabel}
-            </label>
-            <input
-              type="email"
-              value={recipientEmail}
-              onChange={e => setRecipientEmail(e.target.value)}
-              placeholder={s.recipientPH}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-400"
-            />
-            <p className="text-xs text-gray-400 mt-1">{s.recipientHint}</p>
-          </div>
-
-          {/* Amount */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {s.amountLabel}
-            </label>
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              {QUICK_AMOUNTS.map(a => (
-                <button
-                  key={a}
-                  onClick={() => setAmount(String(a))}
-                  className={`py-2 rounded-xl text-sm font-semibold border transition ${
-                    amount === String(a)
-                      ? 'bg-teal-600 text-white border-teal-600'
-                      : 'bg-gray-50 text-gray-700 border-gray-200'
-                  }`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-            <input
-              type="number"
-              value={amount}
-              onChange={e => setAmount(e.target.value)}
-              placeholder={s.customPH}
-              min="10"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-400"
-            />
-          </div>
-
-          {/* Note */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              {s.noteLabel}
-            </label>
-            <input
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder={s.notePH}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-teal-400"
-            />
-          </div>
-        </div>
-
-        <button
-          onClick={handleTransfer}
-          disabled={loading}
-          className="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-60"
-        >
-          {loading
-            ? (<><Loader2 className="w-4 h-4 animate-spin" /> {s.sending}</>)
-            : s.sendBtn(amount)}
-        </button>
-
-        <p className="text-center text-xs text-gray-400">{s.disclaimer}</p>
       </div>
     </div>
   );
 }
-// BAMBEH_END_TOKEN__COINSTRANSFER__COMPLETE
+// BAMBEH_END_TOKEN__COINSTRANSFER_FIX850__COMPLETE

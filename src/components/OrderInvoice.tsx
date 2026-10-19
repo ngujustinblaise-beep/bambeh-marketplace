@@ -41,8 +41,8 @@ const strings = {
     item: 'Item', qty: 'Qty', amount: 'Amount', subtotal: 'Subtotal',
     fee: 'Bambeh fee and tax', total: 'Total', sellerGets: 'Seller receives',
     payment: 'Payment', method: 'Method', reference: 'Reference',
-    escrow: 'Escrow', paid: 'PAID', unpaid: 'AWAITING CONFIRMATION',
-    terms: 'Terms', termsBody: 'Funds placed in Bambeh escrow are released to the seller only when the buyer confirms delivery. If the item does not arrive, or is not as described, the buyer may request a refund to the number that paid. Questions: support@bambeh.com',
+    escrow: 'Bambeh Secured Pay', es_held: 'Money held', es_released: 'Paid to the seller', es_refunded: 'Refunded', es_disputed: 'Under review', es_frozen: 'Under review', es_under_review: 'Under review', paid: 'PAID', unpaid: 'AWAITING CONFIRMATION',
+    terms: 'Terms', termsBody: 'Payments made through Bambeh Secured Pay are held until the buyer confirms delivery; only then is the seller paid. If the item does not arrive or is not as described, the buyer reports it before confirming. Bambeh reviews it within 72 hours and, if a refund is approved, the item price goes back to the number that paid (the commission and charges are not refunded). Questions: Chat with Bambeh in the app, or support@bambeh.com',
     print: 'Print', download: 'Download', close: 'Close',
     loadErr: 'Could not build the invoice.', retry: 'Retry',
     footer: 'BAMBEH SARL - Yaounde, Cameroon - support@bambeh.com - bambeh.com',
@@ -53,8 +53,8 @@ const strings = {
     item: 'Article', qty: 'Qt\u00e9', amount: 'Montant', subtotal: 'Sous-total',
     fee: 'Frais Bambeh et taxe', total: 'Total', sellerGets: 'Le vendeur re\u00e7oit',
     payment: 'Paiement', method: 'M\u00e9thode', reference: 'R\u00e9f\u00e9rence',
-    escrow: 'S\u00e9questre', paid: 'PAY\u00c9', unpaid: 'EN ATTENTE DE CONFIRMATION',
-    terms: 'Conditions', termsBody: 'Les fonds plac\u00e9s sous s\u00e9questre Bambeh sont vers\u00e9s au vendeur uniquement lorsque l\u2019acheteur confirme la livraison. Si l\u2019article n\u2019arrive pas, ou ne correspond pas \u00e0 la description, l\u2019acheteur peut demander un remboursement vers le num\u00e9ro qui a pay\u00e9. Questions : support@bambeh.com',
+    escrow: 'Bambeh Secured Pay', es_held: 'Argent gard\u00e9', es_released: 'Vers\u00e9 au vendeur', es_refunded: 'Rembours\u00e9', es_disputed: 'En examen', es_frozen: 'En examen', es_under_review: 'En examen', paid: 'PAY\u00c9', unpaid: 'EN ATTENTE DE CONFIRMATION',
+    terms: 'Conditions', termsBody: 'Les paiements faits via Bambeh Secured Pay sont gard\u00e9s jusqu\u2019\u00e0 ce que l\u2019acheteur confirme la livraison ; alors seulement le vendeur est pay\u00e9. Si l\u2019article n\u2019arrive pas ou ne correspond pas \u00e0 la description, l\u2019acheteur le signale avant de confirmer. Bambeh examine sous 72 heures et, si un remboursement est accord\u00e9, le prix de l\u2019article revient au num\u00e9ro qui a pay\u00e9 (la commission et les frais ne sont pas rembours\u00e9s). Questions : Discuter avec Bambeh dans l\u2019application, ou support@bambeh.com',
     print: 'Imprimer', download: 'T\u00e9l\u00e9charger', close: 'Fermer',
     loadErr: 'Impossible de g\u00e9n\u00e9rer la facture.', retry: 'R\u00e9essayer',
     footer: 'BAMBEH SARL - Yaound\u00e9, Cameroun - support@bambeh.com - bambeh.com',
@@ -65,8 +65,8 @@ const strings = {
     item: 'Thing', qty: 'How many', amount: 'Amount', subtotal: 'Subtotal',
     fee: 'Bambeh cut and tax', total: 'Total', sellerGets: 'Seller go collect',
     payment: 'Payment', method: 'How you pay', reference: 'Reference',
-    escrow: 'Escrow', paid: 'DEM PAY', unpaid: 'WE DEY WAIT CONFIRMATION',
-    terms: 'Terms', termsBody: 'Money wey dey Bambeh escrow only go reach seller when buyer confirm say the thing don land. If e no reach, or e no be wetin dem talk, buyer fit ask for him money back to the number wey pay. Question? support@bambeh.com',
+    escrow: 'Bambeh Secured Pay', es_held: 'Money dey hold', es_released: 'Seller don collect', es_refunded: 'Money don return', es_disputed: 'Bambeh dey check', es_frozen: 'Bambeh dey check', es_under_review: 'Bambeh dey check', paid: 'DEM PAY', unpaid: 'WE DEY WAIT CONFIRMATION',
+    terms: 'Terms', termsBody: 'Money wey you pay through Bambeh Secured Pay go dey hold until buyer confirm say the thing don land; na only then seller go collect. If e no reach, or e no be wetin dem talk, buyer go report am before e confirm. Bambeh go check am inside 72 hours and, if dem gree refund, the price of the thing go return to the number wey pay (commission and charges no dey return). Question? Chat with Bambeh for inside the app, or support@bambeh.com',
     print: 'Print', download: 'Download', close: 'Close',
     loadErr: 'Invoice no gree build.', retry: 'Try again',
     footer: 'BAMBEH SARL - Yaounde, Cameroon - support@bambeh.com - bambeh.com',
@@ -77,8 +77,8 @@ const strings = {
     item: '\u0627\u0644\u0645\u0646\u062a\u062c', qty: '\u0627\u0644\u0643\u0645\u064a\u0629', amount: '\u0627\u0644\u0645\u0628\u0644\u063a', subtotal: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0641\u0631\u0639\u064a',
     fee: '\u0639\u0645\u0648\u0644\u0629 \u0628\u0627\u0645\u0628\u064a \u0648\u0627\u0644\u0631\u0633\u0648\u0645', total: '\u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a', sellerGets: '\u064a\u0633\u062a\u0644\u0645 \u0627\u0644\u0628\u0627\u0626\u0639',
     payment: '\u0627\u0644\u062f\u0641\u0639', method: '\u0627\u0644\u0637\u0631\u064a\u0642\u0629', reference: '\u0627\u0644\u0645\u0631\u062c\u0639',
-    escrow: '\u0627\u0644\u0636\u0645\u0627\u0646', paid: '\u0645\u062f\u0641\u0648\u0639', unpaid: '\u0628\u0627\u0646\u062a\u0637\u0627\u0631 \u0627\u0644\u062a\u0623\u0643\u064a\u062f',
-    terms: '\u0627\u0644\u0634\u0631\u0648\u0637', termsBody: '\u0627\u0644\u0623\u0645\u0648\u0627\u0644 \u0627\u0644\u0645\u0648\u062f\u0639\u0629 \u0641\u064a \u0636\u0645\u0627\u0646 \u0628\u0627\u0645\u0628\u064a \u062a\u064f\u062f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639 \u0641\u0642\u0637 \u0639\u0646\u062f \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0645\u0634\u062a\u0631\u064a \u0644\u0644\u0627\u0633\u062a\u0644\u0627\u0645. \u0625\u0646 \u0644\u0645 \u064a\u0635\u0644 \u0627\u0644\u0645\u0646\u062a\u062c \u0623\u0648 \u0644\u0645 \u064a\u0637\u0627\u0628\u0642 \u0627\u0644\u0648\u0635\u0641\u060c \u064a\u0645\u0643\u0646 \u0644\u0644\u0645\u0634\u062a\u0631\u064a \u0637\u0644\u0628 \u0627\u0633\u062a\u0631\u062f\u0627\u062f \u0625\u0644\u0649 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u062f\u0641\u0639. \u0644\u0644\u0627\u0633\u062a\u0641\u0633\u0627\u0631: support@bambeh.com',
+    escrow: 'Bambeh Secured Pay', es_held: '\u0627\u0644\u0645\u0627\u0644 \u0645\u062d\u0641\u0648\u0638', es_released: '\u062f\u064f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639', es_refunded: '\u062a\u0645 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f', es_disputed: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629', es_frozen: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629', es_under_review: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629', paid: '\u0645\u062f\u0641\u0648\u0639', unpaid: '\u0628\u0627\u0646\u062a\u0637\u0627\u0631 \u0627\u0644\u062a\u0623\u0643\u064a\u062f',
+    terms: '\u0627\u0644\u0634\u0631\u0648\u0637', termsBody: '\u062a\u064f\u062d\u0641\u0638 \u0627\u0644\u0645\u062f\u0641\u0648\u0639\u0627\u062a \u0639\u0628\u0631 Bambeh Secured Pay \u062d\u062a\u0649 \u064a\u0624\u0643\u062f \u0627\u0644\u0645\u0634\u062a\u0631\u064a \u0627\u0644\u0627\u0633\u062a\u0644\u0627\u0645\u060c \u0648\u0639\u0646\u062f\u0647\u0627 \u0641\u0642\u0637 \u064a\u064f\u062f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639. \u0625\u0630\u0627 \u0644\u0645 \u064a\u0635\u0644 \u0627\u0644\u0645\u0646\u062a\u062c \u0623\u0648 \u0644\u0645 \u064a\u0637\u0627\u0628\u0642 \u0627\u0644\u0648\u0635\u0641\u060c \u064a\u0628\u0644\u0651\u063a \u0627\u0644\u0645\u0634\u062a\u0631\u064a \u0639\u0646 \u0630\u0644\u0643 \u0642\u0628\u0644 \u0627\u0644\u062a\u0623\u0643\u064a\u062f. \u062a\u0631\u0627\u062c\u0639 Bambeh \u0627\u0644\u0623\u0645\u0631 \u062e\u0644\u0627\u0644 72 \u0633\u0627\u0639\u0629\u060c \u0648\u0625\u0630\u0627 \u062a\u0645\u062a \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f \u064a\u0639\u0648\u062f \u0633\u0639\u0631 \u0627\u0644\u0645\u0646\u062a\u062c \u0625\u0644\u0649 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u062f\u0641\u0639 (\u0644\u0627 \u062a\u064f\u0633\u062a\u0631\u062f \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0648\u0627\u0644\u0631\u0633\u0648\u0645). \u0644\u0644\u0627\u0633\u062a\u0641\u0633\u0627\u0631: \u062a\u062d\u062f\u0651\u062b \u0645\u0639 Bambeh \u062f\u0627\u062e\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u060c \u0623\u0648 support@bambeh.com',
     print: '\u0637\u0628\u0627\u0639\u0629', download: '\u062a\u0646\u0632\u064a\u0644', close: '\u0625\u063a\u0644\u0627\u0642',
     loadErr: '\u062a\u0639\u0630\u0631 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0641\u0627\u062a\u0648\u0631\u0629.', retry: '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629',
     footer: 'BAMBEH SARL - Yaounde, Cameroon - support@bambeh.com - bambeh.com',
@@ -89,8 +89,8 @@ const strings = {
     item: 'Ku\u0257e', qty: 'No foti', amount: 'Njeenu', subtotal: 'Fof gadano',
     fee: 'Jaw\u0257i Bambeh e lampo', total: 'Fof', sellerGets: 'Jeeyoowo he\u0253ata',
     payment: 'Yo\u0253gol', method: 'No yo\u0253iri', reference: 'Reference',
-    escrow: 'Escrow', paid: 'YO\u0181AAMA', unpaid: 'INA HEBEE TEE\u014aTINGOL',
-    terms: 'Sar\u0257iiji', termsBody: 'Kaalisi mo\u0253\u0253aa\u0257o e escrow Bambeh neldete jeeyoowo tan so so\u0257oowo tee\u014btinii jaggol. So ku\u0257e yottaaki, walla \u0257e nanndaani e sifaa, so\u0257oowo waawi \u0257a\u0253\u0253ude ruttingol to limngal yo\u0253unoo. Naamnal: support@bambeh.com',
+    escrow: 'Bambeh Secured Pay', es_held: 'Kaalis ina jogaa', es_released: 'Jeeyoowo yo\u0253aama', es_refunded: 'Ruttaama', es_disputed: 'Bambeh ina \u01b4eewa', es_frozen: 'Bambeh ina \u01b4eewa', es_under_review: 'Bambeh ina \u01b4eewa', paid: 'YO\u0181AAMA', unpaid: 'INA HEBEE TEE\u014aTINGOL',
+    terms: 'Sar\u0257iiji', termsBody: 'Njo\u0253di \u0257i yo\u0253ir Bambeh Secured Pay ina jogaa haa soodoowo tee\u014btina jaggol; ndeen tan jeeyoowo yo\u0253ete. So ge\u0257al ngal yottaaki, walla \u0257e nanndaani e sifaa, soodoowo habray \u0257um hade tee\u014btinde. Bambeh \u01b4eewto nder waktuuji 72; so ruttingol jaba\u0257aama, coggu ge\u0257al ngal ruttoto e limngal yo\u0253unoo (komisiyon e njo\u0253di ruttataake). Naamnal: Yeewtu e Bambeh e nder jaa\u0253nirgal ngal, walla support@bambeh.com',
     print: 'Winndito', download: 'Aawto', close: 'Uddu',
     loadErr: 'Fakture waawaa mahaade.', retry: 'Eto kadi',
     footer: 'BAMBEH SARL - Yaounde, Cameroon - support@bambeh.com - bambeh.com',
@@ -292,7 +292,7 @@ td{padding:10px 6px;border-bottom:1px solid #f1f5f9}.c{text-align:center}.r{text
 <div class="grid" style="margin-top:26px">
 <div><div class="lbl">${esc(s.method)}</div><div class="val">${esc(inv.method || '-')}</div></div>
 <div><div class="lbl">${esc(s.reference)}</div><div class="val mono">${esc(inv.reference || '-')}</div></div>
-<div><div class="lbl">${esc(s.escrow)}</div><div class="val">${esc((inv.escrowStatus || '-').replace(/_/g, ' '))}</div></div>
+<div><div class="lbl">${esc(s.escrow)}</div><div class="val">${esc((s as unknown as Record<string, string>)['es_' + String(inv.escrowStatus || '').toLowerCase()] || (inv.escrowStatus || '-').replace(/_/g, ' '))}</div></div>
 </div>
 <div class="terms"><div class="lbl">${esc(s.terms)}</div><p>${esc(s.termsBody)}</p></div>
 <div class="ft">${esc(s.footer)}</div>

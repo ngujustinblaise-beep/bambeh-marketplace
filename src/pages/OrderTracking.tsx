@@ -40,7 +40,7 @@ const strings = {
     orderNum: 'Order', placed: 'Placed', updated: 'Updated',
     itemsTitle: 'Items', qty: 'Qty', total: 'Total',
     payTitle: 'Payment', method: 'Method', reference: 'Reference', paidAt: 'Paid',
-    escrow: 'Escrow', deliveryTitle: 'Delivery', address: 'Address', city: 'City',
+    escrow: 'Bambeh Secured Pay', es_held: 'Money held', es_released: 'Paid to the seller', es_refunded: 'Refunded', es_disputed: 'Under review', es_frozen: 'Under review', es_under_review: 'Under review', deliveryTitle: 'Delivery', address: 'Address', city: 'City',
     timeline: 'Tracking history',
     st_pending: 'Order received', st_confirmed: 'Confirmed', st_preparing: 'Being prepared',
     st_handed_over: 'Handed to delivery', st_delivered: 'Delivered',
@@ -53,7 +53,7 @@ const strings = {
     orderNum: 'Commande', placed: 'Pass\u00e9e le', updated: 'Mise \u00e0 jour',
     itemsTitle: 'Articles', qty: 'Qt\u00e9', total: 'Total',
     payTitle: 'Paiement', method: 'M\u00e9thode', reference: 'R\u00e9f\u00e9rence', paidAt: 'Pay\u00e9 le',
-    escrow: 'S\u00e9questre', deliveryTitle: 'Livraison', address: 'Adresse', city: 'Ville',
+    escrow: 'Bambeh Secured Pay', es_held: 'Argent gard\u00e9', es_released: 'Vers\u00e9 au vendeur', es_refunded: 'Rembours\u00e9', es_disputed: 'En examen', es_frozen: 'En examen', es_under_review: 'En examen', deliveryTitle: 'Livraison', address: 'Adresse', city: 'Ville',
     timeline: 'Historique de suivi',
     st_pending: 'Commande re\u00e7ue', st_confirmed: 'Confirm\u00e9e', st_preparing: 'En pr\u00e9paration',
     st_handed_over: 'Remise au livreur', st_delivered: 'Livr\u00e9e',
@@ -66,7 +66,7 @@ const strings = {
     orderNum: 'Order', placed: 'You order am', updated: 'Last update',
     itemsTitle: 'Things wey you buy', qty: 'How many', total: 'Total',
     payTitle: 'Payment', method: 'How you pay', reference: 'Reference', paidAt: 'You pay',
-    escrow: 'Escrow', deliveryTitle: 'Delivery', address: 'Address', city: 'Town',
+    escrow: 'Bambeh Secured Pay', es_held: 'Money dey hold', es_released: 'Seller don collect', es_refunded: 'Money don return', es_disputed: 'Bambeh dey check', es_frozen: 'Bambeh dey check', es_under_review: 'Bambeh dey check', deliveryTitle: 'Delivery', address: 'Address', city: 'Town',
     timeline: 'Tracking history',
     st_pending: 'Order don enter', st_confirmed: 'E don confirm', st_preparing: 'Dem dey prepare am',
     st_handed_over: 'Dem don give am to delivery', st_delivered: 'E don reach',
@@ -79,7 +79,7 @@ const strings = {
     orderNum: '\u0627\u0644\u0637\u0644\u0628', placed: '\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0637\u0644\u0628', updated: '\u0622\u062e\u0631 \u062a\u062d\u062f\u064a\u062b',
     itemsTitle: '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a', qty: '\u0627\u0644\u0643\u0645\u064a\u0629', total: '\u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a',
     payTitle: '\u0627\u0644\u062f\u0641\u0639', method: '\u0627\u0644\u0637\u0631\u064a\u0642\u0629', reference: '\u0627\u0644\u0645\u0631\u062c\u0639', paidAt: '\u062a\u0645 \u0627\u0644\u062f\u0641\u0639',
-    escrow: '\u0627\u0644\u0636\u0645\u0627\u0646', deliveryTitle: '\u0627\u0644\u062a\u0648\u0635\u064a\u0644', address: '\u0627\u0644\u0639\u0646\u0648\u0627\u0646', city: '\u0627\u0644\u0645\u062f\u064a\u0646\u0629',
+    escrow: 'Bambeh Secured Pay', es_held: '\u0627\u0644\u0645\u0627\u0644 \u0645\u062d\u0641\u0648\u0638', es_released: '\u062f\u064f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639', es_refunded: '\u062a\u0645 \u0627\u0644\u0627\u0633\u062a\u0631\u062f\u0627\u062f', es_disputed: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629', es_frozen: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629', es_under_review: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629', deliveryTitle: '\u0627\u0644\u062a\u0648\u0635\u064a\u0644', address: '\u0627\u0644\u0639\u0646\u0648\u0627\u0646', city: '\u0627\u0644\u0645\u062f\u064a\u0646\u0629',
     timeline: '\u0633\u062c\u0644 \u0627\u0644\u062a\u062a\u0628\u0639',
     st_pending: '\u062a\u0645 \u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u0637\u0644\u0628', st_confirmed: '\u0645\u0624\u0643\u062f', st_preparing: '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632',
     st_handed_over: '\u0633\u064f\u0644\u0651\u0645 \u0644\u0644\u062a\u0648\u0635\u064a\u0644', st_delivered: '\u062a\u0645 \u0627\u0644\u062a\u0633\u0644\u064a\u0645',
@@ -92,7 +92,7 @@ const strings = {
     orderNum: 'Yamiroore', placed: '\u00d1alnde', updated: 'Sakkitii',
     itemsTitle: 'Ku\u0257e', qty: 'No foti', total: 'Fof',
     payTitle: 'Yo\u0253gol', method: 'No yo\u0253iri', reference: 'Reference', paidAt: 'Yo\u0253aa',
-    escrow: 'Escrow', deliveryTitle: 'Naworgol', address: 'Adres', city: 'Saare',
+    escrow: 'Bambeh Secured Pay', es_held: 'Kaalis ina jogaa', es_released: 'Jeeyoowo yo\u0253aama', es_refunded: 'Ruttaama', es_disputed: 'Bambeh ina \u01b4eewa', es_frozen: 'Bambeh ina \u01b4eewa', es_under_review: 'Bambeh ina \u01b4eewa', deliveryTitle: 'Naworgol', address: 'Adres', city: 'Saare',
     timeline: 'Laamu \u0257aggol',
     st_pending: 'Yamiroore he\u0253aama', st_confirmed: 'Tee\u014btinaama', st_preparing: '\u0257on hebloo',
     st_handed_over: 'Hokkaama neldoowo', st_delivered: 'Yottiima',
@@ -386,7 +386,7 @@ export default function OrderTracking() {
               {order.escrow_status && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> {s.escrow}</span>
-                  <span className="font-medium capitalize">{order.escrow_status.replace(/_/g, ' ')}</span>
+                  <span className="font-medium">{(s as unknown as Record<string, string>)['es_' + order.escrow_status.toLowerCase()] || order.escrow_status.replace(/_/g, ' ')}</span>
                 </div>
               )}
             </div>
