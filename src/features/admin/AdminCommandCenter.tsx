@@ -43,6 +43,9 @@ import {
 } from './lib';
 import UserActionPanel from './UserActionPanel';   // FIX475
 import AdminFeaturedAds from './AdminFeaturedAds';         // FIX827 - Adverts and Promotions in one place
+import AdminBusinesses from './AdminBusinesses';           // FIX836 - registered businesses, checked by Bambeh
+import AdminSupport from './AdminSupport';                 // FIX838 - Chat with Bambeh, answered here
+import { Building2 as BusinessesIcon, LifeBuoy as SupportIcon } from 'lucide-react'; // FIX836/FIX838
 import PharmaciesSection from './PharmaciesSection'; // FIX482
 import RequestsSection from './RequestsSection';     // FIX489
 import UtilitiesSection from './UtilitiesSection';   // FIX501
@@ -74,7 +77,7 @@ type Section =
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
   | 'agents' | 'requests' | 'paywall' | 'gates' | 'foodgas' | 'womenshealth' | 'obligations' | 'couriers'
-  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured';
+  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured' | 'businesses' | 'support';
 
 const NAV: Array<{
   key: Section;
@@ -95,6 +98,8 @@ const NAV: Array<{
   { key: 'countries', label: 'Countries',     icon: CountriesIcon }, // FIX779
   { key: 'views',     label: 'Views & visits', icon: ViewsIcon }, // FIX808
   { key: 'featured',  label: 'Featured ads',   icon: Star },   // FIX827 - Adverts and Promotions in one place
+  { key: 'businesses', label: 'Businesses',    icon: BusinessesIcon, badge: ['corp_waiting'] },   // FIX836
+  { key: 'support',   label: 'Support inbox', icon: SupportIcon, badge: ['support_waiting'] }, // FIX838
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
   { key: 'utilities', label: 'Water & Lights', icon: Droplet,
     badge: ['utility_live'] },
@@ -133,7 +138,7 @@ export default function AdminCommandCenter() {
   const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<AdminRole | null>(null);
   const [loading, setLoading] = useState(true);
-  const [section, setSection] = useState<Section>('overview');
+  const [section, setSection] = useState<Section>(() => { try { const s = new URLSearchParams(window.location.hash.split('?')[1] || window.location.search.slice(1) || '').get('s'); return (s && NAV.some((n) => n.key === s) ? s : 'overview') as Section; } catch { return 'overview'; } }); // FIX844 - a staff notification opens its section
   const [toast, setToast] = useState('');
 
   // FIX513 - how far down the screen the app header ends.
@@ -265,6 +270,8 @@ export default function AdminCommandCenter() {
         {section === 'overview'  && <Overview role={role} cap={cap} />}
         {section === 'users'     && <UsersSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'featured'  && <AdminFeaturedAds embedded />}{/* FIX827 - Adverts and Promotions in one place */}
+        {section === 'businesses' && <AdminBusinesses embedded />}{/* FIX836 - registered businesses, checked by Bambeh */}
+        {section === 'support'   && <AdminSupport embedded />}{/* FIX838 - Chat with Bambeh, answered here */}
         {section === 'pharmacies' && <PharmaciesSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'utilities'  && <UtilitiesSection  userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'fuel'       && <FuelSection       userId={userId!} role={role} cap={cap} flash={flash} />}

@@ -10,7 +10,7 @@
 
 import { Link } from "react-router-dom";
 import {	
-  Mail, Phone, MapPin, Heart,
+  Mail, MessageCircle, MapPin, Heart,
   ArrowLeftRight, Briefcase, ShoppingBag, Wrench, Home as HomeIcon, Car,
 } from "lucide-react";
 import { useLang } from "@/hooks/useAppLang";
@@ -196,8 +196,8 @@ export default function Footer() {
                 <a href="mailto:support@bambeh.com" className="hover:text-teal-400" dir="ltr">support@bambeh.com</a>
               </div>
               <div className="flex items-start gap-2">
-                <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span dir="ltr">+237 652 953 607</span>
+                <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <Link to="/help/chat" className="hover:text-teal-400">{s.contactSupport}</Link>{/* FIX844 - Chat with Bambeh: contact stays in Bambeh */}
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />

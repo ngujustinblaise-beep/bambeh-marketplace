@@ -364,6 +364,7 @@ const AvoidingScams           = lazy(() => import("@/pages/help/AvoidingScams"))
 const MeetingSafely           = lazy(() => import("@/pages/help/MeetingSafely"));
 const ReportingIssues         = lazy(() => import("@/pages/help/ReportingIssues"));
 const ContactSupport          = lazy(() => import("@/pages/help/ContactSupport"));
+const SupportChat             = lazy(() => import("@/features/support/SupportChat")); // FIX837 - Chat with Bambeh
 const ShareMyVoice        = lazy(() => import("@/pages/ShareMyVoice"));
 
 // BAMBEH FEATURES
@@ -1304,6 +1305,7 @@ export default function App() {
                         {/* ── 12. HELP CENTER ────────────────────────────────────── */}
                         <Route path="/help" element={<MainLayout><Help /></MainLayout>} />
                         <Route path="/help/contact" element={<MainLayout><ContactSupport /></MainLayout>} />
+                        <Route path="/help/chat" element={<MainLayout><SupportChat /></MainLayout>} />{/* FIX837 - Chat with Bambeh, open to everyone (it asks to sign in) */}
                         <Route path="/feedback" element={<ShareMyVoice />} />
                         <Route path="/help/guides" element={<MainLayout><HelpGuides /></MainLayout>} />
                         <Route path="/help/video-tutorials" element={<MainLayout><VideoTutorials /></MainLayout>} />
