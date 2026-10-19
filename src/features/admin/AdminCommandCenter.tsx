@@ -42,8 +42,7 @@ import {
   fetchAllListings, countListingsByType, type AdminListing,
 } from './lib';
 import UserActionPanel from './UserActionPanel';   // FIX475
-import AdsSection from './AdsSection';             // FIX464
-import PromotionsSection from './PromotionsSection'; // FIX469
+import AdminFeaturedAds from './AdminFeaturedAds';         // FIX827 - Adverts and Promotions in one place
 import PharmaciesSection from './PharmaciesSection'; // FIX482
 import RequestsSection from './RequestsSection';     // FIX489
 import UtilitiesSection from './UtilitiesSection';   // FIX501
@@ -75,7 +74,7 @@ type Section =
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
   | 'agents' | 'requests' | 'paywall' | 'gates' | 'foodgas' | 'womenshealth' | 'obligations' | 'couriers'
-  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views';
+  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured';
 
 const NAV: Array<{
   key: Section;
@@ -95,8 +94,7 @@ const NAV: Array<{
   { key: 'usage',     label: 'App usage',     icon: UsageIcon },   // FIX666
   { key: 'countries', label: 'Countries',     icon: CountriesIcon }, // FIX779
   { key: 'views',     label: 'Views & visits', icon: ViewsIcon }, // FIX808
-  { key: 'ads',       label: 'Adverts',        icon: Megaphone },
-  { key: 'promos',    label: 'Promotions',     icon: Star },
+  { key: 'featured',  label: 'Featured ads',   icon: Star },   // FIX827 - Adverts and Promotions in one place
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
   { key: 'utilities', label: 'Water & Lights', icon: Droplet,
     badge: ['utility_live'] },
@@ -266,8 +264,7 @@ export default function AdminCommandCenter() {
       <main className="flex-1 p-4 md:p-6 max-w-5xl">
         {section === 'overview'  && <Overview role={role} cap={cap} />}
         {section === 'users'     && <UsersSection userId={userId!} role={role} cap={cap} flash={flash} />}
-        {section === 'ads'       && <AdsSection userId={userId!} role={role} cap={cap} flash={flash} />}
-        {section === 'promos'    && <PromotionsSection userId={userId!} role={role} cap={cap} flash={flash} />}
+        {section === 'featured'  && <AdminFeaturedAds embedded />}{/* FIX827 - Adverts and Promotions in one place */}
         {section === 'pharmacies' && <PharmaciesSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'utilities'  && <UtilitiesSection  userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'fuel'       && <FuelSection       userId={userId!} role={role} cap={cap} flash={flash} />}

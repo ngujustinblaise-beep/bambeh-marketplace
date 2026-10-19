@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX821_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX828_CLEAN
 // @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,6 +29,12 @@
  *     typing - the sections and free help, the adverts, rentals, jobs... - and "See all results".
  *   - a smaller welcome on phones (less empty space above it), so the search and the three main categories
  *     show without scrolling. Computers keep the big welcome.
+ *
+ * FIX828 (Big, 18 Oct 2026 - "we can switch off all free ads running now on the feature ad as well as corporate
+ * ads and choose which ads should run based on payments"): Command Center > Featured ads (FIX827) decides.
+ *   - Featured Ads: everything posted / only the chosen (paid) ones / nothing - its heading shows only when
+ *     something runs (FeaturedAdsStrip, FIX825), and each set of 10 passes across the screen before the next.
+ *   - the Corporate adverts strip and its heading disappear when it is switched off.
  *
  * © 2025–2026 Bambeh. All rights reserved.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -85,6 +91,7 @@ import HomeSearch from '@/components/home/HomeSearch';     // FIX820 - the insta
 import { IS_STORE_APP, storeAllows } from '@/config/storeMode'; // FIX620
 import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
 import CorporateAdsStrip from '@/features/corporate/CorporateAdsStrip';
+import { useAdNow } from '@/components/ads/adControl';   // FIX828 - what Command Center > Featured ads switched on
 
 // ─── Translation Table ─────────────────────────────────────────────────────
 const HOME_T: Record<string, Record<string, string>> = {
@@ -452,6 +459,7 @@ interface RecentListing {
 export default function Home() {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { now: adNow } = useAdNow();   // FIX828
   const _rl = homeNormLang(language);
   const isRtl = _rl === "ar";
   
@@ -707,14 +715,13 @@ export default function Home() {
             without anybody being made to look at it. Do not move it below. */}
         {!IS_STORE_APP && <ServicesRow />}
 
-                {/* Featured Ads (FIX114: live rolling strip of REAL posts) */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">⭐ {t('home.badgeFeatured')}</h2>
-          <FeaturedAdsStrip maxVisible={10} showHeader={false} />
-        </div>
+        {/* Featured Ads (FIX114: live rolling strip of REAL posts). FIX828 - what runs is set in Command Center >
+            Featured ads; the heading shows only when something runs; sets of 10 pass across the screen (FIX825). */}
+        <FeaturedAdsStrip maxVisible={10} showHeader={false} heading={'⭐ ' + t('home.badgeFeatured')} className="mb-16" />
 
         {/* ── Corporate Adverts (FIX123: replaces Recently Posted) ─────── */}
-        {!IS_STORE_APP && (<div className="mb-16">
+        {/* FIX828 - switched off in Command Center > Featured ads: the strip and its heading are not shown */}
+        {!IS_STORE_APP && adNow.corporate_on && (<div className="mb-16" data-home-corporate="1">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">🏢 {t('home.corporateAds')}</h2>
             <Link to="/corporate/ads" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
@@ -780,4 +787,4 @@ function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => stri
     </p>
   );
 }
-// BAMBEH_END_TOKEN__HOME_FIX821__COMPLETE
+// BAMBEH_END_TOKEN__HOME_FIX828__COMPLETE

@@ -1,6 +1,16 @@
-// BAMBEH_DEPLOY_TOKEN__TAXI_CHECK_FIX760_CLEAN
+// BAMBEH_DEPLOY_TOKEN__TAXI_CHECK_FIX829_CLEAN
 /**
- * src/features/safety/TaxiCheck.tsx - FIX760 (was FIX748) - route /taxi-check
+ * src/features/safety/TaxiCheck.tsx - FIX829 (was FIX760, FIX748) - route /taxi-check
+ *
+ * FIX829, Big 18 Oct 2026: "in the taxi check section the scan the code does not open".
+ *   In the installed app the camera is only allowed once the app itself carries the camera permission (FIX753
+ *   added it; the APK on the phone must be built after it). On a phone with an older APK, or where the camera was
+ *   refused, "Scan the code" closed again at once and only said "the camera is blocked". Now:
+ *   - in the installed app, when the live camera cannot be used, the phone's own camera opens straight away for a
+ *     PHOTO of the code - Bambeh reads the code from the photo (the photo path needs no permission from the app);
+ *   - the camera screen always has "Photo instead"; if no picture comes after 10 seconds it says so;
+ *   - the message says exactly where to allow the camera: in the app (Settings > Apps > Bambeh > Permissions >
+ *     Camera), or in Chrome (the lock next to the address > Permissions > Camera) - in five languages.
  *
  * TAXI CHECK. Big, 14 Oct 2026: "taxis in Yaounde have bar codes for the security of passengers and
  * the state ... can we build a free barcode scanner in the free section where we will advise users to
@@ -39,6 +49,7 @@ import {
   Phone, ScanLine, ShieldCheck, Siren, Trash2, UserPlus, X,
 } from 'lucide-react';
 import { useLang } from '@/hooks/useAppLang';
+import { IS_NATIVE_APP } from '@/config/storeMode';   // FIX829 - inside the installed app
 import { useAuth } from '@/contexts/AuthContext';
 import { MAX_PEOPLE, findMe, fmtNumber, loadPeople, mapLink, normPhone, savePeople, smsHref, waHref } from './SafetyButton';
 import type { TrustedPerson } from './SafetyButton';
@@ -69,10 +80,14 @@ const EN = {
   reading: 'Reading the photo...',
   photoFail: 'No code found in this photo. Try again closer, with more light - or type the door number.',
   camUnsupported: 'This phone cannot open the camera here. Take a photo of the code, or type the door number.',
-  camDenied: 'The camera is blocked for Bambeh. Allow it in your phone settings - or take a photo of the code, or type the door number.',
+  camDenied: 'The camera is blocked for this site. In Chrome: tap the lock (or the (i)) next to the address > Permissions > Camera > Allow, then press Scan again. Or take a photo of the code, or type the door number.',
   camNone: 'No camera found. Take a photo of the code, or type the door number.',
   camBusy: 'Another app is using the camera. Close it and try again.',
   camFailed: 'The camera did not open. Take a photo of the code, or type the door number.',
+  camDeniedApp: 'Bambeh could not use the camera. On the phone: Settings > Apps > Bambeh > Permissions > Camera > Allow, then press Scan again. If Camera is not in the list, install the newest Bambeh app. Meanwhile: take a photo of the code, or type the door number.',
+  camAuto: 'Your camera opens to take a photo of the code instead - Bambeh reads the code from the photo.',
+  camSlow: 'No picture yet? Press "Photo instead" - or close the camera and type the door number.',
+  photoShort: 'Photo instead',
   codeLink: 'This code opens:',
   official: 'The city of Yaound\u00e9\'s taxi register (Taxi-Yaound\u00e9)',
   notOfficial: 'Bambeh does not know this website. Real codes come from the city of Yaound\u00e9 (Taxi-Yaound\u00e9). Check carefully.',
@@ -165,10 +180,14 @@ const FR: Record<Key, string> = {
   reading: 'Lecture de la photo...',
   photoFail: 'Aucun code trouv\u00e9 sur cette photo. R\u00e9essayez plus pr\u00e8s, avec plus de lumi\u00e8re, ou saisissez le num\u00e9ro de porti\u00e8re.',
   camUnsupported: 'Ce t\u00e9l\u00e9phone ne peut pas ouvrir la cam\u00e9ra ici. Prenez une photo du code, ou saisissez le num\u00e9ro de porti\u00e8re.',
-  camDenied: 'La cam\u00e9ra est bloqu\u00e9e pour Bambeh. Autorisez-la dans les r\u00e9glages du t\u00e9l\u00e9phone, ou prenez une photo du code, ou saisissez le num\u00e9ro de porti\u00e8re.',
+  camDenied: 'La cam\u00e9ra est bloqu\u00e9e pour ce site. Dans Chrome : touchez le cadenas (ou le (i)) \u00e0 c\u00f4t\u00e9 de l\u2019adresse > Autorisations > Cam\u00e9ra > Autoriser, puis appuyez de nouveau sur Scanner. Ou prenez une photo du code, ou saisissez le num\u00e9ro de porti\u00e8re.',
   camNone: 'Aucune cam\u00e9ra trouv\u00e9e. Prenez une photo du code, ou saisissez le num\u00e9ro de porti\u00e8re.',
   camBusy: 'Une autre application utilise la cam\u00e9ra. Fermez-la et r\u00e9essayez.',
   camFailed: 'La cam\u00e9ra ne s\u2019est pas ouverte. Prenez une photo du code, ou saisissez le num\u00e9ro de porti\u00e8re.',
+  camDeniedApp: 'Bambeh n\u2019a pas pu utiliser la cam\u00e9ra. Sur le t\u00e9l\u00e9phone : Param\u00e8tres > Applications > Bambeh > Autorisations > Cam\u00e9ra > Autoriser, puis appuyez de nouveau sur Scanner. Si Cam\u00e9ra n\u2019est pas dans la liste, installez la derni\u00e8re application Bambeh. En attendant : prenez une photo du code, ou saisissez le num\u00e9ro de porti\u00e8re.',
+  camAuto: 'Votre appareil photo s\u2019ouvre pour photographier le code \u00e0 la place - Bambeh lit le code sur la photo.',
+  camSlow: 'Toujours pas d\u2019image ? Appuyez sur \u00ab Photo \u00e0 la place \u00bb - ou fermez la cam\u00e9ra et saisissez le num\u00e9ro de porti\u00e8re.',
+  photoShort: 'Photo \u00e0 la place',
   codeLink: 'Ce code ouvre :',
   official: 'Le registre des taxis de la ville de Yaound\u00e9 (Taxi-Yaound\u00e9)',
   notOfficial: 'Bambeh ne conna\u00eet pas ce site. Les vrais codes viennent de la ville de Yaound\u00e9 (Taxi-Yaound\u00e9). V\u00e9rifiez bien.',
@@ -260,10 +279,14 @@ const PIDGIN: Record<Key, string> = {
   reading: 'We di read the picture...',
   photoFail: 'We no see any code for this picture. Try again near-near, with more light - or write the door number.',
   camUnsupported: 'This phone no fit open the camera here. Snap the code, or write the door number.',
-  camDenied: 'The camera don block for Bambeh. Allow am for your phone settings - or snap the code, or write the door number.',
+  camDenied: 'The camera don block for this site. For Chrome: touch the padlock (or the (i)) near the address > Permissions > Camera > Allow, then press Scan again. Or snap the code, or write the door number.',
   camNone: 'We no see any camera. Snap the code, or write the door number.',
   camBusy: 'Another app di use the camera. Close am and try again.',
   camFailed: 'The camera no open. Snap the code, or write the door number.',
+  camDeniedApp: 'Bambeh no fit use the camera. For your phone: Settings > Apps > Bambeh > Permissions > Camera > Allow, then press Scan again. If Camera no dey for the list, install the new Bambeh app. For now: snap the code, or write the door number.',
+  camAuto: 'Your camera dey open make you snap the code - Bambeh go read the code from the picture.',
+  camSlow: 'Picture never show? Press "Snap am instead" - or close the camera and write the door number.',
+  photoShort: 'Snap am instead',
   codeLink: 'This code di open:',
   official: 'The taxi register of Yaound\u00e9 city (Taxi-Yaound\u00e9)',
   notOfficial: 'Bambeh no know this website. Correct codes di come from Yaound\u00e9 city (Taxi-Yaound\u00e9). Check am well.',
@@ -355,10 +378,14 @@ const AR: Record<Key, string> = {
   reading: '\u062c\u0627\u0631\u064d \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0635\u0648\u0631\u0629...',
   photoFail: '\u0644\u0645 \u064a\u064f\u0639\u062b\u0631 \u0639\u0644\u0649 \u0631\u0645\u0632 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0648\u0631\u0629. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649 \u0645\u0646 \u0645\u0633\u0627\u0641\u0629 \u0623\u0642\u0631\u0628 \u0648\u0628\u0625\u0636\u0627\u0621\u0629 \u0623\u0643\u062b\u0631\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
   camUnsupported: '\u0644\u0627 \u064a\u0633\u062a\u0637\u064a\u0639 \u0647\u0630\u0627 \u0627\u0644\u0647\u0627\u062a\u0641 \u0641\u062a\u062d \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 \u0647\u0646\u0627. \u0627\u0644\u062a\u0642\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
-  camDenied: '\u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 \u0645\u062d\u062c\u0648\u0628\u0629 \u0639\u0646 \u0628\u0627\u0645\u0628\u064a\u0647. \u0627\u0633\u0645\u062d \u0628\u0647\u0627 \u0645\u0646 \u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0647\u0627\u062a\u0641\u060c \u0623\u0648 \u0627\u0644\u062a\u0642\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
+  camDenied: '\u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 \u0645\u062d\u062c\u0648\u0628\u0629 \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0648\u0642\u0639. \u0641\u064a \u0643\u0631\u0648\u0645: \u0627\u0644\u0645\u0633 \u0627\u0644\u0642\u0641\u0644 (\u0623\u0648 (i)) \u0628\u062c\u0627\u0646\u0628 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 > \u0627\u0644\u0623\u0630\u0648\u0646\u0627\u062a > \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 > \u0627\u0644\u0633\u0645\u0627\u062d\u060c \u062b\u0645 \u0627\u0636\u063a\u0637 \u0645\u0633\u062d \u0645\u062c\u062f\u062f\u064b\u0627. \u0623\u0648 \u0627\u0644\u062a\u0642\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
   camNone: '\u0644\u0645 \u064a\u064f\u0639\u062b\u0631 \u0639\u0644\u0649 \u0643\u0627\u0645\u064a\u0631\u0627. \u0627\u0644\u062a\u0642\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
   camBusy: '\u062a\u0637\u0628\u064a\u0642 \u0622\u062e\u0631 \u064a\u0633\u062a\u062e\u062f\u0645 \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627. \u0623\u063a\u0644\u0642\u0647 \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.',
   camFailed: '\u0644\u0645 \u062a\u064f\u0641\u062a\u062d \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627. \u0627\u0644\u062a\u0642\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
+  camDeniedApp: '\u062a\u0639\u0630\u0651\u0631 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647 \u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627. \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062a\u0641: \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a > \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a > \u0628\u0627\u0645\u0628\u064a\u0647 > \u0627\u0644\u0623\u0630\u0648\u0646\u0627\u062a > \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 > \u0627\u0644\u0633\u0645\u0627\u062d\u060c \u062b\u0645 \u0627\u0636\u063a\u0637 \u0645\u0633\u062d \u0645\u062c\u062f\u062f\u064b\u0627. \u0625\u0646 \u0644\u0645 \u062a\u0643\u0646 \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 \u0641\u064a \u0627\u0644\u0642\u0627\u0626\u0645\u0629\u060c \u062b\u0628\u0651\u062a \u0623\u062d\u062f\u062b \u062a\u0637\u0628\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647. \u0641\u064a \u0627\u0644\u0623\u062b\u0646\u0627\u0621: \u0627\u0644\u062a\u0642\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632\u060c \u0623\u0648 \u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
+  camAuto: '\u062a\u064f\u0641\u062a\u062d \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 \u0644\u0627\u0644\u062a\u0642\u0627\u0637 \u0635\u0648\u0631\u0629 \u0644\u0644\u0631\u0645\u0632 \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643 - \u064a\u0642\u0631\u0623 \u0628\u0627\u0645\u0628\u064a\u0647 \u0627\u0644\u0631\u0645\u0632 \u0645\u0646 \u0627\u0644\u0635\u0648\u0631\u0629.',
+  camSlow: '\u0644\u0627 \u0635\u0648\u0631\u0629 \u0628\u0639\u062f\u061f \u0627\u0636\u063a\u0637 \u00ab\u0635\u0648\u0631\u0629 \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643\u00bb - \u0623\u0648 \u0623\u063a\u0644\u0642 \u0627\u0644\u0643\u0627\u0645\u064a\u0631\u0627 \u0648\u0627\u0643\u062a\u0628 \u0631\u0642\u0645 \u0627\u0644\u0628\u0627\u0628.',
+  photoShort: '\u0635\u0648\u0631\u0629 \u0628\u062f\u0644\u064b\u0627 \u0645\u0646 \u0630\u0644\u0643',
   codeLink: '\u0647\u0630\u0627 \u0627\u0644\u0631\u0645\u0632 \u064a\u0641\u062a\u062d:',
   official: '\u0633\u062c\u0644 \u0633\u064a\u0627\u0631\u0627\u062a \u0627\u0644\u0623\u062c\u0631\u0629 \u0644\u0645\u062f\u064a\u0646\u0629 \u064a\u0627\u0648\u0646\u062f\u064a (Taxi-Yaound\u00e9)',
   notOfficial: '\u0628\u0627\u0645\u0628\u064a\u0647 \u0644\u0627 \u064a\u0639\u0631\u0641 \u0647\u0630\u0627 \u0627\u0644\u0645\u0648\u0642\u0639. \u0627\u0644\u0631\u0645\u0648\u0632 \u0627\u0644\u062d\u0642\u064a\u0642\u064a\u0629 \u062a\u0623\u062a\u064a \u0645\u0646 \u0645\u062f\u064a\u0646\u0629 \u064a\u0627\u0648\u0646\u062f\u064a (Taxi-Yaound\u00e9). \u062a\u062d\u0642\u0651\u0642 \u062c\u064a\u062f\u064b\u0627.',
@@ -450,10 +477,14 @@ const FF: Record<Key, string> = {
   reading: 'Ina janngee natal ngal...',
   photoFail: 'Kod alaa e ndee natal. Eto kadi \u0253adaade, e jaynge \u0253urnde - walla winndu limoore damal.',
   camUnsupported: 'Ndee telefon waawaa udditde kamera \u0257oo. Natu kod oo, walla winndu limoore damal.',
-  camDenied: 'Kamera uddaama wonande Bambeh. Accu \u0257um e teeltirgol telefon maa - walla natu kod oo, walla winndu limoore damal.',
+  camDenied: 'Kamera uddaama wonande ndee lowre. Nder Chrome: meemu cuurgal (walla (i)) takko adres > Jamirooje > Kamera > Accu, refti \u00f1o\u01b4\u01b4u Scan kadi. Walla natu kod oo, walla winndu limoore damal.',
   camNone: 'Kamera he\u0253aaka. Natu kod oo, walla winndu limoore damal.',
   camBusy: 'Aplikasiyo\u014b goo ina huutoroo kamera. Uddu \u0257um, eto kadi.',
   camFailed: 'Kamera udditaaki. Natu kod oo, walla winndu limoore damal.',
+  camDeniedApp: 'Bambeh waawaa huutoraade kamera. Nder telefon: Teeltirgol > Jaa\u0253nirgal > Bambeh > Jamirooje > Kamera > Accu, refti \u00f1o\u01b4\u01b4u Scan kadi. So Kamera alaa e doggol ngol, aaf jaa\u0253nirgal Bambeh kesal. Haa \u0257um: natu kod oo, walla winndu limoore damal.',
+  camAuto: 'Kamera maa ena udditoo ngam natugol kod oo - Bambeh janngat kod oo e natal ngal.',
+  camSlow: 'Natal alaa tawo? \u00d1o\u01b4\u01b4u \u00abNatal kanjum\u00bb - walla uddu kamera, winndu limoore damal.',
+  photoShort: 'Natal kanjum',
   codeLink: 'Ndee kod ina uddita:',
   official: 'Deftere taksi saare Yaawunde (Taxi-Yaound\u00e9)',
   notOfficial: 'Bambeh anndaa ndee lowre. Kod goonga ina iwra e saare Yaawunde (Taxi-Yaound\u00e9). \u01b3eewto no feewi.',
@@ -640,13 +671,22 @@ function savedSession(): boolean {
 }
 
 // ------------------------------------------------------------------ the camera
-function CameraScan({ t, dir, onCode, onProblem, onClose }: {
+function CameraScan({ t, dir, onCode, onProblem, onClose, onPhoto }: {
   t: Record<Key, string>; dir: 'rtl' | 'ltr'; onCode: (text: string) => void; onProblem: (p: CameraProblem) => void; onClose: () => void;
+  /** FIX829 - the phone's own camera for a photo of the code, from the camera screen */
+  onPhoto: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [torch, setTorch] = useState<OpenCamera['torch']>(null);
   const [lightOn, setLightOn] = useState(false);
   const [ready, setReady] = useState(false);
+  const [slow, setSlow] = useState(false);   // FIX829 - no picture after 10 seconds
+
+  useEffect(() => {
+    if (ready) return undefined;
+    const id = window.setTimeout(() => setSlow(true), 10000);
+    return () => window.clearTimeout(id);
+  }, [ready]);
 
   useEffect(() => {
     let alive = true;
@@ -712,6 +752,9 @@ function CameraScan({ t, dir, onCode, onProblem, onClose }: {
         <p className="absolute inset-x-0 top-6 px-6 text-center text-base font-bold text-white drop-shadow">
           {ready ? t.scanning : <Loader2 className="mx-auto h-6 w-6 animate-spin" aria-hidden="true" />}
         </p>
+        {slow && !ready && (
+          <p className="absolute inset-x-4 bottom-4 rounded-xl bg-black/70 p-3 text-center text-sm font-semibold text-white" data-camera-slow="1">{t.camSlow}</p>
+        )}
       </div>
       <div className="relative z-10 flex items-center justify-center gap-3 bg-black px-4 py-4 pb-8">
         {torch && (
@@ -720,6 +763,10 @@ function CameraScan({ t, dir, onCode, onProblem, onClose }: {
             <Flashlight className="h-5 w-5" aria-hidden="true" />{t.light}
           </button>
         )}
+        <button type="button" onClick={onPhoto} data-camera-photo="1"
+                className="inline-flex items-center gap-2 rounded-2xl bg-white/15 px-4 py-3 text-sm font-bold text-white">
+          <ImageIcon className="h-5 w-5" aria-hidden="true" />{t.photoShort}
+        </button>
         <button type="button" onClick={onClose} data-close-camera="1"
                 className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-gray-900">
           <X className="h-5 w-5" aria-hidden="true" />{t.closeCam}
@@ -732,6 +779,14 @@ function CameraScan({ t, dir, onCode, onProblem, onClose }: {
 const PROBLEM_KEY: Record<CameraProblem | 'photo', Key> = {
   unsupported: 'camUnsupported', denied: 'camDenied', none: 'camNone', busy: 'camBusy', failed: 'camFailed', photo: 'photoFail',
 };
+/** FIX829 - in the installed app, a refused camera is fixed in the phone's settings (or with the newest app) */
+export function problemKey(p: CameraProblem | 'photo', inApp: boolean = IS_NATIVE_APP): Key {
+  return inApp && p === 'denied' ? 'camDeniedApp' : PROBLEM_KEY[p];
+}
+/** FIX829 - when the live camera cannot be used, the phone's own camera opens for a photo of the code instead */
+export function photoInstead(p: CameraProblem, inApp: boolean = IS_NATIVE_APP): boolean {
+  return p === 'unsupported' || (inApp && (p === 'denied' || p === 'failed'));
+}
 
 export default function TaxiCheck() {
   const lang = normLang(useLang());
@@ -752,6 +807,7 @@ export default function TaxiCheck() {
 
   const [camera, setCamera] = useState(false);
   const [problem, setProblem] = useState<CameraProblem | 'photo' | null>(null);
+  const [autoPhoto, setAutoPhoto] = useState(false);   // FIX829 - the photo camera was opened for her
   const [readingPhoto, setReadingPhoto] = useState(false);
   const [code, setCode] = useState('');
   const [door, setDoor] = useState('');
@@ -944,7 +1000,7 @@ export default function TaxiCheck() {
         </div>
         {!scanned ? (
           <>
-            <button type="button" onClick={() => { setProblem(null); setCamera(true); }} data-scan="1"
+            <button type="button" onClick={() => { setProblem(null); setAutoPhoto(false); setCamera(true); }} data-scan="1"
                     className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-4 text-lg font-extrabold text-white shadow hover:bg-black">
               <ScanLine className="h-6 w-6" />{t.scan}
             </button>
@@ -985,7 +1041,8 @@ export default function TaxiCheck() {
             <Camera className="h-3.5 w-3.5" />{t.rescan}
           </button>
         )}
-        {problem && <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert" data-problem={problem}>{t[PROBLEM_KEY[problem]]}</p>}
+        {problem && <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-900" role="alert" data-problem={problem}>{t[problemKey(problem)]}</p>}
+        {autoPhoto && <p className="rounded-xl bg-blue-50 p-3 text-sm font-semibold text-blue-900" data-auto-photo="1">{t.camAuto}</p>}
       </section>
 
       <section className="space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm" data-step="2">
@@ -1142,9 +1199,15 @@ export default function TaxiCheck() {
     {/* outside the page column: its spacing must not move the full-screen camera */}
     {camera && (
       <CameraScan t={t} dir={dir} onCode={gotCode} onClose={() => setCamera(false)}
-                  onProblem={(p) => { setCamera(false); setProblem(p); }} />
+                  onProblem={(p) => {
+                    setCamera(false);
+                    setProblem(p);
+                    // FIX829 - the live camera cannot be used here: open the phone's own camera for a photo of the code
+                    if (photoInstead(p) && fileRef.current) { setAutoPhoto(true); try { fileRef.current.click(); } catch { /* she presses the photo button */ } }
+                  }}
+                  onPhoto={() => { setCamera(false); setProblem(null); setAutoPhoto(false); if (fileRef.current) fileRef.current.click(); }} />
     )}
     </>
   );
 }
-// BAMBEH_END_TOKEN__TAXI_CHECK_FIX760__COMPLETE
+// BAMBEH_END_TOKEN__TAXI_CHECK_FIX829__COMPLETE

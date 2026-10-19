@@ -1,6 +1,13 @@
-// BAMBEH_DEPLOY_TOKEN__ADINTERSTITIAL_FIX465_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ADINTERSTITIAL_FIX826_CLEAN
 /**
- * src/components/ads/AdInterstitial.tsx - Bambeh Marketplace
+ * src/components/ads/AdInterstitial.tsx - Bambeh Marketplace - FIX826 (replaces FIX465)
+ *
+ * FIX826, Big 18 Oct 2026: "we can switch off all free ads running now on the feature ad as well as corporate ads".
+ *   - Command Center > Featured ads (FIX827) switches this full-screen advert on or off for everybody, at once.
+ *   - It shows the company adverts that are running now (paid for a day, a week, a month or a year - FIX823), read
+ *     with the rest of the line-up through adControl (FIX824). Before FIX823 is run, it reads corporate_ads as before.
+ *   - French readers get the advert's French words when the advertiser gave them; "Ad", "Learn more" and the close
+ *     button speak the reader's language (five languages).
  *
  * FIX430: the pop-up advert for free users.
  *
@@ -37,6 +44,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { usePlanLimits } from "@/hooks/usePlanLimits";
+import { useLang } from "@/hooks/useAppLang";
+import { fetchAdNow } from "@/components/ads/adControl";
+
+/* FIX826 - the words around the advert, in the reader's language (the advert's own words are the advertiser's) */
+const AD_WORDS: Record<string, { ad: string; more: string; close: string }> = {
+  en: { ad: "Ad", more: "Learn more", close: "Close advert" },
+  fr: { ad: "Pub", more: "En savoir plus", close: "Fermer la publicit\u00e9" },
+  pidgin: { ad: "Ad", more: "Know more", close: "Close the ad" },
+  ar: { ad: "\u0625\u0639\u0644\u0627\u0646", more: "\u0627\u0639\u0631\u0641 \u0627\u0644\u0645\u0632\u064a\u062f", close: "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u0625\u0639\u0644\u0627\u0646" },
+  ff: { ad: "Jaayngal", more: "Yiylo \u0253uri", close: "Uddu jaayngal" },
+};
 
 /* ------------------------------------------------------------------ rules -- */
 const VIEWS_PER_AD    = 5;       // show after this many listing views
@@ -54,7 +72,8 @@ const listeners = new Set<Listener>();
 /* FIX465 - the advert pool lives at MODULE level, not in a ref.
    MainLayout wraps each route element, so it unmounts and remounts on every
    navigation. A ref-held pool would refetch on every single page view. This
-   is fetched once per page load and reused. */
+   is fetched once per page load and reused. FIX826 - it now comes with the
+   Featured ads control (adControl, kept 2 minutes), so it follows a switch. */
 let adPool: AdRow[] = [];
 let poolFetched = false;
 
@@ -82,6 +101,47 @@ export function countListingView(): void {
   listeners.forEach((fn) => { try { fn(); } catch { /* ignore */ } });
 }
 
+/**
+ * FIX826 - the pool of company adverts: what Command Center > Featured ads has running (FIX823), and nothing at all
+ * when the full-screen advert is switched off there. Only when that answer cannot be had (FIX823 not run yet) is
+ * corporate_ads read directly, as before - once per page load.
+ */
+async function refreshPool(): Promise<void> {
+  try {
+    const now = await fetchAdNow();
+    if (now.ok) {
+      adPool = now.popup_on ? now.popup.map((p) => ({
+        id: p.id, title: p.title, description: p.description, image_url: p.image_url, link_url: p.link_url,
+        company_name: p.company_name, title_fr: p.title_fr ?? null, description_fr: p.description_fr ?? null,
+      })) : [];
+      return;
+    }
+  } catch {
+    // fall through to the older reading
+  }
+  if (poolFetched) return;
+  poolFetched = true;
+  try {
+    // FIX465 - the schedule is now honoured. Before this, an advert booked
+    // for next month ran today and an expired one ran forever, which is
+    // exactly the kind of thing an advertiser stops paying over.
+    // A null start means "already running"; a null end means "no end date".
+    const nowIso = new Date().toISOString();
+    const { data, error } = await supabase
+      .from("corporate_ads")
+      .select("id, title, description, image_url, link_url, company_name")
+      .eq("is_active", true)
+      .not("image_url", "is", null)
+      .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+      .or(`ends_at.is.null,ends_at.gte.${nowIso}`)
+      .limit(20);
+    if (error || !Array.isArray(data)) return;   // silence is correct here
+    adPool = data as AdRow[];
+  } catch {
+    // an advert failing to load must never disturb the app
+  }
+}
+
 export interface AdRow {
   id: string;
   title: string;
@@ -89,10 +149,15 @@ export interface AdRow {
   image_url: string | null;
   link_url: string | null;
   company_name: string | null;
+  /** FIX826 - the advertiser's French words, when given */
+  title_fr?: string | null;
+  description_fr?: string | null;
 }
 
 export default function AdInterstitial() {
   const plan = usePlanLimits();
+  const lang = String(useLang() || "en");
+  const words = AD_WORDS[lang] || AD_WORDS.en;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -102,34 +167,13 @@ export default function AdInterstitial() {
   const [countdown, setCountdown] = useState(Math.ceil(CLOSE_AFTER_MS / 1000));
   const lastCounted = useRef<string>("");
 
-  /* ---- load the pool once. Never blocks anything if it fails. ------------ */
+  /* ---- load the pool. Never blocks anything if it fails. ----------------
+     FIX826 - asked again (the answer is kept 2 minutes) at every item page, so a switch in the Command Center reaches
+     a phone without it having to reload. */
   useEffect(() => {
-    if (poolFetched) return;
     if (plan.loading) return;
     if (plan.isPremium) return;      // premium never sees an advert
-    poolFetched = true;
-
-    (async () => {
-      try {
-        // FIX465 - the schedule is now honoured. Before this, an advert booked
-        // for next month ran today and an expired one ran forever, which is
-        // exactly the kind of thing an advertiser stops paying over.
-        // A null start means "already running"; a null end means "no end date".
-        const nowIso = new Date().toISOString();
-        const { data, error } = await supabase
-          .from("corporate_ads")
-          .select("id, title, description, image_url, link_url, company_name")
-          .eq("is_active", true)
-          .not("image_url", "is", null)
-          .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
-          .or(`ends_at.is.null,ends_at.gte.${nowIso}`)
-          .limit(20);
-        if (error || !Array.isArray(data)) return;   // silence is correct here
-        adPool = data as AdRow[];
-      } catch {
-        // an advert failing to load must never disturb the app
-      }
-    })();
+    void refreshPool();
   }, [plan.loading, plan.isPremium]);
 
   /* ---- FIX465: count a listing view whenever the route becomes a detail page.
@@ -140,8 +184,9 @@ export default function AdInterstitial() {
     if (path === lastCounted.current) return;
     if (!LISTING_PATH.test(path)) return;
     lastCounted.current = path;
+    if (!plan.isPremium) void refreshPool();   // FIX826 - the next advert follows the Command Center's switch
     countListingView();
-  }, [location.pathname]);
+  }, [location.pathname, plan.isPremium]);
 
   /* ---- decide whether this view earns an advert ------------------------- */
   const maybeShow = useCallback(() => {
@@ -168,7 +213,7 @@ export default function AdInterstitial() {
     writeNum(LAST_KEY, Date.now());
 
     // fire and forget - a failed view count must not break the advert
-    void supabase.rpc("bump_ad_view", { ad_id: pick.id }).catch(() => undefined);
+    void Promise.resolve(supabase.rpc("bump_ad_view", { ad_id: pick.id })).catch(() => undefined);   // FIX826 - the query builder has no .catch: wrapped, it never throws
   }, [open, plan.isPremium]);
 
   useEffect(() => {
@@ -208,13 +253,16 @@ export default function AdInterstitial() {
   }, [open, close]);
 
   if (!open || !ad) return null;
+  const fr = lang.indexOf("fr") === 0;
+  const title = (fr && ad.title_fr) || ad.title;
+  const description = (fr && ad.description_fr) || ad.description;
 
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={ad.title}
+      aria-label={title}
       onClick={close}
     >
       <div
@@ -226,7 +274,7 @@ export default function AdInterstitial() {
           type="button"
           onClick={close}
           disabled={!canClose}
-          aria-label="Close advert"
+          aria-label={words.close}
           className={`absolute right-3 top-3 z-10 flex h-9 min-w-9 items-center justify-center rounded-full px-2 text-sm font-bold transition ${
             canClose
               ? "bg-white text-gray-900 shadow active:scale-95"
@@ -238,13 +286,13 @@ export default function AdInterstitial() {
 
         {/* honest label. Both stores want adverts identifiable as adverts. */}
         <span className="absolute left-3 top-3 z-10 rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-          Ad
+          {words.ad}
         </span>
 
         {ad.image_url && (
           <img
             src={ad.image_url}
-            alt={ad.title}
+            alt={title}
             className="h-56 w-full object-cover"
             loading="eager"
           />
@@ -256,23 +304,23 @@ export default function AdInterstitial() {
               {ad.company_name}
             </p>
           )}
-          <h3 className="mt-0.5 text-base font-bold text-gray-900">{ad.title}</h3>
-          {ad.description && (
-            <p className="mt-1 text-sm text-gray-600">{ad.description}</p>
+          <h3 className="mt-0.5 text-base font-bold text-gray-900">{title}</h3>
+          {description && (
+            <p className="mt-1 text-sm text-gray-600">{description}</p>
           )}
 
           {ad.link_url && (
             <button
               type="button"
               onClick={() => {
-                void supabase.rpc("bump_ad_click", { ad_id: ad.id }).catch(() => undefined);
+                void Promise.resolve(supabase.rpc("bump_ad_click", { ad_id: ad.id })).catch(() => undefined);   // FIX826 - before, this line threw and "Learn more" went nowhere
                 const url = ad.link_url as string;
                 if (url.startsWith("/")) { setOpen(false); navigate(url); }
-                else { window.open(url, "_blank", "noopener,noreferrer"); }
+                else if (/^https:\/\//i.test(url)) { window.open(url, "_blank", "noopener,noreferrer"); }
               }}
               className="mt-3 w-full rounded-xl bg-teal-600 py-2.5 text-sm font-bold text-white active:scale-95"
             >
-              Learn more
+              {words.more}
             </button>
           )}
         </div>
@@ -280,4 +328,4 @@ export default function AdInterstitial() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ADINTERSTITIAL_FIX465__COMPLETE
+// BAMBEH_END_TOKEN__ADINTERSTITIAL_FIX826__COMPLETE
