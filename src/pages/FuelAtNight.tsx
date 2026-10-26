@@ -1,4 +1,8 @@
-// BAMBEH_DEPLOY_TOKEN__FUELATNIGHT_FIX799_CLEAN
+// BAMBEH_DEPLOY_TOKEN__FUELATNIGHT_FIX875_CLEAN
+// FIX875 (Big, 19 Oct 2026: "Fuel at night shows station phone numbers. SHOW LOCATION not number"): no phone number
+// on this page any more - the "Call" button is now "Show on map", which opens the station's name, street, quarter, town
+// and region in the phone's maps app. The database stops sending the numbers too (FIX860). Nothing else changed.
+// FIX891: the dot and the dash between words now show as a dot and a dash (they showed as code).
 // FIX799 (Big, 15 Oct 2026): the town list is grouped by region (TownOptions, FIX795), and the town picked here
 // opens the other free pages in that town too (places.ts, FIX769). Replaces FIX506; nothing else changed.
 /**
@@ -34,7 +38,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Fuel, Droplet, Flame, Loader2, AlertCircle, RefreshCw,
-  MapPin, Clock, Phone, Users, Info, X, Check,
+  MapPin, Clock, Navigation, Users, Info, X, Check,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
@@ -46,7 +50,7 @@ type FuelKind = 'petrol' | 'diesel' | 'gas';
 interface Station {
   id: string; name: string; brand: string | null;
   region: string; town: string; quarter: string | null;
-  address: string | null; phone: string | null;
+  address: string | null;
   is_24h: boolean; opens_at: string | null; closes_at: string | null;
   has_petrol: boolean; has_diesel: boolean; has_gas: boolean;
   notes: string | null; open_now: boolean;
@@ -54,13 +58,19 @@ interface Station {
 }
 interface TownRow { town: string; region: string }
 
+/** FIX875 - the station in the phone's maps app: its name, street, quarter, town and region. */
+function mapsUrl(s: Station): string {
+  const q = [s.name, s.address, s.quarter, s.town, s.region].filter((x) => x && String(x).trim()).join(', ');
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+}
+
 const STR: Record<string, Record<string, string>> = {
   en: {
     title: 'Fuel at night', back: 'Back',
     sub: 'Stations open now, and what other drivers are saying. Free, no sign-in to read.',
     allTowns: 'Everywhere', all: 'All', petrol: 'Petrol', diesel: 'Diesel', gas: 'Gas',
     openNow: 'Open now', closed: 'Closed now', h24: 'Open 24 hours',
-    call: 'Call', report: 'Report fuel',
+    map: 'Show on map', report: 'Report fuel',
     reportTitle: 'What did you see?', reportSub: 'Only report what you saw yourself, just now.',
     whichFuel: 'Which fuel?', available: 'They have it', out: 'They are dry', queue: 'Long queue',
     send: 'Send', sending: 'Sending...', cancel: 'Cancel',
@@ -81,7 +91,7 @@ const STR: Record<string, Record<string, string>> = {
     sub: 'Stations ouvertes maintenant, et ce que disent les autres conducteurs. Gratuit, sans compte.',
     allTowns: 'Partout', all: 'Tout', petrol: 'Essence', diesel: 'Gasoil', gas: 'Gaz',
     openNow: 'Ouvert', closed: 'Ferm\u00e9', h24: 'Ouvert 24h/24',
-    call: 'Appeler', report: 'Signaler',
+    map: 'Voir sur la carte', report: 'Signaler',
     reportTitle: 'Qu\u2019avez-vous vu ?', reportSub: 'Ne signalez que ce que vous avez vu vous-m\u00eame, \u00e0 l\u2019instant.',
     whichFuel: 'Quel carburant ?', available: 'Il y en a', out: 'Ils sont \u00e0 sec', queue: 'Longue file',
     send: 'Envoyer', sending: 'Envoi...', cancel: 'Annuler',
@@ -102,7 +112,7 @@ const STR: Record<string, Record<string, string>> = {
     sub: 'Station wey dey open now, and wetin oda driver dem talk. Free, you no need account.',
     allTowns: 'Everywhere', all: 'All', petrol: 'Petrol', diesel: 'Gasoil', gas: 'Gas',
     openNow: 'E dey open', closed: 'E don close', h24: 'E dey open 24 hours',
-    call: 'Call dem', report: 'Talk wetin you see',
+    map: 'See am for map', report: 'Talk wetin you see',
     reportTitle: 'Wetin you see?', reportSub: 'Only talk wetin you see yourself, now now.',
     whichFuel: 'Which one?', available: 'Dem get am', out: 'Dem don finish', queue: 'Queue long',
     send: 'Send am', sending: 'Dey send...', cancel: 'Leave am',
@@ -123,7 +133,7 @@ const STR: Record<string, Record<string, string>> = {
     sub: '\u0645\u062d\u0637\u0627\u062a \u0645\u0641\u062a\u0648\u062d\u0629 \u0627\u0644\u0622\u0646\u060c \u0648\u0645\u0627 \u064a\u0642\u0648\u0644\u0647 \u0627\u0644\u0633\u0627\u0626\u0642\u0648\u0646. \u0645\u062c\u0627\u0646\u064a\u060c \u062f\u0648\u0646 \u062a\u0633\u062c\u064a\u0644.',
     allTowns: '\u0643\u0644 \u0627\u0644\u0645\u062f\u0646', all: '\u0627\u0644\u0643\u0644', petrol: '\u0628\u0646\u0632\u064a\u0646', diesel: '\u062f\u064a\u0632\u0644', gas: '\u063a\u0627\u0632',
     openNow: '\u0645\u0641\u062a\u0648\u062d \u0627\u0644\u0622\u0646', closed: '\u0645\u063a\u0644\u0642', h24: '\u0645\u0641\u062a\u0648\u062d 24 \u0633\u0627\u0639\u0629',
-    call: '\u0627\u062a\u0635\u0644', report: '\u0623\u0628\u0644\u063a',
+    map: '\u0627\u0639\u0631\u0636 \u0639\u0644\u0649 \u0627\u0644\u062e\u0631\u064a\u0637\u0629', report: '\u0623\u0628\u0644\u063a',
     reportTitle: '\u0645\u0627\u0630\u0627 \u0631\u0623\u064a\u062a\u061f', reportSub: '\u0623\u0628\u0644\u063a \u0641\u0642\u0637 \u0639\u0645\u0627 \u0631\u0623\u064a\u062a\u0647 \u0628\u0646\u0641\u0633\u0643 \u0627\u0644\u0622\u0646.',
     whichFuel: '\u0623\u064a \u0648\u0642\u0648\u062f\u061f', available: '\u0645\u062a\u0648\u0641\u0631', out: '\u0646\u0641\u062f', queue: '\u0637\u0627\u0628\u0648\u0631 \u0637\u0648\u064a\u0644',
     send: '\u0625\u0631\u0633\u0627\u0644', sending: '\u062c\u0627\u0631\u064d \u0627\u0644\u0625\u0631\u0633\u0627\u0644...', cancel: '\u0625\u0644\u063a\u0627\u0621',
@@ -144,7 +154,7 @@ const STR: Record<string, Record<string, string>> = {
     sub: 'Sitaso\u014baaji uddi\u0257i jooni, e ko wo\u0253\u0253e soofoor\u0253e kaali. Meere, a alaa haaje se\u014baade.',
     allTowns: 'Nokkuuje fof', all: 'Fof', petrol: 'Esaas', diesel: 'Gasuwaal', gas: 'Gaas',
     openNow: 'Ina uddita jooni', closed: 'Uddaama', h24: 'Ina uddita waktuuji 24',
-    call: 'Noddu', report: 'Habru',
+    map: 'Ndaar nokku ngu', report: 'Habru',
     reportTitle: 'Ko yi\u0257\u0257aa?', reportSub: 'Habru tan ko yi\u0257\u0257aa e hoore maa jooni.',
     whichFuel: 'Hol esaas?', available: 'Ina woodi', out: 'Ina laa\u0253i', queue: 'Ndilla juut\u0257o',
     send: 'Neldu', sending: 'Ina nelda...', cancel: 'Haaytu',
@@ -351,7 +361,7 @@ export default function FuelAtNight() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-gray-900 truncate">
                     {s.name}
-                    {s.brand ? <span className="text-gray-400 font-normal"> \u00b7 {s.brand}</span> : null}
+                    {s.brand ? <span className="text-gray-400 font-normal"> {'\u00b7'} {s.brand}</span> : null}
                   </p>
                   <p className="text-xs text-gray-500 truncate flex items-center gap-1">
                     <MapPin className="w-3 h-3 shrink-0" />
@@ -364,7 +374,7 @@ export default function FuelAtNight() {
                       {s.open_now ? t('openNow') : t('closed')}
                     </span>
                     <span className="text-gray-400">
-                      \u00b7 {s.is_24h ? t('h24') : `${hhmm(s.opens_at)} - ${hhmm(s.closes_at)}`}
+                      {'\u00b7'} {s.is_24h ? t('h24') : `${hhmm(s.opens_at)} - ${hhmm(s.closes_at)}`}
                     </span>
                   </p>
                   {s.notes ? <p className="text-xs text-gray-500 mt-1">{s.notes}</p> : null}
@@ -380,7 +390,7 @@ export default function FuelAtNight() {
                     : said.tone === 'out' ? 'text-red-700 font-semibold'
                     : 'text-amber-700 font-semibold'}>
                     {said.text}
-                    <span className="text-gray-400 font-normal"> \u00b7 {ago(s.last_report_at, lang)}</span>
+                    <span className="text-gray-400 font-normal"> {'\u00b7'} {ago(s.last_report_at, lang)}</span>
                   </span>
                 ) : (
                   <span className="text-gray-400">{t('noReports')}</span>
@@ -388,12 +398,11 @@ export default function FuelAtNight() {
               </div>
 
               <div className="flex gap-2 mt-3">
-                {s.phone ? (
-                  <a href={`tel:${s.phone}`}
-                    className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 py-2 rounded-xl">
-                    <Phone className="w-3.5 h-3.5" /> {t('call')}
-                  </a>
-                ) : null}
+                {/* FIX875 - where it is, never a phone number */}
+                <a href={mapsUrl(s)} target="_blank" rel="noopener noreferrer" data-map={s.id}
+                  className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 py-2 rounded-xl">
+                  <Navigation className="w-3.5 h-3.5" /> {t('map')}
+                </a>
                 <button onClick={() => openSheet(s)}
                   className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 py-2 rounded-xl">
                   <Users className="w-3.5 h-3.5" /> {signedIn ? t('report') : t('signIn')}
@@ -420,7 +429,7 @@ export default function FuelAtNight() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-xs text-gray-500">{sheet.station.name} \u2014 {t('reportSub')}</p>
+            <p className="text-xs text-gray-500">{sheet.station.name} {'\u2014'} {t('reportSub')}</p>
 
             <p className="text-xs font-semibold text-gray-600">{t('whichFuel')}</p>
             <div className="flex gap-2">
@@ -475,4 +484,4 @@ export default function FuelAtNight() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__FUELATNIGHT_FIX799__COMPLETE
+// BAMBEH_END_TOKEN__FUELATNIGHT_FIX875__COMPLETE

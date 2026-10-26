@@ -56,14 +56,15 @@ export type BadgeKey =
   | 'utility_live'      // FIX501
   | 'fuel_pending'      // FIX504
   | 'corp_waiting'      // FIX842 - Businesses
-  | 'support_waiting';  // FIX842 - Support inbox
+  | 'support_waiting'   // FIX842 - Support inbox
+  | 'zerm_cashout';     // FIX886 - Zerm coins: coins-to-money requests waiting (FIX859)
 
 export type BadgeMap = Partial<Record<BadgeKey, number>>;
 
 type BadgeRow = { section_key: string; badge_count: number | string; status?: string };
 
 /** The keys the second RPC answers for (so a failure of one RPC keeps only its own numbers). */
-const DESK_KEYS: BadgeKey[] = ['corp_waiting', 'support_waiting'];
+const DESK_KEYS: BadgeKey[] = ['corp_waiting', 'support_waiting', 'zerm_cashout'];   // FIX886
 
 function toMap(data: unknown): BadgeMap | null {
   if (!Array.isArray(data)) return null;

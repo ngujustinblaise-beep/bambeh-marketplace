@@ -311,7 +311,7 @@ export default function QuizPage() {
           <Trophy className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
           <p className="font-bold text-emerald-800">{s.winTitle}</p>
           <p className="text-xs text-emerald-700 mt-0.5">
-            +{(r?.reward ?? a?.reward_zerm ?? 0).toLocaleString('en-US', { maximumFractionDigits: 6 })} Zerm \u2014 {s.winBody}
+            +{(r?.reward ?? a?.reward_zerm ?? 0).toLocaleString('en-US', { maximumFractionDigits: 6 })} Zerm {'\u2014'} {s.winBody}
           </p>
         </div>
       );
@@ -409,7 +409,7 @@ export default function QuizPage() {
               onChange={e => setProfRegion(e.target.value)}
               className="w-full border rounded-xl px-3 py-2.5 text-sm mb-3 bg-white outline-none focus:ring-2 focus:ring-amber-500"
             >
-              <option value="">\u2014</option>
+              <option value="">{'\u2014'}</option>
               {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
             <label className="block text-xs font-semibold text-gray-600 mb-1">{s.subdivision}</label>

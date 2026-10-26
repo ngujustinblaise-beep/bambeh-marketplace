@@ -1,4 +1,6 @@
 // BAMBEH_DEPLOY_TOKEN__SECTION_GATE_FIX679_CLEAN
+// FIX881 (Package 9): a chat with someone you already have a deal with - a paid order (60 days) or a delivery (30 days) -
+// opens without a pass. The database decides (bambeh_deal_chat_ok, FIX860); phone numbers are never shown.
 /**
  * src/components/security/SectionGate.tsx - FIX679 (replaces FIX673)
  *
@@ -33,7 +35,7 @@
  */
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';   // FIX881
 import { Loader2, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -42,6 +44,7 @@ import type { SectionKey } from '@/hooks/useSectionGates';
 import { PLAN_PRICES } from '@/hooks/usePlanLimits';
 import { useLang } from '@/hooks/useAppLang';
 import { IS_STORE_APP } from '@/config/storeMode';
+import { supabase } from '@/lib/supabase';                       // FIX881
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 function normLang(v: unknown): Lang {
@@ -159,15 +162,31 @@ export default function SectionGate({ section, children }: { section: SectionKey
     return () => window.clearTimeout(timer);
   }, [section, uid]);
 
+  // FIX881 - /chat?userId=<someone you have a deal with>: the database says yes or no (bambeh_deal_chat_ok)
+  const location = useLocation();
+  const dealPeer = section === 'chat' || section === 'chat_sellers'
+    ? (new URLSearchParams(location.search || '').get('userId') || '') : '';
+  const [dealOk, setDealOk] = useState<boolean | null>(null);
+  useEffect(() => {
+    let alive = true;
+    setDealOk(null);
+    if (!uid || !/^[0-9a-f-]{36}$/i.test(dealPeer)) { setDealOk(false); return () => { alive = false; }; }
+    Promise.resolve(supabase.rpc('bambeh_deal_chat_ok', { p_peer: dealPeer }))
+      .then((r: { data: unknown; error: unknown }) => { if (alive) setDealOk(!r.error && r.data === true); })
+      .catch(() => { if (alive) setDealOk(false); });
+    return () => { alive = false; };
+  }, [uid, dealPeer]);
+
   // members and staff always pass (and a Google Play build, should one ever be made again)
   if (IS_STORE_APP || isAdmin === true || isActive === true) return <>{children}</>;
+  if (dealOk === true) return <>{children}</>;   // FIX881 - a deal already made opens its chat
 
   // a module that is free for this person opens at once - from the remembered
   // switches while the fresh answer is on its way
   if (!sectionIsMembersOnly(section, gates, advertiser)) return <>{children}</>;
 
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
-  if (!ready || isLoading || !graceOver) {
+  if (!ready || isLoading || !graceOver || dealOk === null) {   // FIX881: and the deal check
     return (
       <div dir={dir} role="status" aria-busy="true" data-fix="FIX679"
         className="min-h-[50vh] flex flex-col items-center justify-center gap-3 px-4 text-sm text-gray-500">

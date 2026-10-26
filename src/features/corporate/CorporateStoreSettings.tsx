@@ -119,6 +119,19 @@ const L = {
   },
 } as const;
 type LS = (typeof L)['en'];
+
+// FIX882 (Package 9) - the words for the private contact, kept apart from L so its typing stays as it was
+const CONTACT_WORDS: Record<string, { badEmail: string; badPhone: string; contactPrivate: string }> = {
+  en: { badEmail: "Check the email address.", badPhone: "Check the phone number (8 to 15 digits).", contactPrivate: "Only you and Bambeh staff see this email and phone. Buyers write to you in the Bambeh chat." },
+  fr: { badEmail: "V\u00e9rifiez l'adresse e-mail.", badPhone: "V\u00e9rifiez le num\u00e9ro (8 \u00e0 15 chiffres).", contactPrivate: "Seuls vous et l'\u00e9quipe Bambeh voyez cet e-mail et ce t\u00e9l\u00e9phone. Les acheteurs vous \u00e9crivent dans le chat Bambeh." },
+  pidgin: { badEmail: "Check the email.", badPhone: "Check the number (8 to 15 numbers).", contactPrivate: "Na only you and Bambeh staff dey see this email and phone. Buyers go write you for Bambeh chat." },
+  ar: { badEmail: "\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a.", badPhone: "\u062a\u062d\u0642\u0642 \u0645\u0646 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 (\u0645\u0646 8 \u0625\u0644\u0649 15 \u0631\u0642\u0645\u064b\u0627).", contactPrivate: "\u0644\u0627 \u064a\u0631\u0649 \u0647\u0630\u0627 \u0627\u0644\u0628\u0631\u064a\u062f \u0648\u0627\u0644\u0647\u0627\u062a\u0641 \u0633\u0648\u0627\u0643 \u0648\u0641\u0631\u064a\u0642 Bambeh. \u064a\u0631\u0627\u0633\u0644\u0643 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646 \u0641\u064a \u062f\u0631\u062f\u0634\u0629 Bambeh." },
+  ff: { badEmail: "\u01b3eewto email maa.", badPhone: "\u01b3eewto limngal maa (limor\u0257e 8 haa 15).", contactPrivate: "Ko aan e gollo\u0253e Bambeh tan njiyata ngol email e ngol telefol. Soodoo\u0253e ina mbinndana ma e chat Bambeh." },
+};
+function contactWords(l: LS) {
+  const key = (Object.keys(L) as string[]).find((k) => ((L as Record<string, unknown>)[k] as unknown) === (l as unknown)) || 'en';
+  return CONTACT_WORDS[key] || CONTACT_WORDS.en;
+}
 function useL(): { l: LS; isRtl: boolean } {
   const raw = useLang() as string;
   const key = raw === 'fulfulde' ? 'ff' : raw;
@@ -161,6 +174,7 @@ type FormState = {
 export default function CorporateStoreSettings() {
   const navigate = useNavigate();
   const { l, isRtl } = useL();
+  const cw = contactWords(l);   // FIX882
   const { s } = corpStrings(useLang() as string);
 
   const [store, setStore] = useState<CorporateStore | null>(null);
@@ -187,6 +201,12 @@ export default function CorporateStoreSettings() {
       const st = (mine && mine[0]) || null;
       if (!st) { setStore(null); return; }
       setStore(st);
+      // FIX882 - the contact email and phone are kept private (FIX860): only the store's owner and managers read them
+      let priv: { rep_email?: string | null; rep_phone?: string | null } = {};
+      try {
+        const { data: pc } = await supabase.rpc('bambeh_corp_contact_get', { p_store: st.id });
+        if (pc && (pc as { ok?: boolean }).ok) priv = pc as typeof priv;
+      } catch { /* before FIX860: the columns of the store row */ }
       setForm({
         trading_name: st.trading_name ?? '',
         registered_name: st.registered_name ?? '',
@@ -194,8 +214,8 @@ export default function CorporateStoreSettings() {
         city: st.city ?? '',
         address: st.address ?? '',
         rep_name: st.rep_name ?? '',
-        rep_email: st.rep_email ?? '',
-        rep_phone: st.rep_phone ?? '',
+        rep_email: priv.rep_email ?? st.rep_email ?? '',
+        rep_phone: priv.rep_phone ?? st.rep_phone ?? '',
         moq_text: st.moq_text ?? '',
         min_order_value_xaf: st.min_order_value_xaf != null ? String(st.min_order_value_xaf) : '',
         price_mode: st.price_mode ?? 'both',
@@ -269,8 +289,8 @@ export default function CorporateStoreSettings() {
           city: form.city.trim() || null,
           address: form.address.trim() || null,
           rep_name: form.rep_name.trim() || null,
-          rep_email: form.rep_email.trim() || null,
-          rep_phone: form.rep_phone.trim() || null,
+          // FIX882: rep_email is saved privately below (bambeh_corp_contact_set), not on the public store row
+          // FIX882: rep_phone is saved privately below (bambeh_corp_contact_set), not on the public store row
           moq_text: form.moq_text.trim() || null,
           min_order_value_xaf: minVal,
           price_mode: form.price_mode || 'both',
@@ -278,6 +298,16 @@ export default function CorporateStoreSettings() {
         })
         .eq('id', store.id);
       if (dbErr) throw new Error(dbErr.message);
+      // FIX882 - the contact, privately (the owner or a store admin only; the database checks)
+      const { data: cs, error: csErr } = await supabase.rpc('bambeh_corp_contact_set', {
+        p_store: store.id, p_rep_email: form.rep_email.trim() || null, p_rep_phone: form.rep_phone.trim() || null,
+      });
+      const csr = (cs || {}) as { ok?: boolean; reason?: string };
+      if (csErr && !/does not exist|could not find the function|schema cache|PGRST202/i.test(csErr.message || '')) throw new Error(csErr.message);
+      if (!csErr && csr.ok === false) {
+        setError(csr.reason === 'bad_email' ? cw.badEmail : csr.reason === 'bad_phone' ? cw.badPhone : l.uploadErr);
+        return;
+      }
       setDirty(false);
       setSavedTick(true);
       setTimeout(() => setSavedTick(false), 2500);
@@ -388,6 +418,7 @@ export default function CorporateStoreSettings() {
         {/* Contact */}
         <div className="bg-white rounded-2xl shadow-sm border p-4 space-y-3">
           <h3 className="text-sm font-bold text-gray-900">{l.secContact}</h3>
+          <p className="text-xs text-gray-500" data-contact-private="1">{cw.contactPrivate}</p>
           <div><label className={labelCls}>{l.repName}</label>
             <input className={inputCls} value={form.rep_name} onChange={(e) => set('rep_name', e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">

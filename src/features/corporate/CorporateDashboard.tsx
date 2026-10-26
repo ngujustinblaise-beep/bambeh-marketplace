@@ -43,6 +43,16 @@ import {
 type Tab = 'products' | 'quotes';
 type Note = { text: string; tone: 'red' | 'green' } | null;
 
+// FIX885 (Package 9) - a product can be removed from the dashboard: it goes to the Trash (/corporate/trash, FIX155),
+// where it can be restored for 7 days. Asked once before it moves.
+const PROD_REMOVE: Record<string, { ask: string; yes: string; no: string; done: string; fail: string }> = {
+  en: { ask: "Move this product to the Trash? You can restore it there for 7 days.", yes: "Move to Trash", no: "Keep it", done: "Moved to the Trash. You can restore it there for 7 days.", fail: "Could not remove it. Try again." },
+  fr: { ask: "Mettre ce produit \u00e0 la corbeille ? Vous pourrez le restaurer pendant 7 jours.", yes: "Mettre \u00e0 la corbeille", no: "Le garder", done: "Mis \u00e0 la corbeille. Vous pouvez le restaurer pendant 7 jours.", fail: "Impossible de le retirer. R\u00e9essayez." },
+  pidgin: { ask: "Put this product for Trash? You fit bring am back inside 7 days.", yes: "Put am for Trash", no: "Leave am", done: "E don enter Trash. You fit bring am back inside 7 days.", fail: "E no comot. Try again." },
+  ar: { ask: "\u0646\u0642\u0644 \u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062a\u062c \u0625\u0644\u0649 \u0633\u0644\u0629 \u0627\u0644\u0645\u062d\u0630\u0648\u0641\u0627\u062a\u061f \u064a\u0645\u0643\u0646\u0643 \u0627\u0633\u062a\u0639\u0627\u062f\u062a\u0647 \u062e\u0644\u0627\u0644 7 \u0623\u064a\u0627\u0645.", yes: "\u0627\u0646\u0642\u0644 \u0625\u0644\u0649 \u0627\u0644\u0633\u0644\u0629", no: "\u0623\u0628\u0642\u0650\u0647", done: "\u0646\u064f\u0642\u0644 \u0625\u0644\u0649 \u0633\u0644\u0629 \u0627\u0644\u0645\u062d\u0630\u0648\u0641\u0627\u062a. \u064a\u0645\u0643\u0646\u0643 \u0627\u0633\u062a\u0639\u0627\u062f\u062a\u0647 \u062e\u0644\u0627\u0644 7 \u0623\u064a\u0627\u0645.", fail: "\u062a\u0639\u0630\u0651\u0631\u062a \u0627\u0644\u0625\u0632\u0627\u0644\u0629. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649." },
+  ff: { ask: "Naatnu ndee huunde e Ittaaje? A waawii artirde nde e nder bal\u0257e 7.", yes: "Naatnu e Ittaaje", no: "Accu nde", done: "Naatii e Ittaaje. A waawii artirde nde e nder bal\u0257e 7.", fail: "Ittugol waasii. Eto kadi." },
+};
+
 const TONE: Record<string, { box: string; icon: string }> = {
   waiting: { box: 'border-amber-200 bg-amber-50 text-amber-900', icon: 'text-amber-500' },
   documents: { box: 'border-orange-300 bg-orange-50 text-orange-900', icon: 'text-orange-500' },
@@ -56,6 +66,8 @@ export default function CorporateDashboard() {
   const lang = useLang() as string;
   const { s, isRtl } = corpStrings(lang);
   const { r } = reviewStrings(lang);
+  const pr = PROD_REMOVE[lang === 'pcm' ? 'pidgin' : lang === 'fulfulde' || lang === 'ful' ? 'ff' : lang] || PROD_REMOVE.en;   // FIX885
+  const [confirmProd, setConfirmProd] = useState<string | null>(null);                                                      // FIX885
 
   const [store, setStore] = useState<CorporateStore | null>(null);
   const [review, setReview] = useState<MyBusiness | null>(null);
@@ -114,6 +126,22 @@ export default function CorporateDashboard() {
   }, [navigate, loadReview]);
 
   useEffect(() => { void load(); }, [load]);
+
+  // FIX885 - to the Trash (deleted_at, status 'deleted' - what /corporate/trash restores); asked once before
+  const removeProduct = async (id: string) => {
+    try {
+      const { data, error } = await supabase.from('corporate_products')
+        .update({ deleted_at: new Date().toISOString(), status: 'deleted' })
+        .eq('id', id)
+        .select('id');
+      if (error || !Array.isArray(data) || data.length === 0) throw new Error('not removed');
+      setProducts((list) => list.filter((x) => x.id !== id));
+      setConfirmProd(null);
+      say(pr.done);
+    } catch {
+      say(pr.fail, 'red');
+    }
+  };
 
   const chooseDoc = (kind: DocKind) => {
     pendingKind.current = kind;
@@ -373,7 +401,23 @@ export default function CorporateDashboard() {
                       {Array.isArray(p.images) && p.images[0] ? <img src={p.images[0]} alt="" className="h-full w-full object-cover" /> : <Tag className="h-5 w-5 text-gray-300" />}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-gray-800">{p.title}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="truncate text-sm font-semibold text-gray-800">{p.title}</p>
+                        {confirmProd === p.id ? null : (
+                          <button type="button" onClick={() => setConfirmProd(p.id)} data-product-remove={p.id}
+                                  className="shrink-0 rounded-lg border border-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-600">{r.remove}</button>
+                        )}
+                      </div>
+                      {confirmProd === p.id ? (
+                        <div className="my-1.5 rounded-lg bg-red-50 p-2 text-xs text-red-800" data-product-confirm={p.id}>
+                          <p>{pr.ask}</p>
+                          <div className="mt-1.5 flex flex-wrap gap-2">
+                            <button type="button" onClick={() => { void removeProduct(p.id); }} data-product-remove-yes={p.id}
+                                    className="rounded-md bg-red-600 px-2.5 py-1 font-bold text-white">{pr.yes}</button>
+                            <button type="button" onClick={() => setConfirmProd(null)} className="rounded-md border border-red-200 bg-white px-2.5 py-1 font-semibold text-red-700">{pr.no}</button>
+                          </div>
+                        </div>
+                      ) : null}
                       <p className="text-xs text-gray-500">
                         {p.retail_price_xaf != null ? fmtXAF(p.retail_price_xaf) : ''}
                         {p.bulk_price_xaf != null ? ' - ' + s.bulkPrice + ' ' + fmtXAF(p.bulk_price_xaf) : ''}

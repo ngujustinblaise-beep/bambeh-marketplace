@@ -1,5 +1,12 @@
-// BAMBEH_DEPLOY_TOKEN__COINSPAGE_FIX851_CLEAN
+// BAMBEH_DEPLOY_TOKEN__COINSPAGE_FIX872_CLEAN
 /**
+ * FIX872 (replaces FIX851, kept below) - TURN COINS INTO MONEY, WHEN AN ADMIN SAYS SO.
+ *   - While an admin or the super admin has "Coins to money" switched on (Command Center > Zerm coins, FIX859 - OFF
+ *     by default), the page shows "Turn coins into money" (it opens /coins/cashout, FIX871) and the card about what
+ *     coins are says Bambeh can turn them into money. Switched off, it says they cannot - as before.
+ *   - The history names a request ("Turned into money": the coins set aside) and coins given back (a request
+ *     cancelled, refused or not paid). The totals count neither as earned, and coins given back are not "used".
+ *
  * CoinsPage.tsx - Bambeh Marketplace
  * FILE LOCATION: src/routes/groups/payments/CoinsPage.tsx  (routed at /coins)
  *
@@ -24,12 +31,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Zap, ArrowUpRight, ArrowDownLeft, History, RefreshCw, CalendarCheck, Gift, ShieldCheck, Plus, Send,
+  Zap, ArrowUpRight, ArrowDownLeft, History, RefreshCw, CalendarCheck, Gift, ShieldCheck, Plus, Send, Banknote,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 import RedeemPremium from '@/components/coins/RedeemPremium';   // FIX547
-import { useZermState } from '@/features/coins/zermApi';      // FIX847 - the Command Center switches
+import { useZermState } from '@/features/coins/zermApi';      // FIX847/FIX870 - the Command Center switches
 
 // -- i18n ----------------------------------------------------------------------
 const strings = {
@@ -50,6 +57,10 @@ const strings = {
     t_daily_login: 'Daily check-in', t_post_listing: 'Advert posted', t_first_listing: 'Your first advert',
     t_referral_signup: 'A friend joined Bambeh', t_signup_bonus: 'Welcome bonus', t_spent: 'Used for premium',
     t_purchase: 'Coins bought', t_sent: 'Sent to {name}', t_received: 'From {name}', buyBtn: 'Buy coins', sendBtn: 'Send coins',
+    cashBtn: 'Turn coins into money',
+    onlyBodyCash: 'Zerm coins are points you earn by using Bambeh. They can\'t be bought, sold or sent to someone else. Bambeh can turn them into money for you - ask below.',
+    t_cashout: 'Turned into money',
+    t_cashout_back: 'Coins back in your wallet',
   },
   fr: {
     title: 'Pi\u00e8ces Zerm', balance: 'Vos pi\u00e8ces', available: 'Disponibles',
@@ -68,6 +79,10 @@ const strings = {
     t_daily_login: 'Bonus du jour', t_post_listing: 'Annonce publi\u00e9e', t_first_listing: 'Votre premi\u00e8re annonce',
     t_referral_signup: 'Un ami a rejoint Bambeh', t_signup_bonus: 'Bonus de bienvenue', t_spent: 'Utilis\u00e9e pour le premium',
     t_purchase: 'Pi\u00e8ces achet\u00e9es', t_sent: 'Envoy\u00e9 \u00e0 {name}', t_received: 'De {name}', buyBtn: 'Acheter des pi\u00e8ces', sendBtn: 'Envoyer des pi\u00e8ces',
+    cashBtn: 'Changer mes pi\u00e8ces en argent',
+    onlyBodyCash: 'Les pi\u00e8ces Zerm sont des points que vous gagnez en utilisant Bambeh. Elles ne s\u2019ach\u00e8tent pas, ne se vendent pas et ne s\u2019envoient pas \u00e0 quelqu\u2019un d\u2019autre. Bambeh peut les changer en argent pour vous : demandez-le ci-dessous.',
+    t_cashout: 'Chang\u00e9es en argent',
+    t_cashout_back: 'Pi\u00e8ces rendues dans votre portefeuille',
   },
   pidgin: {
     title: 'Zerm Coins', balance: 'Your coins', available: 'Wey dey',
@@ -86,6 +101,10 @@ const strings = {
     t_daily_login: 'Daily check-in', t_post_listing: 'You post advert', t_first_listing: 'Your first advert',
     t_referral_signup: 'Your padi don join Bambeh', t_signup_bonus: 'Welcome bonus', t_spent: 'You use am for premium',
     t_purchase: 'You buy coins', t_sent: 'You send give {name}', t_received: 'From {name}', buyBtn: 'Buy coins', sendBtn: 'Send coins',
+    cashBtn: 'Change coins to money',
+    onlyBodyCash: 'Zerm coins na points wey you dey get when you dey use Bambeh. Nobody fit buy dem, sell dem or send dem give another person. Bambeh fit change dem to money for you - ask for down.',
+    t_cashout: 'You change am to money',
+    t_cashout_back: 'Coins don come back for your wallet',
   },
   ar: {
     title: '\u0639\u0645\u0644\u0627\u062a \u0632\u064a\u0631\u0645', balance: '\u0639\u0645\u0644\u0627\u062a\u0643', available: '\u0645\u062a\u0627\u062d\u0629',
@@ -104,6 +123,10 @@ const strings = {
     t_daily_login: '\u0627\u0644\u062f\u062e\u0648\u0644 \u0627\u0644\u064a\u0648\u0645\u064a', t_post_listing: '\u0646\u0634\u0631 \u0625\u0639\u0644\u0627\u0646', t_first_listing: '\u0625\u0639\u0644\u0627\u0646\u0643 \u0627\u0644\u0623\u0648\u0644',
     t_referral_signup: '\u0627\u0646\u0636\u0645 \u0635\u062f\u064a\u0642 \u0625\u0644\u0649 Bambeh', t_signup_bonus: '\u0645\u0643\u0627\u0641\u0623\u0629 \u0627\u0644\u062a\u0631\u062d\u064a\u0628', t_spent: '\u0627\u0633\u062a\u064f\u062e\u062f\u0645\u062a \u0644\u0644\u0627\u0634\u062a\u0631\u0627\u0643 \u0627\u0644\u0645\u0645\u064a\u0632',
     t_purchase: '\u0639\u0645\u0644\u0627\u062a \u0645\u0634\u062a\u0631\u0627\u0629', t_sent: '\u0623\u064f\u0631\u0633\u0644\u062a \u0625\u0644\u0649 {name}', t_received: '\u0645\u0646 {name}', buyBtn: '\u0634\u0631\u0627\u0621 \u0639\u0645\u0644\u0627\u062a', sendBtn: '\u0625\u0631\u0633\u0627\u0644 \u0639\u0645\u0644\u0627\u062a',
+    cashBtn: '\u062d\u0648\u0651\u0644 \u0627\u0644\u0639\u0645\u0644\u0627\u062a \u0625\u0644\u0649 \u0645\u0627\u0644',
+    onlyBodyCash: '\u0639\u0645\u0644\u0627\u062a \u0632\u064a\u0631\u0645 \u0646\u0642\u0627\u0637 \u062a\u0643\u0633\u0628\u0647\u0627 \u0628\u0627\u0633\u062a\u062e\u062f\u0627\u0645 Bambeh. \u0644\u0627 \u062a\u064f\u0634\u062a\u0631\u0649 \u0648\u0644\u0627 \u062a\u064f\u0628\u0627\u0639 \u0648\u0644\u0627 \u062a\u064f\u0631\u0633\u0644 \u0625\u0644\u0649 \u0634\u062e\u0635 \u0622\u062e\u0631. \u064a\u0645\u0643\u0646 \u0644\u0640 Bambeh \u062a\u062d\u0648\u064a\u0644\u0647\u0627 \u0625\u0644\u0649 \u0645\u0627\u0644 \u0644\u0643 - \u0627\u0637\u0644\u0628 \u0630\u0644\u0643 \u0623\u062f\u0646\u0627\u0647.',
+    t_cashout: '\u062d\u064f\u0648\u0651\u0644\u062a \u0625\u0644\u0649 \u0645\u0627\u0644',
+    t_cashout_back: '\u0639\u0627\u062f\u062a \u0627\u0644\u0639\u0645\u0644\u0627\u062a \u0625\u0644\u0649 \u0645\u062d\u0641\u0638\u062a\u0643',
   },
   ff: {
     title: 'Coin\u0257e Zerm', balance: 'Coin\u0257e maa', available: 'Woni',
@@ -122,6 +145,10 @@ const strings = {
     t_daily_login: 'Naatgol \u00f1alnde', t_post_listing: 'Jeeynge yaltinaama', t_first_listing: 'Jeeynge maa adanngo',
     t_referral_signup: 'Sehil maa naatii e Bambeh', t_signup_bonus: 'Bonus ja\u0253\u0253orgol', t_spent: 'Huutoraama ngam premium',
     t_purchase: 'Coin\u0257e sood\u0257e', t_sent: 'Neldaa e {name}', t_received: 'Immorde e {name}', buyBtn: 'Soodu coin\u0257e', sendBtn: 'Neldu coin\u0257e',
+    cashBtn: 'Waylu coin\u0257e kaalis',
+    onlyBodyCash: 'Coin\u0257e Zerm ko poyntiiji \u0257i ke\u0253ataa so a huutorii Bambeh. \u0181e soodetaake, \u0253e yeeyetaake, \u0253e neldetaake go\u0257\u0257o. Bambeh waawi waylude \u0257e kaalis ngam maa - \u0257a\u0253\u0253it \u0257um les.',
+    t_cashout: 'Wayliraa\u0257e kaalis',
+    t_cashout_back: 'Coin\u0257e ngartii e boorse maa',
   },
 } as const;
 
@@ -143,9 +170,22 @@ interface Transaction {
 }
 
 /** A coin leaves the wallet only when it is used (the premium week). Everything else is a reward. */
-const SPENT_TYPES = ['debit', 'spend', 'spent', 'redeem', 'redeem_week', 'premium_week', 'zerm_redeem', 'sent'];
+const SPENT_TYPES = ['debit', 'spend', 'spent', 'redeem', 'redeem_week', 'premium_week', 'zerm_redeem', 'sent', 'cashout'];
 function isSpent(tx: Transaction): boolean {
   return SPENT_TYPES.indexOf(String(tx.type || '').toLowerCase()) >= 0 || Number(tx.amount) < 0;
+}
+
+/**
+ * FIX872 - coins to money (FIX859). A request writes 'cashout' (coins set aside); a request cancelled, refused or not
+ * paid gives them back as 'cashout_back'. An older database that refuses those two types gets 'debit' / 'credit' with
+ * the same words, so both spellings are recognised.
+ */
+function cashKind(tx: Transaction): 'out' | 'back' | null {
+  const ty = String(tx.type || '').toLowerCase();
+  const d = String(tx.description || '');
+  if (ty === 'cashout' || (ty === 'debit' && d.indexOf('Coins to money:') === 0)) return 'out';
+  if (ty === 'cashout_back' || (ty === 'credit' && /^(Request cancelled|Request refused|Money not sent)$/.test(d))) return 'back';
+  return null;
 }
 
 /** Coins are counted in quarter-thousandths (a reward is 0.0025), so show up to four decimals. */
@@ -156,6 +196,9 @@ function fmtCoins(n: number | null | undefined): string {
 
 function txLabel(tx: Transaction, s: LangStrings): string {
   const ty = String(tx.type || '').toLowerCase();
+  const cash = cashKind(tx);                                   // FIX872
+  if (cash === 'out') return s.t_cashout;
+  if (cash === 'back') return s.t_cashout_back;
   // FIX845 writes the other member's name as the description of a send
   if (ty === 'sent') return s.t_sent.replace('{name}', tx.description || '?');
   if (ty === 'received') return s.t_received.replace('{name}', tx.description || '?');
@@ -241,9 +284,13 @@ export default function CoinsPage() {
     }
   }, [loadData]);
 
-  const filtered = transactions.filter((tx) => tab === 'all' || (tab === 'spent' ? isSpent(tx) : !isSpent(tx)));
-  const earned   = transactions.filter((tx) => !isSpent(tx)).reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
-  const spent    = transactions.filter((tx) => isSpent(tx)).reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+  // FIX872 - coins given back from a request are not earned: they sit with the uses, and cancel the request out
+  const usedSide = (tx: Transaction) => isSpent(tx) || cashKind(tx) === 'back';
+  const filtered = transactions.filter((tx) => tab === 'all' || (tab === 'spent' ? usedSide(tx) : !usedSide(tx)));
+  const earned   = transactions.filter((tx) => !usedSide(tx)).reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+  const spent    = Math.max(0,
+    transactions.filter((tx) => isSpent(tx)).reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
+    - transactions.filter((tx) => cashKind(tx) === 'back').reduce((sum, tx) => sum + Math.abs(tx.amount), 0));
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24" dir={isRtl ? 'rtl' : 'ltr'} data-fix="FIX851">
@@ -325,9 +372,22 @@ export default function CoinsPage() {
             <ShieldCheck className="w-5 h-5 flex-shrink-0 mt-0.5 text-teal-600" />
             <div>
               <p className="text-sm font-semibold text-gray-900">{s.onlyTitle}</p>
-              <p className="text-xs text-gray-600 mt-0.5">{s.onlyBody}</p>
+              <p className="text-xs text-gray-600 mt-0.5">{zerm.cashout ? s.onlyBodyCash : s.onlyBody}</p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* FIX872 - coins to money: only while an admin has it switched on; a Bambeh admin checks every request */}
+      {zerm.cashout && (
+        <div className="px-4 mb-4">
+          <button
+            onClick={() => navigate('/coins/cashout')}
+            data-go="cashout"
+            className="w-full border-2 border-teal-600 text-teal-700 bg-white py-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          >
+            <Banknote className="w-4 h-4" /> {s.cashBtn}
+          </button>
         </div>
       )}
 
@@ -442,4 +502,4 @@ export default function CoinsPage() {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__COINSPAGE_FIX851__COMPLETE
+// BAMBEH_END_TOKEN__COINSPAGE_FIX872__COMPLETE

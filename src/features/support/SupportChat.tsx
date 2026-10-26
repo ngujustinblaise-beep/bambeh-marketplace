@@ -27,6 +27,14 @@ import { useLang } from '@/hooks/useAppLang';
 import { fetchMyStores, type CorporateStore } from '@/features/corporate/lib';
 
 const SUPPORT_EMAIL = 'support@bambeh.com';
+// FIX884 - weekly and monthly passes: messages to Bambeh are marked first in the Support inbox (FIX861)
+const PRIORITY_NOTE: Record<string, string> = {
+  en: "Priority support: your pass puts your messages first.",
+  fr: "Assistance prioritaire : votre pass place vos messages en premier.",
+  pidgin: "Priority support: your pass dey put your message first.",
+  ar: "\u062f\u0639\u0645 \u0630\u0648 \u0623\u0648\u0644\u0648\u064a\u0629: \u0627\u0634\u062a\u0631\u0627\u0643\u0643 \u064a\u0636\u0639 \u0631\u0633\u0627\u0626\u0644\u0643 \u0623\u0648\u0644\u064b\u0627.",
+  ff: "Ballal adii\u0257um: pass maa ina adiida mesaasji maa.",
+};
 type Cat = 'general' | 'billing' | 'technical' | 'verification' | 'payout';
 const CATS: Cat[] = ['billing', 'technical', 'verification', 'payout', 'general'];
 
@@ -182,11 +190,12 @@ export default function SupportChat({ business = false }: { business?: boolean }
   const navigate = useNavigate();
   const location = useLocation();
   const lang = useLang() as string;
-  const { t, isRtl } = chatStrings(lang);
+  const { t, isRtl, lang: chatLang } = chatStrings(lang);   // FIX884: chatLang
 
   const [uid, setUid] = useState<string | null | undefined>(undefined);   // undefined: still looking
   const [store, setStore] = useState<CorporateStore | null | undefined>(business ? undefined : null);
   const [tickets, setTickets] = useState<Ticket[] | null>(null);
+  const [priority, setPriority] = useState(false);   // FIX884 - a weekly or monthly pass: answered first
   const [state, setState] = useState<'ok' | 'not_ready' | 'error'>('ok');
   const [view, setView] = useState<View>({ k: 'list' });
   const [cat, setCat] = useState<Cat>('billing');
@@ -231,9 +240,10 @@ export default function SupportChat({ business = false }: { business?: boolean }
     try {
       const { data, error } = await supabase.rpc('bambeh_support_my');
       if (error) { setState(missingFn(error) ? 'not_ready' : 'error'); return; }
-      const d = (data || {}) as { ok?: boolean; tickets?: Ticket[] };
+      const d = (data || {}) as { ok?: boolean; tickets?: Ticket[]; priority?: boolean };   // FIX884: priority
       if (!d.ok) { setState('error'); return; }
       setTickets(Array.isArray(d.tickets) ? d.tickets : []);
+      setPriority(d.priority === true);
       setState('ok');
     } catch {
       if (!quiet) setState('error');
@@ -335,6 +345,11 @@ export default function SupportChat({ business = false }: { business?: boolean }
         {business ? <Building2 className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />} {business ? t.bizTitle : t.title}
       </h1>
       <p className="mt-1 text-sm text-teal-50">{business ? (store ? (store.trading_name || store.registered_name) + ' - ' : '') + t.bizSub : t.subtitle}</p>
+      {!business && priority ? (
+        <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold" data-priority="1">
+          <ShieldCheck className="h-3.5 w-3.5" /> {PRIORITY_NOTE[chatLang] || PRIORITY_NOTE.en}
+        </p>
+      ) : null}
     </div>
   );
   const wrap = (body: ReactNode) => (

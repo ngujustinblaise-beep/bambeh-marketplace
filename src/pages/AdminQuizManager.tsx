@@ -202,7 +202,7 @@ export default function AdminQuizManager() {
           <button onClick={loadItems} aria-label="Refresh" className="bg-white/10 p-2 rounded-xl"><RefreshCw className="w-4 h-4" /></button>
         </div>
         <h1 className="text-xl font-bold flex items-center gap-2 mt-1"><Trophy className="w-5 h-5 text-amber-400" /> Quiz Manager</h1>
-        <p className="text-gray-300 text-xs mt-1">Role: <span className="font-semibold text-amber-300">{role}</span> \u2014 moderators compose T1-T2; every quiz goes live only after admin approval.</p>
+        <p className="text-gray-300 text-xs mt-1">Role: <span className="font-semibold text-amber-300">{role}</span> {'\u2014'} moderators compose T1-T2; every quiz goes live only after admin approval.</p>
       </div>
 
       {/* Tabs */}
@@ -236,7 +236,7 @@ export default function AdminQuizManager() {
                 className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Multiple-choice options (optional \u2014 one per line; leave empty for free text)</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">Multiple-choice options (optional {'\u2014'} one per line; leave empty for free text)</label>
               <textarea value={optionsText} onChange={e => setOptionsText(e.target.value)} rows={3}
                 placeholder={'Tontine\nExchange\nFarm Fresh'}
                 className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none" />
@@ -244,7 +244,7 @@ export default function AdminQuizManager() {
 
             {/* Tier picker */}
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-2">Winner limit tier (STRICT \u2014 zero coins past the cap)</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-2">Winner limit tier (STRICT {'\u2014'} zero coins past the cap)</label>
               <div className="space-y-2">
                 {TIERS.map(t => {
                   const allowed = canPickTier(t.tier);
@@ -259,7 +259,7 @@ export default function AdminQuizManager() {
                       } ${!allowed ? 'opacity-40 cursor-not-allowed' : 'hover:border-amber-300'}`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-sm text-gray-900">T{t.tier} \u2014 first {fmt(t.total)}</span>
+                        <span className="font-semibold text-sm text-gray-900">T{t.tier} {'\u2014'} first {fmt(t.total)}</span>
                         <span className="text-[10px] font-bold text-gray-400">{t.roles}</span>
                       </div>
                       <p className="text-xs text-gray-500 mt-0.5">
@@ -313,7 +313,7 @@ export default function AdminQuizManager() {
                 <p className="font-semibold text-gray-900 text-sm">{q.question}</p>
                 <p className="text-xs text-gray-500">Answer: <strong>{q.correct_answer}</strong>{Array.isArray(q.options) && q.options.length > 0 ? ` \u2022 MCQ: ${q.options.join(' / ')}` : ' \u2022 free text'}</p>
                 <p className="text-xs text-gray-500 flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" /> T{q.tier}: first {fmt(q.max_winners)} \u2022 {fmt(q.per_region_cap)}/region
+                  <Users className="w-3.5 h-3.5" /> T{q.tier}: first {fmt(q.max_winners)} {'\u2022'} {fmt(q.per_region_cap)}/region
                   {q.min_subdivisions > 0 ? ` \u2022 \u2265${q.min_subdivisions} subdivisions/region` : ''}
                 </p>
                 {isAdmin ? (
@@ -365,12 +365,12 @@ export default function AdminQuizManager() {
                     <span className={`text-[10px] font-bold rounded-full px-2 py-0.5 ${q.status === 'live' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'}`}>
                       {q.status.toUpperCase()}
                     </span>
-                    <span className="text-xs text-gray-400">T{q.tier} \u2022 {fmtZ(q.reward_zerm)} Zerm/winner</span>
+                    <span className="text-xs text-gray-400">T{q.tier} {'\u2022'} {fmtZ(q.reward_zerm)} Zerm/winner</span>
                   </div>
                   <p className="font-semibold text-gray-900 text-sm">{q.question}</p>
                   <p className="text-xs text-gray-600">
-                    Answers: <strong>{fmt(st.answers)}</strong> \u2022 Winners: <strong>{fmt(st.winners)}</strong> / {fmt(q.max_winners)}
-                    {' '}\u2022 Paid out: <strong>{fmtZ(st.winners * Number(q.reward_zerm))} Zerm</strong>
+                    Answers: <strong>{fmt(st.answers)}</strong> {'\u2022'} Winners: <strong>{fmt(st.winners)}</strong> / {fmt(q.max_winners)}
+                    {' '}{'\u2022'} Paid out: <strong>{fmtZ(st.winners * Number(q.reward_zerm))} Zerm</strong>
                   </p>
                   {q.status === 'live' && (
                     <button onClick={() => endQuiz(q)} disabled={busyId === q.id}

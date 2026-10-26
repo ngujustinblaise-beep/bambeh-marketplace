@@ -447,7 +447,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, saveDraftLabel, disabled =
       {onBack && (
         <button type="button" onClick={onBack}
           className="flex-shrink-0 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 active:scale-95">
-          \u2190
+          {'\u2190'}
         </button>
       )}
       <button type="button" onClick={onNext} disabled={disabled}
@@ -462,7 +462,7 @@ function NavRow({ onDraft, onBack, onNext, nextLabel, saveDraftLabel, disabled =
 }
 
 function Err({ msg }: { msg?: string }) {
-  return msg ? <p className="text-xs text-red-500 mt-1 font-medium">\u26A0 {msg}</p> : null;
+  return msg ? <p className="text-xs text-red-500 mt-1 font-medium">{'\u26A0'} {msg}</p> : null;
 }
 
 function Lbl({ children, required }: { children: React.ReactNode; required?: boolean }) {
@@ -502,11 +502,11 @@ interface Draft {
 /* FIX322 - the payout number. Written as \u escapes on purpose, so no
    future edit can eat the Arabic or the Fulfulde. */
 const PAYOUT_COPY: Record<string, Record<string, string>> = {
-  en: { label: "Phone number for your payment", ph: "6XX XXX XXX", hint: "This is where your money is sent when somebody buys from you.", required: "Add the phone number where you want to be paid. Without it we cannot send you your money.", saveFailed: "We could not save your payment number. Please try again." },
-  fr: { label: "Num\u00e9ro de t\u00e9l\u00e9phone pour votre paiement", ph: "6XX XXX XXX", hint: "C'est l\u00e0 que votre argent sera envoy\u00e9 quand quelqu'un ach\u00e8te chez vous.", required: "Ajoutez le num\u00e9ro o\u00f9 vous voulez \u00eatre pay\u00e9. Sans lui, nous ne pouvons pas vous envoyer votre argent.", saveFailed: "Nous n'avons pas pu enregistrer votre num\u00e9ro. R\u00e9essayez." },
-  pidgin: { label: "Phone number wey we go pay you", ph: "6XX XXX XXX", hint: "Na here your money go enter when person buy from you.", required: "Put the phone number wey you want make we pay you. Without am, we no fit send your money.", saveFailed: "We no fit save your number. Abeg try again." },
-  ar: { label: "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0623\u0645\u0648\u0627\u0644\u0643", ph: "6XX XXX XXX", hint: "\u0625\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u062a\u064f\u0631\u0633\u0644 \u0623\u0645\u0648\u0627\u0644\u0643 \u0639\u0646\u062f \u0627\u0644\u0634\u0631\u0627\u0621 \u0645\u0646\u0643.", required: "\u0623\u0636\u0641 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0627\u0644\u0630\u064a \u062a\u0631\u064a\u062f \u0623\u0646 \u062a\u064f\u062f\u0641\u0639 \u0639\u0644\u064a\u0647. \u0628\u062f\u0648\u0646\u0647 \u0644\u0627 \u064a\u0645\u0643\u0646\u0646\u0627 \u0625\u0631\u0633\u0627\u0644 \u0623\u0645\u0648\u0627\u0644\u0643.", saveFailed: "\u062a\u0639\u0630\u0631 \u062d\u0641\u0638 \u0631\u0642\u0645\u0643. \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b." },
-  ff: { label: "Limce noone ngam yo\u0253eede", ph: "6XX XXX XXX", hint: "Ko \u0257oo kaalis maa neldetee si go\u0257\u0257o soodii to ma.", required: "\u0181eydu limce nokku \u0257o nji\u0257\u0257aa yo\u0253eede. Si alaa, min mbaawaa neldude ma kaalis maa.", saveFailed: "Min mbaawaa danndude limce maa. Artu jeer." },
+  en: { label: "Phone number for your payment", ph: "6XX XXX XXX", hint: "This is where your money is sent when somebody buys from you. Buyers never see it.", required: "Add the phone number where you want to be paid. Without it we cannot send you your money.", saveFailed: "We could not save your payment number. Please try again." },
+  fr: { label: "Num\u00e9ro de t\u00e9l\u00e9phone pour votre paiement", ph: "6XX XXX XXX", hint: "C'est l\u00e0 que votre argent sera envoy\u00e9 quand quelqu'un ach\u00e8te chez vous. Les acheteurs ne le voient jamais.", required: "Ajoutez le num\u00e9ro o\u00f9 vous voulez \u00eatre pay\u00e9. Sans lui, nous ne pouvons pas vous envoyer votre argent.", saveFailed: "Nous n'avons pas pu enregistrer votre num\u00e9ro. R\u00e9essayez." },
+  pidgin: { label: "Phone number wey we go pay you", ph: "6XX XXX XXX", hint: "Na here your money go enter when person buy from you. Buyer no dey see am.", required: "Put the phone number wey you want make we pay you. Without am, we no fit send your money.", saveFailed: "We no fit save your number. Abeg try again." },
+  ar: { label: "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0644\u0627\u0633\u062a\u0644\u0627\u0645 \u0623\u0645\u0648\u0627\u0644\u0643", ph: "6XX XXX XXX", hint: "\u0625\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0631\u0642\u0645 \u062a\u064f\u0631\u0633\u0644 \u0623\u0645\u0648\u0627\u0644\u0643 \u0639\u0646\u062f \u0627\u0644\u0634\u0631\u0627\u0621 \u0645\u0646\u0643. \u0644\u0627 \u064a\u0631\u0627\u0647 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646 \u0623\u0628\u062f\u064b\u0627.", required: "\u0623\u0636\u0641 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0627\u0644\u0630\u064a \u062a\u0631\u064a\u062f \u0623\u0646 \u062a\u064f\u062f\u0641\u0639 \u0639\u0644\u064a\u0647. \u0628\u062f\u0648\u0646\u0647 \u0644\u0627 \u064a\u0645\u0643\u0646\u0646\u0627 \u0625\u0631\u0633\u0627\u0644 \u0623\u0645\u0648\u0627\u0644\u0643.", saveFailed: "\u062a\u0639\u0630\u0631 \u062d\u0641\u0638 \u0631\u0642\u0645\u0643. \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b." },
+  ff: { label: "Limce noone ngam yo\u0253eede", ph: "6XX XXX XXX", hint: "Ko \u0257oo kaalis maa neldetee si go\u0257\u0257o soodii to ma. Soodoo\u0253e njiyataa ngal.", required: "\u0181eydu limce nokku \u0257o nji\u0257\u0257aa yo\u0253eede. Si alaa, min mbaawaa neldude ma kaalis maa.", saveFailed: "Min mbaawaa danndude limce maa. Artu jeer." },
 };
 
 const BLANK: Draft = {
@@ -700,7 +700,7 @@ export default function FarmFreshSellerPage() {
         unit:                   d.unit,
         category:               d.category,
         location:               d.location.trim(),
-        seller_phone:           payoutPhone,
+        // FIX883: no phone number on the product (FIX860) - the payout number stays on the farmer's profile only
         stock_quantity:         d.quantity ? Number(d.quantity) : null,
         is_organic:             d.is_organic,
         available_for_delivery: d.available_for_delivery,
@@ -730,7 +730,7 @@ export default function FarmFreshSellerPage() {
   if (posted) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-7xl mb-4">\uD83C\uDF3F</p>
+        <p className="text-7xl mb-4">{'\uD83C\uDF3F'}</p>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{tt("produceListed", lang)}</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{tt("produceListedSub", lang)}</p>
         <p className="text-xs text-gray-400 mb-4">{tt("produceListedSub2", lang)}</p>
@@ -779,7 +779,7 @@ export default function FarmFreshSellerPage() {
       <div className="sticky top-0 z-10 bg-green-600 text-white px-4 py-4 flex items-center gap-3 shadow">
         <button onClick={() => step === 1 ? navigate(-1) : back()}
           className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">
-          \u2190
+          {'\u2190'}
         </button>
         <h1 className="font-bold text-lg">{tt("listYourProducePage", lang)}</h1>
       </div>
@@ -898,12 +898,12 @@ export default function FarmFreshSellerPage() {
               <p className="text-xs text-gray-400">{tt("photoSub", lang)}</p>
               <p className="text-xs text-green-700 bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2">{tt("photoSecure", lang)}</p>
 
-              {imgErrors.map((e, i) => <p key={i} className="text-xs text-red-500 font-medium">\u26A0 {e}</p>)}
+              {imgErrors.map((e, i) => <p key={i} className="text-xs text-red-500 font-medium">{'\u26A0'} {e}</p>)}
 
               <div onClick={() => fileRef.current?.click()}
                 className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors
                   ${imagePreviews.length >= 6 ? "opacity-40 pointer-events-none" : "border-gray-200 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"}`}>
-                <p className="text-3xl mb-2">\uD83D\uDCF8</p>
+                <p className="text-3xl mb-2">{'\uD83D\uDCF8'}</p>
                 <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
                   {imagePreviews.length >= 6 ? tt("maxPhotos", lang) : tt("tapUpload", lang)}
                 </p>
@@ -919,7 +919,7 @@ export default function FarmFreshSellerPage() {
                       <img src={src} alt={`Photo ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                       <button type="button"
                         onClick={() => { setImagePreviews(p => p.filter((_, idx) => idx !== i)); setImageFiles(p => p.filter((_, idx) => idx !== i)); }}
-                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">\u00D7</button>
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">{'\u00D7'}</button>
                       {i === 0 && <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-1.5 py-0.5 rounded font-bold">Main</span>}
                     </div>
                   ))}
@@ -961,11 +961,11 @@ export default function FarmFreshSellerPage() {
 
             {uploadProgress && (
               <div className="bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
-                <span className="animate-spin inline-block">\u27F3</span> {uploadProgress}
+                <span className="animate-spin inline-block">{'\u27F3'}</span> {uploadProgress}
               </div>
             )}
             {errs.submit && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">\u26A0 {errs.submit}</div>
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{'\u26A0'} {errs.submit}</div>
             )}
 
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">

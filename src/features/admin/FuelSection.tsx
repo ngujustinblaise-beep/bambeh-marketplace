@@ -208,7 +208,7 @@ export default function FuelSection({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 truncate">
                   {s.name}
-                  {s.brand ? <span className="text-gray-400 font-normal"> \u00b7 {s.brand}</span> : null}
+                  {s.brand ? <span className="text-gray-400 font-normal"> {'\u00b7'} {s.brand}</span> : null}
                   {!s.is_active ? (
                     <span className="ml-2 text-[10px] bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">HIDDEN</span>
                   ) : null}

@@ -102,7 +102,7 @@ const NAV: Array<{
   { key: 'featured',  label: 'Featured ads',   icon: Star },   // FIX827 - Adverts and Promotions in one place
   { key: 'businesses', label: 'Businesses',    icon: BusinessesIcon, badge: ['corp_waiting'] },   // FIX836
   { key: 'support',   label: 'Support inbox', icon: SupportIcon, badge: ['support_waiting'] }, // FIX838
-  { key: 'zerm',      label: 'Zerm coins',    icon: ZermIcon },   // FIX852 - buying and sending switched by admins
+  { key: 'zerm',      label: 'Zerm coins',    icon: ZermIcon, badge: ['zerm_cashout'] },   // FIX852/FIX886 - switches; coins-to-money requests waiting
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
   { key: 'utilities', label: 'Water & Lights', icon: Droplet,
     badge: ['utility_live'] },

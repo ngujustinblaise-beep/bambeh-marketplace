@@ -1,4 +1,6 @@
-// BAMBEH_DEPLOY_TOKEN__ZERMEARNONLY_FIX848_CLEAN
+// BAMBEH_DEPLOY_TOKEN__ZERMEARNONLY_FIX873_CLEAN
+// FIX873 (replaces FIX848, kept below) - while an admin has "Coins to money" switched on (FIX859), the lead says
+// Bambeh can turn coins into money from the Zerm coins page (it no longer says they can never be changed into money).
 // FILE LOCATION: src/features/coins/ZermEarnOnly.tsx
 //
 // FIX848 - "ZERM COINS ARE EARNED": the page /coins/buy and /coins/transfer show while an admin has buying or
@@ -13,12 +15,14 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CalendarCheck, Crown, Gift, MessageCircle, ShieldCheck, Tag, TrendingUp, Zap } from 'lucide-react';
 import { useLang } from '@/hooks/useAppLang';
 import { ZERM_STR, zermLang } from '@/features/coins/zermText';
+import { useZermState } from '@/features/coins/zermApi';   // FIX873
 
 export default function ZermEarnOnly({ mode }: { mode: 'buy' | 'send' }) {
   const navigate = useNavigate();
   const lang = zermLang(useLang());
   const w = ZERM_STR[lang];
   const rtl = lang === 'ar';
+  const { state: zerm } = useZermState();                  // FIX873 - the Command Center switches
 
   const Earn = ({ icon, text }: { icon: ReactNode; text: string }) => (
     <li className="flex items-start gap-3">
@@ -39,7 +43,7 @@ export default function ZermEarnOnly({ mode }: { mode: 'buy' | 'send' }) {
           </span>
           <h1 className="text-xl font-bold leading-tight" data-title="1">{mode === 'buy' ? w.buyTitle : w.sendTitle}</h1>
         </div>
-        <p className="mt-3 text-sm text-teal-50">{w.lead}</p>
+        <p className="mt-3 text-sm text-teal-50" data-lead={zerm.cashout ? 'cash' : 'plain'}>{zerm.cashout ? w.leadCash : w.lead}</p>
       </div>
 
       <div className="mx-auto -mt-5 max-w-lg space-y-4 px-4">
@@ -81,4 +85,4 @@ export default function ZermEarnOnly({ mode }: { mode: 'buy' | 'send' }) {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__ZERMEARNONLY_FIX848__COMPLETE
+// BAMBEH_END_TOKEN__ZERMEARNONLY_FIX873__COMPLETE

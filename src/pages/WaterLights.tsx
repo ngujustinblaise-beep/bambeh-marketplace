@@ -735,7 +735,7 @@ export default function WaterLights() {
                 onChange={(e) => setWatchForm({ ...watchForm, quarter: e.target.value })}
                 list="bambeh-quarters" placeholder={t('quarterOrVillage')} className={INPUT} />
               <p className="text-[11px] text-gray-400 mt-1">
-                {t('pickOrType')} \u2014 {t('wholeTown')}
+                {t('pickOrType')} {'\u2014'} {t('wholeTown')}
               </p>
             </div>
 

@@ -302,6 +302,7 @@ const AgentPage         = lazy(() => import("@/routes/groups/delivery/AgentPage"
 const RequestDelivery   = lazy(() => import("@/routes/groups/delivery/RequestDelivery")); // FIX598
 const CoinsHistory      = lazy(() => import("@/routes/groups/payments/CoinsHistory"));
 const CoinsTransfer     = lazy(() => import("@/routes/groups/payments/CoinsTransfer"));
+const CoinsCashout      = lazy(() => import("@/routes/groups/payments/CoinsCashout"));   // FIX871 - coins to money (when admins switch it on)
 
 // GENERAL PAGES
 const About           = lazy(() => import("@/pages/About"));
@@ -1282,6 +1283,14 @@ export default function App() {
                           }
                         />
                         {/* Legacy redirects — keeps old links alive */}
+                        <Route
+                          path="/coins/cashout"
+                          element={
+                            <MainLayout>
+                              <AuthGate require="user"><CoinsCashout /></AuthGate>
+                            </MainLayout>
+                          }
+                        />{/* FIX886 */}
                         <Route path="/coins/purchase"  element={<Navigate to="/coins/buy" replace />} />
                         <Route path="/zerm/purchase"   element={<Navigate to="/coins/buy" replace />} />
 

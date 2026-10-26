@@ -503,7 +503,7 @@ export default function SafetyAlerts() {
                     {t(KIND_KEY[o.kind])}
                   </span>
                   {o.kind === 'accident' && o.accident_type ? (
-                    <span className="text-gray-400 font-bold normal-case"> \u00b7 {t('v' + o.accident_type)}</span>
+                    <span className="text-gray-400 font-bold normal-case"> {'\u00b7'} {t('v' + o.accident_type)}</span>
                   ) : null}
                 </p>
                 <p className="text-xs text-gray-500 truncate flex items-center gap-1">
@@ -523,7 +523,7 @@ export default function SafetyAlerts() {
             <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-500">
               <Users className="w-3.5 h-3.5 shrink-0 text-gray-300" />
               {Number(o.confirm_count) === 1 ? t('onePerson') : `${o.confirm_count} ${t('people')}`}
-              <span className="text-gray-400">\u00b7 {ago(o.last_activity_at, lang)}</span>
+              <span className="text-gray-400">{'\u00b7'} {ago(o.last_activity_at, lang)}</span>
             </div>
 
             {o.is_unsafe ? (

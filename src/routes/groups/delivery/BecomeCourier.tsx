@@ -92,7 +92,7 @@ const STR: Record<string, Dict> = {
     noOpen: 'Nothing waiting in your town right now.', noMine: 'You are not carrying anything.',
     offDutyHint: 'Go on duty to see the jobs waiting in your town.',
     take: 'Take this job', pickedUp: 'I have collected it', delivered: 'I have delivered it',
-    handBack: 'Hand it back', callIt: 'Call', fromL: 'From', toL: 'To', refreshJobs: 'Refresh',
+    handBack: 'Hand it back', callIt: 'Message the customer', fromL: 'From', toL: 'To', refreshJobs: 'Refresh',
     youEarn: 'You earn', clientPays: 'Client pays', km: 'km',
     alreadyPaid: 'Already paid - the money is with Bambeh before you ride',
     earnedToday: 'Earned today', earnedTotal: 'Earned in total', notYetEarned: 'Not earned yet',
@@ -126,7 +126,7 @@ const STR: Record<string, Dict> = {
     noOpen: 'Rien en attente dans votre ville pour le moment.', noMine: 'Vous ne transportez rien.',
     offDutyHint: 'Entrez en service pour voir les courses en attente.',
     take: 'Prendre cette course', pickedUp: 'Colis r\u00e9cup\u00e9r\u00e9', delivered: 'Colis livr\u00e9',
-    handBack: 'Rendre la course', callIt: 'Appeler', fromL: 'De', toL: '\u00c0', refreshJobs: 'Actualiser',
+    handBack: 'Rendre la course', callIt: '\u00c9crire au client', fromL: 'De', toL: '\u00c0', refreshJobs: 'Actualiser',
     youEarn: 'Vous gagnez', clientPays: 'Le client paie', km: 'km',
     alreadyPaid: 'D\u00e9j\u00e0 pay\u00e9 - l\u2019argent est chez Bambeh avant votre d\u00e9part',
     earnedToday: 'Gagn\u00e9 aujourd\u2019hui', earnedTotal: 'Gagn\u00e9 au total', notYetEarned: 'Pas encore gagn\u00e9',
@@ -160,7 +160,7 @@ const STR: Record<string, Dict> = {
     noOpen: 'No work dey wait for your town now.', noMine: 'You no dey carry anything.',
     offDutyHint: 'Enter duty so you go see the work wey dey wait.',
     take: 'Take this work', pickedUp: 'I done collect am', delivered: 'I done deliver am',
-    handBack: 'Give am back', callIt: 'Call', fromL: 'From', toL: 'Go', refreshJobs: 'Refresh',
+    handBack: 'Give am back', callIt: 'Message the customer', fromL: 'From', toL: 'Go', refreshJobs: 'Refresh',
     youEarn: 'You go take', clientPays: 'Client pay', km: 'km',
     alreadyPaid: 'Dem done pay - the money dey with Bambeh before you start',
     earnedToday: 'You take today', earnedTotal: 'All wey you take', notYetEarned: 'You no take yet',
@@ -201,7 +201,7 @@ const STR: Record<string, Dict> = {
     pickedUp: '\u062A\u0645 \u0627\u0644\u0627\u0633\u062A\u0644\u0627\u0645',
     delivered: '\u062A\u0645 \u0627\u0644\u062A\u0648\u0635\u064A\u0644',
     handBack: '\u0625\u0631\u062C\u0627\u0639 \u0627\u0644\u0637\u0644\u0628',
-    callIt: '\u0627\u062A\u0635\u0644', fromL: '\u0645\u0646', toL: '\u0625\u0644\u0649',
+    callIt: '\u0631\u0627\u0633\u0644 \u0627\u0644\u0639\u0645\u064a\u0644', fromL: '\u0645\u0646', toL: '\u0625\u0644\u0649',
     refreshJobs: '\u062A\u062D\u062F\u064A\u062B',
     youEarn: '\u0645\u0627 \u062A\u0631\u0628\u062D\u0647', clientPays: '\u064A\u062F\u0641\u0639 \u0627\u0644\u0639\u0645\u064A\u0644', km: '\u0643\u0645',
     alreadyPaid: '\u0645\u062F\u0641\u0648\u0639 \u0645\u0633\u0628\u0642\u0627 - \u0627\u0644\u0645\u0628\u0644\u063A \u0639\u0646\u062F \u0628\u0627\u0645\u0628\u064A\u0647 \u0642\u0628\u0644 \u0627\u0646\u0637\u0644\u0627\u0642\u0643',
@@ -237,7 +237,7 @@ const STR: Record<string, Dict> = {
     noOpen: 'Alaa ko habbii e saare maa jooni.', noMine: 'A roondaaki hay huunde.',
     offDutyHint: 'Naatu e golle ngam yi\u0263de ko habbii.',
     take: 'Jogo \u0257um', pickedUp: 'Mi jogii \u0257um', delivered: 'Mi rokkii \u0257um',
-    handBack: 'Rutta \u0257um', callIt: 'Nod', fromL: 'Iwde', toL: 'Haa', refreshJobs: 'Hesnit',
+    handBack: 'Rutta \u0257um', callIt: 'Winndan joom nodde', fromL: 'Iwde', toL: 'Haa', refreshJobs: 'Hesnit',
     youEarn: 'Ko heb\u0257aa', clientPays: 'Ko kliyan yo\u0253\u0257i', km: 'km',
     alreadyPaid: 'Yo\u0253aama - kaalisi wo\u0257i e Bambeh haa a yaha',
     earnedToday: 'Heb\u0257aa hannde', earnedTotal: 'Heb\u0257aa fof', notYetEarned: 'Heb\u0257aaka tawo',
@@ -342,6 +342,23 @@ function Inner() {
   const [openJobs, setOpenJobs] = useState<Job[]>([]);
   const [myJobs, setMyJobs]     = useState<Job[]>([]);
   const [jobBusy, setJobBusy]   = useState<string | null>(null);
+
+  /* FIX880 (Package 9) - the rider writes to the customer in the Bambeh chat; no phone number is shown any more
+     (bambeh_delivery_chat_peer and the phone shield, FIX860). */
+  const chatCustomer = async (jobId: string, title: string) => {
+    setJobBusy(jobId);
+    setError(null);
+    try {
+      const { data, error: e } = await supabase.rpc('bambeh_delivery_chat_peer', { p_job: jobId });
+      const r = data as { ok?: boolean; user_id?: string } | null;
+      if (e || !r || !r.ok || !r.user_id) { setError(t.failed); return; }
+      navigate('/chat?userId=' + encodeURIComponent(r.user_id) + '&listingTitle=' + encodeURIComponent(title));
+    } catch {
+      setError(t.failed);
+    } finally {
+      setJobBusy(null);
+    }
+  };
 
   /* FIX597 - earnings. bambeh_courier_earnings() counts only DELIVERED work,
      so "earned" is money the rider has actually finished for. */
@@ -609,11 +626,15 @@ function Inner() {
                   ) : null}
 
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {j.contact_phone ? (
-                      <a href={`tel:${j.contact_phone}`}
+                    {/* FIX880 - the customer is reached in the Bambeh chat, never by phone number */}
+                    {j.id ? (
+                      <>
+                      <button type="button" disabled={jobBusy === j.id} data-chat-customer={j.id}
+                        onClick={() => { void chatCustomer(j.id, String(j.pickup_area || '') + ' > ' + String(j.dropoff_area || '')); }}
                         className="min-h-[44px] inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-bold text-emerald-700 ring-1 ring-emerald-300">
-                        {t.callIt} {j.contact_phone}
-                      </a>
+                        {t.callIt}{/* FIX880 */}
+                      </button>{/* FIX880: a chat button, never a phone link */}
+                      </>
                     ) : null}
 
                     {j.status === 'ACCEPTED' ? (
@@ -742,7 +763,7 @@ function Inner() {
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setVeh(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-teal-500">
                 {vTypes.map((v: Vehicle) => (
-                  <option key={v.key} value={v.key}>{v.label} \u2014 {v.capacity}</option>
+                  <option key={v.key} value={v.key}>{v.label} {'\u2014'} {v.capacity}</option>
                 ))}
               </select>
             </label>
