@@ -303,6 +303,8 @@ const RequestDelivery   = lazy(() => import("@/routes/groups/delivery/RequestDel
 const CoinsHistory      = lazy(() => import("@/routes/groups/payments/CoinsHistory"));
 const CoinsTransfer     = lazy(() => import("@/routes/groups/payments/CoinsTransfer"));
 const CoinsCashout      = lazy(() => import("@/routes/groups/payments/CoinsCashout"));   // FIX871 - coins to money (when admins switch it on)
+const ShopPage          = lazy(() => import("@/routes/groups/shop/ShopPage"));   // FIX897 - bambeh.com/<name>: a seller's shop, open to everyone
+const MyShop            = lazy(() => import("@/routes/groups/shop/MyShop"));     // FIX898 - My shop link and the Verified on Bambeh card
 
 // GENERAL PAGES
 const About           = lazy(() => import("@/pages/About"));
@@ -576,6 +578,7 @@ const OnboardingFlowGuard = React.memo(function OnboardingFlowGuard({
     "/taxi-check", // FIX748 - Taxi check opens straight from a shared link
     "/calm", // FIX742 - Calm tools ("When to get help") open straight from a shared link
     "/join", // FIX756 - the 30-second free account opens straight from a link
+    "/s/", // FIX900 - a seller's shop link opens straight away, no account needed to look
   ];
 
   // FIX764 - first-time visitors browse straight away (Big, 15 Oct 2026): the language is taken from the phone
@@ -810,6 +813,8 @@ export default function App() {
                         <Route path="/sign-in" element={<Navigate to="/login" replace />} />
                         <Route path="/register" element={<AuthLayout><RegisterForm /></AuthLayout>} />
                         <Route path="/join" element={<AuthLayout><QuickJoin /></AuthLayout>} />{/* FIX756 - the 30-second free account: name, number, password, one box - then back to where she was */}
+                        <Route path="/s/:slug" element={<ShopPage />} />{/* FIX900 - a seller's shop: anyone can look; "see more" asks for the free account */}
+                        <Route path="/my-shop" element={<MainLayout><AuthGate require="user"><MyShop /></AuthGate></MainLayout>} />{/* FIX900 - My shop link */}
                         <Route
                           path="/forgot-password"
                           element={<AuthLayout><ForgotPassword /></AuthLayout>}

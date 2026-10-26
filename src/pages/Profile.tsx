@@ -579,7 +579,10 @@ export default function Profile() {
     } catch { return ""; }
   })();
 
+  // FIX900 - the seller's shop link (Package 10): one link for everything they sell
+  const myShopLabel = ({"en": "My shop link", "fr": "Le lien de ma boutique", "pidgin": "My shop link", "ar": "\u0631\u0627\u0628\u0637 \u0645\u062a\u062c\u0631\u064a", "ff": "Jokkol bitik am"} as Record<string, string>)[l] || "My shop link";
   const quickLinks: [string, string][] = [
+    ["\u{1F517}  " + myShopLabel, "/my-shop"],   // FIX900
     ["⚡  " + s.qlCoins,     "/coins"],
     ["🛍️  " + s.qlListings,  "/my-listings"],
     ["📦  " + s.qlOrders,    "/orders"],

@@ -257,6 +257,12 @@ export default function MyListings() {
           </div>
         </div>
 
+        {/* FIX900 - one link for all of it: the seller's shop (Package 10) */}
+        <button type="button" onClick={() => navigate("/my-shop")} data-my-shop="1"
+                className="mb-3 flex w-full items-center justify-between gap-2 rounded-xl border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-semibold text-teal-800">
+          <span>{({"en": "Share all your items with one link", "fr": "Partagez tous vos articles avec un seul lien", "pidgin": "Share all your things with one link", "ar": "\u0634\u0627\u0631\u0643 \u0643\u0644 \u0645\u0646\u062a\u062c\u0627\u062a\u0643 \u0628\u0631\u0627\u0628\u0637 \u0648\u0627\u062d\u062f", "ff": "Rokku kuuje maa fof e jokkol gootol"} as Record<string, string>)[String(language)] || "Share all your items with one link"}</span>
+          <span aria-hidden="true" className="inline-block rtl:rotate-180">&rarr;</span>
+        </button>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {filters.map(f => (
             <button

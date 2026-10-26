@@ -48,6 +48,8 @@ import AdminSupport from './AdminSupport';                 // FIX838 - Chat with
 import { Building2 as BusinessesIcon, LifeBuoy as SupportIcon } from 'lucide-react'; // FIX836/FIX838
 import AdminZerm from './AdminZerm';                         // FIX852 - Zerm coins: earned; buying and sending switched by admins
 import { Zap as ZermIcon } from 'lucide-react';               // FIX852
+import AdminShops from './AdminShops';                          // FIX899 - shop links and Verified on Bambeh
+import { Store as ShopsIcon } from 'lucide-react';              // FIX899
 import PharmaciesSection from './PharmaciesSection'; // FIX482
 import RequestsSection from './RequestsSection';     // FIX489
 import UtilitiesSection from './UtilitiesSection';   // FIX501
@@ -79,7 +81,8 @@ type Section =
   | 'approvals' | 'announce' | 'team' | 'finances' | 'reports' | 'feedback'
   | 'listings' | 'ads' | 'promos' | 'pharmacies' | 'utilities' | 'fuel'
   | 'agents' | 'requests' | 'paywall' | 'gates' | 'foodgas' | 'womenshealth' | 'obligations' | 'couriers'
-  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured' | 'businesses' | 'support' | 'zerm';
+  | 'revive' | 'recovery' | 'refunds' | 'usage' | 'countries' | 'views' | 'featured' | 'businesses' | 'support' | 'zerm'
+  | 'shops';   // FIX899
 
 const NAV: Array<{
   key: Section;
@@ -101,6 +104,7 @@ const NAV: Array<{
   { key: 'views',     label: 'Views & visits', icon: ViewsIcon }, // FIX808
   { key: 'featured',  label: 'Featured ads',   icon: Star },   // FIX827 - Adverts and Promotions in one place
   { key: 'businesses', label: 'Businesses',    icon: BusinessesIcon, badge: ['corp_waiting'] },   // FIX836
+  { key: 'shops',     label: 'Shops',          icon: ShopsIcon },   // FIX899 - every seller's shop link; Verified on Bambeh
   { key: 'support',   label: 'Support inbox', icon: SupportIcon, badge: ['support_waiting'] }, // FIX838
   { key: 'zerm',      label: 'Zerm coins',    icon: ZermIcon, badge: ['zerm_cashout'] },   // FIX852/FIX886 - switches; coins-to-money requests waiting
   { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
@@ -274,6 +278,7 @@ export default function AdminCommandCenter() {
         {section === 'users'     && <UsersSection userId={userId!} role={role} cap={cap} flash={flash} />}
         {section === 'featured'  && <AdminFeaturedAds embedded />}{/* FIX827 - Adverts and Promotions in one place */}
         {section === 'businesses' && <AdminBusinesses embedded />}{/* FIX836 - registered businesses, checked by Bambeh */}
+        {section === 'shops'     && <AdminShops embedded />}{/* FIX899 - shop links, Verified on Bambeh */}
         {section === 'support'   && <AdminSupport embedded />}{/* FIX838 - Chat with Bambeh, answered here */}
         {section === 'zerm'      && <AdminZerm embedded />}{/* FIX852 - Zerm coins switches */}
         {section === 'pharmacies' && <PharmaciesSection userId={userId!} role={role} cap={cap} flash={flash} />}
