@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Users, Search, ShieldCheck, ShieldOff, Eye, Ban, RefreshCw, Filter, ChevronDown, UserCheck, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { isMissingFunction } from "@/lib/memberCards"; // FIX912
 import { useLang, t } from "@/hooks/useAppLang";
 
 interface ManagedUser {
@@ -36,22 +37,37 @@ const UserManagementPage: React.FC = () => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      let q = supabase
-        .from("profiles")
-        .select("id, display_name, email, avatar_url, city, is_verified, is_vendor, is_banned, subscription_tier, total_listings, created_at")
-        .order("created_at", { ascending: false })
-        .limit(200);
-
-      if (filter === "verified") q = q.eq("is_verified", true);
-      else if (filter === "unverified") q = q.eq("is_verified", false);
-      else if (filter === "vendors") q = q.eq("is_vendor", true);
-      else if (filter === "banned") q = q.eq("is_banned", true);
-
-      const { data, error } = await q;
+      // FIX912 - e-mails are closed to the app's public key (FIX910). Staff read whole member rows through
+      // bambeh_staff_member_rows, which also never fails on a column this database does not have; the filter runs
+      // on the rows that come back. Until FIX910 has been run, the old read still works.
+      let rows: Record<string, unknown>[] = [];
+      const got = await supabase.rpc("bambeh_staff_member_rows", { p_limit: 500 });
+      let error: unknown = got.error;
+      if (!got.error) {
+        // each row comes back as the member itself (PostgREST) or as { member } - take either
+        rows = ((got.data as unknown[] | null) ?? []).map((x) => {
+          const o = (x ?? {}) as Record<string, unknown>;
+          return (o.member && typeof o.member === "object" ? o.member : o) as Record<string, unknown>;
+        });
+      } else if (isMissingFunction(got.error)) {
+        const old = await supabase
+          .from("profiles")
+          .select("id, display_name, email, avatar_url, city, is_verified, is_vendor, is_banned, subscription_tier, total_listings, created_at")
+          .order("created_at", { ascending: false })
+          .limit(200);
+        error = old.error;
+        rows = (old.data as Record<string, unknown>[] | null) ?? [];
+      }
+      const data = rows.filter((row) =>
+        filter === "verified" ? row.is_verified === true
+        : filter === "unverified" ? row.is_verified !== true
+        : filter === "vendors" ? row.is_vendor === true
+        : filter === "banned" ? row.is_banned === true
+        : true);
       if (!error && data) {
         setUsers(data.map((row) => ({
           id: row.id as string,
-          displayName: (row.display_name as string) ?? "?",
+          displayName: (row.display_name as string) ?? (row.full_name as string) ?? "?",   // FIX912 - whole rows now
           email: (row.email as string) ?? "?",
           avatarUrl: row.avatar_url as string | undefined,
           city: row.city as string | undefined,

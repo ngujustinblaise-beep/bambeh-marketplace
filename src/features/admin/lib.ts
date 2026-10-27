@@ -11,6 +11,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { isMissingFunction } from '@/lib/memberCards';   // FIX912
 
 export type AdminRole = 'super_admin' | 'admin' | 'moderator';
 
@@ -306,14 +307,24 @@ async function adminSafe<T>(run: () => Promise<{ data: unknown; error: unknown }
   return { rows: [], failed: true };
 }
 
-export async function searchUsers(query: string): Promise<AdminUser[]> {
+/* FIX912 - members' e-mails and numbers are closed to the app's public key (FIX910). Staff (moderators, admins, the
+ * super admin) find members through bambeh_staff_find_members - by name, e-mail or phone number. Until FIX910 has
+ * been run that function does not exist yet and the old read still works. */
+async function staffFindMembers(query: string): Promise<{ data: unknown; error: unknown }> {
+  const r = await supabase.rpc('bambeh_staff_find_members', { p_query: query.trim() || null, p_limit: 500 });
+  if (!r.error || !isMissingFunction(r.error)) return { data: r.data, error: r.error };
   let q = supabase
     .from('profiles')
     .select('id, full_name, email, admin_role, account_frozen, created_at')
     .order('created_at', { ascending: false })
     .limit(500);   // FIX437 - was 50. You have 75 users; 50 hid a quarter of them.
   if (query.trim()) q = q.or(`full_name.ilike.%${query}%,email.ilike.%${query}%`);
-  const out = await adminSafe<AdminUser>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+  const old = await q;
+  return { data: old.data, error: old.error };
+}
+
+export async function searchUsers(query: string): Promise<AdminUser[]> {
+  const out = await adminSafe<AdminUser>(() => staffFindMembers(query));   // FIX912
   return out.rows;
 }
 
@@ -687,13 +698,7 @@ export async function countUsersOrNull(): Promise<number | null> {
 
 /** searchUsers, but it keeps the failed flag instead of discarding it. */
 export async function searchUsersWithStatus(query: string): Promise<AdminFetch<AdminUser>> {
-  let q = supabase
-    .from('profiles')
-    .select('id, full_name, email, admin_role, account_frozen, created_at')
-    .order('created_at', { ascending: false })
-    .limit(500);
-  if (query.trim()) q = q.or(`full_name.ilike.%${query}%,email.ilike.%${query}%`);
-  return adminSafe<AdminUser>(() => q as unknown as Promise<{ data: unknown; error: unknown }>);
+  return adminSafe<AdminUser>(() => staffFindMembers(query));   // FIX912 - through bambeh_staff_find_members
 }
 
 /** fetchAllListings, but it keeps the failed flag instead of discarding it. */

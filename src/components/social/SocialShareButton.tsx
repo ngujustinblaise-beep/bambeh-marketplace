@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';   // FIX912
 import { Share2, Copy, CheckCircle, MessageCircle, Send, X } from 'lucide-react';
 
 // --- Types --------------------------------------------------------------------
@@ -11,6 +12,9 @@ interface SocialShareButtonProps {
   className?: string;
   variant?: 'icon' | 'text' | 'full';
   size?: 'sm' | 'md' | 'lg';
+  /** FIX912 - a page may give its own label (Home: icon + "Share Bambeh"); it is shown as given. */
+  children?: ReactNode;
+  itemType?: string;
 }
 
 // --- Share helpers ------------------------------------------------------------
@@ -38,6 +42,7 @@ export default function SocialShareButton({
   className = '',
   variant = 'icon',
   size = 'md',
+  children,   // FIX912
 }: SocialShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -87,6 +92,15 @@ export default function SocialShareButton({
   // -- Trigger button ----------------------------------------------------------
 
   const TriggerButton = () => {
+    // FIX912 - the label the page gave, styled by the page. Before this the label was ignored, so Home showed a wide
+    // green button with only a tiny icon inside it.
+    if (children) {
+      return (
+        <button type="button" onClick={handleNativeShare} className={className}>
+          {children}
+        </button>
+      );
+    }
     if (variant === 'text') {
       return (
         <button

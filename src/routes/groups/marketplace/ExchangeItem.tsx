@@ -24,6 +24,7 @@ import {
   CheckCircle, Pencil, Trash2, RotateCcw,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { readProfileCards } from '@/lib/memberCards';   // FIX912 - the owner's name, never a number
 import { useLang } from '@/hooks/useAppLang';
 import { renewExchangeListing } from '@/services/exchange-expiry-reminder';
 
@@ -301,12 +302,8 @@ const ExchangeItem: React.FC = () => {
       // the item always displays even if the profile lookup fails.
       let profile: any = null;
       try {
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user_id)
-          .maybeSingle();
-        profile = prof;
+        // FIX912 - name and photo only (FIX910 closes select * on profiles)
+        profile = (await readProfileCards([String(data.user_id ?? '')]))[0] ?? null;
       } catch { /* non-fatal */ }
       setItem({
         id:                  data.id as string,

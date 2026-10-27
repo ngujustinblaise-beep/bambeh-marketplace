@@ -21,6 +21,7 @@ import {
   X, LogOut, Camera, AlertCircle, Wallet, CheckCircle2,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { readMyProfile } from "@/lib/memberCards"; // FIX912 - the member's own numbers (FIX910 closes them to everyone else)
 // FIX354 - the SAME prefix tables the payments Edge Function uses, so the
 // browser can never accept a number CamPay would refuse to pay.
 import { checkMomoPhone, momoOperatorLabel, momoError } from "@/lib/momoPhone";
@@ -299,12 +300,10 @@ export default function Profile() {
             // FIX354 - select("*") on purpose. Naming a column that does not
             // exist makes PostgREST reject the ENTIRE query, which would blank
             // the whole profile page if payout_phone has not been added yet.
-            const { data } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", u.id)
-              .single();
-            if (data) extra = data;
+            // FIX912 - members' numbers and e-mails are closed to the app (FIX910); the own row, numbers included,
+            // comes from bambeh_my_profile (the old read is used until FIX910 has been run).
+            const own = await readMyProfile(u.id);
+            if (own.data) extra = own.data;
           } catch { /* profiles table may not exist — that's fine */ }
 
           const p: UserProfile = {
@@ -527,16 +526,22 @@ export default function Profile() {
         await supabase.auth.updateUser({
           data: { full_name: updated.name, phone: updated.phone, location: updated.location },
         });
-        const { error } = await supabase
+        // FIX912 - an upsert that carries the phone or payout number is refused once FIX910 closes them, so the row is
+        // written without them first, then the two numbers are set on the member's own row.
+        let { error } = await supabase
           .from("profiles")
           .upsert({
             id:           session.user.id,
             display_name: updated.name,
-            phone:        updated.phone,
-            payout_phone: normalisedPayout || null,
             location:     updated.location,
             bio:          updated.bio,
           });
+        if (!error) {
+          ({ error } = await supabase
+            .from("profiles")
+            .update({ phone: updated.phone, payout_phone: normalisedPayout || null })
+            .eq("id", session.user.id));
+        }
         if (error) {
           // FIX354 - never again close the editor on a failed write.
           console.error("[profile] save failed:", error.message, error.details ?? "", error.hint ?? "");

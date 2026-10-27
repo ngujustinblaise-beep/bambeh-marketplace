@@ -25,6 +25,7 @@
 import React, { useEffect, useState } from 'react';
 import { Star, CheckCircle2, Loader2, MessageSquare, CornerDownRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { readProfileCards } from '@/lib/memberCards';   // FIX912 - names without numbers
 import { useLang } from '@/hooks/useAppLang';
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
@@ -126,7 +127,7 @@ export const SellerReviews: React.FC<Props> = ({ sellerId, className = '', limit
       const ids = Array.from(new Set(list.map((r) => r.reviewer_id).filter(Boolean))) as string[];
       if (ids.length === 0) return;
       try {
-        const { data: profs } = await supabase.from('profiles').select('*').in('id', ids);
+        const profs = await readProfileCards(ids);   // FIX912 - names and photos only (FIX910 closes select * on profiles)
         if (!alive || !profs) return;
         const map: Record<string, string> = {};
         for (const row of profs as Record<string, unknown>[]) {

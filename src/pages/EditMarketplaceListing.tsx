@@ -34,6 +34,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { readMyListingContact } from '@/lib/memberCards';   // FIX912 - the seller's own advert number
 import { useLang } from '@/hooks/useAppLang';
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
@@ -169,6 +170,9 @@ export default function EditMarketplaceListing() {
         .single();
 
       if (err || !data) { setNotFound(true); setLoading(false); return; }
+      // FIX912 - an advert's number now lives in a private table (FIX910); the seller still sees their own here.
+      const mine = data.phone ? null : await readMyListingContact(listingId);
+      const ownNumber = String(data.phone || mine?.payout_phone || mine?.phone || mine?.contact_phone || '');
 
       setForm({
         title:       data.title       || '',
@@ -177,7 +181,7 @@ export default function EditMarketplaceListing() {
         category:    data.category    || '',
         condition:   data.condition   || '',
         location:    data.location    || '',
-        phone:       data.phone       || '',
+        phone:       ownNumber,   // FIX912
         negotiable:  data.negotiable  || false,
         stockQuantity: data.stock_quantity == null ? '' : String(data.stock_quantity),   // FIX346
         colors:      Array.isArray(data.colors_available) ? data.colors_available.join(',') : '',   // FIX346

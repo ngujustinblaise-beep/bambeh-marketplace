@@ -129,6 +129,7 @@
 import { useState, useEffect, useCallback, useRef, createContext } from 'react';
 import type { Session, User }                              from '@supabase/supabase-js';
 import { supabase }                                        from '@/lib/supabase';
+import { readMyProfile }                                   from '@/lib/memberCards';   // FIX912
 
 // -- Types -------------------------------------------------------------------
 
@@ -432,7 +433,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     lastProfileAttempt = { userId: user.id, at: Date.now() };
 
     const read = await attempt(
-      () => supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+      () => readMyProfile(user.id),   // FIX912 - the own row through bambeh_my_profile (FIX910 closes select * on profiles)
       1,
     );
 
