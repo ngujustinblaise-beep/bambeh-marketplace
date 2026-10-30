@@ -42,6 +42,9 @@ import {
 import { supabase } from '@/lib/supabase';
 import { qrSvg } from '@/lib/qrcode';
 import { useLang } from '@/hooks/useAppLang';
+import AgentAssist from '@/features/agents/AgentAssist';   // FIX938 - sign up a client on the agent's own phone (FIX933)
+import AgentReport from '@/features/agents/AgentReport';   // FIX938 - the daily report, and Bambeh's answers (FIX934)
+import { inviteLinkFor } from '@/features/agents/assist';  // FIX938 - the real address, never https://localhost
 
 type Dict = {
   title: string; lead: string; whatNext: string; noList: string;
@@ -318,7 +321,7 @@ function Inner() {
      from the search string OR from inside the hash and stores it until a
      session appears, so this link needs no new plumbing at all. */
   const inviteLink = mine?.code
-    ? window.location.origin + '/?agent=' + encodeURIComponent(mine.code) + '#/register'
+    ? inviteLinkFor(mine.code)   // FIX938 - inside the Android app the page itself is https://localhost
     : '';
 
   const qrMarkup = useMemo(
@@ -490,6 +493,10 @@ function Inner() {
           )}
 
           <p className="mt-3 px-1 text-xs text-gray-500">{t.noList}</p>
+
+          {/* FIX938 - Package 13: sign up a client on this phone (temporary password + QR), and the daily report */}
+          <AgentAssist />
+          <AgentReport />
 
           <div className="mt-4">
             <div className="flex items-center justify-between">

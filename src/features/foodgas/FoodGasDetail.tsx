@@ -30,11 +30,12 @@ import {
 } from 'lucide-react';
 import { publicShareUrl } from '@/config/storeMode';
 import {
-  KIND_ICON, brandLabel, cityLabel, daysText, doualaNow, fmtDate, fmtSince, fmtXaf, hasPhoneNumber, isFoodKind, kindLabel,
+  KIND_ICON, brandLabel, cityLabel, daysText, doualaNow, fmtDate, fmtXaf, hasPhoneNumber, isFoodKind, kindLabel,
   meatLabel, openState, opensLaterToday, reasonText, sizeText, useFoodText,
 } from './foodGasText';
 import type { FoodKey, FoodLang } from './foodGasText';
-import { book, getPlace, openChat, setGas, setOfferStock } from './foodGasApi';
+import { book, getPlace, openChat, setOfferStock } from './foodGasApi';
+import { GasTodayPanel } from './GasToday'; // FIX938 - the easy gas switch (FIX935)
 import type { BookingKind, FoodMe, FoodPlace, GasMode, GasOffer } from './foodGasApi';
 
 type T = (key: FoodKey, vars?: Record<string, string | number>) => string;
@@ -369,7 +370,7 @@ export default function FoodGasDetail() {
   const [toast, setToast] = useState('');
   const [chatBusy, setChatBusy] = useState(false);
   const [sheet, setSheet] = useState<{ kind: BookingKind | null; offer: string | null } | null>(null);
-  const [gasBusy, setGasBusy] = useState(false);
+  // FIX938 - the gas switch keeps its own busy state (GasTodayPanel)
   const [stockBusy, setStockBusy] = useState('');
 
   const load = useCallback(async () => {
@@ -411,14 +412,7 @@ export default function FoodGasDetail() {
     try { await navigator.clipboard.writeText(url); setToast(t('shared')); } catch { setToast(url); }
   };
 
-  const switchGas = async (v: boolean) => {
-    if (!place) return;
-    setGasBusy(true);
-    const r = await setGas(place.id, v);
-    setGasBusy(false);
-    if (r.ok) setPlace({ ...place, gas_available: r.gas_available, gas_today: r.gas_available, gas_checked_at: r.gas_checked_at });
-    else setToast(reasonText(lang, r.reason));
-  };
+  // FIX938 - "gas today" is switched by GasTodayPanel (FIX935)
 
   const switchStock = async (o: GasOffer) => {
     if (!place) return;
@@ -523,18 +517,13 @@ export default function FoodGasDetail() {
               {place.status === 'live' && place.needs_review && <p className="mt-1 text-sm text-orange-900">{t('statusChanged')}</p>}
               {featuredOn && <p className="mt-1 text-sm font-semibold text-amber-800">{t('featuredUntil', { d: fmtDate(place.featured_until, lang) })}</p>}
               {isGas && (
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button type="button" disabled={gasBusy} onClick={() => void switchGas(true)}
-                    className={'rounded-xl py-2.5 text-sm font-bold ' + (place.gas_today ? 'bg-green-600 text-white' : 'border border-green-300 bg-white text-green-800')}>
-                    {t('gasSwitchYes')}
-                  </button>
-                  <button type="button" disabled={gasBusy} onClick={() => void switchGas(false)}
-                    className={'rounded-xl py-2.5 text-sm font-bold ' + (answeredToday && !place.gas_today ? 'bg-red-600 text-white' : 'border border-red-200 bg-white text-red-700')}>
-                    {t('gasSwitchNo')}
-                  </button>
+                <div className="mt-3">
+                  {/* FIX938 - one switch (FIX935); the bottles keep their switches in the gas table below */}
+                  <GasTodayPanel withBottles={false}
+                    place={{ id: place.id, gas_today: place.gas_today, gas_checked_at: place.gas_checked_at, offers: place.offers || [] }}
+                    onChange={(c) => setPlace({ ...place, gas_available: c.gas_available, gas_today: c.gas_today, gas_checked_at: c.gas_checked_at })} />
                 </div>
               )}
-              {isGas && place.gas_checked_at && <p className="mt-1 text-xs text-gray-600">{t('gasUpdated', { t: fmtSince(place.gas_checked_at, lang) })}</p>}
               <div className="mt-3 flex flex-wrap gap-2">
                 {me.can_edit && (
                   <button type="button" onClick={() => navigate('/food-gas/edit/' + place.id)}

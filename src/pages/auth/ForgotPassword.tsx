@@ -573,6 +573,17 @@ function tr(lang: string, k: string): string {
    how two rules end up disagreeing. It hands back the full international
    number and whether it is valid; this page just uses both. */
 
+/* FIX938 - the QR code a Bambeh agent shows after signing a client up on the agent's phone (FIX933) opens this page
+   on the Temporary password tab with the number AND the temporary password filled in: only the new password is
+   left to type, twice. These words greet that client. */
+const AGENT_WELCOME: Record<string, { title: string; intro: string }> = {
+  en: { title: 'Welcome to Bambeh - choose your own password', intro: 'Your number and the temporary password from the agent are already filled in. Choose your own password (8 characters or more), type it twice, and you are in.' },
+  fr: { title: 'Bienvenue sur Bambeh - choisissez votre mot de passe', intro: 'Votre num\u00e9ro et le mot de passe temporaire de l\u2019agent sont d\u00e9j\u00e0 remplis. Choisissez votre propre mot de passe (8 caract\u00e8res ou plus), tapez-le deux fois, et c\u2019est fait.' },
+  pidgin: { title: 'Welcome to Bambeh - choose your own password', intro: 'Your number and the temporary password from the agent don already dey inside. Choose your own password (8 characters or more), type am two times, and you don enter.' },
+  ar: { title: '\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0643 \u0641\u064a \u0628\u0627\u0645\u0628\u064a\u0647 - \u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631\u0643', intro: '\u0631\u0642\u0645\u0643 \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629 \u0645\u0646 \u0627\u0644\u0648\u0643\u064a\u0644 \u0645\u0643\u062a\u0648\u0628\u0627\u0646 \u0628\u0627\u0644\u0641\u0639\u0644. \u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631\u0643 \u0627\u0644\u062e\u0627\u0635\u0629 (8 \u0623\u062d\u0631\u0641 \u0623\u0648 \u0623\u0643\u062b\u0631)\u060c \u0627\u0643\u062a\u0628\u0647\u0627 \u0645\u0631\u062a\u064a\u0646\u060c \u0648\u062a\u062f\u062e\u0644.' },
+  ff: { title: 'A ja\u0253\u0253aama e Bambeh - su\u0253o finnde maa', intro: 'Limngal maa e finnde sahaa ajan oo \u0257on winndaa gila. Su\u0253o finnde maa (alkule 8 walla \u0253uri), winndu nde laabi \u0257i\u0257i, a naatii.' },
+};
+
 export default function ForgotPassword() {
   const langRaw: unknown = useLang();
   const lang: string = typeof langRaw === 'string' ? langRaw : 'en';
@@ -591,6 +602,13 @@ export default function ForgotPassword() {
   })();
   const urlEmail = String(urlQuery.get('email') || '').trim();
   const urlMode = String(urlQuery.get('mode') || '');
+  // FIX938 - the agent's QR code (FIX933) also carries the temporary password (?code=) and says where it came from
+  const urlCode = (() => {
+    const v = String(urlQuery.get('code') || '').replace(/\s+/g, '');
+    return /^[A-Za-z0-9]{6,24}$/.test(v) && /[A-Za-z]/.test(v) ? v : '';
+  })();
+  const fromAgent = urlQuery.get('from') === 'agent';
+  const welcome = AGENT_WELCOME[lang === 'pcm' ? 'pidgin' : lang] || AGENT_WELCOME.en;
 
   const [mode, setMode] = useState<'phone' | 'email' | 'code'>(
     urlMode === 'email' || urlMode === 'code' ? (urlMode as 'email' | 'code') : 'phone',
@@ -619,7 +637,7 @@ export default function ForgotPassword() {
      "must change" flag and reloads signed in. (The 8-digit reset code is retired.) */
   // FIX654 - one field: the phone number OR the email they signed up with
   const [cId, setCId] = useState(() => urlEmail || urlPhone || '');
-  const [cCode, setCCode] = useState('');
+  const [cCode, setCCode] = useState(urlCode); // FIX938 - filled in from the agent's QR code
   const [cPw1, setCPw1] = useState('');
   const [cPw2, setCPw2] = useState('');
   const [cShow, setCShow] = useState(false);
@@ -815,8 +833,8 @@ export default function ForgotPassword() {
           {mode === 'code' ? (
             <div className="space-y-4">
               <div className="rounded-2xl bg-teal-50 border border-teal-100 p-3">
-                <p className="text-sm font-semibold text-teal-900">{t('codeTitle')}</p>
-                <p className="text-xs text-teal-800 mt-1">{t('codeIntro')}</p>
+                <p className="text-sm font-semibold text-teal-900">{fromAgent ? welcome.title : t('codeTitle')}</p>
+                <p className="text-xs text-teal-800 mt-1">{fromAgent ? welcome.intro : t('codeIntro')}</p>
               </div>
               {cDone ? (
                 <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800 font-semibold text-center">

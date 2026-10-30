@@ -39,17 +39,18 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  DISH_PICKS, FOOD_KINDS, GAS_BRANDS, KIND_ICON, MEATS, SIZE_PICKS, brandLabel, cityLabel, dayShort,
-  doualaNow, fmtDate, fmtSize, fmtWhen, fmtXaf, foldDish, hasPhoneNumber, isFoodKind, isGasBrand, kindLabel,
+  DISH_PICKS, FOOD_KINDS, GAS_BRANDS, KIND_ICON, MEATS, SIZE_PICKS, cityLabel, dayShort,
+  fmtDate, fmtWhen, fmtXaf, foldDish, hasPhoneNumber, isFoodKind, isGasBrand, kindLabel,
   launchAreasOf, launchCityOf, meatLabel, momoNumber, reasonText, regionOfCity, sizeText, slugArea, townOfCity, useFoodText,
 } from './foodGasText';
 import type { FoodKey, FoodKind, FoodLang, GasBrand, Meat } from './foodGasText';
 import { neighbourhoodsOf, regionLabel as placeRegionLabel, regionsOf, townsOf } from '@/lib/africa/places';
 import {
   answerBooking, cancelBooking, featureStart, featureStatus, getPlace, listBookings, myPlaces, payWithMomo, saveGas, saveItems,
-  savePlace, setGas, setOfferStock, setVisible, uploadPhoto,
+  savePlace, setVisible, uploadPhoto,
 } from './foodGasApi';
 import type { FeaturePlan, FoodBooking, FoodItem, GasOffer, GasOfferInput, MyPlace, PlaceInput } from './foodGasApi';
+import { GasTodayPanel } from './GasToday'; // FIX938 - the easy gas switch (FIX935)
 
 type T = (key: FoodKey, vars?: Record<string, string | number>) => string;
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -869,22 +870,11 @@ function MineView({ lang, dir, t }: { lang: FoodLang; dir: 'rtl' | 'ltr'; t: T }
     if (hit.length) setFeature(hit[0]);
   }, [wantFeature, rows]);
 
-  const stock = async (p: MyPlace, o: GasOffer) => {
-    setBusyId(o.id);
-    const r = await setOfferStock(o.id, !o.in_stock);
-    setBusyId('');
-    if (!r.ok) { setErr(reasonText(lang, r.reason)); return; }
+  // FIX938 - the gas switches (GasTodayPanel, FIX935) save themselves; the list keeps what they answered
+  const gasChanged = (p: MyPlace, c: { gas_available: boolean; gas_today: boolean; gas_checked_at: string | null; offers: GasOffer[] }) => {
     setRows((prev) => (prev || []).map((x) => (x.id === p.id ? {
-      ...x, gas_available: r.gas_available, gas_today: r.gas_available, gas_checked_at: r.gas_checked_at,
-      gas_offers: (x.gas_offers || []).map((y) => (y.id === o.id ? { ...y, in_stock: r.in_stock } : y)),
+      ...x, gas_available: c.gas_available, gas_today: c.gas_today, gas_checked_at: c.gas_checked_at, gas_offers: c.offers,
     } : x)));
-  };
-  const gas = async (p: MyPlace, v: boolean) => {
-    setBusyId(p.id);
-    const r = await setGas(p.id, v);
-    setBusyId('');
-    if (r.ok) setRows((prev) => (prev || []).map((x) => (x.id === p.id ? { ...x, gas_available: r.gas_available, gas_today: r.gas_available, gas_checked_at: r.gas_checked_at } : x)));
-    else setErr(reasonText(lang, r.reason));
   };
   const visible = async (p: MyPlace, v: boolean) => {
     setBusyId(p.id);
@@ -921,7 +911,7 @@ function MineView({ lang, dir, t }: { lang: FoodLang; dir: 'rtl' | 'ltr'; t: T }
           {rows.map((p) => {
             const KI = KIND_ICON[p.kinds[0] || 'restaurant'];
             const isGas = p.kinds.indexOf('gas') >= 0;
-            const answeredToday = !!p.gas_checked_at && doualaNow(new Date(p.gas_checked_at)).ymd === doualaNow().ymd;
+            // FIX938 - "answered today" is worked out inside the gas switch (GasTodayPanel)
             const featuredOn = !!p.featured_until && new Date(p.featured_until).getTime() > Date.now();
             return (
               <li key={p.id} data-mine={p.id} className="overflow-hidden rounded-2xl bg-white shadow-sm">
@@ -942,19 +932,10 @@ function MineView({ lang, dir, t }: { lang: FoodLang; dir: 'rtl' | 'ltr'; t: T }
                     {p.open_bookings > 0 && <p className="text-xs font-bold text-orange-700">{t('openBookings', { n: p.open_bookings })}</p>}
                   </div>
                 </div>
-                {isGas && (p.gas_offers || []).length > 0 && (
+                {isGas && (
                   <div className="px-3 pb-2" data-stock-row={p.id}>
-                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t('stockToday')}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(p.gas_offers || []).map((o) => (
-                        <button key={o.id} type="button" disabled={busyId === o.id} aria-pressed={o.in_stock} data-stock={o.id} onClick={() => void stock(p, o)}
-                          className={'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold disabled:opacity-60 ' +
-                            (o.in_stock ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600 line-through')}>
-                          {o.in_stock ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                          {brandLabel(o.brand, o.brand_other)} {fmtSize(o.size_kg, lang)} kg
-                        </button>
-                      ))}
-                    </div>
+                    <GasTodayPanel place={{ id: p.id, gas_today: p.gas_today, gas_checked_at: p.gas_checked_at, offers: p.gas_offers || [] }}
+                      onChange={(c) => gasChanged(p, c)} />
                   </div>
                 )}
                 {isGas && (p.gas_offers || []).length === 0 && (
@@ -966,14 +947,7 @@ function MineView({ lang, dir, t }: { lang: FoodLang; dir: 'rtl' | 'ltr'; t: T }
                     </button>
                   </div>
                 )}
-                {isGas && (
-                  <div className="grid grid-cols-2 gap-2 px-3 pb-2">
-                    <button type="button" disabled={busyId === p.id} onClick={() => void gas(p, true)}
-                      className={'rounded-xl py-2 text-xs font-bold ' + (p.gas_today ? 'bg-green-600 text-white' : 'border border-green-300 text-green-800')}>{t('gasSwitchYes')}</button>
-                    <button type="button" disabled={busyId === p.id} onClick={() => void gas(p, false)}
-                      className={'rounded-xl py-2 text-xs font-bold ' + (answeredToday && !p.gas_today ? 'bg-red-600 text-white' : 'border border-red-200 text-red-700')}>{t('gasSwitchNo')}</button>
-                  </div>
-                )}
+                {/* FIX938 - the yes / no buttons are now the switch above (GasTodayPanel) */}
                 <div className="flex flex-wrap gap-2 border-t border-gray-100 px-3 py-2">
                   {p.status === 'live' && (
                     <button type="button" onClick={() => navigate('/food-gas/place/' + p.id)} className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">

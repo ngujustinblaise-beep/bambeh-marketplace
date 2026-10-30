@@ -32,7 +32,7 @@ import { supabase } from "@/lib/supabase";
 import { useLang } from "@/hooks/useAppLang";
 
 type LangKey = "en" | "fr" | "pidgin" | "ar" | "ff";
-type Phase = "idle" | "must_change" | "paused" | "done" | "security" | "secdone";
+type Phase = "idle" | "must_change" | "paused" | "done" | "security" | "secdone" | "assist_expired"; // FIX938
 
 const QUESTION_KEYS = ["mother_middle_name", "primary_school", "best_friend", "first_car_colour", "birth_town"] as const;
 const SNOOZE_PREFIX = "bambeh:fix613:secq-later:";
@@ -400,12 +400,23 @@ const linkBtn: React.CSSProperties = {
   cursor: "pointer",
 };
 
+/* FIX938 - an account a Bambeh agent made on the agent's phone (FIX933): welcome words instead of "staff reset your
+   account"; and a temporary password past its 48 hours is ended at the sign-in (bambeh_my_assist_state, FIX931). */
+const ASSIST: Record<LangKey, { title: string; sub: string; expTitle: string; expSub: string; ok: string }> = {
+  en: { title: "Welcome to Bambeh: choose your own password", sub: "A Bambeh agent made this account for you with a temporary password. Choose your own password now - only you will know it.", expTitle: "This temporary password has expired", expSub: "It was not used within 48 hours, so it stopped working to protect your account. Use Forgot password on the sign-in page to get a new one.", ok: "OK" },
+  fr: { title: "Bienvenue sur Bambeh : choisissez votre mot de passe", sub: "Un agent Bambeh a cr\u00e9\u00e9 ce compte pour vous avec un mot de passe temporaire. Choisissez maintenant votre propre mot de passe - vous seul le conna\u00eetrez.", expTitle: "Ce mot de passe temporaire a expir\u00e9", expSub: "Il n\u2019a pas \u00e9t\u00e9 utilis\u00e9 dans les 48 heures, il a donc cess\u00e9 de fonctionner pour prot\u00e9ger votre compte. Utilisez Mot de passe oubli\u00e9 sur la page de connexion pour en obtenir un nouveau.", ok: "OK" },
+  pidgin: { title: "Welcome to Bambeh: choose your own password", sub: "Bambeh agent open this account for you with temporary password. Choose your own password now - na only you go know am.", expTitle: "This temporary password don expire", expSub: "Nobody use am inside 48 hours, so e stop to work to protect your account. Use Forgot password for the sign-in page to get new one.", ok: "OK" },
+  ar: { title: "\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0643 \u0641\u064a \u0628\u0627\u0645\u0628\u064a\u0647: \u0627\u062e\u062a\u0631 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631\u0643", sub: "\u0623\u0646\u0634\u0623 \u0648\u0643\u064a\u0644 \u0645\u0646 \u0628\u0627\u0645\u0628\u064a\u0647 \u0647\u0630\u0627 \u0627\u0644\u062d\u0633\u0627\u0628 \u0644\u0643 \u0628\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u0645\u0624\u0642\u062a\u0629. \u0627\u062e\u062a\u0631 \u0627\u0644\u0622\u0646 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631\u0643 \u0627\u0644\u062e\u0627\u0635\u0629 - \u0644\u0646 \u064a\u0639\u0631\u0641\u0647\u0627 \u0623\u062d\u062f \u063a\u064a\u0631\u0643.", expTitle: "\u0627\u0646\u062a\u0647\u062a \u0635\u0644\u0627\u062d\u064a\u0629 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u0645\u0624\u0642\u062a\u0629", expSub: "\u0644\u0645 \u062a\u064f\u0633\u062a\u062e\u062f\u0645 \u062e\u0644\u0627\u0644 48 \u0633\u0627\u0639\u0629\u060c \u0641\u062a\u0648\u0642\u0641\u062a \u0639\u0646 \u0627\u0644\u0639\u0645\u0644 \u0644\u062d\u0645\u0627\u064a\u0629 \u062d\u0633\u0627\u0628\u0643. \u0627\u0633\u062a\u062e\u062f\u0645 \u0646\u0633\u064a\u062a \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0641\u064a \u0635\u0641\u062d\u0629 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u062d\u0635\u0648\u0644 \u0639\u0644\u0649 \u0643\u0644\u0645\u0629 \u062c\u062f\u064a\u062f\u0629.", ok: "\u062d\u0633\u0646\u064b\u0627" },
+  ff: { title: "A ja\u0253\u0253aama e Bambeh: su\u0253o finnde maa", sub: "Ajan Bambeh sosii konte ndee ngam maa e finnde sahaa. Su\u0253o jooni finnde maa - aan tan anndata nde.", expTitle: "Finnde sahaa ndee gasii", expSub: "Huutoraaka nde e nder waktuuji 48, ndeen nde dartii ngam reende konte maa. Huutor Finnde yejjitaande e hello naatgol ngam he\u0253de nde hesere.", ok: "Eey" },
+};
+
 function GateInner() {
   const rawLang: unknown = useLang();
   const lang = pickLang(
     typeof rawLang === "string" ? rawLang : rawLang && (rawLang as { lang?: string }).lang,
   );
   const t = S[lang];
+  const ax = ASSIST[lang]; // FIX938
   const rtl = lang === "ar";
 
   const [phase, setPhase] = useState<Phase>("idle");
@@ -415,6 +426,7 @@ function GateInner() {
   const [show2, setShow2] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [assisted, setAssisted] = useState(false); // FIX938 - made by a Bambeh agent: the welcome words
 
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [canLater, setCanLater] = useState(true);
@@ -460,7 +472,27 @@ function GateInner() {
 
       if (!mounted.current || submitting.current) return;
       if (flags.is_active === false || flags.account_frozen === true) setPhase("paused");
-      else if (flags.must_change_password === true) setPhase("must_change");
+      else if (flags.must_change_password === true) {
+        // FIX938 - an account a Bambeh agent made (FIX933): welcome words; a temporary password past its 48 hours ends here
+        let how: "" | "yes" | "expired" = "";
+        try {
+          const a = await supabase.rpc("bambeh_my_assist_state");
+          const d = a && !a.error ? (a.data as { assisted?: boolean; expired?: boolean } | null) : null;
+          how = d && d.assisted === true ? (d.expired === true ? "expired" : "yes") : "";
+        } catch {
+          how = "";
+        }
+        if (!mounted.current || submitting.current) return;
+        setAssisted(how === "yes");
+        if (how === "expired") {
+          try {
+            await supabase.auth.signOut();
+          } catch {
+            /* the local session is cleared either way */
+          }
+          if (mounted.current) setPhase("assist_expired");
+        } else setPhase("must_change");
+      }
       else if (typeof flags.security_answers === "number" && flags.security_answers < 3) {
         const created = flags.account_created_at ? new Date(flags.account_created_at).getTime() : 0;
         const quiet = created > 0 && Date.now() - created < QUIET_MS; // FIX757: not on the first day
@@ -743,6 +775,14 @@ function GateInner() {
               {t.signOut}
             </button>
           </div>
+        ) : phase === "assist_expired" ? (
+          <div data-fix="FIX938">
+            <h2 style={{ fontSize: 21, margin: "0 0 10px" }}>{ax.expTitle}</h2>
+            <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.5, margin: 0 }}>{ax.expSub}</p>
+            <button type="button" style={primaryBtn(true)} onClick={() => setPhase("idle")}>
+              {ax.ok}
+            </button>
+          </div>
         ) : (
           <form
             onSubmit={(e) => {
@@ -750,8 +790,8 @@ function GateInner() {
               void submit();
             }}
           >
-            <h2 style={{ fontSize: 21, margin: "0 0 8px" }}>{t.title}</h2>
-            <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.5, margin: 0 }}>{t.sub}</p>
+            <h2 style={{ fontSize: 21, margin: "0 0 8px" }}>{assisted ? ax.title : t.title}</h2>
+            <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.5, margin: 0 }}>{assisted ? ax.sub : t.sub}</p>
 
             <label style={labelStyle} htmlFor="fix613-pw1">
               {t.newPass}

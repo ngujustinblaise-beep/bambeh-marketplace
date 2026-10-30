@@ -36,6 +36,7 @@ import {
 } from './foodGasText';
 import type { FoodKey, FoodKind, FoodLang, Meat } from './foodGasText';
 import { listPlaces } from './foodGasApi';
+import GasTodayCard from './GasToday'; // FIX938 - the easy gas switch at the top of Cooking gas, for depot owners (FIX935)
 import type { AreaCount, BrandCount, DishCount, FoodCard, MeatCount, SizeCount, TownCount } from './foodGasApi';
 import { findRegion, regionLabel as placeRegionLabel, regionsOf, townsOf } from '@/lib/africa/places';
 
@@ -462,6 +463,7 @@ function ListView({ section }: { section: Section }) {
       </header>
 
       <div className="mx-auto max-w-5xl px-4">
+        {isGas && <GasTodayCard onChanged={() => void load(0)} />}
         {isGas ? (
           <>
             <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-3" role="tablist" aria-label={t('colBrand')} data-row="brands">

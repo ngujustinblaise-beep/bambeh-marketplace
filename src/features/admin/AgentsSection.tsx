@@ -1,6 +1,17 @@
-// BAMBEH_DEPLOY_TOKEN__AGENTSSECTION_FIX592_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AGENTSSECTION_FIX937_CLEAN
 /**
- * src/features/admin/AgentsSection.tsx - Bambeh Admin Command Center
+ * src/features/admin/AgentsSection.tsx - Bambeh Admin Command Center - FIX937 (replaces FIX592)
+ *
+ * FIX937 - PACKAGE 13 (Big, 29 Oct 2026):
+ *   - DAILY TARGET per agent ("Admins set a number"): set here, shown on the agent's page against their real count
+ *     of new members today; the agent still answers yes / partly / no in their daily report.
+ *   - ACCOUNTS MADE FOR CLIENTS: how many each agent made on their own phone (AgentAssist, FIX933), how many clients
+ *     then chose their own password, how many ended unused after 48 hours, and the cap per day (30 to start;
+ *     0 switches it off for that agent). Counts only - never the clients' names or numbers.
+ *   - DAILY REPORTS: a second tab (AgentReportsPanel, FIX936) - read, answer (the agent sees it on their page and in
+ *     their bell), mark as read; the easiest and hardest times to work, counted across agents.
+ *   - Fixed: the "% stuck" colour was green when MOST signups were stuck; "Copy their link" gave https://localhost
+ *     inside the Android app - it now gives the real address (as the agent's own page does).
  *
  * FIX508 - MARKETING AGENTS.
  * ------------------------------------------------------------------
@@ -29,8 +40,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Loader2, AlertCircle, RefreshCw, UserPlus, X, Check, Copy,
-  RotateCcw, Ban, TrendingUp, Users, Crown, ChevronRight,
+  RotateCcw, Ban, TrendingUp, Users, Crown, ChevronRight, Target, ClipboardList,
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { inviteLinkFor } from '@/features/agents/assist';
+import AgentReportsPanel, { type AgentTimes } from './AgentReportsPanel';
 import {
   fetchAgentStats, fetchAgentDaily, createAgent, setAgentActive,
   rotateAgentCode, grantAgentPremium, fetchAgents,
@@ -40,6 +54,14 @@ import {
 } from './lib';
 
 const INPUT = 'w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500';
+
+/** FIX937 - one line per agent from bambeh_staff_agent_overview (FIX931): target, cap, accounts made for clients, reports. */
+interface AgentPlanLine {
+  agent_id: string; daily_target: number | null; assist_daily_cap: number;
+  signups_today: number; assisted_today: number; assisted: number; claimed: number; expired: number; waiting: number;
+  not_credited: number; reports: number; met_yes: number; met_partly: number; met_no: number;
+  last_report: string | null; reports_waiting: number;
+}
 
 export default function AgentsSection({
   userId, role, flash,
@@ -58,15 +80,39 @@ export default function AgentsSection({
   const [saving, setSaving] = useState(false);
   // FIX592 - which stat card is being used as a filter, if any
   const [focus, setFocus] = useState<null | 'signups' | 'activated' | 'stuck'>(null);
+  // FIX937 - the agents' plan (target, cap) and what they did with it; the daily reports tab
+  const [tab, setTab] = useState<'agents' | 'reports'>('agents');
+  const [plans, setPlans] = useState<Record<string, AgentPlanLine>>({});
+  const [times, setTimes] = useState<AgentTimes | null>(null);
+  const [planOk, setPlanOk] = useState(true);
+  const [reportsWaiting, setReportsWaiting] = useState(0);
+  const [planDraft, setPlanDraft] = useState<{ target: string; cap: string }>({ target: '', cap: '30' });
+  const [planSaving, setPlanSaving] = useState(false);
+
+  const loadPlans = useCallback(async () => {
+    try {
+      const r = await supabase.rpc('bambeh_staff_agent_overview', { p_days: 7 });
+      const d = r && !r.error ? (r.data as { ok?: boolean; rows?: AgentPlanLine[]; times?: AgentTimes } | null) : null;
+      if (!d || !d.ok) { setPlanOk(false); return; }
+      const map: Record<string, AgentPlanLine> = {};
+      (d.rows || []).forEach((x) => { map[x.agent_id] = x; });
+      setPlans(map);
+      setTimes(d.times || null);
+      setPlanOk(true);
+      setReportsWaiting((d.rows || []).reduce((n, x) => n + Number(x.reports_waiting || 0), 0));
+    } catch {
+      setPlanOk(false);
+    }
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [s, a] = await Promise.all([fetchAgentStats(), fetchAgents()]);
+    const [s, a] = await Promise.all([fetchAgentStats(), fetchAgents(), loadPlans()]);
     setStats(s.rows);
     setAgents(a.rows);
     setFailed(s.failed && a.failed);
     setLoading(false);
-  }, []);
+  }, [loadPlans]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { (async () => { setRegions(await fetchRegions()); })(); }, []);
@@ -74,7 +120,31 @@ export default function AgentsSection({
   const openAgent = async (id: string) => {
     if (open === id) { setOpen(null); return; }
     setOpen(id);
+    const p = plans[id];
+    setPlanDraft({ target: p && p.daily_target ? String(p.daily_target) : '', cap: String(p ? p.assist_daily_cap : 30) });
     setDaily(await fetchAgentDaily(id, 14));
+  };
+
+  /* FIX937 - the daily target (empty = none) and the cap of accounts an agent may make for clients each day */
+  const savePlan = async (agentId: string) => {
+    const tRaw = planDraft.target.trim();
+    const target = tRaw === '' ? 0 : Number(tRaw);
+    const cap = Number(planDraft.cap.trim());
+    if (!Number.isInteger(target) || target < 0 || target > 500) { flash('Daily target: a whole number from 1 to 500, or empty for none.'); return; }
+    if (!Number.isInteger(cap) || cap < 0 || cap > 200) { flash('Accounts for clients per day: a whole number from 0 to 200.'); return; }
+    setPlanSaving(true);
+    try {
+      const r = await supabase.rpc('bambeh_staff_agent_plan', { p_agent: agentId, p_daily_target: target, p_assist_cap: cap });
+      const d = r && !r.error ? (r.data as { ok?: boolean; reason?: string } | null) : null;
+      if (!d || !d.ok) {
+        flash(d && d.reason === 'not_admin' ? 'Only admins can change this.' : 'Could not save. Has FIX931 been run in Supabase?');
+        return;
+      }
+      flash(target ? 'Saved: ' + target + ' new members a day, ' + cap + ' accounts for clients a day.' : 'Saved: no daily target, ' + cap + ' accounts for clients a day.');
+      await loadPlans();
+    } finally {
+      setPlanSaving(false);
+    }
   };
 
   const save = async () => {
@@ -126,7 +196,7 @@ export default function AgentsSection({
   };
 
   const copyLink = async (code: string) => {
-    const url = `${window.location.origin}/#/register?agent=${code}`;
+    const url = inviteLinkFor(code);   // FIX937 - the real address, never https://localhost inside the Android app
     try {
       await navigator.clipboard.writeText(url);
       setCopied(code);
@@ -183,6 +253,36 @@ export default function AgentsSection({
         </div>
       </div>
 
+      {/* FIX937 - two tabs: the agents, and their daily reports */}
+      <div className="mt-3 flex gap-2" role="tablist">
+        <button type="button" role="tab" aria-selected={tab === 'agents'} onClick={() => setTab('agents')} data-tab="agents"
+          className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold ${tab === 'agents' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border border-gray-200'}`}>
+          <Users className="w-4 h-4" /> Agents
+        </button>
+        <button type="button" role="tab" aria-selected={tab === 'reports'} onClick={() => setTab('reports')} data-tab="reports"
+          className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold ${tab === 'reports' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border border-gray-200'}`}>
+          <ClipboardList className="w-4 h-4" /> Daily reports
+          {reportsWaiting > 0 ? (
+            <span className={`rounded-full px-1.5 text-[11px] font-black ${tab === 'reports' ? 'bg-white text-indigo-700' : 'bg-indigo-600 text-white'}`} data-waiting="1">
+              {reportsWaiting}
+            </span>
+          ) : null}
+        </button>
+      </div>
+
+      {tab === 'reports' ? (
+        <div className="mt-4">
+          <AgentReportsPanel agents={agents.map((a) => ({ id: a.id, full_name: a.full_name, code: a.code }))}
+            times={times} flash={flash} onWaiting={setReportsWaiting} />
+        </div>
+      ) : (
+      <>
+      {!planOk ? (
+        <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          Daily targets, accounts made for clients and daily reports appear here once FIX931 has been run in Supabase.
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-3 gap-2 my-4">
         <Stat label="Signed up" value={String(totalSignups)} tone="text-gray-900"
           active={focus === 'signups'}
@@ -229,6 +329,7 @@ export default function AgentsSection({
                word "stuck", so an agent converting everybody read as 100%
                stuck. Stuck is what did NOT activate. */
             const hasOwn = Number(a.signups) > 0;
+            const plan = plans[a.agent_id];
             const pct = hasOwn
               ? 100 - Math.round((Number(a.activated) / Number(a.signups)) * 100) : null;
             return (
@@ -256,9 +357,14 @@ export default function AgentsSection({
                     <p className="text-sm font-black text-gray-900">
                       {a.activated}<span className="text-gray-300 font-bold"> / {a.signups}</span>
                     </p>
-                    <p className={`text-[11px] font-bold ${pct >= 40 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    <p className={`text-[11px] font-bold ${pct === null ? 'text-gray-400' : pct > 60 ? 'text-red-600' : pct >= 40 ? 'text-amber-600' : 'text-emerald-600'}`}>
                       {pct === null ? '\u2014' : `${pct}% stuck`}
                     </p>
+                    {plan && plan.daily_target ? (
+                      <p className={`text-[11px] font-bold ${plan.signups_today >= plan.daily_target ? 'text-emerald-600' : 'text-gray-500'}`} data-today-target={a.agent_id}>
+                        today {plan.signups_today} / {plan.daily_target}
+                      </p>
+                    ) : null}
                   </div>
                   <ChevronRight className={`w-4 h-4 shrink-0 text-gray-300 transition-transform ${
                     open === a.agent_id ? 'rotate-90' : ''}`} />
@@ -276,6 +382,47 @@ export default function AgentsSection({
                         <p className="text-gray-500">this week</p>
                       </div>
                     </div>
+
+                    {/* FIX937 - the plan, and the accounts this agent made on their phone for clients (counts only) */}
+                    {planOk ? (
+                      <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-2.5 space-y-2" data-plan={a.agent_id}>
+                        <p className="flex items-center gap-1.5 text-xs font-bold text-indigo-900"><Target className="w-3.5 h-3.5" /> Daily plan</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Field label="New members a day (target)" hint="Empty = no target.">
+                            <input value={planDraft.target} inputMode="numeric" onChange={(e) => setPlanDraft({ ...planDraft, target: e.target.value.replace(/[^0-9]/g, '').slice(0, 3) })}
+                              placeholder="e.g. 10" className={INPUT} data-plan-target={a.agent_id} />
+                          </Field>
+                          <Field label="Accounts for clients a day (cap)" hint="0 = switched off. 30 to start.">
+                            <input value={planDraft.cap} inputMode="numeric" onChange={(e) => setPlanDraft({ ...planDraft, cap: e.target.value.replace(/[^0-9]/g, '').slice(0, 3) })}
+                              className={INPUT} data-plan-cap={a.agent_id} />
+                          </Field>
+                        </div>
+                        <button type="button" onClick={() => void savePlan(a.agent_id)} disabled={planSaving} data-plan-save={a.agent_id}
+                          className="flex items-center gap-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-xl disabled:opacity-50">
+                          {planSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} Save the plan
+                        </button>
+                        {plan ? (
+                          <div className="text-[11px] text-gray-700 space-y-0.5" data-assisted={a.agent_id}>
+                            <p>
+                              <span className="font-bold">Accounts made for clients, last 7 days: {plan.assisted}</span>
+                              {' \u00b7 '}client chose a password: {plan.claimed}
+                              {' \u00b7 '}ended unused after 48 h: {plan.expired}
+                              {' \u00b7 '}today: {plan.assisted_today} of {plan.assist_daily_cap}
+                            </p>
+                            <p>
+                              Waiting for the client now: {plan.waiting}
+                              {plan.not_credited > 0 ? ' \u00b7 not counted to the agent: ' + plan.not_credited : ''}
+                            </p>
+                            <p>
+                              Daily reports, last 7 days: {plan.reports}
+                              {plan.reports > 0 ? ' (met ' + plan.met_yes + ', partly ' + plan.met_partly + ', not met ' + plan.met_no + ')' : ''}
+                              {plan.last_report ? ' \u00b7 last: ' + plan.last_report : ''}
+                              {plan.reports_waiting > 0 ? ' \u00b7 waiting for an answer: ' + plan.reports_waiting : ''}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
 
                     {daily.length ? (
                       <div>
@@ -348,6 +495,8 @@ export default function AgentsSection({
             </div>
           ) : null}
         </div>
+      )}
+      </>
       )}
 
       {draft ? (
@@ -449,3 +598,4 @@ function Field({ label, required, hint, children }: {
 }
 // BAMBEH_END_TOKEN__AGENTSSECTION_FIX508__COMPLETE
 // BAMBEH_END_TOKEN__AGENTSSECTION_FIX592__COMPLETE
+// BAMBEH_END_TOKEN__AGENTSSECTION_FIX937__COMPLETE
