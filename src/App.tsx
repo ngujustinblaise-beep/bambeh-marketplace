@@ -439,13 +439,23 @@ const BackToTopButton = React.memo(function BackToTopButton() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // FIX928 - a small round arrow in the bottom-left corner, no words (the big "Back to Top" pill in the middle of the
+  // screen covered the adverts). Bottom-LEFT in every language: the chat button lives bottom-right.
+  const { language } = useLanguage();
   if (!visible) return null;
+  const label = ({
+    en: "Back to top", fr: "Retour en haut", pidgin: "Go back for top",
+    ar: "\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0623\u0639\u0644\u0649", ff: "Ruttu dow",
+  } as Record<string, string>)[String(language)] || "Back to top";
 
   return (
     <button
+      type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Back to top"
-      className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[9996] px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-500 to-teal-700 text-white flex items-center gap-2 shadow-lg shadow-teal-500/40 hover:from-teal-400 hover:to-teal-600 hover:-translate-y-1 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 text-sm font-semibold"
+      aria-label={label}
+      title={label}
+      data-fix="FIX928"
+      className="fixed bottom-6 left-4 z-[9996] flex h-10 w-10 items-center justify-center rounded-full bg-teal-600/90 text-white shadow-lg shadow-teal-600/30 hover:bg-teal-700 active:scale-90 transition-all duration-200"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -455,12 +465,11 @@ const BackToTopButton = React.memo(function BackToTopButton() {
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-4 h-4"
+        className="w-5 h-5"
         aria-hidden="true"
       >
         <polyline points="18 15 12 9 6 15" />
       </svg>
-      Back to Top
     </button>
   );
 });

@@ -1,18 +1,18 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX828_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX926_CLEAN
 // @ts-nocheck
 /**
- * ═══════════════════════════════════════════════════════════════════════════
+ * ===========================================================================
  * HOME PAGE - BAMBEH MARKETPLACE (FULLY INTERNATIONALIZED)
- * ═══════════════════════════════════════════════════════════════════════════
+ * ===========================================================================
  *
- * ✅ Featured ads from marketplace (subscription-based)
- * ✅ Posted items appear on home page (localStorage method)
- * ✅ View count tracker on listings
- * ✅ Social sharing integration
- * ✅ All categories with beautiful layout
- * ✅ Special Features Hub — links to all Bambeh-exclusive pages
- * ✅ Recent Listings section (from localStorage)
- * ✅ FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
+ * - Featured ads from marketplace (subscription-based)
+ * - Posted items appear on home page (localStorage method)
+ * - View count tracker on listings
+ * - Social sharing integration
+ * - All categories with beautiful layout
+ * - Special Features Hub - links to all Bambeh-exclusive pages
+ * - Recent Listings section (from localStorage)
+ * - FULL I18N: English, French, Pidgin, Arabic, Fulfulde (5 languages)
  *
  * FIX802 (Big, 18 Oct 2026 - "limit users to see marketplace, cooking gas and rentals while the others do
  * not overwhelm users"): a calmer Home.
@@ -36,8 +36,17 @@
  *     something runs (FeaturedAdsStrip, FIX825), and each set of 10 passes across the screen before the next.
  *   - the Corporate adverts strip and its heading disappear when it is switched off.
  *
- * © 2025–2026 Bambeh. All rights reserved.
- * ═══════════════════════════════════════════════════════════════════════════
+ * FIX926 (Big, 29 Oct 2026 - "the old colour looks ok"; from the calm-look previews he kept these):
+ *   - COOKING GAS AND FOOD PILLS under the three main categories - the two buttons from the calm draft, in Bambeh's
+ *     own colours (Food is one tap away now; Cooking gas keeps its big card too).
+ *   - THE CORPORATE ADVERTS heading and strip show only once a business advert exists (no "No corporate adverts yet"
+ *     box on Home), and only after Command Center > Featured ads has answered (switched off = not even downloaded).
+ *   - Share Bambeh sends the real address (app.bambeh.com), also from inside the Android app (FIX630's publicShareUrl).
+ *   - The unused "recently posted" download is gone: Home fetched ten adverts on every visit and never showed them.
+ *   Everything else - the colours, the three main categories, Special Features, free help - is exactly as before.
+ *
+ * (c) 2025-2026 Bambeh. All rights reserved.
+ * ===========================================================================
  */
 
 import { useState, useEffect } from 'react';
@@ -49,10 +58,7 @@ import {
   Home as HomeIcon,
   Car,
   TrendingUp,
-  MapPin,
   Share2,
-  Clock,
-  Eye,
   Building2,
   Flame,           // FIX704 - Cooking gas tile
   UtensilsCrossed, // FIX704 - Food tile
@@ -83,17 +89,16 @@ function howToUseLang(): string {
 }
 import { useNavigate } from 'react-router-dom';
 import SocialShareButton from '@/components/social/SocialShareButton';
-import { ListingImage } from '@/components/ui/BambehImage';
 import { useLanguage } from "@/context/LanguageContext";
-import { supabase } from '@/lib/supabase';
 import ServicesRow from '@/components/home/ServicesRow';   // FIX481
 import HomeSearch from '@/components/home/HomeSearch';     // FIX820 - the instant search
-import { IS_STORE_APP, storeAllows } from '@/config/storeMode'; // FIX620
+import { IS_STORE_APP, storeAllows, publicShareUrl } from '@/config/storeMode'; // FIX620, FIX926 - the real address to share
 import FeaturedAdsStrip from '@/components/ads/FeaturedAdsStrip';
-import CorporateAdsStrip from '@/features/corporate/CorporateAdsStrip';
+import CorporateAdsStrip, { fetchCorporateAds } from '@/features/corporate/CorporateAdsStrip';
+import type { CorporateAd } from '@/features/corporate/CorporateAdsStrip'; // FIX926
 import { useAdNow } from '@/components/ads/adControl';   // FIX828 - what Command Center > Featured ads switched on
 
-// ─── Translation Table ─────────────────────────────────────────────────────
+// --- Translation Table -----------------------------------------------------
 const HOME_T: Record<string, Record<string, string>> = {
   en: {
     "home.welcomePrefix": "Welcome to ",
@@ -131,7 +136,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.escrow": "User Protection",
     "home.recentPosted": "Recently Posted",
     "home.corporateAds": "Corporate Adverts",
-    "home.seeAll": "See all →",
+    "home.seeAll": "See all \u2192",
     "home.moreCats": "More categories", // FIX802
     "home.seeAllN": "See all ({{n}})", // FIX802
     "home.showLess": "Show less", // FIX802
@@ -161,60 +166,60 @@ const HOME_T: Record<string, Record<string, string>> = {
   fr: {
     "home.welcomePrefix": "Bienvenue sur ",
     "home.welcomeSuffix": "Bambeh",
-    "home.tagline": "Place de marché en ligne",
+    "home.tagline": "Place de march\u00e9 en ligne",
     "home.feeMsg": "Seulement 1 % de commission par vente (taxes et frais de service en sus)",
     "home.shareBtn": "Partager Bambeh avec des amis",
     "home.sellBtn": "Vendre un article",
     "home.corporateBtn": "Espace Entreprise",
     "home.jobsTitle": "Emplois",
-    "home.jobsDesc": "Trouvez votre prochaine opportunité",
-    "home.marketplaceTitle": "Marché",
+    "home.jobsDesc": "Trouvez votre prochaine opportunit\u00e9",
+    "home.marketplaceTitle": "March\u00e9",
     "home.marketplaceDesc": "Acheter et vendre des articles",
     "home.servicesTitle": "Services",
     "home.servicesDesc": "Embaucher des professionnels",
     "home.rentalsTitle": "Locations",
     "home.rentalsDesc": "Trouvez votre prochain logement",
-    "home.vehiclesTitle": "Véhicules",
+    "home.vehiclesTitle": "V\u00e9hicules",
     "home.vehiclesDesc": "Voitures et motos",
-    "home.exchangeTitle": "Échange",
+    "home.exchangeTitle": "\u00c9change",
     "home.exchangeDesc": "Troquer des articles",
     "home.gasTitle": "Gaz domestique",
     "home.gasDesc": "Recharges et bouteilles pr\u00E8s de chez vous",
     "home.foodTitle": "Restos & grillades",
     "home.foodDesc": "Restaurants, soya et poisson brais\u00E9",
-    "home.featuresHeading": "Fonctionnalités spéciales",
-    "home.zermCoins": "Pièces Zerm",
+    "home.featuresHeading": "Fonctionnalit\u00e9s sp\u00e9ciales",
+    "home.zermCoins": "Pi\u00e8ces Zerm",
     "home.farmFresh": "Produits frais",
-    "home.community": "Communauté",
+    "home.community": "Communaut\u00e9",
     "home.groupBuying": "Achat collectif",
     "home.compareItems": "Comparer les articles",
     "home.bambehAI": "IA Bambeh",
-    "home.flashDeals": "Offres éclair",
-    "home.meetSafely": "Rencontre sécurisée",
+    "home.flashDeals": "Offres \u00e9clair",
+    "home.meetSafely": "Rencontre s\u00e9curis\u00e9e",
     "home.escrow": "Protection des utilisateurs",
-    "home.recentPosted": "Récemment publié",
+    "home.recentPosted": "R\u00e9cemment publi\u00e9",
     "home.corporateAds": "Annonces Entreprises",
-    "home.seeAll": "Voir tout →",
+    "home.seeAll": "Voir tout \u2192",
     "home.moreCats": "Plus de cat\u00e9gories", // FIX802
     "home.seeAllN": "Voir tout ({{n}})", // FIX802
     "home.showLess": "Voir moins", // FIX802
-    "home.badgeFeatured": "À la une",
+    "home.badgeFeatured": "\u00c0 la une",
     "home.badgeUrgent": "Urgent",
-    "home.typeExchange": "Échange / Troc",
-    "home.typeNegotiable": "Négociable",
+    "home.typeExchange": "\u00c9change / Troc",
+    "home.typeNegotiable": "N\u00e9gociable",
     "home.typeItem": "article",
     "home.whyChoose": "Pourquoi choisir Bambeh ?",
     "home.whyFee": "1 % de commission",
     "home.whyFeeDesc": "Seulement 1 % de commission quand une vente se conclut. Les taxes et les frais de service et de paiement sont affich\u00e9s avant tout paiement.",
     "home.whyEscrow": "Protection des utilisateurs",
-    "home.whyEscrowDesc": "Votre argent est protégé jusqu'à la confirmation de la livraison.",
-    "home.whyTracking": "Suivi en temps réel",
-    "home.whyTrackingDesc": "Suivez vos commandes de l'achat à la livraison.",
-    "home.ctaTitle": "Prêt à commencer ?",
+    "home.whyEscrowDesc": "Votre argent est prot\u00e9g\u00e9 jusqu'\u00e0 la confirmation de la livraison.",
+    "home.whyTracking": "Suivi en temps r\u00e9el",
+    "home.whyTrackingDesc": "Suivez vos commandes de l'achat \u00e0 la livraison.",
+    "home.ctaTitle": "Pr\u00eat \u00e0 commencer ?",
     "home.ctaSubtitle": "Achetez, vendez, louez, embauchez et \u00e9changez sur Bambeh. Publier votre annonce est gratuit.",
     "home.ctaShop": "Commencer les achats",
     "home.ctaSell": "Vendre un article",
-    "home.timeJustNow": "À l'instant",
+    "home.timeJustNow": "\u00c0 l'instant",
     "home.timeMinAgo": "Il y a {{m}} min",
     "home.timeHourAgo": "Il y a {{h}}h",
     "home.timeDayAgo": "Il y a {{d}}j",
@@ -222,67 +227,67 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.viewPlural": "vues",
   },
   ar: {
-    "home.welcomePrefix": "أهلا وسهلا ب ",
+    "home.welcomePrefix": "\u0623\u0647\u0644\u0627 \u0648\u0633\u0647\u0644\u0627 \u0628 ",
     "home.welcomeSuffix": "Bambeh",
-    "home.tagline": "سوق إلكتروني",
+    "home.tagline": "\u0633\u0648\u0642 \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a",
     "home.feeMsg": "\u0639\u0645\u0648\u0644\u0629 1% \u0641\u0642\u0637 \u0639\u0644\u0649 \u0643\u0644 \u0639\u0645\u0644\u064a\u0629 \u0628\u064a\u0639 (\u062a\u064f\u0636\u0627\u0641 \u0627\u0644\u0636\u0631\u064a\u0628\u0629 \u0648\u0631\u0633\u0648\u0645 \u0627\u0644\u062e\u062f\u0645\u0629)",
-    "home.shareBtn": "شارك Bambeh مع الأصدقاء",
+    "home.shareBtn": "\u0634\u0627\u0631\u0643 Bambeh \u0645\u0639 \u0627\u0644\u0623\u0635\u062f\u0642\u0627\u0621",
     "home.sellBtn": "\u0628\u0650\u0639 \u0633\u0644\u0639\u0629",
-    "home.corporateBtn": "دخول الشركات",
-    "home.jobsTitle": "الوظائف",
-    "home.jobsDesc": "ابحث عن فرصتك التالية",
-    "home.marketplaceTitle": "السوق",
-    "home.marketplaceDesc": "شراء وبيع العناصر",
-    "home.servicesTitle": "الخدمات",
-    "home.servicesDesc": "استئجار المحترفين",
-    "home.rentalsTitle": "الإيجارات",
-    "home.rentalsDesc": "ابحث عن منزلك التالي",
-    "home.vehiclesTitle": "المركبات",
-    "home.vehiclesDesc": "السيارات والدراجات النارية",
-    "home.exchangeTitle": "المقايضة",
-    "home.exchangeDesc": "مبادلة العناصر",
+    "home.corporateBtn": "\u062f\u062e\u0648\u0644 \u0627\u0644\u0634\u0631\u0643\u0627\u062a",
+    "home.jobsTitle": "\u0627\u0644\u0648\u0638\u0627\u0626\u0641",
+    "home.jobsDesc": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0641\u0631\u0635\u062a\u0643 \u0627\u0644\u062a\u0627\u0644\u064a\u0629",
+    "home.marketplaceTitle": "\u0627\u0644\u0633\u0648\u0642",
+    "home.marketplaceDesc": "\u0634\u0631\u0627\u0621 \u0648\u0628\u064a\u0639 \u0627\u0644\u0639\u0646\u0627\u0635\u0631",
+    "home.servicesTitle": "\u0627\u0644\u062e\u062f\u0645\u0627\u062a",
+    "home.servicesDesc": "\u0627\u0633\u062a\u0626\u062c\u0627\u0631 \u0627\u0644\u0645\u062d\u062a\u0631\u0641\u064a\u0646",
+    "home.rentalsTitle": "\u0627\u0644\u0625\u064a\u062c\u0627\u0631\u0627\u062a",
+    "home.rentalsDesc": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0645\u0646\u0632\u0644\u0643 \u0627\u0644\u062a\u0627\u0644\u064a",
+    "home.vehiclesTitle": "\u0627\u0644\u0645\u0631\u0643\u0628\u0627\u062a",
+    "home.vehiclesDesc": "\u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u062f\u0631\u0627\u062c\u0627\u062a \u0627\u0644\u0646\u0627\u0631\u064a\u0629",
+    "home.exchangeTitle": "\u0627\u0644\u0645\u0642\u0627\u064a\u0636\u0629",
+    "home.exchangeDesc": "\u0645\u0628\u0627\u062f\u0644\u0629 \u0627\u0644\u0639\u0646\u0627\u0635\u0631",
     "home.gasTitle": "\u063A\u0627\u0632 \u0627\u0644\u0637\u0628\u062E",
     "home.gasDesc": "\u062A\u0639\u0628\u0626\u0629 \u0648\u0642\u0648\u0627\u0631\u064A\u0631 \u063A\u0627\u0632 \u0628\u0627\u0644\u0642\u0631\u0628 \u0645\u0646\u0643",
     "home.foodTitle": "\u0627\u0644\u0637\u0639\u0627\u0645",
     "home.foodDesc": "\u0645\u0637\u0627\u0639\u0645 \u0648\u0635\u0648\u064A\u0627 \u0648\u0633\u0645\u0643 \u0645\u0634\u0648\u064A",
-    "home.featuresHeading": "ميزات خاصة",
-    "home.zermCoins": "عملات Zerm",
-    "home.farmFresh": "منتجات طازة",
-    "home.community": "المجتمع",
-    "home.groupBuying": "الشراء الجماعي",
-    "home.compareItems": "مقارنة العناصر",
-    "home.bambehAI": "ذكاء Bambeh الصناعي",
-    "home.flashDeals": "صفقات سريعة",
-    "home.meetSafely": "لقاء آمن",
+    "home.featuresHeading": "\u0645\u064a\u0632\u0627\u062a \u062e\u0627\u0635\u0629",
+    "home.zermCoins": "\u0639\u0645\u0644\u0627\u062a Zerm",
+    "home.farmFresh": "\u0645\u0646\u062a\u062c\u0627\u062a \u0637\u0627\u0632\u0629",
+    "home.community": "\u0627\u0644\u0645\u062c\u062a\u0645\u0639",
+    "home.groupBuying": "\u0627\u0644\u0634\u0631\u0627\u0621 \u0627\u0644\u062c\u0645\u0627\u0639\u064a",
+    "home.compareItems": "\u0645\u0642\u0627\u0631\u0646\u0629 \u0627\u0644\u0639\u0646\u0627\u0635\u0631",
+    "home.bambehAI": "\u0630\u0643\u0627\u0621 Bambeh \u0627\u0644\u0635\u0646\u0627\u0639\u064a",
+    "home.flashDeals": "\u0635\u0641\u0642\u0627\u062a \u0633\u0631\u064a\u0639\u0629",
+    "home.meetSafely": "\u0644\u0642\u0627\u0621 \u0622\u0645\u0646",
     "home.escrow": "\u062d\u0645\u0627\u064a\u0629 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645",
-    "home.recentPosted": "تم نشره مؤخرا",
-    "home.corporateAds": "إعلانات الشركات",
-    "home.seeAll": "عرض الكل ←",
+    "home.recentPosted": "\u062a\u0645 \u0646\u0634\u0631\u0647 \u0645\u0624\u062e\u0631\u0627",
+    "home.corporateAds": "\u0625\u0639\u0644\u0627\u0646\u0627\u062a \u0627\u0644\u0634\u0631\u0643\u0627\u062a",
+    "home.seeAll": "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644 \u2190",
     "home.moreCats": "\u0641\u0626\u0627\u062a \u0623\u062e\u0631\u0649", // FIX802
     "home.seeAllN": "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644 ({{n}})", // FIX802
     "home.showLess": "\u0639\u0631\u0636 \u0623\u0642\u0644", // FIX802
-    "home.badgeFeatured": "مميز",
-    "home.badgeUrgent": "عاجل",
-    "home.typeExchange": "مقايضة / تبديل",
-    "home.typeNegotiable": "قابل للتفاوض",
-    "home.typeItem": "عنصر",
-    "home.whyChoose": "لماذا اختيار Bambeh؟",
+    "home.badgeFeatured": "\u0645\u0645\u064a\u0632",
+    "home.badgeUrgent": "\u0639\u0627\u062c\u0644",
+    "home.typeExchange": "\u0645\u0642\u0627\u064a\u0636\u0629 / \u062a\u0628\u062f\u064a\u0644",
+    "home.typeNegotiable": "\u0642\u0627\u0628\u0644 \u0644\u0644\u062a\u0641\u0627\u0648\u0636",
+    "home.typeItem": "\u0639\u0646\u0635\u0631",
+    "home.whyChoose": "\u0644\u0645\u0627\u0630\u0627 \u0627\u062e\u062a\u064a\u0627\u0631 Bambeh\u061f",
     "home.whyFee": "\u0639\u0645\u0648\u0644\u0629 1%",
     "home.whyFeeDesc": "\u0639\u0645\u0648\u0644\u0629 1% \u0641\u0642\u0637 \u0639\u0646\u062f \u0625\u062a\u0645\u0627\u0645 \u0627\u0644\u0628\u064a\u0639. \u062a\u064f\u0639\u0631\u0636 \u0627\u0644\u0636\u0631\u064a\u0628\u0629 \u0648\u0631\u0633\u0648\u0645 \u0627\u0644\u062e\u062f\u0645\u0629 \u0648\u0627\u0644\u062f\u0641\u0639 \u0642\u0628\u0644 \u0623\u064a \u062f\u0641\u0639.",
     "home.whyEscrow": "\u062d\u0645\u0627\u064a\u0629 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645",
-    "home.whyEscrowDesc": "أموالك محمية حتى تأكيد التسليم.",
-    "home.whyTracking": "تتبع في الوقت الفعلي",
-    "home.whyTrackingDesc": "تابع طلباتك من الشراء إلى التسليم.",
-    "home.ctaTitle": "هل أنت مستعد للبدء؟",
+    "home.whyEscrowDesc": "\u0623\u0645\u0648\u0627\u0644\u0643 \u0645\u062d\u0645\u064a\u0629 \u062d\u062a\u0649 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062a\u0633\u0644\u064a\u0645.",
+    "home.whyTracking": "\u062a\u062a\u0628\u0639 \u0641\u064a \u0627\u0644\u0648\u0642\u062a \u0627\u0644\u0641\u0639\u0644\u064a",
+    "home.whyTrackingDesc": "\u062a\u0627\u0628\u0639 \u0637\u0644\u0628\u0627\u062a\u0643 \u0645\u0646 \u0627\u0644\u0634\u0631\u0627\u0621 \u0625\u0644\u0649 \u0627\u0644\u062a\u0633\u0644\u064a\u0645.",
+    "home.ctaTitle": "\u0647\u0644 \u0623\u0646\u062a \u0645\u0633\u062a\u0639\u062f \u0644\u0644\u0628\u062f\u0621\u061f",
     "home.ctaSubtitle": "\u0627\u0634\u062a\u0631\u0650 \u0648\u0628\u0650\u0639 \u0648\u0627\u0633\u062a\u0623\u062c\u0631 \u0648\u0648\u0638\u0650\u0651\u0641 \u0648\u0628\u0627\u062f\u0650\u0644 \u0639\u0644\u0649 \u0628\u0627\u0645\u0628\u064a\u0647. \u0646\u0634\u0631 \u0625\u0639\u0644\u0627\u0646\u0643 \u0645\u062c\u0627\u0646\u064a.",
-    "home.ctaShop": "ابدأ التسوق",
-    "home.ctaSell": "بيع عنصر",
-    "home.timeJustNow": "للتو",
-    "home.timeMinAgo": "منذ {{m}} دقيقة",
-    "home.timeHourAgo": "منذ {{h}} ساعة",
-    "home.timeDayAgo": "منذ {{d}} يوم",
-    "home.viewSingular": "عرض",
-    "home.viewPlural": "عروض",
+    "home.ctaShop": "\u0627\u0628\u062f\u0623 \u0627\u0644\u062a\u0633\u0648\u0642",
+    "home.ctaSell": "\u0628\u064a\u0639 \u0639\u0646\u0635\u0631",
+    "home.timeJustNow": "\u0644\u0644\u062a\u0648",
+    "home.timeMinAgo": "\u0645\u0646\u0630 {{m}} \u062f\u0642\u064a\u0642\u0629",
+    "home.timeHourAgo": "\u0645\u0646\u0630 {{h}} \u0633\u0627\u0639\u0629",
+    "home.timeDayAgo": "\u0645\u0646\u0630 {{d}} \u064a\u0648\u0645",
+    "home.viewSingular": "\u0639\u0631\u0636",
+    "home.viewPlural": "\u0639\u0631\u0648\u0636",
   },
   pidgin: {
     "home.welcomePrefix": "Welcome to ",
@@ -320,7 +325,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.escrow": "User Protection",
     "home.recentPosted": "Recently Posted",
     "home.corporateAds": "Corporate Adverts",
-    "home.seeAll": "See all →",
+    "home.seeAll": "See all \u2192",
     "home.moreCats": "More category", // FIX802
     "home.seeAllN": "See all ({{n}})", // FIX802
     "home.showLess": "Show less", // FIX802
@@ -366,7 +371,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.vehiclesTitle": "Mootorji",
     "home.vehiclesDesc": "Finniye e motobare",
     "home.exchangeTitle": "Jayndu",
-    "home.exchangeDesc": "Jayndu geɗiɗi",
+    "home.exchangeDesc": "Jayndu ge\u0257i\u0257i",
     "home.gasTitle": "Gaas defirde",
     "home.gasDesc": "He\u0253tinde gaas \u0253adii\u0257i ma",
     "home.foodTitle": "\u00D1aamdu",
@@ -376,22 +381,22 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.farmFresh": "Jeema Koli",
     "home.community": "Joyi",
     "home.groupBuying": "Windu\u0257e Golol",
-    "home.compareItems": "Danna Geɗiɗi",
+    "home.compareItems": "Danna Ge\u0257i\u0257i",
     "home.bambehAI": "Bambeh AI",
     "home.flashDeals": "Taggal Cinnde",
     "home.meetSafely": "Haaltu Jibintirde",
     "home.escrow": "Ndeenka huutoroo\u0253e",
-    "home.recentPosted": "Winduɗi Gooto",
-    "home.corporateAds": "Jeeyanɗe Corporate",
-    "home.seeAll": "Yiylo fof →",
+    "home.recentPosted": "Windu\u0257i Gooto",
+    "home.corporateAds": "Jeeyan\u0257e Corporate",
+    "home.seeAll": "Yiylo fof \u2192",
     "home.moreCats": "Hollu \u0253ur\u0257o", // FIX802
     "home.seeAllN": "Yiylo fof ({{n}})", // FIX802
     "home.showLess": "Hollu see\u0257a", // FIX802
     "home.badgeFeatured": "Sifaa",
     "home.badgeUrgent": "Aray",
-    "home.typeExchange": "Jayndu / Roɓaa",
+    "home.typeExchange": "Jayndu / Ro\u0253aa",
     "home.typeNegotiable": "E ko yaajanda",
-    "home.typeItem": "jeɗ",
+    "home.typeItem": "je\u0257",
     "home.whyChoose": "Haa yidde Bambeh?",
     "home.whyFee": "Komisiyo\u014b 1%",
     "home.whyFeeDesc": "Komisiyo\u014b 1% tan so njeeygu timmii. Lampo e njo\u0253di golle e yo\u0253gol ina njiyee hade yo\u0253gol.",
@@ -402,7 +407,7 @@ const HOME_T: Record<string, Record<string, string>> = {
     "home.ctaTitle": "A\u0259 jom hanwi?",
     "home.ctaSubtitle": "Soodu, yeeyu, luw e waylu e Bambeh. Winndugo anndinol maa ko meere.",
     "home.ctaShop": "Hanwi windu\u0257e",
-    "home.ctaSell": "Gummaa jeɗ",
+    "home.ctaSell": "Gummaa je\u0257",
     "home.timeJustNow": "Gooto",
     "home.timeMinAgo": "Sekkere {{m}} ago",
     "home.timeHourAgo": "Lewru {{h}} ago",
@@ -412,7 +417,7 @@ const HOME_T: Record<string, Record<string, string>> = {
   },
 };
 
-// ─── Language Normalization ───────────────────────────────────────────────
+// --- Language Normalization -----------------------------------------------
 const homeNormLang = (l: string): string => {
   l = String(l || 'en').toLowerCase();
   if (l.indexOf('fr') === 0) return 'fr';
@@ -438,28 +443,10 @@ function setSessionFlag(key: string, on: boolean): void {
   } catch { /* not kept - fine */ }
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────
-interface RecentListing {
-  id: string | number;
-  type?: string;
-  title: string;
-  price: number;
-  currency?: string;
-  location?: string;
-  category?: string;
-  primaryImage?: string;
-  featured?: boolean;
-  urgent?: boolean;
-  negotiable?: boolean;
-  condition?: string;
-  createdAt: string;
-  expiresAt?: string;
-}
-
 export default function Home() {
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const { now: adNow } = useAdNow();   // FIX828
+  const { now: adNow, ready: adReady } = useAdNow();   // FIX828; FIX926 - wait for the answer
   const _rl = homeNormLang(language);
   const isRtl = _rl === "ar";
   
@@ -472,9 +459,8 @@ export default function Home() {
     return v;
   };
 
-  const [recentListings, setRecentListings] = useState<RecentListing[]>([]);
 
-  // ── Categories (translated names & descriptions) ───────────────────────
+  // -- Categories (translated names & descriptions) -----------------------
   const categories = [
     { nameKey: 'home.jobsTitle', descKey: 'home.jobsDesc', icon: Briefcase,  link: '/jobs',        color: 'bg-blue-500'   },
     { nameKey: 'home.marketplaceTitle', descKey: 'home.marketplaceDesc', icon: ShoppingBag, link: '/marketplace', color: 'bg-green-500'  },
@@ -486,17 +472,17 @@ export default function Home() {
     { nameKey: 'home.foodTitle', descKey: 'home.foodDesc', icon: UtensilsCrossed, link: '/food-gas/food', color: 'bg-amber-500' }, // FIX704
   ];
 
-  // ── Special Features tiles (translated labels) ─────────────────────────
+  // -- Special Features tiles (translated labels) -------------------------
   const specialFeatures = [
-    { labelKey: 'home.zermCoins',    link: '/coins',        emoji: '⚡', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
-    { labelKey: 'home.farmFresh',    link: '/farm-fresh',   emoji: '🌿', bg: 'bg-green-50',   text: 'text-green-800'   },
-    { labelKey: 'home.community',     link: '/community',    emoji: '🏘️', bg: 'bg-teal-50',    text: 'text-teal-800'    },
-    { labelKey: 'home.groupBuying',  link: '/group-buying', emoji: '👥', bg: 'bg-blue-50',    text: 'text-blue-800'    },
-    { labelKey: 'home.compareItems', link: '/compare',      emoji: '⚖️', bg: 'bg-purple-50',  text: 'text-purple-800'  },
-    { labelKey: 'home.bambehAI',     link: '/ai-chat',      emoji: '🤖', bg: 'bg-indigo-50',  text: 'text-indigo-800'  },
-    { labelKey: 'home.flashDeals',   link: '/deals',        emoji: '⚡', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
-    { labelKey: 'home.meetSafely',   link: '/meet-safely',  emoji: '🛡️', bg: 'bg-sky-50',     text: 'text-sky-800'     },
-    { labelKey: 'home.escrow',        link: '/escrow',       emoji: '🔒', bg: 'bg-emerald-50', text: 'text-emerald-800' },
+    { labelKey: 'home.zermCoins',    link: '/coins',        emoji: '\u26a1', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
+    { labelKey: 'home.farmFresh',    link: '/farm-fresh',   emoji: '\ud83c\udf3f', bg: 'bg-green-50',   text: 'text-green-800'   },
+    { labelKey: 'home.community',     link: '/community',    emoji: '\ud83c\udfd8\ufe0f', bg: 'bg-teal-50',    text: 'text-teal-800'    },
+    { labelKey: 'home.groupBuying',  link: '/group-buying', emoji: '\ud83d\udc65', bg: 'bg-blue-50',    text: 'text-blue-800'    },
+    { labelKey: 'home.compareItems', link: '/compare',      emoji: '\u2696\ufe0f', bg: 'bg-purple-50',  text: 'text-purple-800'  },
+    { labelKey: 'home.bambehAI',     link: '/ai-chat',      emoji: '\ud83e\udd16', bg: 'bg-indigo-50',  text: 'text-indigo-800'  },
+    { labelKey: 'home.flashDeals',   link: '/deals',        emoji: '\u26a1', bg: 'bg-yellow-50',  text: 'text-yellow-800'  },
+    { labelKey: 'home.meetSafely',   link: '/meet-safely',  emoji: '\ud83d\udee1\ufe0f', bg: 'bg-sky-50',     text: 'text-sky-800'     },
+    { labelKey: 'home.escrow',        link: '/escrow',       emoji: '\ud83d\udd12', bg: 'bg-emerald-50', text: 'text-emerald-800' },
   ];
 
   // FIX802 - what is on show and what waits behind "More categories" / "See all" (Big, 18 Oct 2026)
@@ -516,65 +502,32 @@ export default function Home() {
   const toggleCats = () => { const v = !showAllCats; setShowAllCats(v); setSessionFlag(MORE_CATS_KEY, v); };
   const toggleFeatures = () => { const v = !showAllFeatures; setShowAllFeatures(v); setSessionFlag(MORE_FEATURES_KEY, v); };
 
+  // FIX926 - corporate adverts: no heading and no empty box until a business advert exists. One download, shared with
+  // the strip (it does not download again), and only once Command Center > Featured ads has answered: switched off =
+  // nothing downloaded at all.
+  const corporateWanted = !IS_STORE_APP && adReady && adNow.corporate_on;
+  const [corporateAds, setCorporateAds] = useState<CorporateAd[]>([]);
   useEffect(() => {
-    // FIX114: recently posted listings now load from REAL Supabase.
-    // (Featured ads are handled by the live <FeaturedAdsStrip /> below.)
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from('listings')
-          .select('id, type, title, price, location, images, status, created_at, expires_at')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
-          .limit(10);
-        if (error) throw error;
-        const now = Date.now();
-        const mapped: RecentListing[] = ((data ?? []) as Array<{
-          id: string; type: string | null; title: string; price: number | null;
-          location: string | null; images: string[] | null; created_at: string; expires_at: string | null;
-        }>)
-          .filter(l => !l.expires_at || new Date(l.expires_at).getTime() >= now)
-          .map(l => ({
-            id: l.id,
-            type: l.type ?? 'marketplace',
-            title: l.title,
-            price: l.price ?? 0,
-            location: l.location ?? undefined,
-            primaryImage: Array.isArray(l.images) && l.images[0] ? l.images[0] : undefined,
-            createdAt: l.created_at,
-            expiresAt: l.expires_at ?? undefined,
-          }));
-        setRecentListings(mapped);
-      } catch {
-        setRecentListings([]);
-      }
-    })();
-  }, []);
-
-  // ── Helpers ────────────────────────────────────────────────────────────
-  const timeAgo = (iso: string): string => {
-    const diff = Date.now() - new Date(iso).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1)  return t('home.timeJustNow');
-    if (m < 60) return t('home.timeMinAgo', { m });
-    const h = Math.floor(m / 60);
-    if (h < 24) return t('home.timeHourAgo', { h });
-    const d = Math.floor(h / 24);
-    return t('home.timeDayAgo', { d });
-  };
+    if (!corporateWanted) return;
+    let alive = true;
+    fetchCorporateAds(60)
+      .then((ads) => { if (alive) setCorporateAds(ads); })
+      .catch(() => { if (alive) setCorporateAds([]); });
+    return () => { alive = false; };
+  }, [corporateWanted]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50">
       <div className="container mx-auto px-4 py-6 md:py-16">
 
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        {/* -- Hero ------------------------------------------------------- */}
         <div className="text-center mb-10 md:mb-16">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-3 md:mb-4">
             {t('home.welcomePrefix')}<span className="text-teal-600">{t('home.welcomeSuffix')}</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mb-2">{t('home.tagline')}</p>
           <p className="text-base md:text-lg text-gray-500">
-            🎉 <span className="font-bold text-green-600">{t('home.feeMsg')}</span> 💚
+            {'\u{1F389}'} <span className="font-bold text-green-600">{t('home.feeMsg')}</span> {'\u{1F49A}'}
           </p>
 
           {/* FIX821 - the instant search (FIX820): the first thing to use on Home */}
@@ -592,6 +545,7 @@ export default function Home() {
             <SocialShareButton
               title="Bambeh - Online Marketplace"
               description="Buy, sell, rent and find work on Bambeh. Posting is free."
+              url={publicShareUrl()}
               itemType="app"
               className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
@@ -640,6 +594,27 @@ export default function Home() {
               </Link>
             ))}
           </div>
+          {/* FIX926 - Cooking gas and Food, one tap away (the two buttons Big liked in the calm draft, in Bambeh's colours) */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2" data-home-pills="1">
+            <Link
+              to="/food-gas/gas"
+              data-pill="/food-gas/gas"
+              title={t('home.gasDesc')}
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:border-red-200 hover:shadow-md active:scale-[0.98] transition-all"
+            >
+              <Flame className="w-4 h-4 text-red-600" />
+              {t('home.gasTitle')}
+            </Link>
+            <Link
+              to="/food-gas/food"
+              data-pill="/food-gas/food"
+              title={t('home.foodDesc')}
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:border-amber-200 hover:shadow-md active:scale-[0.98] transition-all"
+            >
+              <UtensilsCrossed className="w-4 h-4 text-amber-500" />
+              {t('home.foodTitle')}
+            </Link>
+          </div>
           {moreCategories.length > 0 && (
             <button
               type="button"
@@ -675,10 +650,10 @@ export default function Home() {
           )}
         </div>
 
-        {/* ── Special Features (FIX802: four on show, the rest behind "See all") ──────────────────────────────────────────── */}
+        {/* -- Special Features (FIX802: four on show, the rest behind "See all") -------------------------------------------- */}
         <div className="mb-16" data-home-features="1" style={shownFeatures.length ? undefined : { display: 'none' }}>
           <div className="flex items-center justify-between gap-3 mb-6">
-            <h2 className="text-3xl font-bold text-gray-900">✨ {t('home.featuresHeading')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900">{'\u{2728}'} {t('home.featuresHeading')}</h2>
             {moreFeatures.length > 0 && (
               <button
                 type="button"
@@ -708,7 +683,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Featured Ads ──────────────────────────────────────────────── */}
+        {/* -- Featured Ads ------------------------------------------------ */}
         {/* FIX481 - the free services. Deliberately placed directly ABOVE the
             featured strip: anyone reaching for "Pharmacies on call" travels
             past the adverts to get here, so the strip is seen on the way
@@ -717,39 +692,39 @@ export default function Home() {
 
         {/* Featured Ads (FIX114: live rolling strip of REAL posts). FIX828 - what runs is set in Command Center >
             Featured ads; the heading shows only when something runs; sets of 10 pass across the screen (FIX825). */}
-        <FeaturedAdsStrip maxVisible={10} showHeader={false} heading={'⭐ ' + t('home.badgeFeatured')} className="mb-16" />
+        <FeaturedAdsStrip maxVisible={10} showHeader={false} heading={'\u2b50 ' + t('home.badgeFeatured')} className="mb-16" />
 
-        {/* ── Corporate Adverts (FIX123: replaces Recently Posted) ─────── */}
+        {/* -- Corporate Adverts (FIX123: replaces Recently Posted) ------- */}
         {/* FIX828 - switched off in Command Center > Featured ads: the strip and its heading are not shown */}
-        {!IS_STORE_APP && adNow.corporate_on && (<div className="mb-16" data-home-corporate="1">
+        {corporateWanted && corporateAds.length > 0 && (<div className="mb-16" data-home-corporate="1">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">🏢 {t('home.corporateAds')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{'\u{1F3E2}'} {t('home.corporateAds')}</h2>
             <Link to="/corporate/ads" className="text-teal-600 hover:text-teal-700 font-semibold text-sm">{t('home.seeAll')}</Link>
           </div>
-          <CorporateAdsStrip maxVisible={8} />
+          <CorporateAdsStrip maxVisible={8} preloaded={corporateAds} />
         </div>)}
 
-        {/* ── Why Bambeh ────────────────────────────────────────────────── */}
+        {/* -- Why Bambeh -------------------------------------------------- */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">{t('home.whyChoose')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">💚</span>
+                <span className="text-3xl">{'\u{1F49A}'}</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyFee')}</h3>
               <p className="text-gray-600">{t('home.whyFeeDesc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🔒</span>
+                <span className="text-3xl">{'\u{1F512}'}</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyEscrow')}</h3>
               <p className="text-gray-600">{t('home.whyEscrowDesc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">📦</span>
+                <span className="text-3xl">{'\u{1F4E6}'}</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{t('home.whyTracking')}</h3>
               <p className="text-gray-600">{t('home.whyTrackingDesc')}</p>
@@ -757,7 +732,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── CTA ──────────────────────────────────────────────────────── */}
+        {/* -- CTA -------------------------------------------------------- */}
         <div className="bg-gradient-to-r from-teal-600 to-blue-600 rounded-2xl shadow-2xl p-12 text-center text-white">
           <h2 className="text-4xl font-bold mb-4">{t('home.ctaTitle')}</h2>
           <p className="text-xl mb-8">{t('home.ctaSubtitle')}</p>
@@ -776,15 +751,4 @@ export default function Home() {
   );
 }
 
-// ── ViewCount Sub-Component ───────────────────────────────────────────────────
-function ViewCount({ listingId, t }: { listingId: string; t: (k: string) => string }) {
-  const key = `Bambeh_views_${listingId}`;
-  const count = parseInt(localStorage.getItem(key) || '0');
-  if (count === 0) return null;
-  return (
-    <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-      <Eye className="w-3 h-3" />{count} {count === 1 ? t('home.viewSingular') : t('home.viewPlural')}
-    </p>
-  );
-}
-// BAMBEH_END_TOKEN__HOME_FIX828__COMPLETE
+// BAMBEH_END_TOKEN__HOME_FIX926__COMPLETE

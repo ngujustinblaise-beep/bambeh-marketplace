@@ -1,167 +1,209 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
-import { useNotifications, type BambehNotification } from '@/hooks/useNotifications';
+// BAMBEH_DEPLOY_TOKEN__NOTIFICATIONBELL_FIX927_CLEAN
+/**
+ * src/components/NotificationBell.tsx - Bambeh Marketplace
+ *
+ * FIX927 - THE BELL THAT WORKS (Package 12; Bambeh's own colours - Big, 29 Oct 2026: "the old colour looks ok"). Before:
+ *   - the list sat inside the white-text header, so the heading and every notification title were WHITE ON WHITE;
+ *   - it read `read`, a field that does not exist (the database says `is_read`), so every notification looked unread
+ *     forever and the dot never went away;
+ *   - in Arabic the list opened off the left edge of the phone and the whole page zoomed out;
+ *   - English only, and emoji for icons.
+ * Now: dark words on a white card; `is_read`; on a phone the list spans the screen right under the header (whatever its
+ * height), on a computer it opens under the bell on the side the language reads from; five languages; teal line icons.
+ * A tap marks it read and opens what it is about (Bambeh's own pages only); "See all" opens the Notifications page.
+ * The data is the same hook as before (useNotifications). The look stays Bambeh's: white card, teal, the green count.
+ *
+ * (c) 2026 BAMBEH SARL. All rights reserved.
+ */
 
-const BellIcon = ({ hasUnread }: { hasUnread: boolean }) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-    {hasUnread && <circle cx="18" cy="6" r="4" fill="#1D9E75" stroke="white" strokeWidth="1.5"/>}
-  </svg>
-);
+import { useEffect, useRef, useState } from 'react';
+import type { ComponentType } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, ShoppingCart, MessageSquare, Star, CreditCard, Settings, Hand, Megaphone } from 'lucide-react';
+import { useNotifications } from '@/hooks/useNotifications';
+import type { BambehNotification } from '@/hooks/useNotifications';
+import { useLang } from '@/hooks/useAppLang';
 
-const typeIcon: Record<string, string> = {
-  welcome: '👋',
-  subscription: '⭐',
-  new_order: '🛒',
-  new_message: '💬',
-  order: '🛒',
-  chat: '💬',
-  promo: '🔔',
-  system: '⚙️',
-  review: '⭐',
-  payment: '💳',
+type Icon = ComponentType<{ className?: string }>;
+
+const ICON: Record<string, Icon> = {
+  welcome: Hand, subscription: Star, review: Star, new_order: ShoppingCart, order: ShoppingCart,
+  new_message: MessageSquare, chat: MessageSquare, promo: Megaphone, system: Settings, payment: CreditCard,
 };
 
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1)  return 'Just now';
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
-}
-
-function NotifItem({ notif, onRead }: { notif: BambehNotification; onRead: (id: string) => void }) {
-  return (
-    <div
-      onClick={() => !notif.read && onRead(notif.id)}
-      style={{
-        display: 'flex',
-        gap: '10px',
-        padding: '12px 16px',
-        borderBottom: '0.5px solid rgba(0,0,0,0.06)',
-        background: notif.read ? 'transparent' : 'rgba(29,158,117,0.05)',
-        cursor: notif.read ? 'default' : 'pointer',
-        transition: 'background 0.15s',
-      }}
-    >
-      <div style={{
-        width: 36, height: 36, borderRadius: '50%',
-        background: 'rgba(29,158,117,0.12)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 16, flexShrink: 0,
-      }}>
-        {typeIcon[notif.type] ?? '🔔'}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: notif.read ? 400 : 600, color: 'inherit', lineHeight: 1.3 }}>
-            {notif.title}
-          </span>
-          {!notif.read && (
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1D9E75', flexShrink: 0, marginTop: 4 }} />
-          )}
-        </div>
-        <p style={{ fontSize: 12, color: 'rgba(128,128,128,0.9)', margin: '3px 0 0', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-          {notif.body.length > 120 ? notif.body.slice(0, 120) + '…' : notif.body}
-        </p>
-        <span style={{ fontSize: 11, color: 'rgba(128,128,128,0.7)', marginTop: 3, display: 'block' }}>
-          {timeAgo(notif.created_at)}
-        </span>
-      </div>
-    </div>
-  );
-}
+// the words of the Notifications page (five languages) and of the old Home time line
+const W: Record<string, Record<string, string>> = {
+  en: {
+    title: 'Notifications', markAll: 'Mark all read', loading: 'Loading notifications...', emptyTitle: 'All caught up!',
+    emptyBody: 'Your notifications will appear here.', seeAll: 'See all',
+    now: 'Just now', min: '{n} min ago', hour: '{n}h ago', day: '{n}d ago', unread: '{n} unread',
+  },
+  fr: {
+    title: 'Notifications', markAll: 'Tout marquer comme lu', loading: 'Chargement des notifications...',
+    emptyTitle: 'Tout est \u00e0 jour !', emptyBody: 'Vos notifications appara\u00eetront ici.', seeAll: 'Voir tout',
+    now: '\u00c0 l\'instant', min: 'Il y a {n} min', hour: 'Il y a {n}h', day: 'Il y a {n}j', unread: '{n} non lues',
+  },
+  pidgin: {
+    title: 'Notifications', markAll: 'Mark all as read', loading: 'Notifications dey load...',
+    emptyTitle: 'Everything don set!', emptyBody: 'You notifications go show here.', seeAll: 'See all',
+    now: 'Just now', min: '{n} min ago', hour: '{n}h ago', day: '{n}d ago', unread: '{n} wey you never read',
+  },
+  ar: {
+    title: '\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a', markAll: '\u0648\u0636\u0639 \u0627\u0644\u0643\u0644 \u0643\u0645\u0642\u0631\u0648\u0621',
+    loading: '\u062c\u0627\u0631\u064d \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a...',
+    emptyTitle: '\u0643\u0644 \u0634\u064a\u0621 \u0645\u062d\u062f\u062b!', emptyBody: '\u0633\u062a\u0638\u0647\u0631 \u0625\u0634\u0639\u0627\u0631\u0627\u062a\u0643 \u0647\u0646\u0627.',
+    seeAll: '\u0639\u0631\u0636 \u0627\u0644\u0643\u0644',
+    now: '\u0644\u0644\u062a\u0648', min: '\u0645\u0646\u0630 {n} \u062f\u0642\u064a\u0642\u0629', hour: '\u0645\u0646\u0630 {n} \u0633\u0627\u0639\u0629',
+    day: '\u0645\u0646\u0630 {n} \u064a\u0648\u0645', unread: '{n} \u063a\u064a\u0631 \u0645\u0642\u0631\u0648\u0621\u0629',
+  },
+  ff: {
+    title: 'Tintinn\u0257e', markAll: 'Wa\u0257o fow ja\u014bde', loading: 'Your notifications are loading...',
+    emptyTitle: 'Kuu\u0253e fow oo\u00f1ii!', emptyBody: 'Tintinn\u0257e maa \u0253e wa\u0257o e ndee.', seeAll: 'Yiylo fof',
+    now: 'Gooto', min: 'Sekkere {n} ago', hour: 'Lewru {n} ago', day: 'Joom {n} ago', unread: '{n}',
+  },
+};
+const ALIAS: Record<string, string> = { pcm: 'pidgin', pid: 'pidgin', ful: 'ff', fulfulde: 'ff' };
 
 export function NotificationBell() {
   const { notifications, unreadCount, loading, markRead, markAllRead } = useNotifications();
   const [open, setOpen] = useState(false);
+  const [panelTop, setPanelTop] = useState<number | null>(null);   // FIX927 - on a phone: right under the header
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const raw = String(useLang() || 'en');
+  const lang = ALIAS[raw] || raw;
+  const w = (k: string, n?: number): string => {
+    const v = (W[lang] && W[lang][k]) || W.en[k] || k;
+    return n === undefined ? v : v.split('{n}').join(String(n));
+  };
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    if (!open) return;
+    const away = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', away);
+    document.addEventListener('keydown', esc);
+    return () => { document.removeEventListener('mousedown', away); document.removeEventListener('keydown', esc); };
+  }, [open]);
+
+  const ago = (iso: string): string => {
+    const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (!Number.isFinite(m) || m < 1) return w('now');
+    if (m < 60) return w('min', m);
+    const h = Math.floor(m / 60);
+    if (h < 24) return w('hour', h);
+    return w('day', Math.floor(h / 24));
+  };
+
+  const tap = (n: BambehNotification) => {
+    if (!n.is_read) void markRead(n.id);
+    const link = typeof n.link === 'string' ? n.link : '';
+    if (link.startsWith('/')) { setOpen(false); navigate(link); }   // only Bambeh's own pages
+  };
+
+  const label = w('title') + (unreadCount > 0 ? ' (' + w('unread', unreadCount) + ')' : '');
 
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+    <div ref={ref} className="relative" data-fix="FIX927">
       <button
-        onClick={() => setOpen(o => !o)}
-        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-        style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          padding: '6px', borderRadius: '50%', position: 'relative',
-          color: 'inherit', display: 'flex', alignItems: 'center',
-          transition: 'background 0.15s',
+        type="button"
+        onClick={() => {
+          if (!open && ref.current) {
+            // the header's real bottom edge (Bambeh's header is taller on some pages and phones)
+            const hdr = ref.current.closest('header');
+            const box = (hdr || ref.current).getBoundingClientRect();
+            const phone = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches;
+            setPanelTop(phone ? Math.max(8, Math.round(box.bottom + 6)) : null);
+          }
+          setOpen((o) => !o);
         }}
+        aria-label={label}
+        title={label}
+        aria-expanded={open}
+        data-bell="1"
+        className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-current hover:bg-white/10 active:bg-white/20 transition-colors"
       >
-        <BellIcon hasUnread={unreadCount > 0} />
+        <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span style={{
-            position: 'absolute', top: 2, right: 2,
-            background: '#1D9E75', color: '#fff',
-            fontSize: 9, fontWeight: 700,
-            borderRadius: 10, padding: '1px 4px',
-            minWidth: 14, textAlign: 'center',
-            border: '1.5px solid white',
-            lineHeight: 1.4,
-          }}>
+          <span
+            data-bell-count={unreadCount}
+            className="absolute top-0.5 end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#1D9E75] px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white"
+          >
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div style={{
-          position: 'absolute', right: 0, top: 'calc(100% + 8px)',
-          width: 340, maxHeight: 480,
-          background: 'var(--color-background-primary, #fff)',
-          borderRadius: 16, border: '0.5px solid rgba(0,0,0,0.1)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-          zIndex: 9999, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column',
-        }}>
-          <div style={{
-            padding: '14px 16px 12px',
-            borderBottom: '0.5px solid rgba(0,0,0,0.07)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span style={{ fontSize: 15, fontWeight: 600 }}>Notifications</span>
+        <div
+          role="dialog"
+          aria-label={w('title')}
+          data-bell-panel="1"
+          style={panelTop === null ? undefined : { top: panelTop }}
+          className="fixed inset-x-2 z-[70] flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white text-start text-gray-900 shadow-2xl top-[4.5rem] md:absolute md:inset-x-auto md:end-0 md:top-full md:mt-2 md:w-[360px]"
+        >
+          <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-3">
+            <span className="text-[15px] font-bold">{w('title')}</span>
             {unreadCount > 0 && (
-              <button
-                onClick={markAllRead}
-                style={{
-                  fontSize: 12, color: '#1D9E75', background: 'none',
-                  border: 'none', cursor: 'pointer', fontWeight: 500, padding: 0,
-                }}
-              >
-                Mark all read
+              <button type="button" onClick={() => void markAllRead()} className="rounded-lg px-2 py-1 text-xs font-semibold text-teal-700 hover:bg-teal-50">
+                {w('markAll')}
               </button>
             )}
           </div>
 
-          <div style={{ overflowY: 'auto', flex: 1 }}>
+          <div className="flex-1 overflow-y-auto">
             {loading ? (
-              <div style={{ padding: 32, textAlign: 'center', color: 'rgba(128,128,128,0.7)', fontSize: 13 }}>
-                Loading…
-              </div>
+              <p className="px-4 py-8 text-center text-sm text-gray-500">{w('loading')}</p>
             ) : notifications.length === 0 ? (
-              <div style={{ padding: 40, textAlign: 'center' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🔔</div>
-                <div style={{ fontSize: 13, color: 'rgba(128,128,128,0.8)' }}>No notifications yet</div>
+              <div className="px-6 py-10 text-center">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-teal-50">
+                  <Bell className="h-6 w-6 text-teal-600" />
+                </span>
+                <p className="mt-3 text-sm font-bold">{w('emptyTitle')}</p>
+                <p className="mt-1 text-xs text-gray-500">{w('emptyBody')}</p>
               </div>
             ) : (
-              notifications.map(n => (
-                <NotifItem key={n.id} notif={n} onRead={markRead} />
-              ))
+              notifications.slice(0, 30).map((n) => {
+                const I = ICON[n.type] || Bell;
+                const body = String(n.body || '');
+                return (
+                  <button
+                    key={n.id}
+                    type="button"
+                    onClick={() => tap(n)}
+                    data-note={n.is_read ? 'read' : 'unread'}
+                    className={`flex w-full gap-3 border-b border-gray-100 px-4 py-3 text-start transition-colors hover:bg-gray-50 ${n.is_read ? '' : 'bg-teal-50/60'}`}
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50">
+                      <I className="h-4 w-4 text-teal-600" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-start justify-between gap-2">
+                        <span className={`text-[13px] leading-snug ${n.is_read ? 'font-normal' : 'font-bold'}`}>{n.title}</span>
+                        {!n.is_read && <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1D9E75]" />}
+                      </span>
+                      {body ? <span className="mt-0.5 block text-xs leading-relaxed text-gray-500 line-clamp-2">{body}</span> : null}
+                      <span className="mt-0.5 block text-[11px] text-gray-400">{ago(n.created_at)}</span>
+                    </span>
+                  </button>
+                );
+              })
             )}
           </div>
+
+          <button
+            type="button"
+            onClick={() => { setOpen(false); navigate('/notifications'); }}
+            className="border-t border-gray-100 px-4 py-3 text-sm font-semibold text-teal-700 hover:bg-teal-50"
+            data-bell-all="1"
+          >
+            {w('seeAll')}
+          </button>
         </div>
       )}
     </div>
   );
 }
+
+export default NotificationBell;
+// BAMBEH_END_TOKEN__NOTIFICATIONBELL_FIX927__COMPLETE

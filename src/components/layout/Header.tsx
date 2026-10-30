@@ -255,8 +255,11 @@ export default function Header() {
   const navKey = NAV_ALIAS[String(language)] || String(language);
   const navL = NAV_L[navKey] || NAV_L.en;
 
+  // FIX928 - the app keeps Pidgin as "pidgin" (and may meet "ful"): this list says "pcm" and "ff" - before, a Pidgin
+  // phone saw "English" here and no tick on Pidgin
+  const curLang: string = String(language) === "pidgin" ? "pcm" : String(language) === "ful" ? "ff" : String(language);
   const getCurrentLanguage = () =>
-    AVAILABLE_LANGUAGES.find(l => l.code === language) || AVAILABLE_LANGUAGES[0];
+    AVAILABLE_LANGUAGES.find(l => l.code === curLang) || AVAILABLE_LANGUAGES[0];
 
   const handleLogout = async () => {
     try {
@@ -317,7 +320,7 @@ export default function Header() {
       // users) -> fr-FR engine; Fulfulde KEYWORDS below still route correctly.
       en: 'en-US', fr: 'fr-FR', pcm: 'en-NG', ff: 'fr-FR', ar: 'ar-SA'
     };
-    recognition.lang = langMap[language as LanguageCode] || 'en-US';
+    recognition.lang = langMap[curLang as LanguageCode] || 'en-US';   // FIX928 - Pidgin listens as en-NG
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -648,12 +651,12 @@ export default function Header() {
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code)}
                       className={`w-full text-left px-4 py-3 hover:bg-teal-50 transition-colors flex items-center gap-3 text-sm font-medium ${
-                        language === lang.code ? 'bg-teal-50 text-teal-700' : ''
+                        curLang === lang.code ? 'bg-teal-50 text-teal-700' : ''
                       }`}
                     >
                       <span className="text-lg">{lang.flag}</span>
                       <span className="flex-1">{lang.name}</span>
-                      {language === lang.code && <span className="text-teal-500">{'\u2713'}</span>}
+                      {curLang === lang.code && <span className="text-teal-500">{'\u2713'}</span>}
                     </button>
                   ))}
                 </div>
@@ -768,13 +771,13 @@ export default function Header() {
                         setIsMenuOpen(false);
                       }}
                       className={`w-full text-left hover:bg-teal-700 active:bg-teal-800 px-4 py-3 transition-colors flex items-center gap-3 font-medium ${
-                        language === lang.code ? 'bg-teal-700' : ''
+                        curLang === lang.code ? 'bg-teal-700' : ''
                       }`}
                       style={{ touchAction: 'auto', minHeight: '48px' }}
                     >
                       <span className="text-lg">{lang.flag}</span>
                       <span className="flex-1">{lang.name}</span>
-                      {language === lang.code && <span className="text-teal-300 font-bold">{'\u2713'}</span>}
+                      {curLang === lang.code && <span className="text-teal-300 font-bold">{'\u2713'}</span>}
                     </button>
                   ))}
                 </div>
