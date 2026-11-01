@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__HOME_FIX926_CLEAN
+// BAMBEH_DEPLOY_TOKEN__HOME_FIX948_CLEAN
 // @ts-nocheck
 /**
  * ===========================================================================
@@ -45,6 +45,14 @@
  *   - The unused "recently posted" download is gone: Home fetched ten adverts on every visit and never showed them.
  *   Everything else - the colours, the three main categories, Special Features, free help - is exactly as before.
  *
+ * FIX948 (Big, 1 Nov 2026, with a picture: "the corporate button, the share button, the how to use button should display
+ * as shown in the picture while sell goes up as one big button"):
+ *   - SELL AN ITEM is alone on top, one big button (the money action).
+ *   - Corporate, Share App and How To sit side by side under it, outlined - they help, Sell is the action. Short words
+ *     in all five languages so three fit on one line on a small phone; the full name is still what a screen reader says.
+ *   - Free help (ServicesRow, FIX949): the Safety button and Taxi check are small round buttons, in their own red and
+ *     yellow, instead of the two long bars.
+ *
  * (c) 2025-2026 Bambeh. All rights reserved.
  * ===========================================================================
  */
@@ -63,7 +71,23 @@ import {
   Flame,           // FIX704 - Cooking gas tile
   UtensilsCrossed, // FIX704 - Food tile
   ChevronDown,     // FIX802 - More categories / See all
+  Tag,             // FIX948 - Sell an Item
+  Info,            // FIX948 - How To
 } from 'lucide-react';
+
+// FIX948 - the three small buttons under Sell (Big's picture, 1 Nov 2026): short words, so three fit on one line
+const ROW_WORDS: Record<string, { corporate: string; share: string; howto: string }> = {
+  en: { corporate: 'Corporate', share: 'Share App', howto: 'How To' },
+  fr: { corporate: 'Entreprises', share: 'Partager', howto: 'Guide' },
+  pidgin: { corporate: 'Corporate', share: 'Share App', howto: 'How To' },
+  ar: { corporate: '\u0627\u0644\u0634\u0631\u0643\u0627\u062a', share: '\u0645\u0634\u0627\u0631\u0643\u0629', howto: '\u0627\u0644\u062f\u0644\u064a\u0644' },
+  ff: { corporate: 'Corporate', share: 'Jedd Bambeh', howto: 'No huutoraade' },
+};
+// On the smallest phones (under 360 px) the icon sits above the word, so a long word ("Entreprises") never spills out.
+const ROW_BTN =
+  'min-w-0 inline-flex flex-col min-[360px]:flex-row items-center justify-center gap-0.5 min-[360px]:gap-1 rounded-full ' +
+  'border-2 border-teal-600 bg-white px-1.5 py-2 text-[12px] min-[400px]:text-[13px] sm:text-sm font-bold leading-tight ' +
+  'text-center text-teal-700 shadow-sm hover:bg-teal-50 active:scale-95 transition-all';
 
 // FIX397 - "How to use Bambeh", in the five app languages. Written as plain
 // ASCII escapes so no encoding accident can ever mangle it, and read from the
@@ -76,17 +100,8 @@ const HOW_TO_USE_LABEL: Record<string, string> = {
   ff: "No huutoraade Bambeh",
 };
 
-function howToUseLang(): string {
-  try {
-    const raw = String(window.localStorage.getItem("Bambeh_language") || "").toLowerCase();
-    if (raw === "pcm" || raw === "pidgin_english" || raw === "pidgin") return "pidgin";
-    if (raw === "ful" || raw === "fulfulde" || raw === "ff") return "ff";
-    if (raw === "fr" || raw === "ar" || raw === "en") return raw;
-  } catch {
-    /* storage blocked - fall through to English */
-  }
-  return "en";
-}
+// FIX948 - the How To words now follow the page's own language (the one every other word on Home uses) instead of a
+// second, separate reading of the stored language.
 import { useNavigate } from 'react-router-dom';
 import SocialShareButton from '@/components/social/SocialShareButton';
 import { useLanguage } from "@/context/LanguageContext";
@@ -449,6 +464,7 @@ export default function Home() {
   const { now: adNow, ready: adReady } = useAdNow();   // FIX828; FIX926 - wait for the answer
   const _rl = homeNormLang(language);
   const isRtl = _rl === "ar";
+  const rw = ROW_WORDS[_rl] || ROW_WORDS.en;   // FIX948
   
   // Translation helper
   const t = (k: string, o?: Record<string, any>) => {
@@ -533,44 +549,54 @@ export default function Home() {
           {/* FIX821 - the instant search (FIX820): the first thing to use on Home */}
           <HomeSearch className="mt-5" />
 
-          {/* FIX122: Corporate login (left) + labelled Share (right) */}
-          <div className="mt-6 flex flex-col items-center justify-center gap-3">
-            {!IS_STORE_APP && (<button
-              onClick={() => navigate('/corporate')}
-              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
-            >
-              <Building2 className="w-5 h-5" />
-              {t('home.corporateBtn')}
-            </button>)}
-            <SocialShareButton
-              title="Bambeh - Online Marketplace"
-              description="Buy, sell, rent and find work on Bambeh. Posting is free."
-              url={publicShareUrl()}
-              itemType="app"
-              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
-            >
-              <Share2 className="w-5 h-5" />
-              {t('home.shareBtn')}
-            </SocialShareButton>
-            {/* FIX280: Sell Item sits under Share, same green, same white label.
-                This is the money action - it belongs where people can see it. */}
+          {/* FIX948 - Big's picture (1 Nov 2026): Sell an Item alone on top, one big button; Corporate, Share App and How To
+              side by side under it, outlined - they help, Sell is the action. */}
+          <div className="mt-6 mx-auto w-full max-w-md" data-home-actions="1">
             <button
+              type="button"
               onClick={() => navigate('/marketplace/sell')}
-              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-700 hover:to-emerald-700 font-semibold shadow-lg hover:shadow-xl transition-all"
+              data-home-sell="1"
+              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 sm:py-5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-2xl hover:from-teal-700 hover:to-emerald-700 text-xl sm:text-2xl font-bold shadow-xl shadow-emerald-600/30 hover:shadow-2xl active:scale-[0.99] transition-all"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <Tag className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
               {t('home.sellBtn')}
             </button>
-            {/* FIX397 - How to use Bambeh. Same width as the three above it,
-                outlined instead of filled so it reads as help, not an action
-                that costs anything. */}
-            <button
-              onClick={() => navigate('/how-to-use')}
-              className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-teal-600 text-teal-700 rounded-lg hover:bg-teal-50 font-semibold shadow-lg hover:shadow-xl transition-all"
-            >
-              <span aria-hidden="true">{"\u{1F4D6}"}</span>
-              {HOW_TO_USE_LABEL[howToUseLang()] || HOW_TO_USE_LABEL.en}
-            </button>
+            <div className={'mt-3 grid gap-2 ' + (IS_STORE_APP ? 'grid-cols-2' : 'grid-cols-3')} data-home-row="1">
+              {!IS_STORE_APP && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/corporate')}
+                  data-home-btn="corporate"
+                  aria-label={t('home.corporateBtn')}
+                  title={t('home.corporateBtn')}
+                  className={ROW_BTN}
+                >
+                  <Building2 className="w-4 h-4 shrink-0" />
+                  <span className="min-w-0">{rw.corporate}</span>
+                </button>
+              )}
+              <SocialShareButton
+                title="Bambeh - Online Marketplace"
+                description="Buy, sell, rent and find work on Bambeh. Posting is free."
+                url={publicShareUrl()}
+                itemType="app"
+                className={ROW_BTN}
+              >
+                <Share2 className="w-4 h-4 shrink-0" />
+                <span className="min-w-0" data-home-btn="share">{rw.share}</span>
+              </SocialShareButton>
+              <button
+                type="button"
+                onClick={() => navigate('/how-to-use')}
+                data-home-btn="howto"
+                aria-label={HOW_TO_USE_LABEL[_rl] || HOW_TO_USE_LABEL.en}
+                title={HOW_TO_USE_LABEL[_rl] || HOW_TO_USE_LABEL.en}
+                className={ROW_BTN}
+              >
+                <Info className="w-4 h-4 shrink-0" />
+                <span className="min-w-0">{rw.howto}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -751,4 +777,4 @@ export default function Home() {
   );
 }
 
-// BAMBEH_END_TOKEN__HOME_FIX926__COMPLETE
+// BAMBEH_END_TOKEN__HOME_FIX948__COMPLETE

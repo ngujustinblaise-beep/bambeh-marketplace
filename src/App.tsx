@@ -883,7 +883,11 @@ export default function App() {
                         <Route path="/safety" element={<MainLayout><FreeServiceGate><SafetyAlerts /></FreeServiceGate></MainLayout>} />{/* FIX507 - free, a Bambeh account is enough (FIX727) */}
                         <Route path="/list-my-service" element={<MainLayout><AuthGate require="user"><ListMyService /></AuthGate></MainLayout>} />{/* FIX484 - also outside AuthGate */}
                         <Route path="/admin/quiz" element={<MainLayout><AuthGate require="admin"><AdminQuizManager /></AuthGate></MainLayout>} />{/* FIX166 */}
-                        <Route path="/admin/center" element={<MainLayout><AuthGate require="admin"><AdminCommandCenter /></AuthGate></MainLayout>} />
+                        {/* FIX950 - moderators come in too (Big, 1 Nov 2026: admins AND moderators should notice the agents' reports).
+                            The door used to check for admins only, so a moderator was sent back to Home. Command Center itself
+                            says "Access denied" to anyone without a staff role and shows a moderator only what a moderator may
+                            do; every staff function checks the role again in the database. */}
+                        <Route path="/admin/center" element={<MainLayout><AuthGate require="user"><AdminCommandCenter /></AuthGate></MainLayout>} />
 
                         {/* ── 3. PUBLIC MARKETPLACE ──────────────────────────────── */}
                         <Route path="/" element={<MainLayout><Home /></MainLayout>} />

@@ -1,4 +1,4 @@
-// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX803_CLEAN
+// BAMBEH_DEPLOY_TOKEN__SERVICESROW_FIX949_CLEAN
 /**
  * src/components/home/ServicesRow.tsx \u2014 Bambeh Marketplace
  *
@@ -69,13 +69,19 @@
  *   bars stay under the tiles, always on show. An opened row stays open until
  *   the tab or app is closed; the next visit starts calm again.
  *
+ * FIX949 - Big, 1 Nov 2026: "the safety button and taxi check should just be small round buttons under free help,
+ *   anytime. maintain their colours". The two long bars are now two small round buttons under the tiles - the Safety
+ *   button red, Taxi check yellow, as before - each with its name under it; the longer sentence is what a screen reader
+ *   says and what shows when the pointer rests on it. While a taxi ride is open on this phone, Taxi check carries a green
+ *   dot and says "I arrived", so arriving safely is still one tap from Home.
+ *
  * \u00a9 2026 BAMBEH SARL. All rights reserved.
  */
 
 import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';   // FIX728: no global React needed
 import { Link } from 'react-router-dom';
-import { Car, Cross, Stethoscope, Droplets, Fuel, ShieldAlert, HeartPulse, Siren, ChevronRight, ChevronDown } from 'lucide-react'; // FIX728: HeartPulse, Siren, ChevronRight; FIX751: Car; FIX803: ChevronDown
+import { Car, Cross, Stethoscope, Droplets, Fuel, ShieldAlert, HeartPulse, Siren, ChevronDown } from 'lucide-react'; // FIX728: HeartPulse, Siren; FIX751: Car; FIX803: ChevronDown; FIX949: no more bars, so no ChevronRight
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';   // FIX502
 
@@ -124,6 +130,7 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: 'Taxi check', // FIX751
     taxiBarSub: 'Scan the taxi\'s code before you get in', // FIX751
     taxiOpen: 'On a taxi ride? Tap here when you arrive safely', // FIX751
+    taxiArrive: 'I arrived', // FIX949
     seeAll: 'See all ({n})', // FIX803
     showLess: 'Show less', // FIX803
   },
@@ -142,6 +149,7 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: 'V\u00e9rifier mon taxi', // FIX751
     taxiBarSub: 'Scannez le code du taxi avant de monter', // FIX751
     taxiOpen: 'En taxi ? Touchez ici quand vous \u00eates bien arriv\u00e9(e)', // FIX751
+    taxiArrive: 'Je suis arriv\u00e9(e)', // FIX949
     seeAll: 'Voir tout ({n})', // FIX803
     showLess: 'Voir moins', // FIX803
   },
@@ -160,6 +168,7 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: 'Check your taxi', // FIX751
     taxiBarSub: 'Scan the taxi code before you enter', // FIX751
     taxiOpen: 'You dey for taxi? Touch here when you reach well', // FIX751
+    taxiArrive: 'I don reach', // FIX949
     seeAll: 'See all ({n})', // FIX803
     showLess: 'Show less', // FIX803
   },
@@ -178,6 +187,7 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: '\u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629', // FIX751
     taxiBarSub: '\u0627\u0645\u0633\u062d \u0631\u0645\u0632 \u0633\u064a\u0627\u0631\u0629 \u0627\u0644\u0623\u062c\u0631\u0629 \u0642\u0628\u0644 \u0623\u0646 \u062a\u0631\u0643\u0628', // FIX751
     taxiOpen: '\u0641\u064a \u0633\u064a\u0627\u0631\u0629 \u0623\u062c\u0631\u0629\u061f \u0627\u0636\u063a\u0637 \u0647\u0646\u0627 \u0639\u0646\u062f\u0645\u0627 \u062a\u0635\u0644 \u0628\u0633\u0644\u0627\u0645', // FIX751
+    taxiArrive: '\u0648\u0635\u0644\u062a \u0628\u0633\u0644\u0627\u0645', // FIX949
     seeAll: '\u0639\u0631\u0636 \u0627\u0644\u0643\u0644 ({n})', // FIX803
     showLess: '\u0639\u0631\u0636 \u0623\u0642\u0644', // FIX803
   },
@@ -196,6 +206,7 @@ const STR: Record<string, Record<string, string>> = {
     taxiBar: '\u01b3eew taksi maa', // FIX751
     taxiBarSub: '\u01b3eewnu kod taksi oo adii naataa', // FIX751
     taxiOpen: 'A woni e taksi? Mee\u0257 \u0257oo so a yottiima no mo\u01b4\u01b4i', // FIX751
+    taxiArrive: 'Mi yottiima', // FIX949
     seeAll: 'Yiylo fof ({n})', // FIX803
     showLess: 'Hollu see\u0257a', // FIX803
   },
@@ -413,32 +424,30 @@ export default function ServicesRow() {
         })}
       </div>
 
-      {/* FIX728 - the Safety button: no account, nothing stored on Bambeh */}
-      <Link to="/safety-button" data-safety-bar="1"
-        className="mt-3 flex items-center gap-3 rounded-2xl bg-red-600 px-4 py-3 text-white shadow hover:bg-red-700 active:scale-[0.99] transition-all">
-        <span className="w-10 h-10 flex-shrink-0 rounded-xl bg-white/20 flex items-center justify-center">
-          <Siren className="w-5 h-5" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block font-bold leading-tight">{t('safetyBar')}</span>
-          <span className="block text-xs text-red-50 leading-tight">{t('safetyBarSub')}</span>
-        </span>
-        <ChevronRight className={`w-5 h-5 flex-shrink-0 ${isRtl ? 'rotate-180' : ''}`} />
-      </Link>
-
-      {/* FIX751 - Taxi check: scan the taxi's QR code, send the taxi to your people; nothing stored on Bambeh */}
-      <Link to="/taxi-check" data-taxi-bar="1" data-taxi-open={taxiRide ? '1' : '0'}
-        className="mt-2 flex items-center gap-3 rounded-2xl bg-yellow-400 px-4 py-3 text-gray-900 shadow hover:bg-yellow-300 active:scale-[0.99] transition-all">
-        <span className="w-10 h-10 flex-shrink-0 rounded-xl bg-white/50 flex items-center justify-center">
-          <Car className="w-5 h-5" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block font-bold leading-tight">{t('taxiBar')}</span>
-          <span className="block text-xs text-gray-800 leading-tight">{taxiRide ? t('taxiOpen') : t('taxiBarSub')}</span>
-        </span>
-        <ChevronRight className={`w-5 h-5 flex-shrink-0 ${isRtl ? 'rotate-180' : ''}`} />
-      </Link>
+      {/* FIX949 - the Safety button (red) and Taxi check (yellow): two small round buttons under the tiles (Big, 1 Nov 2026).
+          No account, nothing stored on Bambeh - exactly as the two bars were (FIX728, FIX751). */}
+      <div className="mt-4 flex items-start justify-center gap-10" data-help-round="1">
+        <Link to="/safety-button" data-safety-bar="1"
+          aria-label={t('safetyBar') + ' - ' + t('safetyBarSub')} title={t('safetyBarSub')}
+          className="group flex w-24 flex-col items-center gap-1.5 text-center">
+          <span className="w-14 h-14 rounded-full bg-red-600 text-white shadow-lg shadow-red-600/30 flex items-center justify-center group-hover:bg-red-700 group-active:scale-95 transition-all">
+            <Siren className="w-6 h-6" />
+          </span>
+          <span className="text-[11px] sm:text-xs font-bold leading-tight text-gray-800">{t('safetyBar')}</span>
+        </Link>
+        <Link to="/taxi-check" data-taxi-bar="1" data-taxi-open={taxiRide ? '1' : '0'}
+          aria-label={t('taxiBar') + ' - ' + (taxiRide ? t('taxiOpen') : t('taxiBarSub'))} title={taxiRide ? t('taxiOpen') : t('taxiBarSub')}
+          className="group flex w-24 flex-col items-center gap-1.5 text-center">
+          <span className="relative w-14 h-14 rounded-full bg-yellow-400 text-gray-900 shadow-lg shadow-yellow-500/30 flex items-center justify-center group-hover:bg-yellow-300 group-active:scale-95 transition-all">
+            <Car className="w-6 h-6" />
+            {taxiRide ? (
+              <span data-taxi-dot="1" className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white animate-pulse" />
+            ) : null}
+          </span>
+          <span className="text-[11px] sm:text-xs font-bold leading-tight text-gray-800">{taxiRide ? t('taxiArrive') : t('taxiBar')}</span>
+        </Link>
+      </div>
     </section>
   );
 }
-// BAMBEH_END_TOKEN__SERVICESROW_FIX803__COMPLETE
+// BAMBEH_END_TOKEN__SERVICESROW_FIX949__COMPLETE

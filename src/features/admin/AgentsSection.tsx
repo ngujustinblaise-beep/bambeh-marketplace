@@ -1,6 +1,12 @@
-// BAMBEH_DEPLOY_TOKEN__AGENTSSECTION_FIX937_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AGENTSSECTION_FIX946_CLEAN
 /**
- * src/features/admin/AgentsSection.tsx - Bambeh Admin Command Center - FIX937 (replaces FIX592)
+ * src/features/admin/AgentsSection.tsx - Bambeh Admin Command Center - FIX946 (replaces FIX937)
+ *
+ * FIX946 - PACKAGE 14 (Big, 1 Nov 2026: "when the marketing agents report comes in, it should signal in the marketing
+ *   agents icon on the command center ... which will ease the admins and moderators to notice the message"):
+ *   - the number beside Marketing agents (FIX945) counts the reports waiting for Bambeh;
+ *   - MODERATORS now open this section too and see the daily reports only: read, answer, mark as read. Agents,
+ *     codes, daily targets and caps stay with admins and the super admin (the database checks, FIX942).
  *
  * FIX937 - PACKAGE 13 (Big, 29 Oct 2026):
  *   - DAILY TARGET per agent ("Admins set a number"): set here, shown on the agent's page against their real count
@@ -64,8 +70,10 @@ interface AgentPlanLine {
 }
 
 export default function AgentsSection({
-  userId, role, flash,
+  userId, role, cap, flash,
 }: { userId: string; role: AdminRole; cap: Capabilities; flash: (m: string) => void }) {
+  // FIX946 - admins and the super admin manage the agents; moderators see the daily reports only
+  const manage = cap.createModerators;
 
   const [stats, setStats] = useState<AgentStat[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -114,8 +122,8 @@ export default function AgentsSection({
     setLoading(false);
   }, [loadPlans]);
 
-  useEffect(() => { load(); }, [load]);
-  useEffect(() => { (async () => { setRegions(await fetchRegions()); })(); }, []);
+  useEffect(() => { if (manage) void load(); else setLoading(false); }, [load, manage]);
+  useEffect(() => { if (!manage) return; (async () => { setRegions(await fetchRegions()); })(); }, [manage]);
 
   const openAgent = async (id: string) => {
     if (open === id) { setOpen(null); return; }
@@ -203,6 +211,25 @@ export default function AgentsSection({
       window.setTimeout(() => setCopied(null), 2500);
     } catch { flash(url); }
   };
+
+  /* FIX946 - a moderator: the daily reports, nothing else */
+  if (!manage) {
+    return (
+      <div data-agents-mod="1">
+        <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <ClipboardList className="w-5 h-5 text-indigo-600" /> Marketing agents - daily reports
+          {reportsWaiting > 0 ? (
+            <span className="rounded-full bg-indigo-600 px-2 text-xs font-black text-white" data-waiting="1">{reportsWaiting}</span>
+          ) : null}
+        </h1>
+        <p className="text-xs text-gray-500 mb-4">
+          Read each report and answer it - the agent sees your answer on their page and in their bell, signed Bambeh - or mark it
+          as read. Agents, codes, daily targets and caps are set by admins.
+        </p>
+        <AgentReportsPanel agents={[]} times={null} flash={flash} onWaiting={setReportsWaiting} />
+      </div>
+    );
+  }
 
   const totalSignups = stats.reduce((t, s) => t + Number(s.signups ?? 0), 0);
   const totalActive = stats.reduce((t, s) => t + Number(s.activated ?? 0), 0);
@@ -598,4 +625,4 @@ function Field({ label, required, hint, children }: {
 }
 // BAMBEH_END_TOKEN__AGENTSSECTION_FIX508__COMPLETE
 // BAMBEH_END_TOKEN__AGENTSSECTION_FIX592__COMPLETE
-// BAMBEH_END_TOKEN__AGENTSSECTION_FIX937__COMPLETE
+// BAMBEH_END_TOKEN__AGENTSSECTION_FIX946__COMPLETE

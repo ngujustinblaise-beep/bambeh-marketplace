@@ -75,6 +75,7 @@ import { Globe as CountriesIcon } from 'lucide-react';         // FIX779
 import AdminViews from './AdminViews';                         // FIX808
 import { Eye as ViewsIcon } from 'lucide-react';               // FIX808
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
+import FinanceWaiting from './FinanceWaiting';   // FIX950 - what the number beside Finances counts, and how to clear it (FIX944)
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
@@ -125,15 +126,20 @@ const NAV: Array<{
   { key: 'approvals', label: 'Approvals',      icon: CheckSquare, needs: 'approveMessages' },
   { key: 'announce',  label: 'Announcements',  icon: Megaphone, needs: 'publishAnnouncements' },
   { key: 'team',      label: 'Team & Roles',   icon: UserCog,  needs: 'createModerators' },
-  { key: 'agents',    label: 'Marketing agents', icon: UserPlus, needs: 'createModerators' },
+  // FIX950 - a number while an agent's report or answer waits for Bambeh (FIX942/FIX945); moderators open it too and
+  // see the daily reports only (AgentsSection, FIX946) - agents, codes, targets and caps stay with admins
+  { key: 'agents',    label: 'Marketing agents', icon: UserPlus, badge: ['agent_reports_waiting'] },
   { key: 'couriers',  label: 'Delivery agents',  icon: Users },
   { key: 'obligations', label: 'Bambeh payments', icon: Wallet },
   { key: 'paywall',   label: 'Subscription wall', icon: Lock },
   { key: 'gates',     label: 'Members-only sections', icon: GatesIcon }, // FIX675
   { key: 'foodgas',   label: 'Gas & food', icon: FoodGasIcon }, // FIX693
   { key: 'womenshealth', label: "Women's health", icon: WomensHealthIcon }, // FIX724
+  // FIX950 - the number counts exactly what the top of the Finances page lists (FinanceWaiting, FIX944): payments
+  // waiting more than an hour for Mobile Money, and payouts Bambeh owes. It used to show 14 for months that nothing
+  // on the page could clear.
   { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances',
-    badge: ['payments_pending', 'seller_payouts', 'event_payouts'] },
+    badge: ['fin_payments_stale', 'fin_payouts_waiting'] },
   { key: 'reports',   label: 'Reports',        icon: FileText,
     badge: ['reports_open'] },
   { key: 'feedback',  label: 'Share My Voice', icon: MessageSquare,
@@ -145,7 +151,8 @@ export default function AdminCommandCenter() {
   const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<AdminRole | null>(null);
   const [loading, setLoading] = useState(true);
-  const [section, setSection] = useState<Section>(() => { try { const s = new URLSearchParams(window.location.hash.split('?')[1] || window.location.search.slice(1) || '').get('s'); return (s && NAV.some((n) => n.key === s) ? s : 'overview') as Section; } catch { return 'overview'; } }); // FIX844 - a staff notification opens its section
+  // FIX950 - the section asked for; what is shown (section, below visibleNav) must be one this role may open
+  const [pickedSection, setSection] = useState<Section>(() => { try { const s = new URLSearchParams(window.location.hash.split('?')[1] || window.location.search.slice(1) || '').get('s'); return (s && NAV.some((n) => n.key === s) ? s : 'overview') as Section; } catch { return 'overview'; } }); // FIX844 - a staff notification opens its section
   const [toast, setToast] = useState('');
 
   // FIX513 - how far down the screen the app header ends.
@@ -203,7 +210,12 @@ export default function AdminCommandCenter() {
     })();
   }, []);
 
-  const visibleNav = NAV.filter((n) => !n.needs || cap[n.needs]);
+  // FIX950 - moderators come in for the agents' daily reports and see only that section. The others were built for
+  // admins and were never opened to moderators: add one to MODERATOR_SECTIONS only after its database side is checked.
+  const MODERATOR_SECTIONS: Section[] = ['agents'];
+  const visibleNav = NAV.filter((n) => (!n.needs || cap[n.needs]) && (role !== 'moderator' || MODERATOR_SECTIONS.indexOf(n.key) >= 0));
+  // a section this role may not open (an old link, ?s= in the address) shows the first one it may
+  const section: Section = visibleNav.some((n) => n.key === pickedSection) ? pickedSection : (visibleNav.length > 0 ? visibleNav[0].key : pickedSection);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-teal-600"><Loader2 className="w-8 h-8 animate-spin" /></div>;
@@ -998,6 +1010,9 @@ function FinancesSection() {
           <RefreshCw className="w-3 h-3" /> Refresh
         </button>
       </div>
+
+      {/* FIX950 - first: what is waiting (the number beside Finances), and how to clear it */}
+      <FinanceWaiting />
 
       {loading ? (
         <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div>

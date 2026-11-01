@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { NotificationBell } from '@/components/NotificationBell';
+import { useAgentSignal } from '@/features/agents/agentSignal';   // FIX950 - Bambeh answered the agent's daily report (FIX943)
 import { useLang } from "@/hooks/useAppLang";
 import { IS_NATIVE_APP, storeAllows, publicShareUrl } from "@/config/storeMode"; // FIX630, FIX683 - the mic is a web-view limit
 
@@ -222,6 +223,9 @@ export default function Header() {
   const isRtl = lang === "ar";
   const navigate  = useNavigate();
   const { currentUser, logout } = useAuth();
+  // FIX950 - Big, 1 Nov 2026: "the response from bambeh should signal in the menu or marketing agent". 0 for anyone
+  // who is not an agent (asked once a session); a red dot on the menu button, the number beside "Marketing agent".
+  const agentUnseen = useAgentSignal(currentUser ? currentUser.id : null);
   const { language, setLanguage, t } = useLanguage();
   const hk = String(lang) === 'pcm' ? 'pidgin' : String(lang) === 'ful' ? 'ff' : String(lang);
   const H = (k: string): string => (HDR[hk] && HDR[hk][k]) || HDR.en[k] || k;
@@ -466,11 +470,14 @@ export default function Header() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 hover:bg-teal-700 rounded-lg transition-colors"
+            className="relative md:hidden p-2 hover:bg-teal-700 rounded-lg transition-colors"
             style={{ touchAction: 'auto', WebkitTapHighlightColor: 'transparent', minWidth: '48px', minHeight: '48px' }}
             aria-label={H('menuAria')}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {agentUnseen > 0 && !isMenuOpen ? (
+              <span data-agent-dot="1" aria-hidden="true" className="absolute top-2 right-2 w-3 h-3 rounded-full bg-red-500 ring-2 ring-teal-600" />
+            ) : null}
           </button>
 
           {/* Logo */}
@@ -626,7 +633,7 @@ export default function Header() {
               { to: '/agent',            label: NAV_ICON.agent + ' ' + navL.agent },
             ].filter((item) => storeAllows(item.to)).map((item) => (
               <Link key={item.to} to={item.to} className="flex-shrink-0 whitespace-nowrap hover:text-teal-200 transition-colors">
-                {item.label}
+                {item.label}{item.to === '/agent' && agentUnseen > 0 ? (<span data-agent-count="1" className="ms-2 inline-flex min-w-[20px] h-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-white text-[11px] font-bold align-middle">{agentUnseen > 9 ? '9+' : agentUnseen}</span>) : null}
               </Link>
             ))}
           </div>
@@ -805,7 +812,7 @@ export default function Header() {
                   className="hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
                   style={{ touchAction: 'auto', minHeight: '48px' }}
                 >
-                  {item.label}
+                  {item.label}{item.to === '/agent' && agentUnseen > 0 ? (<span data-agent-count="1" className="ms-2 inline-flex min-w-[20px] h-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-white text-[11px] font-bold align-middle">{agentUnseen > 9 ? '9+' : agentUnseen}</span>) : null}
                 </Link>
               ))}
               <Link
@@ -858,7 +865,7 @@ export default function Header() {
                   className="hover:bg-teal-700 active:bg-teal-800 px-4 py-3 rounded transition-colors font-medium"
                   style={{ touchAction: 'auto', minHeight: '48px' }}
                 >
-                  {item.label}
+                  {item.label}{item.to === '/agent' && agentUnseen > 0 ? (<span data-agent-count="1" className="ms-2 inline-flex min-w-[20px] h-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-white text-[11px] font-bold align-middle">{agentUnseen > 9 ? '9+' : agentUnseen}</span>) : null}
                 </Link>
               ))}
               {storeAllows('/subscription') ? (

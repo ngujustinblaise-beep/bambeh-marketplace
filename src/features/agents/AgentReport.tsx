@@ -24,6 +24,7 @@ import { ClipboardList, Loader2, MessageSquare, Send } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/hooks/useAppLang';
 import { normLang } from '@/pages/auth/QuickJoin';
+import { pingAgentSignal } from './agentSignal';   // FIX950 - the menu number goes as soon as the answer is opened
 
 type Lang = 'en' | 'fr' | 'pidgin' | 'ar' | 'ff';
 type Met = 'yes' | 'partly' | 'no';
@@ -226,6 +227,7 @@ export default function AgentReport() {
       const d = r && !r.error && r.data && typeof r.data === 'object' ? (r.data as Got) : null;
       if (!d || !d.ok) { setGot((prev) => (prev && prev.ok ? prev : { ok: false })); return; }
       setGot(d);
+      if (markSeen) pingAgentSignal();   // FIX950
       if (fillForm) {
         setForm(formOf(d.report_today));
         setSavedAt(d.report_today ? d.report_today.updated_at : null);

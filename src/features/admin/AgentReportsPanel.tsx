@@ -1,6 +1,14 @@
-// BAMBEH_DEPLOY_TOKEN__AGENT_REPORTS_PANEL_FIX936_CLEAN
+// BAMBEH_DEPLOY_TOKEN__AGENT_REPORTS_PANEL_FIX947_CLEAN
 /**
- * src/features/admin/AgentReportsPanel.tsx - FIX936 (new) - Command Center > Marketing agents > Daily reports
+ * src/features/admin/AgentReportsPanel.tsx - FIX947 (replaces FIX936) - Command Center > Marketing agents > Daily reports
+ *
+ * FIX947 (Big, 1 Nov 2026: "it should signal in the marketing agents icon on the command center ... which will ease the
+ * admins and moderators to notice the message"):
+ *   - moderators read and answer the reports too (FIX942 opened the three report functions to them);
+ *   - an answer or "Mark as read" asks Command Center for fresh numbers at once, so the number beside Marketing
+ *     agents goes down without waiting for the next minute (refreshAdminBadges, FIX945);
+ *   - the "Every agent" list is built from the reports themselves when the page has no list of agents (moderators).
+ *
  *
  * Big, 29 Oct 2026: "Build field agent marketing agent daily feedback form ... and they can reply directly from
  * their platform to the admin." The agents write on their page (AgentReport, FIX934); admins read here and answer.
@@ -8,13 +16,15 @@
  *   - An answer is shown to the agent on their page, signed "Bambeh", and in their bell (FIX931).
  *   - "Mark as read" takes a report off the waiting list without an answer.
  *   - The two "when" questions are counted across the agents (last 7 days): when work is easiest and hardest.
- * Admins only (the database checks: bambeh_staff_agent_reports / _reply / _read, FIX931). English only, by decision.
+ * Moderators, admins and the super admin (the database checks: bambeh_staff_agent_reports / _reply / _read, FIX942).
+ * English only, by decision.
  *
  * (c) 2026 BAMBEH SARL. All rights reserved.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { AlertCircle, Check, Loader2, MessageSquare, RefreshCw, Send } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { refreshAdminBadges } from './useBadgeCounts';   // FIX947
 
 type Met = 'yes' | 'partly' | 'no';
 type Slot = 'morning' | 'midday' | 'afternoon' | 'evening';
@@ -100,6 +110,8 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
   const [failed, setFailed] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState('');
+  // FIX947 - the agents met in the reports so far (the list when the page has none, as for moderators)
+  const [seen, setSeen] = useState<Record<string, { id: string; full_name: string; code: string }>>({});
 
   const load = useCallback(async (offset: number) => {
     if (offset === 0) setLoading(true);
@@ -109,6 +121,11 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
       if (!d || !d.ok) { setFailed(true); if (offset === 0) setRows([]); return; }
       setFailed(false);
       setRows((prev) => (offset === 0 ? d.rows || [] : prev.concat(d.rows || [])));
+      setSeen((prev) => {
+        const next = { ...prev };
+        (d.rows || []).forEach((x) => { if (x.agent_id && !next[x.agent_id]) next[x.agent_id] = { id: x.agent_id, full_name: x.agent_name || 'Agent', code: x.code || '-' }; });
+        return next;
+      });
       setTotal(d.total || 0);
       setWaiting(d.waiting || 0);
       if (onWaiting) onWaiting(d.waiting || 0);
@@ -135,6 +152,7 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
       const next = r.waiting ? Math.max(0, waiting - 1) : waiting;
       setWaiting(next);
       if (onWaiting) onWaiting(next);
+      refreshAdminBadges();   // FIX947 - the number beside Marketing agents goes down now
       flash('Answer sent. The agent sees it on their page and in their bell.');
     } finally {
       setBusy('');
@@ -151,6 +169,7 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
       const next = r.waiting ? Math.max(0, waiting - 1) : waiting;
       setWaiting(next);
       if (onWaiting) onWaiting(next);
+      refreshAdminBadges();   // FIX947
     } finally {
       setBusy('');
     }
@@ -164,7 +183,7 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
   );
 
   return (
-    <div data-fix="FIX936">
+    <div data-fix="FIX947">
       <TimesBox times={times} />
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {chip('waiting', 'Waiting (' + waiting + ')')}
@@ -174,7 +193,7 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
         <select value={agent} onChange={(e) => setAgent(e.target.value)} data-filter="agent"
           className="rounded-xl border border-gray-200 bg-white px-2 py-1.5 text-xs font-semibold text-gray-700">
           <option value="">Every agent</option>
-          {agents.map((a) => <option key={a.id} value={a.id}>{a.full_name} ({a.code})</option>)}
+          {(agents.length ? agents : Object.values(seen)).map((a) => <option key={a.id} value={a.id}>{a.full_name} ({a.code})</option>)}
         </select>
         <button type="button" onClick={() => void load(0)} title="Refresh" className="ml-auto rounded-xl p-2 text-gray-500 hover:bg-gray-100">
           <RefreshCw className="h-4 w-4" />
@@ -273,4 +292,4 @@ export default function AgentReportsPanel({ agents, times, flash, onWaiting }: {
     </div>
   );
 }
-// BAMBEH_END_TOKEN__AGENT_REPORTS_PANEL_FIX936__COMPLETE
+// BAMBEH_END_TOKEN__AGENT_REPORTS_PANEL_FIX947__COMPLETE
