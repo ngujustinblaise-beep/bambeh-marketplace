@@ -49,7 +49,22 @@
     <meta name="apple-mobile-web-app-title" content="Bambeh" />
   </head>
   <body>
-    <div id="root"></div>
+    <!-- FIX968 - the wait screen until the app has arrived (React replaces it when it starts) -->
+    <div id="root"><style>@keyframes bambehWaitBreath{0%,100%{opacity:.22}50%{opacity:.45}}#bambeh-wait img{opacity:.32;animation:bambehWaitBreath 2.4s ease-in-out infinite}@media (prefers-reduced-motion: reduce){#bambeh-wait img{animation:none}}</style><div id="bambeh-wait" role="status" aria-live="polite" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;text-align:center;background:linear-gradient(180deg,#f0fdfa 0%,#ffffff 70%);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif"><img src="/icons/icon-192.png" width="96" height="96" alt="" style="border-radius:24px"><p id="bambeh-wait-msg" style="margin:0;max-width:20rem;font-size:16px;line-height:1.6;font-weight:500;color:#0f766e">Be patient as we link you up&hellip;</p></div></div>
+    <script>
+      // FIX968 - the wait screen speaks the member's language (the app's setting on this phone, else the phone's)
+      (function () {
+        var T = { en: ['Be patient as we link you up\u2026', 'Please be patient as we carry this load properly\u2026'], fr: ['Patientez, nous vous connectons\u2026', 'Merci de patienter\u00a0: nous portons cette charge comme il faut\u2026'], pidgin: ['Take am easy, we dey link you up\u2026', 'Abeg get patience, we dey carry dis load well-well\u2026'], ar: ['\u062a\u062d\u0644\u064e\u0651 \u0628\u0627\u0644\u0635\u0628\u0631\u060c \u062c\u0627\u0631\u064d \u062a\u0648\u0635\u064a\u0644\u0643\u2026', '\u0646\u0631\u062c\u0648 \u0645\u0646\u0643 \u0627\u0644\u0635\u0628\u0631\u060c \u0646\u062d\u0645\u0644 \u0647\u0630\u0627 \u0627\u0644\u062d\u0645\u0644 \u0643\u0645\u0627 \u064a\u0646\u0628\u063a\u064a\u2026'], ff: ['Mu\u00f1 see\u0257a, min njokkondirta ma\u2026', 'Tii\u0257no mu\u00f1, min ndonda doongal ngal no feewi\u2026'] };
+        var l = '';
+        try { l = window.localStorage.getItem('Bambeh_language') || ''; } catch (e) { l = ''; }
+        if (!T[l]) { var n = (navigator.language || '').slice(0, 2).toLowerCase(); l = (n === 'fr' || n === 'ar') ? n : 'en'; }
+        var m = document.getElementById('bambeh-wait-msg');
+        if (!m) { return; }
+        m.textContent = T[l][0];
+        if (l === 'ar') { m.setAttribute('dir', 'rtl'); }
+        setTimeout(function () { var x = document.getElementById('bambeh-wait-msg'); if (x) { x.textContent = T[l][1]; } }, 4000);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
       <script>
       // FIX410 - register ONLY on the real website. Never inside the

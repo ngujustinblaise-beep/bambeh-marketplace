@@ -19,7 +19,9 @@ import FirstVisit from "@/components/auth/FirstVisit"; // FIX764 - loaded near t
 import React, { Suspense, useEffect, createContext, useContext, useState, useCallback } from "react";
 // FIX962 - every page of the app retries its own download on a weak line before giving up (FIX957). Same
 // signature as React.lazy, so the 150 pages below did not have to change.
-import { lazyWithRetry as lazy } from "@/lib/lazyRetry";
+// FIX968 - every page still retries its own download (FIX957, inside lazyWithWait) and now shows the wait screen
+// while it comes: over the current page when the member moves on a slow line (React keeps the old page on show).
+import { lazyWithWait as lazy, WaitOverlay, WaitScreen } from "@/components/app/WaitScreen";
 
 
 // ─── FIX347: the "Please refresh or contact support" screen ──────────────────
@@ -498,44 +500,11 @@ const RouteAwareWidgets = React.memo(function RouteAwareWidgets() {
 });
 
 // ── LoadingFallback ──────────────────────────────────────────────────────────
+// FIX968 - Big, 1 Nov 2026: while a screen downloads, the faint Bambeh logo and "Be patient as we link you up",
+// then "Please be patient as we carry this load properly", in the member's language (WaitScreen.tsx, FIX967).
+// Before: a grey skeleton of cards that said nothing, in English only.
 const LoadingFallback = React.memo(function LoadingFallback() {
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Top brand bar */}
-      <div className="bg-teal-600 h-14 w-full flex items-center px-4">
-        <div className="h-6 w-28 bg-teal-500 rounded animate-pulse" />
-      </div>
-
-      {/* Content skeleton */}
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-        <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <div className="h-32 bg-gray-200 dark:bg-gray-700 animate-pulse" />
-              <div className="p-3 space-y-2">
-                <div className="h-3 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                <div className="h-3 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                <div className="h-4 w-2/3 bg-teal-100 dark:bg-teal-900 rounded animate-pulse" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-2 flex items-center justify-center gap-2">
-        <div className="h-4 w-4 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />
-        <span className="text-xs text-teal-600 font-medium animate-pulse">
-          Bambeh Online Marketplace
-        </span>
-      </div>
-    </div>
-  );
+  return <WaitScreen />;
 });
 
 // ── OnboardingFlowGuard ──────────────────────────────────────────────────────
@@ -793,6 +762,7 @@ export default function App() {
                 <NavigationBridge />
                 <ScrollToTop />
                 <NetworkStatusBar />
+                <WaitOverlay />{/* FIX968 - the wait screen over the page while the next screen downloads */}
                 <SecurityInitializer />
                 <RouteTracker>
                   <OnboardingFlowGuard>
