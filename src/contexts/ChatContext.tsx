@@ -5,7 +5,9 @@ import React, {
   useEffect,
   ReactNode
 } from "react";
-import { io, Socket } from "socket.io-client";
+// FIX962 - socket.io (about 12 kB compressed) was downloaded with the FIRST screen on every phone for a socket that
+// never connects (no chat server is set: VITE_SOCKET_URL). It now loads only when a chat server is set.
+import type { Socket } from "socket.io-client";
 
 export interface ChatMessage {
   id: string;
@@ -73,12 +75,14 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
-  // Initialize Socket.IO connection
+  // Initialize Socket.IO connection - FIX962: only when a chat server is set, and downloaded only then
   useEffect(() => {
-    // Replace with your actual socket server URL
-    const socketUrl =
-      import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
-
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    if (!socketUrl) return;
+    let alive = true;
+    let made: Socket | null = null;
+    import("socket.io-client").then(({ io }) => {
+    if (!alive) return;
     const newSocket = io(socketUrl, {
       autoConnect: false, // Don't connect until user is authenticated,
       reconnection: true,
@@ -104,10 +108,13 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({
       console.error("Socket error:", error);
     });
 
+    made = newSocket;
     setSocket(newSocket);
+    }).catch(() => { /* a weak line: no live chat socket this time */ });
 
     return () => {
-      newSocket.close();
+      alive = false;
+      if (made) made.close();
     };
   }, []);
 

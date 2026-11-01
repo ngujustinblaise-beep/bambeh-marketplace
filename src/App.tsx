@@ -16,7 +16,10 @@ import FirstVisit from "@/components/auth/FirstVisit"; // FIX764 - loaded near t
  */
 
 // ─── 1. React Core ────────────────────────────────────────────────────────────
-import React, { Suspense, lazy, useEffect, createContext, useContext, useState, useCallback } from "react";
+import React, { Suspense, useEffect, createContext, useContext, useState, useCallback } from "react";
+// FIX962 - every page of the app retries its own download on a weak line before giving up (FIX957). Same
+// signature as React.lazy, so the 150 pages below did not have to change.
+import { lazyWithRetry as lazy } from "@/lib/lazyRetry";
 
 
 // ─── FIX347: the "Please refresh or contact support" screen ──────────────────
@@ -49,16 +52,15 @@ if (typeof window !== "undefined") {
     window.location.reload();
   };
 
-  // Vite's own signal for a failed lazy-chunk fetch.
-  window.addEventListener("vite:preloadError", (e) => {
-    e.preventDefault();
-    recoverFromStaleChunk("vite:preloadError");
-  });
+  // FIX962 - Vite's "vite:preloadError" is no longer caught here. Catching it (preventDefault) makes a failed page
+  // download RESOLVE with nothing instead of failing, and only the reload that followed hid that. Now the failure
+  // reaches the page's own retry (lazyWithRetry, FIX957), which asks again and reloads at most once a minute.
 
-  // Belt and braces: some browsers surface it only as an unhandled rejection.
+  // Belt and braces: a download that is NOT a page (and so has no retry of its own) still gets the one reload.
   window.addEventListener("unhandledrejection", (e) => {
     const msg = String((e as PromiseRejectionEvent).reason?.message ?? "");
-    if (/dynamically imported module|Importing a module script failed|error loading dynamically imported/i.test(msg)) {
+    if (navigator.onLine !== false &&
+        /dynamically imported module|Importing a module script failed|error loading dynamically imported/i.test(msg)) {
       recoverFromStaleChunk(msg);
     }
   });

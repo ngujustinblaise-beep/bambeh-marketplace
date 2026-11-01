@@ -84,6 +84,8 @@ import {
   useContext,
   ReactNode,
 } from "react";
+// FIX962 - the banner's "Data Saver" button is now the app's one switch (FIX958); before, nothing read it
+import { isLite, setLiteChoice, subscribeLite } from "@/lib/liteMode";
 import {
   Wifi,
   WifiOff,
@@ -220,7 +222,8 @@ function readConnection(): {
 
 export function NetworkProvider({ children }: { children: ReactNode }) {
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo>(defaultNetworkInfo);
-  const [isDataSaverEnabled, setDataSaverState] = useState(false);
+  const [isDataSaverEnabled, setDataSaverState] = useState<boolean>(() => isLite());   // FIX962
+  useEffect(() => subscribeLite(() => setDataSaverState(isLite())), []);              // FIX962 - the menu switch too
   const [showOfflineToast, setShowOfflineToast] = useState(false);
 
   // Live mirror of the current reading, so the sampler can compare without
@@ -292,13 +295,13 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
 
     // Suggest data saver once, on a genuinely bad line, and never again
     // afterwards if the user has expressed a preference.
-    if (!userChoseRef.current && (next.strength === "poor" || next.saveData)) {
-      setDataSaverState(true);
-    }
+    // FIX962 - "auto" follows the phone's own data saver and 2G (FIX958); a member's own choice always wins
+    if (!userChoseRef.current) setDataSaverState(isLite());
   }, []);
 
   const setDataSaverEnabled = useCallback((enabled: boolean): void => {
     userChoseRef.current = true;
+    setLiteChoice(enabled ? "on" : "off");   // FIX962 - kept on this phone, followed by the whole app
     setDataSaverState(enabled);
   }, []);
 

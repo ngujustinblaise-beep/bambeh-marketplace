@@ -6,7 +6,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import sessionManager, { SESSION_KEYS } from '@/utils/auth/sessionManager';
-import { initializeFirebaseAppCheck } from '@/utils/firebase/firebaseConfig';
+// FIX962 - App Check's library (firebase, about 150 kB compressed) was downloaded with the FIRST screen on every
+// phone, even with no reCAPTCHA key set, when it does nothing. It now loads on its own, three seconds after the
+// app opens, only when a key is set - and never in data-saving mode (FIX958).
+import { isLite } from '@/lib/liteMode';
 
 const SESSION_CHECK_INTERVAL_MS = 60_000;
 
@@ -37,7 +40,13 @@ const SecurityInitializer: React.FC = () => {
     if (hasInitialized.current) return;
     hasInitialized.current = true;
     sessionManager.migrateOldSessions();
-    initializeFirebaseAppCheck();
+    if (import.meta.env.VITE_RECAPTCHA_SITE_KEY && !isLite()) {   // FIX962
+      setTimeout(() => {
+        import('@/utils/firebase/firebaseConfig')
+          .then((m) => { m.initializeFirebaseAppCheck(); })
+          .catch(() => { /* a weak line: App Check waits for the next opening */ });
+      }, 3000);
+    }
     if (import.meta.env.MODE === 'development') {
       console.log('🔒 SecurityInitializer: All security systems active');
     }
