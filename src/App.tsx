@@ -229,6 +229,7 @@ import TermsAcceptance from "@/pages/TermsAcceptance";
 import { StoreRouteGuard } from "@/config/storeMode"; // FIX620
 import ActivityPing from "@/components/analytics/ActivityPing"; // FIX665
 import InstallPrompt from "@/components/pwa/InstallPrompt"; // FIX669
+import AppUpdateNotice from "@/components/app/AppUpdateNotice"; // FIX981 - "a newer Bambeh app is ready" (FIX978): Android app only, and rarely
 import AuthPage from "@/pages/auth/AuthPage";
 import BiometricLogin from "@/pages/auth/BiometricLogin";
 
@@ -762,6 +763,7 @@ export default function App() {
                 <NavigationBridge />
                 <ScrollToTop />
                 <NetworkStatusBar />
+                <AppUpdateNotice />{/* FIX981 - only in the Android app, only when a newer APK is needed (FIX978) */}
                 <WaitOverlay />{/* FIX968 - the wait screen over the page while the next screen downloads */}
                 <SecurityInitializer />
                 <RouteTracker>

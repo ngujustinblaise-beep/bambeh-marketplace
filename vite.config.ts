@@ -48,9 +48,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from 'node:url'
+// FIX981 - after every build: the build's fingerprint and its file list, from which the Android app keeps itself up to
+// date (scripts/bambeh-ota.mjs, FIX979). It never fails the build.
+import bambehOta from './scripts/bambeh-ota.mjs'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), bambehOta()],   // FIX981 - bambehOta reads the finished build (FIX979)
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -276,6 +276,9 @@ self.addEventListener('fetch', function (event) {
   var url;
   try { url = new URL(req.url); } catch (e) { return; }
   var same = url.origin === self.location.origin;
+  // FIX981 - the Android app's download page and file (FIX980) and the app's update lists (FIX979): always straight
+  // from the network, never the saved copy - on a slow line the member must get the APK, not the app's page.
+  if (same && (url.pathname === '/download' || url.pathname.indexOf('/download/') === 0 || url.pathname.indexOf('/ota/') === 0)) return;
 
   if (req.mode === 'navigate') {
     if (same) event.respondWith(handleNavigate(event));

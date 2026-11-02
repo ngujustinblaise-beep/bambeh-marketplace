@@ -106,6 +106,25 @@ const config: CapacitorConfig = {
       group: "BambehPreferences",
     },
 
+    // FIX981 - @capgo/capacitor-updater 8.54.0 (installed by FIX982): the Android app keeps itself up to date from
+    // app.bambeh.com (src/lib/appUpdate.ts, FIX977). Bambeh decides when to download and when to switch; the updater
+    // asks nobody else: no automatic checks, its statistics, channels and update server are switched off. A version
+    // that does not say it opened within 20 seconds is thrown away (the phone goes back to the last one that worked).
+    // A new APK starts again from the version inside it.
+    CapacitorUpdater: {
+      autoUpdate: false,
+      appReadyTimeout: 20000,
+      responseTimeout: 30,
+      autoDeleteFailed: true,
+      autoDeletePrevious: true,
+      resetWhenUpdate: true,
+      updateUrl: "",
+      statsUrl: "",
+      channelUrl: "",
+      shakeMenu: false,
+      allowModifyUrl: false,
+    },
+
     // ── Share ──────────────────────────────────────────────────────────────
     // Capacitor Share plugin — native OS share sheet, no config needed.
   },

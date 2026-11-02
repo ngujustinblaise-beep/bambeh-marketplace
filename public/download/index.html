@@ -1,0 +1,305 @@
+<!-- BAMBEH_DEPLOY_TOKEN__DOWNLOADPAGE_FIX980_CLEAN -->
+<!doctype html>
+<!--
+  public/download/index.html - FIX980 (Package 18, Big 2 Nov 2026): the page that installs the Bambeh Android app.
+  app.bambeh.com/download/ - agents open it on a member's phone (or the member scans the QR code on an agent's phone).
+  The APK and latest.json beside it are published by FIX983 (C:\Dev\bambe-android, the APK build script).
+  Five languages (Arabic right to left); no phone numbers; nothing from other sites; small enough for a weak line.
+  The service worker never serves this folder from its saved copy (FIX981): a slow line gets the APK, not the app.
+  (c) 2026 BAMBEH SARL. All rights reserved.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d9488">
+<title>Bambeh for Android</title>
+<link rel="icon" href="/icons/icon-192.png">
+<style>
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f0fdfa;color:#134e4a;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+main{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:#0f766e}
+.brand img{width:40px;height:40px;border-radius:10px}
+.langs{display:flex;gap:4px;flex-wrap:wrap}
+.langs button{border:1px solid #99f6e4;background:#fff;color:#115e59;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:600;min-height:32px;cursor:pointer}
+.langs button[aria-pressed="true"]{background:#0d9488;border-color:#0d9488;color:#fff}
+h1{font-size:26px;line-height:1.2;margin:22px 0 6px;color:#0f172a}
+.lead{margin:0 0 16px;color:#115e59;font-size:16px}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 18px rgba(15,118,110,.10);margin:0 0 18px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;border-radius:14px;background:#0d9488;color:#fff;font-size:18px;font-weight:800;text-decoration:none;border:0}
+.btn:active{background:#0f766e}
+.btn svg{width:22px;height:22px}
+.meta{margin:10px 0 0;text-align:center;font-size:14px;color:#0f766e}
+.web{display:block;margin-top:12px;text-align:center;color:#0f766e;font-weight:700;font-size:15px}
+.none{margin:0;font-size:15px;color:#134e4a}
+.hint{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:#fef9c3;color:#713f12;font-size:14px}
+h2{font-size:18px;margin:22px 0 8px;color:#0f172a}
+ol{margin:0;padding:0;list-style:none;counter-reset:s}
+ol li{position:relative;padding:0 0 12px 44px;min-height:34px;font-size:15px}
+ol li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:#ccfbf1;color:#0f766e;font-weight:800;display:flex;align-items:center;justify-content:center}
+.note{border-radius:14px;padding:14px 16px;margin:14px 0;font-size:15px}
+.note b{display:block;margin-bottom:4px;font-size:16px}
+.warn{background:#fff7ed;color:#7c2d12;border:1px solid #fed7aa}
+.good{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.share{display:flex;gap:14px;align-items:center}
+.share .qr{width:132px;height:132px;flex:0 0 132px;border-radius:10px;background:#fff;border:1px solid #e2e8f0}
+.share p{margin:4px 0 0;font-size:14px}
+details{margin:18px 0 0;font-size:13px;color:#334155}
+summary{cursor:pointer;font-weight:700;color:#0f766e}
+code{display:block;word-break:break-all;background:#f1f5f9;border-radius:8px;padding:6px 8px;margin:4px 0 8px;font-size:12px}
+footer{margin-top:24px;text-align:center;font-size:13px;color:#0f766e}
+footer a{color:#0f766e;font-weight:700}
+[dir="rtl"] ol li{padding:0 44px 12px 0}
+[dir="rtl"] ol li:before{left:auto;right:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main id="page">
+  <div class="top">
+    <div class="brand"><img src="/icons/icon-192.png" alt="" width="40" height="40"><span>Bambeh</span></div>
+    <div class="langs" role="group" aria-label="Language">
+      <button type="button" data-lang="en">EN</button><button type="button" data-lang="fr">FR</button><button type="button" data-lang="pidgin">Pidgin</button><button type="button" data-lang="ar">&#1593;&#1585;&#1576;&#1610;</button><button type="button" data-lang="ff">Fulfulde</button>
+    </div>
+  </div>
+
+  <h1 data-t="title">Bambeh for Android</h1>
+  <p class="lead" data-t="lead">Buy, sell, rent and find help near you. Install the Bambeh app on this phone.</p>
+
+  <div class="card">
+    <div id="ready" hidden>
+      <a id="btn" class="btn" href="/download/bambeh.apk" download="bambeh.apk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg><span data-t="btn">Download the app</span></a>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div id="none">
+      <p class="none" data-t="none">The app file is being prepared. Meanwhile Bambeh works in your browser at app.bambeh.com.</p>
+    </div>
+    <p class="hint" id="notandroid" hidden data-t="notandroid">This app is for Android phones. On an iPhone or a computer, use Bambeh in the browser.</p>
+    <a class="web" href="https://app.bambeh.com/" data-t="web">Open Bambeh in the browser</a>
+  </div>
+
+  <h2 data-t="how">How to install</h2>
+  <ol>
+    <li data-t="s1">Tap &ldquo;Download the app&rdquo;. If Chrome warns about this type of file, confirm the download.</li>
+    <li data-t="s2">Open the downloaded file. The first time, Android asks to allow installs from Chrome: open Settings, allow this source, then come back.</li>
+    <li data-t="s3">Tap Install, then Open, and sign in with your number and password.</li>
+  </ol>
+
+  <div class="note warn"><b data-t="old_t">Already have an older Bambeh app?</b><span data-t="old_b">If Android says &ldquo;App not installed&rdquo;, or that it conflicts with an app already on the phone, remove the old Bambeh first: press and hold its icon, App info, Uninstall. Then install again and sign in. Your account, adverts, messages and orders are kept by Bambeh, not on the phone.</span></div>
+  <div class="note good"><b data-t="upd_t">It keeps itself up to date</b><span data-t="upd_b">After this, the app updates itself over the internet with small downloads. You will not need to install it again, except in the rare case the app asks you to.</span></div>
+
+  <h2 data-t="share_t">Install it on another phone</h2>
+  <div class="card share">
+    <svg shape-rendering="crispEdges" role="img" aria-label="QR: app.bambeh.com/download" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" class="qr"><path fill="#fff" d="M0 0h37v37h-37z"/><path class="qrline" stroke="#0f172a" d="M4 4.5h7m4 0h1m1 0h4m1 0h3m1 0h7m-29 1h1m5 0h1m1 0h2m1 0h4m1 0h2m2 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h2m4 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m1 0h3m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h3m1 0h3m3 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m2 0h2m1 0h2m1 0h1m2 0h2m2 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-19 1h1m2 0h3m1 0h1m2 0h1m-20 1h3m1 0h2m2 0h1m1 0h2m2 0h5m6 0h2m-25 1h1m1 0h1m1 0h1m2 0h3m1 0h2m1 0h6m1 0h1m1 0h1m1 0h1m-27 1h2m1 0h5m1 0h1m1 0h1m1 0h2m1 0h1m3 0h1m3 0h2m-27 1h2m1 0h2m1 0h2m5 0h2m4 0h1m2 0h3m2 0h1m-28 1h4m1 0h1m1 0h1m2 0h2m1 0h2m1 0h1m2 0h2m1 0h1m2 0h3m-27 1h1m1 0h1m2 0h1m1 0h1m3 0h1m1 0h1m3 0h1m2 0h2m1 0h2m1 0h1m-29 1h2m1 0h1m2 0h1m2 0h1m2 0h1m2 0h1m1 0h5m1 0h3m1 0h2m-26 1h3m1 0h1m5 0h1m1 0h1m6 0h1m1 0h2m-25 1h2m3 0h2m2 0h1m1 0h1m1 0h2m2 0h1m2 0h1m1 0h3m1 0h1m-25 1h3m4 0h2m1 0h2m1 0h1m3 0h1m2 0h1m2 0h1m-27 1h1m1 0h1m1 0h1m1 0h3m3 0h2m1 0h4m1 0h1m1 0h2m2 0h1m-25 1h1m2 0h1m3 0h3m1 0h1m1 0h3m1 0h1m1 0h2m1 0h3m-26 1h6m1 0h6m1 0h4m1 0h7m1 0h1m-21 1h2m4 0h1m1 0h1m1 0h1m1 0h1m3 0h2m1 0h2m-29 1h7m2 0h1m2 0h1m3 0h2m1 0h2m1 0h1m1 0h1m1 0h2m-28 1h1m5 0h1m1 0h2m2 0h3m3 0h1m1 0h1m3 0h1m-25 1h1m1 0h3m1 0h1m3 0h4m3 0h1m2 0h8m-28 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m4 0h1m1 0h1m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m2 0h1m3 0h1m2 0h1m2 0h1m1 0h1m-29 1h1m5 0h1m1 0h2m2 0h5m3 0h1m3 0h2m1 0h1m-28 1h7m5 0h1m5 0h3m2 0h1m3 0h1"/></svg>
+    <p data-t="share_b">Scan this code with the other phone, or open app.bambeh.com/download in its browser. Share this page, not the file: WhatsApp blocks app files.</p>
+  </div>
+
+  <details id="staff" hidden>
+    <summary data-t="staff">For Bambeh staff: check the file</summary>
+    <div><span data-t="code">Version code</span><code id="vcode"></code></div>
+    <div><span data-t="sha">File SHA-256</span><code id="sha"></code></div>
+    <div><span data-t="cert">Signed with certificate SHA-256</span><code id="cert"></code></div>
+  </details>
+
+  <footer><span data-t="help">Questions?</span> <a href="mailto:support@bambeh.com">support@bambeh.com</a><br>&copy; BAMBEH SARL</footer>
+</main>
+<script>
+(function () {
+  'use strict';
+  var T = {
+    en: {
+      title: 'Bambeh for Android',
+      lead: 'Buy, sell, rent and find help near you. Install the Bambeh app on this phone.',
+      btn: 'Download the app',
+      meta: 'Version {v} \u00b7 {s} MB \u00b7 {d}',
+      none: 'The app file is being prepared. Meanwhile Bambeh works in your browser at app.bambeh.com.',
+      web: 'Open Bambeh in the browser',
+      notandroid: 'This app is for Android phones. On an iPhone or a computer, use Bambeh in the browser.',
+      how: 'How to install',
+      s1: 'Tap \u201cDownload the app\u201d. If Chrome warns about this type of file, confirm the download.',
+      s2: 'Open the downloaded file. The first time, Android asks to allow installs from Chrome: open Settings, allow this source, then come back.',
+      s3: 'Tap Install, then Open, and sign in with your number and password.',
+      old_t: 'Already have an older Bambeh app?',
+      old_b: 'If Android says \u201cApp not installed\u201d, or that it conflicts with an app already on the phone, remove the old Bambeh first: press and hold its icon, App info, Uninstall. Then install again and sign in. Your account, adverts, messages and orders are kept by Bambeh, not on the phone.',
+      upd_t: 'It keeps itself up to date',
+      upd_b: 'After this, the app updates itself over the internet with small downloads. You will not need to install it again, except in the rare case the app asks you to.',
+      share_t: 'Install it on another phone',
+      share_b: 'Scan this code with the other phone, or open app.bambeh.com/download in its browser. Share this page, not the file: WhatsApp blocks app files.',
+      staff: 'For Bambeh staff: check the file',
+      sha: 'File SHA-256',
+      cert: 'Signed with certificate SHA-256',
+      code: 'Version code',
+      help: 'Questions?'
+    },
+    fr: {
+      title: 'Bambeh pour Android',
+      lead: 'Achetez, vendez, louez et trouvez de l\'aide pr\u00e8s de chez vous. Installez l\'application Bambeh sur ce t\u00e9l\u00e9phone.',
+      btn: 'T\u00e9l\u00e9charger l\'application',
+      meta: 'Version {v} \u00b7 {s} Mo \u00b7 {d}',
+      none: 'Le fichier de l\'application est en pr\u00e9paration. En attendant, Bambeh fonctionne dans votre navigateur sur app.bambeh.com.',
+      web: 'Ouvrir Bambeh dans le navigateur',
+      notandroid: 'Cette application est pour les t\u00e9l\u00e9phones Android. Sur un iPhone ou un ordinateur, utilisez Bambeh dans le navigateur.',
+      how: 'Comment l\'installer',
+      s1: 'Touchez \u00ab\u00a0T\u00e9l\u00e9charger l\'application\u00a0\u00bb. Si Chrome vous avertit sur ce type de fichier, confirmez le t\u00e9l\u00e9chargement.',
+      s2: 'Ouvrez le fichier t\u00e9l\u00e9charg\u00e9. La premi\u00e8re fois, Android demande d\'autoriser les installations depuis Chrome\u00a0: ouvrez les Param\u00e8tres, autorisez cette source, puis revenez.',
+      s3: 'Touchez Installer, puis Ouvrir, et connectez-vous avec votre num\u00e9ro et votre mot de passe.',
+      old_t: 'Vous avez d\u00e9j\u00e0 une ancienne application Bambeh\u00a0?',
+      old_b: 'Si Android affiche \u00ab\u00a0Application non install\u00e9e\u00a0\u00bb ou un conflit avec une application d\u00e9j\u00e0 sur le t\u00e9l\u00e9phone, supprimez d\'abord l\'ancienne Bambeh\u00a0: appui long sur son ic\u00f4ne, Infos sur l\'appli, D\u00e9sinstaller. Puis installez \u00e0 nouveau et connectez-vous. Votre compte, vos annonces, vos messages et vos commandes sont gard\u00e9s par Bambeh, pas sur le t\u00e9l\u00e9phone.',
+      upd_t: 'Elle se met \u00e0 jour toute seule',
+      upd_b: 'Ensuite, l\'application se met \u00e0 jour par Internet, avec de petits t\u00e9l\u00e9chargements. Vous n\'aurez plus \u00e0 la r\u00e9installer, sauf dans le cas rare o\u00f9 l\'application vous le demande.',
+      share_t: 'L\'installer sur un autre t\u00e9l\u00e9phone',
+      share_b: 'Scannez ce code avec l\'autre t\u00e9l\u00e9phone, ou ouvrez app.bambeh.com/download dans son navigateur. Partagez cette page, pas le fichier\u00a0: WhatsApp bloque les fichiers d\'application.',
+      staff: 'Pour l\'\u00e9quipe Bambeh\u00a0: v\u00e9rifier le fichier',
+      sha: 'SHA-256 du fichier',
+      cert: 'Sign\u00e9 avec le certificat SHA-256',
+      code: 'Code de version',
+      help: 'Des questions\u00a0?'
+    },
+    pidgin: {
+      title: 'Bambeh for Android',
+      lead: 'Buy, sell, rent and find help near you. Put di Bambeh app for dis phone.',
+      btn: 'Download di app',
+      meta: 'Version {v} \u00b7 {s} MB \u00b7 {d}',
+      none: 'Dem still dey prepare di app file. For now, Bambeh dey work for your browser for app.bambeh.com.',
+      web: 'Open Bambeh for browser',
+      notandroid: 'Dis app na for Android phone. For iPhone or computer, use Bambeh for browser.',
+      how: 'How to install am',
+      s1: 'Touch \u201cDownload di app\u201d. If Chrome warn you about dis kind file, agree make e download.',
+      s2: 'Open di file wey you download. Di first time, Android go ask make you allow install from Chrome: open Settings, allow dis source, then come back.',
+      s3: 'Touch Install, then Open, and sign in with your number and password.',
+      old_t: 'You get old Bambeh app before?',
+      old_b: 'If Android talk \u201cApp not installed\u201d, or say e clash with app wey dey phone already, comot di old Bambeh first: press and hold im icon, App info, Uninstall. Then install again and sign in. Your account, adverts, messages and orders dey with Bambeh, no be for phone.',
+      upd_t: 'E dey update imself',
+      upd_b: 'After dis one, di app go dey update imself through internet with small downloads. You no go need install am again, except di rare time wey di app go ask you.',
+      share_t: 'Install am for another phone',
+      share_b: 'Scan dis code with di other phone, or open app.bambeh.com/download for im browser. Share dis page, no be di file: WhatsApp dey block app files.',
+      staff: 'For Bambeh staff: check di file',
+      sha: 'File SHA-256',
+      cert: 'Signed with certificate SHA-256',
+      code: 'Version code',
+      help: 'Question?'
+    },
+    ar: {
+      title: '\u0628\u0627\u0645\u0628\u064a\u0647 \u0644\u0623\u0646\u062f\u0631\u0648\u064a\u062f',
+      lead: '\u0627\u0634\u062a\u0631\u0650 \u0648\u0628\u0650\u0639 \u0648\u0627\u0633\u062a\u0623\u062c\u0631 \u0648\u0627\u0628\u062d\u062b \u0639\u0646 \u0627\u0644\u0645\u0633\u0627\u0639\u062f\u0629 \u0628\u0627\u0644\u0642\u0631\u0628 \u0645\u0646\u0643. \u062b\u0628\u0651\u062a \u062a\u0637\u0628\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0647\u0627\u062a\u0641.',
+      btn: '\u062a\u0646\u0632\u064a\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642',
+      meta: '\u0627\u0644\u0625\u0635\u062f\u0627\u0631 {v} \u00b7 {s} \u0645\u064a\u063a\u0627\u0628\u0627\u064a\u062a \u00b7 {d}',
+      none: '\u064a\u062c\u0631\u064a \u062a\u062c\u0647\u064a\u0632 \u0645\u0644\u0641 \u0627\u0644\u062a\u0637\u0628\u064a\u0642. \u0641\u064a \u0627\u0644\u0623\u062b\u0646\u0627\u0621\u060c \u064a\u0639\u0645\u0644 \u0628\u0627\u0645\u0628\u064a\u0647 \u0641\u064a \u0645\u062a\u0635\u0641\u062d\u0643 \u0639\u0644\u0649 app.bambeh.com.',
+      web: '\u0627\u0641\u062a\u062d \u0628\u0627\u0645\u0628\u064a\u0647 \u0641\u064a \u0627\u0644\u0645\u062a\u0635\u0641\u062d',
+      notandroid: '\u0647\u0630\u0627 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0644\u0647\u0648\u0627\u062a\u0641 \u0623\u0646\u062f\u0631\u0648\u064a\u062f. \u0639\u0644\u0649 \u0622\u064a\u0641\u0648\u0646 \u0623\u0648 \u062d\u0627\u0633\u0648\u0628\u060c \u0627\u0633\u062a\u062e\u062f\u0645 \u0628\u0627\u0645\u0628\u064a\u0647 \u0641\u064a \u0627\u0644\u0645\u062a\u0635\u0641\u062d.',
+      how: '\u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u062a\u062b\u0628\u064a\u062a',
+      s1: '\u0627\u0636\u063a\u0637 \u00ab\u062a\u0646\u0632\u064a\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u00bb. \u0625\u0630\u0627 \u062d\u0630\u0651\u0631\u0643 Chrome \u0645\u0646 \u0647\u0630\u0627 \u0627\u0644\u0646\u0648\u0639 \u0645\u0646 \u0627\u0644\u0645\u0644\u0641\u0627\u062a\u060c \u0623\u0643\u0651\u062f \u0627\u0644\u062a\u0646\u0632\u064a\u0644.',
+      s2: '\u0627\u0641\u062a\u062d \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0630\u064a \u0646\u0632\u0651\u0644\u062a\u0647. \u0641\u064a \u0627\u0644\u0645\u0631\u0629 \u0627\u0644\u0623\u0648\u0644\u0649 \u064a\u0637\u0644\u0628 Android \u0627\u0644\u0633\u0645\u0627\u062d \u0628\u0627\u0644\u062a\u062b\u0628\u064a\u062a \u0645\u0646 Chrome: \u0627\u0641\u062a\u062d \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a\u060c \u0648\u0627\u0633\u0645\u062d \u0628\u0647\u0630\u0627 \u0627\u0644\u0645\u0635\u062f\u0631\u060c \u062b\u0645 \u0627\u0631\u062c\u0639.',
+      s3: '\u0627\u0636\u063a\u0637 \u00ab\u062a\u062b\u0628\u064a\u062a\u00bb \u062b\u0645 \u00ab\u0641\u062a\u062d\u00bb\u060c \u0648\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0631\u0642\u0645\u0643 \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631.',
+      old_t: '\u0647\u0644 \u0644\u062f\u064a\u0643 \u062a\u0637\u0628\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0642\u062f\u064a\u0645\u061f',
+      old_b: '\u0625\u0630\u0627 \u0638\u0647\u0631 \u00ab\u0644\u0645 \u064a\u062a\u0645 \u062a\u062b\u0628\u064a\u062a \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u00bb \u0623\u0648 \u062a\u0639\u0627\u0631\u0636 \u0645\u0639 \u062a\u0637\u0628\u064a\u0642 \u0645\u0648\u062c\u0648\u062f \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062a\u0641\u060c \u0627\u062d\u0630\u0641 \u0628\u0627\u0645\u0628\u064a\u0647 \u0627\u0644\u0642\u062f\u064a\u0645 \u0623\u0648\u0644\u064b\u0627: \u0627\u0636\u063a\u0637 \u0645\u0637\u0648\u0644\u064b\u0627 \u0639\u0644\u0649 \u0623\u064a\u0642\u0648\u0646\u062a\u0647\u060c \u062b\u0645 \u00ab\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u00bb\u060c \u062b\u0645 \u00ab\u0625\u0644\u063a\u0627\u0621 \u0627\u0644\u062a\u062b\u0628\u064a\u062a\u00bb. \u0628\u0639\u062f\u0647\u0627 \u062b\u0628\u0651\u062a \u0645\u0646 \u062c\u062f\u064a\u062f \u0648\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644. \u062d\u0633\u0627\u0628\u0643 \u0648\u0625\u0639\u0644\u0627\u0646\u0627\u062a\u0643 \u0648\u0631\u0633\u0627\u0626\u0644\u0643 \u0648\u0637\u0644\u0628\u0627\u062a\u0643 \u0645\u062d\u0641\u0648\u0638\u0629 \u0644\u062f\u0649 \u0628\u0627\u0645\u0628\u064a\u0647\u060c \u0644\u0627 \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062a\u0641.',
+      upd_t: '\u064a\u062d\u062f\u0651\u062b \u0646\u0641\u0633\u0647 \u0628\u0646\u0641\u0633\u0647',
+      upd_b: '\u0628\u0639\u062f \u0630\u0644\u0643 \u064a\u062d\u062f\u0651\u062b \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0646\u0641\u0633\u0647 \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0628\u062a\u0646\u0632\u064a\u0644\u0627\u062a \u0635\u063a\u064a\u0631\u0629. \u0644\u0646 \u062a\u062d\u062a\u0627\u062c \u0625\u0644\u0649 \u062a\u062b\u0628\u064a\u062a\u0647 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649\u060c \u0625\u0644\u0627 \u0641\u064a \u0627\u0644\u062d\u0627\u0644\u0627\u062a \u0627\u0644\u0646\u0627\u062f\u0631\u0629 \u0627\u0644\u062a\u064a \u064a\u0637\u0644\u0628 \u0641\u064a\u0647\u0627 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0630\u0644\u0643.',
+      share_t: '\u062a\u062b\u0628\u064a\u062a\u0647 \u0639\u0644\u0649 \u0647\u0627\u062a\u0641 \u0622\u062e\u0631',
+      share_b: '\u0627\u0645\u0633\u062d \u0647\u0630\u0627 \u0627\u0644\u0631\u0645\u0632 \u0628\u0627\u0644\u0647\u0627\u062a\u0641 \u0627\u0644\u0622\u062e\u0631\u060c \u0623\u0648 \u0627\u0641\u062a\u062d app.bambeh.com/download \u0641\u064a \u0645\u062a\u0635\u0641\u062d\u0647. \u0634\u0627\u0631\u0643 \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629 \u0644\u0627 \u0627\u0644\u0645\u0644\u0641: \u0648\u0627\u062a\u0633\u0627\u0628 \u064a\u062d\u0638\u0631 \u0645\u0644\u0641\u0627\u062a \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a.',
+      staff: '\u0644\u0641\u0631\u064a\u0642 \u0628\u0627\u0645\u0628\u064a\u0647: \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0645\u0644\u0641',
+      sha: 'SHA-256 \u0644\u0644\u0645\u0644\u0641',
+      cert: '\u0645\u0648\u0642\u0651\u0639 \u0628\u0627\u0644\u0634\u0647\u0627\u062f\u0629 SHA-256',
+      code: '\u0631\u0645\u0632 \u0627\u0644\u0625\u0635\u062f\u0627\u0631',
+      help: '\u0623\u0633\u0626\u0644\u0629\u061f'
+    },
+    ff: {
+      title: 'Bambeh e Android',
+      lead: 'Soodu, yeeyu, luwar, yiytu ballal \u0253adii\u0257o e maa. Wurnu aplikaasiyo\u014b Bambeh e ndee telefon.',
+      btn: 'Wurno aplikaasiyo\u014b \u0257oo',
+      meta: 'Versiyo\u014b {v} \u00b7 {s} MB \u00b7 {d}',
+      none: 'Fiile aplikaasiyo\u014b ina mo\u01b4\u01b4inee. Haa \u0257um timma, Bambeh ina golla e navigateer maa, e app.bambeh.com.',
+      web: 'Uddit Bambeh e navigateer',
+      notandroid: 'Ndee aplikaasiyo\u014b ko ngam telefonji Android. E iPhone walla ordinateer, huutoro Bambeh e navigateer.',
+      how: 'No wurnirta',
+      s1: 'Meemu \u201cWurno aplikaasiyo\u014b \u0257oo\u201d. So Chrome reentinii fiile ndee, jaa\u0253u jippinde.',
+      s2: 'Uddit fiile nde jippin\u0257aa. Laawol aranol, Android ina naamna yamirde wurnude immorde e Chrome: uddit Settings, yamir ndee jaa\u0253ngal, refto.',
+      s3: 'Meemu Install, refti Open, naat e limngal telefon maa e finnde maa.',
+      old_t: 'Aplikaasiyo\u014b Bambeh hii\u0257\u0257o ina woodi e telefon maa?',
+      old_b: 'So Android wi\u2019ii \u201cApp not installed\u201d, ittu Bambeh hii\u0257\u0257o oo taho: tappu e ikon mum, App info, Uninstall. Refti wurnu kadi, naat. Konte maa, anonsuuji maa, mesaasuuji maa e yamirooje maa ina ndeenaa to Bambeh, wonaa e telefon.',
+      upd_t: 'Ina hes\u0257itina hoore mum',
+      upd_b: 'Caggal \u0257um, aplikaasiyo\u014b ina hes\u0257itina hoore mum e enternet, e jippin\u0257e pamare. A sokliraa wurnude mo kadi, si wonaa so aplikaasiyo\u014b naamnii maa.',
+      share_t: 'Wurnu e telefon go\u0257\u0257o',
+      share_b: 'Skaneer ndee kod e telefon go\u0257\u0257o oo, walla uddit app.bambeh.com/download e navigateer mum. Wadan ngoo hello, wonaa fiile: WhatsApp ina ha\u0257a fiileeji aplikaasiyo\u014b.',
+      staff: 'Ngam gollii\u0253e Bambeh: \u01b4eewto fiile',
+      sha: 'File SHA-256',
+      cert: 'Signed with certificate SHA-256',
+      code: 'Version code',
+      help: 'Naamnde?'
+    }
+  };
+  var KEY = 'bambeh_download_lang';
+  var DATE = { en: 'en-GB', fr: 'fr-FR', pidgin: 'en-GB', ar: 'ar', ff: 'fr-FR' };
+  var info = null;
+  function pick() {
+    var l = '';
+    try { l = localStorage.getItem(KEY) || localStorage.getItem('Bambeh_language') || ''; } catch (e) { l = ''; }
+    if (l === 'pcm') l = 'pidgin';
+    if (T[l]) return l;
+    var n = String(navigator.language || '').slice(0, 2).toLowerCase();
+    return (n === 'fr' || n === 'ar') ? n : 'en';
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var lang = pick();
+  function draw() {
+    var t = T[lang] || T.en;
+    var root = document.documentElement;
+    root.lang = lang === 'pidgin' ? 'en' : lang;
+    root.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = t.title;
+    var els = document.querySelectorAll('[data-t]');
+    for (var i = 0; i < els.length; i++) {
+      var k = els[i].getAttribute('data-t');
+      if (t[k]) els[i].textContent = t[k];
+    }
+    var bs = document.querySelectorAll('[data-lang]');
+    for (var j = 0; j < bs.length; j++) bs[j].setAttribute('aria-pressed', bs[j].getAttribute('data-lang') === lang ? 'true' : 'false');
+    if (info) {
+      var d = '';
+      try { d = new Date(info.released_at).toLocaleDateString(DATE[lang] || 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { d = ''; }
+      var mb = info.size > 0 ? (info.size / 1048576).toFixed(1) : '?';
+      document.getElementById('meta').textContent = t.meta.replace('{v}', info.version_name || String(info.version_code)).replace('{s}', mb).replace('{d}', d);
+    }
+  }
+  var bs = document.querySelectorAll('[data-lang]');
+  for (var b = 0; b < bs.length; b++) {
+    bs[b].addEventListener('click', function () {
+      lang = this.getAttribute('data-lang');
+      try { localStorage.setItem(KEY, lang); } catch (e) { /* not kept: still shown */ }
+      draw();
+    });
+  }
+  if (!/android/i.test(navigator.userAgent || '')) document.getElementById('notandroid').hidden = false;
+  draw();
+  var x = new XMLHttpRequest();
+  x.open('GET', '/download/latest.json?t=' + Date.now(), true);
+  x.timeout = 20000;
+  x.onload = function () {
+    var j = null;
+    try { j = JSON.parse(x.responseText); } catch (e) { j = null; }
+    if (x.status !== 200 || !j || !(j.version_code > 0)) return;
+    var url = (typeof j.url === 'string' && /^\/download\/[A-Za-z0-9._-]+\.apk$/.test(j.url)) ? j.url : '/download/bambeh.apk';
+    info = { version_code: j.version_code, version_name: String(j.version_name || ''), size: Number(j.size) || 0, released_at: String(j.released_at || '') };
+    var a = document.getElementById('btn');
+    a.href = url + '?v=' + encodeURIComponent(String(j.version_code));
+    a.setAttribute('download', 'Bambeh-' + (info.version_name || info.version_code) + '.apk');
+    document.getElementById('ready').hidden = false;
+    document.getElementById('none').hidden = true;
+    if (j.sha256) {
+      document.getElementById('vcode').textContent = String(j.version_code) + (info.version_name ? ' (' + esc(info.version_name) + ')' : '');
+      document.getElementById('sha').textContent = String(j.sha256);
+      document.getElementById('cert').textContent = String(j.cert_sha256 || '');
+      document.getElementById('staff').hidden = false;
+    }
+    draw();
+  };
+  x.send();
+})();
+</script>
+</body>
+</html>
+<!-- BAMBEH_END_TOKEN__DOWNLOADPAGE_FIX980__COMPLETE -->

@@ -37,6 +37,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { NotificationBell } from '@/components/NotificationBell';
 import { LiteToggle } from '@/components/network/LiteToggle';   // FIX962 - the Save data switch (FIX961)
+import { AppVersionLine } from '@/components/app/AppUpdateNotice';   // FIX981 - the Android app's version, in the menu (FIX978)
 import { useAgentSignal } from '@/features/agents/agentSignal';   // FIX950 - Bambeh answered the agent's daily report (FIX943)
 import { useLang } from "@/hooks/useAppLang";
 import { IS_NATIVE_APP, storeAllows, publicShareUrl } from "@/config/storeMode"; // FIX630, FIX683 - the mic is a web-view limit
@@ -852,6 +853,7 @@ export default function Header() {
               </button>
               {/* FIX962 - Save data: photos only when an item is opened; on by itself on a slow line (FIX958) */}
               <LiteToggle />
+              <AppVersionLine />{/* FIX981 - Android app only: its version, up to date or not, Check now (FIX978) */}
               {[
                 { to: '/coins',     label: '\u26A1 ' + H('zerm')                  },
                 { to: '/cart',      label: `\uD83D\uDED2 ${t('nav.cart')}`      },
