@@ -31,13 +31,14 @@ import { forgetOpenCountries } from '@/lib/africa/useOpenCountries';
 
 type Row = { code: string; blocs: string[]; signup_on: boolean; places_on: boolean; accounts: number; changed_at: string | null };
 type Change = { at: string; by: string; what: 'signup' | 'places' | 'both'; on: boolean; codes: string[] };
-type Data = { ok: boolean; reason?: string; can_change?: boolean; rows?: Row[]; email_accounts?: number; changes?: Change[] };
+type Data = { ok: boolean; reason?: string; can_change?: boolean; can_change_one?: boolean; rows?: Row[]; email_accounts?: number; changes?: Change[] };   // FIX972 - can_change_one: moderators
 type Which = 'signup' | 'places' | 'both';
 type Filter = 'all' | 'CEMAC' | 'ECOWAS' | 'AES' | 'REST' | 'WORLD' | 'OPEN';
 
 const REASONS: Record<string, string> = {
   staff_only: 'Only Bambeh staff can see this screen.',
-  admins_only: 'Only admins and the super admin can switch countries. Moderators can look.',
+  admins_only: 'Only admins and the super admin can switch countries.',
+  one_at_a_time: 'Moderators switch one country at a time. Open all and Close all are for admins and the super admin.',   // FIX972
   home_always_on: 'Cameroon is always on - it cannot be switched off.',
   unknown_country: 'One of those countries is not in the list.',
   no_country: 'No country was chosen.',
@@ -115,9 +116,10 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
     return m;
   }, [rows]);
   const can = !!data?.can_change;
+  const canOne = can || !!data?.can_change_one;   // FIX972 - moderators: one country at a time (FIX970)
 
   const change = async (codes: string[], what: Which, on: boolean, ask: string | null) => {
-    if (!can || busy) return;
+    if (!(codes.length === 1 ? canOne : can) || busy) return;
     if (ask && typeof window.confirm === 'function' && !window.confirm(ask)) return;
     setBusy(true);
     setNote(null);
@@ -193,7 +195,7 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
               <button key={w} type="button" onClick={() => setWhich(w)} style={btn(which === w)} data-which={w}>{WHAT[w]}</button>
             ))}
             <span style={{ fontSize: 12, color: '#64748b' }}>
-              Open now: {openSignup} for phone sign-up, {openPlaces} for places. {data.can_change ? '' : 'You can look; only admins can switch.'}
+              Open now: {openSignup} for phone sign-up, {openPlaces} for places. {data.can_change ? '' : canOne ? 'You can switch one country at a time; Open all and Close all are for admins.' : 'You can look; only admins can switch.'}
             </span>
           </div>
 
@@ -208,9 +210,9 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
                   <div style={{ fontWeight: 800, fontSize: 15 }}>{blocName(b, 'en')}</div>
                   <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{on} of {members.length} on ({WHAT[w].toLowerCase()}){b === 'WORLD' ? ' - places stay African' : ''}</div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                    <button type="button" disabled={!can || busy || !members.length} style={btn(false)} data-bloc-on={b}
+                    <button type="button" disabled={!can || busy || !members.length} style={{ ...btn(false), opacity: can ? 1 : 0.45, cursor: can ? 'pointer' : 'not-allowed' }} data-bloc-on={b}
                             onClick={() => void change(members, w, true, 'Switch ON ' + WHAT[w].toLowerCase() + ' for ' + blocName(b, 'en') + '?')}>Open all</button>
-                    <button type="button" disabled={!can || busy || !members.length} style={btn(false, '#b91c1c')} data-bloc-off={b}
+                    <button type="button" disabled={!can || busy || !members.length} style={{ ...btn(false, '#b91c1c'), opacity: can ? 1 : 0.45, cursor: can ? 'pointer' : 'not-allowed' }} data-bloc-off={b}
                             onClick={() => void change(members, w, false, 'Switch OFF ' + WHAT[w].toLowerCase() + ' for ' + blocName(b, 'en') + '? Cameroon stays on.')}>Close all</button>
                   </div>
                 </div>
@@ -248,14 +250,14 @@ export default function AdminCountries({ embedded = false }: { embedded?: boolea
                       <td style={td}>{c.blocs.map((b) => BLOC_SHORT[b] || b).join(', ') || '-'}</td>
                       <td style={td}>{r ? r.accounts : 0}</td>
                       <td style={td}>
-                        <Toggle on={!!r && r.signup_on} locked={locked} disabled={!can || busy} label={'Phone sign-up ' + c.en}
+                        <Toggle on={!!r && r.signup_on} locked={locked} disabled={!canOne || busy} label={'Phone sign-up ' + c.en}
                                 onClick={() => void change([c.code], 'signup', !(r && r.signup_on), null)} />
                       </td>
                       <td style={td}>
                         {isWorld(c.code) ? (
                           <span style={{ fontSize: 12, color: '#94a3b8' }} data-no-places={c.code}>Africa only</span>
                         ) : (
-                          <Toggle on={!!r && r.places_on} locked={locked} disabled={!can || busy} label={'Places ' + c.en}
+                          <Toggle on={!!r && r.places_on} locked={locked} disabled={!canOne || busy} label={'Places ' + c.en}
                                   onClick={() => void change([c.code], 'places', !(r && r.places_on), null)} />
                         )}
                       </td>

@@ -67,7 +67,8 @@ export type BadgeKey =
   | 'zerm_cashout'      // FIX886 - Zerm coins: coins-to-money requests waiting (FIX859)
   | 'agent_reports_waiting'   // FIX945 - Marketing agents
   | 'fin_payments_stale'      // FIX945 - Finances: payments waiting more than an hour
-  | 'fin_payouts_waiting';    // FIX945 - Finances: payouts Bambeh owes
+  | 'fin_payouts_waiting'     // FIX945 - Finances: payouts Bambeh owes
+  | 'protection_asks';        // FIX972 - User Protection: a moderator asks an admin to release (FIX970)
 
 export type BadgeMap = Partial<Record<BadgeKey, number>>;
 
@@ -75,7 +76,7 @@ type BadgeRow = { section_key: string; badge_count: number | string; status?: st
 
 /** Which RPC answers for which keys (so a failure of one RPC keeps only its own numbers). */
 const DESK_KEYS: BadgeKey[] = ['corp_waiting', 'support_waiting', 'zerm_cashout'];   // FIX886
-const STAFF_KEYS: BadgeKey[] = ['agent_reports_waiting', 'fin_payments_stale', 'fin_payouts_waiting'];   // FIX945
+const STAFF_KEYS: BadgeKey[] = ['agent_reports_waiting', 'fin_payments_stale', 'fin_payouts_waiting', 'protection_asks'];   // FIX945, FIX972
 
 /** A section that just handled something asks for fresh numbers at once (FIX945). */
 export const ADMIN_BADGES_EVENT = 'bambeh:admin-badges';

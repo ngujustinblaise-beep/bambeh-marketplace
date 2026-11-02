@@ -105,6 +105,7 @@ const strings = {
     refundedBody: 'This order was declined and the money was sent back to the number that paid.',
     disputedTitle: 'Under review',
     disputedBody: "A claim on this order is being reviewed by Bambeh, who replies within 72 hours. No money moves until it is decided.",
+    pausedBody: "Bambeh is checking this order. The seller will be paid once the check is finished. You do not need to do anything else.",   // FIX972 - Bambeh paused this order (User Protection)
     noEscrowTitle: 'Direct payment',
     noEscrowBody: 'This order was not placed under User Protection, so there is nothing to hold or release.',
     closedTitle: 'Order closed',
@@ -158,6 +159,7 @@ const strings = {
     refundedBody: 'Cette commande a \u00e9t\u00e9 refus\u00e9e et l\u2019argent a \u00e9t\u00e9 renvoy\u00e9 au num\u00e9ro qui a pay\u00e9.',
     disputedTitle: 'En cours d\u2019examen',
     disputedBody: "Une r\u00e9clamation sur cette commande est en cours d'examen par Bambeh, qui r\u00e9pond sous 72 heures. Aucun argent ne bouge avant la d\u00e9cision.",
+    pausedBody: "Bambeh v\u00e9rifie cette commande. Le vendeur sera pay\u00e9 une fois la v\u00e9rification termin\u00e9e. Vous n'avez rien d'autre \u00e0 faire.",   // FIX972 - Bambeh paused this order (User Protection)
     noEscrowTitle: 'Paiement direct',
     noEscrowBody: 'Cette commande n\u2019est pas sous la Protection des utilisateurs, il n\u2019y a donc rien \u00e0 lib\u00e9rer.',
     closedTitle: 'Commande cl\u00f4tur\u00e9e',
@@ -211,6 +213,7 @@ const strings = {
     refundedBody: 'You refuse this order and the money go back to the number wey pay.',
     disputedTitle: 'Dem dey check am',
     disputedBody: "Bambeh dey check one claim for this order, and dem go answer inside 72 hours. No money go move until dem decide.",
+    pausedBody: "Bambeh dey check this order. Dem go pay the seller when the check finish. You no need do anything again.",   // FIX972 - Bambeh paused this order (User Protection)
     noEscrowTitle: 'Direct payment',
     noEscrowBody: 'This order no pass through User Protection, so nothing dey for hold or release.',
     closedTitle: 'Order don close',
@@ -264,6 +267,7 @@ const strings = {
     refundedBody: '\u062a\u0645 \u0631\u0641\u0636 \u0627\u0644\u0637\u0644\u0628 \u0648\u0623\u0639\u064a\u062f \u0627\u0644\u0645\u0628\u0644\u063a \u0625\u0644\u0649 \u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0630\u064a \u062f\u0641\u0639.',
     disputedTitle: '\u0642\u064a\u062f \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629',
     disputedBody: "\u064a\u0631\u0627\u062c\u0639 \u0628\u0627\u0645\u0628\u064a\u0647 \u0645\u0637\u0627\u0644\u0628\u0629 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0648\u064a\u0631\u062f \u062e\u0644\u0627\u0644 72 \u0633\u0627\u0639\u0629. \u0644\u0627 \u062a\u062a\u062d\u0631\u0643 \u0623\u064a \u0623\u0645\u0648\u0627\u0644 \u062d\u062a\u0649 \u064a\u062a\u0645 \u0627\u0644\u0642\u0631\u0627\u0631.",
+    pausedBody: "\u064a\u062a\u062d\u0642\u0642 \u0628\u0627\u0645\u0628\u064a\u0647 \u0645\u0646 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628. \u0633\u064a\u062a\u0645 \u0627\u0644\u062f\u0641\u0639 \u0644\u0644\u0628\u0627\u0626\u0639 \u0628\u0639\u062f \u0627\u0646\u062a\u0647\u0627\u0621 \u0627\u0644\u062a\u062d\u0642\u0642\u060c \u0648\u0644\u0627 \u064a\u0644\u0632\u0645\u0643 \u0641\u0639\u0644 \u0623\u064a \u0634\u064a\u0621 \u0622\u062e\u0631.",   // FIX972 - Bambeh paused this order (User Protection)
     noEscrowTitle: '\u062f\u0641\u0639 \u0645\u0628\u0627\u0634\u0631',
     noEscrowBody: '\u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0644\u064a\u0633 \u062a\u062d\u062a \u062d\u0645\u0627\u064a\u0629 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u060c \u0644\u0630\u0644\u0643 \u0644\u0627 \u0634\u064a\u0621 \u0644\u062d\u0641\u0638\u0647 \u0623\u0648 \u062a\u062d\u0631\u064a\u0631\u0647.',
     closedTitle: '\u0627\u0644\u0637\u0644\u0628 \u0645\u063a\u0644\u0642',
@@ -317,6 +321,7 @@ const strings = {
     refundedBody: 'Yamiroore nde salminaama, kaalisi rutti to limngal yo\u0253unoo.',
     disputedTitle: 'Ina yi\u0257ee',
     disputedBody: "Bambeh ina \u01b4eewta \u0257a\u0253\u0253aande e ndee yamiroore, ina jaabta nder waktuuji 72. Kaalis dillataa haa \u0257um ta\u01b4aa.",
+    pausedBody: "Bambeh ina \u01b4eewta ndee yamiroore. Jeeyoowo yo\u0253ete so \u01b4eewgol ngol timmii.",   // FIX972 - Bambeh paused this order (User Protection)
     noEscrowTitle: 'Yo\u0253gol laa\u0253i',
     noEscrowBody: 'Ordoru ndu naataani e Ndeenka huutoroo\u0253e, alaa ko jogaa walla ko neldetee.',
     closedTitle: 'Yamiroore uddaama',
@@ -556,6 +561,8 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
       let json: Record<string, unknown> | null = null;
       try { json = raw ? (JSON.parse(raw) as Record<string, unknown>) : null; } catch { /* plain text */ }
 
+      // FIX972 - Bambeh paused this order (Command Center > User Protection, FIX973): say so in the member's language
+      if (!res.ok && json && json.code === 'order_paused') throw new Error(s.pausedBody);
       if (!res.ok) {
         const msg =
           (typeof json?.error === 'string' && json.error) ||
@@ -566,7 +573,7 @@ export default function EscrowActionPanel({ orderId, onChanged, className }: Pro
       }
       return json;
     },
-    [order?.id, reference, s.signIn],
+    [order?.id, reference, s.signIn, s.pausedBody],
   );
 
   /* ---- FIX209: verify the payment with the provider, server-side --------

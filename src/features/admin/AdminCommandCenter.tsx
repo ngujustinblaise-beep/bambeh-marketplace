@@ -33,7 +33,7 @@ import {
 import {
   fetchMyRole, capabilitiesFor, ROLE_LABEL, type AdminRole, type Capabilities,
   searchUsers, type AdminUser, setUserFrozen, setAdminFrozen, assignRole,
-  fetchDisputes, type Dispute, resolveDispute, setEscrowFrozen,
+  fetchDisputes, type Dispute, resolveDispute,   // FIX972 - setEscrowFrozen gone (User Protection, FIX971)
   composeMessage, fetchPendingMessages, approveMessage, rejectMessage,
   publishAnnouncement, fetchReports, fetchFinanceBreakdown, fmtXAF,
   type FinanceRow,   // FIX505
@@ -76,6 +76,7 @@ import AdminViews from './AdminViews';                         // FIX808
 import { Eye as ViewsIcon } from 'lucide-react';               // FIX808
 import useBadgeCounts, { type BadgeKey } from './useBadgeCounts'; // FIX496
 import FinanceWaiting from './FinanceWaiting';   // FIX950 - what the number beside Finances counts, and how to clear it (FIX944)
+import UserProtectionSection from './UserProtectionSection';   // FIX972 - User Protection (FIX971): pause, ask, approve and pay
 
 type Section =
   | 'overview' | 'users' | 'disputes' | 'escrow' | 'comms'
@@ -120,12 +121,14 @@ const NAV: Array<{
     badge: ['reset_requests', 'verify_pharmacies', 'verify_hospitals'] },
   { key: 'disputes',  label: 'Disputes',       icon: Gavel,    needs: 'resolveDisputes',
     badge: ['disputes'] },
-  { key: 'escrow',    label: 'Escrow',         icon: Lock,     needs: 'freezeEscrow',
-    badge: ['escrow_disputes'] },
+  // FIX972 - User Protection (was "Escrow", a box that never worked): every staff member looks and pauses; only admins
+  // and the super admin unpause and pay the seller; the number counts moderators' asks waiting for them
+  { key: 'escrow',    label: 'User Protection', icon: Lock,
+    badge: ['escrow_disputes', 'protection_asks'] },
   { key: 'comms',     label: 'Communications', icon: Send },
-  { key: 'approvals', label: 'Approvals',      icon: CheckSquare, needs: 'approveMessages' },
-  { key: 'announce',  label: 'Announcements',  icon: Megaphone, needs: 'publishAnnouncements' },
-  { key: 'team',      label: 'Team & Roles',   icon: UserCog,  needs: 'createModerators' },
+  { key: 'approvals', label: 'Approvals',      icon: CheckSquare },   // FIX972 - moderators look; admins approve
+  { key: 'announce',  label: 'Announcements',  icon: Megaphone },   // FIX972 - moderators look; admins publish
+  { key: 'team',      label: 'Team & Roles',   icon: UserCog },   // FIX972 - moderators look; admins and the super admin change roles
   // FIX950 - a number while an agent's report or answer waits for Bambeh (FIX942/FIX945); moderators open it too and
   // see the daily reports only (AgentsSection, FIX946) - agents, codes, targets and caps stay with admins
   { key: 'agents',    label: 'Marketing agents', icon: UserPlus, badge: ['agent_reports_waiting'] },
@@ -138,7 +141,7 @@ const NAV: Array<{
   // FIX950 - the number counts exactly what the top of the Finances page lists (FinanceWaiting, FIX944): payments
   // waiting more than an hour for Mobile Money, and payouts Bambeh owes. It used to show 14 for months that nothing
   // on the page could clear.
-  { key: 'finances',  label: 'Finances',       icon: Wallet,   needs: 'viewFinances',
+  { key: 'finances',  label: 'Finances',       icon: Wallet,   // FIX972 - the whole team looks; the super admin closes payments
     badge: ['fin_payments_stale', 'fin_payouts_waiting'] },
   { key: 'reports',   label: 'Reports',        icon: FileText,
     badge: ['reports_open'] },
@@ -210,10 +213,10 @@ export default function AdminCommandCenter() {
     })();
   }, []);
 
-  // FIX950 - moderators come in for the agents' daily reports and see only that section. The others were built for
-  // admins and were never opened to moderators: add one to MODERATOR_SECTIONS only after its database side is checked.
-  const MODERATOR_SECTIONS: Section[] = ['agents'];
-  const visibleNav = NAV.filter((n) => (!n.needs || cap[n.needs]) && (role !== 'moderator' || MODERATOR_SECTIONS.indexOf(n.key) >= 0));
+  // FIX972 - Big, 1 Nov 2026: moderators see every section except Shops (admins and the super admin only). What a
+  // moderator may not do inside a section, the database refuses (FIX970) and the section shows read-only.
+  const ADMIN_ONLY_SECTIONS: Section[] = ['shops'];
+  const visibleNav = NAV.filter((n) => (!n.needs || cap[n.needs]) && (role !== 'moderator' || ADMIN_ONLY_SECTIONS.indexOf(n.key) < 0));
   // a section this role may not open (an old link, ?s= in the address) shows the first one it may
   const section: Section = visibleNav.some((n) => n.key === pickedSection) ? pickedSection : (visibleNav.length > 0 ? visibleNav[0].key : pickedSection);
 
@@ -312,12 +315,12 @@ export default function AdminCommandCenter() {
         {section === 'countries' && <AdminCountries embedded />}{/* FIX779 */}
         {section === 'views'     && <AdminViews embedded />}{/* FIX808 */}
         {section === 'disputes'  && cap.resolveDisputes && <DisputesSection userId={userId!} role={role} flash={flash} />}
-        {section === 'escrow'    && cap.freezeEscrow && <EscrowSection userId={userId!} role={role} flash={flash} />}
+        {section === 'escrow'    && <UserProtectionSection role={role} flash={flash} />}{/* FIX972 - every staff member; the database decides who may do what */}
         {section === 'comms'     && <CommsSection userId={userId!} role={role} flash={flash} />}
-        {section === 'approvals' && cap.approveMessages && <ApprovalsSection userId={userId!} role={role} flash={flash} />}
-        {section === 'announce'  && cap.publishAnnouncements && <AnnounceSection userId={userId!} role={role} flash={flash} />}
-        {section === 'team'      && cap.createModerators && <TeamSection userId={userId!} role={role} cap={cap} flash={flash} />}
-        {section === 'finances'  && cap.viewFinances && <FinancesSection />}
+        {section === 'approvals' && <ApprovalsSection userId={userId!} role={role} flash={flash} canDecide={cap.approveMessages} />}{/* FIX972 */}
+        {section === 'announce'  && <AnnounceSection userId={userId!} role={role} flash={flash} canPublish={cap.publishAnnouncements} />}{/* FIX972 */}
+        {section === 'team'      && <TeamSection userId={userId!} role={role} cap={cap} flash={flash} />}{/* FIX972 - moderators look */}
+        {section === 'finances'  && <FinancesSection owner={cap.viewFinances} />}{/* FIX972 - the whole team looks */}
         {section === 'reports'   && <ReportsSection role={role} />}
         {section === 'feedback'  && <FeedbackSection userId={userId!} role={role} />}
       </main>
@@ -382,8 +385,8 @@ function Overview({ role, cap }: { role: AdminRole; cap: Capabilities }) {
       </div>
       <div className="mt-4 bg-teal-50 border border-teal-200 rounded-2xl p-4 text-sm text-teal-800">
         {role === 'super_admin' && 'You have full control, including finances and team management. Every moderator report reaches you silently.'}
-        {role === 'admin' && 'You can resolve disputes, freeze users and escrow, broadcast, and approve moderator messages. Finances are owner-only.'}
-        {role === 'moderator' && 'You can resolve disputes and answer users. Messages you compose are sent for admin approval first.'}
+        {role === 'admin' && 'You can resolve disputes, freeze and unfreeze members, pause User Protection payments and pay sellers, make moderators, broadcast, and approve moderator messages. Finances: you can look; closing a payment is for the super admin.'}
+        {role === 'moderator' && 'You see every section except Shops. You can resolve disputes, answer members, freeze a member, pause a User Protection payment and ask an admin to release it, and switch one country at a time. Unfreezing, paying sellers, roles, premium, the Subscription wall, Members-only sections, Bambeh payments, Finances and Zerm coins switches are for admins. Messages you compose are sent for admin approval first.'}
       </div>
     </>
   );
@@ -503,20 +506,26 @@ function UsersSection({ userId, role, cap, flash }: { userId: string; role: Admi
   const load = useCallback(async () => { setLoading(true); setUsers(await searchUsers(q)); setLoading(false); }, [q]);
   useEffect(() => { load(); }, [load]);
 
+  // FIX972 - the database's own staff function now does it (FIX970): before, Freeze changed nothing and still said so.
+  // It refuses what this role may not do and its reason is shown as it is.
   const doFreeze = (u: AdminUser, freeze: boolean) => async (reason: string) => {
     setBusy(true);
     try {
       if (u.admin_role) {
-        if (!cap.freezeAdmins) { flash('Only the Super Admin can freeze an admin.'); setBusy(false); setTarget(null); return; }
+        if (!cap.freezeAdmins) { flash('Only the Super Admin can freeze or unfreeze a staff account.'); setBusy(false); setTarget(null); setPending(null); return; }
         await setAdminFrozen(userId, u.id, freeze, reason);
       } else {
         await setUserFrozen(userId, role, u.id, freeze, reason);
       }
-      flash(freeze ? 'Account frozen.' : 'Account unfrozen.');
-      setTarget(null); await load();
-    } catch { flash('Action failed.'); } finally { setBusy(false); }
+      flash(freeze ? 'Account frozen. The member now sees "Your account is paused".' : 'Account unfrozen.');
+      setTarget(null); setPending(null); await load();
+    } catch (e) { flash(e instanceof Error && e.message ? e.message : 'Action failed.'); } finally { setBusy(false); }
   };
   const [pending, setPending] = useState<{ u: AdminUser; freeze: boolean } | null>(null);
+  // FIX972 - who may press Freeze / Unfreeze here: moderators freeze members only; admins also unfreeze; staff accounts:
+  // the super admin only; the super admin's own account and your own: never
+  const mayToggle = (u: AdminUser): boolean => cap.freezeUsers && u.id !== userId && u.admin_role !== 'super_admin'
+    && (!u.admin_role || cap.freezeAdmins) && (!u.account_frozen || role !== 'moderator');
 
   return (
     <>
@@ -541,7 +550,7 @@ function UsersSection({ userId, role, cap, flash }: { userId: string; role: Admi
                 <p className="text-xs text-gray-400 truncate">{u.email}</p>
               </div>
               {u.account_frozen ? <span className="text-[10px] font-bold text-red-600 bg-red-50 rounded-full px-2 py-0.5">Frozen</span> : null}
-              {cap.freezeUsers ? (
+              {mayToggle(u) ? (
                 <button onClick={(e) => { e.stopPropagation(); setPending({ u, freeze: !u.account_frozen }); }}
                   className={`p-2 rounded-xl ${u.account_frozen ? 'text-emerald-600 hover:bg-emerald-50' : 'text-blue-600 hover:bg-blue-50'}`}
                   title={u.account_frozen ? 'Unfreeze' : 'Freeze'}>
@@ -639,44 +648,7 @@ function DisputesSection({ userId, role, flash }: { userId: string; role: AdminR
   );
 }
 
-// ---------- Escrow ----------
-function EscrowSection({ userId, role, flash }: { userId: string; role: AdminRole; flash: (m: string) => void }) {
-  const [orderId, setOrderId] = useState('');
-  const [escrowId, setEscrowId] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState<null | boolean>(null);
-
-  const act = (freeze: boolean) => async (reason: string) => {
-    if (!escrowId.trim()) { flash('Enter the escrow id.'); return; }
-    setBusy(true);
-    try {
-      await setEscrowFrozen(userId, role, escrowId.trim(), orderId.trim() || null, freeze, reason);
-      flash(freeze ? 'Escrow frozen.' : 'Escrow released.'); setPending(null);
-    } catch { flash('Action failed.'); } finally { setBusy(false); }
-  };
-
-  return (
-    <>
-      <h1 className="text-xl font-bold text-gray-900 mb-1">Escrow Controls</h1>
-      <p className="text-sm text-gray-500 mb-4">Freeze escrow to stop funds during fraud or emergencies; release when a deal is verified legitimate. Every action is logged.</p>
-      <Card title="Freeze or release an escrow">
-        <label className="text-xs font-semibold text-gray-600">Escrow ledger ID</label>
-        <input value={escrowId} onChange={(e) => setEscrowId(e.target.value)} placeholder="escrow_ledger.id"
-          className="mt-1 mb-3 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none" />
-        <label className="text-xs font-semibold text-gray-600">Order ID (optional)</label>
-        <input value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="orders.id"
-          className="mt-1 mb-3 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none" />
-        <div className="flex gap-2">
-          <button onClick={() => setPending(true)} className="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-1"><Snowflake className="w-4 h-4" /> Freeze</button>
-          <button onClick={() => setPending(false)} className="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-1"><Flame className="w-4 h-4" /> Release</button>
-        </div>
-      </Card>
-      {pending !== null ? (
-        <ReasonModal title={pending ? 'Freeze escrow' : 'Release escrow'} busy={busy} onClose={() => setPending(null)} onConfirm={act(pending)} />
-      ) : null}
-    </>
-  );
-}
+// ---------- Escrow: FIX972 - replaced by User Protection (UserProtectionSection.tsx, FIX971); the old box never worked ----------
 
 // ---------- Communications ----------
 function CommsSection({ userId, role, flash }: { userId: string; role: AdminRole; flash: (m: string) => void }) {
@@ -738,7 +710,7 @@ function CommsSection({ userId, role, flash }: { userId: string; role: AdminRole
 }
 
 // ---------- Approvals ----------
-function ApprovalsSection({ userId, role, flash }: { userId: string; role: AdminRole; flash: (m: string) => void }) {
+function ApprovalsSection({ userId, role, flash, canDecide }: { userId: string; role: AdminRole; flash: (m: string) => void; canDecide: boolean }) {
   const [rows, setRows] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -754,6 +726,7 @@ function ApprovalsSection({ userId, role, flash }: { userId: string; role: Admin
   return (
     <>
       <h1 className="text-xl font-bold text-gray-900 mb-3">Message Approvals</h1>
+      {canDecide ? null : <p className="text-sm text-gray-500 mb-3" data-readonly="approvals">Only admins and the super admin approve messages. The messages you wrote wait here until one of them decides.</p>}
       {loading ? <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div> : (
         <div className="space-y-2">
           {rows.map((m) => (
@@ -761,10 +734,12 @@ function ApprovalsSection({ userId, role, flash }: { userId: string; role: Admin
               <p className="text-xs text-gray-400 mb-0.5">{String(m.channel)} · {String(m.audience)}</p>
               {m.title ? <p className="text-sm font-semibold text-gray-900">{String(m.title)}</p> : null}
               <p className="text-sm text-gray-700">{String(m.body)}</p>
+              {canDecide ? (
               <div className="flex gap-2 mt-2">
                 <button onClick={() => decide(m.id as string, true)} disabled={busyId === m.id} className="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-sm font-semibold disabled:opacity-60">Approve & send</button>
                 <button onClick={() => decide(m.id as string, false)} disabled={busyId === m.id} className="flex-1 border-2 border-red-200 text-red-600 py-2 rounded-xl text-sm font-semibold disabled:opacity-60">Reject</button>
               </div>
+              ) : null}
             </div>
           ))}
           {rows.length === 0 ? <p className="text-center text-sm text-gray-400 py-8">Nothing awaiting approval.</p> : null}
@@ -775,7 +750,7 @@ function ApprovalsSection({ userId, role, flash }: { userId: string; role: Admin
 }
 
 // ---------- Announcements ----------
-function AnnounceSection({ userId, role, flash }: { userId: string; role: AdminRole; flash: (m: string) => void }) {
+function AnnounceSection({ userId, role, flash, canPublish }: { userId: string; role: AdminRole; flash: (m: string) => void; canPublish: boolean }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
@@ -789,6 +764,8 @@ function AnnounceSection({ userId, role, flash }: { userId: string; role: AdminR
     <>
       <h1 className="text-xl font-bold text-gray-900 mb-1">Public Announcements</h1>
       <p className="text-sm text-gray-500 mb-4">Publish an official notice to the whole platform.</p>
+      {canPublish ? null : <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-3" data-readonly="announce">Only admins and the super admin publish announcements.</p>}
+      <fieldset disabled={!canPublish} style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}>{/* FIX972 - moderators look */}
       <Card title="New announcement">
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="mb-2 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none" />
         <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={4} placeholder="Announcement…" className="mb-3 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none" />
@@ -796,6 +773,7 @@ function AnnounceSection({ userId, role, flash }: { userId: string; role: AdminR
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : (<><Megaphone className="w-4 h-4" /> Publish</>)}
         </button>
       </Card>
+      </fieldset>
     </>
   );
 }
@@ -821,7 +799,7 @@ function TeamSection({ userId, role, cap, flash }: { userId: string; role: Admin
     <>
       <h1 className="text-xl font-bold text-gray-900 mb-1">Team & Roles</h1>
       <p className="text-sm text-gray-500 mb-3">
-        {cap.createAdmins ? 'Create up to 2 secondary admins and any number of moderators.' : 'Create moderators to help with support and disputes.'}
+        {cap.createAdmins ? 'Create up to 2 secondary admins and any number of moderators.' : cap.createModerators ? 'Create moderators to help with support and disputes.' : 'You can look. Only admins and the super admin change roles.'}
       </p>
       <div className="flex items-center gap-2 mb-3 bg-white border border-gray-200 rounded-xl px-3">
         <Search className="w-4 h-4 text-gray-400" />
@@ -838,7 +816,7 @@ function TeamSection({ userId, role, cap, flash }: { userId: string; role: Admin
                 </div>
                 {u.admin_role ? <span className="text-[10px] font-bold bg-teal-100 text-teal-700 rounded-full px-2 py-0.5">{ROLE_LABEL[u.admin_role]}</span> : null}
               </div>
-              {u.admin_role !== 'super_admin' ? (
+              {u.admin_role !== 'super_admin' && cap.createModerators && u.id !== userId && (cap.createAdmins || u.admin_role !== 'admin') ? (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {cap.createAdmins ? (
                     <button disabled={busyId === u.id || (u.admin_role !== 'admin' && adminCount >= 2)} onClick={() => assign(u, 'admin')}
@@ -847,7 +825,7 @@ function TeamSection({ userId, role, cap, flash }: { userId: string; role: Admin
                   <button disabled={busyId === u.id} onClick={() => assign(u, 'moderator')} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 disabled:opacity-40">Make Moderator</button>
                   {u.admin_role ? <button disabled={busyId === u.id} onClick={() => assign(u, null)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 disabled:opacity-40">Remove role</button> : null}
                 </div>
-              ) : <p className="text-[11px] text-gray-400 mt-1">The Super Admin role cannot be changed here.</p>}
+              ) : (u.admin_role === 'super_admin' || cap.createModerators) ? <p className="text-[11px] text-gray-400 mt-1">{u.admin_role === 'super_admin' ? 'The Super Admin role cannot be changed here.' : u.id === userId ? 'You cannot change your own role.' : 'Only the super admin changes an admin.'}</p> : null}
             </div>
           ))}
         </div>
@@ -976,7 +954,7 @@ const SOURCE_LABEL: Record<string, string> = {
   event_payouts: 'Event payouts',
 };
 
-function FinancesSection() {
+function FinancesSection({ owner }: { owner: boolean }) {
   const [rows, setRows] = useState<FinanceRow[]>([]);
   // FIX557 - which card is open, if any
   const [drill, setDrill] = useState<'succeeded' | 'pending' | null>(null);
@@ -1004,7 +982,7 @@ function FinancesSection() {
       <div className="flex items-start justify-between gap-3 mb-1">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Finances</h1>
-          <p className="text-sm text-gray-500">Owner-only. Grouped by the status the database actually holds.</p>
+          <p className="text-sm text-gray-500">{owner ? 'Grouped by the status the database actually holds.' : 'You can look. Closing a payment is for the super admin. Payers\' numbers show as 2376****01.'}</p>
         </div>
         <button onClick={load} className="shrink-0 text-xs font-bold text-teal-700 hover:underline flex items-center gap-1">
           <RefreshCw className="w-3 h-3" /> Refresh
@@ -1012,7 +990,7 @@ function FinancesSection() {
       </div>
 
       {/* FIX950 - first: what is waiting (the number beside Finances), and how to clear it */}
-      <FinanceWaiting />
+      {owner ? <FinanceWaiting /> : null}{/* FIX972 - what waits, and closing it: the super admin */}
 
       {loading ? (
         <div className="flex justify-center py-10 text-teal-600"><Loader2 className="w-6 h-6 animate-spin" /></div>

@@ -159,14 +159,14 @@ export default function PaywallSection({ userId, role, flash }: Props) {
 
   /* ---------------------------------------------------------------- */
 
-  if (!mayFlip) {
-    return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 flex items-start gap-2">
+  // FIX972 - Big, 1 Nov 2026: moderators see every section. The subscription wall they may look at, not change (the
+  // database refuses them, FIX970): the page is drawn for them inside a disabled fieldset, with this note on top.
+  const readOnlyNote = mayFlip ? null : (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 flex items-start gap-2" data-readonly="paywall">
         <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>Only an admin or super admin may change the paywall.</span>
+        <span>You can look. Only an admin or super admin may change the paywall.</span>
       </div>
-    );
-  }
+  );
 
   if (loading) {
     return (
@@ -180,7 +180,8 @@ export default function PaywallSection({ userId, role, flash }: Props) {
   const freeCount = regions.filter((r: RegionRow) => r.free).length;
 
   return (
-    <div className="space-y-6">
+    <fieldset disabled={!mayFlip} className="space-y-6" style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}>{/* FIX972 - moderators look */}
+      {readOnlyNote}
       {/* ---------------------------------------------------- header */}
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -317,7 +318,7 @@ export default function PaywallSection({ userId, role, flash }: Props) {
           Save message
         </button>
       </div>
-    </div>
+    </fieldset>
   );
 }
 // BAMBEH_END_TOKEN__PAYWALLSECTION_FIX536__COMPLETE

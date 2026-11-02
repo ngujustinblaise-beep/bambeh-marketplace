@@ -273,7 +273,7 @@ export default function UserActionPanel({
           </section>
 
           {/* ── ACCOUNT ─────────────────────────────────────────────────── */}
-          {cap.freezeUsers ? (
+          {role === 'moderator' && user.account_frozen ? (<p className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-xl p-3" data-frozen-note="1">Frozen. Only an admin or the super admin can unfreeze this account.</p>) : cap.freezeUsers && (!isStaff || cap.freezeAdmins) && user.id !== actorId && user.admin_role !== 'super_admin' ? (
             <section>
               <h3 className="text-sm font-bold text-gray-900 mb-2">Account</h3>
               <button
@@ -288,7 +288,7 @@ export default function UserActionPanel({
                   : <><Snowflake className="w-4 h-4" /> Freeze this account</>}
               </button>
               <p className="text-[11px] text-gray-400 mt-1.5">
-                A frozen account cannot sign in. You will be asked for a reason, and it is recorded.
+                A frozen account sees only "Your account is paused" in the app. You will be asked for a reason; it is kept with your name, date and time.{role === 'moderator' ? ' Only an admin or the super admin can unfreeze.' : ''}
               </p>
             </section>
           ) : null}

@@ -58,7 +58,7 @@ export function capabilitiesFor(role: AdminRole | null): Capabilities {
     };
   }
   if (role === 'moderator') {
-    return { ...none, resolveDisputes: true }; // messages allowed but forced pending
+    return { ...none, resolveDisputes: true, freezeUsers: true }; // messages allowed but forced pending; FIX972 - moderators freeze members (admins unfreeze)
   }
   return none;
 }
@@ -342,58 +342,63 @@ export async function countUsers(): Promise<number> {
   return count ?? 0;
 }
 
+/* FIX972 - freezing and roles go through the database's own staff functions (FIX970). The old direct writes to
+ * profiles changed nothing (a member's row can only be changed by its owner) and still reported success. The
+ * database checks who may, keeps the reason with the name, date and time, and records it in the staff record. */
+const STAFF_REFUSAL: Record<string, string> = {
+  staff_only: 'Only Bambeh staff can do this.',
+  admins_only: 'Only an admin or the super admin can do this.',
+  admins_unfreeze: 'Only an admin or the super admin can unfreeze an account.',
+  super_only: 'Only the super admin can do this to a staff account.',
+  owner_never: 'The super admin\'s account cannot be changed here.',
+  not_self: 'You cannot do this to your own account.',
+  need_reason: 'Write a reason first (3 letters or more).',
+  not_found: 'This account was not found.',
+  max_admins: 'There are already 2 admins. Remove one first.',
+  bad_role: 'Unknown role.',
+  not_landed: 'The role did not change everywhere, so nothing was changed. Try again.',
+};
+
+async function staffCall(fn: string, args: Record<string, unknown>): Promise<Record<string, unknown>> {
+  const { data, error } = await supabase.rpc(fn, args);
+  if (error) {
+    if (isMissingFunction(error)) throw new Error('Run FIX970 in Supabase (SQL Editor) first: ' + fn + ' is not installed yet.');
+    throw new Error(String((error as { message?: string }).message || 'The database refused.'));
+  }
+  const r = (data || {}) as Record<string, unknown>;
+  if (r.ok !== true) {
+    const k = String(r.reason || '');
+    throw new Error((STAFF_REFUSAL[k] || ('Not done' + (k ? ': ' + k : '.'))) + (r.detail ? ' (' + String(r.detail) + ')' : ''));
+  }
+  return r;
+}
+
 export async function setUserFrozen(
   actorId: string, actorRole: AdminRole, targetId: string, frozen: boolean, reason: string,
 ) {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ account_frozen: frozen, frozen_reason: frozen ? reason : null })
-    .eq('id', targetId);
-  if (error) throw error;
-  await logAction(actorId, actorRole, frozen ? 'freeze_user' : 'unfreeze_user', 'user', targetId, { reason });
+  void actorId; void actorRole;   // the database knows who is signed in
+  await staffCall('bambeh_staff_set_frozen', { p_user: targetId, p_frozen: frozen, p_reason: reason });
 }
 
-/** Super-admin only: freeze/unfreeze an ADMIN account. RLS + this guard both apply. */
+/** A staff account: the super admin only - the database refuses anyone else (FIX970). */
 export async function setAdminFrozen(
   actorId: string, targetId: string, frozen: boolean, reason: string,
 ) {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ account_frozen: frozen, frozen_reason: frozen ? reason : null })
-    .eq('id', targetId);
-  if (error) throw error;
-  await logAction(actorId, 'super_admin', frozen ? 'freeze_admin' : 'unfreeze_admin', 'user', targetId, { reason });
+  void actorId;
+  await staffCall('bambeh_staff_set_frozen', { p_user: targetId, p_frozen: frozen, p_reason: reason });
 }
 
 // ---- Roles ----------------------------------------------------------------
+/** Admins make or remove moderators; the super admin also makes or removes admins (2 at most). Every place a
+ *  role is kept changes together (FIX970). */
 export async function assignRole(
   actorId: string, targetId: string, role: AdminRole | null, actorRole: AdminRole,
 ) {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ admin_role: role, created_by_admin: actorId })
-    .eq('id', targetId);
-  if (error) throw error; // DB trigger enforces the 2-admin cap + single super
-  await logAction(actorId, actorRole, role ? `assign_${role}` : 'remove_role', 'user', targetId, {});
+  void actorId; void actorRole;
+  await staffCall('bambeh_staff_set_role', { p_user: targetId, p_role: role ?? 'none' });
 }
 
-// ---- Escrow controls ------------------------------------------------------
-export async function setEscrowFrozen(
-  actorId: string, actorRole: AdminRole, escrowId: string, orderId: string | null, frozen: boolean, reason: string,
-) {
-  const nowIso = new Date().toISOString();
-  const { error } = await supabase
-    .from('escrow_ledger')
-    .update({ status: frozen ? 'frozen' : 'held', updated_at: nowIso })
-    .eq('id', escrowId);
-  if (error) throw error;
-  if (orderId) {
-    await supabase.from('orders')
-      .update({ escrow_status: frozen ? 'frozen' : 'held', updated_at: nowIso })
-      .eq('id', orderId);
-  }
-  await logAction(actorId, actorRole, frozen ? 'freeze_escrow' : 'unfreeze_escrow', 'escrow', escrowId, { reason, orderId });
-}
+// ---- Escrow: FIX972 - setEscrowFrozen removed (it wrote states the database refuses); see UserProtectionSection
 
 // ---- Disputes -------------------------------------------------------------
 export interface Dispute {
