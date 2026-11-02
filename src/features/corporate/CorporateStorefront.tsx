@@ -97,15 +97,15 @@ export default function CorporateStorefront() {
   return (
     <div className="min-h-screen bg-gray-50 pb-28" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Banner */}
-      <div className="h-32 bg-gradient-to-r from-slate-700 to-slate-900 relative">
-        {store.banner_url ? <img loading="lazy" decoding="async" src={store.banner_url} alt="" className="w-full h-full object-cover" /> : null}
+      <div className="h-32 bg-gradient-to-r from-slate-700 to-slate-900 relative overflow-hidden">{/* FIX989 - the cover picture keeps to its band */}
+        {store.banner_url ? <img loading="lazy" decoding="async" src={store.banner_url} alt="" className="w-full h-full object-cover" style={{ height: '100%' }} /> : null}
         <button onClick={() => navigate(-1)} className="absolute top-4 left-4 bg-black/30 text-white p-2 rounded-xl">
           <ArrowLeft className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
         </button>
       </div>
 
       {/* Header & trust */}
-      <div className="px-4 -mt-10">
+      <div className="relative z-10 px-4 -mt-10">{/* FIX989 - the card and the logo sit above the band, not under it */}
         <div className="bg-white rounded-2xl shadow-sm border p-4">
           <div className="flex gap-3 items-start">
             <div className="w-16 h-16 rounded-xl bg-gray-100 border shrink-0 overflow-hidden flex items-center justify-center -mt-8 bg-white">

@@ -186,18 +186,22 @@ export default function CorporatePage() {
                 onClick={() => navigate(`/corporate/store/${store.slug ?? store.id}`)}
                 className="w-full text-left bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
               >
-                <div className="h-20 bg-gradient-to-r from-slate-200 to-slate-300 relative">
-                  {store.banner_url ? (
-                    <img src={store.banner_url} alt="" className="w-full h-full object-cover" loading="lazy" />
-                  ) : null}
-                </div>
-                <div className="p-3 flex gap-3 items-start -mt-8">
+                {/* FIX989 - the cover band only when the business added a cover picture (Big, 2 Nov 2026: an empty grey band
+                    sat on every business without one, and over the top of its logo). The row below is "relative" so the
+                    logo sits above the picture, not under it; the picture keeps to its band (index.css gives every
+                    image "height: auto", which beat the h-full here). */}
+                {store.banner_url ? (
+                  <div className="h-20 bg-slate-200 overflow-hidden">
+                    <img src={store.banner_url} alt="" className="w-full h-full object-cover" style={{ height: '100%' }} loading="lazy" />
+                  </div>
+                ) : null}
+                <div className={'relative p-3 flex gap-3 items-start' + (store.banner_url ? ' -mt-8' : '')}>
                   <div className="w-14 h-14 rounded-xl bg-white border shadow-sm shrink-0 overflow-hidden flex items-center justify-center">
                     {store.logo_url
                       ? <img src={store.logo_url} alt={store.registered_name} className="w-full h-full object-cover" loading="lazy" />
                       : <Store className="w-6 h-6 text-gray-300" />}
                   </div>
-                  <div className="flex-1 min-w-0 pt-6">
+                  <div className={'flex-1 min-w-0' + (store.banner_url ? ' pt-6' : '')}>
                     <div className="flex items-center gap-1.5">
                       <h3 className="font-bold text-gray-900 text-sm truncate">
                         {store.trading_name || store.registered_name}
@@ -216,7 +220,7 @@ export default function CorporatePage() {
                       </span>
                     ) : null}
                   </div>
-                  <ChevronRight className={`w-4 h-4 text-gray-300 shrink-0 mt-8 ${isRtl ? 'rotate-180' : ''}`} />
+                  <ChevronRight className={`w-4 h-4 text-gray-300 shrink-0 ${store.banner_url ? 'mt-8' : 'self-center'} ${isRtl ? 'rotate-180' : ''}`} />
                 </div>
               </button>
             ))}

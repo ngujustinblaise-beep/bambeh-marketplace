@@ -93,23 +93,25 @@ const NAV: Array<{
   needs?: keyof Capabilities;
   /** FIX496 — badge keys from admin_badge_counts(); summed into one number. */
   badge?: BadgeKey[];
+  /** FIX989 - the number counts only what is new since this staff member last opened the section */
+  fresh?: boolean;
 }> = [
   { key: 'overview',  label: 'Overview',       icon: LayoutGrid },
   { key: 'users',     label: 'Users',          icon: Users },
   { key: 'recovery',  label: 'Account recovery', icon: UserCog },     // FIX612
   { key: 'listings',  label: 'Listings',       icon: Boxes,
     badge: ['listings_pending'] },
-  { key: 'revive',    label: 'Reactivate adverts', icon: RefreshCw }, // FIX611
-  { key: 'refunds',   label: 'Refund claims', icon: RefreshCw },   // FIX636
+  { key: 'revive',    label: 'Reactivate adverts', icon: RefreshCw, badge: ['revive_new'], fresh: true }, // FIX611; FIX989 - adverts that expired since you last opened it
+  { key: 'refunds',   label: 'Refund claims', icon: RefreshCw, badge: ['refund_claims'] },   // FIX636; FIX989 - claims waiting for a decision
   { key: 'usage',     label: 'App usage',     icon: UsageIcon },   // FIX666
   { key: 'countries', label: 'Countries',     icon: CountriesIcon }, // FIX779
   { key: 'views',     label: 'Views & visits', icon: ViewsIcon }, // FIX808
-  { key: 'featured',  label: 'Featured ads',   icon: Star },   // FIX827 - Adverts and Promotions in one place
+  { key: 'featured',  label: 'Featured ads',   icon: Star, badge: ['featured_ending'] },   // FIX827 - Adverts and Promotions in one place; FIX989 - ending within 24 hours
   { key: 'businesses', label: 'Businesses',    icon: BusinessesIcon, badge: ['corp_waiting'] },   // FIX836
-  { key: 'shops',     label: 'Shops',          icon: ShopsIcon },   // FIX899 - every seller's shop link; Verified on Bambeh
+  { key: 'shops',     label: 'Shops',          icon: ShopsIcon, badge: ['shops_new'], fresh: true },   // FIX899 - every seller's shop link; Verified on Bambeh; FIX989 - new shops since you last opened it
   { key: 'support',   label: 'Support inbox', icon: SupportIcon, badge: ['support_waiting'] }, // FIX838
   { key: 'zerm',      label: 'Zerm coins',    icon: ZermIcon, badge: ['zerm_cashout'] },   // FIX852/FIX886 - switches; coins-to-money requests waiting
-  { key: 'pharmacies', label: 'Pharmacies',    icon: Cross },
+  { key: 'pharmacies', label: 'Pharmacies',    icon: Cross, badge: ['pharmacy_cover'] },   // FIX989 - towns with no rota or under 24 hours left
   { key: 'utilities', label: 'Water & Lights', icon: Droplet,
     badge: ['utility_live'] },
   { key: 'fuel',      label: 'Fuel at night',  icon: Fuel,
@@ -126,18 +128,18 @@ const NAV: Array<{
   { key: 'escrow',    label: 'User Protection', icon: Lock,
     badge: ['escrow_disputes', 'protection_asks'] },
   { key: 'comms',     label: 'Communications', icon: Send },
-  { key: 'approvals', label: 'Approvals',      icon: CheckSquare },   // FIX972 - moderators look; admins approve
+  { key: 'approvals', label: 'Approvals',      icon: CheckSquare, badge: ['approvals_waiting'] },   // FIX972 - moderators look; admins approve; FIX989 - messages waiting
   { key: 'announce',  label: 'Announcements',  icon: Megaphone },   // FIX972 - moderators look; admins publish
   { key: 'team',      label: 'Team & Roles',   icon: UserCog },   // FIX972 - moderators look; admins and the super admin change roles
   // FIX950 - a number while an agent's report or answer waits for Bambeh (FIX942/FIX945); moderators open it too and
   // see the daily reports only (AgentsSection, FIX946) - agents, codes, targets and caps stay with admins
   { key: 'agents',    label: 'Marketing agents', icon: UserPlus, badge: ['agent_reports_waiting'] },
-  { key: 'couriers',  label: 'Delivery agents',  icon: Users },
-  { key: 'obligations', label: 'Bambeh payments', icon: Wallet },
+  { key: 'couriers',  label: 'Delivery agents',  icon: Users, badge: ['couriers_waiting'] },   // FIX989 - applications waiting
+  { key: 'obligations', label: 'Bambeh payments', icon: Wallet, badge: ['obligations_due'] },   // FIX989 - bills overdue or due today
   { key: 'paywall',   label: 'Subscription wall', icon: Lock },
   { key: 'gates',     label: 'Members-only sections', icon: GatesIcon }, // FIX675
-  { key: 'foodgas',   label: 'Gas & food', icon: FoodGasIcon }, // FIX693
-  { key: 'womenshealth', label: "Women's health", icon: WomensHealthIcon }, // FIX724
+  { key: 'foodgas',   label: 'Gas & food', icon: FoodGasIcon, badge: ['foodgas_waiting'] }, // FIX693; FIX989 - waiting for a check, changed after approval
+  { key: 'womenshealth', label: "Women's health", icon: WomensHealthIcon, badge: ['wh_waiting'] }, // FIX724; FIX989 - waiting for a check, changed or reported
   // FIX950 - the number counts exactly what the top of the Finances page lists (FinanceWaiting, FIX944): payments
   // waiting more than an hour for Mobile Money, and payouts Bambeh owes. It used to show 14 for months that nothing
   // on the page could clear.
@@ -220,6 +222,18 @@ export default function AdminCommandCenter() {
   // a section this role may not open (an old link, ?s= in the address) shows the first one it may
   const section: Section = visibleNav.some((n) => n.key === pickedSection) ? pickedSection : (visibleNav.length > 0 ? visibleNav[0].key : pickedSection);
 
+  // FIX989 - opening a section marks it seen for this staff member alone (FIX987): a "new since you last opened"
+  // number (Shops, Reactivate adverts) then counts only what comes after. The numbers are asked again once it is noted.
+  useEffect(() => {
+    if (!role) return;
+    let alive = true;
+    void (async () => {
+      try { await supabase.rpc('bambeh_staff_seen_mark', { p_section: section }); } catch { /* noted at the next visit */ }
+      if (alive) void refreshBadges();
+    })();
+    return () => { alive = false; };
+  }, [section, role, refreshBadges]);
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-teal-600"><Loader2 className="w-8 h-8 animate-spin" /></div>;
   }
@@ -266,7 +280,7 @@ export default function AdminCommandCenter() {
             const waiting = badgeSum(n.badge);   // FIX496
             return (
               <button key={n.key} onClick={() => goTo(n.key)}
-                title={waiting > 0 ? `${waiting} item${waiting === 1 ? '' : 's'} waiting` : undefined}
+                title={waiting > 0 ? (n.fresh ? `${waiting} new since you last opened it` : `${waiting} item${waiting === 1 ? '' : 's'} waiting`) : undefined}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
                   active ? 'bg-teal-600 text-white' : 'hover:bg-gray-800 text-gray-300'
                 }`}>
@@ -274,7 +288,7 @@ export default function AdminCommandCenter() {
                 <span className="flex-1 text-left">{n.label}</span>
                 {waiting > 0 ? (
                   <span
-                    aria-label={`${waiting} waiting`}
+                    aria-label={n.fresh ? `${waiting} new` : `${waiting} waiting`}
                     className={`ml-auto min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center ${
                       active ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
                     }`}>
